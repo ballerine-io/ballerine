@@ -1,0 +1,33 @@
+[submodule "apps/ballerine-web-ui"]
+	path = apps/ballerine-web-ui
+	url = git@github.com:ballerine-io/ballerine-web-ui.git
+[submodule "apps/ballerine-backend"]
+	path = apps/ballerine-backend
+	url = git@github.com:ballerine-io/ballerine-backend.git
+[submodule "apps/ballerine-backoffice"]
+	path = apps/ballerine-backoffice
+	url = git@github.com:ballerine-io/ballerine-backoffice.git
+[submodule "apps/ballerine-workflow-builder"]
+	path = apps/ballerine-workflow-builder
+	url = git@github.com:ballerine-io/ballerine-workflow-builder.git
+[submodule "packages/ballerine-core"]
+	path = packages/ballerine-core
+	url = git@github.com:ballerine-io/ballerine-core.git
+[submodule "packages/ballerine-cli"]
+	path = packages/ballerine-cli
+	url = git@github.com:ballerine-io/ballerine-cli.git
+[submodule "sdks/ballerine-web-sdk"]
+	path = sdks/ballerine-web-sdk
+	url = git@github.com:ballerine-io/ballerine-web-sdk.git
+[submodule "sdks/ballerine-ios-sdk"]
+	path = sdks/ballerine-ios-sdk
+	url = git@github.com:ballerine-io/ballerine-ios-sdk.git
+[submodule "sdks/ballerine-android-sdk"]
+	path = sdks/ballerine-android-sdk
+	url = git@github.com:ballerine-io/ballerine-android-sdk.git
+[submodule "packages/ballerine-ui-components"]
+	path = packages/ballerine-ui-components
+	url = git@github.com:ballerine-io/ballerine-ui-components.git
+[submodule "apps/ballerine-docs"]
+	path = apps/ballerine-docs
+	url = git@github.com:ballerine-io/ballerine-docs.git

@@ -1,0 +1,48 @@
+{
+  "name": "Ballerine Monorepo",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:backoffice:dev": "echo \"Error: no test specified\" && exit 1",
+    "start:workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
+    "start:web-ui:dev": "echo \"Error: no test specified\" && exit 1"
+  },
+  "nx": {
+    "namedInputs": {
+      "default": [
+        "{projectRoot}/**/*"
+      ],
+      "production": [
+        "!{projectRoot}/**/*.spec.tsx"
+      ]
+    },
+    "targets": {
+      "build": {
+        "inputs": [
+          "production",
+          "^production"
+        ],
+        "outputs": [
+          "dist/libs/mylib"
+        ],
+        "dependsOn": [
+          "^build"
+        ]
+      },
+      "test": {
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [],
+        "dependsOn": [
+          "build"
+        ]
+      }
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
