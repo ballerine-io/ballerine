@@ -14,8 +14,9 @@
 Ballerine is an open-source infrastructure for user identity and risk management.
 Compose verification processes for any vertical and geography using modular building blocks, components, and 3rd party integrations.
 
-#### We are still in Beta
-<i>Ballerine is still a closed Beta, contact us at: [oss@ballerine.io](mailto:oss@ballerine.io) or click the button below to hear more and get involved before it becomes public.</i>
+#### This Project is Still in Beta
+<i>As you can see, most apps and packages are still private git submodules. We are working on migrating them to this monorepo.</i>\
+<i>If you already want to start using them - reach out to us at [oss@ballerine.io](mailto:oss@ballerine.io) or click the button below.</i>
 
 <a href="https://ballerine.io/request-access" title="Ballerine - Request Access">
     <img width="190px" src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/get-access-button.png" alt="Ballerine's Early Access">
