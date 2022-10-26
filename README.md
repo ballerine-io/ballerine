@@ -110,6 +110,9 @@ Live examples:
 Demo project:
 [View in jsfiddle](https://jsfiddle.net/ballerine/7d0g53xn)
 
+Getting started
+[Click here](#web-sdk-flows)
+
 ___
 
 <details><summary>Some examples of what you can do with it</summary>
