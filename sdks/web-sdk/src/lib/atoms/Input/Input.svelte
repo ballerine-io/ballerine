@@ -5,7 +5,7 @@
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../../utils/css-utils';
   import { IInputAttributes } from './types';
   import { t } from '../../contexts/translation/hooks';
   import merge from 'lodash.merge';

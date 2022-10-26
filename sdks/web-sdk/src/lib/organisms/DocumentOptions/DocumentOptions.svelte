@@ -2,17 +2,17 @@
   import { configuration, IStepConfiguration } from '../../contexts/configuration';
   import DocumentOption from '../../molecules/DocumentOption/DocumentOption.svelte';
   import { goToNextStep } from '../../contexts/navigation';
-  import type { DocumentType, IDocument, IDocumentInfo } from '../../contexts/appState';
+  import type { DocumentType, IDocument, IDocumentInfo } from '../../contexts/app-state';
   import {
     documents,
     selectedDocumentInfo,
     currentStepRoute,
-  } from '../../contexts/appState/stores';
-  import { addDocument } from '../../utils/photoUtils';
+  } from '../../contexts/app-state/stores';
+  import { addDocument } from '../../utils/photo-utils';
   import { isNativeCamera } from '../../contexts/flows/hooks';
   import { IDocumentOption } from '../../molecules/DocumentOption';
   import merge from 'lodash.merge';
-  import { documentOptions } from '../../defaultConfiguration/theme';
+  import { documentOptions } from '../../default-configuration/theme';
 
   export let step: IStepConfiguration;
   const ducumentOptions: IDocumentOption[] = [];

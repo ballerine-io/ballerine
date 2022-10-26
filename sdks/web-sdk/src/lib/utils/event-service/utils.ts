@@ -4,7 +4,7 @@ import {
   IAppState,
   ISelectedParams,
   IStoreData,
-} from '../../contexts/appState';
+} from '../../contexts/app-state';
 import { currentLanguage, Languages } from '../../contexts/translation';
 import { IDocumentVerificationResponse, IOuterEvent, ISendDocumentsResponse } from './types';
 import { get } from 'svelte/store';

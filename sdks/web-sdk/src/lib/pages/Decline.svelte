@@ -4,13 +4,13 @@
   import { Image, Button, Title } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
-  import { DecisionStatus, sendFlowCompleteEvent } from '../utils/EventService';
+  import { DecisionStatus, sendFlowCompleteEvent } from '../utils/event-service';
   import { flowDeclined } from '../services/analytics';
   import { addCloseToURLParams } from '../contexts/navigation/hooks';
-  import { currentParams } from '../contexts/appState';
-  import { declineStep, layout } from '../defaultConfiguration/theme';
+  import { currentParams } from '../contexts/app-state';
+  import { declineStep, layout } from '../default-configuration/theme';
   import merge from 'lodash.merge';
 
   const step = merge(declineStep, $configuration.steps[Steps.Decline]);

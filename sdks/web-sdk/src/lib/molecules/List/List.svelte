@@ -7,7 +7,7 @@
   } from '../../contexts/configuration';
   import { getFlowName } from '../../contexts/flows';
   import { currentLanguage, T } from '../../contexts/translation';
-  import { makeStylesFromConfiguration } from '../../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../../utils/css-utils';
   import { getListLength } from './utils';
 
   export let configuration: IElementProps;

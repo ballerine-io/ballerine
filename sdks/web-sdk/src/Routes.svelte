@@ -1,9 +1,9 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
   import { steps } from './lib/contexts/navigation';
-  import { sendNavigationUpdateEvent } from './lib/utils/EventService';
+  import { sendNavigationUpdateEvent } from './lib/utils/event-service';
   import { visitedPage } from './lib/services/analytics';
-  import { currentStepRoute, currentStepIdx, currentParams } from './lib/contexts/appState';
+  import { currentStepRoute, currentStepIdx, currentParams } from './lib/contexts/app-state';
   let stepIndex: number;
 
   let currentStep = steps[0];

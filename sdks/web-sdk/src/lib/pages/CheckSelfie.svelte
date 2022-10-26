@@ -3,14 +3,14 @@
   import { Title, IconButton } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { goToPrevStep } from '../contexts/navigation';
   import Paragraph from '../atoms/Paragraph/Paragraph.svelte';
   import NavigationButtons from '../molecules/NavigationButtons/NavigationButtons.svelte';
   import Photo from '../atoms/Photo/Photo.svelte';
-  import { selfieUri, currentStepRoute } from '../contexts/appState/stores';
+  import { selfieUri, currentStepRoute } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
-  import { checkSelfieStep, layout } from '../defaultConfiguration/theme';
+  import { checkSelfieStep, layout } from '../default-configuration/theme';
 
   const step = merge(checkSelfieStep, $configuration.steps[Steps.CheckSelfie]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);

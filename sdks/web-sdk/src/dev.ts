@@ -1,6 +1,6 @@
 import { Steps } from './lib/contexts/configuration';
 import { flows } from './main';
-import { DocumentType } from './lib/contexts/appState';
+import { DocumentType } from './lib/contexts/app-state';
 import { FlowsInitOptions } from './types/BallerineSDK';
 
 const ballerineInitConfig: FlowsInitOptions = {

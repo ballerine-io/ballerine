@@ -1,7 +1,7 @@
 import { Elements, IElement, Steps } from './lib/contexts/configuration';
 import { flows } from './main';
-import { DocumentType } from './lib/contexts/appState';
-import { DocumentVariant } from './lib/contexts/appState/types';
+import { DocumentType } from './lib/contexts/app-state';
+import { DocumentVariant } from './lib/contexts/app-state/types';
 
 const businessTaxIdInfo = {
   type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,

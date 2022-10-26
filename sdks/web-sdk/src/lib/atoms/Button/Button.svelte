@@ -1,8 +1,8 @@
 <script lang="ts">
   import { ICSSProperties, IElementProps } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../../utils/css-utils';
   import { configuration as globalConfiguration } from '../../contexts/configuration';
-  import { primaryButton } from '../../defaultConfiguration/theme';
+  import { primaryButton } from '../../default-configuration/theme';
   import merge from 'lodash.merge';
 
   export let configuration: IElementProps;

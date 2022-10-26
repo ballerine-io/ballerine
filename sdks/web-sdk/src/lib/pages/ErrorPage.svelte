@@ -3,15 +3,15 @@
   import { onDestroy } from 'svelte';
   import { Image, Button, Title } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
-  import { currentParams } from '../contexts/appState';
+  import { currentParams } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
-  import { DecisionStatus, sendFlowCompleteEvent } from '../utils/EventService';
+  import { DecisionStatus, sendFlowCompleteEvent } from '../utils/event-service';
   import { flowError } from '../services/analytics';
   import { addCloseToURLParams } from '../contexts/navigation/hooks';
   import merge from 'lodash.merge';
-  import { errorStep, layout } from '../defaultConfiguration/theme';
+  import { errorStep, layout } from '../default-configuration/theme';
 
   const step = merge(errorStep, $configuration.steps[Steps.Error]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
