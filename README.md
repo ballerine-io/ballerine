@@ -86,10 +86,10 @@ ___
       - [We are still in Beta](#we-are-still-in-beta)
 
 
-# Web SDK Flows
+# SDK UI Flows
 
 ### Description
-Web SDK Flows can generate custom made, branded flows to collect KYC/KYB documents and user information.
+Web & Mobile SDK Flows can generate custom made, branded flows to collect KYC/KYB documents and user information.
 The SDK UI is embeddable inside exsiting apps or deployed as an webapp.
 
 <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/phones.png">
@@ -117,9 +117,64 @@ ___
 - And more...
 </details>
 
+
+# Case management (soon Open Source)
+
+
+### Description
+Give your operating team Ballerine’s case management dashboard so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
+
+* A case management dashboard to approve, reject or classify users manually.
+* Create workflows operators can trigger from the interface.
+* Optimize manual work by customizing the layouts and information presented.
+* Use as standalone tool or embed in your existing dashboard.
+
+<br/>
+
+> *We are working on releasing our case management dashboard as Open-Source. Join our mailing list in the button below to get an update once it's out.*	
+> <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
+> <br/>
+> <br/>
+ >   <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
+</a>
+
+
+<br/>
+
+<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
+
 ___
 
-### Getting Started
+# Workflow builder & Rule engine (WIP)
+
+
+### Description
+Customize your identity and risk workflows in code or with a low-code platform non-technical staff can play with.
+
+* Test out different vendor to optimize convertion and costs.
+* Utilize data sources and tools contributed by Ballerine or the community.
+* Visualize complex flows to provide observability of how things work to the rest of the company.
+
+<br/>
+
+> *Our rule engine is still in development. Join our mailing list in the button below to get an update once it's out.*	
+> <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
+> <br/>
+> <br/>
+ >   <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
+</a>
+
+
+<br/>
+
+
+<img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/rule%20engine.png">
+
+
+<br/>
+___
+
+### Getting Started with SDK's Flows
 #### Installation
 
 <ins>CDN:</ins>
@@ -308,84 +363,6 @@ ___
 | `auth` | BEAuthConfig | Auth method and Autorization header
 | `endpoints` | BEEndpoints | List of endpoints for each action
 -----
-
-
-
-# Case management (soon Open Source)
-
-
-### Description
-Give your operating team Ballerine’s case management dashboard so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
-
-* A case management dashboard to approve, reject or classify users manually.
-* Create workflows operators can trigger from the interface.
-* Optimize manual work by customizing the layouts and information presented.
-* Use as standalone tool or embed in your existing dashboard.
-
-<br/>
-
-> *We are working on releasing our case management dashboard as Open-Source. Join our mailing list in the button below to get an update once it's out.*	
-> <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
-> <br/>
-> <br/>
- >   <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
-</a>
-
-
-<br/>
-
-<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
-
-___
-
-# Workflow builder & Rule engine (WIP)
-
-
-### Description
-Customize your identity and risk workflows in code or with a low-code platform non-technical staff can play with.
-
-* Test out different vendor to optimize convertion and costs.
-* Utilize data sources and tools contributed by Ballerine or the community.
-* Visualize complex flows to provide observability of how things work to the rest of the company.
-
-<br/>
-
-> *Our rule engine is still in development. Join our mailing list in the button below to get an update once it's out.*	
-> <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
-> <br/>
-> <br/>
- >   <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
-</a>
-
-
-<br/>
-
-
-<img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/rule%20engine.png">
-
- 
-# High-Level Architecture
-
-Ballerine's architecture is flexible and composable.
-
-**Components**
-
-Components are independent and reusable frontend or backend pieces of configuration, code, or connectors.
-Each component can be plugged into the infrastructure and used by the underlying building blocks.
-
-**Apps** 
-
-Apps bundle are a set of components and connectors that serve a specific use case (like KYC/KYB).
-	
-**Connectors** 
-
-Connectors are integrations to 3rd party vendors. They can be generated with an OpenAPI spec automatically or be built following a predefined interface.
-<br/>
-<br/>
-
-<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/diagram.png">
-
-<br/>
 
 
 ### Roadmap
