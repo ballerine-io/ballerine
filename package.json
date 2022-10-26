@@ -1,18 +1,16 @@
 {
-  "name": "Ballerine Monorepo",
+  "name": "ballerine-monorepo",
+  "private": true,
   "version": "0.1.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "web-sdk:dev": "pnpm exec nx dev @ballerine/web-sdk",
-    "web-sdk:build": "pnpm exec nx build @ballerine/web-sdk",
-    "web-sdk:example": "pnpm exec nx example @ballerine/web-sdk",
+    "web-sdk:dev": "pnpm exec nx dev web-sdk",
+    "web-sdk:build": "pnpm exec nx build web-sdk",
+    "web-sdk:example": "pnpm exec nx example web-sdk",
     "start:backoffice:dev": "echo \"Error: no test specified\" && exit 1",
     "start:workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
     "start:web-ui:dev": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
   "devDependencies": {
     "nx": "15.0.2"
