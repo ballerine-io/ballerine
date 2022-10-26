@@ -1,0 +1,283 @@
+{
+  "en": {
+    "welcome": {
+      "title": "Verify your identity",
+      "button": "Choose document type",
+      "description": "We need some information to help us confirm \nyour identity.",
+      "tip": "Verifying usually takes a few seconds."
+    },
+    "document-selection": {
+      "title": "Upload ID",
+      "description": "Choose the document type you would like to \nidentify with",
+      "tip": "Choose document type"
+    },
+    "document-options": {
+      "passport-title": "Passport",
+      "passport-description": "Your official travel document.",
+      "id_card-title": "ID Card",
+      "id_card-description": "Your government-issued personal ID.",
+      "drivers_license-title": "Drivers license",
+      "drivers_license-description": "Your government-issued Drivers license",
+      "voter_id-title": "Voter ID",
+      "voter_id-description": ""
+    },
+    "document-photo": {
+      "id_card-title": "Upload ID",
+      "id_card-description": "To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
+      "passport-title": "Passport",
+      "passport-description": "Place your passport inside the frame and take a \npicture. \nMake sure it is not cut or has any glare.",
+      "voter_id-title": "Voter ID front side",
+      "voter_id-description": "Place your voter card inside the frome and take a picture. \nMake sure it is not cut or has any glare.",
+      "drivers_license-title": "Drivers license",
+      "drivers_license-description": "Place your drivers license inside the frame and take \na picture. \nMake sure it is not cut or has any glare."
+    },
+    "document-photo-back": {
+      "id_card-title": "Upload ID",
+      "id_card-description": "To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
+      "passport-title": "Upload ID",
+      "passport-description": "To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
+      "voter_id-title": "Voter ID back side",
+      "voter_id-description": "Place the back side of your Voter ID inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare.",
+      "drivers_license-title": "Drivers license back side",
+      "drivers_license-description": "Place the back side of your Drivers license inside \nthe frame and take a picture. \nMake sure it is not cut or has any glare."
+    },
+    "check-document": {
+      "id_card-title": "Review picture",
+      "id_card-description": "Make sure the information is seen clearly, with no blur \nor glare.",
+      "passport-title": "Review picture",
+      "passport-description": "Make sure the information is seen clearly, with no blur \nor glare.",
+      "voter_id-title": "Review picture",
+      "voter_id-description": "Make sure the information is seen clearly, with no blur \nor glare.",
+      "drivers_license-title": "Review picture",
+      "drivers_license-description": "Make sure the information is seen clearly, with no blur \nor glare."
+    },
+    "document-photo-back-start": {
+      "title": "ID back side",
+      "description": "Please take a picture of the back side of your ID",
+      "button": "Take photo",
+      "voter_id-title": "Voter ID back side",
+      "voter_id-description": "Please take a picture of the back side of your Voter ID",
+      "drivers_license-title": "Drivers license back side",
+      "drivers_license-description": "Please take a picture of the back side of your Drivers \nlicense"
+    },
+    "check-document-photo-back": {
+      "title": "Review picture",
+      "description": "Make sure the information is seen clearly, with no blur \nor glare."
+    },
+    "navigation-buttons": {
+      "next": "Looks good",
+      "back": "Take again"
+    },
+    "selfie-start": {
+      "title": "Selfie",
+      "button": "Take a selfie",
+      "description": "Make sure your face is clear and is fully inside the \nframe."
+    },
+    "selfie": {
+      "title": "Selfie",
+      "description": "Place your face inside the frome and take a picture. \nMake sure it is clearly visable."
+    },
+    "check-selfie": {
+      "title": "Review picture",
+      "description": "Make sure your face is clearly visible and fits inside \nthe frame."
+    },
+    "final": {
+      "title": "Success",
+      "description": "Your identity has been successfully verified.",
+      "button": "Next"
+    },
+    "loader": {
+      "text-one": "We're verifying your documents",
+      "text-two": "This may take a few seconds",
+      "text-three": "Taking more than usual"
+    },
+    "resubmission": {
+      "201-title": "Missing images",
+      "201-button": "Retry uploading",
+      "201-description": "It seems like you haven't sent us all of the images we need in order to verify you. please retry uploading the images.",
+      "204-title": "Couldn’t verify the images",
+      "204-button": "Retry uploading",
+      "204-description": "The image of the document you have sent us was in bad quality. please retry uploading the images",
+      "205-title": "Couldn’t verify the images",
+      "205-button": "Retry uploading",
+      "205-description": "The document you have sent us seems to be damaged, please retry uploading using a different document.",
+      "206-title": "Unsupported document",
+      "206-button": "Choose different document",
+      "206-description": "The document you have sent us was not supported. Please take a photo of a valid document.",
+      "207-title": "Expired document",
+      "207-button": "Retry uploading",
+      "207-description": "The document you have sent seems to be expired. Please take a photo of a valid document.",
+      "606-title": "Unclear selfie",
+      "606-button": "Retry uploading",
+      "606-description": "It seems like the photo of your face was not clear, please try again.",
+      "614-title": "Document not fully visible",
+      "614-button": "Retry uploading",
+      "614-description": "The document you have sent is not fully inside the picture.",
+      "615-title": "Back side not fully visible",
+      "615-button": "Retry uploading",
+      "615-description": "The back side of the document you have sent is not fully inside the picture."
+    },
+    "loading": {
+      "review-hint": "Taking longer than usual"
+    },
+    "decline": {
+      "title": "Failed to verify",
+      "button": "Close",
+      "description": "It seems like there was an issue verifying your documents."
+    },
+    "error": {
+      "title": "Failed to verify",
+      "button": "Close"
+    },
+    "timeout": {
+      "title": "Something went wrong",
+      "button": "Close",
+      "description": "It seems like there was an issue verifiying your documents."
+    },
+    "general": {
+      "online": "You are online!",
+      "offline": "You are offline, please check your connection",
+      "errorDocuments": "Error sending documents",
+      "errorDocumentVerification": "Error document verification"
+    }
+  },
+  "es": {
+    "welcome": {
+      "title": "es: Verify your identity",
+      "button": "es: Choose document type",
+      "description": "es: We need some information to help us confirm \nyour identity.",
+      "tip": "es: Verifying usually takes a few seconds."
+    },
+    "document-selection": {
+      "title": "es: Upload ID",
+      "description": "es: Choose the document type you would like to \nidentify with",
+      "tip": "es: Choose document type"
+    },
+    "document-options": {
+      "passport-title": "es: Passport",
+      "passport-description": "es: ",
+      "id_card-title": "es: ID Card",
+      "card-description": "es: ",
+      "drivers_license-title": "es: Drivers license",
+      "drivers_license-description": "es: ",
+      "voter_id-title": "es: Voter ID",
+      "voter_id-description": "es: "
+    },
+    "document-photo": {
+      "id_card-title": "es: Upload ID",
+      "id_card-description": "es: To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
+      "passport-title": "es: Passport",
+      "passport-description": "es: Place your passport inside the frame and take a \npicture. \nMake sure it is not cut or has any glare.",
+      "voter_id-title": "es: Voter ID front side",
+      "voter_id-description": "es: Place your voter card inside the frome and take a picture. \nMake sure it is not cut or has any glare.",
+      "drivers_license-title": "es: Drivers license",
+      "drivers_license-description": "es: Place your drivers license inside the frame and take \na picture. \nMake sure it is not cut or has any glare."
+    },
+    "document-photo-back": {
+      "id_card-title": "es: Upload ID",
+      "id_card-description": "es: To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
+      "passport-title": "es: Upload ID",
+      "passport-description": "es: To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
+      "voter_id-title": "es: Voter ID back side",
+      "voter_id-description": "es: Place the back side of your Voter ID inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare.",
+      "drivers_license-title": "es: Drivers license back side",
+      "drivers_license-description": "es: Place the back side of your Drivers license inside \nthe frame and take a picture. \nMake sure it is not cut or has any glare."
+    },
+    "check-document": {
+      "id_card-title": "es: Review picture",
+      "id_card-description": "es: Make sure the information is seen clearly, with no blur \nor glare.",
+      "passport-title": "es: Review picture",
+      "passport-description": "es: Make sure the information is seen clearly, with no blur \nor glare.",
+      "voter_id-title": "es: Review picture",
+      "voter_id-description": "es: Make sure the information is seen clearly, with no blur \nor glare.",
+      "drivers_license-title": "es: Review picture",
+      "drivers_license-description": "es: Make sure the information is seen clearly, with no blur \nor glare."
+    },
+    "resubmission": {
+      "201-title": "es: Missing images",
+      "201-button": "es: Retry uploading",
+      "201-description": "es: It seems like you haven't sent us all of the images we need in order to verify you. please retry uploading the images.",
+      "204-title": "es: Couldn’t verify the images",
+      "204-button": "es: Retry uploading",
+      "204-description": "es: The image of the document you have sent us was in bad quality. please retry uploading the images",
+      "205-title": "es: Couldn’t verify the images",
+      "205-button": "es: Retry uploading",
+      "205-description": "es: The document you have sent us seems to be damaged, please retry uploading using a different document.",
+      "206-title": "es: Unsupported document",
+      "206-button": "es: Choose different document",
+      "206-description": "es: The document you have sent us was not supported. Please take a photo of a valid document.",
+      "207-title": "es: Expired document",
+      "207-button": "es: Retry uploading",
+      "207-description": "es: The document you have sent seems to be expired. Please take a photo of a valid document.",
+      "606-title": "es: Unclear selfie",
+      "606-button": "es: Retry uploading",
+      "606-description": "es: It seems like the photo of your face was not clear, please try again.",
+      "614-title": "es: Document not fully visible",
+      "614-button": "es: Retry uploading",
+      "614-description": "es: The document you have sent is not fully inside the picture.",
+      "615-title": "es: Back side not fully visible",
+      "615-button": "es: Retry uploading",
+      "615-description": "es: The back side of the document you have sent is not fully inside the picture."
+    },
+    "loading": {
+      "review-hint": "es: Taking longer than usual"
+    },
+    "decline": {
+      "title": "es: Failed to verify",
+      "button": "es: Close",
+      "description": "es: It seems like there was an issue verifying your documents."
+    },
+    "timeout": {
+      "title": "es: Something went wrong",
+      "button": "es: Close",
+      "description": "es: It seems like there was an issue verifiying your documents."
+    },
+    "document-photo-back-start": {
+      "title": "es: ID back side",
+      "description": "es: Please take a picture of the back side of your ID",
+      "button": "es: Take photo",
+      "voter_id-title": "es: Voter ID back side",
+      "voter_id-description": "es: Please take a picture of the back side of your Voter ID",
+      "drivers_license-title": "es: Drivers license back side",
+      "drivers_license-description": "es: Please take a picture of the back side of your Drivers \nlicense"
+    },
+    "check-document-photo-back": {
+      "title": "es: Review picture",
+      "description": "es: Make sure the information is seen clearly, with no blur \nor glare."
+    },
+    "navigation-buttons": {
+      "next": "es: Looks good",
+      "back": "es: Take again"
+    },
+    "selfie-start": {
+      "title": "es: Selfie",
+      "button": "es: Take a selfie",
+      "description": "es: Make sure your face is clear and is fully inside the \nframe."
+    },
+    "selfie": {
+      "title": "es: Selfie",
+      "description": "es: Place your face inside the frome and take a picture. \nMake sure it is clearly visable."
+    },
+    "check-selfie": {
+      "title": "es: Review picture",
+      "description": "es: Make sure your face is clearly visible and fits inside \nthe frame."
+    },
+    "final": {
+      "title": "es: Success",
+      "description": "es: Your identity has been successfully verified.",
+      "button": "es: Next"
+    },
+    "loader": {
+      "text-one": "es: We're verifying your documents",
+      "text-two": "es: This may take a few seconds",
+      "text-three": "es: Taking more than usual"
+    },
+    "general": {
+      "online": "es: You are online!",
+      "offline": "es: You are offline, please check your connection",
+      "errorDocuments": "es: Error sending documents",
+      "errorDocumentVerification": "es: Error document verification"
+    }
+  },
+  "fr": {}
+}
