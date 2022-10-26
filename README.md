@@ -91,7 +91,7 @@ ___
 # SDK UI Flows
 
 ### Description
-Web & Mobile SDK Flows can generate custom made, branded flows to collect KYC/KYB documents and user information.
+With Ballerine's Web & Mobile SDK Flows you can generate custom made, branded flows to collect KYC/KYB documents and user information.
 The SDK UI is embeddable inside exsiting apps or deployed as an webapp.
 
 <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/phones.png">
