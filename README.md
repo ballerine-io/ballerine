@@ -94,13 +94,13 @@ The SDK UI is embeddable inside exsiting apps or deployed as an webapp.
 
 <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/phones.png">
 
-**Why you should use Ballerine's flows:**
-* Pre-made KYC/KYB templates.
-* Customizable UI and flow to fit your desired experience and brand.
-* Ability to use different vendors in the backend over the same flow with.
-* Multi platform support (Desktop, mobile web, mobile native).
-* All camera and different devices edge cases covered and tested.
-* Small and fast, built with Svelte (less than 50kb gzipped).
+**Web SDK Benefits:**
+* Pre-made KYC/KYB **Templates and UI Packs**.
+* **Customizable UI** and flow to fit your desired experience and brand.
+* **Vendor agnostic**, use different vendors in the backend.
+* **Multi platform support** (Desktop, mobile web, mobile native).
+* Edges cases and **long-tail devices covered and tested**.
+* Lightweight and performant, built with Svelte (**less than 50kb gzipped**).
 
 Live examples:
 [KYC 1](https://simple-kyc-demo.ballerine.app/), [KYC 2](https://simple-kyc-demo.ballerine.app/), [KYB](https://simple-kyc-demo.ballerine.app/)
