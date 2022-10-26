@@ -423,24 +423,24 @@ You can create feature requests and upvote existing ones to tell us what we shou
 *Please use the voting system if you think we should prioritize higher a specific chunk*
 * [ ] SDKs *(WIP)*
 	- [x] ~~Open sourcing Web SDK~~
-		- [ ] Behavior data for fraud detection *(WIP)* - [Upvote](https://www.example.com)
-		- [ ] Risk Based KYC/Step up KYC Templates *(WIP)* - [Upvote](https://www.example.com)
+		- [ ] Behavior data for fraud detection *(WIP)*
+		- [ ] Risk Based KYC/Step up KYC Templates *(WIP)*
 	- [x] Open sourcing Android SDK 
-		- [ ] Behavior data for fraud detection *(WIP)* - [Upvote](https://www.example.com)
+		- [ ] Behavior data for fraud detection *(WIP)*
 	- [ ] Open sourcing  iOS SDK *(WIP)* - [Upvote](https://www.example.com)
 		- [x] ~~Webview Integration~~
 		- [x] ~~Native Camera Option~~
-* [ ] Backoffice - [Upvote](https://www.example.com)
-	- [ ] Open Sourcing Case Managment - [Upvote](https://www.example.com)
-		- [ ] Operator Collaborations - [Upvote](https://www.example.com)
-		- [ ] Transaction Approval Queues - [Upvote](https://www.example.com)
+* [ ] Backoffice
+	- [ ] Open Sourcing Case Managment
+		- [ ] Operator Collaborations
+		- [ ] Transaction Approval Queues
 * [ ] Dashboard
-	- [ ] Data pipelines (Orchestrator) *(WIP)* - [Upvote](https://www.example.com)
+	- [ ] Data pipelines (Orchestrator) *(WIP)*
 		- Integrations
 			- [ ] AWS
 				- Fraud Detection
 					- [ ] Account Take Over
-	- [ ] Rule/Risk Engine *(WIP)* - [Upvote](https://www.example.com)
+	- [ ] Rule/Risk Engine *(WIP)*
 
 
 #### Get to know when we release more parts
