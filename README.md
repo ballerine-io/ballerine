@@ -70,7 +70,7 @@ ___
     + [Description](#description-2)
 - [Workflow builder & Rule engine (WIP)](#workflow-builder---rule-engine--wip-)
     + [Description](#description-3)
-    + [Getting Started with SDK's Flows](#getting-started-with-sdk-s-flows)
+- [Getting Started with SDK's Flows](#getting-started-with-sdk-s-flows)
       - [Installation](#installation)
       - [Flows API](#flows-api)
       - [Embedded Flows](#embedded-flows)
@@ -87,10 +87,6 @@ ___
       - [Onboarding Suite (KYC/KYB/General Document Collection)](#onboarding-suite--kyc-kyb-general-document-collection-)
       - [Risk Suite](#risk-suite)
       - [Get to know when we release more parts](#get-to-know-when-we-release-more-parts)
-
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
-
 
 # SDK UI Flows
 
