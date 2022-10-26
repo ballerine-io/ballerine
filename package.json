@@ -9,10 +9,14 @@
     "web-sdk:example": "pnpm exec nx example web-sdk",
     "start:backoffice:dev": "echo \"Error: no test specified\" && exit 1",
     "start:workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
-    "start:web-ui:dev": "echo \"Error: no test specified\" && exit 1"
+    "start:web-ui:dev": "echo \"Error: no test specified\" && exit 1",
+    "commit": "git add . && git-cz"
   },
   "license": "ISC",
   "devDependencies": {
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
+    "commitizen": "^4.2.5",
     "nx": "15.0.2"
   }
 }
