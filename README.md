@@ -29,7 +29,7 @@ ___
 
 
 ### What can you find in this project?
- * KYC/KYB flows and UI in Mobile and web SDKs for user data and document collection - :white_check_mark: Available & Open Source! - [view details](https://github.com/ballerine-io/ballerine-web-ui/blob/staging/README.md#web-sdk)
+ * KYC/KYB flows and UI in Mobile and web SDKs for user data and document collection - :white_check_mark: Available & Open Source! - [view details](#web-sdk-flows)
  * Case management dashboard for users approval/rejection - 🎉 Final stages of Open Sourcing!
  * Identity & risk vendors orchestration - :hourglass_flowing_sand: Almost done
  * No-code rule engine to control Frontend and backend flows - :construction: WIP
