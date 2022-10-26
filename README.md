@@ -111,7 +111,7 @@ Demo project:
 [View in jsfiddle](https://jsfiddle.net/ballerine/7d0g53xn)
 
 Getting started
-[Click here](#web-sdk-flows)
+[Click here](#getting-started-with-sdks-flows)
 
 ___
 
