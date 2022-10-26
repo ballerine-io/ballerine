@@ -1,0 +1,98 @@
+{
+  "author": "Ballerine.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ballerine-io/ballerine-web-ui"
+  },
+  "description": "Ballerine is an open-source infrastructure for user identity and risk management. Compose verification processes for any vertical and geography using modular building blocks, components, and 3rd party integrations.",
+  "keywords": [
+    "ballerine",
+    "fintech",
+    "risk",
+    "verification",
+    "authentication",
+    "authorization",
+    "auth",
+    "service",
+    "identity",
+    "kyc",
+    "kyb"
+  ],
+  "types": "dist/index.d.ts",
+  "name": "@ballerine/web-sdk",
+  "private": false,
+  "version": "1.1.22",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/ballerine-sdk.umd.js",
+  "module": "./dist/ballerine-sdk.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/ballerine-sdk.es.js",
+      "require": "./dist//ballerine-sdk.umd.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite -c vite.dev.config.ts",
+    "build": "vite build",
+    "commit": "git add . && git-cz",
+    "deprecated:build:sdk": "rollup --config",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "format": "prettier --write \"./src/**/*.{js,svelte,html,ts}\"",
+    "lint": "eslint \"./src/**/*.{js,ts,svelte}\"",
+    "lint:fix": "yarn lint --fix",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
+    "build:examples": "npm run build && for i in ./examples/sdk ./examples/standalone; do cp -R ./dist/ballerine-sdk.umd.js $i; done",
+    "example:sdk": "npm run build:examples && npx http-server ./examples/sdk -p 8081",
+    "example:standalone": "npm run build:examples && npx http-server ./examples/standalone -p 9090",
+    "deploy:cdn:cf": "vite build && aws s3 cp ./dist/ballerine-sdk.umd.js s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.js",
+    "publish:patch": "vite build && npm version patch && npm publish && npm run deploy:cdn:cf",
+    "prepare": "husky install",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "yarn build && changeset publish"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.5",
+    "@changesets/changelog-git": "^0.1.13",
+    "@changesets/cli": "^2.25.0",
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
+    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
+    "@tsconfig/svelte": "^2.0.1",
+    "@types/jslib-html5-camera-photo": "^3.1.2",
+    "@types/lodash.keyby": "^4.6.7",
+    "@types/lodash.merge": "^4.6.7",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
+    "commitizen": "^4.2.5",
+    "cz-conventional-changelog": "^3.3.0",
+    "editorconfig": "^1.0.0",
+    "eslint": "^8.18.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-storybook": "^0.6.6",
+    "eslint-plugin-svelte3": "^4.0.0",
+    "husky": "^8.0.1",
+    "postcss": "^8.4.18",
+    "prettier": "^2.7.1",
+    "prettier-plugin-svelte": "^2.8.0",
+    "svelte": "^3.39.0",
+    "svelte-check": "^2.2.7",
+    "svelte-preprocess": "^4.9.8",
+    "typescript": "^4.5.4",
+    "vite": "^2.9.9",
+    "vite-plugin-dts": "^1.6.6",
+    "vite-plugin-html": "^3.2.0"
+  },
+  "dependencies": {
+    "@zerodevx/svelte-toast": "^0.8.0",
+    "compressorjs": "^1.1.1",
+    "jslib-html5-camera-photo": "^3.3.3",
+    "lodash.keyby": "^4.6.0",
+    "lodash.merge": "^4.6.2"
+  }
+}

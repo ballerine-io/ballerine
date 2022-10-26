@@ -1,0 +1,19 @@
+name: Build
+description: Build the project
+
+runs:
+  using: composite
+  steps:
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: 'yarn'
+
+    - name: Install dependencies
+      shell: bash
+      run: yarn install --frozen-lockfile
+
+    - name: Build
+      shell: bash
+      run: yarn build
