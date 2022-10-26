@@ -10,7 +10,8 @@
     "start:backoffice:dev": "echo \"Error: no test specified\" && exit 1",
     "start:workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
     "start:web-ui:dev": "echo \"Error: no test specified\" && exit 1",
-    "commit": "git add . && git-cz"
+    "commit": "git add . && git-cz",
+    "prepare": "husky install"
   },
   "license": "ISC",
   "devDependencies": {
