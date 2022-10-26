@@ -1,4 +1,4 @@
-import { DevMocks, ISelectedParams, IStoreData } from '../../contexts/appState';
+import { DevMocks, ISelectedParams, IStoreData } from '../../contexts/app-state';
 import { IDocumentVerificationResponse, ISendDocumentsResponse } from './types';
 import { getFlowConfig } from '../../contexts/flows/hooks';
 import { IAppConfiguration } from '../../contexts/configuration';

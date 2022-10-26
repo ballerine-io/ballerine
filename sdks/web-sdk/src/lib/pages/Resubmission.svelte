@@ -2,14 +2,14 @@
   import { T } from '../contexts/translation';
   import { Image, Button, Title } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
-  import { currentStepRoute, currentParams } from '../contexts/appState';
+  import { currentStepRoute, currentParams } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
   import { flowResubmission } from '../services/analytics';
   import { onDestroy } from 'svelte';
   import merge from 'lodash.merge';
-  import { layout, resubmissionStep } from '../defaultConfiguration/theme';
+  import { layout, resubmissionStep } from '../default-configuration/theme';
 
   const step = merge(resubmissionStep, $configuration.steps[Steps.Resubmission]);
 

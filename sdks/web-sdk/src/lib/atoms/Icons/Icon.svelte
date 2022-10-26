@@ -3,7 +3,7 @@
   import Passport from './Passport.svelte';
   import License from './License.svelte';
   import PassportTwo from './PassportTwo.svelte';
-  import { makesLocalStyles } from '../../utils/cssUtils';
+  import { makesLocalStyles } from '../../utils/css-utils';
 
   import type { SvelteComponent } from 'svelte';
   import type { Icons } from '../../contexts/configuration/types';

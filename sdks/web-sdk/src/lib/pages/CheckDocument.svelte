@@ -3,13 +3,13 @@
   import { Title, IconButton, Photo, Paragraph } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { goToPrevStep } from '../contexts/navigation';
-  import { getDocImage, IDocumentInfo } from '../contexts/appState';
+  import { getDocImage, IDocumentInfo } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
-  import { documents, selectedDocumentInfo, currentStepRoute } from '../contexts/appState/stores';
+  import { documents, selectedDocumentInfo, currentStepRoute } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
-  import { checkDocumentStep, layout } from '../defaultConfiguration/theme';
+  import { checkDocumentStep, layout } from '../default-configuration/theme';
 
   const step = merge(checkDocumentStep, $configuration.steps[Steps.CheckDocument]);
 

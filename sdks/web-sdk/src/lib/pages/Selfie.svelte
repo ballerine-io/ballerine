@@ -2,18 +2,18 @@
   import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
   import { configuration, Steps } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
   import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { currentStepRoute, DocumentType } from '../contexts/appState';
+  import { currentStepRoute, DocumentType } from '../contexts/app-state';
   import Title from '../atoms/Title/Title.svelte';
-  import { selfieUri } from '../contexts/appState/stores';
-  import { isMobile } from '../utils/isMobile';
-  import { selfieStep, settings } from '../defaultConfiguration/theme';
+  import { selfieUri } from '../contexts/app-state/stores';
+  import { isMobile } from '../utils/is-mobile';
+  import { selfieStep, settings } from '../default-configuration/theme';
   import merge from 'lodash.merge';
-  import { layout } from '../defaultConfiguration/theme';
+  import { layout } from '../default-configuration/theme';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;

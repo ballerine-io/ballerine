@@ -3,12 +3,12 @@
   import { Image, Title, Paragraph, IconButton } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { DocumentOptions } from '../organisms';
   import { goToPrevStep } from '../contexts/navigation';
-  import { currentStepRoute } from '../contexts/appState';
+  import { currentStepRoute } from '../contexts/app-state';
   import merge from 'lodash.merge';
-  import { documentSelectionStep, layout } from '../defaultConfiguration/theme';
+  import { documentSelectionStep, layout } from '../default-configuration/theme';
 
   const step = merge(documentSelectionStep, $configuration.steps[Steps.DocumentSelection]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);

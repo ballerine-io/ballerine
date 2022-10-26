@@ -1,4 +1,4 @@
-import { DocumentType } from '../../contexts/appState';
+import { DocumentType } from '../../contexts/app-state';
 
 export const getOverlaySrc = (documentType: DocumentType) => {
   const cardOverlayDocumentTypes = [

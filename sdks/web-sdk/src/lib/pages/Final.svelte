@@ -3,14 +3,14 @@
   import { T } from '../contexts/translation';
   import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
-  import { currentParams } from '../contexts/appState';
+  import { currentParams } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { flowApproved } from '../services/analytics';
-  import { DecisionStatus, sendFlowCompleteEvent } from '../utils/EventService';
+  import { DecisionStatus, sendFlowCompleteEvent } from '../utils/event-service';
   import { addCloseToURLParams } from '../contexts/navigation/hooks';
   import merge from 'lodash.merge';
-  import { finalStep, layout } from '../defaultConfiguration/theme';
+  import { finalStep, layout } from '../default-configuration/theme';
 
   const step = merge(finalStep, $configuration.steps[Steps.Final]);
 
