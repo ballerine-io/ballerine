@@ -1,8 +1,8 @@
 import mergeObj from 'lodash.merge';
 import toObjByKey from 'lodash.keyby';
-import translation from '../defaultConfiguration/translation.json';
+import translation from '../default-configuration/translation.json';
 import { TranslationType } from '../contexts/translation';
-import { DocumentType } from '../contexts/appState';
+import { DocumentType } from '../contexts/app-state';
 import {
   IAppConfiguration,
   configuration,

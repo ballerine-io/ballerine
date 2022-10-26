@@ -4,13 +4,13 @@
   import { configuration, Steps } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
-  import { ICameraEvent, nativeCameraHandler, updateDocument } from '../utils/photoUtils';
-  import { IDocument, IDocumentInfo, currentStepRoute } from '../contexts/appState';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { ICameraEvent, nativeCameraHandler, updateDocument } from '../utils/photo-utils';
+  import { IDocument, IDocumentInfo, currentStepRoute } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows';
-  import { documents, selectedDocumentInfo } from '../contexts/appState/stores';
+  import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
-  import { documentPhotoBackStartStep, layout } from '../defaultConfiguration/theme';
+  import { documentPhotoBackStartStep, layout } from '../default-configuration/theme';
 
   const step = merge(
     documentPhotoBackStartStep,

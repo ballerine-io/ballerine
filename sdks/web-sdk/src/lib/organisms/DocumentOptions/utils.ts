@@ -1,5 +1,5 @@
 import { IStepConfiguration } from '../../contexts/configuration';
-import { DocumentType, IDocument } from '../../contexts/appState';
+import { DocumentType, IDocument } from '../../contexts/app-state';
 
 // Document types that only can be one chosen
 export const getElementsTypes = (configuration: IStepConfiguration): DocumentType[] => {

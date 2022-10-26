@@ -5,8 +5,8 @@
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { errorText } from '../../defaultConfiguration/theme';
-  import { makeStylesFromConfiguration } from '../../utils/cssUtils';
+  import { errorText } from '../../default-configuration/theme';
+  import { makeStylesFromConfiguration } from '../../utils/css-utils';
 
   export let configuration: IElementProps;
 
