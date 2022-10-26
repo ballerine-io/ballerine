@@ -4,8 +4,14 @@ importers:
 
   .:
     specifiers:
+      '@commitlint/cli': ^17.1.2
+      '@commitlint/config-conventional': ^17.1.0
+      commitizen: ^4.2.5
       nx: 15.0.2
     devDependencies:
+      '@commitlint/cli': 17.1.2
+      '@commitlint/config-conventional': 17.1.0
+      commitizen: 4.2.5
       nx: 15.0.2
 
   apps/web-ui:
