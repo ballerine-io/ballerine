@@ -1,4 +1,4 @@
-import { IDocumentVerificationResponse } from '../../utils/EventService/types';
+import { IDocumentVerificationResponse } from '../../utils/event-service/types';
 import { EFlowEvent } from './enums';
 import { TFlowEventBusPayload } from './types';
 

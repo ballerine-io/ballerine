@@ -1,5 +1,5 @@
 import { Languages } from '../../contexts/translation';
-import { texts } from '../../utils/configurationManagement';
+import { texts } from '../../utils/configuration-management';
 
 export const getListLength = (language: Languages, module: string) => {
   const list = texts[language][module];

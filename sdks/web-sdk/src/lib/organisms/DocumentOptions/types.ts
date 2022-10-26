@@ -1,4 +1,4 @@
-import { DocumentType } from '../../contexts/appState';
+import { DocumentType } from '../../contexts/app-state';
 import { IElementProps } from '../../contexts/configuration';
 import { IDocumentOption } from '../../molecules/DocumentOption';
 

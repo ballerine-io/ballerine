@@ -1,8 +1,8 @@
 import { IMAGE_TYPES } from 'jslib-html5-camera-photo';
 import { IAppConfiguration } from '../contexts/configuration';
 import { Elements, ICSSProperties, IElement, Steps } from '../contexts/configuration/types';
-import { DocumentType } from '../contexts/appState';
-import { DocumentVariant } from '../contexts/appState/types';
+import { DocumentType } from '../contexts/app-state';
+import { DocumentVariant } from '../contexts/app-state/types';
 
 // Config prioritiztion:
 // 3. Theme configuration

@@ -7,10 +7,10 @@
   } from '../../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../../contexts/navigation';
   import { T } from '../../contexts/translation';
-  import { makesLocalStyles } from '../../utils/cssUtils';
-  import { currentStepRoute } from '../../contexts/appState';
+  import { makesLocalStyles } from '../../utils/css-utils';
+  import { currentStepRoute } from '../../contexts/app-state';
   import merge from 'lodash.merge';
-  import { navigationButtons } from '../../defaultConfiguration/theme';
+  import { navigationButtons } from '../../default-configuration/theme';
   const { navigationButtons: userConfiguration } = $globalConfiguration;
 
   const configuration = userConfiguration

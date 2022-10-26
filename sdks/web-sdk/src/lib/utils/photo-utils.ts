@@ -1,7 +1,7 @@
 import { IAppConfiguration } from '../contexts/configuration';
-import { DocumentType, IDocument, IDocumentPage } from '../contexts/appState';
+import { DocumentType, IDocument, IDocumentPage } from '../contexts/app-state';
 import Compressor from 'compressorjs';
-import { documentOptions } from '../defaultConfiguration/theme';
+import { documentOptions } from '../default-configuration/theme';
 import merge from 'lodash.merge';
 
 export type FileEventTarget = EventTarget & { files: FileList };
