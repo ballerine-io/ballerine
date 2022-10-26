@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - staging
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Install dependencies
+        shell: bash
+        run: yarn install --frozen-lockfile
+
+      - name: Create Release Pull Request
+        uses: changesets/action@v1
+        with:
+          commit: 'chore: release package(s)'
+          publish: yarn release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Uncomment once we'd like to let CI handle the CDN step
+      # The CDN path could also be handled using a GitHub secret
+#      - name: Deploy to CDN
+#        shell: bash
+#        run: yarn deploy:cdn:cf

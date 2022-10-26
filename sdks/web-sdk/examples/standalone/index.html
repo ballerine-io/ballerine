@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>My Accounting Openeing Flow</title>
+    <script crossorigin src="/ballerine-sdk.umd.js"></script>
+  </head>
+  <body>
+    <div id="kyc-host"></div>
+    <script>
+      const initConfig = {
+        flows: {
+          'my-kyc-flow': {
+            steps: [
+              { name: 'welcome', id: 'welcome' },
+              {
+                name: 'document-selection',
+                id: 'document-selection',
+                documentOptions: ['id_card', 'drivers_license', 'passport'],
+              },
+              { name: 'document-photo', id: 'identity-document-shot' },
+              { name: 'check-document', id: 'identity-document-user-check' },
+              { name: 'document-photo-back-start', id: 'document-photo-back-start' },
+              { name: 'selfie-start', id: 'selfie-start' },
+              { name: 'selfie', id: 'selfie' },
+              { name: 'check-selfie', id: 'check-selfie' },
+              { name: 'loading', id: 'custom-loader' },
+            ],
+          },
+        },
+      };
+      BallerineSDK.flows.init(initConfig).then(() => {
+        BallerineSDK.flows.openModal('my-kyc-flow', {});
+      });
+    </script>
+  </body>
+</html>

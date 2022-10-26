@@ -1,0 +1,16 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+    "module": "es2022",
+    "lib": ["DOM", "ES2017", "WebWorker"],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "importsNotUsedAsValues": "remove",
+    "strict": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "coverage"]
+}

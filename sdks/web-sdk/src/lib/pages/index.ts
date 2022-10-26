@@ -1,0 +1,17 @@
+export { default as Welcome } from './Welcome.svelte';
+export { default as DocumentSelection } from './DocumentSelection.svelte';
+export { default as DocumentStart } from './DocumentStart.svelte';
+export { default as DocumentPhoto } from './DocumentPhoto.svelte';
+export { default as CheckDocument } from './CheckDocument.svelte';
+export { default as DocumentPhotoBackStart } from './DocumentPhotoBackStart.svelte';
+export { default as DocumentPhotoBack } from './DocumentPhotoBack.svelte';
+export { default as CheckDocumentPhotoBack } from './CheckDocumentPhotoBack.svelte';
+export { default as Final } from './Final.svelte';
+export { default as SelfieStart } from './SelfieStart.svelte';
+export { default as Selfie } from './Selfie.svelte';
+export { default as CheckSelfie } from './CheckSelfie.svelte';
+// export { default as Registration } from "./Registration.svelte";
+export { default as Loading } from './Loading.svelte';
+export { default as Resubmission } from './Resubmission.svelte';
+export { default as Decline } from './Decline.svelte';
+export { default as ErrorPage } from './ErrorPage.svelte';

@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Ensures commitlint doesn't fail due to ts-node when used by changesets
+[ -n "$CI" ] && exit 0
+
+npx --no -- commitlint --edit "$1"

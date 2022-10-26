@@ -4,45 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "web-sdk:dev": "pnpm exec nx dev @ballerine/web-sdk",
+    "web-sdk:build": "pnpm exec nx build @ballerine/web-sdk",
+    "web-sdk:example": "pnpm exec nx example @ballerine/web-sdk",
     "start:backoffice:dev": "echo \"Error: no test specified\" && exit 1",
     "start:workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
     "start:web-ui:dev": "echo \"Error: no test specified\" && exit 1"
   },
-  "nx": {
-    "namedInputs": {
-      "default": [
-        "{projectRoot}/**/*"
-      ],
-      "production": [
-        "!{projectRoot}/**/*.spec.tsx"
-      ]
-    },
-    "targets": {
-      "build": {
-        "inputs": [
-          "production",
-          "^production"
-        ],
-        "outputs": [
-          "dist/libs/mylib"
-        ],
-        "dependsOn": [
-          "^build"
-        ]
-      },
-      "test": {
-        "inputs": [
-          "default",
-          "^production"
-        ],
-        "outputs": [],
-        "dependsOn": [
-          "build"
-        ]
-      }
-    }
-  },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nx": "15.0.2"
+  }
 }

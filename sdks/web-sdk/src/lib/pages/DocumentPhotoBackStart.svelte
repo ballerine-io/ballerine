@@ -1,0 +1,110 @@
+<script lang="ts">
+  import { T } from '../contexts/translation';
+  import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
+  import { configuration, Steps } from '../contexts/configuration';
+  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
+  import { Elements } from '../contexts/configuration/types';
+  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { ICameraEvent, nativeCameraHandler, updateDocument } from '../utils/photoUtils';
+  import { IDocument, IDocumentInfo, currentStepRoute } from '../contexts/appState';
+  import { isNativeCamera } from '../contexts/flows';
+  import { documents, selectedDocumentInfo } from '../contexts/appState/stores';
+  import merge from 'lodash.merge';
+  import { documentPhotoBackStartStep, layout } from '../defaultConfiguration/theme';
+
+  const step = merge(
+    documentPhotoBackStartStep,
+    $configuration.steps[Steps.DocumentPhotoBackStart],
+  );
+
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  let documentInfo: IDocumentInfo | undefined = undefined;
+  let document: IDocument | undefined;
+
+  $: {
+    documentInfo = step.documentInfo || $selectedDocumentInfo;
+    if (!documentInfo) goToPrevStep(step, currentStepRoute, $configuration);
+    document = $documents.find(d => d.type === documentInfo?.type);
+    if (!document) goToPrevStep(step, currentStepRoute, $configuration);
+  }
+
+  const handler = async (e: ICameraEvent) => {
+    const image = await nativeCameraHandler(e);
+    if (!documentInfo) {
+      throw Error("document context wasn't provided");
+    }
+    if (!document) return;
+    const newDocumentsState = updateDocument(document.type, image, $documents);
+    $documents = newDocumentsState;
+    goToNextStep(step, currentStepRoute, $configuration);
+  };
+</script>
+
+<div class="container" {style}>
+  {#each step.elements as element}
+    {#if element.type === Elements.IconButton}
+      <IconButton
+        configuration={element.props}
+        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+      />
+    {/if}
+    {#if element.type === Elements.Image}
+      <Image configuration={element.props} />
+    {/if}
+    {#if element.type === Elements.Title}
+      <Title configuration={element.props}>
+        <T key="title" module="document-photo-back-start" />
+      </Title>
+    {/if}
+    {#if element.type === Elements.Paragraph}
+      <Paragraph configuration={element.props}>
+        <T key="description" module="document-photo-back-start" />
+      </Paragraph>
+    {/if}
+    {#if element.type === Elements.Button}
+      <div class="button-container">
+        {#if isNativeCamera($configuration)}
+          <input
+            class="camera-input"
+            type="file"
+            accept="image/*"
+            capture="environment"
+            on:change={handler}
+          />
+        {/if}
+        <Button
+          on:click={() => goToNextStep(step, currentStepRoute, $configuration)}
+          configuration={element.props}
+        >
+          <T key="button" module="document-photo-back-start" />
+        </Button>
+      </div>
+    {/if}
+  {/each}
+</div>
+
+<style>
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--padding);
+    position: var(--position);
+    background: var(--background);
+    text-align: center;
+  }
+
+  .button-container {
+    position: relative;
+  }
+  .camera-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    z-index: 3;
+    opacity: 0;
+  }
+</style>
