@@ -180,7 +180,7 @@ Customize your identity and risk workflows in code or with a low-code platform n
 <br/>
 ___
 
-### Getting Started with SDK's Flows
+# Getting Started with SDK's Flows
 #### Installation
 
 <ins>CDN:</ins>
