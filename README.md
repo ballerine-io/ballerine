@@ -111,10 +111,12 @@ Demo project:
 ___
 
 <details><summary>Some examples of what you can do with it</summary>
+	
 -  Create a custom flow you can use with any identity verification vendor.
 -  Create a custom flow that your customers can receive in an SMS.
 -  Create different types of flows for different types of customers.
 - And more...
+
 </details>
 
 
