@@ -278,7 +278,7 @@ Code example:
 
 #### Native Mobile apps
 
-The approch to native apps are all the native funcationalties happens inside Ballerine native sdks (Android, iOS) while and the represenation layer is still an web app (inside a native webview).
+All of the native functionalities happen inside Ballerine's native SDKs (Android & iOS Cameras, Sim checks, Fraud checks) while and the representation layer is still a web app (inside a native webview).
 
 This way we can enjoy both worlds:
 * Web UI: Flexible UI that can be changed instantly from the server (no app deployments or store submissions). 
