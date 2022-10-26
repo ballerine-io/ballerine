@@ -78,7 +78,6 @@
     "eslint-plugin-svelte3": "^4.0.0",
     "husky": "^8.0.1",
     "postcss": "^8.4.18",
-    "prettier": "^2.7.1",
     "prettier-plugin-svelte": "^2.8.0",
     "svelte": "^3.39.0",
     "svelte-check": "^2.2.7",
