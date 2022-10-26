@@ -48,7 +48,7 @@ ___
 
 
 -  Use different vendors for different audiences - all modules are 100% vendor agnostic.
--  Create your own low-cost KYC with AWS Rekognize, Googel vision and other ML tools.
+-  Create your own low-cost KYC with AWS Rekognition, Google vision and other ML tools.
 -  Collect documents in a KYB flow.
 -  Implement and modify a case management for user approval/rejection.
 
@@ -219,7 +219,7 @@ Code example:
 The approch to native apps are all the native funcationalties happens inside Ballerine native sdks (Android, iOS) while and the represenation layer is still an web app (inside a native webview).
 
 This way we can enjoy both worlds:
-* Web UI: Flexable UI that can be changes instantly from the server (no app deployments or store submissions). 
+* Web UI: Flexible UI that can be changed instantly from the server (no app deployments or store submissions). 
 * Native API's: Native camera, deep behavioral analysis, ekyc and more..
 
 See Android and iOS repositories for guidance:
@@ -271,7 +271,7 @@ ___
 
 | Config Parameter | Type | Description|
 | - | - | - |
-| `uiPack` | `string` - Name or URL |Ui Pack is a complete bundles of styles, assets and translations|
+| `uiPack` | `string` - Name or URL |UI Pack is a complete bundles of styles, assets and translations|
 | `theme.general` | FlowsGeneralTheme |General colors, paddings, fonts..|
 
 2. General components styles (**overrides theme**)
@@ -342,9 +342,9 @@ ___
 
 
 ### Description
-Customize your identity and risk workflows in code or with a low-code platform non-tchnical staff can play with.
+Customize your identity and risk workflows in code or with a low-code platform non-technical staff can play with.
 
-* Test out different vendor to optmize convertion and costs.
+* Test out different vendor to optimize convertion and costs.
 * Utilize data sources and tools contributed by Ballerine or the community.
 * Visualize complex flows to provide observability of how things work to the rest of the company.
 
@@ -427,7 +427,7 @@ You can create feature requests and upvote existing ones to tell us what we shou
 		- [ ] Plugin System
 		- Integrations
 			- [x] Veriff
-			- [x] AWS Rekognize
+			- [x] AWS Rekognition
 				- [x] Face Match API
 				- [x] Document Classfication
 			- [ ] Google Vision
