@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Simple webpage for testing the SDK" />
+
+    <title>Ballerine SDK test</title>
+    <script
+      async
+      type="module"
+      crossorigin
+      src="https://cdn.jsdelivr.net/npm/@ballerine/web-sdk@1.1.19/dist/ballerine-sdk.umd.js"
+    ></script>
+    <script>
+      const onStartFlowClick = async () => {
+        ballerineInitConfig = {
+          uiConfig: {
+            flows: {
+              'my-kyc-flow': {
+                steps: [
+                  { name: 'welcome', id: 'welcome' },
+                  {
+                    name: 'document-selection',
+                    id: 'document-selection',
+                    documentOptions: ['id_card', 'drivers_license', 'passport'],
+                  },
+                  { name: 'document-photo', id: 'identity-document-shot' },
+                  { name: 'check-document', id: 'identity-document-user-check' },
+                  { name: 'document-photo-back-start', id: 'document-photo-back-start' },
+                  { name: 'selfie-start', id: 'selfie-start' },
+                  { name: 'selfie', id: 'selfie' },
+                  { name: 'check-selfie', id: 'check-selfie' },
+                  { name: 'loading', id: 'custom-loader' },
+                ],
+              },
+            },
+            theme: {
+              button: {
+                color: 'blue',
+              },
+              general: {
+                colors: {
+                  primary: 'brown',
+                  secondary: 'yellow',
+                  text: 'purple',
+                  danger: 'orange',
+                },
+                fonts: {
+                  name: 'Roboto',
+                  link: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap',
+                },
+              },
+            },
+          },
+          translations: {
+            overrides: {
+              en: {
+                welcome: {
+                  title: 'Changed title,',
+                },
+              },
+              //remoteUrl: "https://cdn.ballerine.io/ui-packs/default/translation.json"
+            },
+          },
+          endUserInfo: { id: 'test-id' },
+          backendConfig: {},
+        };
+        await BallerineSDK.flows.init(ballerineInitConfig);
+        const elementId = 'kyc-flow-1';
+        await BallerineSDK.flows.mount(elementId, 'my-kyc-flow', {
+          callbacks: {
+            onFlowNavigationUpdate(payload) {
+              console.log('onFlowNavigation', payload);
+            },
+            onFlowComplete(payload) {
+              console.log('onFlowComplete', payload);
+            },
+          },
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <header>HEADER</header>
+    <div id="kyc-flow-1" style="width: 500px; height: 700px"></div>
+    <button onclick="onStartFlowClick()">Start Flow 1</button>
+    <footer>FOOTER</footer>
+  </body>
+</html>
