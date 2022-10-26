@@ -7,6 +7,8 @@
     "web-sdk:dev": "pnpm exec nx dev web-sdk",
     "web-sdk:build": "pnpm exec nx build web-sdk",
     "web-sdk:example": "pnpm exec nx example web-sdk",
+    "web-sdk:format": "pnpm exec nx format web-sdk",
+    "format": "pnpm exec nx format",
     "start:backoffice:dev": "echo \"Error: no test specified\" && exit 1",
     "start:workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
     "start:web-ui:dev": "echo \"Error: no test specified\" && exit 1",
@@ -18,6 +20,7 @@
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
     "commitizen": "^4.2.5",
-    "nx": "15.0.2"
+    "nx": "15.0.2",
+    "prettier": "^2.7.1"
   }
 }
