@@ -19,7 +19,7 @@ _____
 	
 ### Why Open Source KYC/KYB & Risk stack?
 
-Our mission is to allow any company to manage user identity and risk in a way that suits them and their unique changing needs.
+The goal is to allow any company to manage user identity and risk in a way that suits them and their unique changing needs.
 Main Open Source benefits:
 *  **Future proof** - modular and extendable building blocks.
 *  **Global** - Multiple vendors accessible in one UI and case management dashboard.
