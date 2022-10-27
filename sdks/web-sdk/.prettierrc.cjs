@@ -1,1 +1,1 @@
-module.exports = require('../../packages/config/prettierrc.web-sdk.cjs');
+module.exports = require('../../packages/config/prettierrc.svelte.cjs');
