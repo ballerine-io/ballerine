@@ -29,7 +29,7 @@ ___
 
 
 ### What can you find in this project?
- * KYC/KYB flows and UI in Mobile and web SDKs for user data and document collection - :white_check_mark: Available & Open Source! - [view details](#getting-started-with-sdks-flows)
+ * KYC/KYB flows and UI in Mobile and web SDKs for user data and document collection - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk) | [Docs](#getting-started-with-sdks-flows)
  * Case management dashboard for users approval/rejection - 🎉 Final stages of Open Sourcing!
  * Identity & risk vendors orchestration - :hourglass_flowing_sand: Almost done
  * No-code rule engine to control Frontend and backend flows - :construction: WIP
@@ -51,8 +51,10 @@ ___
 -  Create your own low-cost KYC with AWS Rekognition, Google vision, and other ML tools.
 -  Collect documents in a KYB flow.
 -  Implement and modify a case management for user approval/rejection.
+-  And more.
 
-And more.
+If you currently don't have a commercial agreement with KYC vendors, you can use some of the vendors we already integrated with (Identity verification, AML check, etc.), to quickly start processing user's KYC requests. To do so please contacs us at oss@ballerine.io.
+
 </details>
 
 ___
@@ -368,12 +370,20 @@ ___
 | `baseUrl` | `string (URL)` | Backend base URL
 | `auth` | BEAuthConfig | Auth method and Authorization header
 | `endpoints` | BEEndpoints | List of endpoints for each action
+
+If you currently don't have a commercial agreement with KYC vendors, you can use some of the vendors we already integrated with (Identity verification, AML check, etc.), to quickly start processing user's KYC requests. To do so please contacs us at [oss@ballerine.io](mailto:oss@ballerine.io).
+
 -----
 
 
 ### Roadmap
 
-**You can create feature requests and upvote existing ones to tell us what we should work on next in [here](https://ballerine.canny.io/)**
+Click below to tell us what we should work on next by creating feature requests or upvoting existing one.
+
+</be>
+<a href="https://ballerine.canny.io/" title="Ballerine - feature requests">
+    <img width="180px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/vote%20features.png" alt="Ballerine - feature requests">
+</a>
 
 #### General
 - [ ] Documentation Portal
