@@ -7,12 +7,26 @@
     "web-sdk:dev": "pnpm exec nx dev web-sdk",
     "web-sdk:build": "pnpm exec nx build web-sdk",
     "web-sdk:example": "pnpm exec nx example web-sdk",
+    "web-sdk:format": "pnpm exec nx format web-sdk",
+    "web-sdk:lint": "pnpm exec nx lint web-sdk",
+    "web-sdk:lint:fix": "pnpm exec nx lint:fix web-sdk",
+    "format": "pnpm exec nx run-many --target=format",
+    "lint": "pnpm exec nx run-many --target=lint",
+    "lint:fix": "pnpm exec nx run-many --target=lint:fix",
     "start:backoffice:dev": "echo \"Error: no test specified\" && exit 1",
     "start:workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
-    "start:web-ui:dev": "echo \"Error: no test specified\" && exit 1"
+    "start:web-ui:dev": "echo \"Error: no test specified\" && exit 1",
+    "commit": "git add . && git-cz",
+    "prepare": "husky install"
   },
   "license": "ISC",
   "devDependencies": {
-    "nx": "15.0.2"
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
+    "commitizen": "^4.2.5",
+    "editorconfig": "^1.0.1",
+    "husky": "^8.0.1",
+    "nx": "15.0.2",
+    "prettier": "^2.7.1"
   }
 }
