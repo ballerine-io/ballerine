@@ -86,8 +86,6 @@ importers:
       '@babel/core': ^7.18.5
       '@changesets/changelog-git': ^0.1.13
       '@changesets/cli': ^2.25.0
-      '@commitlint/cli': ^17.1.2
-      '@commitlint/config-conventional': ^17.1.0
       '@sveltejs/vite-plugin-svelte': ^1.0.0-next.30
       '@tsconfig/svelte': ^2.0.1
       '@types/jslib-html5-camera-photo': ^3.1.2
@@ -96,9 +94,7 @@ importers:
       '@typescript-eslint/eslint-plugin': ^5.41.0
       '@typescript-eslint/parser': ^5.41.0
       '@zerodevx/svelte-toast': ^0.8.0
-      commitizen: ^4.2.5
       compressorjs: ^1.1.1
-      cz-conventional-changelog: ^3.3.0
       eslint-config-prettier: ^8.5.0
       eslint-plugin-storybook: ^0.6.6
       eslint-plugin-svelte3: ^4.0.0
@@ -124,8 +120,6 @@ importers:
       '@babel/core': 7.19.3
       '@changesets/changelog-git': 0.1.13
       '@changesets/cli': 2.25.0
-      '@commitlint/cli': 17.1.2
-      '@commitlint/config-conventional': 17.1.0
       '@sveltejs/vite-plugin-svelte': 1.0.8_svelte@3.50.1+vite@2.9.15
       '@tsconfig/svelte': 2.0.1
       '@types/jslib-html5-camera-photo': 3.1.2
@@ -133,8 +127,6 @@ importers:
       '@types/lodash.merge': 4.6.7
       '@typescript-eslint/eslint-plugin': 5.41.0_2dmizcyfdgb4npqs6z4fehioli
       '@typescript-eslint/parser': 5.41.0_typescript@4.8.4
-      commitizen: 4.2.5
-      cz-conventional-changelog: 3.3.0
       eslint-config-prettier: 8.5.0
       eslint-plugin-storybook: 0.6.6_typescript@4.8.4
       eslint-plugin-svelte3: 4.0.0_svelte@3.50.1
