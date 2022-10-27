@@ -27,7 +27,10 @@ export interface IFlowNavigationUpdatePayload extends IEventOptions {
   };
 }
 
-export interface IFlowEventBusParams<TType extends EFlowEvent, TPayload extends TFlowEventBusPayload> {
+export interface IFlowEventBusParams<
+  TType extends EFlowEvent,
+  TPayload extends TFlowEventBusPayload,
+> {
   type: TType;
   payload: TPayload;
 }
@@ -40,6 +43,8 @@ export interface IFlowEventBus {
 
   ({ type, payload }: IFlowEventBusParams<EFlowEvent.FLOW_ERROR, IFlowErrorPayload>): void;
 
-  ({ type, payload }: IFlowEventBusParams<EFlowEvent.FLOW_NAVIGATION_UPDATE, IFlowNavigationUpdatePayload>): void;
-
+  ({
+    type,
+    payload,
+  }: IFlowEventBusParams<EFlowEvent.FLOW_NAVIGATION_UPDATE, IFlowNavigationUpdatePayload>): void;
 }
