@@ -51,8 +51,10 @@ ___
 -  Create your own low-cost KYC with AWS Rekognition, Google vision, and other ML tools.
 -  Collect documents in a KYB flow.
 -  Implement and modify a case management for user approval/rejection.
+-  And more.
 
-And more.
+If you currently don't have a commercial agreement with KYC vendors, you can use some of the vendors we already integrated with (Identity verification, AML check, etc.), to quickly start processing user's KYC requests. To do so please contacs us at oss@ballerine.io.
+
 </details>
 
 ___
@@ -368,6 +370,9 @@ ___
 | `baseUrl` | `string (URL)` | Backend base URL
 | `auth` | BEAuthConfig | Auth method and Authorization header
 | `endpoints` | BEEndpoints | List of endpoints for each action
+
+If you currently don't have a commercial agreement with KYC vendors, you can use some of the vendors we already integrated with (Identity verification, AML check, etc.), to quickly start processing user's KYC requests. To do so please contacs us at [oss@ballerine.io](mailto:oss@ballerine.io).
+
 -----
 
 
