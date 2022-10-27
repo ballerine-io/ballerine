@@ -7,9 +7,9 @@
     "web-sdk:dev": "nx run web-sdk:dev",
     "web-sdk:build": "nx run web-sdk:build",
     "web-sdk:example": "nx run web-sdk:example",
-    "start:backoffice:dev": "echo \"Error: no test specified\" && exit 1",
-    "start:workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
-    "start:web-ui:dev": "echo \"Error: no test specified\" && exit 1"
+    "backoffice:dev": "echo \"Error: no test specified\" && exit 1",
+    "workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
+    "web-ui:dev": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "ISC",
   "devDependencies": {
