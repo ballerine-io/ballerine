@@ -1,5 +1,9 @@
 import ConfigurationProvider from './ConfigurationProvider.svelte';
-import { setFlowCallbacks, updateConfiguration, updateTranslations } from './lib/utils/configuration-management';
+import {
+  setFlowCallbacks,
+  updateConfiguration,
+  updateTranslations,
+} from './lib/utils/configuration-management';
 import { BallerineSDKFlows } from './types/BallerineSDK';
 import { getConfigFromQueryParams } from './lib/utils/get-config-from-query-params';
 
