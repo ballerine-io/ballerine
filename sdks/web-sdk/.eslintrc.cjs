@@ -1,4 +1,4 @@
-const { parserOptions, ...config } = require('../../packages/config/eslintrc.web-sdk.cjs');
+const { parserOptions, ...config } = require('../../packages/config/eslintrc.svelte.cjs');
 
 module.exports = {
   ...config,
