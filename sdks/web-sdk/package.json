@@ -84,7 +84,7 @@
     "svelte-check": "^2.2.7",
     "svelte-preprocess": "^4.9.8",
     "typescript": "^4.5.4",
-    "vite": "^2.9.9",
+    "vite": "^2.9.13",
     "vite-plugin-dts": "^1.6.6",
     "vite-plugin-html": "^3.2.0"
   },
