@@ -1,9 +1,4 @@
-const {
-  env,
-  plugins,
-  extends: extendsRest,
-  ...base
-} = require('./eslintrc.base.cjs');
+const { env, plugins, extends: extendsRest, ...base } = require('./eslintrc.base.cjs');
 
 module.exports = {
   ...base,

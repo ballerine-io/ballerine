@@ -23,12 +23,8 @@
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
-    "@typescript-eslint/eslint-plugin": "^5.41.0",
-    "@typescript-eslint/parser": "^5.41.0",
     "commitizen": "^4.2.5",
     "editorconfig": "^1.0.1",
-    "eslint": "^8.18.0",
-    "eslint-config-prettier": "^8.5.0",
     "husky": "^8.0.1",
     "nx": "15.0.2",
     "prettier": "^2.7.1"
