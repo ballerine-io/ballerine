@@ -106,8 +106,8 @@ The SDK UI is embeddable inside existing apps or deployed as a web app.
 Live examples:
 [KYC 1](https://simple-kyc-demo.ballerine.app/), [KYC 2](https://simple-kyc-demo.ballerine.app/), [KYB](https://simple-kyc-demo.ballerine.app/)
 
-Demo project:
-[View in jsfiddle](https://jsfiddle.net/ballerine/7d0g53xn)
+Playground:
+[jsfiddle](https://jsfiddle.net/ballerine/7d0g53xn)
 
 Getting started
 [Click here](#getting-started-with-sdks-flows)
