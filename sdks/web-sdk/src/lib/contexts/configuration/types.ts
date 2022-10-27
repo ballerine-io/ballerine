@@ -1,7 +1,7 @@
 import { IList } from '../../molecules/List';
 import { INavigationButtons } from '../../molecules/NavigationButtons';
 import { IDocumentOptions } from '../../organisms/DocumentOptions';
-import { IDocumentInfo } from '../appState';
+import { IDocumentInfo } from '../app-state';
 import type { CaptureConfigOption } from 'jslib-html5-camera-photo';
 import { IFlow } from '../flows';
 import { EndUserInfo, FlowsBackendConfig } from '../../../types/BallerineSDK';

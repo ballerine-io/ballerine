@@ -7,12 +7,12 @@
     IAttributes,
     configuration as globalConfiguration,
   } from '../../contexts/configuration';
-  import { IDocumentInfo } from '../../contexts/appState';
+  import { IDocumentInfo } from '../../contexts/app-state';
   import { T } from '../../contexts/translation';
   import { IDocumentOptions } from '../../organisms/DocumentOptions';
-  import { makesLocalStyles } from '../../utils/cssUtils';
+  import { makesLocalStyles } from '../../utils/css-utils';
   import Icon from '../../atoms/Icons/Icon.svelte';
-  import { ICameraEvent, nativeCameraHandler } from '../../utils/photoUtils';
+  import { ICameraEvent, nativeCameraHandler } from '../../utils/photo-utils';
   import { isNativeCamera } from '../../contexts/flows/hooks';
 
   export let configuration: IDocumentOptions;

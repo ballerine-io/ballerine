@@ -4,12 +4,12 @@
   import { configuration, Steps } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
-  import { IDocumentInfo, IDocument, currentStepRoute } from '../contexts/appState';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { IDocumentInfo, IDocument, currentStepRoute } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows/hooks';
-  import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photoUtils';
-  import { documents, selectedDocumentInfo } from '../contexts/appState/stores';
-  import { documentStartStep, layout } from '../defaultConfiguration/theme';
+  import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
+  import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { documentStartStep, layout } from '../default-configuration/theme';
   import merge from 'lodash.merge';
 
   const step = merge(documentStartStep, $configuration.steps[Steps.Welcome]);

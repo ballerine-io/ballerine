@@ -2,23 +2,23 @@
   import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
   import { configuration, Steps } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
   import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
-  import { DocumentType, IDocument } from '../contexts/appState';
+  import { DocumentType, IDocument } from '../contexts/app-state';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
-  import { IDocumentInfo } from '../contexts/appState/types';
-  import { documents, selectedDocumentInfo, currentStepRoute } from '../contexts/appState/stores';
+  import { IDocumentInfo } from '../contexts/app-state/types';
+  import { documents, selectedDocumentInfo, currentStepRoute } from '../contexts/app-state/stores';
   import {
     documentOptions,
     documentPhotoStep,
     documentSelectionStep,
     settings,
-  } from '../defaultConfiguration/theme';
+  } from '../default-configuration/theme';
   import merge from 'lodash.merge';
-  import { layout } from '../defaultConfiguration/theme';
+  import { layout } from '../default-configuration/theme';
 
   let video: HTMLVideoElement;
   let container: HTMLDivElement;

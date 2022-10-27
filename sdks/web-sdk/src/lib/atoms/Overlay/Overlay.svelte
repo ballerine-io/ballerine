@@ -1,10 +1,10 @@
 <script lang="ts">
   import { getOverlaySrc } from './utils';
-  import { DocumentType } from '../../contexts/appState';
+  import { DocumentType } from '../../contexts/app-state';
   import { configuration as globalConfiguration } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../../utils/css-utils';
   import merge from 'lodash.merge';
-  import { overlay } from '../../defaultConfiguration/theme';
+  import { overlay } from '../../default-configuration/theme';
 
   export let type: DocumentType;
 

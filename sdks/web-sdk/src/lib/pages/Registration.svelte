@@ -6,10 +6,10 @@
   import { getConfiguration, IStepConfiguration, Steps, IFormProps } from '../contexts/configuration';
   import { goToNextStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from "../utils/cssUtils";
+  import { makeStylesFromConfiguration } from "../utils/css-utils";
   import Input from '../atoms/Input/Input.svelte';
-  import { getDefaultValues, setValuesFromStore } from "../utils/formUtils";
-  
+  import { getDefaultValues, setValuesFromStore } from "../utils/form-utils";
+
   const configuration = getConfiguration();
 
   const step = configuration.steps.find(s => s.name === Steps.Registration) as IStepConfiguration;
@@ -27,7 +27,7 @@
     const apiUrl = formProps.apiUrl as string;
 
     const res = await fetch(apiUrl, {
-      method: 'POST',  
+      method: 'POST',
       headers: {
         mode:'no-cors',
         'Content-Type': 'application/json'

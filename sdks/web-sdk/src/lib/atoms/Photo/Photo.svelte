@@ -5,7 +5,7 @@
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../../utils/css-utils';
   import Loader from '../Loader/Loader.svelte';
 
   export let configuration: IElementProps;

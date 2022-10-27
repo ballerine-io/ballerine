@@ -4,12 +4,12 @@
   import { configuration, Steps } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
-  import { ICameraEvent, nativeCameraHandler } from '../utils/photoUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { isNativeCamera } from '../contexts/flows/hooks';
-  import { selectedDocumentInfo, selfieUri, currentStepRoute } from '../contexts/appState/stores';
+  import { selectedDocumentInfo, selfieUri, currentStepRoute } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
-  import { layout, selfieStartStep } from '../defaultConfiguration/theme';
+  import { layout, selfieStartStep } from '../default-configuration/theme';
 
   const step = merge(selfieStartStep, $configuration.steps[Steps.SelfieStart]);
 

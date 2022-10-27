@@ -6,8 +6,8 @@
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { iconButton } from '../../defaultConfiguration/theme';
-  import { makeStylesFromConfiguration } from '../../utils/cssUtils';
+  import { iconButton } from '../../default-configuration/theme';
+  import { makeStylesFromConfiguration } from '../../utils/css-utils';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;

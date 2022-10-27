@@ -5,8 +5,8 @@
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { container } from '../../defaultConfiguration/theme';
-  import { makeStylesFromConfiguration } from '../../utils/cssUtils';
+  import { container } from '../../default-configuration/theme';
+  import { makeStylesFromConfiguration } from '../../utils/css-utils';
 
   export let configuration: IElementProps;
   export let active = false;
