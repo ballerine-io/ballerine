@@ -75,7 +75,6 @@ export const flows: BallerineSDKFlows = {
           ...endUserInfo,
         },
       };
-
       const configPromise = updateConfiguration(mergedConfig);
       const translationsPromise = config.translations
         ? updateTranslations(config.translations)

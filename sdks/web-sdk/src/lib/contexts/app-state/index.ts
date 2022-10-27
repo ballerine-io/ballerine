@@ -4,7 +4,7 @@ export {
   selfieUri,
   selectedDocumentInfo,
   currentStepIdx,
-  currentStepRoute,
+  currentStepId,
   currentParams,
 } from './stores';
 export type {

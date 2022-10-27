@@ -48,7 +48,7 @@ export interface IStoreData {
 
 export interface IStep {
   name: Steps;
-  route: string;
+  id: string;
   component: typeof SvelteComponent;
 }
 

@@ -5,7 +5,7 @@
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
-  import { IDocumentInfo, IDocument, currentStepRoute } from '../contexts/app-state';
+  import { IDocumentInfo, IDocument, currentStepId } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
@@ -20,12 +20,12 @@
 
   $: {
     documentInfo = step.documentInfo || $selectedDocumentInfo;
-    if (!documentInfo) goToPrevStep(step, currentStepRoute, $configuration);
+    if (!documentInfo) goToPrevStep(step, currentStepId, $configuration);
   }
 
   const handleGoToNextStep = async () => {
     await navigator.mediaDevices.getUserMedia({ video: true }); // TODO: add catch for missing premessions, and handle appropetly
-    goToNextStep(step, currentStepRoute, $configuration);
+    goToNextStep(step, currentStepId, $configuration);
   };
 
   const handler = async (e: ICameraEvent) => {
@@ -43,7 +43,7 @@
       document,
     );
     $documents = newDocumentsState;
-    goToNextStep(step, currentStepRoute, $configuration);
+    goToNextStep(step, currentStepId, $configuration);
   };
 </script>
 
@@ -52,7 +52,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+        on:click={() => goToPrevStep(step, currentStepId, $configuration)}
       />
     {/if}
     {#if element.type === Elements.Image}
