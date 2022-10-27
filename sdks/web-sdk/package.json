@@ -31,7 +31,7 @@
   "exports": {
     ".": {
       "import": "./dist/ballerine-sdk.es.js",
-      "require": "./dist//ballerine-sdk.umd.js"
+      "require": "./dist/ballerine-sdk.umd.js"
     }
   },
   "scripts": {
@@ -59,7 +59,7 @@
     "@babel/core": "^7.18.5",
     "@changesets/changelog-git": "^0.1.13",
     "@changesets/cli": "^2.25.0",
-    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
+    "@sveltejs/vite-plugin-svelte": "1.0.8",
     "@tsconfig/svelte": "^2.0.1",
     "@types/jslib-html5-camera-photo": "^3.1.2",
     "@types/lodash.keyby": "^4.6.7",
