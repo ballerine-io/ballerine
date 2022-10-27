@@ -1,4 +1,9 @@
-import { IFlowCompletePayload, IFlowErrorPayload, IFlowExitPayload, IFlowNavigationUpdatePayload } from './interfaces';
+import {
+  IFlowCompletePayload,
+  IFlowErrorPayload,
+  IFlowExitPayload,
+  IFlowNavigationUpdatePayload,
+} from './interfaces';
 
 export type TFlowEventBusPayload =
   | IFlowCompletePayload
