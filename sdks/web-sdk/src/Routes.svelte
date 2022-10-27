@@ -25,13 +25,15 @@
 </script>
 
 {#if currentStep}
-  <div
-    class="container"
-    in:fly={{ x: -50, duration: 250, delay: 300 }}
-    out:fly={{ x: -50, duration: 250 }}
-  >
-    <svelte:component this={currentStep.component} />
-  </div>
+  {#key currentStep.name}
+    <div
+      class="container"
+      in:fly={{ x: -50, duration: 250, delay: 300 }}
+      out:fly={{ x: -50, duration: 250 }}
+    >
+      <svelte:component this={currentStep.component} />
+    </div>
+  {/key}
 {/if}
 
 <style>
