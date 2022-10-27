@@ -29,6 +29,8 @@ importers:
   sdks/web-sdk:
     specifiers:
       '@babel/core': ^7.18.5
+      '@changesets/changelog-git': ^0.1.13
+      '@changesets/cli': ^2.25.0
       '@sveltejs/vite-plugin-svelte': 1.0.8
       '@tsconfig/svelte': ^2.0.1
       '@types/jslib-html5-camera-photo': ^3.1.2
@@ -253,6 +255,7 @@ packages:
     dependencies:
       '@babel/types': 7.19.3
     dev: true
+
 
   /@babel/runtime/7.19.4:
     resolution: {integrity: sha512-EXpLCrk55f+cYqmHsSR+yD/0gAIMxxA9QK9lnQWzhMCvt+YmoBN7Zx94s++Kv0+unHk39vxNO8t+CMA2WSS3wA==}
@@ -2042,6 +2045,7 @@ packages:
     dependencies:
       is-arrayish: 0.2.1
     dev: true
+
 
   /es-abstract/1.20.4:
     resolution: {integrity: sha512-0UtvRN79eMe2L+UNEF1BwRe364sj/DXhQ/k5FmivgoSdpM90b8Jc0mDzKMGo7QS0BVbOP/bTwBKNnDc9rNzaPA==}
@@ -4075,6 +4079,7 @@ packages:
       indent-string: 4.0.0
       strip-indent: 3.0.0
     dev: true
+
 
   /regenerator-runtime/0.13.10:
     resolution: {integrity: sha512-KepLsg4dU12hryUO7bp/axHAKvwGOCV0sGloQtpagJ12ai+ojVDqkeGSiRX1zlq+kjIMZ1t7gpze+26QqtdGqw==}

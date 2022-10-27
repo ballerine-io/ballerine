@@ -2,7 +2,7 @@
   "author": "Ballerine.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ballerine-io/ballerine-web-ui"
+    "url": "https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk"
   },
   "description": "Ballerine is an open-source infrastructure for user identity and risk management. Compose verification processes for any vertical and geography using modular building blocks, components, and 3rd party integrations.",
   "keywords": [
