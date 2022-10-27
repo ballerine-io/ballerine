@@ -50,15 +50,10 @@
     "example:sdk": "npm run build:examples && npx http-server ./examples/sdk -p 8081",
     "example:standalone": "npm run build:examples && npx http-server ./examples/standalone -p 9090",
     "deploy:cdn:cf": "vite build && aws s3 cp ./dist/ballerine-sdk.umd.js s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.js",
-    "publish:patch": "vite build && npm version patch && npm publish && npm run deploy:cdn:cf",
-    "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release": "yarn build && changeset publish"
+    "publish:patch": "vite build && npm version patch && npm publish && npm run deploy:cdn:cf"
   },
   "devDependencies": {
     "@babel/core": "^7.18.5",
-    "@changesets/changelog-git": "^0.1.13",
-    "@changesets/cli": "^2.25.0",
     "@sveltejs/vite-plugin-svelte": "1.0.8",
     "@tsconfig/svelte": "^2.0.1",
     "@types/jslib-html5-camera-photo": "^3.1.2",
