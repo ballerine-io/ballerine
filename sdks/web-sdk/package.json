@@ -71,7 +71,6 @@
     "@typescript-eslint/parser": "^5.41.0",
     "commitizen": "^4.2.5",
     "cz-conventional-changelog": "^3.3.0",
-    "editorconfig": "^1.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-storybook": "^0.6.6",
     "eslint-plugin-svelte3": "^4.0.0",
