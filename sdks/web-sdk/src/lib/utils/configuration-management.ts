@@ -140,7 +140,7 @@ const v1adapter = (config: RecursivePartial<FlowsInitOptions>): IAppConfiguratio
     flows: newFlows,
     steps: flowSteps,
     general,
-    ...components
+    ...components,
   };
 };
 
