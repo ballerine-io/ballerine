@@ -1,0 +1,23 @@
+name: Test
+description: Test the project
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v2.0.1
+      with:
+        version: 7.3.0
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm i --no-frozen-lockfile
+
+    - name: Test
+      shell: bash
+      run: pnpm test

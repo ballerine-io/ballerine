@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-# Can be set to specific branches
+#    Can be configured to a specific branch or a different action than push.
 #    branches:
 #      - dev
 
@@ -26,6 +26,7 @@ jobs:
 
       - name: Lint
         uses: ./.github/actions/lint-action
+
 #      test:
 #        timeout-minutes: 60
 #        runs-on: ubuntu-latest
@@ -37,12 +38,12 @@ jobs:
 #          - name: Test
 #            uses: ./.github/actions/test-action
 
-#  build:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#
-#      - name: Build
-#        uses: ./.github/actions/build-action
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build
+        uses: ./.github/actions/build-action

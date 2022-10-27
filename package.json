@@ -17,12 +17,18 @@
     "start:workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
     "start:web-ui:dev": "echo \"Error: no test specified\" && exit 1",
     "commit": "git add . && git-cz",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
   },
   "license": "ISC",
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
+    "@changesets/changelog-git": "^0.1.13",
+    "@changesets/cli": "^2.25.0",
+    "cz-conventional-changelog": "^3.3.0",
     "commitizen": "^4.2.5",
     "editorconfig": "^1.0.1",
     "husky": "^8.0.1",
