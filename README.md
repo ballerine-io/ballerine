@@ -373,7 +373,12 @@ ___
 
 ### Roadmap
 
-**You can create feature requests and upvote existing ones to tell us what we should work on next in [here](https://ballerine.canny.io/)**
+Click below to tell us what we should work on next by creating feature requests or upvoting existing one.
+
+</be>
+<a href="https://ballerine.canny.io/" title="Ballerine - feature requests">
+    <img width="180px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/vote%20features.png" alt="Ballerine - feature requests">
+</a>
 
 #### General
 - [ ] Documentation Portal
