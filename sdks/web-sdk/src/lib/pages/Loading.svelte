@@ -2,7 +2,7 @@
   import { toast } from '@zerodevx/svelte-toast';
   import { FlyingText, Loader } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import {
     currentParams,
     currentStepRoute,
@@ -11,16 +11,16 @@
     IStoreData,
     selectedDocumentInfo,
     selfieUri,
-  } from '../contexts/appState';
-  import { DecisionStatus, sendVerificationUpdateEvent } from '../utils/EventService';
+  } from '../contexts/app-state';
+  import { DecisionStatus, sendVerificationUpdateEvent } from '../utils/event-service';
 
-  import { ISendDocumentsResponse } from '../utils/EventService/types';
+  import { ISendDocumentsResponse } from '../utils/event-service/types';
   import { onDestroy, onMount } from 'svelte';
   import { t } from '../contexts/translation/hooks';
   import { flowUploadLoader } from '../services/analytics';
   import { getFlowConfig } from '../contexts/flows/hooks';
   import merge from 'lodash.merge';
-  import { layout, loadingStep } from '../defaultConfiguration/theme';
+  import { layout, loadingStep } from '../default-configuration/theme';
   import { generateParams, getVerificationStatus, verifyDocuments } from '../services/http';
 
   flowUploadLoader();

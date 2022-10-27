@@ -19,17 +19,17 @@ _____
 	
 ### Why Open Source KYC/KYB & Risk stack?
 
-Our mission is to allow any company to manage user identity and risk in a way that suits them and their unique changing needs, and be a part of a community which builds solutions together.
+The goal is to allow any company to manage user identity and risk in a way that suits them and their unique changing needs.
 Main Open Source benefits:
 *  **Future proof** - modular and extendable building blocks.
 *  **Global** - Multiple vendors accessible in one UI and case management dashboard.
 *  **White label** - Customizable UX and UI.
-*  **Community** - Use what others have built, contribute yourself, leverage community maintainance.
+*  **Community** - Use what others have built, contribute yourself, and leverage community maintenance.
 ___
 
 
 ### What can you find in this project?
- * KYC/KYB flows and UI in Mobile and web SDKs for user data and document collection - :white_check_mark: Available & Open Source! - [view details](https://github.com/ballerine-io/ballerine-web-ui/blob/staging/README.md#web-sdk)
+ * KYC/KYB flows and UI in Mobile and web SDKs for user data and document collection - :white_check_mark: Available & Open Source! - [view details](#getting-started-with-sdks-flows)
  * Case management dashboard for users approval/rejection - 🎉 Final stages of Open Sourcing!
  * Identity & risk vendors orchestration - :hourglass_flowing_sand: Almost done
  * No-code rule engine to control Frontend and backend flows - :construction: WIP
@@ -48,7 +48,7 @@ ___
 
 
 -  Use different vendors for different audiences - all modules are 100% vendor agnostic.
--  Create your own low-cost KYC with AWS Rekognition, Google vision and other ML tools.
+-  Create your own low-cost KYC with AWS Rekognition, Google vision, and other ML tools.
 -  Collect documents in a KYB flow.
 -  Implement and modify a case management for user approval/rejection.
 
@@ -59,38 +59,39 @@ ___
 
 ## Table of Contents
 
-- [Description](#description)
+- [Ballerine is an Open-source Infrastructure for User Identity and Risk Management](#ballerine-is-an-open-source-infrastructure-for-user-identity-and-risk-management)
+  * [Description](#description)
+    + [Why Open Source KYC/KYB & Risk stack?](#why-open-source-kyckyb--risk-stack)
+    + [What can you find in this project?](#what-can-you-find-in-this-project)
   * [Table of Contents](#table-of-contents)
+- [SDK UI Flows](#sdk-ui-flows)
+    + [Description](#description-1)
+- [Case management (soon Open Source)](#case-management-soon-open-source)
+    + [Description](#description-2)
+- [Workflow builder & Rule engine (WIP)](#workflow-builder--rule-engine-wip)
+    + [Description](#description-3)
+- [Getting Started with SDK's Flows](#getting-started-with-sdks-flows)
+      - [Installation](#installation)
+      - [Flows API](#flows-api)
+      - [Embedded Flows](#embedded-flows)
+      - [Standalone/IFrame Flows](#standaloneiframe-flows)
+      - [Native Mobile apps](#native-mobile-apps)
+    + [Customization](#customization)
+      - [Flows Configuration](#flows-configuration)
+      - [UI Configuration](#ui-configuration)
+      - [Translations](#translations)
+      - [Backend Configuration](#backend-configuration)
     + [Roadmap](#roadmap)
       - [General](#general)
-      - [Onboarding Suite (KYC/KYB/General Document Collection)](#onboarding-suite--kyc-kyb-general-document-collection-)
+      - [Onboarding Suite (KYC/KYB/General Document Collection)](#onboarding-suite-kyckybgeneral-document-collection)
       - [Risk Suite](#risk-suite)
-  * [Web SDK](#web-sdk)
-    + [Getting Started](#getting-started)
-      - [Installation](#installation)
-      - [Embedded](#embedded)
-      - [Selfhost](#selfhost)
-      - [Mobile Webview](#mobile-webview)
-      - [Customization options](#customization)
-      - [Example project](#example-project)
-      - [Online Demo](#online-demo)
-      - [Customization](#customization-1)
-      - [This Project is Still in Beta](#this-project-is-still-in-beta)
-    + [What you can find here?](#what-you-can-find-here-)
-    + [Why Open Source KYC?](#why-open-source-kyc-)
-  * [Preview](#preview)
-    + [Modular UI](#modular-ui)
-    + [Case management](#case-management)
-    + [Workflow builder & Rule engine](#workflow-builder---rule-engine)
-    + [High-Level Architecture](#high-level-architecture)
-      - [We are still in Beta](#we-are-still-in-beta)
+      - [Get to know when we release more parts](#get-to-know-when-we-release-more-parts)
 
-
-# Web SDK Flows
+# SDK UI Flows
 
 ### Description
-Web SDK Flows can generate custom made, branded flows to collect KYC/KYB documents and user information.
-The SDK UI is embeddable inside exsiting apps or deployed as an webapp.
+With Ballerine's Web & Mobile SDK Flows you can generate custom-made, branded flows to collect KYC/KYB documents and user information.
+The SDK UI is embeddable inside existing apps or deployed as a web app.
 
 <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/phones.png">
 
@@ -98,28 +99,88 @@ The SDK UI is embeddable inside exsiting apps or deployed as an webapp.
 * Pre-made KYC/KYB **Templates and UI Packs**.
 * **Customizable UI** and flow to fit your desired experience and brand.
 * **Vendor agnostic**, use different vendors in the backend.
-* **Multi platform support** (Desktop, mobile web, mobile native).
+* **Multi-platform support** (Desktop, mobile web, mobile native).
 * Edges cases and **long-tail devices covered and tested**.
 * Lightweight and performant, built with Svelte (**less than 50kb gzipped**).
 
 Live examples:
 [KYC 1](https://simple-kyc-demo.ballerine.app/), [KYC 2](https://simple-kyc-demo.ballerine.app/), [KYB](https://simple-kyc-demo.ballerine.app/)
 
-Demo project:
-[View in jsfiddle](https://jsfiddle.net/ballerine/7d0g53xn)
+Playground:
+[jsfiddle](https://jsfiddle.net/ballerine/7d0g53xn)
+
+Getting started
+[Click here](#getting-started-with-sdks-flows)
 
 ___
 
 <details><summary>Some examples of what you can do with it</summary>
+	
 -  Create a custom flow you can use with any identity verification vendor.
 -  Create a custom flow that your customers can receive in an SMS.
 -  Create different types of flows for different types of customers.
 - And more...
+
 </details>
+
+
+# Case management (soon Open Source)
+
+
+### Description
+Give your operating team Ballerine’s case management dashboard so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
+
+* A case management dashboard to approve, reject or classify users manually.
+* Create workflows operators can trigger from the interface.
+* Optimize manual work by customizing the layouts and information presented.
+* Use as a standalone tool or embed in your existing dashboard.
+
+<br/>
+
+> *We are working on releasing our case management dashboard as Open-Source. Join our mailing list in the button below to get an update once it's out.*	
+> <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
+> <br/>
+> <br/>
+ >   <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
+</a>
+
+
+<br/>
+
+<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
 
 ___
 
-### Getting Started
+# Workflow builder & Rule engine (WIP)
+
+
+### Description
+Customize your identity and risk workflows in code or with a low-code platform non-technical staff can play with.
+
+* Test out different vendors to optimize conversion and costs.
+* Utilize data sources and tools contributed by Ballerine or the community.
+* Visualize complex flows to provide observability of how things work to the rest of the company.
+
+<br/>
+
+> *Our rule engine is still in development. Join our mailing list in the button below to get an update once it's out.*	
+> <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
+> <br/>
+> <br/>
+ >   <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
+</a>
+
+
+<br/>
+
+
+<img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/rule%20engine.png">
+
+
+<br/>
+
+
+# Getting Started with SDK's Flows
 #### Installation
 
 <ins>CDN:</ins>
@@ -216,11 +277,11 @@ Code example:
 
 #### Native Mobile apps
 
-The approch to native apps are all the native funcationalties happens inside Ballerine native sdks (Android, iOS) while and the represenation layer is still an web app (inside a native webview).
+All of the native functionalities happen inside Ballerine's native SDKs (Android & iOS Cameras, Sim checks, Fraud checks) while the representation layer is still a web app (inside a native webview).
 
 This way we can enjoy both worlds:
 * Web UI: Flexible UI that can be changed instantly from the server (no app deployments or store submissions). 
-* Native API's: Native camera, deep behavioral analysis, ekyc and more..
+* Native APIs: Native camera, deep behavioral analysis, ekyc and more...
 
 See Android and iOS repositories for guidance:
 
@@ -229,12 +290,12 @@ See Android and iOS repositories for guidance:
 ___
 ### Customization
 
-Customize the UI, the flow's steps and the backend.
+Customize the UI, the flow's steps, and the backend.
 
 <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/flow.png">
 
 #### Flows Configuration
-Flow Initilzation:
+Flow Initialization:
  ```
  BallerineSDK.flows.init([CONFIG])
  ```
@@ -278,19 +339,19 @@ ___
 
 | Config Parameter | Type | Description|
 | - | - | - |
-| `theme.layout` | FlowsGeneralTheme |Global layout css
-| `theme.paragraph` | FlowsGeneralTheme |Global paragraph  css
-| `theme.button` | FlowsGeneralTheme |Global button  css
+| `theme.layout` | FlowsGeneralTheme |Global layout CSS
+| `theme.paragraph` | FlowsGeneralTheme |Global paragraph  CSS
+| `theme.button` | FlowsGeneralTheme |Global button  CSS
 ... See more
 
 3. Speceifc step component style (**overrides theme & general component style**)
 
 | Config Parameter | Type | Description|
 | - | - | - |
-| `theme.flows['FlowName'].step` | ICSSProperties | Step inculdes style object and styles for each element
+| `theme.flows['FlowName'].step` | ICSSProperties | Step includes style object and styles for each element
 ... See more
 
-As the level is lower it will overide the upper ones
+As the level is lower it will override the upper ones
 ___
 #### Translations
 
@@ -305,92 +366,14 @@ ___
 | Config Parameter | Type | Description|
 | - | - | - |
 | `baseUrl` | `string (URL)` | Backend base URL
-| `auth` | BEAuthConfig | Auth method and Autorization header
+| `auth` | BEAuthConfig | Auth method and Authorization header
 | `endpoints` | BEEndpoints | List of endpoints for each action
 -----
 
 
-
-# Case management (soon Open Source)
-
-
-### Description
-Give your operating team Ballerine’s case management dashboard so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
-
-* A case management dashboard to approve, reject or classify users manually.
-* Create workflows operators can trigger from the interface.
-* Optimize manual work by customizing the layouts and information presented.
-* Use as standalone tool or embed in your existing dashboard.
-
-<br/>
-
-> *We are working on releasing our case management dashboard as Open-Source. Join our mailing list in the button below to get an update once it's out.*	
-> <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
-> <br/>
-> <br/>
- >   <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
-</a>
-
-
-<br/>
-
-<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
-
-___
-
-# Workflow builder & Rule engine (WIP)
-
-
-### Description
-Customize your identity and risk workflows in code or with a low-code platform non-technical staff can play with.
-
-* Test out different vendor to optimize convertion and costs.
-* Utilize data sources and tools contributed by Ballerine or the community.
-* Visualize complex flows to provide observability of how things work to the rest of the company.
-
-<br/>
-
-> *Our rule engine is still in development. Join our mailing list in the button below to get an update once it's out.*	
-> <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
-> <br/>
-> <br/>
- >   <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
-</a>
-
-
-<br/>
-
-
-<img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/rule%20engine.png">
-
- 
-# High-Level Architecture
-
-Ballerine's architecture is flexible and composable.
-
-**Components**
-
-Components are independent and reusable frontend or backend pieces of configuration, code, or connectors.
-Each component can be plugged into the infrastructure and used by the underlying building blocks.
-
-**Apps** 
-
-Apps bundle are a set of components and connectors that serve a specific use case (like KYC/KYB).
-	
-**Connectors** 
-
-Connectors are integrations to 3rd party vendors. They can be generated with an OpenAPI spec automatically or be built following a predefined interface.
-<br/>
-<br/>
-
-<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/diagram.png">
-
-<br/>
-
-
 ### Roadmap
 
-You can create feature requests and upvote existing ones to tell us what we should work on next in [here](https://ballerine.canny.io/)
+**You can create feature requests and upvote existing ones to tell us what we should work on next in [here](https://ballerine.canny.io/)**
 
 #### General
 - [ ] Documentation Portal
@@ -408,7 +391,7 @@ You can create feature requests and upvote existing ones to tell us what we shou
 		- [x] ~~KYC/B Templates~~
 		- [x] ~~Vendor/Backend Agnostic~~
         - [ ] Web liveliness step 
-	- [x] Open sourcing Android SDK 
+	- [x] Open-sourcing Android SDK 
 		- [x] ~~Webview Integration~~
 		- [x] ~~Native Camera Option~~
 		- [ ] Native liveliness *(WIP)*
@@ -416,7 +399,7 @@ You can create feature requests and upvote existing ones to tell us what we shou
 		- [x] ~~Webview Integration~~
 		- [x] ~~Native Camera Option~~
 * [ ] Backoffice
-	- [ ] Open Sourcing Case Managment 
+	- [ ] Open Sourcing Case Management 
 		- [x] User Approval Queues
 		- [ ] Operator Collaborations 
 		- [x] Backend Agnostic
@@ -429,34 +412,34 @@ You can create feature requests and upvote existing ones to tell us what we shou
 			- [x] Veriff
 			- [x] AWS Rekognition
 				- [x] Face Match API
-				- [x] Document Classfication
+				- [x] Document Classification
 			- [ ] Google Vision
 				- [ ] Document Classification
 				- [x] Vision OCR
-	- [ ] No-Code Flow Builder - [Upvote](https://www.example.com)
+	- [ ] No-Code Flow Builder
 
 #### Risk Suite
 *Please use the voting system if you think we should prioritize higher a specific chunk*
 * [ ] SDKs *(WIP)*
 	- [x] ~~Open sourcing Web SDK~~
-		- [ ] Behavior data for fraud detection *(WIP)* - [Upvote](https://www.example.com)
-		- [ ] Risk Based KYC/Step up KYC Templates *(WIP)* - [Upvote](https://www.example.com)
-	- [x] Open sourcing Android SDK 
-		- [ ] Behavior data for fraud detection *(WIP)* - [Upvote](https://www.example.com)
-	- [ ] Open sourcing  iOS SDK *(WIP)* - [Upvote](https://www.example.com)
+		- [ ] Behavior data for fraud detection *(WIP)*
+		- [ ] Risk-Based KYC/Step-up KYC Templates *(WIP)*
+	- [x] Open-sourcing Android SDK 
+		- [ ] Behavior data for fraud detection *(WIP)*
+	- [ ] Open sourcing  iOS SDK *(WIP)*
 		- [x] ~~Webview Integration~~
 		- [x] ~~Native Camera Option~~
-* [ ] Backoffice - [Upvote](https://www.example.com)
-	- [ ] Open Sourcing Case Managment - [Upvote](https://www.example.com)
-		- [ ] Operator Collaborations - [Upvote](https://www.example.com)
-		- [ ] Transaction Approval Queues - [Upvote](https://www.example.com)
+* [ ] Backoffice
+	- [ ] Open Sourcing Case Management
+		- [ ] Operator Collaborations
+		- [ ] Transaction Approval Queues
 * [ ] Dashboard
-	- [ ] Data pipelines (Orchestrator) *(WIP)* - [Upvote](https://www.example.com)
+	- [ ] Data pipelines (Orchestrator) *(WIP)*
 		- Integrations
 			- [ ] AWS
 				- Fraud Detection
 					- [ ] Account Take Over
-	- [ ] Rule/Risk Engine *(WIP)* - [Upvote](https://www.example.com)
+	- [ ] Rule/Risk Engine *(WIP)*
 
 
 #### Get to know when we release more parts

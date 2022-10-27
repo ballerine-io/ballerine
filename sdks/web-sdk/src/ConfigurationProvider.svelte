@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import App from './App.svelte';
-  import { IOuterEvent } from './lib/utils/EventService/types';
+  import { IOuterEvent } from './lib/utils/event-service/types';
 
   let loading = true;
 

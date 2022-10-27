@@ -1,7 +1,7 @@
 <script lang="ts">
   import merge from 'lodash.merge';
   import { configuration, ICSSProperties } from '../../contexts/configuration';
-  import { makesLocalStyles } from '../../utils/cssUtils';
+  import { makesLocalStyles } from '../../utils/css-utils';
 
   export let size: 'small' | 'medium' = 'medium';
   export let fullPage = true;

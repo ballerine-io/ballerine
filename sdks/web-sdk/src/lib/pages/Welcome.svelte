@@ -3,14 +3,14 @@
   import { configuration, Steps } from '../contexts/configuration';
   import { goToNextStep, addCloseToURLParams } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import List from '../molecules/List/List.svelte';
   import { T } from '../contexts/translation';
   import { flowStart } from '../services/analytics';
-  import { sendButtonClickEvent } from '../utils/EventService/utils';
-  import { appState, currentStepRoute } from '../contexts/appState';
+  import { sendButtonClickEvent } from '../utils/event-service/utils';
+  import { appState, currentStepRoute } from '../contexts/app-state';
   import merge from 'lodash.merge';
-  import { layout, welcomeStep } from '../defaultConfiguration/theme';
+  import { layout, welcomeStep } from '../default-configuration/theme';
 
   const step = merge(welcomeStep, $configuration.steps[Steps.Welcome]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);

@@ -4,7 +4,7 @@
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/cssUtils';
+  import { makeStylesFromConfiguration } from '../../utils/css-utils';
 
   export let configuration: IElementProps;
   export let isSelfie = false;
