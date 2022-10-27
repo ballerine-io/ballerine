@@ -7,7 +7,7 @@
   import { goToPrevStep } from '../contexts/navigation';
   import { getDocImage, IDocumentInfo } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
-  import { documents, selectedDocumentInfo, currentStepRoute } from '../contexts/app-state/stores';
+  import { documents, selectedDocumentInfo, currentStepId } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
   import { checkDocumentStep, layout } from '../default-configuration/theme';
 
@@ -22,7 +22,7 @@
   $: {
     documentInfo = step.documentInfo || $selectedDocumentInfo;
     if (!documentInfo) {
-      goToPrevStep(step, currentStepRoute, $configuration);
+      goToPrevStep(step, currentStepId, $configuration);
     }
     if (documentInfo) {
       image = getDocImage(documentInfo.type, $documents);
@@ -36,7 +36,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+        on:click={() => goToPrevStep(step, currentStepId, $configuration)}
       />
     {/if}
     {#if element.type === Elements.Title}

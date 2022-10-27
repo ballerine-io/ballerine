@@ -20,7 +20,7 @@ export const addCloseToURLParams = () => {
 
 export const goToNextStep = (
   stepConfiguration: IStepConfiguration,
-  currentStepRoute: Writable<string>,
+  currentStepId: Writable<string>,
   globalConfiguration: IAppConfiguration,
   skipType?: string,
 ) => {
@@ -29,18 +29,18 @@ export const goToNextStep = (
   const currentFlowIndex = filteredFlows.findIndex(f => f === stepConfiguration.id);
   const nextFlowId = filteredFlows[currentFlowIndex + 1];
   const nextStep = globalConfiguration.steps[nextFlowId];
-
+  console.log("nextStep", nextStep)
   if (nextStep.route) {
-    currentStepRoute.set(nextStep.route);
+    currentStepId.set(nextStep.route);
   }
 
   const step = steps.find(s => s.name === nextStep.name);
-  if (step) currentStepRoute.set(step.route);
+  if (step) currentStepId.set(step.route);
 };
 
 export const goToPrevStep = (
   stepConfiguration: IStepConfiguration,
-  currentStepRoute: Writable<string>,
+  currentStepId: Writable<string>,
   globalConfiguration: IAppConfiguration,
   skipType?: string,
 ) => {
@@ -50,8 +50,8 @@ export const goToPrevStep = (
   const nextFlowId = filteredFlows[currentFlowIndex - 1];
   const nextStep = globalConfiguration.steps[nextFlowId];
   if (nextStep.route) {
-    return currentStepRoute.set(nextStep.route);
+    return currentStepId.set(nextStep.route);
   }
   const step = steps.find(s => s.name === nextStep.name);
-  if (step) return currentStepRoute.set(step.route);
+  if (step) return currentStepId.set(step.route);
 };

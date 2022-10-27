@@ -5,7 +5,7 @@
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import {
     currentParams,
-    currentStepRoute,
+    currentStepId,
     documents,
     ISelectedParams,
     IStoreData,
@@ -62,15 +62,15 @@
         response.idvResult === DecisionStatus.REVIEW
       ) {
         $currentParams = params;
-        $currentStepRoute = '/decline';
+        $currentStepId = '/decline';
       }
       if (response.idvResult === DecisionStatus.RESUBMISSION_REQUESTED) {
         $currentParams = params;
-        $currentStepRoute = '/resubmission';
+        $currentStepId = '/resubmission';
       }
       if (response.idvResult === DecisionStatus.APPROVED) {
         $currentParams = params;
-        $currentStepRoute = '/final';
+        $currentStepId = '/final';
       }
     } catch (error) {
       toast.push(t('general', 'errorDocumentVerification'));
@@ -86,7 +86,7 @@
       toast.push(t('general', 'errorDocuments'));
       console.error('Error sending documents', error);
       $currentParams = { message: error } as ISelectedParams;
-      $currentStepRoute = '/error';
+      $currentStepId = '/error';
       return;
     }
 
@@ -97,7 +97,7 @@
       return;
     }
     showText = false;
-    $currentStepRoute = '/final';
+    $currentStepId = '/final';
   };
 
   onMount(() => {
@@ -109,7 +109,7 @@
     makeRequest(data);
     timeout = setTimeout(() => {
       showText = false;
-      $currentStepRoute = '/decline';
+      $currentStepId = '/decline';
     }, WAITING_TIME);
   });
 

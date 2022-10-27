@@ -10,7 +10,7 @@
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
   import { IDocumentInfo } from '../contexts/app-state/types';
-  import { documents, selectedDocumentInfo, currentStepRoute } from '../contexts/app-state/stores';
+  import { documents, selectedDocumentInfo, currentStepId } from '../contexts/app-state/stores';
   import {
     documentOptions,
     documentPhotoStep,
@@ -34,7 +34,7 @@
   $: {
     documentInfo = step.documentInfo || $selectedDocumentInfo;
     if (!documentInfo) {
-      goToPrevStep(step, currentStepRoute, $configuration);
+      goToPrevStep(step, currentStepId, $configuration);
     }
   }
 
@@ -86,9 +86,9 @@
     if (documentInfo) {
       const document = { type: documentInfo?.type, pages: [], metadata: {} };
       $documents = addDocument(document.type, base64, document);
-      return goToNextStep(step, currentStepRoute, $configuration);
+      return goToNextStep(step, currentStepId, $configuration);
     }
-    return goToPrevStep(step, currentStepRoute, $configuration);
+    return goToPrevStep(step, currentStepId, $configuration);
   };
 </script>
 
@@ -97,7 +97,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+        on:click={() => goToPrevStep(step, currentStepId, $configuration)}
       />
     {/if}
     {#if element.type === Elements.VideoContainer}
