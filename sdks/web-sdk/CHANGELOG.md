@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.1.25
+
+### Patch Changes
+
+- 615f3d0: renamed web-sdk to @ballerine/web-sdk
+
 ## 1.1.24
 
 ### Patch Changes
