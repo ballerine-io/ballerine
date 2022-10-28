@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.1.27
+
+### Patch Changes
+
+- Refactoing
+
 ## 1.1.26
 
 ### Patch Changes
