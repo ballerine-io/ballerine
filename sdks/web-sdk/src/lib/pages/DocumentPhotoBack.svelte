@@ -26,7 +26,7 @@
   $: {
     documentInfo = step.documentInfo || $selectedDocumentInfo;
     if (!documentInfo) {
-      goToPrevStep(step, currentStepId, $configuration);
+      goToPrevStep(currentStepId, $configuration, $currentStepId);
     }
   }
 
@@ -58,7 +58,7 @@
     );
     const newDocumentsState = updateDocument(document.type, base64, $documents);
     $documents = newDocumentsState;
-    goToNextStep(step, currentStepId, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 </script>
 
@@ -67,7 +67,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepId, $configuration)}
+        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
     {#if element.type === Elements.VideoContainer}

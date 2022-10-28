@@ -23,7 +23,7 @@
   $: {
     documentInfo = step.documentInfo || $selectedDocumentInfo;
     if ($documents.length === 0 || !documentInfo) {
-      goToPrevStep(step, currentStepId, $configuration);
+      goToPrevStep(currentStepId, $configuration, $currentStepId);
     }
     if (documentInfo) {
       image = getDocImage(documentInfo.type, $documents, 'back');
@@ -36,7 +36,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepId, $configuration)}
+        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
     {#if element.type === Elements.Title}

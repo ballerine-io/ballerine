@@ -12,9 +12,11 @@
 
   $: {
     const configurationStepId = configurationStepIds.find((key: string) => key === $currentStepId);
-    stepId = configurationStepId || configurationStepIds[0];
-    step = steps.find(s => s.name === $configuration.steps[stepId].name);
-    if (stepId) {
+    if (!configurationStepId) {
+      step = steps.find(s => s.name === $currentStepId);
+    } else {
+      stepId = configurationStepId;
+      step = steps.find(s => s.name === $configuration.steps[stepId].name);
       const newStepIndex = configurationStepIds.indexOf(stepId);
       if (newStepIndex !== $currentStepIdx) {
         $currentStepIdx = newStepIndex;
@@ -25,17 +27,16 @@
       }
     }
   }
-  console.log(2)
 </script>
 
-{#if $configuration.steps[stepId]}
-  {#key step?.component}
+{#if step}
+  {#key step.component}
     <div
       class="container"
       in:fly={{ x: -50, duration: 250, delay: 300 }}
       out:fly={{ x: -50, duration: 250 }}
     >
-      <svelte:component this={step?.component} />
+      <svelte:component this={step.component} />
     </div>
   {/key}
 {/if}

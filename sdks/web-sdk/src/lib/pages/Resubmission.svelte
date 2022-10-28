@@ -20,10 +20,10 @@
 
   const handleNavigate = () => {
     if (hasDocumentSelection) {
-      $currentStepId = '/select-document';
+      $currentStepId = 'select-document';
       return;
     }
-    $currentStepId = '/document-start';
+    $currentStepId = 'document-start';
   };
 
   onDestroy(() => {
