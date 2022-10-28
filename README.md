@@ -15,19 +15,6 @@
 Ballerine is an open-source infrastructure for user identity and risk management.
 Compose verification processes for any vertical and geography using modular building blocks, components, and 3rd party integrations.
 
-_____
-	
-### Why Open Source KYC/KYB & Risk stack?
-
-The goal is to allow any company to manage user identity and risk in a way that suits them and their unique changing needs.
-Main Open Source benefits:
-*  **Future proof** - modular and extendable building blocks.
-*  **Global** - Multiple vendors accessible in one UI and case management dashboard.
-*  **White label** - Customizable UX and UI.
-*  **Community** - Use what others have built, contribute yourself, and leverage community maintenance.
-___
-
-
 ### What can you find in this project?
  * KYC/KYB flows and UI in Mobile and web SDKs for user data and document collection - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk) | [Docs](#getting-started-with-sdks-flows)
  * Case management dashboard for users approval/rejection - 🎉 Final stages of Open Sourcing!
@@ -42,7 +29,17 @@ Join our mailing list to you know whenever we release something (like liveliness
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
 </a>
 
-___
+____
+	
+### Why Open Source KYC/KYB & Risk stack?
+
+The goal is to allow any company to manage user identity and risk in a way that suits them and their unique changing needs.
+Main Open Source benefits:
+*  **Future proof** - modular and extendable building blocks.
+*  **Global** - Multiple vendors accessible in one UI and case management dashboard.
+*  **White label** - Customizable UX and UI.
+*  **Community** - Use what others have built, contribute yourself, and leverage community maintenance.
+
 
 <details><summary>See some examples of what you can do with it</summary>
 
@@ -192,10 +189,8 @@ Add this code to your index.html header
 ```html
 <script
   async
-  src="https://cdn.ballerine.io/1.1.22/ballerine-sdk.umd.min.js"
-  integrity="sha384-cHxaE8mk7COVrdyKoDw4cdPC6PLoMItItHZ+LwA18bDaiWJLxV2f2zyVf6Q9Vtww"
+  src="https://cdn.ballerine.io/js/1.1.27/ballerine-sdk.umd.js"
   crossorigin="anonymous"
-  type="module"
 ></script>
 ```
 <ins>Package Managers:</ins>
@@ -249,7 +244,7 @@ ballerineFlows.on('finish', doSomethingFn)
 Code example:
 ```html
 <script
-  src="https://cdn.ballerine.io/1.1.22/ballerine-sdk.umd.min.js"
+  src="https://cdn.ballerine.io/js/1.1.27/ballerine-sdk.umd.js"
   integrity="sha384-cHxaE8mk7COVrdyKoDw4cdPC6PLoMItItHZ+LwA18bDaiWJLxV2f2zyVf6Q9Vtww"
   crossorigin="anonymous"
   type="module"
