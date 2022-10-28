@@ -1,10 +1,10 @@
 import { IList } from '../../molecules/List';
 import { INavigationButtons } from '../../molecules/NavigationButtons';
 import { IDocumentOptions } from '../../organisms/DocumentOptions';
-import { IDocumentInfo } from '../app-state';
 import type { CaptureConfigOption } from 'jslib-html5-camera-photo';
 import { IFlow } from '../flows';
 import { EndUserInfo, FlowsBackendConfig } from '../../../types/BallerineSDK';
+import { DocumentType } from '../app-state';
 
 export enum Steps {
   Welcome = 'welcome',
@@ -129,8 +129,7 @@ export interface IStepConfiguration {
   style?: ICSSProperties;
   elements: IElement[];
   form?: IFormProps;
-  documentInfo?: IDocumentInfo;
-  route?: string;
+  type: DocumentType;
   id: string;
   cameraConfig?: CaptureConfigOption;
   documentOptions?: DocumentType[];

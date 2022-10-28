@@ -26,7 +26,7 @@
   const handler = async (e: ICameraEvent) => {
     if (!e.target) return;
     $selfieUri = await nativeCameraHandler(e);
-    goToNextStep(step, currentStepId, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 </script>
 
@@ -37,9 +37,9 @@
         configuration={element.props}
         on:click={() =>
           goToPrevStep(
-            step,
             currentStepId,
             $configuration,
+            $currentStepId,
             skipBackSide ? 'back-side' : undefined,
           )}
       />
@@ -69,7 +69,7 @@
           />
         {/if}
         <Button
-          on:click={() => goToNextStep(step, currentStepId, $configuration)}
+          on:click={() => goToNextStep(currentStepId, $configuration, $currentStepId)}
           configuration={element.props}
         >
           <T key="button" module="selfie-start" />

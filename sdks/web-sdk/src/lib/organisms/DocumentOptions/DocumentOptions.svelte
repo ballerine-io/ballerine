@@ -31,7 +31,7 @@
     const option = documentOptionsConfiguration.options[type];
     $selectedDocumentInfo = option?.document as IDocumentInfo;
     await navigator.mediaDevices.getUserMedia({ video: true });
-    goToNextStep(step, currentStepId, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
   const handlePhotoTake = async ({ detail }: { detail: { image: string; type: DocumentType } }) => {
@@ -46,7 +46,7 @@
     );
     $selectedDocumentInfo = option?.document as IDocumentInfo;
     $documents = newDocumentsState;
-    goToNextStep(step, currentStepId, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 </script>
 

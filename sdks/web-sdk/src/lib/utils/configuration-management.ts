@@ -62,7 +62,6 @@ const preloadImages = async (configuration: IAppConfiguration): Promise<IAppConf
 
 export const updateConfiguration = async (configOverrides: RecursivePartial<FlowsInitOptions>) => {
   let configurationResult: IAppConfiguration | undefined = undefined;
-  console.log("configOverrides", configOverrides)
 
   configuration.update(currentConfig => {
     const mergedConfig = mergeConfig(currentConfig, configOverrides);

@@ -49,7 +49,7 @@
       <Button
         on:click={() => {
           flowStart();
-          goToNextStep(step, currentStepId, $configuration);
+          goToNextStep(currentStepId, $configuration, $currentStepId);
         }}
         configuration={element.props}
       >

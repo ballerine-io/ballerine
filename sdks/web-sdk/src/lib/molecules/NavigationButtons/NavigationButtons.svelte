@@ -29,19 +29,19 @@
   {#if configuration.backButton.type === 'button'}
     <Button
       configuration={configuration.backButton.props}
-      on:click={() => goToPrevStep(step, currentStepId, $globalConfiguration, skipType)}
+      on:click={() => goToPrevStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >
       <T key="back" module="navigation-buttons" />
     </Button>
   {:else if configuration.backButton.type === 'iconButton'}
     <IconButton
       configuration={configuration.backButton.props}
-      on:click={() => goToPrevStep(step, currentStepId, $globalConfiguration, skipType)}
+      on:click={() => goToPrevStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     />
   {:else}
     <ButtonWithIcon
       configuration={configuration.backButton.props}
-      on:click={() => goToPrevStep(step, currentStepId, $globalConfiguration, skipType)}
+      on:click={() => goToPrevStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >
       <T key="back" module="navigation-buttons" />
     </ButtonWithIcon>
@@ -49,19 +49,19 @@
   {#if configuration.nextButton.type === 'button'}
     <Button
       configuration={configuration.nextButton.props}
-      on:click={() => goToNextStep(step, currentStepId, $globalConfiguration, skipType)}
+      on:click={() => goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >
       <T key="next" module="navigation-buttons" />
     </Button>
   {:else if configuration.nextButton.type === 'iconButton'}
     <IconButton
       configuration={configuration.nextButton.props}
-      on:click={() => goToNextStep(step, currentStepId, $globalConfiguration, skipType)}
+      on:click={() => goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     />
   {:else}
     <ButtonWithIcon
       configuration={configuration.nextButton.props}
-      on:click={() => goToNextStep(step, currentStepId, $globalConfiguration, skipType)}
+      on:click={() => goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >
       <T key="next" module="navigation-buttons" />
     </ButtonWithIcon>

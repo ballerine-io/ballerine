@@ -147,6 +147,25 @@ const checkDocumentElements = [
 
 const ballerineInitConfig = {
   endUserInfo: { id: 'test-id' },
+  translations: {
+    overrides: {
+      en: {
+        "document-start": {
+          "proofOfBusinessTaxID-title": "TIN ID / Certificate",
+          "proofOfBusinessTaxID-description": "Place the business TIN ID/certificate inside the frame and take a picture. Make sure it is not cut or has any glare.",
+          "proofOfBusinessTaxID-button": "Take a picture",
+        },
+        "document-photo": {
+          "proofOfBusinessTaxID-title": "TIN ID / Certificate",
+          "proofOfBusinessTaxID-description": "Place the business TIN ID/certificate inside the frame and take a picture. Make sure it is not cut or has any glare.",
+        },
+        "check-document": {
+          "proofOfBusinessTaxID-title": "Review picture",
+          "proofOfBusinessTaxID-description": "Make sure the information is seen clearly, with no blur or glare.",
+        }
+      }
+    }
+  },
   uiConfig: {
     flows: {
       ['my-kyc-flow']: {
@@ -172,7 +191,7 @@ const ballerineInitConfig = {
           { name: Steps.Loading, id: Steps.Loading },
         ],
       },
-      ['my-kyc-flow-vendy']: {
+      ['my-kyc-flow-multiflow']: {
         steps: [
           { name: Steps.Welcome, id: Steps.Welcome },
           {
@@ -190,7 +209,6 @@ const ballerineInitConfig = {
             id: 'document-check-business-tax',
             type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
           },
-          { name: Steps.DocumentPhoto, id: 'document-photo-business-tax' },
           { name: Steps.Loading, id: Steps.Loading },
         ],
       },
@@ -198,5 +216,5 @@ const ballerineInitConfig = {
   },
 };
 flows.init(ballerineInitConfig).then(() => {
-  flows.mount('app', 'my-kyc-flow-vendy', {});
+  flows.mount('app', 'my-kyc-flow', {});
 });

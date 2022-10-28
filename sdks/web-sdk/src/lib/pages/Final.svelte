@@ -12,6 +12,8 @@
   import merge from 'lodash.merge';
   import { finalStep, layout } from '../default-configuration/theme';
 
+  console.log("Final")
+
   const step = merge(finalStep, $configuration.steps[Steps.Final]);
 
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
