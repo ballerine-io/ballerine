@@ -51,7 +51,7 @@
     "build:examples": "npm run build && for i in ./examples/sdk ./examples/standalone; do cp -R ./dist/ballerine-sdk.umd.js $i; done",
     "example:sdk": "npm run build:examples && npx http-server ./examples/sdk -p 8081",
     "example:standalone": "npm run build:examples && npx http-server ./examples/standalone -p 9090",
-    "deploy:cdn:cf": "vite build && aws s3 cp ./dist/ballerine-sdk.umd.js s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.js",
+    "deploy:cdn:cf": "vite build && aws s3 cp ./dist/ballerine-sdk.umd.js s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.js && aws s3 cp ./dist/ballerine-sdk.umd.js.map s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.js.map",
     "publish:patch": "vite build && npm version patch && npm publish && npm run deploy:cdn:cf"
   },
   "devDependencies": {
