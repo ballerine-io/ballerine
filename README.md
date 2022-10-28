@@ -189,10 +189,8 @@ Add this code to your index.html header
 ```html
 <script
   async
-  src="https://cdn.ballerine.io/1.1.22/ballerine-sdk.umd.min.js"
-  integrity="sha384-cHxaE8mk7COVrdyKoDw4cdPC6PLoMItItHZ+LwA18bDaiWJLxV2f2zyVf6Q9Vtww"
+  src="https://cdn.ballerine.io/js/1.1.27/ballerine-sdk.umd.js"
   crossorigin="anonymous"
-  type="module"
 ></script>
 ```
 <ins>Package Managers:</ins>
@@ -246,7 +244,7 @@ ballerineFlows.on('finish', doSomethingFn)
 Code example:
 ```html
 <script
-  src="https://cdn.ballerine.io/1.1.22/ballerine-sdk.umd.min.js"
+  src="https://cdn.ballerine.io/js/1.1.27/ballerine-sdk.umd.js"
   integrity="sha384-cHxaE8mk7COVrdyKoDw4cdPC6PLoMItItHZ+LwA18bDaiWJLxV2f2zyVf6Q9Vtww"
   crossorigin="anonymous"
   type="module"
