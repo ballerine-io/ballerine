@@ -7,7 +7,7 @@
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { isNativeCamera } from '../contexts/flows/hooks';
-  import { selectedDocumentInfo, selfieUri, currentStepRoute } from '../contexts/app-state/stores';
+  import { selectedDocumentInfo, selfieUri, currentStepId } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
   import { layout, selfieStartStep } from '../default-configuration/theme';
 
@@ -26,7 +26,7 @@
   const handler = async (e: ICameraEvent) => {
     if (!e.target) return;
     $selfieUri = await nativeCameraHandler(e);
-    goToNextStep(step, currentStepRoute, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 </script>
 
@@ -37,9 +37,9 @@
         configuration={element.props}
         on:click={() =>
           goToPrevStep(
-            step,
-            currentStepRoute,
+            currentStepId,
             $configuration,
+            $currentStepId,
             skipBackSide ? 'back-side' : undefined,
           )}
       />
@@ -69,7 +69,7 @@
           />
         {/if}
         <Button
-          on:click={() => goToNextStep(step, currentStepRoute, $configuration)}
+          on:click={() => goToNextStep(currentStepId, $configuration, $currentStepId)}
           configuration={element.props}
         >
           <T key="button" module="selfie-start" />

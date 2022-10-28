@@ -5,9 +5,9 @@
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { goToPrevStep } from '../contexts/navigation';
-  import { getDocImage, IDocumentInfo } from '../contexts/app-state';
+  import { DocumentType, getDocImage } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
-  import { documents, selectedDocumentInfo, currentStepRoute } from '../contexts/app-state/stores';
+  import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
   import { checkDocumentStep, layout } from '../default-configuration/theme';
 
@@ -15,18 +15,19 @@
 
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
-  let documentInfo: IDocumentInfo | undefined = undefined;
+  const documentType = $configuration.steps[$currentStepId].type as DocumentType || $selectedDocumentInfo.type;
+
   let image = '';
   let skipBackSide = false;
 
   $: {
-    documentInfo = step.documentInfo || $selectedDocumentInfo;
-    if (!documentInfo) {
-      goToPrevStep(step, currentStepRoute, $configuration);
+    if (!documentType) {
+      goToPrevStep(currentStepId, $configuration, $currentStepId);
     }
-    if (documentInfo) {
-      image = getDocImage(documentInfo.type, $documents);
-      skipBackSide = !documentInfo.backSide && !step.documentInfo;
+    if (documentType) {
+      image = getDocImage(documentType, $documents);
+      // Alon: seems like we need to extend configuration with this?
+      skipBackSide = $configuration.steps[$currentStepId].backSide || $selectedDocumentInfo?.backSide;
     }
   }
 </script>
@@ -36,17 +37,17 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key={`${documentInfo?.type}-title`} module="check-document" />
+        <T key={`${documentType}-title`} module="check-document" />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={`${documentInfo?.type}-description`} module="check-document" />
+        <T key={`${documentType}-description`} module="check-document" />
       </Paragraph>
     {/if}
     {#if element.type === Elements.Photo}

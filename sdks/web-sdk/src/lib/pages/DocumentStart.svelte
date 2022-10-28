@@ -3,38 +3,37 @@
   import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
-  import { Elements } from '../contexts/configuration/types';
+  import { Elements, IStepConfiguration } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
-  import { IDocumentInfo, IDocument, currentStepRoute } from '../contexts/app-state';
+  import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { documentStartStep, layout } from '../default-configuration/theme';
   import merge from 'lodash.merge';
 
-  const step = merge(documentStartStep, $configuration.steps[Steps.Welcome]);
+  const step = merge(documentStartStep, $configuration.steps[Steps.DocumentStart]) as IStepConfiguration;
 
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
-  let documentInfo: IDocumentInfo | undefined = undefined;
+  const documentType = $configuration.steps[$currentStepId].type as DocumentType || $selectedDocumentInfo.type;
 
   $: {
-    documentInfo = step.documentInfo || $selectedDocumentInfo;
-    if (!documentInfo) goToPrevStep(step, currentStepRoute, $configuration);
+    if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
   }
 
   const handleGoToNextStep = async () => {
     await navigator.mediaDevices.getUserMedia({ video: true }); // TODO: add catch for missing premessions, and handle appropetly
-    goToNextStep(step, currentStepRoute, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
   const handler = async (e: ICameraEvent) => {
     if (!e.target) return;
     const image = await nativeCameraHandler(e);
-    if (!documentInfo) {
+    if (!documentType) {
       throw Error("document context wasn't provided");
     }
-    const document: IDocument = { type: documentInfo.type, metadata: {}, pages: [] };
+    const document: IDocument = { type: documentType, metadata: {}, pages: [] };
     const newDocumentsState: IDocument[] = addDocument(
       document.type,
       image,
@@ -43,7 +42,7 @@
       document,
     );
     $documents = newDocumentsState;
-    goToNextStep(step, currentStepRoute, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 </script>
 
@@ -52,7 +51,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
     {#if element.type === Elements.Image}
@@ -60,12 +59,12 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key={`${documentInfo?.type}-title`} module="document-start" />
+        <T key={`${documentType}-title`} module="document-start" />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={`${documentInfo?.type}-description`} module="document-start" />
+        <T key={`${documentType}-description`} module="document-start" />
       </Paragraph>
     {/if}
     {#if element.type === Elements.Button}
@@ -80,7 +79,7 @@
           />
         {/if}
         <Button on:click={handleGoToNextStep} configuration={element.props}>
-          <T key={`${documentInfo?.type}-button`} module="document-start" />
+          <T key={`${documentType}-button`} module="document-start" />
         </Button>
       </div>
     {/if}

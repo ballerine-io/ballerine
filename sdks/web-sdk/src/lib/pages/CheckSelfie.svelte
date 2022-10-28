@@ -8,7 +8,7 @@
   import Paragraph from '../atoms/Paragraph/Paragraph.svelte';
   import NavigationButtons from '../molecules/NavigationButtons/NavigationButtons.svelte';
   import Photo from '../atoms/Photo/Photo.svelte';
-  import { selfieUri, currentStepRoute } from '../contexts/app-state/stores';
+  import { selfieUri, currentStepId } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
   import { checkSelfieStep, layout } from '../default-configuration/theme';
 
@@ -24,7 +24,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
     {#if element.type === Elements.Title}

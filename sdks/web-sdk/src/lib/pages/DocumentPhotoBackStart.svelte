@@ -6,7 +6,7 @@
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { ICameraEvent, nativeCameraHandler, updateDocument } from '../utils/photo-utils';
-  import { IDocument, IDocumentInfo, currentStepRoute } from '../contexts/app-state';
+  import { IDocument, IDocumentInfo, currentStepId } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
@@ -24,9 +24,9 @@
 
   $: {
     documentInfo = step.documentInfo || $selectedDocumentInfo;
-    if (!documentInfo) goToPrevStep(step, currentStepRoute, $configuration);
+    if (!documentInfo) goToPrevStep(currentStepId, $configuration, $currentStepId);
     document = $documents.find(d => d.type === documentInfo?.type);
-    if (!document) goToPrevStep(step, currentStepRoute, $configuration);
+    if (!document) goToPrevStep(currentStepId, $configuration, $currentStepId);
   }
 
   const handler = async (e: ICameraEvent) => {
@@ -37,7 +37,7 @@
     if (!document) return;
     const newDocumentsState = updateDocument(document.type, image, $documents);
     $documents = newDocumentsState;
-    goToNextStep(step, currentStepRoute, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 </script>
 
@@ -46,7 +46,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
     {#if element.type === Elements.Image}
@@ -74,7 +74,7 @@
           />
         {/if}
         <Button
-          on:click={() => goToNextStep(step, currentStepRoute, $configuration)}
+          on:click={() => goToNextStep(currentStepId, $configuration, $currentStepId)}
           configuration={element.props}
         >
           <T key="button" module="document-photo-back-start" />

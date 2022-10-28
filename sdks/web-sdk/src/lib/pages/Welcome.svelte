@@ -8,7 +8,7 @@
   import { T } from '../contexts/translation';
   import { flowStart } from '../services/analytics';
   import { sendButtonClickEvent } from '../utils/event-service/utils';
-  import { appState, currentStepRoute } from '../contexts/app-state';
+  import { appState, currentStepId } from '../contexts/app-state';
   import merge from 'lodash.merge';
   import { layout, welcomeStep } from '../default-configuration/theme';
 
@@ -49,7 +49,7 @@
       <Button
         on:click={() => {
           flowStart();
-          goToNextStep(step, currentStepRoute, $configuration);
+          goToNextStep(currentStepId, $configuration, $currentStepId);
         }}
         configuration={element.props}
       >

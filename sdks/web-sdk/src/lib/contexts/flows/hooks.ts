@@ -4,7 +4,6 @@ import { IFlow } from './types';
 const FLOW_STORE_KEY = 'flow';
 
 export const setFlowName = (flows: { [key: string]: IFlow }, name: string | null) => {
-  console.log('setFlowName', name);
   if (name && flows[name]) return sessionStorage.setItem(FLOW_STORE_KEY, name);
 
   const savedFlow = sessionStorage.getItem(FLOW_STORE_KEY);

@@ -2,7 +2,7 @@
   import { T } from '../contexts/translation';
   import { Image, Button, Title } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
-  import { currentStepRoute, currentParams } from '../contexts/app-state';
+  import { currentStepId, currentParams } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
@@ -20,10 +20,10 @@
 
   const handleNavigate = () => {
     if (hasDocumentSelection) {
-      $currentStepRoute = '/select-document';
+      $currentStepId = 'select-document';
       return;
     }
-    $currentStepRoute = '/document-start';
+    $currentStepId = 'document-start';
   };
 
   onDestroy(() => {

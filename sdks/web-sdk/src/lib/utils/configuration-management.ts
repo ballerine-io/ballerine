@@ -62,6 +62,7 @@ const preloadImages = async (configuration: IAppConfiguration): Promise<IAppConf
 
 export const updateConfiguration = async (configOverrides: RecursivePartial<FlowsInitOptions>) => {
   let configurationResult: IAppConfiguration | undefined = undefined;
+
   configuration.update(currentConfig => {
     const mergedConfig = mergeConfig(currentConfig, configOverrides);
     configurationResult = mergedConfig;
@@ -124,7 +125,7 @@ const v1adapter = (config: RecursivePartial<FlowsInitOptions>): IAppConfiguratio
         ...flowConfig,
       };
       if (steps) {
-        newFlows[flowName].stepsOrder = steps.map((step: any) => step.name); // check ts
+        newFlows[flowName].stepsOrder = steps.map((step: any) => step.id); // check ts
       }
       const stepsConfig = toObjByKey(steps, (e: IStepConfiguration) => e.id);
       flowSteps = {

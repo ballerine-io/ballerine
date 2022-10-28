@@ -9,12 +9,10 @@
   import { DocumentType, IDocument } from '../contexts/app-state';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
-  import { IDocumentInfo } from '../contexts/app-state/types';
-  import { documents, selectedDocumentInfo, currentStepRoute } from '../contexts/app-state/stores';
+  import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
   import {
     documentOptions,
     documentPhotoStep,
-    documentSelectionStep,
     settings,
   } from '../default-configuration/theme';
   import merge from 'lodash.merge';
@@ -29,13 +27,10 @@
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
   const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions);
 
-  let documentInfo: IDocumentInfo | undefined = undefined;
+  const documentType = $configuration.steps[$currentStepId].type as DocumentType || $selectedDocumentInfo.type;
 
   $: {
-    documentInfo = step.documentInfo || $selectedDocumentInfo;
-    if (!documentInfo) {
-      goToPrevStep(step, currentStepRoute, $configuration);
-    }
+    if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
   }
 
   onMount(() => {
@@ -83,12 +78,12 @@
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings || settings.cameraSettings,
     );
-    if (documentInfo) {
-      const document = { type: documentInfo?.type, pages: [], metadata: {} };
+    if (documentType) {
+      const document = { type: documentType, pages: [], metadata: {} };
       $documents = addDocument(document.type, base64, document);
-      return goToNextStep(step, currentStepRoute, $configuration);
+      return goToNextStep(currentStepId, $configuration, $currentStepId);
     }
-    return goToPrevStep(step, currentStepRoute, $configuration);
+    return goToPrevStep(currentStepId, $configuration, $currentStepId);
   };
 </script>
 
@@ -97,7 +92,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
     {#if element.type === Elements.VideoContainer}
@@ -108,20 +103,20 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key={`${documentInfo?.type}-title`} module="document-photo" />
+        <T key={`${documentType}-title`} module="document-photo" />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={`${documentInfo?.type}-description`} module="document-photo" />
+        <T key={`${documentType}-description`} module="document-photo" />
       </Paragraph>
     {/if}
     {#if element.type === Elements.CameraButton}
       <CameraButton on:click={handleTakePhoto} configuration={element.props} />
     {/if}
   {/each}
-  {#if documentInfo}
-    <Overlay type={documentInfo.type} />
+  {#if documentType}
+    <Overlay type={documentType} />
   {/if}
 </div>
 
