@@ -329,7 +329,49 @@ export const welcomeStep = {
 export const documentStartStep = {
   name: Steps.DocumentStart,
   id: Steps.DocumentStart,
-  elements: [],
+  elements: [
+    backIconButton,
+    {
+      type: Elements.Title,
+      props: {
+        style: {
+          'text-align': 'center',
+          padding: '8px 0px 20px',
+          'font-size': '18px',
+        },
+      },
+    },
+    {
+      type: Elements.Paragraph,
+      props: {
+        style: {
+          'text-align': 'center',
+          margin: '0px',
+          'font-size': '16px',
+        },
+        context: 'description',
+      },
+    },
+    {
+      type: Elements.Image,
+      props: {
+        style: {
+          margin: '8px auto',
+          'flex-grow': 1,
+        },
+        attributes: {
+          src: 'https://cdn.ballerine.io/ui-packs/default/images/welcome.svg',
+          alt: 'welcome',
+          width: '248px',
+          height: '212px',
+        },
+      },
+    },
+    {
+      type: Elements.Button,
+      props: {}
+    }
+  ],
 };
 
 export const documentSelectionStep = {

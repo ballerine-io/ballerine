@@ -57,4 +57,4 @@ export const appState = derived(currentRoute, $currentRoute => {
   return appState;
 });
 
-export const currentStepRoute = writable<string>('/');
+export const currentStepId = writable<string>("welcome");

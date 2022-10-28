@@ -19,39 +19,31 @@ export const addCloseToURLParams = () => {
 };
 
 export const goToNextStep = (
-  stepConfiguration: IStepConfiguration,
-  currentStepRoute: Writable<string>,
+  currentStepIdStore: Writable<string>,
   globalConfiguration: IAppConfiguration,
+  currentStepId: string,
   skipType?: string,
 ) => {
   const flows = getFlowOrders(globalConfiguration) as string[];
   const filteredFlows = filterOutByType(flows, globalConfiguration, skipType);
-  const currentFlowIndex = filteredFlows.findIndex(f => f === stepConfiguration.id);
-  const nextFlowId = filteredFlows[currentFlowIndex + 1];
-  const nextStep = globalConfiguration.steps[nextFlowId];
-
-  if (nextStep.route) {
-    currentStepRoute.set(nextStep.route);
+  const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
+  if (currentFlowIndex === filteredFlows.length) {
+    throw Error("Error moving next step, this is the last step");
   }
-
-  const step = steps.find(s => s.name === nextStep.name);
-  if (step) currentStepRoute.set(step.route);
+  currentStepIdStore.set(filteredFlows[currentFlowIndex + 1]);
 };
 
 export const goToPrevStep = (
-  stepConfiguration: IStepConfiguration,
-  currentStepRoute: Writable<string>,
+  currentStepIdStore: Writable<string>,
   globalConfiguration: IAppConfiguration,
+  currentStepId: string,
   skipType?: string,
 ) => {
   const flows = getFlowOrders(globalConfiguration) as string[];
   const filteredFlows = filterOutByType(flows, globalConfiguration, skipType);
-  const currentFlowIndex = filteredFlows.findIndex(f => f === stepConfiguration.id);
-  const nextFlowId = filteredFlows[currentFlowIndex - 1];
-  const nextStep = globalConfiguration.steps[nextFlowId];
-  if (nextStep.route) {
-    return currentStepRoute.set(nextStep.route);
+  const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
+  if (currentFlowIndex === 0) {
+    throw Error("Error moving step back, this is the first step");
   }
-  const step = steps.find(s => s.name === nextStep.name);
-  if (step) return currentStepRoute.set(step.route);
+  currentStepIdStore.set(filteredFlows[currentFlowIndex - 1]);
 };

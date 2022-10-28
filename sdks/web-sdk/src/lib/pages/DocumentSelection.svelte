@@ -6,7 +6,7 @@
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { DocumentOptions } from '../organisms';
   import { goToPrevStep } from '../contexts/navigation';
-  import { currentStepRoute } from '../contexts/app-state';
+  import { currentStepId } from '../contexts/app-state';
   import merge from 'lodash.merge';
   import { documentSelectionStep, layout } from '../default-configuration/theme';
 
@@ -19,7 +19,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
     {#if element.type === Elements.Image}

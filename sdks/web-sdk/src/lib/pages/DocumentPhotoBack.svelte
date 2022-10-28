@@ -8,7 +8,7 @@
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import { IDocumentInfo } from '../contexts/app-state/types';
-  import { currentStepRoute } from '../contexts/app-state';
+  import { currentStepId } from '../contexts/app-state';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { updateDocument } from '../utils/photo-utils';
   import { documentPhotoBackStep, settings } from '../default-configuration/theme';
@@ -26,7 +26,7 @@
   $: {
     documentInfo = step.documentInfo || $selectedDocumentInfo;
     if (!documentInfo) {
-      goToPrevStep(step, currentStepRoute, $configuration);
+      goToPrevStep(currentStepId, $configuration, $currentStepId);
     }
   }
 
@@ -58,7 +58,7 @@
     );
     const newDocumentsState = updateDocument(document.type, base64, $documents);
     $documents = newDocumentsState;
-    goToNextStep(step, currentStepRoute, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 </script>
 
@@ -67,7 +67,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
     {#if element.type === Elements.VideoContainer}

@@ -6,7 +6,7 @@
   import {
     documents,
     selectedDocumentInfo,
-    currentStepRoute,
+    currentStepId,
   } from '../../contexts/app-state/stores';
   import { addDocument } from '../../utils/photo-utils';
   import { isNativeCamera } from '../../contexts/flows/hooks';
@@ -31,7 +31,7 @@
     const option = documentOptionsConfiguration.options[type];
     $selectedDocumentInfo = option?.document as IDocumentInfo;
     await navigator.mediaDevices.getUserMedia({ video: true });
-    goToNextStep(step, currentStepRoute, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
   const handlePhotoTake = async ({ detail }: { detail: { image: string; type: DocumentType } }) => {
@@ -46,7 +46,7 @@
     );
     $selectedDocumentInfo = option?.document as IDocumentInfo;
     $documents = newDocumentsState;
-    goToNextStep(step, currentStepRoute, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 </script>
 

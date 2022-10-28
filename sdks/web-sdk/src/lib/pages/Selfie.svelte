@@ -7,7 +7,7 @@
   import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { currentStepRoute, DocumentType } from '../contexts/app-state';
+  import { currentStepId, DocumentType } from '../contexts/app-state';
   import Title from '../atoms/Title/Title.svelte';
   import { selfieUri } from '../contexts/app-state/stores';
   import { isMobile } from '../utils/is-mobile';
@@ -49,7 +49,7 @@
       $configuration.settings?.selfieCameraSettings || settings.cameraSettings,
     );
     $selfieUri = dataUri;
-    goToNextStep(step, currentStepRoute, $configuration);
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 </script>
 
@@ -58,7 +58,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(step, currentStepRoute, $configuration)}
+        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
     {#if element.type === Elements.VideoContainer}
