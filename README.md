@@ -457,9 +457,14 @@ Leave us your email on our mailing list and we'll let you know whenever we relea
 </a>
 </br>
 </br>
-Or join our community channels: <a https://discord.gg/e2rQE4YygA" title="Ballerine - Discord Channel">
-    <img height="18px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/discord%20community.png" alt="Ballerine's Discord Channel"></a> &nbsp; <a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw" title="Ballerine - Slack Channel">
-    <img height="18px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/slack%20community.png" alt="Ballerine's Slack Channel"></a>
+Or join our community channels:
+</br>
+</br>
+<a href="https://discord.gg/e2rQE4YygA" title="Ballerine - Discord Channel">
+<img height="18px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/discord%20community.png" alt="Ballerine's Discord Channel"></a>
+</br>
+<a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw" title="Ballerine - Slack Channel">
+<img height="18px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/slack%20community.png" alt="Ballerine's Slack Channel"></a>
 </br>
 
 ___
