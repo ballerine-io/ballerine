@@ -9,6 +9,7 @@ export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return defineConfig({
     build: {
+      sourcemap: true,
       reportCompressedSize: true,
       chunkSizeWarningLimit: 300,
       rollupOptions: {
