@@ -455,7 +455,14 @@ Leave us your email on our mailing list and we'll let you know whenever we relea
 <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
 </a>
+</br>
+</br>
+Or join our community channels: <a https://discord.gg/e2rQE4YygA" title="Ballerine - Discord Channel">
+    <img height="18px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/discord%20community.png" alt="Ballerine's Discord Channel"></a> &nbsp; <a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw" title="Ballerine - Slack Channel">
+    <img height="18px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/slack%20community.png" alt="Ballerine's Slack Channel"></a>
+</br>
 
 ___
+
 <i>As you can see, most apps and packages are still private git submodules. We are working on migrating them to this monorepo.</i>\
 <i>If you already want to start using them or want to get involved - reach out to us at [oss@ballerine.io](mailto:oss@ballerine.io).</i>
