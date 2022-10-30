@@ -33,6 +33,8 @@ const cssProperties: (keyof ICSSProperties)[] = [
   'fill',
   'flex-grow',
   'background-position-y',
+  'outline',
+  'z-index',
 ];
 
 export const makeStylesFromConfiguration = (
