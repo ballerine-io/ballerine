@@ -76,23 +76,29 @@
         <video bind:this={video} autoplay playsinline />
       </VideoContainer>
     {/if}
-    {#if element.type === Elements.Title}
-      <Title configuration={element.props}>
-        <T key={`${documentInfo?.type}-title`} module="document-photo-back" />
-      </Title>
-    {/if}
-    {#if element.type === Elements.Paragraph}
-      <Paragraph configuration={element.props}>
+  {/each}
+  <div class="header">
+    {#each step.elements as element}
+      {#if element.type === Elements.Title}
+        <Title configuration={element.props}>
+          <T key={`${documentInfo?.type}-title`} module="document-photo-back" />
+        </Title>
+      {/if}
+      {#if element.type === Elements.Paragraph}
+        <Paragraph configuration={element.props}>
         <T key={`${documentInfo?.type}-description`} module="document-photo-back" />
-      </Paragraph>
-    {/if}
+        </Paragraph>
+      {/if}
+    {/each}
+  </div>
+  {#if documentInfo}
+    <Overlay type={documentInfo.type} />
+  {/if}
+  {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
       <CameraButton on:click={handleTakePhoto} configuration={element.props} />
     {/if}
   {/each}
-  {#if documentInfo}
-    <Overlay type={documentInfo.type} />
-  {/if}
 </div>
 
 <style>
@@ -100,6 +106,13 @@
     height: 100%;
     position: var(--position);
     background: var(--background);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header {
     text-align: center;
     display: flex;
     flex-direction: column;
