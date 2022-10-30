@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.1.30
+
+### Patch Changes
+
+- mobile fix
+
 ## 1.1.29
 
 ### Patch Changes
