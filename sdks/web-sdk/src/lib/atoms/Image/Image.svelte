@@ -31,4 +31,8 @@
     flex-grow: var(--flex-grow, 0);
     text-align: center;
   }
+  img {
+    width: 88%;
+    height: 100%;
+  }
 </style>

@@ -10,11 +10,7 @@
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import {
-    documentOptions,
-    documentPhotoStep,
-    settings,
-  } from '../default-configuration/theme';
+  import { documentOptions, documentPhotoStep, settings } from '../default-configuration/theme';
   import merge from 'lodash.merge';
   import { layout } from '../default-configuration/theme';
 
@@ -27,7 +23,8 @@
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
   const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions);
 
-  const documentType = $configuration.steps[$currentStepId].type as DocumentType || $selectedDocumentInfo.type;
+  const documentType =
+    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
 
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
@@ -101,23 +98,29 @@
         <video bind:this={video} autoplay playsinline />
       </VideoContainer>
     {/if}
-    {#if element.type === Elements.Title}
-      <Title configuration={element.props}>
-        <T key={`${documentType}-title`} module="document-photo" />
-      </Title>
-    {/if}
-    {#if element.type === Elements.Paragraph}
-      <Paragraph configuration={element.props}>
-        <T key={`${documentType}-description`} module="document-photo" />
-      </Paragraph>
-    {/if}
+  {/each}
+  <div class="header">
+    {#each step.elements as element}
+      {#if element.type === Elements.Title}
+        <Title configuration={element.props}>
+          <T key={`${documentType}-title`} module="document-photo" />
+        </Title>
+      {/if}
+      {#if element.type === Elements.Paragraph}
+        <Paragraph configuration={element.props}>
+          <T key={`${documentType}-description`} module="document-photo" />
+        </Paragraph>
+      {/if}
+    {/each}
+  </div>
+  {#if documentType}
+    <Overlay type={documentType} />
+  {/if}
+  {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
       <CameraButton on:click={handleTakePhoto} configuration={element.props} />
     {/if}
   {/each}
-  {#if documentType}
-    <Overlay type={documentType} />
-  {/if}
 </div>
 
 <style>
@@ -125,6 +128,13 @@
     height: 100%;
     position: var(--position);
     background: var(--background);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header {
     text-align: center;
     display: flex;
     flex-direction: column;
