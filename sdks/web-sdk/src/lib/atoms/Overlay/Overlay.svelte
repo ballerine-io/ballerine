@@ -18,28 +18,28 @@
 <style>
   .overlay {
     z-index: 1;
-    position: absolute;
+    position: relative;
     margin: 10px 0px 0px 0px;
-    outline: 600px solid #000000b8;
-    border-radius: 20px;
+    max-width: 80%;
+    max-height: 100%;
+    outline: 1200px solid #000000d6;
+    border: 3px solid #ffffff4d;
+    width: 100%;
   }
   .overlay.card {
-    width: 400px;
-    height: 260px;
-
+    border-radius: 12px;
+    aspect-ratio: 4/3;
   }
   .overlay.passport {
-    width: 400px;
-    height: 400px;
+    border-radius: 12px;
+    aspect-ratio: 3/4;
   }
   .overlay.a4 {
-    width: 400px;
-    height: 600px;
+    border-radius: 12px;
+    aspect-ratio: 3/4;
   }
   .overlay.selfie {
-    width: 400px;
-    height: 400px;
-    outline: 700px solid #000000b8;
-    border-radius: 50%;
+    border-radius: 100%;
+    aspect-ratio: 3/4;
   }
 </style>
