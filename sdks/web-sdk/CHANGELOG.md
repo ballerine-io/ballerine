@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.1.28
+
+### Patch Changes
+
+- Style changes
+
 ## 1.1.27
 
 ### Patch Changes
