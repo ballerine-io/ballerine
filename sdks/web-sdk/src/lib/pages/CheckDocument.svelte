@@ -24,10 +24,8 @@
     if (!documentType) {
       goToPrevStep(currentStepId, $configuration, $currentStepId);
     }
-    if (documentType) {
-      image = getDocImage(documentType, $documents);
-      // Alon: seems like we need to extend configuration with this?
-      skipBackSide = $configuration.steps[$currentStepId].backSide || $selectedDocumentInfo?.backSide;
+    if ($selectedDocumentInfo && !$selectedDocumentInfo.backSide) {
+      skipBackSide = true;
     }
   }
 </script>
