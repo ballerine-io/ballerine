@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.1.29
+
+### Patch Changes
+
+- UI Fixes, kyb flow fix
+
 ## 1.1.28
 
 ### Patch Changes
