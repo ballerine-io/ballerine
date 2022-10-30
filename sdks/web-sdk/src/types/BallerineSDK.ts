@@ -106,13 +106,13 @@ interface FlowsMountOptions {
 type FlowsModalOptions = FlowsMountOptions;
 
 export interface FlowsTranslations {
-  overrides?: Record<string, string>;
+  overrides?: Record<string, Object>;
   remoteUrl?: string;
 }
 
 export interface BallerineSDKFlows {
   init: (config: FlowsInitOptions) => Promise<void>;
-  mount: (elementId: string, flowName: string, config: FlowsMountOptions) => void;
+  mount: (flowName: string, elementId: string, config: FlowsMountOptions) => void;
   openModal: (flowName: string, config: FlowsMountOptions) => void;
   setConfig: (config: FlowsInitOptions) => Promise<void>;
 }

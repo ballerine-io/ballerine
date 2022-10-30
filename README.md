@@ -206,7 +206,7 @@ Add this code to your index.html header
 BallerineSDK.flows.init({...}).then(() => {
 	console.log('flows ready');
 	// 3. Mount selected flow on an element
-	BallerineSDK.flows.mount('flow-host-element', 'my-kyc-flow', {});
+	BallerineSDK.flows.mount('my-kyc-flow', 'flow-host-element', {});
 });
 // 4. Listen to finish event (see events)
 BallerineSDK.flows.on('finish', doSomethingFn)
@@ -219,7 +219,7 @@ import { flows as ballerineFlows } from '@ballerine/web-sdk';
 
 await ballerineFlows.init({...}).then(() => console.log('flows ready'));
 // 3. Mount selected flow on an element
-ballerineFlows.mount('flow-host-element', 'my-kyc-flow', {});
+ballerineFlows.mount('my-kyc-flow', 'flow-host-element', {});
 // 4. Listen to finish event (see events)
 ballerineFlows.on('finish', doSomethingFn)
 ```
@@ -251,7 +251,7 @@ Code example:
 		}
 	}
 	BallerineSDK.flows.init(initConfig).then(() => {
-		BallerineSDK.flows.mount('flow-host-element', 'my-kyc-flow', {});
+		BallerineSDK.flows.mount('my-kyc-flow', 'flow-host-element', {});
 	});	
 }
 </script>
@@ -291,7 +291,7 @@ Flow Initialization:
 
 Running a flow:
  ```
-BallerineSDK.flows.mount(elementId, 'my-flow', [CONFIG]);
+BallerineSDK.flows.mount('my-flow', elementId, [CONFIG]);
 // or
 BallerineSDK.flows.openModal('my-flow', [CONFIG]);
  ```

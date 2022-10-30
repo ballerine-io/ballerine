@@ -77,11 +77,13 @@
         <T key="description" module="selfie" />
       </Paragraph>
     {/if}
+  {/each}
+  <Overlay type={DocumentType.SELFIE} />
+  {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
       <CameraButton on:click={handleTakePhoto} configuration={element.props} />
     {/if}
   {/each}
-  <Overlay type={DocumentType.SELFIE} />
 </div>
 
 <style>

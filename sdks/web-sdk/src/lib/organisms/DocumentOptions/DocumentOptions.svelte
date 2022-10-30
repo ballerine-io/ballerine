@@ -34,7 +34,7 @@
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
-  const handlePhotoTake = async ({ detail }: { detail: { image: string; type: DocumentType } }) => {
+  const handleTakePhoto = async ({ detail }: { detail: { image: string; type: DocumentType } }) => {
     const option = documentOptionsConfiguration.options[detail.type];
     const document: IDocument = { type: detail.type, metadata: {}, pages: [] };
     const newDocumentsState: IDocument[] = addDocument(
@@ -54,7 +54,7 @@
   {#each ducumentOptions as documentOption}
     <DocumentOption
       on:selectOption={handleSelectOption}
-      on:photoTake={handlePhotoTake}
+      on:photoTake={handleTakePhoto}
       configuration={documentOptionsConfiguration}
       attributes={documentOption.attributes}
       document={documentOption.document}
