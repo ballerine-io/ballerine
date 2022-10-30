@@ -78,6 +78,8 @@ interface ICSSPropertiesAll {
   fill: string;
   'flex-grow': number;
   'background-position-y': string;
+  outline: string;
+  'z-index': string;
 }
 
 export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo';
@@ -127,12 +129,20 @@ export interface IElement {
 export interface IStepConfiguration {
   name: Steps;
   style?: ICSSProperties;
+  overlayStyle?: ICSSProperties;
   elements: IElement[];
   form?: IFormProps;
   type: DocumentType;
   id: string;
   cameraConfig?: CaptureConfigOption;
   documentOptions?: DocumentType[];
+}
+
+export interface IOverlayStyles {
+  card?: ICSSProperties,
+  passport?: ICSSProperties,
+  a4?: ICSSProperties,
+  selfie?: ICSSProperties,
 }
 
 export interface IAppConfiguration {
@@ -177,7 +187,7 @@ export interface IAppConfiguration {
   input?: ICSSProperties;
   loader?: ICSSProperties;
   errorText?: ICSSProperties;
-  overlay?: ICSSProperties;
+  overlay?: IOverlayStyles;
   settings?: ConfigSettings;
 }
 
