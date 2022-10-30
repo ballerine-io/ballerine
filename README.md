@@ -5,18 +5,16 @@
     <img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/ballerine-logo.png" alt="Ballerine's website">
 </a>
 
-# Ballerine is an Open-source Infrastructure for User Identity and Risk Management
+# Open-source Infrastructure for User Identity and Risk Management
 
-<h5>This project's mission is to help any company verify its customers’ identity while providing an amazing user experience.</h5>
 </div>
 
 
 ## Description
-Ballerine is an open-source infrastructure for user identity and risk management.
-Compose verification processes for any vertical and geography using modular building blocks, components, and 3rd party integrations.
+Ballerine helps any company verify its customers’ identity while providing an amazing user experience by composing verification processes for any vertical and geography using modular building blocks, components, and 3rd party integrations.
 
 ### What can you find in this project?
- * KYC/KYB flows and UI in Mobile and web SDKs for user data and document collection - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk) | [Docs](#getting-started-with-sdks-flows)
+ * KYC/KYB flows and UI in Mobile & web SDK - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk) | [Live demos](#description-1) | [Docs](#getting-started-with-sdks-flows)
  * Case management dashboard for users approval/rejection - 🎉 Final stages of Open Sourcing!
  * Identity & risk vendors orchestration - :hourglass_flowing_sand: Almost done
  * No-code rule engine to control Frontend and backend flows - :construction: WIP
@@ -58,33 +56,17 @@ ___
 
 ## Table of Contents
 
-- [Ballerine is an Open-source Infrastructure for User Identity and Risk Management](#ballerine-is-an-open-source-infrastructure-for-user-identity-and-risk-management)
-  * [Description](#description)
-    + [Why Open Source KYC/KYB & Risk stack?](#why-open-source-kyckyb--risk-stack)
-    + [What can you find in this project?](#what-can-you-find-in-this-project)
-  * [Table of Contents](#table-of-contents)
 - [SDK UI Flows](#sdk-ui-flows)
-    + [Description](#description-1)
 - [Case management (soon Open Source)](#case-management-soon-open-source)
-    + [Description](#description-2)
 - [Workflow builder & Rule engine (WIP)](#workflow-builder--rule-engine-wip)
-    + [Description](#description-3)
 - [Getting Started with SDK's Flows](#getting-started-with-sdks-flows)
-      - [Installation](#installation)
-      - [Flows API](#flows-api)
-      - [Embedded Flows](#embedded-flows)
-      - [Standalone/IFrame Flows](#standaloneiframe-flows)
-      - [Native Mobile apps](#native-mobile-apps)
-    + [Customization](#customization)
-      - [Flows Configuration](#flows-configuration)
-      - [UI Configuration](#ui-configuration)
-      - [Translations](#translations)
-      - [Backend Configuration](#backend-configuration)
-    + [Roadmap](#roadmap)
-      - [General](#general)
-      - [Onboarding Suite (KYC/KYB/General Document Collection)](#onboarding-suite-kyckybgeneral-document-collection)
-      - [Risk Suite](#risk-suite)
-      - [Get to know when we release more parts](#get-to-know-when-we-release-more-parts)
+     - [Installation](#installation)
+     - [Flows API](#flows-api)
+     - [Embedded Flows](#embedded-flows)
+     - [Standalone/IFrame Flows](#standaloneiframe-flows)
+     - [Native Mobile apps](#native-mobile-apps)
+       + [Customization](#customization)
+ - [Roadmap](#roadmap)
 
 # SDK UI Flows
 
@@ -102,7 +84,7 @@ The SDK UI is embeddable inside existing apps or deployed as a web app.
 * Edges cases and **long-tail devices covered and tested**.
 * Lightweight and performant, built with Svelte (**less than 50kb gzipped**).
 
-Live examples:
+Live demos:
 [KYC 1](https://simple-kyc-demo.ballerine.app/), [KYC 2](https://simple-kyc-demo.ballerine.app/), [KYB](https://simple-kyc-demo.ballerine.app/)
 
 Playground:
@@ -110,6 +92,9 @@ Playground:
 
 Getting started
 [Click here](#getting-started-with-sdks-flows)
+
+
+<sub>Note - No data is captured and sent anywhere when using the camera in the examples</sub>
 
 ___
 
