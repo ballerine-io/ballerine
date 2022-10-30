@@ -24,6 +24,9 @@
     if (!documentType) {
       goToPrevStep(currentStepId, $configuration, $currentStepId);
     }
+    if (documentType) {
+      image = getDocImage(documentType, $documents);
+    }
     if ($selectedDocumentInfo && !$selectedDocumentInfo.backSide) {
       skipBackSide = true;
     }
