@@ -1,6 +1,6 @@
 import { DocumentType } from '../../contexts/app-state';
 
-export const getOverlaySrc = (documentType: DocumentType) => {
+export const getOverlayDocumentType = (documentType: DocumentType): 'card' | 'passport' | 'a4' | 'selfie' => {
   const cardOverlayDocumentTypes = [
     DocumentType.DRIVERS_LICENSE,
     DocumentType.RESIDENCE_PERMIT,
@@ -11,13 +11,13 @@ export const getOverlaySrc = (documentType: DocumentType) => {
   ];
 
   if (cardOverlayDocumentTypes.includes(documentType)) {
-    return 'https://cdn.ballerine.io/ui-packs/default/images/card-overlay2.svg';
+    return "card";
   }
   if (documentType === DocumentType.PASSPORT) {
-    return 'https://cdn.ballerine.io/ui-packs/default/images/passport-overlay2.svg';
+    return "passport";
   }
   if (documentType === DocumentType.SELFIE) {
-    return 'https://cdn.ballerine.io/ui-packs/default/images/selfie-overlay2.svg';
+    return "selfie";
   }
-  return 'https://cdn.ballerine.io/ui-packs/default/images/a4-overlay2.svg';
+  return "a4";
 };

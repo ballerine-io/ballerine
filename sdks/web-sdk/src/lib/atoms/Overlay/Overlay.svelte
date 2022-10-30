@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getOverlaySrc } from './utils';
+  import { getOverlayDocumentType } from './utils';
   import { DocumentType } from '../../contexts/app-state';
   import { configuration as globalConfiguration } from '../../contexts/configuration';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
@@ -8,35 +8,38 @@
 
   export let type: DocumentType;
 
-  const src = getOverlaySrc(type);
+  const overlayType = getOverlayDocumentType(type);
 
   const style = makeStylesFromConfiguration(merge(overlay, $globalConfiguration.overlay));
 </script>
 
-<div class="overlay" style:background-image="url({src})" {style} />
+<div class="overlay {overlayType}" />
 
 <style>
   .overlay {
-    position: absolute;
-    background-repeat: no-repeat;
-    background-size: auto;
-    background-position: center;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     z-index: 1;
+    position: absolute;
+    margin: 10px 0px 0px 0px;
+    outline: 600px solid #000000b8;
+    border-radius: 20px;
   }
+  .overlay.card {
+    width: 400px;
+    height: 260px;
 
-  @media (min-height: 800px) {
-    .overlay {
-      background-size: cover;
-    }
   }
-
-  @media (max-height: 680px) {
-    .overlay {
-      background-position-y: var(--background-position-y);
-    }
+  .overlay.passport {
+    width: 400px;
+    height: 400px;
+  }
+  .overlay.a4 {
+    width: 400px;
+    height: 600px;
+  }
+  .overlay.selfie {
+    width: 400px;
+    height: 400px;
+    outline: 700px solid #000000b8;
+    border-radius: 50%;
   }
 </style>
