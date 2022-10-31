@@ -1,4 +1,4 @@
-import { DecisionStatus } from "../../contexts/app-state/types";
+import { DecisionStatus } from '../../contexts/app-state/types';
 
 export interface ISendDocumentsResponse {
   status: 'success' | 'fail';

@@ -125,7 +125,7 @@ const v1adapter = (config: RecursivePartial<FlowsInitOptions>): IAppConfiguratio
         ...flowConfig,
       };
       if (steps) {
-        newFlows[flowName].stepsOrder = steps.map((step) => step.id); // check ts
+        newFlows[flowName].stepsOrder = steps.map(step => step.id); // check ts
       }
       const stepsConfig = toObjByKey(steps, (e: IStepConfiguration) => e.id);
       flowSteps = {

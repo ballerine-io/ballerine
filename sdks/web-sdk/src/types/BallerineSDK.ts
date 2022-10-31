@@ -7,7 +7,7 @@ import {
   IFlowExitPayload,
   IFlowNavigationUpdatePayload,
 } from '../lib/services/flow-event-bus/interfaces';
-import { AnyRecord } from "../types";
+import { AnyRecord } from '../types';
 
 interface FlowsGeneralTheme {
   progress?: boolean;

@@ -3,11 +3,7 @@
   import DocumentOption from '../../molecules/DocumentOption/DocumentOption.svelte';
   import { goToNextStep } from '../../contexts/navigation';
   import type { DocumentType, IDocument, IDocumentInfo } from '../../contexts/app-state';
-  import {
-    documents,
-    selectedDocumentInfo,
-    currentStepId,
-  } from '../../contexts/app-state/stores';
+  import { documents, selectedDocumentInfo, currentStepId } from '../../contexts/app-state/stores';
   import { addDocument } from '../../utils/photo-utils';
   import { isNativeCamera } from '../../contexts/flows/hooks';
   import { IDocumentOption } from '../../molecules/DocumentOption';

@@ -12,7 +12,7 @@
   import { addCloseToURLParams } from '../contexts/navigation/hooks';
   import merge from 'lodash.merge';
   import { errorStep, layout } from '../default-configuration/theme';
-  import { DecisionStatus } from "../contexts/app-state/types";
+  import { DecisionStatus } from '../contexts/app-state/types';
 
   const step = merge(errorStep, $configuration.steps[Steps.Error]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
