@@ -1,29 +1,34 @@
-import mergeObj from 'lodash.merge';
-import toObjByKey from 'lodash.keyby';
-import translation from '../default-configuration/translation.json';
-import { TranslationType } from '../contexts/translation';
-import { DocumentType } from '../contexts/app-state';
+import mergeObj from "lodash.merge";
+import toObjByKey from "lodash.keyby";
+import translation from "../default-configuration/translation.json";
+import { TranslationType } from "../contexts/translation";
 import {
-  IAppConfiguration,
   configuration,
-  IStepConfiguration,
   Elements,
-  Steps,
-} from '../contexts/configuration';
-import { FlowsTranslations, FlowsEventsConfig, FlowsInitOptions } from '../../types/BallerineSDK';
-import { IFlow } from '../contexts/flows';
-import { IDocumentOptionItem } from '../organisms/DocumentOptions/types';
+  IAppConfiguration,
+  IStepConfiguration,
+  Steps
+} from "../contexts/configuration";
+import { FlowsEventsConfig, FlowsInitOptions, FlowsTranslations } from "../../types/BallerineSDK";
+import { IFlow } from "../contexts/flows";
+import { IDocumentOptionItem } from "../organisms/DocumentOptions/types";
+import { AnyRecord } from "../../types";
 
 export let texts: TranslationType = translation;
 
 const preloadByExtension = async (src: string): Promise<string> => {
-  return new Promise(async (resolve, reject) => {
-    const extension = src.split('.').pop();
-    if (extension === 'svg') {
-      const response = await fetch(src);
-      const svg = await response.text();
-      return resolve(svg);
-    }
+  const extension = src.split(".").pop();
+  let svg: string | undefined;
+
+  if (extension === "svg") {
+    const response = await fetch(src);
+
+    svg = await response.text();
+  }
+
+  return new Promise((resolve, reject) => {
+    if (svg) return resolve(svg);
+
     const img = new Image();
     img.onload = () => resolve(img.src);
     img.onerror = reject;
@@ -44,7 +49,7 @@ const updateSteps = async (steps: {
         if (element.type === Elements.Image && element.props.attributes?.src) {
           const { src } = element.props.attributes;
           updatedSteps[stepsKeys[i]].elements[j].props.attributes!.src = await preloadByExtension(
-            src,
+            src
           );
         }
       }
@@ -56,7 +61,7 @@ const updateSteps = async (steps: {
 const preloadImages = async (configuration: IAppConfiguration): Promise<IAppConfiguration> => {
   return {
     ...configuration,
-    steps: await updateSteps(configuration.steps),
+    steps: await updateSteps(configuration.steps)
   };
 };
 
@@ -91,7 +96,7 @@ export const updateTranslations = async (translations: FlowsTranslations) => {
 
 export const mergeConfig = (
   originalConfig: IAppConfiguration,
-  overrides: RecursivePartial<FlowsInitOptions>,
+  overrides: RecursivePartial<FlowsInitOptions>
 ) => {
   const newConfig: IAppConfiguration = mergeObj(originalConfig, v1adapter(overrides));
   if (
@@ -101,18 +106,23 @@ export const mergeConfig = (
     newConfig.documentOptions
   ) {
     const documentOptions = newConfig.steps[Steps.DocumentSelection].documentOptions?.reduce(
-      (docOpts: any, docType: any) => {
-        docOpts[docType] = newConfig.documentOptions?.options[docType as DocumentType];
+      (docOpts, docType) => {
+        docOpts[docType] = newConfig.documentOptions?.options[docType];
         return docOpts;
       },
-      {} as IDocumentOptionItem,
+      {} as IDocumentOptionItem
     );
+
+    if (!documentOptions) return newConfig;
+
     newConfig.documentOptions.options = documentOptions;
   }
   return newConfig;
 };
 
-const v1adapter = (config: RecursivePartial<FlowsInitOptions>): IAppConfiguration | any => {
+const v1adapter = (config: RecursivePartial<FlowsInitOptions>): IAppConfiguration
+  // We should either infer the return type or correct it. endUserInfo is not supposed to be a partial and general not undefined.
+  | AnyRecord => {
   const { uiConfig = {}, endUserInfo = {}, backendConfig = {} } = config;
   const { flows = {}, general, components } = uiConfig;
   const newFlows = {} as { [key: string]: IFlow };
@@ -122,15 +132,18 @@ const v1adapter = (config: RecursivePartial<FlowsInitOptions>): IAppConfiguratio
       const { steps, ...flowConfig } = flow;
       newFlows[flowName] = {
         name: flowName,
-        ...flowConfig,
+        ...flowConfig
       };
       if (steps) {
-        newFlows[flowName].stepsOrder = steps.map(step => step.id); // check ts
+        newFlows[flowName].stepsOrder = steps
+          .map(step => step?.id)
+          // Not using !!v | Boolean(v) to be more explicit.
+          .filter((v): v is string => typeof v === "string"); // check ts
       }
       const stepsConfig = toObjByKey(steps, (e: IStepConfiguration) => e.id);
       flowSteps = {
         ...flowSteps,
-        ...stepsConfig,
+        ...stepsConfig
       };
     }
   }
@@ -141,7 +154,7 @@ const v1adapter = (config: RecursivePartial<FlowsInitOptions>): IAppConfiguratio
     flows: newFlows,
     steps: flowSteps,
     general,
-    ...components,
+    ...components
   };
 };
 
@@ -155,9 +168,9 @@ export const setFlowCallbacks = async (flowName: string, callbacks: FlowsEventsC
     uiConfig: {
       flows: {
         [flowName]: {
-          callbacks,
-        },
-      },
-    },
+          callbacks
+        }
+      }
+    }
   });
 };
