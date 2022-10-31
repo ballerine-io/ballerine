@@ -1,45 +1,45 @@
-import { IAppConfiguration, ICSSProperties } from '../contexts/configuration';
+import { ICSSProperties } from "../contexts/configuration";
 
 const cssProperties: (keyof ICSSProperties)[] = [
-  'margin',
-  'padding',
-  'font-family',
-  'font-size',
-  'font-weight',
-  'line-height',
-  'vertical-align',
-  'width',
-  'height',
-  'background',
-  'color',
-  'border-radius',
-  'border',
-  'display',
-  'align-items',
-  'text-align',
-  'justify-content',
-  'cursor',
-  'position',
-  'top',
-  'bottom',
-  'left',
-  'right',
-  'hover',
-  'active',
-  'box-shadow',
-  '-webkit-box-shadow',
-  'flex-direction',
-  'align-self',
-  'fill',
-  'flex-grow',
-  'background-position-y',
-  'outline',
-  'z-index',
+  "margin",
+  "padding",
+  "font-family",
+  "font-size",
+  "font-weight",
+  "line-height",
+  "vertical-align",
+  "width",
+  "height",
+  "background",
+  "color",
+  "border-radius",
+  "border",
+  "display",
+  "align-items",
+  "text-align",
+  "justify-content",
+  "cursor",
+  "position",
+  "top",
+  "bottom",
+  "left",
+  "right",
+  "hover",
+  "active",
+  "box-shadow",
+  "-webkit-box-shadow",
+  "flex-direction",
+  "align-self",
+  "fill",
+  "flex-grow",
+  "background-position-y",
+  "outline",
+  "z-index"
 ];
 
 export const makeStylesFromConfiguration = (
   globalComponentStyles: ICSSProperties = {},
-  configStyles: ICSSProperties = {},
+  configStyles: ICSSProperties = {}
 ): string => {
   const styles: string[] = [];
 
@@ -47,65 +47,65 @@ export const makeStylesFromConfiguration = (
     globalCss: ICSSProperties,
     localCss: ICSSProperties,
     property: keyof ICSSProperties,
-    prefix = '',
+    prefix = ""
   ) => {
     if (localCss && localCss[property]) {
-      styles.push(`--${prefix}${property}: ${localCss[property]};`);
+      styles.push(`--${prefix}${property}: ${String(localCss[property])};`);
       return;
     }
     if (globalCss && globalCss[property]) {
-      styles.push(`--${prefix}${property}: ${globalCss[property]};`);
+      styles.push(`--${prefix}${property}: ${String(globalCss[property])};`);
       return;
     }
   };
 
   cssProperties.map(property => {
-    if (property === 'hover') {
+    if (property === "hover") {
       cssProperties.map(hoverProperty => {
         const globalHoverProperties = globalComponentStyles.hover as ICSSProperties;
         const localHoverProperties = configStyles.hover as ICSSProperties;
-        setProperties(globalHoverProperties, localHoverProperties, hoverProperty, 'hover-');
+        setProperties(globalHoverProperties, localHoverProperties, hoverProperty, "hover-");
       });
       return;
     }
-    if (property === 'active') {
+    if (property === "active") {
       cssProperties.map(property => {
         const globalActiveProperties = globalComponentStyles.active as ICSSProperties;
         const localActiveHoverProperties = configStyles.active as ICSSProperties;
-        setProperties(globalActiveProperties, localActiveHoverProperties, property, 'active-');
+        setProperties(globalActiveProperties, localActiveHoverProperties, property, "active-");
       });
       return;
     }
     setProperties(globalComponentStyles, configStyles, property);
   });
 
-  return styles.join('\n');
+  return styles.join("\n");
 };
 
 export const makesLocalStyles = (configStyles: ICSSProperties) => {
   const styles: string[] = [];
 
-  const setProperties = (css: ICSSProperties, property: keyof ICSSProperties, prefix = '') => {
-    if (css[property]) styles.push(`--${prefix}${property}: ${css[property]};`);
+  const setProperties = (css: ICSSProperties, property: keyof ICSSProperties, prefix = "") => {
+    if (css[property]) styles.push(`--${prefix}${property}: ${String(css[property])};`);
   };
 
   cssProperties.map(property => {
-    if (property === 'hover' && configStyles.hover) {
+    if (property === "hover" && configStyles.hover) {
       cssProperties.map(hoverProperty => {
         const cssHoverProperties = configStyles.hover as ICSSProperties;
-        setProperties(cssHoverProperties, hoverProperty, 'hover-');
+        setProperties(cssHoverProperties, hoverProperty, "hover-");
       });
       return;
     }
-    if (property === 'active' && configStyles.active) {
+    if (property === "active" && configStyles.active) {
       cssProperties.map(property => {
         const cssActiveProperties = configStyles.active as ICSSProperties;
-        setProperties(cssActiveProperties, property, 'active-');
+        setProperties(cssActiveProperties, property, "active-");
       });
       return;
     }
     setProperties(configStyles, property);
   });
 
-  return styles.join('\n');
+  return styles.join("\n");
 };
