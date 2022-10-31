@@ -1,11 +1,28 @@
 /// <reference types="svelte" />
 
+// Importing into global.d.ts breaks global types such as RecursivePartial
+
+enum DecisionStatus {
+  APPROVED = 'approved',
+  RESUBMISSION_REQUESTED = 'resubmission_requested',
+  DECLINED = 'declined',
+  EXPIRED = 'expired',
+  ABANDONED = 'abandoned',
+  REVIEW = 'review',
+}
+
+type AnyRecord = Record<PropertyKey, any>;
+
 // Should use Posthog's types here instead
-
-import { DevMocks } from "./lib/contexts/app-state";
-
 interface IPosthog {
-  capture(event: string, payload?: Record<PropertyKey, any>): void;
+  capture(event: string, payload?: AnyRecord): void;
+}
+
+interface DevMocks {
+  resultTime: number | string;
+  reasonCode: number;
+  code: number;
+  idvResult: DecisionStatus;
 }
 
 declare global {
@@ -28,6 +45,3 @@ type RecursivePartial<T> = {
 };
 
 type StringKV = { [key: string]: string };
-
-// Otherwise the file is not being picked up by TypeScript
-export {};

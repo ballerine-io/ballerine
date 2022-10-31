@@ -10,6 +10,7 @@ import {
 } from "../../contexts/configuration/getters";
 import { DecisionStatus } from "../../contexts/app-state/types";
 import { EndUserInfo } from "../../../types/BallerineSDK";
+import { AnyRecord } from "../../../types";
 
 const outerScopeContext = window.__blrn_context;
 const docTypeMapping = {
@@ -32,7 +33,7 @@ const staticHeaders = {
   'Content-Type': 'application/json',
 };
 
-const httpPost = async <TResponse>(url: string, body: Record<PropertyKey, any>) => {
+const httpPost = async <TResponse>(url: string, body: AnyRecord) => {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
