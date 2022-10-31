@@ -7,6 +7,7 @@ import {
   IFlowExitPayload,
   IFlowNavigationUpdatePayload,
 } from '../lib/services/flow-event-bus/interfaces';
+import { AnyRecord } from "../types";
 
 interface FlowsGeneralTheme {
   progress?: boolean;
@@ -106,7 +107,7 @@ interface FlowsMountOptions {
 type FlowsModalOptions = FlowsMountOptions;
 
 export interface FlowsTranslations {
-  overrides?: Record<string, Object>;
+  overrides?: Record<string, AnyRecord>;
   remoteUrl?: string;
 }
 
