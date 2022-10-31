@@ -1,13 +1,13 @@
-import { ICSSProperties, IStepConfiguration } from "../lib/contexts/configuration";
-import { ConfigSettings } from "../lib/contexts/configuration/types";
-import { INavigationButtons } from "../lib/molecules/NavigationButtons";
+import { ICSSProperties, IStepConfiguration } from '../lib/contexts/configuration';
+import { ConfigSettings } from '../lib/contexts/configuration/types';
+import { INavigationButtons } from '../lib/molecules/NavigationButtons';
 import {
   IFlowCompletePayload,
   IFlowErrorPayload,
   IFlowExitPayload,
-  IFlowNavigationUpdatePayload
-} from "../lib/services/flow-event-bus/interfaces";
-import { AnyRecord } from "../types";
+  IFlowNavigationUpdatePayload,
+} from '../lib/services/flow-event-bus/interfaces';
+import { AnyRecord } from '../types';
 
 interface FlowsGeneralTheme {
   progress?: boolean;
@@ -81,7 +81,7 @@ export interface EndUserInfo {
 export interface FlowsBackendConfig {
   baseUrl?: string;
   auth?: {
-    method?: "jwt" | "basic" | "cookie";
+    method?: 'jwt' | 'basic' | 'cookie';
     authorizationHeader?: string;
   };
   endpoints?: {

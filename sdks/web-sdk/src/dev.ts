@@ -1,23 +1,23 @@
-import { Steps } from "./lib/contexts/configuration";
-import { flows } from "./main";
-import { DocumentType } from "./lib/contexts/app-state";
-import { FlowsInitOptions } from "./types/BallerineSDK";
+import { Steps } from './lib/contexts/configuration';
+import { flows } from './main';
+import { DocumentType } from './lib/contexts/app-state';
+import { FlowsInitOptions } from './types/BallerineSDK';
 
 const ballerineInitConfig: FlowsInitOptions = {
-  endUserInfo: { id: "test-id" },
+  endUserInfo: { id: 'test-id' },
   translations: {
-    overrides: {}
+    overrides: {},
   },
   uiConfig: {
     general: {
       fonts: {
-        name: "Inter",
-        link: "https://fonts.googleapis.com/css2?family=Inter:wght@500",
-        weight: [500, 700]
-      }
+        name: 'Inter',
+        link: 'https://fonts.googleapis.com/css2?family=Inter:wght@500',
+        weight: [500, 700],
+      },
     },
     flows: {
-      ["my-kyc-flow"]: {
+      ['my-kyc-flow']: {
         steps: [
           { name: Steps.Welcome, id: Steps.Welcome },
           {
@@ -26,8 +26,8 @@ const ballerineInitConfig: FlowsInitOptions = {
             documentOptions: [
               DocumentType.ID_CARD,
               DocumentType.DRIVERS_LICENSE,
-              DocumentType.PASSPORT
-            ]
+              DocumentType.PASSPORT,
+            ],
           },
           { name: Steps.DocumentPhoto, id: Steps.DocumentPhoto },
           { name: Steps.CheckDocument, id: Steps.CheckDocument },
@@ -37,10 +37,10 @@ const ballerineInitConfig: FlowsInitOptions = {
           { name: Steps.SelfieStart, id: Steps.SelfieStart },
           { name: Steps.Selfie, id: Steps.Selfie },
           { name: Steps.CheckSelfie, id: Steps.CheckSelfie },
-          { name: Steps.Loading, id: Steps.Loading }
-        ]
+          { name: Steps.Loading, id: Steps.Loading },
+        ],
       },
-      ["my-kyb-flow"]: {
+      ['my-kyb-flow']: {
         steps: [
           { name: Steps.Welcome, id: Steps.Welcome },
           {
@@ -49,48 +49,48 @@ const ballerineInitConfig: FlowsInitOptions = {
             documentOptions: [
               DocumentType.ID_CARD,
               DocumentType.DRIVERS_LICENSE,
-              DocumentType.PASSPORT
-            ]
+              DocumentType.PASSPORT,
+            ],
           },
           { name: Steps.DocumentPhoto, id: Steps.DocumentPhoto },
           {
             name: Steps.DocumentStart,
-            id: "document-start-business-reg",
-            type: DocumentType.BUSINESS_REGISTRATION
+            id: 'document-start-business-reg',
+            type: DocumentType.BUSINESS_REGISTRATION,
           },
           {
             name: Steps.DocumentPhoto,
-            id: "document-photo-business-reg",
-            type: DocumentType.BUSINESS_REGISTRATION
+            id: 'document-photo-business-reg',
+            type: DocumentType.BUSINESS_REGISTRATION,
           },
           {
             name: Steps.DocumentStart,
-            id: "document-start-business-tax",
-            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID
+            id: 'document-start-business-tax',
+            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
           },
           {
             name: Steps.DocumentPhoto,
-            id: "document-photo-business-tax",
-            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID
+            id: 'document-photo-business-tax',
+            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
           },
 
           {
             name: Steps.DocumentStart,
-            id: "document-start-business-statement",
-            type: DocumentType.BANK_STATEMENT
+            id: 'document-start-business-statement',
+            type: DocumentType.BANK_STATEMENT,
           },
           {
             name: Steps.DocumentPhoto,
-            id: "document-photo-business-statement",
-            type: DocumentType.BANK_STATEMENT
+            id: 'document-photo-business-statement',
+            type: DocumentType.BANK_STATEMENT,
           },
-          { name: Steps.Loading, id: Steps.Loading }
-        ]
-      }
-    }
-  }
+          { name: Steps.Loading, id: Steps.Loading },
+        ],
+      },
+    },
+  },
 };
 
 void flows.init(ballerineInitConfig).then(() => {
-  flows.openModal("my-kyc-flow", "app", {});
+  flows.openModal('my-kyc-flow', 'app', {});
 });
