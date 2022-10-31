@@ -11,6 +11,10 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    // Otherwise causes an ESLint error
+    "vite.config.ts"
+  ],
   "exclude": ["node_modules", "dist", "coverage"]
 }
