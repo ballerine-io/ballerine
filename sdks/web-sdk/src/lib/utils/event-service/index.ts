@@ -5,4 +5,3 @@ export {
   sendButtonClickEvent,
   subscribe,
 } from './utils';
-export { DecisionStatus } from './types';

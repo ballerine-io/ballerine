@@ -2,7 +2,6 @@
 
 // Should use Posthog's types here instead
 
-import { DecisionStatus } from "./lib/utils/event-service";
 import { DevMocks } from "./lib/contexts/app-state";
 
 interface IPosthog {
