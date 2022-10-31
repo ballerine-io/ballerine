@@ -7,7 +7,7 @@ interface IPosthog {
 }
 
 declare global {
-  var __APP_VERSION__: string;
+  let __APP_VERSION__: string;
 
   interface Window {
     isProd: boolean;
