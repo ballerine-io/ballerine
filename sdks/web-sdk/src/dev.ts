@@ -91,6 +91,6 @@ const ballerineInitConfig: FlowsInitOptions = {
   },
 };
 
-flows.init(ballerineInitConfig).then(() => {
+void flows.init(ballerineInitConfig).then(() => {
   flows.openModal('my-kyc-flow', 'app', {});
 });
