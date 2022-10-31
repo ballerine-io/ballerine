@@ -22,7 +22,7 @@
   import merge from 'lodash.merge';
   import { layout, loadingStep } from '../default-configuration/theme';
   import { generateParams, getVerificationStatus, verifyDocuments } from '../services/http';
-  import { DecisionStatus } from "../contexts/app-state/types";
+  import { DecisionStatus } from '../contexts/app-state/types';
   flowUploadLoader();
 
   const WAITING_TIME = 1000 * 60 * 3; // 3 minutes

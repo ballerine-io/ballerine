@@ -1,4 +1,5 @@
-const posthog = window.posthog || {};
+// FIXME: IDE recognizes the type of window.posthog and still errors that the type does not exist on window
+const posthog = window.posthog;
 
 export const flowStart = () => {
   posthog && posthog.capture && posthog.capture('flow-start');

@@ -63,5 +63,4 @@
     border-radius: 35px;
     overflow: hidden;
   }
-
 </style>

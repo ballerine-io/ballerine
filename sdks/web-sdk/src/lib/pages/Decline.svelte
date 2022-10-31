@@ -12,7 +12,7 @@
   import { currentParams } from '../contexts/app-state';
   import { declineStep, layout } from '../default-configuration/theme';
   import merge from 'lodash.merge';
-  import { DecisionStatus } from "../contexts/app-state/types";
+  import { DecisionStatus } from '../contexts/app-state/types';
 
   const step = merge(declineStep, $configuration.steps[Steps.Decline]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
