@@ -20,7 +20,8 @@
   "include": [
     "src",
     // Otherwise causes an ESLint error
-    "vite.config.ts"
+    "vite.config.ts",
+    "vite.dev.config.ts"
   ],
   "exclude": [
     "node_modules",
