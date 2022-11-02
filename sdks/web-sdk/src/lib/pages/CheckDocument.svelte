@@ -15,7 +15,8 @@
 
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
-  const documentType = $configuration.steps[$currentStepId].type as DocumentType || $selectedDocumentInfo.type;
+  const documentType =
+    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
 
   let image = '';
   let skipBackSide = false;

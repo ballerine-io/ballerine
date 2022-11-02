@@ -2,14 +2,14 @@ import { IInputAttributes } from '../atoms/Input';
 import { IStepConfiguration } from '../contexts/configuration';
 import { Elements, IFormProps } from '../contexts/configuration/types';
 
-const getValuesFromStore = (formProps: IFormProps): Record<string, string> | undefined => {
-  const storeKey = formProps.storeKey as string;
-  if (formProps.persistence === 'session') {
-    const storeData = sessionStorage.getItem(storeKey);
-    return storeData ? JSON.parse(storeData) : undefined;
-  }
-  const storeData = localStorage.getItem(storeKey);
-  return storeData ? JSON.parse(storeData) : undefined;
+const getValuesFromStore = (formProps: IFormProps) => {
+  const storeKey = formProps.storeKey ?? '';
+  const storeData =
+    formProps.persistence === 'session'
+      ? sessionStorage.getItem(storeKey)
+      : localStorage.getItem(storeKey);
+
+  return (storeData ? JSON.parse(storeData) : undefined) as Record<string, string> | undefined;
 };
 
 export const setValuesFromStore = (formProps: IFormProps, values: Record<string, string>): void => {

@@ -139,10 +139,10 @@ export interface IStepConfiguration {
 }
 
 export interface IOverlayStyles {
-  card?: ICSSProperties,
-  passport?: ICSSProperties,
-  a4?: ICSSProperties,
-  selfie?: ICSSProperties,
+  card?: ICSSProperties;
+  passport?: ICSSProperties;
+  a4?: ICSSProperties;
+  selfie?: ICSSProperties;
 }
 
 export interface IAppConfiguration {

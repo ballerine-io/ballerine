@@ -86,7 +86,7 @@
       {/if}
       {#if element.type === Elements.Paragraph}
         <Paragraph configuration={element.props}>
-        <T key={`${documentInfo?.type}-description`} module="document-photo-back" />
+          <T key={`${documentInfo?.type}-description`} module="document-photo-back" />
         </Paragraph>
       {/if}
     {/each}
