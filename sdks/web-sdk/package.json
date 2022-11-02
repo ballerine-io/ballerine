@@ -39,7 +39,7 @@
     "build": "vite build",
     "commit": "git add . && git-cz",
     "deprecated:build:sdk": "rollup --config",
-    "start": "vite preview --port 3000",
+    "start": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
