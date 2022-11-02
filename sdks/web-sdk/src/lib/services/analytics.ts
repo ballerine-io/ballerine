@@ -1,30 +1,27 @@
-// FIXME: IDE recognizes the type of window.posthog and still errors that the type does not exist on window
-const posthog = window.posthog;
-
 export const flowStart = () => {
-  posthog && posthog.capture && posthog.capture('flow-start');
+  return;
 };
 
 export const visitedPage = (pathname: string, search: string) => {
-  posthog && posthog.capture && posthog.capture('visited-page', { pathname, search });
+  return;
 };
 
 export const flowApproved = () => {
-  posthog && posthog.capture && posthog.capture('flow-approved');
+  return;
 };
 
 export const flowDeclined = () => {
-  posthog && posthog.capture && posthog.capture('flow-declined');
+  return;
 };
 
 export const flowResubmission = () => {
-  posthog && posthog.capture && posthog.capture('flow-resubmission');
+  return;
 };
 
 export const flowUploadLoader = () => {
-  posthog && posthog.capture && posthog.capture('flow-upload-loader');
+  return;
 };
 
 export const flowError = () => {
-  posthog && posthog.capture && posthog.capture('flow-error');
+  return;
 };
