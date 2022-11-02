@@ -1,4 +1,3 @@
-// Should use Posthog's types here instead
 import { DevMocks } from './lib/contexts/app-state';
 
 declare global {
