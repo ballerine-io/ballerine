@@ -22,7 +22,9 @@
     margin: 10px 0px 0px 0px;
     max-width: 80%;
     max-height: 100%;
-    outline: 1200px solid #000000d6;
+    -webkit-box-shadow: 0px 0px 0px 1000px rgba(0, 0, 0, 0.7);
+    -moz-box-shadow: 0px 0px 0px 1000px rgba(0, 0, 0, 0.7);
+    box-shadow: 0px 0px 0px 1000px rgba(0, 0, 0, 0.7);
     border: 3px solid #ffffff4d;
     width: 100%;
   }
