@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.18.5",
+    "@playwright/test": "^1.27.1",
     "@sveltejs/vite-plugin-svelte": "1.0.8",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/svelte": "^3.2.2",
@@ -64,6 +65,7 @@
     "@types/jslib-html5-camera-photo": "^3.1.2",
     "@types/lodash.keyby": "^4.6.7",
     "@types/lodash.merge": "^4.6.7",
+    "@types/node": "^18.11.9",
     "@types/testing-library__jest-dom": "^5.14.5",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
@@ -88,6 +90,7 @@
   "dependencies": {
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
+    "dotenv": "^16.0.3",
     "jslib-html5-camera-photo": "^3.3.3",
     "lodash.keyby": "^4.6.0",
     "lodash.merge": "^4.6.2"

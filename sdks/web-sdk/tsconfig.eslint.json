@@ -16,7 +16,8 @@
     "src",
     // Otherwise causes an ESLint error
     "vite.config.ts",
-    "vite.dev.config.ts"
+    "vite.dev.config.ts",
+    "playwright.config.ts"
   ],
   "exclude": ["node_modules", "dist", "coverage"]
 }
