@@ -1,5 +1,12 @@
 # web-sdk
 
+## 1.1.34
+
+### Patch Changes
+
+- bf629b6: Fixed ESLint errors and warnings
+- bf629b6: Made WebStorm specific fixes to ESLint config
+
 ## 1.1.33
 
 ### Patch Changes
