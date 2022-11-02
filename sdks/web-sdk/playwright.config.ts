@@ -1,12 +1,13 @@
-import type { PlaywrightTestConfig } from "@playwright/test";
-import { devices } from "@playwright/test";
+import type { PlaywrightTestConfig } from '@playwright/test';
+import { devices } from '@playwright/test';
 
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-import "dotenv/config";
+import 'dotenv/config';
 
+console.log(process.env.CI);
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -99,13 +100,9 @@ const config: PlaywrightTestConfig = {
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: `pnpm build && pnpm start`,
-    url: `http://localhost:3000`,
-    timeout: 120 * 1000,
+    command: `pnpm dev`,
+    url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    env: {
-      NODE_ENV: 'test',
-    },
   },
 };
 
