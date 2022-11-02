@@ -21,16 +21,17 @@ runs:
     - name: Test
       shell: bash
       run: pnpm test
-#    - name: Install Playwright browsers
-#      shell: bash
-#      run: pnpm dlx playwright install --with-deps
-#
-#    - name: Test e2e
-#      shell: bash
-#      run: pnpm test:e2e
-#    - uses: actions/upload-artifact@v3
-#      if: always()
-#      with:
-#        name: playwright-report
-#        path: playwright-report/
-#        retention-days: 30
+
+    - name: Install Playwright browsers
+      shell: bash
+      run: pnpm dlx playwright install --with-deps
+
+    - name: Test e2e
+      shell: bash
+      run: pnpm test:e2e
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
