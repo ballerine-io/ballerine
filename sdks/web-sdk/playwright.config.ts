@@ -104,6 +104,7 @@ const config: PlaywrightTestConfig = {
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    ignoreHTTPSErrors: true,
   },
 };
 
