@@ -13,10 +13,10 @@ export const resolveEndpoint = (
 ): string => {
   const backendConfig = getBackendConfig();
 
-  return (
-    backendConfig.baseUrl +
-    resolveStringTemplate(backendConfig.endpoints[endpointName] as string, templateParams)
-  );
+  return `${backendConfig.baseUrl ?? ''}${resolveStringTemplate(
+    backendConfig.endpoints?.[endpointName] ?? '',
+    templateParams,
+  )}`;
 };
 
 export const getStartVerificationEndpoint = (templateParams?: StringKV): string =>

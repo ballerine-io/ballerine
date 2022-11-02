@@ -4,10 +4,10 @@
   import { goToNextStep } from '../../contexts/navigation';
   import type { DocumentType, IDocument, IDocumentInfo } from '../../contexts/app-state';
   import {
+    currentParams,
+    currentStepId,
     documents,
     selectedDocumentInfo,
-    currentStepId,
-    currentParams,
   } from '../../contexts/app-state/stores';
   import { addDocument } from '../../utils/photo-utils';
   import { isNativeCamera } from '../../contexts/flows/hooks';
@@ -35,7 +35,7 @@
       await navigator.mediaDevices.getUserMedia({ video: true });
       goToNextStep(currentStepId, $configuration, $currentStepId);
     } catch (error) {
-      $currentParams = { message: "Camera not found or access is not provided" };
+      $currentParams = { message: 'Camera not found or access is not provided' };
       $currentStepId = 'error';
     }
   };

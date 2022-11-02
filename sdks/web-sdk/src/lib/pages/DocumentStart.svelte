@@ -12,11 +12,15 @@
   import { documentStartStep, layout } from '../default-configuration/theme';
   import merge from 'lodash.merge';
 
-  const step = merge(documentStartStep, $configuration.steps[Steps.DocumentStart]) as IStepConfiguration;
+  const step = merge(
+    documentStartStep,
+    $configuration.steps[Steps.DocumentStart],
+  ) as IStepConfiguration;
 
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
-  const documentType = $configuration.steps[$currentStepId].type as DocumentType || $selectedDocumentInfo.type;
+  const documentType =
+    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
 
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
@@ -27,7 +31,7 @@
       await navigator.mediaDevices.getUserMedia({ video: true });
       goToNextStep(currentStepId, $configuration, $currentStepId);
     } catch (error) {
-      $currentParams = { message: "Camera not found or access is not provided" };
+      $currentParams = { message: 'Camera not found or access is not provided' };
       $currentStepId = 'error';
     }
   };

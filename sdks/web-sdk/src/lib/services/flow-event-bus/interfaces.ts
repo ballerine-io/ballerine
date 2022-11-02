@@ -1,6 +1,7 @@
 import { IDocumentVerificationResponse } from '../../utils/event-service/types';
 import { EFlowEvent } from './enums';
 import { TFlowEventBusPayload } from './types';
+import { AnyRecord } from '../../../types';
 
 export interface IEventOptions {
   eventName: string;
@@ -12,11 +13,11 @@ export interface IFlowCompletePayload extends IEventOptions {
 }
 
 export interface IFlowExitPayload extends IEventOptions {
-  payload: Record<PropertyKey, any>;
+  payload: AnyRecord;
 }
 
 export interface IFlowErrorPayload extends IEventOptions {
-  payload: Record<PropertyKey, any>;
+  payload: AnyRecord;
 }
 
 export interface IFlowNavigationUpdatePayload extends IEventOptions {

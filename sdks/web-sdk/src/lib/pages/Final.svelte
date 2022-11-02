@@ -7,12 +7,13 @@
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { flowApproved } from '../services/analytics';
-  import { DecisionStatus, sendFlowCompleteEvent } from '../utils/event-service';
+  import { sendFlowCompleteEvent } from '../utils/event-service';
   import { addCloseToURLParams } from '../contexts/navigation/hooks';
   import merge from 'lodash.merge';
   import { finalStep, layout } from '../default-configuration/theme';
+  import { DecisionStatus } from '../contexts/app-state/types';
 
-  console.log("Final")
+  console.log('Final');
 
   const step = merge(finalStep, $configuration.steps[Steps.Final]);
 

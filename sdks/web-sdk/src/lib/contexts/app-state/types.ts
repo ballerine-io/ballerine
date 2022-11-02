@@ -61,10 +61,10 @@ export interface DevMocks {
   resultTime: number | string;
   reasonCode: number;
   code: number;
-  idvResult: DecesionStatus;
+  idvResult: DecisionStatus;
 }
 
-export enum DecesionStatus {
+export enum DecisionStatus {
   APPROVED = 'approved',
   RESUBMISSION_REQUESTED = 'resubmission_requested',
   DECLINED = 'declined',

@@ -1,4 +1,4 @@
-import { DevMocks, ISelectedParams, IStoreData } from '../../contexts/app-state';
+import { DevMocks, IDocument, ISelectedParams, IStoreData } from '../../contexts/app-state';
 import { IDocumentVerificationResponse, ISendDocumentsResponse } from './types';
 import { getFlowConfig } from '../../contexts/flows/hooks';
 import { IAppConfiguration } from '../../contexts/configuration';
@@ -8,6 +8,8 @@ import {
   getStartVerificationEndpoint,
   getVerificationStatusEndpoint,
 } from '../../contexts/configuration/getters';
+import { DecisionStatus } from '../../contexts/app-state/types';
+import { AnyRecord } from '../../../types';
 
 const outerScopeContext = window.__blrn_context;
 const docTypeMapping = {
@@ -30,7 +32,7 @@ const staticHeaders = {
   'Content-Type': 'application/json',
 };
 
-const httpPost = async (url: string, body: Object) => {
+const httpPost = async <TResponse>(url: string, body: AnyRecord) => {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -44,7 +46,7 @@ const httpPost = async (url: string, body: Object) => {
       `Error fetching ${url}. http code: ${response.status}, ${response.statusText}.`,
     );
   }
-  return response.json();
+  return response.json() as Promise<TResponse>;
 };
 
 const httpGet = async (url: string) => {
@@ -62,12 +64,11 @@ const httpGet = async (url: string) => {
   return response.json();
 };
 
-export const getVerificationStatus = async (
-  endUserId: string,
-): Promise<IDocumentVerificationResponse> => {
+export const getVerificationStatus = async (endUserId: string) => {
   const verificationId = localStorage.getItem('verificationId') as string;
   const endpointUrl = getVerificationStatusEndpoint({ verificationId });
-  return httpGet(endpointUrl);
+  // Enter a validation step here that would infer the response's type
+  return httpGet(endpointUrl) as Promise<IDocumentVerificationResponse>;
 };
 
 export const verifyDocuments = async (
@@ -89,16 +90,21 @@ export const verifyDocuments = async (
   }
   documentsForUpload.push(...data.docs);
 
-  const payload: any = {
-    endUserInfo: {
-      firstName: configuration.endUserInfo.firstName,
-      lastName: configuration.endUserInfo.lastName,
-      id: endUserId,
-      type: getFlowConfig(configuration).userType,
-      phone: configuration.endUserInfo.phone,
-      email: configuration.endUserInfo.email,
-      language: configuration.endUserInfo.language,
-    },
+  const endUserInfo = {
+    firstName: configuration.endUserInfo.firstName,
+    lastName: configuration.endUserInfo.lastName,
+    id: endUserId,
+    type: getFlowConfig(configuration).userType,
+    phone: configuration.endUserInfo.phone,
+    email: configuration.endUserInfo.email,
+    language: configuration.endUserInfo.language,
+  };
+  const payload: {
+    endUserInfo: typeof endUserInfo;
+    documents: typeof documentsForUpload;
+    devMocks?: DevMocks;
+  } = {
+    endUserInfo,
     documents: documentsForUpload,
   };
 
@@ -107,12 +113,16 @@ export const verifyDocuments = async (
       resultTime: (outerScopeContext && outerScopeContext.mockResultTime) || 7, // 3 seconds default
       reasonCode: outerScopeContext && outerScopeContext.mockReasonCode,
       code: outerScopeContext && outerScopeContext.mockCode,
-      idvResult: (outerScopeContext && outerScopeContext.mockIdvResult) || 'approved',
+      idvResult: (outerScopeContext && outerScopeContext.mockIdvResult) || DecisionStatus.APPROVED,
     };
     payload.devMocks = devMocks;
   }
 
-  const verificationRes = await httpPost(getStartVerificationEndpoint(), payload);
+  const verificationRes = await httpPost<
+    ISendDocumentsResponse & {
+      verificationId: string;
+    }
+  >(getStartVerificationEndpoint(), payload);
   localStorage.setItem('verificationId', verificationRes.verificationId);
   return verificationRes;
 };

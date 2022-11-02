@@ -2,28 +2,33 @@ import mergeObj from 'lodash.merge';
 import toObjByKey from 'lodash.keyby';
 import translation from '../default-configuration/translation.json';
 import { TranslationType } from '../contexts/translation';
-import { DocumentType } from '../contexts/app-state';
 import {
-  IAppConfiguration,
   configuration,
-  IStepConfiguration,
   Elements,
+  IAppConfiguration,
+  IStepConfiguration,
   Steps,
 } from '../contexts/configuration';
-import { FlowsTranslations, FlowsEventsConfig, FlowsInitOptions } from '../../types/BallerineSDK';
+import { FlowsEventsConfig, FlowsInitOptions, FlowsTranslations } from '../../types/BallerineSDK';
 import { IFlow } from '../contexts/flows';
 import { IDocumentOptionItem } from '../organisms/DocumentOptions/types';
+import { AnyRecord } from '../../types';
 
 export let texts: TranslationType = translation;
 
 const preloadByExtension = async (src: string): Promise<string> => {
-  return new Promise(async (resolve, reject) => {
-    const extension = src.split('.').pop();
-    if (extension === 'svg') {
-      const response = await fetch(src);
-      const svg = await response.text();
-      return resolve(svg);
-    }
+  const extension = src.split('.').pop();
+  let svg: string | undefined;
+
+  if (extension === 'svg') {
+    const response = await fetch(src);
+
+    svg = await response.text();
+  }
+
+  return new Promise((resolve, reject) => {
+    if (svg) return resolve(svg);
+
     const img = new Image();
     img.onload = () => resolve(img.src);
     img.onerror = reject;
@@ -101,18 +106,26 @@ export const mergeConfig = (
     newConfig.documentOptions
   ) {
     const documentOptions = newConfig.steps[Steps.DocumentSelection].documentOptions?.reduce(
-      (docOpts: any, docType: any) => {
-        docOpts[docType] = newConfig.documentOptions?.options[docType as DocumentType];
+      (docOpts, docType) => {
+        docOpts[docType] = newConfig.documentOptions?.options[docType];
         return docOpts;
       },
       {} as IDocumentOptionItem,
     );
+
+    if (!documentOptions) return newConfig;
+
     newConfig.documentOptions.options = documentOptions;
   }
   return newConfig;
 };
 
-const v1adapter = (config: RecursivePartial<FlowsInitOptions>): IAppConfiguration | any => {
+const v1adapter = (
+  config: RecursivePartial<FlowsInitOptions>,
+):
+  | IAppConfiguration
+  // We should either infer the return type or correct it. endUserInfo is not supposed to be a partial and general not undefined.
+  | AnyRecord => {
   const { uiConfig = {}, endUserInfo = {}, backendConfig = {} } = config;
   const { flows = {}, general, components } = uiConfig;
   const newFlows = {} as { [key: string]: IFlow };
@@ -125,7 +138,10 @@ const v1adapter = (config: RecursivePartial<FlowsInitOptions>): IAppConfiguratio
         ...flowConfig,
       };
       if (steps) {
-        newFlows[flowName].stepsOrder = steps.map((step: any) => step.id); // check ts
+        newFlows[flowName].stepsOrder = steps
+          .map(step => step?.id)
+          // Not using !!v | Boolean(v) to be more explicit.
+          .filter((v): v is string => typeof v === 'string'); // check ts
       }
       const stepsConfig = toObjByKey(steps, (e: IStepConfiguration) => e.id);
       flowSteps = {

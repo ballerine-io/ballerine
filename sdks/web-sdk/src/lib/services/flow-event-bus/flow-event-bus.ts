@@ -21,6 +21,7 @@ export const flowEventBus: IFlowEventBus = ({ type, payload }) => {
       callbacks?.onFlowNavigationUpdate?.(payload);
       break;
     default:
-      throw new Error(`Unknown flow event type ${type}`);
+      // JSON.stringify assumes the passed type could be anything, like this type should display correctly in the console.
+      throw new Error(`Unknown flow event type ${JSON.stringify(type)}`);
   }
 };

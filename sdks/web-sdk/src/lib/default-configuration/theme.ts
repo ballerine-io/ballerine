@@ -369,8 +369,8 @@ export const documentStartStep = {
     },
     {
       type: Elements.Button,
-      props: {}
-    }
+      props: {},
+    },
   ],
 };
 
