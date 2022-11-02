@@ -3,7 +3,12 @@
   import DocumentOption from '../../molecules/DocumentOption/DocumentOption.svelte';
   import { goToNextStep } from '../../contexts/navigation';
   import type { DocumentType, IDocument, IDocumentInfo } from '../../contexts/app-state';
-  import { documents, selectedDocumentInfo, currentStepId } from '../../contexts/app-state/stores';
+  import {
+    currentParams,
+    currentStepId,
+    documents,
+    selectedDocumentInfo,
+  } from '../../contexts/app-state/stores';
   import { addDocument } from '../../utils/photo-utils';
   import { isNativeCamera } from '../../contexts/flows/hooks';
   import { IDocumentOption } from '../../molecules/DocumentOption';
@@ -26,8 +31,13 @@
     const type = detail as DocumentType;
     const option = documentOptionsConfiguration.options[type];
     $selectedDocumentInfo = option?.document as IDocumentInfo;
-    await navigator.mediaDevices.getUserMedia({ video: true });
-    goToNextStep(currentStepId, $configuration, $currentStepId);
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: true });
+      goToNextStep(currentStepId, $configuration, $currentStepId);
+    } catch (error) {
+      $currentParams = { message: 'Camera not found or access is not provided' };
+      $currentStepId = 'error';
+    }
   };
 
   const handleTakePhoto = async ({ detail }: { detail: { image: string; type: DocumentType } }) => {
