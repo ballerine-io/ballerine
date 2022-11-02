@@ -28,4 +28,4 @@ runs:
 
     - name: Test e2e
       shell: bash
-      run: DEBUG=pw:webserver pnpm test:e2e
+      run: pnpm test:e2e
