@@ -10,7 +10,7 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": ["src/**/*", "src/node_modules/**/*"],
   "exclude": ["node_modules/*", "__sapper__/*", "static/*"]
