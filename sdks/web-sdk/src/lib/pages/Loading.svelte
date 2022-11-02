@@ -12,7 +12,7 @@
     selectedDocumentInfo,
     selfieUri,
   } from '../contexts/app-state';
-  import { DecisionStatus, sendVerificationUpdateEvent } from '../utils/event-service';
+  import { sendVerificationUpdateEvent } from '../utils/event-service';
 
   import { ISendDocumentsResponse } from '../utils/event-service/types';
   import { onDestroy, onMount } from 'svelte';
@@ -22,6 +22,7 @@
   import merge from 'lodash.merge';
   import { layout, loadingStep } from '../default-configuration/theme';
   import { generateParams, getVerificationStatus, verifyDocuments } from '../services/http';
+  import { DecisionStatus } from '../contexts/app-state/types';
   flowUploadLoader();
 
   const WAITING_TIME = 1000 * 60 * 3; // 3 minutes

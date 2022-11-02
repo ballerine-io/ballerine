@@ -1,15 +1,7 @@
-import {
-  appState,
-  DevMocks,
-  IAppState,
-  ISelectedParams,
-  IStoreData,
-} from '../../contexts/app-state';
+import { appState, IAppState } from '../../contexts/app-state';
 import { currentLanguage, Languages } from '../../contexts/translation';
-import { IDocumentVerificationResponse, IOuterEvent, ISendDocumentsResponse } from './types';
+import { IDocumentVerificationResponse, IOuterEvent } from './types';
 import { get } from 'svelte/store';
-import { getFlowConfig } from '../../contexts/flows/hooks';
-import { IAppConfiguration } from '../../contexts/configuration';
 import { flowEventBus } from '../../services/flow-event-bus/flow-event-bus';
 import { EFlowEvent } from '../../services/flow-event-bus/enums';
 

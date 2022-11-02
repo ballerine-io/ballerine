@@ -1,4 +1,4 @@
-import { IAppConfiguration, ICSSProperties } from '../contexts/configuration';
+import { ICSSProperties } from '../contexts/configuration';
 
 const cssProperties: (keyof ICSSProperties)[] = [
   'margin',
@@ -50,11 +50,11 @@ export const makeStylesFromConfiguration = (
     prefix = '',
   ) => {
     if (localCss && localCss[property]) {
-      styles.push(`--${prefix}${property}: ${localCss[property]};`);
+      styles.push(`--${prefix}${property}: ${String(localCss[property])};`);
       return;
     }
     if (globalCss && globalCss[property]) {
-      styles.push(`--${prefix}${property}: ${globalCss[property]};`);
+      styles.push(`--${prefix}${property}: ${String(globalCss[property])};`);
       return;
     }
   };
@@ -86,7 +86,7 @@ export const makesLocalStyles = (configStyles: ICSSProperties) => {
   const styles: string[] = [];
 
   const setProperties = (css: ICSSProperties, property: keyof ICSSProperties, prefix = '') => {
-    if (css[property]) styles.push(`--${prefix}${property}: ${css[property]};`);
+    if (css[property]) styles.push(`--${prefix}${property}: ${String(css[property])};`);
   };
 
   cssProperties.map(property => {

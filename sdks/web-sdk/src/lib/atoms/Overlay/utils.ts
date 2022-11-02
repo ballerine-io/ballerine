@@ -1,6 +1,8 @@
 import { DocumentType } from '../../contexts/app-state';
 
-export const getOverlayDocumentType = (documentType: DocumentType): 'card' | 'passport' | 'a4' | 'selfie' => {
+export const getOverlayDocumentType = (
+  documentType: DocumentType,
+): 'card' | 'passport' | 'a4' | 'selfie' => {
   const cardOverlayDocumentTypes = [
     DocumentType.DRIVERS_LICENSE,
     DocumentType.RESIDENCE_PERMIT,
@@ -11,13 +13,13 @@ export const getOverlayDocumentType = (documentType: DocumentType): 'card' | 'pa
   ];
 
   if (cardOverlayDocumentTypes.includes(documentType)) {
-    return "card";
+    return 'card';
   }
   if (documentType === DocumentType.PASSPORT) {
-    return "passport";
+    return 'passport';
   }
   if (documentType === DocumentType.SELFIE) {
-    return "selfie";
+    return 'selfie';
   }
-  return "a4";
+  return 'a4';
 };

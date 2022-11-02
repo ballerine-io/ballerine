@@ -2,7 +2,13 @@
   "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
     "module": "es2022",
-    "lib": ["DOM", "ES2017", "WebWorker"],
+    "lib": [
+      "DOM",
+      // DOM.Iterable, ES2019, and downlevelIteration are required for Object.fromEntries and URLSearchParams to work together with no type errors.
+      "DOM.Iterable",
+      "ES2019",
+      "WebWorker"
+    ],
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "importsNotUsedAsValues": "remove",
@@ -10,8 +16,16 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "types": ["vitest/globals", "@testing-library/jest-dom"]
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "downlevelIteration": true
   },
-  "include": ["src/**/*", "src/node_modules/**/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "static/*"]
+  "include": [
+    "src/**/*",
+    "src/node_modules/**/*"
+  ],
+  "exclude": [
+    "node_modules/*",
+    "__sapper__/*",
+    "static/*"
+  ]
 }

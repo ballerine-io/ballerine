@@ -28,7 +28,7 @@ export const goToNextStep = (
   const filteredFlows = filterOutByType(flows, globalConfiguration, skipType);
   const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
   if (currentFlowIndex === filteredFlows.length) {
-    throw Error("Error moving next step, this is the last step");
+    throw Error('Error moving next step, this is the last step');
   }
   currentStepIdStore.set(filteredFlows[currentFlowIndex + 1]);
 };
@@ -43,7 +43,7 @@ export const goToPrevStep = (
   const filteredFlows = filterOutByType(flows, globalConfiguration, skipType);
   const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
   if (currentFlowIndex === 0) {
-    throw Error("Error moving step back, this is the first step");
+    throw Error('Error moving step back, this is the first step');
   }
   currentStepIdStore.set(filteredFlows[currentFlowIndex - 1]);
 };

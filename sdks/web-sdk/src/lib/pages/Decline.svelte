@@ -6,12 +6,13 @@
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
-  import { DecisionStatus, sendFlowCompleteEvent } from '../utils/event-service';
+  import { sendFlowCompleteEvent } from '../utils/event-service';
   import { flowDeclined } from '../services/analytics';
   import { addCloseToURLParams } from '../contexts/navigation/hooks';
   import { currentParams } from '../contexts/app-state';
   import { declineStep, layout } from '../default-configuration/theme';
   import merge from 'lodash.merge';
+  import { DecisionStatus } from '../contexts/app-state/types';
 
   const step = merge(declineStep, $configuration.steps[Steps.Decline]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
