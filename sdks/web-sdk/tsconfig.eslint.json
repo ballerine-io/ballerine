@@ -18,6 +18,7 @@
     "vite.config.ts",
     "vite.dev.config.ts",
     "playwright.config.ts",
+    "vitest.config.ts",
     "e2e"
   ],
   "exclude": ["node_modules", "dist", "coverage"]
