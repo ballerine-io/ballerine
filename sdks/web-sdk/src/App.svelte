@@ -52,6 +52,7 @@
     width: 100%;
     margin: 0 auto;
     height: 100%;
+    overflow: hidden;
   }
 
   :global(html, body, #app) {
