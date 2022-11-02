@@ -7,6 +7,7 @@
     documents,
     selectedDocumentInfo,
     currentStepId,
+    currentParams,
   } from '../../contexts/app-state/stores';
   import { addDocument } from '../../utils/photo-utils';
   import { isNativeCamera } from '../../contexts/flows/hooks';
@@ -30,8 +31,13 @@
     const type = detail as DocumentType;
     const option = documentOptionsConfiguration.options[type];
     $selectedDocumentInfo = option?.document as IDocumentInfo;
-    await navigator.mediaDevices.getUserMedia({ video: true });
-    goToNextStep(currentStepId, $configuration, $currentStepId);
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: true });
+      goToNextStep(currentStepId, $configuration, $currentStepId);
+    } catch (error) {
+      $currentParams = { message: "Camera not found or access is not provided" };
+      $currentStepId = 'error';
+    }
   };
 
   const handleTakePhoto = async ({ detail }: { detail: { image: string; type: DocumentType } }) => {
