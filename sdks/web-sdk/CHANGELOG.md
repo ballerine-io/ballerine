@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.1.32
+
+### Patch Changes
+
+- Fixes, examples update
+
 ## 1.1.31
 
 ### Patch Changes
