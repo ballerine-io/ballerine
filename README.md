@@ -21,7 +21,7 @@ Ballerine helps any company verify its customers’ identity while providing an 
  
 [See Detailed Roadmap](#roadmap)
 
-Join our mailing list to you know whenever we release something (like liveliness or the case management back office).
+Join our mailing list so you know whenever we release something (like liveliness or the case management back office).
 
 <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
