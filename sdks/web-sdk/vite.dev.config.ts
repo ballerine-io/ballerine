@@ -1,11 +1,15 @@
-import { defineConfig, loadEnv } from 'vite';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { defineConfig, loadEnv } from "vite";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
   console.log('VITE', mode);
   const env = loadEnv(mode, process.cwd(), '');
   return defineConfig({
+    server: {
+      port: 3000,
+      host: '127.0.0.1',
+    },
     build: {
       reportCompressedSize: true,
       chunkSizeWarningLimit: 300,

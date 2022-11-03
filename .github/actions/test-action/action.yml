@@ -21,3 +21,11 @@ runs:
     - name: Test
       shell: bash
       run: pnpm test
+
+    - name: Install Playwright browsers
+      shell: bash
+      run: npx playwright install --with-deps
+
+    - name: Test e2e
+      shell: bash
+      run: pnpm test:e2e

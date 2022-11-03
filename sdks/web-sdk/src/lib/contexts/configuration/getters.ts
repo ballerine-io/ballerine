@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import { configuration } from '.';
 import { FlowsBackendConfig } from '../../../types/BallerineSDK';
-import { resolveStringTemplate } from '../../utils/string-utils';
+import { resolveStringTemplate } from '../../utils/string-utils/resolve-string-template';
 
 export const getBackendConfig = (): FlowsBackendConfig => {
   return get(configuration).backendConfig;
