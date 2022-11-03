@@ -4,6 +4,9 @@ Bug - subject of the issue
 ### Description
 Elaborate on the subject, motivation, and context.
 
+### Has the bug been reported before
+(Y/N) - Provide a link to the issue.
+
 ### Expected Behaviour
 What should happen?
 
