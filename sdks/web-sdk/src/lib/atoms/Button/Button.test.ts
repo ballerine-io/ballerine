@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/svelte';
-import Button from './Button.svelte';
-import TestButton from './TestButton.svelte';
+import TestButton from './Button.test.svelte';
 
 describe('Button', () => {
   it('should render a button', async () => {
