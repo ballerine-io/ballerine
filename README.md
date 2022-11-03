@@ -60,7 +60,7 @@ Main Open Source benefits:
 -  Implement and modify a case management for user approval/rejection.
 -  And more.
 
-If you currently don't have a commercial agreement with KYC vendors, you can use some of the vendors we already integrated with (Identity verification, AML check, etc.), to quickly start processing user's KYC requests. To do so please contacs us at oss@ballerine.io.
+If you currently don't have a commercial agreement with KYC vendors, you can use some of the vendors we already integrated with (Identity verification, AML check, etc.), to quickly start processing user's KYC requests. To do so please contact us at oss@ballerine.io.
 
 </details>
 
