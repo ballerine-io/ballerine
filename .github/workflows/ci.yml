@@ -27,16 +27,16 @@ jobs:
       - name: Lint
         uses: ./.github/actions/lint-action
 
-#      test:
-#        timeout-minutes: 60
-#        runs-on: ubuntu-latest
-#
-#        steps:
-#          - name: Checkout
-#            uses: actions/checkout@v3
-#
-#          - name: Test
-#            uses: ./.github/actions/test-action
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test
+        uses: ./.github/actions/test-action
 
   build:
     runs-on: ubuntu-latest

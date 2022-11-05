@@ -1,14 +1,7 @@
+import { DecisionStatus } from '../../contexts/app-state/types';
+
 export interface ISendDocumentsResponse {
   status: 'success' | 'fail';
-}
-
-export enum DecisionStatus {
-  APPROVED = 'approved',
-  RESUBMISSION_REQUESTED = 'resubmission_requested',
-  DECLINED = 'declined',
-  EXPIRED = 'expired',
-  ABANDONED = 'abandoned',
-  REVIEW = 'review',
 }
 
 export interface IDocumentVerificationResponse {

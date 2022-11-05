@@ -30,10 +30,10 @@
   );
 </script>
 
-{#if useModal}
+{#if !isMobile() && useModal}
   {#if !loading && modalOpened}
     <div class="background">
-      <div class="content {isMobile() ? 'mobile' : ''}">
+      <div class="content ">
         <App {flowName} />
       </div>
     </div>
@@ -62,12 +62,5 @@
     box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.05);
     border-radius: 35px;
     overflow: hidden;
-  }
-  .content.mobile {
-    width: 100%;
-    height: 100%;
-    box-shadow: none;
-    border-radius: 0px;
-    overflow: auto;
   }
 </style>

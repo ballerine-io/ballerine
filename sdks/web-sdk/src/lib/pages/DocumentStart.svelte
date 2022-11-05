@@ -8,23 +8,32 @@
   import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
-  import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { currentParams, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { documentStartStep, layout } from '../default-configuration/theme';
   import merge from 'lodash.merge';
 
-  const step = merge(documentStartStep, $configuration.steps[Steps.DocumentStart]) as IStepConfiguration;
+  const step = merge(
+    documentStartStep,
+    $configuration.steps[Steps.DocumentStart],
+  ) as IStepConfiguration;
 
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
-  const documentType = $configuration.steps[$currentStepId].type as DocumentType || $selectedDocumentInfo.type;
+  const documentType =
+    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
 
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
   }
 
   const handleGoToNextStep = async () => {
-    await navigator.mediaDevices.getUserMedia({ video: true }); // TODO: add catch for missing premessions, and handle appropetly
-    goToNextStep(currentStepId, $configuration, $currentStepId);
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: true });
+      goToNextStep(currentStepId, $configuration, $currentStepId);
+    } catch (error) {
+      $currentParams = { message: 'Camera not found or access is not provided' };
+      $currentStepId = 'error';
+    }
   };
 
   const handler = async (e: ICameraEvent) => {

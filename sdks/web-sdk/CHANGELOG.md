@@ -1,5 +1,35 @@
 # web-sdk
 
+## 1.1.33
+
+### Patch Changes
+
+- release
+
+## 1.1.32
+
+### Patch Changes
+
+- Fixes, examples update
+
+## 1.1.31
+
+### Patch Changes
+
+- Bug fixes
+
+## 1.1.30
+
+### Patch Changes
+
+- mobile fix
+
+## 1.1.29
+
+### Patch Changes
+
+- UI Fixes, kyb flow fix
+
 ## 1.1.28
 
 ### Patch Changes

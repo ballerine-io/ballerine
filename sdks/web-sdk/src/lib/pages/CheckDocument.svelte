@@ -15,7 +15,8 @@
 
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
-  const documentType = $configuration.steps[$currentStepId].type as DocumentType || $selectedDocumentInfo.type;
+  const documentType =
+    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
 
   let image = '';
   let skipBackSide = false;
@@ -26,8 +27,9 @@
     }
     if (documentType) {
       image = getDocImage(documentType, $documents);
-      // Alon: seems like we need to extend configuration with this?
-      skipBackSide = $configuration.steps[$currentStepId].backSide || $selectedDocumentInfo?.backSide;
+    }
+    if ($selectedDocumentInfo && !$selectedDocumentInfo.backSide) {
+      skipBackSide = true;
     }
   }
 </script>
