@@ -14,8 +14,8 @@ Elaborate on the subject, motivation, and context.
  * Links, screenshots, and other resources related to this change.
 
 ### Checklist
-- [] I have read the [contribution guidelines]() of this project
-- [] I have read the [style guidelines]() of this project
+- [] I have read the [contribution guidelines](CONTRIBUTING.md) of this project
+- [] I have read the [style guidelines](STYLE_GUIDE.md) of this project
 - [] I have performed a self-review of my own code
 - [] I have commented my code, particularly in hard-to-understand areas
 - [] I have made corresponding changes to the documentation

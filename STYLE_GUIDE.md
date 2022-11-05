@@ -20,7 +20,7 @@ This repository makes use of EditorConfig, ESLint, and Prettier to enforce a con
 - Use `const` over `let` where possible.
 - Use arrow functions over function expressions.
 - Avoid over 2 levels of nesting, utilize early returns.
-- Avoid for loops, use `Array.prototype.forEach` or `Array.prototype.map` instead.
+- Avoid `for` loops, use `Array.prototype.forEach` or `Array.prototype.map` instead.
 
 ## Naming conventions
 
@@ -43,17 +43,22 @@ This repository makes use of EditorConfig, ESLint, and Prettier to enforce a con
 
 This repository uses the [Atomic Design](https://bradfrost.com/blog/post/atomic-web-design/) methodology to organize UI components and strives for co-location of files a component owns such as its styling and tests.
 
-- atoms/
-  - Button/
-    - Button.svelte
-    - Button.test.svelte (an implementation Button.svelte to be imported by Button.test.ts)
-    - Button.test.ts
-    - types.ts
+```
+├── atoms/
+└───── Button/
+        ├── Button.svelte
+        ├── Button.test.svelte (an implementation Button.svelte to be imported
+         by Button.test.ts)
+        ├── Button.test.ts
+        └── types.ts
+```
 
 ### Non-UI
 
-- utils/
-  - get-user/
-      - get-user.ts
-      - get-user.test.ts
-      - types.ts
+```
+├── utils/
+└───── get-user/
+        ├── get-user.ts
+        ├── get-user.test.ts
+        └── types.ts
+```
