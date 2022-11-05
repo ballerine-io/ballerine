@@ -11,5 +11,5 @@ module.exports = {
   settings: {
     ...settings,
     'svelte3/typescript': require('typescript'),
-  }
+  },
 };
