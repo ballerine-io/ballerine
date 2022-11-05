@@ -14,5 +14,4 @@ module.exports = {
     es6: true,
   },
   plugins: ['@typescript-eslint'],
-  ignorePatterns: ['node_modules', '.eslintrc.cjs'],
 };

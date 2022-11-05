@@ -1,10 +1,10 @@
-import { defineConfig, loadEnv } from "vite";
-import { svelte } from "@sveltejs/vite-plugin-svelte";
-import { resolve } from "path";
-import dts from "vite-plugin-dts";
+import type { UserConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { resolve } from 'path';
+import dts from 'vite-plugin-dts';
 
-/** @type {import("vite").UserConfig} */
-export default ({ mode }) => {
+export default ({ mode }: { mode: UserConfig['mode'] }) => {
   console.log('building with vite...', mode);
   const env = loadEnv(mode, process.cwd(), '');
   return defineConfig({

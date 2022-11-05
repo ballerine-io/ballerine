@@ -17,6 +17,7 @@
     // Otherwise causes an ESLint error
     "vite.config.ts",
     "vite.dev.config.ts",
+    "svelte.config.js",
     "playwright.config.ts",
     "vitest.config.ts",
     "e2e"
