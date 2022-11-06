@@ -85,19 +85,16 @@ const config: PlaywrightTestConfig = {
       },
     },
 
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        launchOptions: {
-          args: [
-            '--use-fake-device-for-media-stream',
-            '--use-fake-ui-for-media-stream',
-            '--use-file-for-fake-video-capture=./e2e/fixtures/selfie.mjpeg',
-          ],
-        },
-      },
-    },
+    // Playwright currently does not support faking video on WebKit
+    // {
+    //   name: 'webkit',
+    //   use: {
+    //     ...devices['Desktop Safari'],
+    //     launchOptions: {
+    //       args: [],
+    //     },
+    //   },
+    // },
 
     /* Test against mobile viewports. */
     // {
