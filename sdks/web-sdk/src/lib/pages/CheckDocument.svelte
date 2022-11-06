@@ -11,8 +11,10 @@
   import merge from 'lodash.merge';
   import { checkDocumentStep, layout } from '../default-configuration/theme';
 
-  const step = merge(checkDocumentStep, $configuration.steps[Steps.CheckDocument]);
+  export let stepId;
 
+  const step = merge(checkDocumentStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   const documentType =
@@ -44,12 +46,12 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key={`${documentType}-title`} module="check-document" />
+        <T key={'title'} namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={`${documentType}-description`} module="check-document" />
+        <T key={'description'} namespace={stepNamespace} />
       </Paragraph>
     {/if}
     {#if element.type === Elements.Photo}

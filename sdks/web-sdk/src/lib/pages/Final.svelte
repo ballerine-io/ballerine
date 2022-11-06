@@ -13,10 +13,10 @@
   import { finalStep, layout } from '../default-configuration/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
 
-  console.log('Final');
+  export let stepId;
 
-  const step = merge(finalStep, $configuration.steps[Steps.Final]);
-
+  const step = merge(finalStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   flowApproved();
@@ -41,17 +41,17 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key="title" module="final" />
+        <T key="title" namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={element.props.context || 'description'} module="final" />
+        <T key={element.props.context || 'description'} namespace={stepNamespace} />
       </Paragraph>
     {/if}
     {#if element.type === Elements.Button}
       <Button on:click={handleClose} configuration={element.props}>
-        <T key="button" module="final" />
+        <T key="button" namespace={stepNamespace} />
       </Button>
     {/if}
   {/each}

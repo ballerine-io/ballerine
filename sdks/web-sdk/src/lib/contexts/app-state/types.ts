@@ -9,10 +9,10 @@ export enum DocumentType {
   VOTER_ID = 'voter_id', // CARD
   WORK_PERMIT = 'work_permit', // CARD
   VISA = 'visa', // CARD
-  BANK_STATEMENT = 'bankStatement', // A4
-  PROOF_OF_BUSINESS_TAX_ID = 'proofOfBusinessTaxID', // A4
-  OPERATING_LICENSE = 'operatingLicense', // A4
-  BUSINESS_REGISTRATION = 'businessRegistration', // A4
+  BANK_STATEMENT = 'bank_statement', // A4
+  PROOF_OF_BUSINESS_TAX_ID = 'proof_of_business_tax_id', // A4
+  OPERATING_LICENSE = 'operating_license', // A4
+  BUSINESS_REGISTRATION = 'business_registration', // A4
   SELFIE = 'selfie',
 }
 

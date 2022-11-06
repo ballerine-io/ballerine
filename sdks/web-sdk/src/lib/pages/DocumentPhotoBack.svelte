@@ -7,27 +7,27 @@
   import { CameraButton, IconButton, Overlay, Paragraph, Title, VideoContainer } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { IDocumentInfo } from '../contexts/app-state/types';
   import { currentStepId } from '../contexts/app-state';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { updateDocument } from '../utils/photo-utils';
   import { documentPhotoBackStep, settings } from '../default-configuration/theme';
   import merge from 'lodash.merge';
   import { layout } from '../default-configuration/theme';
+  import { DocumentType } from '../contexts/app-state';
+
+  export let stepId;
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = merge(documentPhotoBackStep, $configuration.steps[Steps.DocumentPhotoBack]);
+  const step = merge(documentPhotoBackStep, $configuration.steps[stepId]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const documentType =
+    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
 
-  let documentInfo: IDocumentInfo | undefined = undefined;
-
+  const stepNamespace = `${step.namespace}.${documentType}`;
   $: {
-    documentInfo = step.documentInfo || $selectedDocumentInfo;
-    if (!documentInfo) {
-      goToPrevStep(currentStepId, $configuration, $currentStepId);
-    }
+    if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
   }
 
   onMount(() => {
@@ -51,7 +51,7 @@
   });
 
   const handleTakePhoto = () => {
-    const document = $documents.find(d => d.type === documentInfo?.type);
+    const document = $documents.find(d => d.type === documentType);
     if (!cameraPhoto || !document) return;
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings || settings.cameraSettings,
@@ -81,18 +81,18 @@
     {#each step.elements as element}
       {#if element.type === Elements.Title}
         <Title configuration={element.props}>
-          <T key={`${documentInfo?.type}-title`} module="document-photo-back" />
+          <T key={`title`} namespace={stepNamespace} />
         </Title>
       {/if}
       {#if element.type === Elements.Paragraph}
         <Paragraph configuration={element.props}>
-          <T key={`${documentInfo?.type}-description`} module="document-photo-back" />
+          <T key={`description`} namespace={stepNamespace} />
         </Paragraph>
       {/if}
     {/each}
   </div>
-  {#if documentInfo}
-    <Overlay type={documentInfo.type} />
+  {#if documentType}
+    <Overlay type={documentType} />
   {/if}
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}

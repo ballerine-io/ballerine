@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { Languages } from './types';
-import { texts } from '../../utils/configuration-management';
+import { texts } from '../../utils/configuration-manager';
 
 export const currentLanguage = writable<Languages>('en');
 
@@ -10,9 +10,23 @@ currentLanguage.subscribe(lang => {
   language = lang;
 });
 
-export const t = (module: string, key: string) => {
-  if (!texts[language]) return 'Language not defined: ' + language;
-  if (!texts[language][module]) return 'Text module not found: ' + module;
-  if (!texts[language][module][key]) return 'Text key not found: ' + key;
-  return texts[language][module][key];
+export const t = (namespace: string, key: string) => {
+  let path = `${language}.${namespace}.${key}`;
+
+  let text = get(texts, path);
+  if (!text) {
+    const namespacePath = namespace.split('.');
+    const lastKey = namespacePath.pop();
+    path = `${language}.${namespacePath.join('.')}.${key}`;
+    text = get(texts, path);
+    console.log('fallback to default translation, missing key', lastKey);
+  }
+  return text || 'Missing translation: ' + path;
+};
+
+const get = (obj: Record<string, unknown>, path: string): string => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const result = path.split('.').reduce((res, key) => res && res[key], obj);
+  return result;
 };
