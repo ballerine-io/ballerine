@@ -7,6 +7,8 @@ importers:
 
   .:
     specifiers:
+      '@branchlint/cli': ^1.0.3
+      '@branchlint/default-config': ^1.0.1
       '@changesets/changelog-git': ^0.1.13
       '@changesets/cli': ^2.25.0
       '@commitlint/cli': ^17.1.2
@@ -18,6 +20,8 @@ importers:
       nx: 15.0.2
       prettier: ^2.7.1
     devDependencies:
+      '@branchlint/cli': 1.0.3
+      '@branchlint/default-config': 1.0.1
       '@changesets/changelog-git': 0.1.13
       '@changesets/cli': 2.25.0
       '@commitlint/cli': 17.1.2
@@ -318,6 +322,31 @@ packages:
       '@babel/helper-string-parser': 7.19.4
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
+    dev: true
+
+  /@branchlint/cli/1.0.3:
+    resolution: {integrity: sha512-5r9wam8niuokfXOJwpw7uEi+8RY3CtwJpfy3xINHSyh4fYVfhviNGQKis/YHoohCHCufUMhlNdX8LJUkuhbycw==}
+    hasBin: true
+    dependencies:
+      '@branchlint/common': 0.0.1
+      '@branchlint/default-config': 1.0.1
+      inquirer: 8.0.1
+    dev: true
+
+  /@branchlint/common/0.0.1:
+    resolution: {integrity: sha512-8UFahntTD06LFh0ZsjrYL4Qpck4nJIbPozV91xalc6nLqLBYb2eDl0mZNczKwwedgVuHs1jV4/yO7YhvhwBsbA==}
+    dependencies:
+      inquirer: 8.0.1
+      zod: 3.19.1
+    dev: true
+
+  /@branchlint/default-config/1.0.1:
+    resolution: {integrity: sha512-jF1UHQQcbN2zsDjoL9efe5hEAlycNIgPNWE8Yr9ajkGur4DQuxnHcqLVYNxgOyLEILONOkXXsHhcfhn2vig84Q==}
+    dependencies:
+      '@branchlint/common': 0.0.1
+      lodash: 4.17.21
+      yargs: 17.6.2
+      zod: 3.19.1
     dev: true
 
   /@changesets/apply-release-plan/6.1.1:
@@ -3415,6 +3444,25 @@ packages:
     resolution: {integrity: sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==}
     dev: true
 
+  /inquirer/8.0.1:
+    resolution: {integrity: sha512-BwZ5KPT4cY1Hg6nzhFA0NBx4ae8n1T4zCD0vr1qQMo8EsO+bLLtwfwSyhi7E1i+Dcpi8UNuCQYC7H8QpvOFZzg==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      ansi-escapes: 4.3.2
+      chalk: 4.1.2
+      cli-cursor: 3.1.0
+      cli-width: 3.0.0
+      external-editor: 3.1.0
+      figures: 3.2.0
+      lodash: 4.17.21
+      mute-stream: 0.0.8
+      run-async: 2.4.1
+      rxjs: 6.6.7
+      string-width: 4.2.3
+      strip-ansi: 6.0.1
+      through: 2.3.8
+    dev: true
+
   /inquirer/8.2.4:
     resolution: {integrity: sha512-nn4F01dxU8VeKfq192IjLsxu0/OmMZ4Lg3xKAns148rCaXP6ntAoEkVYZThWjwON8AlzdZZi6oqnhNbxUG9hVg==}
     engines: {node: '>=12.0.0'}
@@ -4848,6 +4896,13 @@ packages:
       queue-microtask: 1.2.3
     dev: true
 
+  /rxjs/6.6.7:
+    resolution: {integrity: sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==}
+    engines: {npm: '>=2.0.0'}
+    dependencies:
+      tslib: 1.14.1
+    dev: true
+
   /rxjs/7.5.7:
     resolution: {integrity: sha512-z9MzKh/UcOqB3i20H6rtrlaE/CgjLOvheWK/9ILrbhROGTweAi1BaFsTT9FbwZi5Trr1qNRs+MXkhmR06awzQA==}
     dependencies:
@@ -5461,7 +5516,7 @@ packages:
       smartwrap: 2.0.2
       strip-ansi: 6.0.1
       wcwidth: 1.0.1
-      yargs: 17.6.0
+      yargs: 17.6.2
     dev: true
 
   /type-check/0.3.2:
@@ -5914,6 +5969,19 @@ packages:
       yargs-parser: 21.1.1
     dev: true
 
+  /yargs/17.6.2:
+    resolution: {integrity: sha512-1/9UrdHjDZc0eOU0HxOHoS78C69UD3JRMvzlJ7S79S2nTaWRA/whGCTV8o9e/N/1Va9YIV7Q4sOxD8VV4pCWOw==}
+    engines: {node: '>=12'}
+    dependencies:
+      cliui: 8.0.1
+      escalade: 3.1.1
+      get-caller-file: 2.0.5
+      require-directory: 2.1.1
+      string-width: 4.2.3
+      y18n: 5.0.8
+      yargs-parser: 21.1.1
+    dev: true
+
   /yn/3.1.1:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
@@ -5934,4 +6002,8 @@ packages:
       validator: 13.7.0
     optionalDependencies:
       commander: 2.20.3
+    dev: true
+
+  /zod/3.19.1:
+    resolution: {integrity: sha512-LYjZsEDhCdYET9ikFu6dVPGp2YH9DegXjdJToSzD9rO6fy4qiRYFoyEYwps88OseJlPyl2NOe2iJuhEhL7IpEA==}
     dev: true
