@@ -1,11 +1,11 @@
-import type { PlaywrightTestConfig } from '@playwright/test';
-import { devices } from '@playwright/test';
+import type { PlaywrightTestConfig } from "@playwright/test";
+import { devices } from "@playwright/test";
 
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-import 'dotenv/config';
+import "dotenv/config";
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -48,6 +48,13 @@ const config: PlaywrightTestConfig = {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: [
+            '--use-fake-device-for-media-stream',
+            '--use-fake-ui-for-media-stream',
+            '--use-file-for-fake-video-capture=./e2e/fixtures/selfie.mjpeg',
+          ],
+        },
       },
     },
 
@@ -55,6 +62,26 @@ const config: PlaywrightTestConfig = {
       name: 'firefox',
       use: {
         ...devices['Desktop Firefox'],
+        launchOptions: {
+          firefoxUserPrefs: {
+            'media.navigator.streams.fake': true,
+            'media.navigator.permission.disabled': true,
+            'media.gstreamer.enabled': false,
+            'browser.cache.disk.enable': false,
+            'browser.cache.disk.capacity': 0,
+            'browser.cache.disk.smart_size.enabled': false,
+            'browser.cache.disk.smart_size.first_run': false,
+            'browser.sessionstore.resume_from_crash': false,
+            'browser.startup.page': 0,
+            'browser.startup.homepage': 'about:blank',
+            'browser.startup.firstrunSkipsHomepage': false,
+            'browser.shell.checkDefaultBrowser': false,
+            'device.storage.enabled': false,
+            'extensions.update.enabled': false,
+            'app.update.enabled': false,
+            'network.http.use-cache': false,
+          },
+        },
       },
     },
 
@@ -62,6 +89,9 @@ const config: PlaywrightTestConfig = {
       name: 'webkit',
       use: {
         ...devices['Desktop Safari'],
+        launchOptions: {
+          args: ['--enable-mock-capture-devices=true', '--enable-media-stream=true'],
+        },
       },
     },
 

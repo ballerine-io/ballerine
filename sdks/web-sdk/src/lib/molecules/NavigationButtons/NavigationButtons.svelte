@@ -1,16 +1,17 @@
 <script lang="ts">
-  import { Button, IconButton, ButtonWithIcon } from '../../atoms';
+  import { Button, ButtonWithIcon, IconButton } from "../../atoms";
   import {
     configuration as globalConfiguration,
     ICSSProperties,
-    IStepConfiguration,
-  } from '../../contexts/configuration';
-  import { goToNextStep, goToPrevStep } from '../../contexts/navigation';
-  import { T } from '../../contexts/translation';
-  import { makesLocalStyles } from '../../utils/css-utils';
-  import { currentStepId } from '../../contexts/app-state';
-  import merge from 'lodash.merge';
-  import { navigationButtons } from '../../default-configuration/theme';
+    IStepConfiguration
+  } from "../../contexts/configuration";
+  import { goToNextStep, goToPrevStep } from "../../contexts/navigation";
+  import { T } from "../../contexts/translation";
+  import { makesLocalStyles } from "../../utils/css-utils";
+  import { currentStepId } from "../../contexts/app-state";
+  import merge from "lodash.merge";
+  import { navigationButtons } from "../../default-configuration/theme";
+
   const { navigationButtons: userConfiguration } = $globalConfiguration;
 
   const configuration = userConfiguration
@@ -22,7 +23,7 @@
 
   const style = makesLocalStyles(configuration.props.style as ICSSProperties);
 
-  const skipType = skipBackSide ? 'back-side' : undefined;
+  const skipType = skipBackSide ? "back-side" : undefined;
 </script>
 
 <div {style} class="navigation-buttons">

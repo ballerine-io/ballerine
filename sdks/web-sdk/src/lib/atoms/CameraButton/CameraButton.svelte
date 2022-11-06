@@ -2,9 +2,9 @@
   import {
     configuration as globalConfiguration,
     ICSSProperties,
-    IElementProps,
-  } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+    IElementProps
+  } from "../../contexts/configuration";
+  import { makeStylesFromConfiguration } from "../../utils/css-utils";
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
@@ -12,7 +12,7 @@
   const style = makeStylesFromConfiguration($globalConfiguration.cameraButton, styleProps);
 </script>
 
-<button {style} on:click> <span class="inner-container" /></button>
+<button {style} on:click aria-label="take picture"><span class="inner-container" /></button>
 
 <style>
   button {
@@ -29,6 +29,7 @@
     cursor: pointer;
     z-index: 2;
   }
+
   .inner-container {
     width: 64px;
     height: 64px;
