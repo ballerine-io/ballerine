@@ -106,7 +106,7 @@ Getting started
 [Click here](#getting-started-with-sdks-flows)
 
 
-<sub>Note - No data is captured and sent anywhere when using the camera in the examples</sub>
+<sub>Note - We don't store any data or documents that are being sent in the examples or demos</sub>
 
 ___
 
@@ -241,10 +241,8 @@ ballerineFlows.on('finish', doSomethingFn)
 Code example:
 ```html
 <script
-  src="https://cdn.ballerine.io/js/1.1.27/ballerine-sdk.umd.js"
-  integrity="sha384-cHxaE8mk7COVrdyKoDw4cdPC6PLoMItItHZ+LwA18bDaiWJLxV2f2zyVf6Q9Vtww"
+  src="https://cdn.ballerine.io/js/1.1.33/ballerine-sdk.umd.js"
   crossorigin="anonymous"
-  type="module"
 ></script>
 <script>
 	const initConfig = {

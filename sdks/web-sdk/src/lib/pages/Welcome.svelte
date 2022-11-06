@@ -12,7 +12,10 @@
   import merge from 'lodash.merge';
   import { layout, welcomeStep } from '../default-configuration/theme';
 
-  const step = merge(welcomeStep, $configuration.steps[Steps.Welcome]);
+  export let stepId;
+
+  const step = merge(welcomeStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 </script>
 
@@ -34,12 +37,12 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key="title" module="welcome" />
+        <T key="title" namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={element.props.context || ''} module="welcome" />
+        <T key={element.props.context || ''} namespace={stepNamespace} />
       </Paragraph>
     {/if}
     {#if element.type === Elements.List}
@@ -53,7 +56,7 @@
         }}
         configuration={element.props}
       >
-        <T key="button" module="welcome" />
+        <T key="button" namespace={stepNamespace} />
       </Button>
     {/if}
   {/each}

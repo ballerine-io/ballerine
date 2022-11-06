@@ -4,7 +4,8 @@ import {
   setFlowCallbacks,
   updateConfiguration,
   updateTranslations,
-} from './lib/utils/configuration-management';
+} from './lib/utils/configuration-manager';
+import { BallerineSDKFlows } from './types/BallerineSDK';
 import { getConfigFromQueryParams } from './lib/utils/get-config-from-query-params';
 
 export const flows: BallerineSDKFlows = {

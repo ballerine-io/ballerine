@@ -14,7 +14,10 @@
   import merge from 'lodash.merge';
   import { DecisionStatus } from '../contexts/app-state/types';
 
-  const step = merge(declineStep, $configuration.steps[Steps.Decline]);
+  export let stepId;
+
+  const step = merge(declineStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   const handleClose = () => {
@@ -36,17 +39,17 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key="title" module="decline" />
+        <T key="title" namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.ErrorText}
       <ErrorText configuration={element.props}>
-        <T key="description" module="decline" />
+        <T key="description" namespace={stepNamespace} />
       </ErrorText>
     {/if}
     {#if element.type === Elements.Button}
       <Button configuration={element.props} on:click={handleClose}>
-        <T key="button" module="decline" />
+        <T key="button" namespace={stepNamespace} />
       </Button>
     {/if}
   {/each}

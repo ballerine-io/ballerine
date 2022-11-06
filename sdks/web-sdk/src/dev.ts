@@ -38,11 +38,43 @@ const ballerineInitConfig: FlowsInitOptions = {
           { name: Steps.Selfie, id: Steps.Selfie },
           { name: Steps.CheckSelfie, id: Steps.CheckSelfie },
           { name: Steps.Loading, id: Steps.Loading },
+          { name: Steps.Final, id: Steps.Final },
         ],
       },
       ['my-kyb-flow']: {
         steps: [
           { name: Steps.Welcome, id: Steps.Welcome },
+          {
+            name: Steps.DocumentStart,
+            id: Steps.DocumentStart,
+            type: DocumentType.BUSINESS_REGISTRATION,
+          },
+          {
+            name: Steps.DocumentPhoto,
+            id: Steps.DocumentPhoto,
+            type: DocumentType.BUSINESS_REGISTRATION,
+          },
+          {
+            name: Steps.DocumentStart,
+            id: Steps.DocumentStart,
+            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
+          },
+          {
+            name: Steps.DocumentPhoto,
+            id: Steps.DocumentPhoto,
+            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
+          },
+
+          {
+            name: Steps.DocumentStart,
+            id: Steps.DocumentStart,
+            type: DocumentType.BANK_STATEMENT,
+          },
+          {
+            name: Steps.DocumentPhoto,
+            id: Steps.DocumentPhoto,
+            type: DocumentType.BANK_STATEMENT,
+          },
           {
             name: Steps.DocumentSelection,
             id: Steps.DocumentSelection,
@@ -53,38 +85,10 @@ const ballerineInitConfig: FlowsInitOptions = {
             ],
           },
           { name: Steps.DocumentPhoto, id: Steps.DocumentPhoto },
-          {
-            name: Steps.DocumentStart,
-            id: 'document-start-business-reg',
-            type: DocumentType.BUSINESS_REGISTRATION,
-          },
-          {
-            name: Steps.DocumentPhoto,
-            id: 'document-photo-business-reg',
-            type: DocumentType.BUSINESS_REGISTRATION,
-          },
-          {
-            name: Steps.DocumentStart,
-            id: 'document-start-business-tax',
-            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
-          },
-          {
-            name: Steps.DocumentPhoto,
-            id: 'document-photo-business-tax',
-            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
-          },
-
-          {
-            name: Steps.DocumentStart,
-            id: 'document-start-business-statement',
-            type: DocumentType.BANK_STATEMENT,
-          },
-          {
-            name: Steps.DocumentPhoto,
-            id: 'document-photo-business-statement',
-            type: DocumentType.BANK_STATEMENT,
-          },
+          { name: Steps.DocumentPhotoBackStart, id: Steps.DocumentPhotoBackStart },
+          { name: Steps.DocumentPhotoBack, id: Steps.DocumentPhotoBack },
           { name: Steps.Loading, id: Steps.Loading },
+          { name: Steps.Final, id: Steps.Final },
         ],
       },
     },
@@ -92,5 +96,5 @@ const ballerineInitConfig: FlowsInitOptions = {
 };
 
 void flows.init(ballerineInitConfig).then(() => {
-  flows.openModal('my-kyc-flow', 'app', {});
+  flows.openModal('my-kyc-flow', {});
 });

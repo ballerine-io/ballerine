@@ -12,7 +12,10 @@
   import merge from 'lodash.merge';
   import { checkSelfieStep, layout } from '../default-configuration/theme';
 
-  const step = merge(checkSelfieStep, $configuration.steps[Steps.CheckSelfie]);
+  export let stepId;
+
+  const step = merge(checkSelfieStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 </script>
 
@@ -29,12 +32,12 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key="title" module="check-selfie" />
+        <T key="title" namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key="description" module="check-selfie" />
+        <T key="description" namespace={stepNamespace} />
       </Paragraph>
     {/if}
   {/each}

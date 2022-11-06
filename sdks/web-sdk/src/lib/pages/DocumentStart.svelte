@@ -12,10 +12,10 @@
   import { documentStartStep, layout } from '../default-configuration/theme';
   import merge from 'lodash.merge';
 
-  const step = merge(
-    documentStartStep,
-    $configuration.steps[Steps.DocumentStart],
-  ) as IStepConfiguration;
+  export let stepId;
+
+  const step = merge(documentStartStep, $configuration.steps[stepId]) as IStepConfiguration;
+  
 
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
@@ -25,6 +25,7 @@
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
   }
+  const stepNamespace = `${step.namespace }.${documentType}`;
 
   const handleGoToNextStep = async () => {
     try {
@@ -68,12 +69,12 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key={`${documentType}-title`} module="document-start" />
+        <T key={'title'} namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={`${documentType}-description`} module="document-start" />
+        <T key={'description'} namespace={stepNamespace} />
       </Paragraph>
     {/if}
     {#if element.type === Elements.Button}
@@ -88,7 +89,7 @@
           />
         {/if}
         <Button on:click={handleGoToNextStep} configuration={element.props}>
-          <T key={`${documentType}-button`} module="document-start" />
+          <T key={'button'} namespace={stepNamespace} />
         </Button>
       </div>
     {/if}

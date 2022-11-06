@@ -68,11 +68,11 @@
   </Container>
   <div class="text-container">
     <Paragraph configuration={configuration.titleProps} active={hover || active}>
-      <T key={`${document.type}-title`} module="document-options" />
+      <T key={`${document.type}-title`} namespace="document-options" />
     </Paragraph>
     {#if configuration.descriptionProps}
       <Paragraph configuration={configuration.descriptionProps} active={hover || active}>
-        <T key={`${document.type}-description`} module="document-options" />
+        <T key={`${document.type}-description`} namespace="document-options" />
       </Paragraph>
     {/if}
   </div>

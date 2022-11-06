@@ -43,6 +43,7 @@ const updateSteps = async (steps: {
   const stepsKeys = Object.keys(steps);
   for (let i = 0; i < stepsKeys.length; i++) {
     const step = steps[stepsKeys[i]];
+    step.namespace = step.namespace || step.id || step.name;
     if (step.elements) {
       for (let j = 0; j < step.elements.length; j++) {
         const element = step.elements[j];
@@ -120,6 +121,12 @@ export const mergeConfig = (
   return newConfig;
 };
 
+const calcualteStepId = (step: RecursivePartial<IStepConfiguration>) => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  if (!step.id || step.id === step.name) return `${step.name!}${step.type ? '-' + step.type : ''}`;
+  return step.id;
+};
+
 const v1adapter = (
   config: RecursivePartial<FlowsInitOptions>,
 ):
@@ -139,11 +146,11 @@ const v1adapter = (
       };
       if (steps) {
         newFlows[flowName].stepsOrder = steps
-          .map(step => step?.id)
+          .map(e => calcualteStepId(e!))
           // Not using !!v | Boolean(v) to be more explicit.
           .filter((v): v is string => typeof v === 'string'); // check ts
       }
-      const stepsConfig = toObjByKey(steps, (e: IStepConfiguration) => e.id);
+      const stepsConfig = toObjByKey(steps, calcualteStepId);
       flowSteps = {
         ...flowSteps,
         ...stepsConfig,

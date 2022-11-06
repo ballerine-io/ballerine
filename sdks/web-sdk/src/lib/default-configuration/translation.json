@@ -22,77 +22,96 @@
       "voter_id-description": "Government-issued Voter ID"
     },
     "document-start": {
-      "proofOfBusinessTaxID-title": "TIN ID / Certificate",
-      "proofOfBusinessTaxID-button": "Take a picture",
-      "proofOfBusinessTaxID-description": "Please take a picture of your business TIN ID or certificate. Make sure the document is fully visible inside the picture.",
-      "bankStatement-title": "Bank Statement/Letter",
-      "bankStatement-button": "Take a picture",
-      "bankStatement-description": "Please take a picture of a bank statement or of a letter from the bank. Make sure the document is fully visible inside the picture.",
-      "businessRegistration-title": "Business Registration",
-      "businessRegistration-button": "Take a picture",
-      "businessRegistration-description": "Please take a picture of your business registration document. Make sure the document is fully visible inside the picture.",
-      "operatingLicense-title": "Operating license",
-      "operatingLicense-button": "Take a picture",
-      "operatingLicense-description": "Please take a picture of your business’s operating license. Make sure the document is fully visible inside the picture."
+      "title": "Document",
+      "button": "Take a picture",
+      "description": "Please take a picture of your document. Make sure its fully visible inside the picture.",
+      "operating_license": {
+        "title": "Operating license",
+        "button": "Take a picture",
+        "description": "Please take a picture of your business’s operating license. Make sure the document is fully visible inside the picture."
+      },
+      "business_registration": {
+        "title": "Business Registration",
+        "button": "Take a picture",
+        "description": "Please take a picture of your business registration document. Make sure the document is fully visible inside the picture."
+      },
+      "proof_of_business_tax_id": {
+        "title": "TIN ID / Certificate",
+        "button": "Take a picture",
+        "description": "Please take a picture of your business TIN ID or certificate. Make sure the document is fully visible inside the picture."
+      },
+      "bank_statement": {
+        "title": "Bank Statement/Letter",
+        "button": "Take a picture",
+        "description": "Please take a picture of a bank statement or of a letter from the bank. Make sure the document is fully visible inside the picture."
+      }
     },
     "document-photo": {
-      "id_card-title": "Upload ID",
-      "id_card-description": "To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
-      "passport-title": "Passport",
-      "passport-description": "Place your passport inside the frame and take a \npicture. \nMake sure it is not cut or has any glare.",
-      "voter_id-title": "Voter ID front side",
-      "voter_id-description": "Place your voter card inside the frome and take a picture. \nMake sure it is not cut or has any glare.",
-      "drivers_license-title": "Drivers license",
-      "drivers_license-description": "Place your drivers license inside the frame and take \na picture. \nMake sure it is not cut or has any glare.",
-      "proofOfBusinessTaxID-title": "TIN ID / Certificate",
-      "proofOfBusinessTaxID-button": "Take a picture",
-      "proofOfBusinessTaxID-description": "Please take a picture of your business TIN ID or certificate. Make sure the document is fully visible inside the picture.",
-      "bankStatement-title": "Bank Statement/Letter",
-      "bankStatement-button": "Take a picture",
-      "bankStatement-description": "Please take a picture of a bank statement or of a letter from the bank. Make sure the document is fully visible inside the picture.",
-      "businessRegistration-title": "Business Registration",
-      "businessRegistration-button": "Take a picture",
-      "businessRegistration-description": "Please take a picture of your business registration document. Make sure the document is fully visible inside the picture.",
-      "operatingLicense-title": "Operating license",
-      "operatingLicense-button": "Take a picture",
-      "operatingLicense-description": "Please take a picture of your business’s operating license. Make sure the document is fully visible inside the picture."
+      "title": "Document Upload",
+      "description": "Place the document inside the frame and take a picture. Make sure it is not cut or has any glare.",
+      "id_card": {
+        "title": "Upload ID",
+        "description": "Place your ID inside the from and take a picture. \nMake sure it is not cut or has any glare."
+      },
+      "passport": {
+        "title": "Passport",
+        "description": "Place your passport inside the frame and take a \npicture. \nMake sure it is not cut or has any glare."
+      },
+      "voter_id": {
+        "title": "Voter ID front side",
+        "description": "Place your voter card inside the frome and take a picture. \nMake sure it is not cut or has any glare."
+      },
+      "drivers_license": {
+        "title": "Drivers license",
+        "description": "Place your drivers license inside the frame and take \na picture. \nMake sure it is not cut or has any glare."
+      },
+      "business-tax": {
+        "title": "Business TIN ID/certificate",
+        "description": "Place the business TIN ID/certificate inside the frame and take a picture. Make sure it is not cut or has any glare."
+      },
+      "business-statement": {
+        "title": "Bank Statement/Letter",
+        "description": "Place the bank Statement/letter inside the frame and take a picture. Make sure it is not cut or has any glare."
+      },
+      "business-reg": {
+        "title": "Business Registration",
+        "description": "Place the business registration document inside the frame and take a picture. Make sure it is not cut or has any glare."
+      },
+      "operating_license": {
+        "title": "Operating license",
+        "description": "Place the operating license document inside the frame and take a picture. Make sure it is not cut or has any glare."
+      }
     },
     "document-photo-back": {
-      "id_card-title": "Upload ID",
-      "id_card-description": "To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
-      "passport-title": "Upload ID",
-      "passport-description": "To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
-      "voter_id-title": "Voter ID back side",
-      "voter_id-description": "Place the back side of your Voter ID inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare.",
-      "drivers_license-title": "Drivers license back side",
-      "drivers_license-description": "Place the back side of your Drivers license inside \nthe frame and take a picture. \nMake sure it is not cut or has any glare."
+      "id_card": {
+        "title": "ID Card back side",
+        "description": "Place the back side of your ID Card inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
+      },
+      "voter_id": {
+        "title": "Voter ID back side",
+        "description": "Place the back side of your Voter ID inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
+      },
+      "drivers_license": {
+        "title": "Drivers license back side",
+        "description": "Place the back side of your Drivers license inside \nthe frame and take a picture. \nMake sure it is not cut or has any glare."
+      }
     },
     "check-document": {
-      "id_card-title": "Review picture",
-      "id_card-description": "Make sure the information is seen clearly, with no blur \nor glare.",
-      "passport-title": "Review picture",
-      "passport-description": "Make sure the information is seen clearly, with no blur \nor glare.",
-      "voter_id-title": "Review picture",
-      "voter_id-description": "Make sure the information is seen clearly, with no blur \nor glare.",
-      "drivers_license-title": "Review picture",
-      "drivers_license-description": "Make sure the information is seen clearly, with no blur \nor glare.",
-      "proofOfBusinessTaxID-title": "Review picture",
-      "proofOfBusinessTaxID-description": "Make sure the information is seen clearly, with no blur or glare.",
-      "bankStatement-title": "Review picture",
-      "bankStatement-description": "Make sure the information is seen clearly, with no blur or glare.",
-      "businessRegistration-title": "Review picture",
-      "businessRegistration-description": "Make sure the information is seen clearly, with no blur or glare.",
-      "operatingLicense-title": "Review picture",
-      "operatingLicense-description": "Make sure the information is seen clearly, with no blur or glare."
+      "title": "Review picture",
+      "description": "Make sure the information is seen clearly, with no blur \nor glare."
     },
     "document-photo-back-start": {
       "title": "ID back side",
       "description": "Please take a picture of the back side of your ID",
       "button": "Take photo",
-      "voter_id-title": "Voter ID back side",
-      "voter_id-description": "Please take a picture of the back side of your Voter ID",
-      "drivers_license-title": "Drivers license back side",
-      "drivers_license-description": "Please take a picture of the back side of your Drivers \nlicense"
+      "voter_id": {
+        "description": "Please take a picture of the back side of your Voter ID",
+        "title": "Voter ID back side"
+      },
+      "drivers_license": {
+        "title": "Drivers license back side",
+        "description": "Please take a picture of the back side of your Drivers \nlicense"
+      }
     },
     "check-document-photo-back": {
       "title": "Review picture",
@@ -206,18 +225,18 @@
       "voter_id-description": "es: Place your voter card inside the frome and take a picture. \nMake sure it is not cut or has any glare.",
       "drivers_license-title": "es: Drivers license",
       "drivers_license-description": "es: Place your drivers license inside the frame and take \na picture. \nMake sure it is not cut or has any glare.",
-      "proofOfBusinessTaxID-title": "TIN ID / Certificate",
-      "proofOfBusinessTaxID-button": "Take a picture",
-      "proofOfBusinessTaxID-description": "Please take a picture of your business TIN ID or certificate. Make sure the document is fully visible inside the picture.",
-      "bankStatement-title": "Bank Statement/Letter",
-      "bankStatement-button": "Take a picture",
-      "bankStatement-description": "Please take a picture of a bank statement or of a letter from the bank. Make sure the document is fully visible inside the picture.",
-      "businessRegistration-title": "Business Registration",
-      "businessRegistration-button": "Take a picture",
-      "businessRegistration-description": "Please take a picture of your business registration document. Make sure the document is fully visible inside the picture.",
-      "operatingLicense-title": "Operating license",
-      "operatingLicense-button": "Take a picture",
-      "operatingLicense-description": "Please take a picture of your business’s operating license. Make sure the document is fully visible inside the picture."
+      "proof_of_business_tax_id-title": "TIN ID / Certificate",
+      "proof_of_business_tax_id-button": "Take a picture",
+      "proof_of_business_tax_id-description": "Please take a picture of your business TIN ID or certificate. Make sure the document is fully visible inside the picture.",
+      "bank_statement-title": "Bank Statement/Letter",
+      "bank_statement-button": "Take a picture",
+      "bank_statement-description": "Please take a picture of a bank statement or of a letter from the bank. Make sure the document is fully visible inside the picture.",
+      "business_registration-title": "Business Registration",
+      "business_registration-button": "Take a picture",
+      "business_registration-description": "Please take a picture of your business registration document. Make sure the document is fully visible inside the picture.",
+      "operating_license-title": "Operating license",
+      "operating_license-button": "Take a picture",
+      "operating_license-description": "Please take a picture of your business’s operating license. Make sure the document is fully visible inside the picture."
     },
     "document-photo-back": {
       "id_card-title": "es: Upload ID",
