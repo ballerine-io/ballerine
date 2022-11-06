@@ -25,8 +25,8 @@ export const goToNextStep = (
   currentStepId: string,
   skipType?: string,
 ) => {
-  const flows = getFlowOrders(globalConfiguration) as string[];
-  const filteredFlows = filterOutByType(flows, globalConfiguration, skipType);
+  const stepsOrder = getFlowOrders(globalConfiguration) as string[];
+  const filteredFlows = filterOutByType(stepsOrder, globalConfiguration, skipType);
   const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
   if (currentFlowIndex === filteredFlows.length) {
     throw Error('Error moving next step, this is the last step');

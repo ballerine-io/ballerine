@@ -25,7 +25,7 @@
   const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions);
   const documentType =
     ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
-  const stepNamespace = `${step.namespace }.${documentType}`;
+  const stepNamespace = `${step.namespace}.${documentType}`;
 
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);

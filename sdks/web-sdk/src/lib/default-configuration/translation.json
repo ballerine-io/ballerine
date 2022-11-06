@@ -65,15 +65,15 @@
         "title": "Drivers license",
         "description": "Place your drivers license inside the frame and take \na picture. \nMake sure it is not cut or has any glare."
       },
-      "business-tax": {
+      "proof_of_business_tax_id": {
         "title": "Business TIN ID/certificate",
         "description": "Place the business TIN ID/certificate inside the frame and take a picture. Make sure it is not cut or has any glare."
       },
-      "business-statement": {
+      "bank_statement": {
         "title": "Bank Statement/Letter",
         "description": "Place the bank Statement/letter inside the frame and take a picture. Make sure it is not cut or has any glare."
       },
-      "business-reg": {
+      "business_registration": {
         "title": "Business Registration",
         "description": "Place the business registration document inside the frame and take a picture. Make sure it is not cut or has any glare."
       },
