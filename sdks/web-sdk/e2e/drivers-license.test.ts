@@ -23,7 +23,7 @@ test('Drivers License', async ({ page }) => {
 
   await takePicture.click();
 
-  let submit = page.getByRole('button', { name: /looks\sgood/i });
+  let submit = page.getByRole('button', { name: /looks\sgood/i }).first();
 
   await submit.click();
 
@@ -38,7 +38,7 @@ test('Drivers License', async ({ page }) => {
 
   await takePicture.click();
 
-  submit = page.getByRole('button', { name: /looks\sgood/i });
+  submit = page.getByRole('button', { name: /looks\sgood/i }).first();
 
   await submit.click();
 
@@ -51,7 +51,7 @@ test('Drivers License', async ({ page }) => {
 
   await takePicture.click();
 
-  submit = page.getByRole('button', { name: /looks\sgood/i });
+  submit = page.getByRole('button', { name: /looks\sgood/i }).first();
 
   await submit.click();
 
