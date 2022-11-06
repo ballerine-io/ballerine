@@ -90,7 +90,11 @@ const config: PlaywrightTestConfig = {
       use: {
         ...devices['Desktop Safari'],
         launchOptions: {
-          args: ['--enable-mock-capture-devices=true', '--enable-media-stream=true'],
+          args: [
+            '--use-fake-device-for-media-stream',
+            '--use-fake-ui-for-media-stream',
+            '--use-file-for-fake-video-capture=./e2e/fixtures/selfie.mjpeg',
+          ],
         },
       },
     },
