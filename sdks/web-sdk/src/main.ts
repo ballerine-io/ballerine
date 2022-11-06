@@ -1,4 +1,5 @@
 import ConfigurationProvider from './ConfigurationProvider.svelte';
+import { BallerineSDKFlows } from './types/BallerineSDK';
 import {
   setFlowCallbacks,
   updateConfiguration,
