@@ -31,7 +31,7 @@
       configuration={configuration.backButton.props}
       on:click={() => goToPrevStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >
-      <T key="back" module="navigation-buttons" />
+      <T key="back" namespace="navigation-buttons" />
     </Button>
   {:else if configuration.backButton.type === 'iconButton'}
     <IconButton
@@ -43,7 +43,7 @@
       configuration={configuration.backButton.props}
       on:click={() => goToPrevStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >
-      <T key="back" module="navigation-buttons" />
+      <T key="back" namespace="navigation-buttons" />
     </ButtonWithIcon>
   {/if}
   {#if configuration.nextButton.type === 'button'}
@@ -51,7 +51,7 @@
       configuration={configuration.nextButton.props}
       on:click={() => goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >
-      <T key="next" module="navigation-buttons" />
+      <T key="next" namespace="navigation-buttons" />
     </Button>
   {:else if configuration.nextButton.type === 'iconButton'}
     <IconButton
@@ -63,7 +63,7 @@
       configuration={configuration.nextButton.props}
       on:click={() => goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >
-      <T key="next" module="navigation-buttons" />
+      <T key="next" namespace="navigation-buttons" />
     </ButtonWithIcon>
   {/if}
 </div>

@@ -2,6 +2,7 @@ import { IAppConfiguration, IStepConfiguration } from '../configuration';
 import { steps } from './constants';
 import { getFlowOrders } from '../flows/hooks';
 import { Writable } from '../../../../node_modules/svelte/types/runtime/store/index';
+import { debug } from 'svelte/internal';
 
 const filterOutByType = (flowIds: string[], configuration: IAppConfiguration, type?: string) => {
   if (!type) return flowIds;

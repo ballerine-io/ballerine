@@ -12,11 +12,10 @@
   import merge from 'lodash.merge';
   import { documentPhotoBackStartStep, layout } from '../default-configuration/theme';
 
-  const step = merge(
-    documentPhotoBackStartStep,
-    $configuration.steps[Steps.DocumentPhotoBackStart],
-  );
+  export let stepId;
 
+  const step = merge(documentPhotoBackStartStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   let documentInfo: IDocumentInfo | undefined = undefined;
@@ -54,12 +53,12 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key="title" module="document-photo-back-start" />
+        <T key="title" namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key="description" module="document-photo-back-start" />
+        <T key="description" namespace={stepNamespace} />
       </Paragraph>
     {/if}
     {#if element.type === Elements.Button}
@@ -77,7 +76,7 @@
           on:click={() => goToNextStep(currentStepId, $configuration, $currentStepId)}
           configuration={element.props}
         >
-          <T key="button" module="document-photo-back-start" />
+          <T key="button" namespace={stepNamespace} />
         </Button>
       </div>
     {/if}

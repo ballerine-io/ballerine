@@ -60,17 +60,17 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key="title" module="registration" />
+        <T key="title" namespace="registration" />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key="description" module="registration" />
+        <T key="description" namespace="registration" />
       </Paragraph>
     {/if}
     {#if element.type === Elements.Button}
       <Button configuration={element.props}>
-        <T key="button" module="registration" />
+        <T key="button" namespace="registration" />
       </Button>
     {/if}
   {/each}

@@ -14,17 +14,18 @@
   import merge from 'lodash.merge';
   import { layout } from '../default-configuration/theme';
 
+  export let stepId;
+
   let video: HTMLVideoElement;
   let container: HTMLDivElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = merge(documentPhotoStep, $configuration.steps[Steps.DocumentPhoto]);
-
+  const step = merge(documentPhotoStep, $configuration.steps[stepId]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
   const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions);
-
   const documentType =
     ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+  const stepNamespace = `${step.namespace }.${documentType}`;
 
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
@@ -103,12 +104,12 @@
     {#each step.elements as element}
       {#if element.type === Elements.Title}
         <Title configuration={element.props}>
-          <T key={`${documentType}-title`} module="document-photo" />
+          <T key={'title'} namespace={stepNamespace} />
         </Title>
       {/if}
       {#if element.type === Elements.Paragraph}
         <Paragraph configuration={element.props}>
-          <T key={`${documentType}-description`} module="document-photo" />
+          <T key={'description'} namespace={stepNamespace} />
         </Paragraph>
       {/if}
     {/each}
