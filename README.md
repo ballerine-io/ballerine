@@ -97,7 +97,7 @@ The SDK UI is embeddable inside existing apps or deployed as a web app.
 * Lightweight and performant, built with Svelte (**less than 50kb gzipped**).
 
 Live demos:
-[KYC](https://simple-kyc-demo.ballerine.app/), [KYB](https://simple-kyb-demo.ballerine.app/)
+[KYC](https://simple-kyc-demo.ballerine.app/)
 
 Playground:
 [jsfiddle](https://jsfiddle.net/ballerine/7d0g53xn)
