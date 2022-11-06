@@ -51,30 +51,26 @@ pnpm dev
 ## First commit
 
 ### Branch name
-To keep branch names consistent and descriptive in the context of open-source we use a format of your-name/type/subject where type is one of the following:
-build | chore | ci | docs | feat | fix | perf | refactor | revert | style | test
-and subject is the main objective of the branch i.e the feature's name.
+This project makes use of [branchlint](https://github.com/Omri-Levy/branchlint) to ensure that all branch names follow a consistent format with a CLI to help with the process of creating a new branch, setting upstream, and checking out to the new branch.
 
 ### Commit message
 This project makes use of tools like [commitizen](https://github.com/commitizen/cz-cli) and [commitlint](https://github.com/conventional-changelog/commitlint) to ensure that all commits follow a consistent commit message format with a CLI to help with the process of pushing a commit.
 
-1. Create a new branch
+1. Create a new branch, set upstream, and checkout to the new branch
+
+Make sure to run this NPM script in the root of the monorepo and follow the CLI prompts.
+
 ```bash
-git checkout -b your-name/type/subject
+pnpm branchlint
 ```
 
-2. Set upstream
-```bash
-git push -u origin your-name/type/subject
-```
-
-3. Make your changes
+2. Make your changes
 
 ```bash
 pnpm changeset
 ```
 
-4. Push a formatted commit
+3. Push a formatted commit
 
 Make sure to run this NPM script in the root of the monorepo and follow the CLI prompts.
 
@@ -82,16 +78,16 @@ Make sure to run this NPM script in the root of the monorepo and follow the CLI 
 pnpm commit
 ```
 
-5. Push the commit
+4. Push the commit
 ```bash
 git push
 ```
 
-6. GitHub Actions
+5. GitHub Actions
 
 Now that the changes are pushed to the remote branch, GitHub Actions will run workflows for building, testing, linting, and formatting. Before creating a pull request, make sure that all workflows have passed.
 
-7. Create a pull request
+6. Create a pull request
 
 When creating a pull request, make sure to follow the pull request template.
 
