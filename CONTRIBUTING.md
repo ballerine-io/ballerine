@@ -12,6 +12,7 @@ We accept contributions in different sizes and varied difficulty, from documenta
 
 - Join our [Discord](https://discord.gg/e2rQE4YygA) or [Slack](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw)
 - Head to our [documentation](README.md)
+- Contact us at [oss@ballerine.io](mailto:oss@ballerine.io)
 
 ## Prerequisites
 
@@ -69,15 +70,11 @@ git push -u origin your-name/type/subject
 
 3. Make your changes
 
-4. Make a changeset
-
-Running the following NPM script from the root of the monorepo will prompt you for which packages your change affects and ask for a summary of the change. This will create a markdown file in the .changeset directory to be committed with your changes where the summary will be a part of the changelog for when a release is made.
-
 ```bash
 pnpm changeset
 ```
 
-5. Push a formatted commit
+4. Push a formatted commit
 
 Make sure to run this NPM script in the root of the monorepo and follow the CLI prompts.
 
