@@ -23,6 +23,7 @@
     "kyb"
   ],
   "scripts": {
+    "branchlint": "branchlint -u -c --prefix \"$(git config --global user.name)\"",
     "format": "nx run-many --target=format",
     "lint": "nx run-many --target=lint",
     "lint:fix": "nx run-many --target=lint:fix",
@@ -49,12 +50,14 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "@commitlint/cli": "^17.1.2",
-    "@commitlint/config-conventional": "^17.1.0",
+    "@branchlint/cli": "^1.0.3",
+    "@branchlint/default-config": "^1.0.1",
     "@changesets/changelog-git": "^0.1.13",
     "@changesets/cli": "^2.25.0",
-    "cz-conventional-changelog": "^3.3.0",
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
     "commitizen": "^4.2.5",
+    "cz-conventional-changelog": "^3.3.0",
     "editorconfig": "^1.0.1",
     "husky": "^8.0.1",
     "nx": "15.0.2",
