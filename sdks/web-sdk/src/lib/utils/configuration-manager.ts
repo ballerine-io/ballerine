@@ -122,7 +122,8 @@ export const mergeConfig = (
 };
 
 const calcualteStepId = (step: RecursivePartial<IStepConfiguration>) => {
-  if (!step.id || step.id === step.name) return `${step.name}${step.type ? '-' + step.type : ''}`;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  if (!step.id || step.id === step.name) return `${step.name!}${step.type ? '-' + step.type : ''}`;
   return step.id;
 };
 

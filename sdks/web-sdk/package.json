@@ -45,7 +45,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "format": "prettier --write \"./src/**/*.{js,svelte,html,ts}\"",
     "lint": "eslint \"./src/**/*.{js,ts,svelte}\"",
-    "lint:fix": "yarn lint --fix",
+    "lint:fix": "pnpm lint --fix",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "build:examples": "npm run build && for i in ./examples/sdk ./examples/standalone; do cp -R ./dist/ballerine-sdk.umd.js $i; done",
