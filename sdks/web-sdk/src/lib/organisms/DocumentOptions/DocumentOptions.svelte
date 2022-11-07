@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { toast } from '@zerodevx/svelte-toast';
   import { configuration, IStepConfiguration } from '../../contexts/configuration';
   import DocumentOption from '../../molecules/DocumentOption/DocumentOption.svelte';
   import { goToNextStep } from '../../contexts/navigation';
@@ -10,6 +11,7 @@
     selectedDocumentInfo,
   } from '../../contexts/app-state/stores';
   import { addDocument } from '../../utils/photo-utils';
+  import { t } from '../../contexts/translation/hooks';
   import { isNativeCamera } from '../../contexts/flows/hooks';
   import { IDocumentOption } from '../../molecules/DocumentOption';
   import merge from 'lodash.merge';
@@ -35,8 +37,7 @@
       await navigator.mediaDevices.getUserMedia({ video: true });
       goToNextStep(currentStepId, $configuration, $currentStepId);
     } catch (error) {
-      $currentParams = { message: 'Camera not found or access is not provided' };
-      $currentStepId = 'error';
+      toast.push(t('general', 'errorCameraAccess'));
     }
   };
 

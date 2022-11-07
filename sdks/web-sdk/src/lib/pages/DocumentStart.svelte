@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { toast } from '@zerodevx/svelte-toast';
   import { T } from '../contexts/translation';
   import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
@@ -6,6 +7,7 @@
   import { Elements, IStepConfiguration } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
+  import { t } from '../contexts/translation/hooks';
   import { isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { currentParams, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
@@ -15,7 +17,7 @@
   export let stepId;
 
   const step = merge(documentStartStep, $configuration.steps[stepId]) as IStepConfiguration;
-  
+
 
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
@@ -32,8 +34,7 @@
       await navigator.mediaDevices.getUserMedia({ video: true });
       goToNextStep(currentStepId, $configuration, $currentStepId);
     } catch (error) {
-      $currentParams = { message: 'Camera not found or access is not provided' };
-      $currentStepId = 'error';
+      toast.push(t('general', 'errorCameraAccess'));
     }
   };
 
