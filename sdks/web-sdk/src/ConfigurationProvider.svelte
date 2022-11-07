@@ -5,6 +5,8 @@
   import { isMobile } from './lib/utils/is-mobile';
 
   let loading = true;
+  let modalOpened = true;
+  let mounted = true;
 
   onMount(async () => {
     loading = false;
@@ -15,7 +17,6 @@
   export let flowName: string;
 
   export let useModal = false;
-  let modalOpened = true;
 
   window.addEventListener(
     'message',
@@ -23,7 +24,9 @@
       const event = e.data as IOuterEvent;
       if (event.eventName !== 'blrn_event') return;
       if (event.shouldExit) {
+        console.log(1)
         modalOpened = false;
+        mounted = false;
       }
     },
     false,
@@ -39,7 +42,9 @@
     </div>
   {/if}
 {:else if !loading}
-  <App {flowName} />
+  {#if mounted}
+    <App {flowName} />
+  {/if}
 {/if}
 
 <style>

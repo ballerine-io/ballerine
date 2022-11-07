@@ -39,6 +39,7 @@ export const sendFlowCompleteEvent = (verificationResponse: IDocumentVerificatio
   const eventOptions = {
     eventName: 'blrn_event',
     eventType: 'sync_flow_complete',
+    shouldExit: true,
     payload,
   };
 

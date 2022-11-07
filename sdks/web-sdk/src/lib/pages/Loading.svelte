@@ -1,7 +1,7 @@
 <script lang="ts">
   import { toast } from '@zerodevx/svelte-toast';
   import { FlyingText, Loader } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import {
     currentParams,

@@ -1,15 +1,14 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
   import { onDestroy } from 'svelte';
-  import { Image, Button, Title } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
-  import { currentParams } from '../contexts/app-state';
+  import { Image, Button, Title, IconCloseButton } from '../atoms';
+  import { configuration } from '../contexts/configuration';
+  import { appState, currentParams } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
-  import { sendFlowCompleteEvent } from '../utils/event-service';
+  import { sendButtonClickEvent, sendFlowCompleteEvent } from '../utils/event-service';
   import { flowError } from '../services/analytics';
-  import { addCloseToURLParams } from '../contexts/navigation/hooks';
   import merge from 'lodash.merge';
   import { errorStep, layout } from '../default-configuration/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
@@ -24,7 +23,6 @@
 
   const handleClose = () => {
     sendFlowCompleteEvent({ status: 'error', idvResult: DecisionStatus.DECLINED });
-    addCloseToURLParams();
   };
 
   flowError();
@@ -38,6 +36,14 @@
   {#each step.elements as element}
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent('close', { status: 'document_collection' }, $appState, true);
+        }}
+      />
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
