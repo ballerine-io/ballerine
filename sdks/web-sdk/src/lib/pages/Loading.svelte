@@ -27,7 +27,10 @@
 
   const WAITING_TIME = 1000 * 60 * 3; // 3 minutes
 
-  const step = merge(loadingStep, $configuration.steps[Steps.Loading]);
+  export let stepId;
+
+  const step = merge(loadingStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   let timeout: number;
@@ -128,7 +131,7 @@
       <div class="text-container">
         <FlyingText
           texts={[
-            { text: t('loader', 'text-one'), startTime: 3000, endTime: 5000 },
+            { text: t('loader', 'text-one'), startTime: 10, endTime: 5000 },
             { text: t('loader', 'text-two'), startTime: 6000, endTime: 'infinity' },
           ]}
         />

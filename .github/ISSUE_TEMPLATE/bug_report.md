@@ -1,5 +1,11 @@
-### Subject
-Bug - subject of the issue
+---
+name: Bug report
+about: Create a report to help us improve
+title: Bug - subject of the issue
+labels: bug
+assignees: ''
+
+---
 
 ### Description
 Elaborate on the subject, motivation, and context.

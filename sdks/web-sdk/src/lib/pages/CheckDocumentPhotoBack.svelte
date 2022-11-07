@@ -11,10 +11,10 @@
   import merge from 'lodash.merge';
   import { checkDocumentPhotoBackStep, layout } from '../default-configuration/theme';
 
-  const step = merge(
-    checkDocumentPhotoBackStep,
-    $configuration.steps[Steps.CheckDocumentPhotoBack],
-  );
+  export let stepId;
+
+  const step = merge(checkDocumentPhotoBackStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   let image: string;
@@ -41,12 +41,12 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key="title" module="check-document-photo-back" />
+        <T key="title" namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key="description" module="check-document-photo-back" />
+        <T key="description" namespace={stepNamespace} />
       </Paragraph>
     {/if}
     {#if element.type === Elements.Photo}

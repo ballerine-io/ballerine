@@ -25,11 +25,11 @@
 
 <div {style} class="container">
   <Title configuration={titleProps}>
-    <T key="title" module={`list-${flowId}`} />
+    <T key="title" namespace={`list-${flowId}`} />
   </Title>
   {#each listItems as item, index}
     <ListItem configuration={listElementProps}>
-      <T key={`item-${index + 1}`} module={`list-${flowId}`} />
+      <T key={`item-${index + 1}`} namespace={`list-${flowId}`} />
     </ListItem>
   {/each}
 </div>

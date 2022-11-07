@@ -134,6 +134,7 @@ export interface IStepConfiguration {
   form?: IFormProps;
   type: DocumentType;
   id: string;
+  namespace?: string;
   cameraConfig?: CaptureConfigOption;
   documentOptions?: DocumentType[];
 }

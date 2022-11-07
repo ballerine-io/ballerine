@@ -15,39 +15,119 @@
             flows: {
               'my-kyc-flow': {
                 steps: [
-                  { name: 'welcome', id: 'welcome' },
+                  {
+                    name: 'welcome',
+                    id: 'welcome',
+                  },
                   {
                     name: 'document-selection',
                     id: 'document-selection',
                     documentOptions: ['id_card', 'drivers_license', 'passport'],
                   },
-                  { name: 'document-photo', id: 'identity-document-shot' },
-                  { name: 'check-document', id: 'identity-document-user-check' },
-                  { name: 'document-photo-back-start', id: 'document-photo-back-start' },
-                  { name: 'document-photo-back', id: 'document-photo-back' },
-                  { name: 'check-document-photo-back', id: 'check-document-photo-back' },
-                  { name: 'selfie-start', id: 'selfie-start' },
-                  { name: 'selfie', id: 'selfie' },
-                  { name: 'check-selfie', id: 'check-selfie' },
-                  { name: 'loading', id: 'custom-loader' },
+                  {
+                    name: 'document-photo',
+                    id: 'document-photo',
+                  },
+                  {
+                    name: 'check-document',
+                    id: 'check-document',
+                  },
+                  {
+                    name: 'document-photo-back-start',
+                    id: 'document-photo-back-start',
+                  },
+                  {
+                    name: 'document-photo-back',
+                    id: 'document-photo-back',
+                  },
+                  {
+                    name: 'check-document-photo-back',
+                    id: 'check-document-photo-back',
+                  },
+                  {
+                    name: 'selfie-start',
+                    id: 'selfie-start',
+                  },
+                  {
+                    name: 'selfie',
+                    id: 'selfie',
+                  },
+                  {
+                    name: 'check-selfie',
+                    id: 'check-selfie',
+                  },
+                  {
+                    name: 'loading',
+                    id: 'loading',
+                  },
+                  {
+                    name: 'final',
+                    id: 'final',
+                  },
                 ],
               },
-            },
-            theme: {
-              button: {
-                color: 'blue',
-              },
-              general: {
-                colors: {
-                  primary: 'brown',
-                  secondary: 'yellow',
-                  text: 'purple',
-                  danger: 'orange',
-                },
-                fonts: {
-                  name: 'Roboto',
-                  link: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap',
-                },
+              'my-kyb-flow': {
+                steps: [
+                  {
+                    name: 'welcome',
+                    id: 'welcome',
+                  },
+                  {
+                    name: 'document-start',
+                    id: 'document-start',
+                    type: 'business_registration',
+                  },
+                  {
+                    name: 'document-photo',
+                    id: 'document-photo',
+                    type: 'business_registration',
+                  },
+                  {
+                    name: 'document-start',
+                    id: 'document-start',
+                    type: 'proof_of_business_tax_id',
+                  },
+                  {
+                    name: 'document-photo',
+                    id: 'document-photo',
+                    type: 'proof_of_business_tax_id',
+                  },
+                  {
+                    name: 'document-start',
+                    id: 'document-start',
+                    type: 'bank_statement',
+                  },
+                  {
+                    name: 'document-photo',
+                    id: 'document-photo',
+                    type: 'bank_statement',
+                  },
+                  {
+                    name: 'document-selection',
+                    id: 'document-selection',
+                    documentOptions: ['id_card', 'drivers_license', 'passport'],
+                  },
+                  {
+                    name: 'document-photo',
+                    id: 'document-photo',
+                  },
+                  {
+                    name: 'document-photo-back-start',
+                    id: 'document-photo-back-start',
+                  },
+                  {
+                    name: 'document-photo-back',
+                    id: 'document-photo-back',
+                  },
+                  {
+                    name: 'loading',
+                    id: 'loading',
+                  },
+                  {
+                    name: 'final',
+                    id: 'final',
+                  },
+                ],
               },
             },
           },
@@ -55,7 +135,7 @@
             overrides: {
               en: {
                 welcome: {
-                  title: 'Changed title,',
+                  title: 'Text Override with init config',
                 },
               },
               //remoteUrl: "https://cdn.ballerine.io/ui-packs/default/translation.json"

@@ -2,6 +2,7 @@ import { IAppConfiguration, IStepConfiguration } from '../configuration';
 import { steps } from './constants';
 import { getFlowOrders } from '../flows/hooks';
 import { Writable } from '../../../../node_modules/svelte/types/runtime/store/index';
+import { debug } from 'svelte/internal';
 
 const filterOutByType = (flowIds: string[], configuration: IAppConfiguration, type?: string) => {
   if (!type) return flowIds;
@@ -24,8 +25,8 @@ export const goToNextStep = (
   currentStepId: string,
   skipType?: string,
 ) => {
-  const flows = getFlowOrders(globalConfiguration) as string[];
-  const filteredFlows = filterOutByType(flows, globalConfiguration, skipType);
+  const stepsOrder = getFlowOrders(globalConfiguration) as string[];
+  const filteredFlows = filterOutByType(stepsOrder, globalConfiguration, skipType);
   const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
   if (currentFlowIndex === filteredFlows.length) {
     throw Error('Error moving next step, this is the last step');
