@@ -19,8 +19,7 @@
     "vite.dev.config.ts",
     "svelte.config.js",
     "playwright.config.ts",
-    "vitest.config.ts",
-    "e2e"
+    "vitest.config.ts"
   ],
   "exclude": ["node_modules", "dist", "coverage"]
 }

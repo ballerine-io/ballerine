@@ -97,7 +97,5 @@ const ballerineInitConfig: FlowsInitOptions = {
 console.log(ballerineInitConfig);
 
 void flows.init(ballerineInitConfig).then(() => {
-  const isKyb = window.location.pathname.split('/').at(1) === 'kyb';
-
-  flows.openModal(`my-${isKyb ? 'kyb' : 'kyc'}`, {});
+  flows.openModal('my-kyc-flow', {});
 });

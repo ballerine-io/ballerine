@@ -61,7 +61,7 @@ export class RunFlow {
 
   async start() {
     // The page should load
-    await this.page.goto(`${this.baseUrl}${this.isKyb ? "kyb" : ""}`);
+    await this.page.goto(this.baseUrl);
 
     // The page should not be empty
     const button = this.page.getByRole("button", { name: /choose\sdocument\stype/i });

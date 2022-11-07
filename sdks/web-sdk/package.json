@@ -37,7 +37,6 @@
   "scripts": {
     "dev": "vite -c vite.dev.config.ts",
     "build": "vite build",
-    "commit": "git add . && git-cz",
     "deprecated:build:sdk": "rollup --config",
     "start": "vite preview",
     "test": "vitest run",
