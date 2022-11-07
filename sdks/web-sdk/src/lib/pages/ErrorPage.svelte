@@ -14,7 +14,10 @@
   import { errorStep, layout } from '../default-configuration/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
 
-  const step = merge(errorStep, $configuration.steps[Steps.Error]);
+  export let stepId;
+
+  const step = merge(errorStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   const message = $currentParams ? $currentParams.message : '';
@@ -38,7 +41,7 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key="title" module="error" />
+        <T key="title" namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.ErrorText}
@@ -46,13 +49,13 @@
         {#if message}
           {message}
         {:else}
-          <T key="description" module="error" />
+          <T key="description" namespace={stepNamespace} />
         {/if}
       </ErrorText>
     {/if}
     {#if element.type === Elements.Button}
       <Button configuration={element.props} on:click={handleClose}>
-        <T key="button" module="error" />
+        <T key="button" namespace={stepNamespace} />
       </Button>
     {/if}
   {/each}

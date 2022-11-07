@@ -10,7 +10,10 @@
   import merge from 'lodash.merge';
   import { documentSelectionStep, layout } from '../default-configuration/theme';
 
-  const step = merge(documentSelectionStep, $configuration.steps[Steps.DocumentSelection]);
+  export let stepId;
+
+  const step = merge(documentSelectionStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 </script>
 
@@ -27,12 +30,12 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key="title" module="document-selection" />
+        <T key="title" namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={element.props.context || 'description'} module="document-selection" />
+        <T key={element.props.context || 'description'} namespace={stepNamespace} />
       </Paragraph>
     {/if}
   {/each}

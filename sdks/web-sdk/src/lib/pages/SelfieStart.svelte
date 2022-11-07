@@ -11,8 +11,10 @@
   import merge from 'lodash.merge';
   import { layout, selfieStartStep } from '../default-configuration/theme';
 
-  const step = merge(selfieStartStep, $configuration.steps[Steps.SelfieStart]);
+  export let stepId;
 
+  const step = merge(selfieStartStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   let skipBackSide = false;
@@ -49,12 +51,12 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key="title" module="selfie-start" />
+        <T key="title" namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={element.props.context || 'description'} module="selfie-start" />
+        <T key={element.props.context || 'description'} namespace={stepNamespace} />
       </Paragraph>
     {/if}
     {#if element.type === Elements.Button}
@@ -72,7 +74,7 @@
           on:click={() => goToNextStep(currentStepId, $configuration, $currentStepId)}
           configuration={element.props}
         >
-          <T key="button" module="selfie-start" />
+          <T key="button" namespace={stepNamespace} />
         </Button>
       </div>
     {/if}

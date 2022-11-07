@@ -18,7 +18,10 @@
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = merge(selfieStep, $configuration.steps[Steps.Selfie]);
+  export let stepId;
+
+  const step = merge(selfieStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   const facingMode = isMobile() ? FACING_MODES.USER : FACING_MODES.ENVIRONMENT;
@@ -69,12 +72,12 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key="title" module="selfie" />
+        <T key="title" namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key="description" module="selfie" />
+        <T key="description" namespace={stepNamespace} />
       </Paragraph>
     {/if}
   {/each}

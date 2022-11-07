@@ -11,8 +11,10 @@
   import merge from 'lodash.merge';
   import { layout, resubmissionStep } from '../default-configuration/theme';
 
-  const step = merge(resubmissionStep, $configuration.steps[Steps.Resubmission]);
+  export let stepId;
 
+  const step = merge(resubmissionStep, $configuration.steps[stepId]);
+  const stepNamespace = step.namespace!;
   const hasDocumentSelection = !!$configuration.steps[Steps.DocumentSelection];
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
@@ -40,17 +42,17 @@
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
-        <T key={`${reasonCode}-title`} module="resubmission" />
+        <T key={`${reasonCode}-title`} namespace={stepNamespace} />
       </Title>
     {/if}
     {#if element.type === Elements.ErrorText}
       <ErrorText configuration={element.props}>
-        <T key={`${reasonCode}-description`} module="resubmission" />
+        <T key={`${reasonCode}-description`} namespace={stepNamespace} />
       </ErrorText>
     {/if}
     {#if element.type === Elements.Button}
       <Button configuration={element.props} on:click={handleNavigate}>
-        <T key={`${reasonCode}-button`} module="resubmission" />
+        <T key={`${reasonCode}-button`} namespace={stepNamespace} />
       </Button>
     {/if}
   {/each}
