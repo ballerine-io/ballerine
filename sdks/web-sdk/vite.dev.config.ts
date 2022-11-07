@@ -1,6 +1,7 @@
-import type { UserConfig } from 'vite';
-import { defineConfig, loadEnv } from 'vite';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
+import type { UserConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
+import * as path from "path";
 
 // https://vitejs.dev/config/
 export default ({ mode }: { mode: UserConfig['mode'] }) => {
@@ -14,6 +15,12 @@ export default ({ mode }: { mode: UserConfig['mode'] }) => {
     build: {
       reportCompressedSize: true,
       chunkSizeWarningLimit: 300,
+      rollupOptions: {
+        input: {
+          main: path.resolve('./index.html'),
+          kyb: path.resolve('./index.kyb.html'),
+        },
+      },
     },
     plugins: [
       svelte(),
