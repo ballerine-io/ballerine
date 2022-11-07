@@ -1,5 +1,11 @@
-### Subject
-Bug - subject of the issue
+---
+name: Bug report
+about: Create a report to help us improve
+title: Bug - subject of the issue
+labels: bug
+assignees: ''
+
+---
 
 ### Description
 Elaborate on the subject, motivation, and context.
@@ -16,9 +22,9 @@ What happens instead?
 ### Environment
 * Node version:
 * Device, operating system and its version:
-  *
+  -
 * Browser and its version:
-  *
+  -
 * Version of the affected apps and packages:
   *
 
