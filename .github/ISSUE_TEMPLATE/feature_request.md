@@ -1,5 +1,11 @@
-### Subject
-Feature - subject of the issue
+---
+name: Feature request
+about: Suggest an idea for this project
+title: Feature - subject of the issue
+labels: feature request
+assignees: ''
+
+---
 
 ### Description
 Elaborate on the subject, motivation, and context.
