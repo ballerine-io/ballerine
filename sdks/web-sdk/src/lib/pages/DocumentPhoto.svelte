@@ -1,18 +1,22 @@
 <script lang="ts">
-  import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
-  import { T } from '../contexts/translation';
-  import { configuration, Steps } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
-  import { onDestroy, onMount } from 'svelte';
-  import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
-  import { Elements } from '../contexts/configuration/types';
-  import { DocumentType, IDocument } from '../contexts/app-state';
-  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import Title from '../atoms/Title/Title.svelte';
-  import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { documentOptions, documentPhotoStep, settings } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
-  import { layout } from '../default-configuration/theme';
+  import CameraPhoto, { FACING_MODES } from "jslib-html5-camera-photo";
+  import { T } from "../contexts/translation";
+  import { configuration } from "../contexts/configuration";
+  import { makeStylesFromConfiguration } from "../utils/css-utils";
+  import { onDestroy, onMount } from "svelte";
+  import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from "../atoms";
+  import { Elements } from "../contexts/configuration/types";
+  import { DocumentType, IDocument } from "../contexts/app-state";
+  import { goToNextStep, goToPrevStep } from "../contexts/navigation";
+  import Title from "../atoms/Title/Title.svelte";
+  import { currentStepId, documents, selectedDocumentInfo } from "../contexts/app-state/stores";
+  import {
+    documentOptions,
+    documentPhotoStep,
+    layout,
+    settings
+  } from "../default-configuration/theme";
+  import merge from "lodash.merge";
 
   export let stepId;
 
@@ -24,7 +28,7 @@
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
   const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions);
   const documentType =
-    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo?.type;
   const stepNamespace = `${step.namespace}.${documentType}`;
 
   $: {
@@ -37,13 +41,13 @@
     cameraPhoto
       .startCamera(FACING_MODES.ENVIRONMENT, {
         width: 1920,
-        height: 1080,
+        height: 1080
       })
       .then(stream => {
-        console.log('stream', stream);
+        console.log("stream", stream);
       })
       .catch(error => {
-        console.log('error', error);
+        console.log("error", error);
       });
   });
 
@@ -66,15 +70,15 @@
       ...clearedDocuments,
       {
         ...document,
-        pages: [{ side: 'front', base64 }],
-      },
+        pages: [{ side: "front", base64 }]
+      }
     ];
   };
 
   const handleTakePhoto = () => {
     if (!cameraPhoto) return;
     const base64 = cameraPhoto.getDataUri(
-      $configuration.settings?.cameraSettings || settings.cameraSettings,
+      $configuration.settings?.cameraSettings || settings.cameraSettings
     );
     if (documentType) {
       const document = { type: documentType, pages: [], metadata: {} };
@@ -135,6 +139,7 @@
     align-items: center;
     justify-content: space-between;
   }
+
   .header {
     text-align: center;
     display: flex;
