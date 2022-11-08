@@ -4,6 +4,13 @@
 
 This repository makes use of EditorConfig, ESLint, and Prettier to enforce a consistent coding style. These tools are configured under `.editorconfig`, `packages/config/eslintrc.base.cjs`, and `packages/config/prettierrc.base.cjs` respectively. Linting can be done locally by running `pnpm lint:fix` and formatting by running `pnpm format` from the root of the monorepo.
 
+## Suggested editor extensions
+
+To avoid CI failing due to linting and formatting issues, it is recommended to install the following extensions for your editor and enable format/lint on save.
+
+* [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+* [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+
 ## General guidelines
 
 - Code indentation of 2 spaces.

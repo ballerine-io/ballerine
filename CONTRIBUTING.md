@@ -66,10 +66,6 @@ pnpm branchlint
 
 2. Make your changes
 
-```bash
-pnpm changeset
-```
-
 3. Push a formatted commit
 
 Make sure to run this NPM script in the root of the monorepo and follow the CLI prompts.
@@ -91,4 +87,13 @@ Now that the changes are pushed to the remote branch, GitHub Actions will run wo
 
 When creating a pull request, make sure to follow the pull request template.
 
+## Contributing using a fork
 
+1. Head to the [repository](https://www.github.com/ballerine-io/ballerine).
+2. Click on the "Fork" button on the top right corner of the GitHub page.
+3. Create the fork.
+4. Follow the instructions from [prerequisites](#prerequisites) up to creating a pull request.
+5. On the compare page, click **compare across forks**.
+6. In the "base branch" drop-down menu, select the branch of the upstream repository you'd like to merge changes into.
+7. In the "head fork" drop-down menu, select your fork, then in the "compare branch" drop-down menu to select the branch you made your changes in.
+8. Create the pull request.

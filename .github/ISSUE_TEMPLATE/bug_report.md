@@ -22,9 +22,9 @@ What happens instead?
 ### Environment
 * Node version:
 * Device, operating system and its version:
-  -
+  *
 * Browser and its version:
-  -
+  *
 * Version of the affected apps and packages:
   *
 
