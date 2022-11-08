@@ -1,11 +1,9 @@
 <script lang="ts">
-  import { toast } from '@zerodevx/svelte-toast';
   import { configuration, IStepConfiguration } from '../../contexts/configuration';
   import DocumentOption from '../../molecules/DocumentOption/DocumentOption.svelte';
   import { goToNextStep } from '../../contexts/navigation';
   import type { DocumentType, IDocument, IDocumentInfo } from '../../contexts/app-state';
   import {
-    currentParams,
     currentStepId,
     documents,
     selectedDocumentInfo,
@@ -16,6 +14,7 @@
   import { IDocumentOption } from '../../molecules/DocumentOption';
   import merge from 'lodash.merge';
   import { documentOptions } from '../../default-configuration/theme';
+  import { checkIsCameraAvailable } from '../../services/camera-manager';
 
   export let step: IStepConfiguration;
   const ducumentOptions: IDocumentOption[] = [];
@@ -33,12 +32,9 @@
     const type = detail as DocumentType;
     const option = documentOptionsConfiguration.options[type];
     $selectedDocumentInfo = option?.document as IDocumentInfo;
-    try {
-      await navigator.mediaDevices.getUserMedia({ video: true });
-      goToNextStep(currentStepId, $configuration, $currentStepId);
-    } catch (error) {
-      toast.push(t('general', 'errorCameraAccess'));
-    }
+    const isCameraAvailable = await checkIsCameraAvailable();
+    if (!isCameraAvailable) return;
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
   const handleTakePhoto = async ({ detail }: { detail: { image: string; type: DocumentType } }) => {

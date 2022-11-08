@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { toast } from '@zerodevx/svelte-toast';
   import { T } from '../contexts/translation';
   import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
@@ -7,12 +6,12 @@
   import { Elements, IStepConfiguration } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
-  import { t } from '../contexts/translation/hooks';
   import { isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
-  import { currentParams, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { documentStartStep, layout } from '../default-configuration/theme';
   import merge from 'lodash.merge';
+  import { checkIsCameraAvailable } from '../services/camera-manager';
 
   export let stepId;
 
@@ -30,12 +29,9 @@
   const stepNamespace = `${step.namespace }.${documentType}`;
 
   const handleGoToNextStep = async () => {
-    try {
-      await navigator.mediaDevices.getUserMedia({ video: true });
-      goToNextStep(currentStepId, $configuration, $currentStepId);
-    } catch (error) {
-      toast.push(t('general', 'errorCameraAccess'));
-    }
+    const isCameraAvailable = await checkIsCameraAvailable();
+    if (!isCameraAvailable) return;
+    goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
   const handler = async (e: ICameraEvent) => {
