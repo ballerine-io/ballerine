@@ -11,6 +11,7 @@
   import { appState, currentStepId } from '../contexts/app-state';
   import merge from 'lodash.merge';
   import { layout, welcomeStep } from '../default-configuration/theme';
+  import { ActionNames, VerificationStatuses } from '../utils/event-service';
 
   export let stepId;
 
@@ -26,7 +27,7 @@
         <IconButton
           configuration={element.props}
           on:click={() => {
-            sendButtonClickEvent('close', { status: 'document_collection' }, $appState, true);
+            sendButtonClickEvent(ActionNames.CLOSE, { status: VerificationStatuses.DATA_COLLECTION }, $appState, true);
           }}
         />
       </div>
@@ -35,7 +36,7 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent('close', { status: 'document_collection' }, $appState, true);
+          sendButtonClickEvent(ActionNames.CLOSE, { status: VerificationStatuses.DATA_COLLECTION }, $appState, true);
         }}
       />
     {/if}

@@ -6,7 +6,7 @@
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
-  import { sendButtonClickEvent, sendFlowCompleteEvent } from '../utils/event-service';
+  import { ActionNames, sendButtonClickEvent, sendFlowCompleteEvent, VerificationStatuses } from '../utils/event-service';
   import { flowDeclined } from '../services/analytics';
   import { currentParams, appState } from '../contexts/app-state';
   import { declineStep, layout } from '../default-configuration/theme';
@@ -20,7 +20,7 @@
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   const handleClose = () => {
-    sendFlowCompleteEvent({ status: 'completed', idvResult: DecisionStatus.DECLINED });
+    sendFlowCompleteEvent({ status: VerificationStatuses.COMPLETED, idvResult: DecisionStatus.DECLINED });
   };
 
   onDestroy(() => {
@@ -36,7 +36,7 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent('close', { status: 'document_collection' }, $appState, true);
+          sendButtonClickEvent(ActionNames.CLOSE, { status: VerificationStatuses.DATA_COLLECTION }, $appState, true);
         }}
       />
     {/if}

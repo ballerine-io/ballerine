@@ -11,7 +11,7 @@
   import { selfieUri, currentStepId, appState } from '../contexts/app-state';
   import merge from 'lodash.merge';
   import { checkSelfieStep, layout } from '../default-configuration/theme';
-  import { sendButtonClickEvent } from '../utils/event-service';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
 
   export let stepId;
 
@@ -35,7 +35,7 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent('close', { status: 'document_collection' }, $appState, true);
+          sendButtonClickEvent(ActionNames.CLOSE, { status: VerificationStatuses.DATA_COLLECTION }, $appState, true);
         }}
       />
     {/if}

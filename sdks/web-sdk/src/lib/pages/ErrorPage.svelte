@@ -7,7 +7,7 @@
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
-  import { sendButtonClickEvent, sendFlowCompleteEvent } from '../utils/event-service';
+  import { ActionNames, sendButtonClickEvent, sendFlowCompleteEvent, VerificationStatuses } from '../utils/event-service';
   import { flowError } from '../services/analytics';
   import merge from 'lodash.merge';
   import { errorStep, layout } from '../default-configuration/theme';
@@ -22,7 +22,7 @@
   const message = $currentParams ? $currentParams.message : '';
 
   const handleClose = () => {
-    sendFlowCompleteEvent({ status: 'error', idvResult: DecisionStatus.DECLINED });
+    sendFlowCompleteEvent({ status: VerificationStatuses.ERROR, idvResult: DecisionStatus.DECLINED });
   };
 
   flowError();
@@ -41,7 +41,7 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent('close', { status: 'document_collection' }, $appState, true);
+          sendButtonClickEvent(ActionNames.CLOSE, { status: VerificationStatuses.DATA_COLLECTION }, $appState, true);
         }}
       />
     {/if}

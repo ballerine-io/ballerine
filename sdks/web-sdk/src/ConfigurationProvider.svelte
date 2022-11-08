@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import App from './App.svelte';
+  import { BALLERINE_EVENT } from './lib/utils/event-service';
   import { IOuterEvent } from './lib/utils/event-service/types';
   import { isMobile } from './lib/utils/is-mobile';
 
@@ -22,9 +23,8 @@
     'message',
     e => {
       const event = e.data as IOuterEvent;
-      if (event.eventName !== 'blrn_event') return;
+      if (event.eventName !== BALLERINE_EVENT) return;
       if (event.shouldExit) {
-        console.log(1)
         modalOpened = false;
         mounted = false;
       }
