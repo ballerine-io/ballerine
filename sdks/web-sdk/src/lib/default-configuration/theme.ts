@@ -297,7 +297,7 @@ export const welcomeStep = {
   style: {},
   elements: [
     backIconButton,
-    closeIconButton,
+    //closeIconButton,
     {
       type: Elements.Title,
       props: {
