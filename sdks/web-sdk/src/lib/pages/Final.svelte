@@ -7,7 +7,7 @@
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { flowApproved } from '../services/analytics';
-  import { ActionNames, sendButtonClickEvent, sendFlowCompleteEvent, VerificationStatuses } from '../utils/event-service';
+  import { EActionNames, sendButtonClickEvent, sendFlowCompleteEvent, EVerificationStatuses } from '../utils/event-service';
   import merge from 'lodash.merge';
   import { finalStep, layout } from '../default-configuration/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
@@ -21,7 +21,7 @@
   flowApproved();
 
   const handleClose = () => {
-    sendFlowCompleteEvent({ status: VerificationStatuses.COMPLETED, idvResult: DecisionStatus.APPROVED });
+    sendFlowCompleteEvent({ status: EVerificationStatuses.COMPLETED, idvResult: DecisionStatus.APPROVED });
   };
 
   onDestroy(() => {
@@ -38,7 +38,7 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(ActionNames.CLOSE, { status: VerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
         }}
       />
     {/if}

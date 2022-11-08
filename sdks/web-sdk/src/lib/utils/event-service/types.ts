@@ -1,17 +1,17 @@
 import { DecisionStatus } from '../../contexts/app-state/types';
 
-export enum EventTypes {
+export enum EEventTypes {
   SYNC_FLOW_COMPLETE = 'sync_flow_complete',
   VERIFICATION_UPDATE = 'verification_update',
   NAVIGATION_UPDATE = 'navigation_update',
   BUTTON_CLICK = 'button_click'
 }
 
-export enum ActionNames {
+export enum EActionNames {
   CLOSE = 'close',
 }
 
-export enum VerificationStatuses {
+export enum EVerificationStatuses {
   COMPLETED = 'completed',
   PENDING = 'pending',
   ERROR = 'error',
@@ -23,7 +23,7 @@ export interface ISendDocumentsResponse {
 }
 
 export interface IDocumentVerificationResponse {
-  status: VerificationStatuses;
+  status: EVerificationStatuses;
   idvResult?: DecisionStatus;
   code?: number;
   reasonCode?: number;

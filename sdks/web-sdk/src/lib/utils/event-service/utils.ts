@@ -1,6 +1,6 @@
 import { appState, IAppState } from '../../contexts/app-state';
 import { currentLanguage, Languages } from '../../contexts/translation';
-import { IDocumentVerificationResponse, IOuterEvent, ActionNames, EventTypes } from './types';
+import { IDocumentVerificationResponse, IOuterEvent, EActionNames, EEventTypes } from './types';
 import { get } from 'svelte/store';
 import { flowEventBus } from '../../services/flow-event-bus/flow-event-bus';
 import { EFlowEvent } from '../../services/flow-event-bus/enums';
@@ -39,7 +39,7 @@ export const sendFlowCompleteEvent = (verificationResponse: IDocumentVerificatio
   const payload = { status, idvResult };
   const eventOptions = {
     eventName: BALLERINE_EVENT,
-    eventType: EventTypes.SYNC_FLOW_COMPLETE,
+    eventType: EEventTypes.SYNC_FLOW_COMPLETE,
     shouldExit: true,
     payload,
   };
@@ -58,7 +58,7 @@ export const sendVerificationUpdateEvent = (
 ) => {
   const eventOptions = {
     eventName: BALLERINE_EVENT,
-    eventType: EventTypes.VERIFICATION_UPDATE,
+    eventType: EEventTypes.VERIFICATION_UPDATE,
     shouldExit,
     details,
   };
@@ -70,7 +70,7 @@ export const sendNavigationUpdateEvent = () => {
 
   const eventOptions = {
     eventName: BALLERINE_EVENT,
-    eventType: EventTypes.NAVIGATION_UPDATE,
+    eventType: EEventTypes.NAVIGATION_UPDATE,
     details: {
       currentIdx: as.currentStepIdx,
       // FIXME: currentPage and previousPage typed as a string by IAppState.
@@ -86,14 +86,14 @@ export const sendNavigationUpdateEvent = () => {
 };
 
 export const sendButtonClickEvent = (
-  actionName: ActionNames,
+  actionName: EActionNames,
   status: IDocumentVerificationResponse,
   as: IAppState,
   shouldExit = false,
 ) => {
   const eventOptions = {
     eventName: BALLERINE_EVENT,
-    eventType: EventTypes.BUTTON_CLICK,
+    eventType: EEventTypes.BUTTON_CLICK,
     shouldExit,
     details: {
       actionName,

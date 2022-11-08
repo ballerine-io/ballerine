@@ -14,7 +14,7 @@
   } from '../contexts/app-state';
   import { sendVerificationUpdateEvent } from '../utils/event-service';
 
-  import { ISendDocumentsResponse, VerificationStatuses } from '../utils/event-service/types';
+  import { ISendDocumentsResponse, EVerificationStatuses } from '../utils/event-service/types';
   import { onDestroy, onMount } from 'svelte';
   import { t } from '../contexts/translation/hooks';
   import { flowUploadLoader } from '../services/analytics';
@@ -51,7 +51,7 @@
   const checkStatus = async (data: ISendDocumentsResponse) => {
     try {
       const response = await getVerificationStatus(endUserId);
-      if (response.status === VerificationStatuses.PENDING) {
+      if (response.status === EVerificationStatuses.PENDING) {
         veryficationTimeout = setTimeout(() => checkStatus(data), 2000);
         return;
       }

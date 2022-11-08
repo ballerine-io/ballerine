@@ -1,11 +1,11 @@
-import { EventTypes, IDocumentVerificationResponse } from '../../utils/event-service';
+import { EEventTypes, IDocumentVerificationResponse } from '../../utils/event-service';
 import { EFlowEvent } from './enums';
 import { TFlowEventBusPayload } from './types';
 import { AnyRecord } from '../../../types';
 
 export interface IEventOptions {
   eventName: string;
-  eventType: EventTypes;
+  eventType: EEventTypes;
 }
 
 export interface IFlowCompletePayload extends IEventOptions {

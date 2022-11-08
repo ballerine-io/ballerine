@@ -14,7 +14,7 @@
   import { selfieStep, settings } from '../default-configuration/theme';
   import merge from 'lodash.merge';
   import { layout } from '../default-configuration/theme';
-  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
+  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
@@ -69,7 +69,7 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(ActionNames.CLOSE, { status: VerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
         }}
       />
     {/if}
