@@ -1,22 +1,22 @@
 <script lang="ts">
-  import CameraPhoto, { FACING_MODES } from "jslib-html5-camera-photo";
-  import { T } from "../contexts/translation";
-  import { configuration } from "../contexts/configuration";
-  import { makeStylesFromConfiguration } from "../utils/css-utils";
-  import { onDestroy, onMount } from "svelte";
-  import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from "../atoms";
-  import { Elements } from "../contexts/configuration/types";
-  import { DocumentType, IDocument } from "../contexts/app-state";
-  import { goToNextStep, goToPrevStep } from "../contexts/navigation";
-  import Title from "../atoms/Title/Title.svelte";
-  import { currentStepId, documents, selectedDocumentInfo } from "../contexts/app-state/stores";
+  import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
+  import { T } from '../contexts/translation';
+  import { configuration } from '../contexts/configuration';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { onDestroy, onMount } from 'svelte';
+  import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
+  import { Elements } from '../contexts/configuration/types';
+  import { DocumentType, IDocument } from '../contexts/app-state';
+  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
+  import Title from '../atoms/Title/Title.svelte';
+  import { currentStepId, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import {
     documentOptions,
     documentPhotoStep,
     layout,
-    settings
-  } from "../default-configuration/theme";
-  import merge from "lodash.merge";
+    settings,
+  } from '../default-configuration/theme';
+  import merge from 'lodash.merge';
 
   export let stepId;
 
@@ -41,13 +41,13 @@
     cameraPhoto
       .startCamera(FACING_MODES.ENVIRONMENT, {
         width: 1920,
-        height: 1080
+        height: 1080,
       })
       .then(stream => {
-        console.log("stream", stream);
+        console.log('stream', stream);
       })
       .catch(error => {
-        console.log("error", error);
+        console.log('error', error);
       });
   });
 
@@ -70,15 +70,15 @@
       ...clearedDocuments,
       {
         ...document,
-        pages: [{ side: "front", base64 }]
-      }
+        pages: [{ side: 'front', base64 }],
+      },
     ];
   };
 
   const handleTakePhoto = () => {
     if (!cameraPhoto) return;
     const base64 = cameraPhoto.getDataUri(
-      $configuration.settings?.cameraSettings || settings.cameraSettings
+      $configuration.settings?.cameraSettings || settings.cameraSettings,
     );
     if (documentType) {
       const document = { type: documentType, pages: [], metadata: {} };

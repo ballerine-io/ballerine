@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { Button, IconButton, Image, Paragraph, Title } from "../atoms";
-  import { configuration } from "../contexts/configuration";
-  import { addCloseToURLParams, goToNextStep } from "../contexts/navigation/hooks";
-  import { Elements } from "../contexts/configuration/types";
-  import { makeStylesFromConfiguration } from "../utils/css-utils";
-  import List from "../molecules/List/List.svelte";
-  import { T } from "../contexts/translation";
-  import { flowStart } from "../services/analytics";
-  import { sendButtonClickEvent } from "../utils/event-service/utils";
-  import { appState, currentStepId } from "../contexts/app-state";
-  import merge from "lodash.merge";
-  import { layout, welcomeStep } from "../default-configuration/theme";
+  import { Button, IconButton, Image, Paragraph, Title } from '../atoms';
+  import { configuration } from '../contexts/configuration';
+  import { addCloseToURLParams, goToNextStep } from '../contexts/navigation/hooks';
+  import { Elements } from '../contexts/configuration/types';
+  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import List from '../molecules/List/List.svelte';
+  import { T } from '../contexts/translation';
+  import { flowStart } from '../services/analytics';
+  import { sendButtonClickEvent } from '../utils/event-service/utils';
+  import { appState, currentStepId } from '../contexts/app-state';
+  import merge from 'lodash.merge';
+  import { layout, welcomeStep } from '../default-configuration/theme';
 
   export let stepId;
 
