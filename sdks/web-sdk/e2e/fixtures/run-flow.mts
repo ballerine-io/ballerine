@@ -22,15 +22,39 @@ export class RunFlow {
     })();
   }
 
+
+  // Could receive the skip conditions as arguments in the future
+  get skipSelfie() {
+    return [
+      this.isKyb,
+    ].some(Boolean);
+  }
+
+  get skipDocumentBackSide() {
+    return [
+      !this.isKyb && this.flow === "passport",
+    ].some(Boolean);
+  }
+
+  get skipConfirmPicture() {
+    return [
+      this.isKyb,
+    ].some(Boolean);
+  }
+
   get takePicture() {
     return this.page.locator("button[aria-label=\"take picture\"]").first();
   }
 
   get confirmPicture() {
+    if (this.skipConfirmPicture) return;
+
     return this.page.getByRole("button", { name: /looks\sgood/i }).first();
   }
 
   async kyb() {
+    if (!this.isKyb) return;
+
     const title = this.page.getByRole("heading", {
       name: /business\sregistration/i
     });
@@ -38,31 +62,52 @@ export class RunFlow {
     await expect(title).toBeVisible();
 
     // Step 1
-    let openCamera = this.page.getByRole("button", { name: /take\sa\spicture/i });
+    let openCamera = this.page.getByRole("button", { name: /take\sa\spicture/i }).first();
 
     await openCamera.click();
 
     await this.takePicture.click();
 
     // Step 2
-    openCamera = this.page.getByRole("button", { name: /take\sa\spicture/i });
+    openCamera = this.page.getByRole("button", { name: /take\sa\spicture/i }).first();
 
     await openCamera.click();
 
     await this.takePicture.click();
 
     // Step 3
-    openCamera = this.page.getByRole("button", { name: /take\sa\spicture/i });
+    openCamera = this.page.getByRole("button", { name: /take\sa\spicture/i }).first();
 
     await openCamera.click();
 
     await this.takePicture.click();
   }
 
-  async start() {
+  async takeSelfie() {
+    if (this.skipSelfie) return;
 
-    // The page should load
-    await this.page.goto(this.baseUrl);
+    const selfie = this.page.getByRole("button", { name: /take\sa\sselfie/i });
+
+    await selfie.click();
+
+    await this.takePicture.click();
+    await this.confirmPicture?.click();
+  }
+
+  async takeDocumentBackSide() {
+    if (this.skipDocumentBackSide) return;
+
+    const idBackSide = this.page.getByRole("button", {
+      name: /take\sphoto/i
+    });
+
+    await idBackSide.click();
+
+    await this.takePicture.click();
+    await this.confirmPicture?.click();
+  }
+
+  async start() {
 
     // The page should not be empty
     const button = this.page.getByRole("button", { name: /choose\sdocument\stype/i });
@@ -70,9 +115,8 @@ export class RunFlow {
     // The page should be interactive
     await button.click();
 
-    if (this.isKyb) {
-      await this.kyb();
-    }
+    // Run KYB specific steps if this.isKyb is true
+    await this.kyb();
 
     const title = this.page.getByRole("heading", {
       name: /upload\sid/i
@@ -81,42 +125,21 @@ export class RunFlow {
     await expect(title).toBeVisible();
 
     // Step 1
-    const documentOption = this.page.getByText(this.regex);
 
+    // Pick the document type
+    const documentOption = this.page.getByText(this.regex);
     await documentOption.click();
 
-    await this.takePicture.click();
+    // Take a picture, and press looks good if not a KYB flow
+    await this.takePicture?.click();
+    await this.confirmPicture?.click();
 
-    if (!this.isKyb) {
-      await this.confirmPicture.click();
-    }
+    await this.takeDocumentBackSide();
 
-    // Step 2
-    if (this.flow !== "passport") {
-      const idBackSide = this.page.getByRole("button", {
-        name: /take\sphoto/i
-      });
+    // Step 3
 
-      await idBackSide.click();
-
-      await this.takePicture.click();
-    }
-
-    if (this.flow === "passport" || !this.isKyb) {
-
-      if (this.flow !== "passport") {
-        await this.confirmPicture.click();
-      }
-
-      // Step 3
-      const selfie = this.page.getByRole("button", { name: /take\sa\sselfie/i });
-
-      await selfie.click();
-
-      await this.takePicture.click();
-
-      await this.confirmPicture.click();
-    }
+    // Take a selfie if not a KYB flow
+    await this.takeSelfie();
 
     // Final step - wait for result
     const success = this.page.getByRole("heading", { name: /success/i });
