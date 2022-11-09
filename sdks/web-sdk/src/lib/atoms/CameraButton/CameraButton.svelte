@@ -2,9 +2,9 @@
   import {
     configuration as globalConfiguration,
     ICSSProperties,
-    IElementProps
-  } from "../../contexts/configuration";
-  import { makeStylesFromConfiguration } from "../../utils/css-utils";
+    IElementProps,
+  } from '../../contexts/configuration';
+  import { makeStylesFromConfiguration } from '../../utils/css-utils';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;

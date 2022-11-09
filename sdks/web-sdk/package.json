@@ -41,7 +41,7 @@
     "start": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test kyc",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "format": "prettier --write \"./**/*.{cjs,js,svelte,html,ts}\"",
     "lint": "eslint \"./**/*.{cjs,js,ts,svelte}\"",

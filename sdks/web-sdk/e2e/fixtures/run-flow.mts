@@ -2,7 +2,7 @@ import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
 export class RunFlow {
-  readonly baseUrl = "http://localhost:3000/";
+  readonly baseUrl = "/";
   regex: RegExp;
 
   constructor(readonly page: Page, readonly flow: "idCard" | "driversLicense" | "passport" | "voterId", readonly isKyb = false) {
@@ -60,6 +60,7 @@ export class RunFlow {
   }
 
   async start() {
+
     // The page should load
     await this.page.goto(this.baseUrl);
 

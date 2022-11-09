@@ -15,7 +15,6 @@
   export let stepId;
 
   const step = merge(documentStartStep, $configuration.steps[stepId]) as IStepConfiguration;
-  
 
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
@@ -25,7 +24,7 @@
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
   }
-  const stepNamespace = `${step.namespace }.${documentType}`;
+  const stepNamespace = `${step.namespace}.${documentType}`;
 
   const handleGoToNextStep = async () => {
     try {
