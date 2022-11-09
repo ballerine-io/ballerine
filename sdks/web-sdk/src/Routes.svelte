@@ -36,7 +36,7 @@
       in:fly={{ x: -50, duration: 250, delay: 300 }}
       out:fly={{ x: -50, duration: 250 }}
     >
-      <svelte:component this={step.component} stepId={stepId} />
+      <svelte:component this={step.component} {stepId} />
     </div>
   {/key}
 {/if}

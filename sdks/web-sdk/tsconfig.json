@@ -19,13 +19,6 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "downlevelIteration": true
   },
-  "include": [
-    "src/**/*",
-    "src/node_modules/**/*"
-  ],
-  "exclude": [
-    "node_modules/*",
-    "__sapper__/*",
-    "static/*"
-  ]
+  "include": ["src/**/*", "src/node_modules/**/*"],
+  "exclude": ["node_modules/*", "__sapper__/*", "static/*"]
 }

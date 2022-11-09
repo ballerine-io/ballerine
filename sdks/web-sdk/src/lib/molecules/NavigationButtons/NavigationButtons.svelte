@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, IconButton, ButtonWithIcon } from '../../atoms';
+  import { Button, ButtonWithIcon, IconButton } from '../../atoms';
   import {
     configuration as globalConfiguration,
     ICSSProperties,
@@ -11,6 +11,7 @@
   import { currentStepId } from '../../contexts/app-state';
   import merge from 'lodash.merge';
   import { navigationButtons } from '../../default-configuration/theme';
+
   const { navigationButtons: userConfiguration } = $globalConfiguration;
 
   const configuration = userConfiguration
