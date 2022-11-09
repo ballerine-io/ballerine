@@ -1,20 +1,24 @@
-import type { Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 
 export class RunFlow {
-  readonly baseUrl = "/";
+  readonly baseUrl = '/';
   regex: RegExp;
 
-  constructor(readonly page: Page, readonly flow: "idCard" | "driversLicense" | "passport" | "voterId", readonly isKyb = false) {
+  constructor(
+    readonly page: Page,
+    readonly flow: 'idCard' | 'driversLicense' | 'passport' | 'voterId',
+    readonly isKyb = false,
+  ) {
     this.regex = (() => {
       switch (this.flow) {
-        case "idCard":
+        case 'idCard':
           return /^id\scard$/i;
-        case "driversLicense":
+        case 'driversLicense':
           return /^drivers\slicense$/i;
-        case "passport":
+        case 'passport':
           return /^passport$/i;
-        case "voterId":
+        case 'voterId':
           return /^voter\sid$/i;
         default:
           throw new Error(`Unknown flow: ${JSON.stringify(this.flow, null, 2)}`);
@@ -22,61 +26,54 @@ export class RunFlow {
     })();
   }
 
-
   // Could receive the skip conditions as arguments in the future
   get skipSelfie() {
-    return [
-      this.isKyb,
-    ].some(Boolean);
+    return [this.isKyb].some(Boolean);
   }
 
   get skipDocumentBackSide() {
-    return [
-      !this.isKyb && this.flow === "passport",
-    ].some(Boolean);
+    return [!this.isKyb && this.flow === 'passport'].some(Boolean);
   }
 
   get skipConfirmPicture() {
-    return [
-      this.isKyb,
-    ].some(Boolean);
+    return [this.isKyb].some(Boolean);
   }
 
   get takePicture() {
-    return this.page.locator("button[aria-label=\"take picture\"]").first();
+    return this.page.locator('button[aria-label="take picture"]').first();
   }
 
   get confirmPicture() {
     if (this.skipConfirmPicture) return;
 
-    return this.page.getByRole("button", { name: /looks\sgood/i }).first();
+    return this.page.getByRole('button', { name: /looks\sgood/i }).first();
   }
 
   async kyb() {
     if (!this.isKyb) return;
 
-    const title = this.page.getByRole("heading", {
-      name: /business\sregistration/i
+    const title = this.page.getByRole('heading', {
+      name: /business\sregistration/i,
     });
 
     await expect(title).toBeVisible();
 
     // Step 1
-    let openCamera = this.page.getByRole("button", { name: /take\sa\spicture/i }).first();
+    let openCamera = this.page.getByRole('button', { name: /take\sa\spicture/i }).first();
 
     await openCamera.click();
 
     await this.takePicture.click();
 
     // Step 2
-    openCamera = this.page.getByRole("button", { name: /take\sa\spicture/i }).first();
+    openCamera = this.page.getByRole('button', { name: /take\sa\spicture/i }).first();
 
     await openCamera.click();
 
     await this.takePicture.click();
 
     // Step 3
-    openCamera = this.page.getByRole("button", { name: /take\sa\spicture/i }).first();
+    openCamera = this.page.getByRole('button', { name: /take\sa\spicture/i }).first();
 
     await openCamera.click();
 
@@ -86,7 +83,7 @@ export class RunFlow {
   async takeSelfie() {
     if (this.skipSelfie) return;
 
-    const selfie = this.page.getByRole("button", { name: /take\sa\sselfie/i });
+    const selfie = this.page.getByRole('button', { name: /take\sa\sselfie/i });
 
     await selfie.click();
 
@@ -97,8 +94,8 @@ export class RunFlow {
   async takeDocumentBackSide() {
     if (this.skipDocumentBackSide) return;
 
-    const idBackSide = this.page.getByRole("button", {
-      name: /take\sphoto/i
+    const idBackSide = this.page.getByRole('button', {
+      name: /take\sphoto/i,
     });
 
     await idBackSide.click();
@@ -108,9 +105,8 @@ export class RunFlow {
   }
 
   async start() {
-
     // The page should not be empty
-    const button = this.page.getByRole("button", { name: /choose\sdocument\stype/i });
+    const button = this.page.getByRole('button', { name: /choose\sdocument\stype/i });
 
     // The page should be interactive
     await button.click();
@@ -118,8 +114,8 @@ export class RunFlow {
     // Run KYB specific steps if this.isKyb is true
     await this.kyb();
 
-    const title = this.page.getByRole("heading", {
-      name: /upload\sid/i
+    const title = this.page.getByRole('heading', {
+      name: /upload\sid/i,
     });
 
     await expect(title).toBeVisible();
@@ -142,7 +138,7 @@ export class RunFlow {
     await this.takeSelfie();
 
     // Final step - wait for result
-    const success = this.page.getByRole("heading", { name: /success/i });
+    const success = this.page.getByRole('heading', { name: /success/i });
 
     await expect(success).toBeVisible();
   }
