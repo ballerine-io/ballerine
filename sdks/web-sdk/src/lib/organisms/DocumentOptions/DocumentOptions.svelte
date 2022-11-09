@@ -32,7 +32,6 @@
     const option = documentOptionsConfiguration.options[type];
     $selectedDocumentInfo = option?.document as IDocumentInfo;
     try {
-      await navigator.mediaDevices.getUserMedia({ video: true });
       goToNextStep(currentStepId, $configuration, $currentStepId);
     } catch (error) {
       $currentParams = { message: 'Camera not found or access is not provided' };
