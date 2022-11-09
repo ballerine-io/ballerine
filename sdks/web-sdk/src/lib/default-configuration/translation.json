@@ -191,7 +191,8 @@
       "online": "You are online!",
       "offline": "You are offline, please check your connection",
       "errorDocuments": "Error sending documents",
-      "errorDocumentVerification": "Error document verification"
+      "errorDocumentVerification": "Error document verification",
+      "errorCameraAccess": "Cannot access your device's camera. To proceed, go to the app's settings and enable camera permissions."
     }
   },
   "es": {
