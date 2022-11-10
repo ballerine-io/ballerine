@@ -1,0 +1,67 @@
+<script lang="ts">
+  import { goToNextStep } from '../../contexts/navigation';
+  import type { ICSSProperties, IElementProps } from '../../contexts/configuration';
+  import { configuration as globalConfiguration } from '../../contexts/configuration';
+  import { currentStepId } from '../../contexts/app-state';
+  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { primaryButton } from '../../default-configuration/theme';
+  import merge from 'lodash.merge';
+  import { Loader } from './Loader';
+
+  export let isDisabled = false;
+  export let isLoading = false;
+  export let configuration: IElementProps;
+
+  const styleProps = configuration?.style as ICSSProperties;
+  const style = makeStylesFromConfiguration(
+    merge(primaryButton, $globalConfiguration.button),
+    styleProps,
+  );
+  let disabled: boolean;
+  const onClick = () => {
+    if (disabled) return;
+
+    goToNextStep(currentStepId, $globalConfiguration, $currentStepId);
+    isDisabled = true;
+  };
+
+  $: disabled = isDisabled || isLoading;
+</script>
+
+<button {style} {disabled} on:click={onClick}>
+  {#if isLoading}
+    <div class="loader-container">
+      <Loader />
+    </div>
+  {/if}
+  <slot />
+</button>
+
+<style>
+  button:disabled .loader-container {
+    margin-inline-end: 1rem;
+  }
+
+  button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    padding: var(--padding);
+    font-size: var(--font-size);
+    font-weight: var(--font-weight);
+    width: var(--width);
+    background: var(--background);
+    color: var(--color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin: var(--margin);
+  }
+
+  button:disabled {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+</style>

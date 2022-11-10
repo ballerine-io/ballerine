@@ -1,4 +1,5 @@
 export { Button } from './Button';
+export { NextStepButton } from './NextStepButton';
 export { Title } from './Title';
 export { Image } from './Image';
 export { Paragraph } from './Paragraph';

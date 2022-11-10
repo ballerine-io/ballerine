@@ -1,14 +1,13 @@
 <script lang="ts">
-  import { Button, IconButton, Image, Paragraph, Title } from '../atoms';
+  import { IconButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
-  import { addCloseToURLParams, goToNextStep } from '../contexts/navigation/hooks';
+  import { addCloseToURLParams } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import List from '../molecules/List/List.svelte';
   import { T } from '../contexts/translation';
-  import { flowStart } from '../services/analytics';
   import { sendButtonClickEvent } from '../utils/event-service/utils';
-  import { appState, currentStepId } from '../contexts/app-state';
+  import { appState } from '../contexts/app-state';
   import merge from 'lodash.merge';
   import { layout, welcomeStep } from '../default-configuration/theme';
 
@@ -17,7 +16,6 @@
   const step = merge(welcomeStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
-  let isTransitioning = false;
 </script>
 
 <div class="container" {style}>
@@ -50,18 +48,9 @@
       <List configuration={element.props} />
     {/if}
     {#if element.type === Elements.Button}
-      <Button
-        on:click={() => {
-          if (isTransitioning) return;
-
-          flowStart();
-          goToNextStep(currentStepId, $configuration, $currentStepId);
-          isTransitioning = true;
-        }}
-        configuration={element.props}
-      >
+      <NextStepButton configuration={element.props}>
         <T key="button" namespace={stepNamespace} />
-      </Button>
+      </NextStepButton>
     {/if}
   {/each}
 </div>
