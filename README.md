@@ -30,7 +30,7 @@
 Ballerine helps any company verify its customers’ identity while providing an amazing user experience by composing verification processes for any vertical and geography using modular building blocks, components, and 3rd party integrations.
 
 ### What can you find in this project?
- * KYC/KYB flows and UI in Mobile & web SDK - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk) | [Live demos](#description-1) | [Docs](#getting-started-with-sdks-flows)
+ * KYC/KYB flows and UI in Mobile & web SDK - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk) | [Live demos](#description-1) | [Docs](#getting-started-with-sdks-flows) | [Deploy on Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fballerine-io%2Fballerine) | [Deploy on Netlify](https://app.netlify.com/start/deploy?repository=https://github.com/ballerine-io/ballerine)
  * Case management dashboard for users approval/rejection - 🎉 Final stages of Open Sourcing!
  * Identity & risk vendors orchestration - :hourglass_flowing_sand: Almost done
  * No-code rule engine to control Frontend and backend flows - :construction: WIP
