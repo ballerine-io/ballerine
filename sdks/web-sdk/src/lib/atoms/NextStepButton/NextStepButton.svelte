@@ -11,6 +11,7 @@
   export let isDisabled = false;
   export let isLoading = false;
   export let configuration: IElementProps;
+  export let skipType: string;
 
   const styleProps = configuration?.style as ICSSProperties;
   const style = makeStylesFromConfiguration(
@@ -21,7 +22,7 @@
   const onClick = () => {
     if (disabled) return;
 
-    goToNextStep(currentStepId, $globalConfiguration, $currentStepId);
+    goToNextStep(currentStepId, $globalConfiguration, $currentStepId, $skipType);
     isDisabled = true;
   };
 
