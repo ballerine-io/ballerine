@@ -4,9 +4,9 @@
   import { configuration } from '../contexts/configuration';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
-  import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
+  import { CameraButton, IconButton, IconCloseButton, Overlay, Paragraph, VideoContainer } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
-  import { DocumentType, IDocument } from '../contexts/app-state';
+  import { DocumentType, IDocument, appState } from '../contexts/app-state';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
@@ -16,6 +16,7 @@
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
 
   export let stepId;
 
@@ -104,6 +105,14 @@
       <IconButton
         configuration={element.props}
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+        }}
       />
     {/if}
     {#if element.type === Elements.VideoContainer}

@@ -1,16 +1,17 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
+  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
-  import { Elements, IStepConfiguration } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
-  import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { documentStartStep, layout } from '../default-configuration/theme';
   import merge from 'deepmerge';
+  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
   import { checkIsCameraAvailable } from '../services/camera-manager';
   import { mergeStepConfig } from '../services/merge-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
@@ -66,6 +67,14 @@
       <IconButton
         configuration={element.props}
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+        }}
       />
     {/if}
     {#if element.type === Elements.Image}

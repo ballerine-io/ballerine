@@ -1,8 +1,7 @@
-import { IAppConfiguration, IStepConfiguration } from '../configuration';
+import { IAppConfiguration } from '../configuration';
 import { steps } from './constants';
 import { getFlowOrders } from '../flows/hooks';
 import { Writable } from '../../../../node_modules/svelte/types/runtime/store/index';
-import { debug } from 'svelte/internal';
 
 const filterOutByType = (flowIds: string[], configuration: IAppConfiguration, type?: string) => {
   if (!type) return flowIds;
@@ -11,12 +10,6 @@ const filterOutByType = (flowIds: string[], configuration: IAppConfiguration, ty
     const step = steps.find(s => s.name === stepConfiguration.name);
     return step?.type !== type;
   });
-};
-
-export const addCloseToURLParams = () => {
-  const url = new URL(window.location.href);
-  url.searchParams.set('close', 'true');
-  history.pushState('', '', url.search);
 };
 
 export const getNextStepId = (globalConfiguration: IAppConfiguration, currentStepId: string, skipType?: string) => {
