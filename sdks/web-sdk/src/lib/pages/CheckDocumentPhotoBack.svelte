@@ -1,15 +1,16 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Title, IconButton, Photo, Paragraph } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { Title, IconButton, Photo, Paragraph, IconCloseButton } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { goToPrevStep } from '../contexts/navigation';
   import { getDocImage, IDocumentInfo } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
-  import { documents, selectedDocumentInfo, currentStepId } from '../contexts/app-state/stores';
+  import { documents, selectedDocumentInfo, currentStepId, appState } from '../contexts/app-state';
   import merge from 'lodash.merge';
   import { checkDocumentPhotoBackStep, layout } from '../default-configuration/theme';
+  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
 
   export let stepId;
 
@@ -37,6 +38,14 @@
       <IconButton
         configuration={element.props}
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+        }}
       />
     {/if}
     {#if element.type === Elements.Title}

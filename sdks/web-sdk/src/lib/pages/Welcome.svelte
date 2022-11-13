@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
-  import { goToNextStep, addCloseToURLParams } from '../contexts/navigation/hooks';
+  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
+  import { configuration } from '../contexts/configuration';
+  import { goToNextStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import List from '../molecules/List/List.svelte';
@@ -11,6 +11,7 @@
   import { appState, currentStepId } from '../contexts/app-state';
   import merge from 'lodash.merge';
   import { layout, welcomeStep } from '../default-configuration/theme';
+  import { EActionNames, EVerificationStatuses } from '../utils/event-service';
 
   export let stepId;
 
@@ -26,11 +27,18 @@
         <IconButton
           configuration={element.props}
           on:click={() => {
-            sendButtonClickEvent('close', { status: 'document_collection' }, $appState, true);
-            addCloseToURLParams();
+            sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
           }}
         />
       </div>
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+        }}
+      />
     {/if}
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />

@@ -13,3 +13,4 @@ export { ListItem } from './ListItem';
 export { Loader } from './Loader';
 export { FlyingText } from './FlyingText';
 export { Overlay } from './Overlay';
+export { IconCloseButton } from './IconCloseButton';
