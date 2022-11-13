@@ -1,15 +1,16 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { IconButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { isNativeCamera } from '../contexts/flows/hooks';
-  import { selectedDocumentInfo, selfieUri, currentStepId } from '../contexts/app-state/stores';
+  import { currentStepId, selectedDocumentInfo, selfieUri } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
   import { layout, selfieStartStep } from '../default-configuration/theme';
+  import { createToggle } from '../hooks/createToggle/createToggle';
 
   export let stepId;
 
@@ -25,10 +26,12 @@
     }
   }
 
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
   const handler = async (e: ICameraEvent) => {
-    if (!e.target) return;
+    if (!e.target || $isDisabled) return;
     $selfieUri = await nativeCameraHandler(e);
     goToNextStep(currentStepId, $configuration, $currentStepId);
+    toggleOnIsDisabled();
   };
 </script>
 
@@ -70,12 +73,9 @@
             on:change={handler}
           />
         {/if}
-        <Button
-          on:click={() => goToNextStep(currentStepId, $configuration, $currentStepId)}
-          configuration={element.props}
-        >
+        <NextStepButton configuration={element.props} disabled={$isDisabled}>
           <T key="button" namespace={stepNamespace} />
-        </Button>
+        </NextStepButton>
       </div>
     {/if}
   {/each}
