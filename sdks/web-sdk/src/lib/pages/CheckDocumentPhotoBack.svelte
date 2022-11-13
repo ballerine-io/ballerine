@@ -1,7 +1,7 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
   import { Title, IconButton, Photo, Paragraph } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { goToPrevStep } from '../contexts/navigation';
@@ -10,6 +10,7 @@
   import { documents, selectedDocumentInfo, currentStepId } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
   import { checkDocumentPhotoBackStep, layout } from '../default-configuration/theme';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
 
   export let stepId;
 
@@ -29,6 +30,8 @@
       image = getDocImage(documentInfo.type, $documents, 'back');
     }
   }
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>

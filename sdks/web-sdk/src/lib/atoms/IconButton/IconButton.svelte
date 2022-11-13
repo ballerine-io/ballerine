@@ -19,13 +19,8 @@
   );
 </script>
 
-<button {style} on:click>
-  <img
-    src={attributes.src}
-    alt={attributes.alt}
-    width={attributes.width}
-    height={attributes.height}
-  />
+<button {style} on:click width={attributes.width} height={attributes.height}>
+  {@html attributes.src}
 </button>
 
 <style>

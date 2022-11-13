@@ -9,7 +9,10 @@
   import merge from 'lodash.merge';
 
   export let configuration: IElementProps;
-  const styleProps = configuration?.style as ICSSProperties;
+
+  const styleProps = configuration?.style as ICSSProperties || {
+    background: $globalConfiguration.button?.background || $globalConfiguration.general.colors.primary || primaryButton.background,
+  };
 
   const style = makeStylesFromConfiguration(
     merge(primaryButton, $globalConfiguration.button),

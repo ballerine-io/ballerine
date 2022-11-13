@@ -19,19 +19,24 @@ export const addCloseToURLParams = () => {
   history.pushState('', '', url.search);
 };
 
+export const getNextStepId = (globalConfiguration: IAppConfiguration, currentStepId: string, skipType?: string) => {
+  const stepsOrder = getFlowOrders(globalConfiguration) as string[];
+  const filteredFlows = filterOutByType(stepsOrder, globalConfiguration, skipType);
+  const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
+  if (currentFlowIndex === filteredFlows.length) {
+    throw Error('Next step doesn\'t exist');
+  }
+  return filteredFlows[currentFlowIndex + 1];
+}
+
 export const goToNextStep = (
   currentStepIdStore: Writable<string>,
   globalConfiguration: IAppConfiguration,
   currentStepId: string,
   skipType?: string,
 ) => {
-  const stepsOrder = getFlowOrders(globalConfiguration) as string[];
-  const filteredFlows = filterOutByType(stepsOrder, globalConfiguration, skipType);
-  const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
-  if (currentFlowIndex === filteredFlows.length) {
-    throw Error('Error moving next step, this is the last step');
-  }
-  currentStepIdStore.set(filteredFlows[currentFlowIndex + 1]);
+  const nextStepId = getNextStepId(globalConfiguration, currentStepId, skipType);
+  currentStepIdStore.set(nextStepId);
 };
 
 export const goToPrevStep = (

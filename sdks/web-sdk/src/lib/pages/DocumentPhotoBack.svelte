@@ -14,6 +14,7 @@
   import merge from 'lodash.merge';
   import { layout } from '../default-configuration/theme';
   import { DocumentType } from '../contexts/app-state';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
 
   export let stepId;
 
@@ -60,6 +61,8 @@
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>

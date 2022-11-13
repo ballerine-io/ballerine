@@ -1,7 +1,7 @@
 <script lang="ts">
   import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
   import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
@@ -13,6 +13,8 @@
   import { documentOptions, documentPhotoStep, settings } from '../default-configuration/theme';
   import merge from 'lodash.merge';
   import { layout } from '../default-configuration/theme';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
 
   export let stepId;
 
@@ -20,7 +22,7 @@
   let container: HTMLDivElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = merge(documentPhotoStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(documentPhotoStep, $configuration.steps[stepId]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
   const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions);
   const documentType =
@@ -83,6 +85,8 @@
     }
     return goToPrevStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style} bind:this={container}>
@@ -122,6 +126,7 @@
       <CameraButton on:click={handleTakePhoto} configuration={element.props} />
     {/if}
   {/each}
+
 </div>
 
 <style>
@@ -142,4 +147,5 @@
     align-items: center;
     justify-content: center;
   }
+
 </style>

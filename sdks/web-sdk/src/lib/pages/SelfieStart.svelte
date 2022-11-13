@@ -10,6 +10,7 @@
   import { selectedDocumentInfo, selfieUri, currentStepId } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
   import { layout, selfieStartStep } from '../default-configuration/theme';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
 
   export let stepId;
 
@@ -30,6 +31,8 @@
     $selfieUri = await nativeCameraHandler(e);
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>

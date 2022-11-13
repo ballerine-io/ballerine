@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import { goToNextStep, addCloseToURLParams } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
@@ -11,12 +11,15 @@
   import { appState, currentStepId } from '../contexts/app-state';
   import merge from 'lodash.merge';
   import { layout, welcomeStep } from '../default-configuration/theme';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
 
   export let stepId;
 
-  const step = merge(welcomeStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(welcomeStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -53,6 +56,7 @@
         on:click={() => {
           flowStart();
           goToNextStep(currentStepId, $configuration, $currentStepId);
+          console.log(1);
         }}
         configuration={element.props}
       >

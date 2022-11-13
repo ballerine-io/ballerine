@@ -14,6 +14,7 @@
   import { selfieStep, settings } from '../default-configuration/theme';
   import merge from 'lodash.merge';
   import { layout } from '../default-configuration/theme';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
@@ -54,6 +55,8 @@
     $selfieUri = dataUri;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>

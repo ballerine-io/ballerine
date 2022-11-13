@@ -132,7 +132,7 @@ export interface IStepConfiguration {
   overlayStyle?: ICSSProperties;
   elements: IElement[];
   form?: IFormProps;
-  type: DocumentType;
+  type?: DocumentType;
   id: string;
   namespace?: string;
   cameraConfig?: CaptureConfigOption;

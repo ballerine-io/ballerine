@@ -1,7 +1,7 @@
 import { IMAGE_TYPES } from 'jslib-html5-camera-photo';
 import { DocumentType } from '../contexts/app-state';
 import { DocumentVariant } from '../contexts/app-state/types';
-import { Elements, ICSSProperties, IElement, Steps } from '../contexts/configuration';
+import { Elements, ICSSProperties, IElement, IStepConfiguration, Steps } from '../contexts/configuration';
 
 export const primaryButton: ICSSProperties = {
   'font-size': '16px',
@@ -301,7 +301,7 @@ export const welcomeStep = {
           'flex-grow': 1,
         },
         attributes: {
-          src: 'https://cdn.ballerine.io/ui-packs/default/images/welcome.svg',
+          src: '/welcome.svg',
           alt: 'welcome',
           width: '248px',
           height: '212px',

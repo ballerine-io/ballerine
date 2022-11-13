@@ -10,15 +10,18 @@
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
   import { checkDocumentStep, layout } from '../default-configuration/theme';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
 
   export let stepId;
 
-  const step = merge(checkDocumentStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(checkDocumentStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
+
   const documentType =
-    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+  ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
 
   let image = '';
   let skipBackSide = false;
@@ -34,6 +37,8 @@
       skipBackSide = true;
     }
   }
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>

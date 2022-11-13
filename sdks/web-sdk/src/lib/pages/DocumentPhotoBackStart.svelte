@@ -11,10 +11,12 @@
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
   import { documentPhotoBackStartStep, layout } from '../default-configuration/theme';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
 
   export let stepId;
 
-  const step = merge(documentPhotoBackStartStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(documentPhotoBackStartStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
@@ -38,6 +40,8 @@
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
