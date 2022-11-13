@@ -1,9 +1,10 @@
 import { appState, IAppState } from '../../contexts/app-state';
 import { currentLanguage, Languages } from '../../contexts/translation';
-import { IDocumentVerificationResponse, IOuterEvent } from './types';
+import { IDocumentVerificationResponse, IOuterEvent, EActionNames, EEventTypes } from './types';
 import { get } from 'svelte/store';
 import { flowEventBus } from '../../services/flow-event-bus/flow-event-bus';
 import { EFlowEvent } from '../../services/flow-event-bus/enums';
+import { BALLERINE_EVENT } from './constants';
 
 const outerScopeContext = window.__blrn_context;
 const isProd = window.__blrn_is_prod;
@@ -37,8 +38,9 @@ export const sendFlowCompleteEvent = (verificationResponse: IDocumentVerificatio
   const { status, idvResult } = verificationResponse;
   const payload = { status, idvResult };
   const eventOptions = {
-    eventName: 'blrn_event',
-    eventType: 'sync_flow_complete',
+    eventName: BALLERINE_EVENT,
+    eventType: EEventTypes.SYNC_FLOW_COMPLETE,
+    shouldExit: true,
     payload,
   };
 
@@ -55,8 +57,8 @@ export const sendVerificationUpdateEvent = (
   shouldExit = false,
 ) => {
   const eventOptions = {
-    eventName: 'blrn_event',
-    eventType: 'verification_update',
+    eventName: BALLERINE_EVENT,
+    eventType: EEventTypes.VERIFICATION_UPDATE,
     shouldExit,
     details,
   };
@@ -67,8 +69,8 @@ export const sendNavigationUpdateEvent = () => {
   const as = get(appState);
 
   const eventOptions = {
-    eventName: 'blrn_event',
-    eventType: 'navigation_update',
+    eventName: BALLERINE_EVENT,
+    eventType: EEventTypes.NAVIGATION_UPDATE,
     details: {
       currentIdx: as.currentStepIdx,
       // FIXME: currentPage and previousPage typed as a string by IAppState.
@@ -84,14 +86,14 @@ export const sendNavigationUpdateEvent = () => {
 };
 
 export const sendButtonClickEvent = (
-  actionName: string,
+  actionName: EActionNames,
   status: IDocumentVerificationResponse,
   as: IAppState,
   shouldExit = false,
 ) => {
   const eventOptions = {
-    eventName: 'blrn_event',
-    eventType: 'button_click',
+    eventName: BALLERINE_EVENT,
+    eventType: EEventTypes.BUTTON_CLICK,
     shouldExit,
     details: {
       actionName,

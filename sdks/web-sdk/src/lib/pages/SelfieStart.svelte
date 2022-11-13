@@ -1,15 +1,16 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { isNativeCamera } from '../contexts/flows/hooks';
-  import { selectedDocumentInfo, selfieUri, currentStepId } from '../contexts/app-state/stores';
+  import { selectedDocumentInfo, selfieUri, currentStepId, appState } from '../contexts/app-state/stores';
   import merge from 'lodash.merge';
   import { layout, selfieStartStep } from '../default-configuration/theme';
+  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
 
   export let stepId;
 
@@ -44,6 +45,14 @@
             $currentStepId,
             skipBackSide ? 'back-side' : undefined,
           )}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+        }}
       />
     {/if}
     {#if element.type === Elements.Image}

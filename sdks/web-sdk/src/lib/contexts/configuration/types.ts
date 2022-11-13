@@ -39,6 +39,7 @@ export enum Elements {
   Container = 'container',
   DocumentOption = 'document-option',
   IconButton = 'icon-button',
+  IconCloseButton = 'icon-close-button',
   CameraButton = 'camera-button',
   VideoContainer = 'video-container',
   List = 'list',
@@ -175,6 +176,7 @@ export interface IAppConfiguration {
   button?: ICSSProperties;
   buttonWithIcon?: ICSSProperties;
   iconButton?: ICSSProperties;
+  iconCloseButton?: ICSSProperties;
   layout?: ICSSProperties;
   photo?: ICSSProperties;
   title: ICSSProperties;

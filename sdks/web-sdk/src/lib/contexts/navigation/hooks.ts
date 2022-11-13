@@ -13,12 +13,6 @@ const filterOutByType = (flowIds: string[], configuration: IAppConfiguration, ty
   });
 };
 
-export const addCloseToURLParams = () => {
-  const url = new URL(window.location.href);
-  url.searchParams.set('close', 'true');
-  history.pushState('', '', url.search);
-};
-
 export const goToNextStep = (
   currentStepIdStore: Writable<string>,
   globalConfiguration: IAppConfiguration,

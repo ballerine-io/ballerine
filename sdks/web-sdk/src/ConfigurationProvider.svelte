@@ -1,10 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import App from './App.svelte';
+  import { BALLERINE_EVENT } from './lib/utils/event-service';
   import { IOuterEvent } from './lib/utils/event-service/types';
   import { isMobile } from './lib/utils/is-mobile';
 
   let loading = true;
+  let modalOpened = true;
+  let mounted = true;
 
   onMount(async () => {
     loading = false;
@@ -15,15 +18,15 @@
   export let flowName: string;
 
   export let useModal = false;
-  let modalOpened = true;
 
   window.addEventListener(
     'message',
     e => {
       const event = e.data as IOuterEvent;
-      if (event.eventName !== 'blrn_event') return;
+      if (event.eventName !== BALLERINE_EVENT) return;
       if (event.shouldExit) {
         modalOpened = false;
+        mounted = false;
       }
     },
     false,
@@ -39,7 +42,9 @@
     </div>
   {/if}
 {:else if !loading}
-  <App {flowName} />
+  {#if mounted}
+    <App {flowName} />
+  {/if}
 {/if}
 
 <style>

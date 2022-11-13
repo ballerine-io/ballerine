@@ -1,18 +1,19 @@
 <script lang="ts">
   import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
-  import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
+  import { CameraButton, IconButton, IconCloseButton, Overlay, Paragraph, VideoContainer } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
-  import { DocumentType, IDocument } from '../contexts/app-state';
+  import { DocumentType, IDocument, appState } from '../contexts/app-state';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { documentOptions, documentPhotoStep, settings } from '../default-configuration/theme';
   import merge from 'lodash.merge';
   import { layout } from '../default-configuration/theme';
+  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
 
   export let stepId;
 
@@ -91,6 +92,14 @@
       <IconButton
         configuration={element.props}
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+        }}
       />
     {/if}
     {#if element.type === Elements.VideoContainer}

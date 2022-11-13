@@ -76,6 +76,15 @@ export const iconButton = {
   right: '32px',
 };
 
+export const iconCloseButton = {
+  background: '#F2F3F4',
+  width: '40px',
+  height: '40px',
+  position: 'absolute',
+  top: '45px',
+  right: '32px',
+};
+
 export const settings = {
   cameraSettings: {
     sizeFactor: 1,
@@ -255,6 +264,22 @@ const backIconButton: IElement = {
   },
 };
 
+const closeIconButton: IElement = {
+  type: Elements.IconCloseButton,
+  props: {
+    attributes: {
+      src: 'https://cdn.ballerine.io/ui-packs/default/images/close.svg',
+      alt: 'back',
+      width: '18px',
+      height: '18px',
+    },
+    style: {
+      right: '26px',
+      background: 'transparent',
+    },
+  },
+};
+
 const backWhiteIconButton: IElement = {
   type: Elements.IconButton,
   props: {
@@ -272,6 +297,7 @@ export const welcomeStep = {
   style: {},
   elements: [
     backIconButton,
+    //closeIconButton,
     {
       type: Elements.Title,
       props: {
@@ -482,7 +508,7 @@ export const documentPhotoBackStartStep = {
   style: {},
   elements: [
     backIconButton,
-    // closeIconButton,
+    //closeIconButton,
     {
       type: Elements.Title,
       id: 'welcome-title1',
@@ -652,6 +678,7 @@ export const selfieStep = {
   id: Steps.Selfie,
   elements: [
     backWhiteIconButton,
+    //closeIconButton,
     {
       type: Elements.Title,
       props: {
