@@ -24,6 +24,7 @@
   import { DecisionStatus } from '../contexts/app-state/types';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadStepById } from '../services/preload-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   flowUploadLoader();
 
   const WAITING_TIME = 1000 * 60 * 3; // 3 minutes
@@ -33,7 +34,14 @@
   const step = mergeStepConfig(loadingStep, $configuration.steps[stepId]);
 
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {}
+    ),
+    step.style
+  );
 
   let timeout: number;
   let veryficationTimeout: number;

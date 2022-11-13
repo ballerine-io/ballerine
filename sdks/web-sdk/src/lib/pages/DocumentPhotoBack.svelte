@@ -16,6 +16,7 @@
   import { DocumentType } from '../contexts/app-state';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 
   export let stepId;
 
@@ -23,7 +24,15 @@
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
   const step = mergeStepConfig(documentPhotoBackStep, $configuration.steps[stepId]);
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {}
+    ),
+    step.style
+  );
+
   const documentType =
     ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
 

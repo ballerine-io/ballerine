@@ -13,12 +13,19 @@
   import merge from 'deepmerge';
   import { checkIsCameraAvailable } from '../services/camera-manager';
   import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 
   export let stepId;
 
   const step = mergeStepConfig(documentStartStep, $configuration.steps[stepId]);
 
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {}
+    ),
+    step.style
+  );
 
   const documentType =
     ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;

@@ -12,13 +12,21 @@
   import { layout, selfieStartStep } from '../default-configuration/theme';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 
   export let stepId;
 
   const step = mergeStepConfig(selfieStartStep, $configuration.steps[stepId]);
 
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {}
+    ),
+    step.style
+  );
 
   let skipBackSide = false;
 

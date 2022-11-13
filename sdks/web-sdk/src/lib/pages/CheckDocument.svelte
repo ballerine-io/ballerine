@@ -12,13 +12,20 @@
   import { checkDocumentStep, layout } from '../default-configuration/theme';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 
   export let stepId;
 
   const step = mergeStepConfig(checkDocumentStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
 
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {}
+    ),
+    step.style
+  );
 
   const documentType =
   ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;

@@ -12,12 +12,20 @@
   import { checkDocumentPhotoBackStep, layout } from '../default-configuration/theme';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 
   export let stepId;
 
   const step = mergeStepConfig(checkDocumentPhotoBackStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {}
+    ),
+    step.style
+  );
 
   let image: string;
   let documentInfo: IDocumentInfo | undefined = undefined;

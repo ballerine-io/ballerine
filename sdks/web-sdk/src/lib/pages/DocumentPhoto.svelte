@@ -15,6 +15,7 @@
   import { layout } from '../default-configuration/theme';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 
   export let stepId;
 
@@ -23,7 +24,15 @@
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
   const step = mergeStepConfig(documentPhotoStep, $configuration.steps[stepId]);
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {}
+    ),
+    step.style
+  );
+
   const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions || {});
   const documentType =
     ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;

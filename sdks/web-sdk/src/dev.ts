@@ -11,7 +11,7 @@ const ballerineInitConfig: FlowsInitOptions = {
   uiConfig: {
     general: {
       colors: {
-        primary: "#7000FF",
+        primary: "#54595F",
       },
       fonts: {
         name: 'Inter',
