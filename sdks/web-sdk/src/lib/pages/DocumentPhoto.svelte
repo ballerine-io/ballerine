@@ -24,6 +24,8 @@
   let container: HTMLDivElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
+  let isDisabled = false;
+
   const step = merge(documentPhotoStep, $configuration.steps[stepId]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
   const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions);
@@ -76,7 +78,10 @@
   };
 
   const handleTakePhoto = () => {
-    if (!cameraPhoto) return;
+    if (!cameraPhoto || isDisabled) return;
+
+    isDisabled = true;
+
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings || settings.cameraSettings,
     );
@@ -123,7 +128,7 @@
   {/if}
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} />
+      <CameraButton on:click={handleTakePhoto} configuration={element.props} {isDisabled} />
     {/if}
   {/each}
 </div>

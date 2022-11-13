@@ -1,24 +1,24 @@
 <script lang="ts">
   import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
   import { CameraButton, IconButton, Overlay, Paragraph, Title, VideoContainer } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { currentStepId } from '../contexts/app-state';
+  import { currentStepId, DocumentType } from '../contexts/app-state';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { updateDocument } from '../utils/photo-utils';
-  import { documentPhotoBackStep, settings } from '../default-configuration/theme';
+  import { documentPhotoBackStep, layout, settings } from '../default-configuration/theme';
   import merge from 'lodash.merge';
-  import { layout } from '../default-configuration/theme';
-  import { DocumentType } from '../contexts/app-state';
 
   export let stepId;
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
+
+  let isDisabled = false;
 
   const step = merge(documentPhotoBackStep, $configuration.steps[stepId]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
@@ -52,13 +52,14 @@
 
   const handleTakePhoto = () => {
     const document = $documents.find(d => d.type === documentType);
-    if (!cameraPhoto || !document) return;
+    if (!cameraPhoto || !document || isDisabled) return;
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings || settings.cameraSettings,
     );
     const newDocumentsState = updateDocument(document.type, base64, $documents);
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
+    isDisabled = true;
   };
 </script>
 
@@ -96,7 +97,7 @@
   {/if}
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} />
+      <CameraButton on:click={handleTakePhoto} configuration={element.props} {isDisabled} />
     {/if}
   {/each}
 </div>

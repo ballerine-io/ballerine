@@ -1,7 +1,7 @@
 <script lang="ts">
   import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
   import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
@@ -11,14 +11,15 @@
   import Title from '../atoms/Title/Title.svelte';
   import { selfieUri } from '../contexts/app-state/stores';
   import { isMobile } from '../utils/is-mobile';
-  import { selfieStep, settings } from '../default-configuration/theme';
+  import { layout, selfieStep, settings } from '../default-configuration/theme';
   import merge from 'lodash.merge';
-  import { layout } from '../default-configuration/theme';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
   export let stepId;
+
+  let isDisabled = false;
 
   const step = merge(selfieStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
@@ -47,12 +48,14 @@
   });
 
   const handleTakePhoto = () => {
-    if (!cameraPhoto) return;
+    if (!cameraPhoto || isDisabled) return;
+
     const dataUri = cameraPhoto.getDataUri(
       $configuration.settings?.selfieCameraSettings || settings.cameraSettings,
     );
     $selfieUri = dataUri;
     goToNextStep(currentStepId, $configuration, $currentStepId);
+    isDisabled = true;
   };
 </script>
 
@@ -84,7 +87,7 @@
   <Overlay type={DocumentType.SELFIE} />
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} />
+      <CameraButton on:click={handleTakePhoto} configuration={element.props} {isDisabled} />
     {/if}
   {/each}
 </div>

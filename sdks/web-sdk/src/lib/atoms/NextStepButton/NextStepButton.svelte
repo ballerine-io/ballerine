@@ -22,7 +22,7 @@
   const onClick = () => {
     if (disabled) return;
 
-    goToNextStep(currentStepId, $globalConfiguration, $currentStepId, $skipType);
+    goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType);
     isDisabled = true;
   };
 
