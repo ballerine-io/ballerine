@@ -82,7 +82,6 @@ export const preloadStepById = async (
   configuration: Writable<IAppConfiguration>,
   currentStepId: string,
 ) => {
-  console.log(globalConfiguration)
     if (preloadedSteps[currentStepId]) return;
     const step = globalConfiguration.steps[currentStepId];
     const updatedStep = await preloadStepImages(step);
