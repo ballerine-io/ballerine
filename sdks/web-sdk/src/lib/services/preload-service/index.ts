@@ -1,1 +1,1 @@
-export { preloadNextStepByCurrent } from "./utils";
+export { preloadNextStepByCurrent, preloadStepById } from "./utils";

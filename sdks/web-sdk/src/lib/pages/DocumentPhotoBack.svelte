@@ -11,18 +11,19 @@
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { updateDocument } from '../utils/photo-utils';
   import { documentPhotoBackStep, settings } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { layout } from '../default-configuration/theme';
   import { DocumentType } from '../contexts/app-state';
   import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { mergeStepConfig } from '../services/merge-service';
 
   export let stepId;
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = merge(documentPhotoBackStep, $configuration.steps[stepId]);
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const step = mergeStepConfig(documentPhotoBackStep, $configuration.steps[stepId]);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
   const documentType =
     ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
 

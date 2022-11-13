@@ -9,7 +9,7 @@
   import { flowStart } from '../services/analytics';
   import { sendButtonClickEvent } from '../utils/event-service/utils';
   import { appState, currentStepId } from '../contexts/app-state';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { layout, welcomeStep } from '../default-configuration/theme';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
@@ -18,7 +18,7 @@
 
   const step = mergeStepConfig(welcomeStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
   preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
@@ -56,7 +56,6 @@
         on:click={() => {
           flowStart();
           goToNextStep(currentStepId, $configuration, $currentStepId);
-          console.log(1);
         }}
         configuration={element.props}
       >

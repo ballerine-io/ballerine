@@ -11,6 +11,11 @@ import {
   selfieStartStep,
   selfieStep,
   checkSelfieStep,
+  loadingStep,
+  finalStep,
+  errorStep,
+  resubmissionStep,
+  declineStep
 } from '../../default-configuration/theme';
 
 export const defaultStepsConfigurations: IStepConfiguration[] = [
@@ -24,5 +29,10 @@ export const defaultStepsConfigurations: IStepConfiguration[] = [
   checkDocumentPhotoBackStep,
   selfieStartStep,
   selfieStep,
-  checkSelfieStep
+  checkSelfieStep,
+  finalStep,
+  loadingStep,
+  errorStep,
+  resubmissionStep,
+  declineStep
 ];

@@ -12,18 +12,20 @@
   import { selfieUri } from '../contexts/app-state/stores';
   import { isMobile } from '../utils/is-mobile';
   import { selfieStep, settings } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { layout } from '../default-configuration/theme';
   import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { mergeStepConfig } from '../services/merge-service';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
   export let stepId;
 
-  const step = merge(selfieStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(selfieStep, $configuration.steps[stepId]);
+
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
 
   const facingMode = isMobile() ? FACING_MODES.USER : FACING_MODES.ENVIRONMENT;
 

@@ -1,4 +1,4 @@
-import mergeObj from 'lodash.merge';
+import mergeObj from 'deepmerge';
 import toObjByKey from 'lodash.keyby';
 import translation from '../default-configuration/translation.json';
 import { TranslationType } from '../contexts/translation';

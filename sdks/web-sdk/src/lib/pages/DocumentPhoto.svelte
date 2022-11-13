@@ -11,7 +11,7 @@
   import Title from '../atoms/Title/Title.svelte';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { documentOptions, documentPhotoStep, settings } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { layout } from '../default-configuration/theme';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
@@ -23,8 +23,8 @@
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
   const step = mergeStepConfig(documentPhotoStep, $configuration.steps[stepId]);
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
-  const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
+  const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions || {});
   const documentType =
     ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
   const stepNamespace = `${step.namespace}.${documentType}`;

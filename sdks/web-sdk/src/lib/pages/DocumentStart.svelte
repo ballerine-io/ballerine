@@ -1,7 +1,7 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
   import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements, IStepConfiguration } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
@@ -10,14 +10,15 @@
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { documentStartStep, layout } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { checkIsCameraAvailable } from '../services/camera-manager';
+  import { mergeStepConfig } from '../services/merge-service';
 
   export let stepId;
 
-  const step = merge(documentStartStep, $configuration.steps[stepId]) as IStepConfiguration;
+  const step = mergeStepConfig(documentStartStep, $configuration.steps[stepId]);
 
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
 
   const documentType =
     ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;

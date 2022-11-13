@@ -9,7 +9,7 @@
   import { IDocument, IDocumentInfo, currentStepId } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { documentPhotoBackStartStep, layout } from '../default-configuration/theme';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
@@ -18,7 +18,7 @@
 
   const step = mergeStepConfig(documentPhotoBackStartStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
 
   let documentInfo: IDocumentInfo | undefined = undefined;
   let document: IDocument | undefined;

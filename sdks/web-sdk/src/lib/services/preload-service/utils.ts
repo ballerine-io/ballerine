@@ -1,4 +1,4 @@
-import merge from "lodash.merge";
+import merge from "deepmerge";
 import { Writable } from "svelte/store";
 import { IAppConfiguration, IStepConfiguration } from "../../contexts/configuration";
 import { getNextStepId } from "../../contexts/navigation";
@@ -64,10 +64,8 @@ export const preloadNextStepByCurrent = async (
 ) => {
     const nextStepId = getNextStepId(globalConfiguration, currentStepId, skipType);
     if (preloadedSteps[nextStepId]) return;
-    console.log("nextStepId", nextStepId);
     const step = globalConfiguration.steps[nextStepId];
     const updatedStep = await preloadStepImages(step);
-    console.log("updatedStep", updatedStep)
     const updatedConfiguration = {
       ...globalConfiguration,
       steps: {
@@ -75,7 +73,26 @@ export const preloadNextStepByCurrent = async (
         [nextStepId]: updatedStep
       }
     }
-    console.log("updatedConfiguration", updatedConfiguration)
     configuration.set(updatedConfiguration);
     preloadedSteps[nextStepId] = true;
+}
+
+export const preloadStepById = async (
+  globalConfiguration: IAppConfiguration,
+  configuration: Writable<IAppConfiguration>,
+  currentStepId: string,
+) => {
+  console.log(globalConfiguration)
+    if (preloadedSteps[currentStepId]) return;
+    const step = globalConfiguration.steps[currentStepId];
+    const updatedStep = await preloadStepImages(step);
+    const updatedConfiguration = {
+      ...globalConfiguration,
+      steps: {
+        ...globalConfiguration.steps,
+        [currentStepId]: updatedStep
+      }
+    }
+    configuration.set(updatedConfiguration);
+    preloadedSteps[currentStepId] = true;
 }

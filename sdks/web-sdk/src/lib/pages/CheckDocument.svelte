@@ -8,7 +8,7 @@
   import { DocumentType, getDocImage } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { checkDocumentStep, layout } from '../default-configuration/theme';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
@@ -17,7 +17,7 @@
 
   const step = mergeStepConfig(checkDocumentStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
 
 
   const documentType =
@@ -36,9 +36,10 @@
     if ($selectedDocumentInfo && !$selectedDocumentInfo.backSide) {
       skipBackSide = true;
     }
+    preloadNextStepByCurrent($configuration, configuration, $currentStepId, skipBackSide ? 'back-side' : undefined);
   }
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+
 </script>
 
 <div class="container" {style}>

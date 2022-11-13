@@ -9,14 +9,15 @@
   import NavigationButtons from '../molecules/NavigationButtons/NavigationButtons.svelte';
   import Photo from '../atoms/Photo/Photo.svelte';
   import { selfieUri, currentStepId } from '../contexts/app-state/stores';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { checkSelfieStep, layout } from '../default-configuration/theme';
+  import { mergeStepConfig } from '../services/merge-service';
 
   export let stepId;
 
-  const step = merge(checkSelfieStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(checkSelfieStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
 </script>
 
 <div class="container" {style}>

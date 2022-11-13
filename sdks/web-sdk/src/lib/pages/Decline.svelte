@@ -11,14 +11,15 @@
   import { addCloseToURLParams } from '../contexts/navigation/hooks';
   import { currentParams } from '../contexts/app-state';
   import { declineStep, layout } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { DecisionStatus } from '../contexts/app-state/types';
+  import { mergeStepConfig } from '../services/merge-service';
 
   export let stepId;
 
-  const step = merge(declineStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(declineStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
 
   const handleClose = () => {
     sendFlowCompleteEvent({ status: 'completed', idvResult: DecisionStatus.DECLINED });

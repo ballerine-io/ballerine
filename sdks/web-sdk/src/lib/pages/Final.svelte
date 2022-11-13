@@ -2,22 +2,24 @@
   import { onDestroy } from 'svelte';
   import { T } from '../contexts/translation';
   import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import { currentParams } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { flowApproved } from '../services/analytics';
   import { sendFlowCompleteEvent } from '../utils/event-service';
   import { addCloseToURLParams } from '../contexts/navigation/hooks';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { finalStep, layout } from '../default-configuration/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
+  import { mergeStepConfig } from '../services/merge-service';
 
   export let stepId;
 
-  const step = merge(finalStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(finalStep, $configuration.steps[stepId]);
+
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
 
   flowApproved();
 

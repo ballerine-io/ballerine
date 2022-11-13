@@ -10,15 +10,16 @@
   import { sendFlowCompleteEvent } from '../utils/event-service';
   import { flowError } from '../services/analytics';
   import { addCloseToURLParams } from '../contexts/navigation/hooks';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { errorStep, layout } from '../default-configuration/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
+  import { mergeStepConfig } from '../services/merge-service';
 
   export let stepId;
 
-  const step = merge(errorStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(errorStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
 
   const message = $currentParams ? $currentParams.message : '';
 

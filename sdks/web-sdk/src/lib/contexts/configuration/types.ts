@@ -82,7 +82,7 @@ interface ICSSPropertiesAll {
   'z-index': string;
 }
 
-export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo';
+export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo' | 'Voter';
 
 interface IAttributesAll {
   icon: Icons;

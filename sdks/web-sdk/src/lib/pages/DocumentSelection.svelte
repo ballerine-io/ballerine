@@ -7,7 +7,7 @@
   import { DocumentOptions } from '../organisms';
   import { goToPrevStep } from '../contexts/navigation';
   import { currentStepId } from '../contexts/app-state';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { documentSelectionStep, layout } from '../default-configuration/theme';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
@@ -16,7 +16,7 @@
 
   const step = mergeStepConfig(documentSelectionStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout || {}), step.style);
   preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
