@@ -38,9 +38,9 @@
   const style = makeStylesFromConfiguration(
     merge(
       injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {}
+      $configuration.layout || {},
     ),
-    step.style
+    step.style,
   );
 
   let timeout: number;

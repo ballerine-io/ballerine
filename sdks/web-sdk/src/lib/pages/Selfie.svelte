@@ -4,7 +4,14 @@
   import { configuration } from '../contexts/configuration';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
-  import { CameraButton, IconButton, IconCloseButton, Overlay, Paragraph, VideoContainer } from '../atoms';
+  import {
+    CameraButton,
+    IconButton,
+    IconCloseButton,
+    Overlay,
+    Paragraph,
+    VideoContainer,
+  } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import { currentStepId, DocumentType } from '../contexts/app-state';
@@ -17,7 +24,11 @@
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { mergeStepConfig } from '../services/merge-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
-  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
@@ -31,9 +42,9 @@
   const style = makeStylesFromConfiguration(
     merge(
       injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {}
+      $configuration.layout || {},
     ),
-    step.style
+    step.style,
   );
 
   const facingMode = isMobile() ? FACING_MODES.USER : FACING_MODES.ENVIRONMENT;
@@ -82,7 +93,12 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
         }}
       />
     {/if}

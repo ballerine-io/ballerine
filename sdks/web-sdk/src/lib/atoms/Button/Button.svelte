@@ -11,8 +11,10 @@
   export let isBack = false;
 
   const background = !isBack
-    ? $globalConfiguration.button?.background || $globalConfiguration.general.colors.primary || primaryButton.background
-    : undefined
+    ? $globalConfiguration.button?.background ||
+      $globalConfiguration.general.colors.primary ||
+      primaryButton.background
+    : undefined;
 
   const styleProps = {
     ...configuration?.style,
@@ -25,7 +27,6 @@
     merge(primaryButton, buttonConfiguration || {}),
     styleProps,
   );
-
 </script>
 
 <button {style} on:click>

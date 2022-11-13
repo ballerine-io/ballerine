@@ -12,7 +12,11 @@
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import { currentStepId, appState } from '../contexts/app-state';
-  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
 
   export let stepId;
 
@@ -22,9 +26,9 @@
   const style = makeStylesFromConfiguration(
     merge(
       injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {}
+      $configuration.layout || {},
     ),
-    step.style
+    step.style,
   );
 
   preloadNextStepByCurrent($configuration, configuration, $currentStepId);
@@ -42,7 +46,12 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
         }}
       />
     {/if}

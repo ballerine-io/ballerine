@@ -25,7 +25,10 @@
   const styleProps = configuration.style as ICSSProperties;
   const attributes = configuration.attributes as IInputAttributes;
 
-  const style = makeStylesFromConfiguration(merge(input, $globalConfiguration.input || {}), styleProps);
+  const style = makeStylesFromConfiguration(
+    merge(input, $globalConfiguration.input || {}),
+    styleProps,
+  );
 </script>
 
 <input

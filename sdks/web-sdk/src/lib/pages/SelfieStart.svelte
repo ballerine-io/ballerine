@@ -11,9 +11,18 @@
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { mergeStepConfig } from '../services/merge-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
-  import { selectedDocumentInfo, selfieUri, currentStepId, appState } from '../contexts/app-state/stores';
+  import {
+    selectedDocumentInfo,
+    selfieUri,
+    currentStepId,
+    appState,
+  } from '../contexts/app-state/stores';
   import { layout, selfieStartStep } from '../default-configuration/theme';
-  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
 
   export let stepId;
 
@@ -24,9 +33,9 @@
   const style = makeStylesFromConfiguration(
     merge(
       injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {}
+      $configuration.layout || {},
     ),
-    step.style
+    step.style,
   );
 
   let skipBackSide = false;
@@ -64,7 +73,12 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
         }}
       />
     {/if}

@@ -12,15 +12,19 @@ const filterOutByType = (flowIds: string[], configuration: IAppConfiguration, ty
   });
 };
 
-export const getNextStepId = (globalConfiguration: IAppConfiguration, currentStepId: string, skipType?: string) => {
+export const getNextStepId = (
+  globalConfiguration: IAppConfiguration,
+  currentStepId: string,
+  skipType?: string,
+) => {
   const stepsOrder = getFlowOrders(globalConfiguration) as string[];
   const filteredFlows = filterOutByType(stepsOrder, globalConfiguration, skipType);
   const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
   if (currentFlowIndex === filteredFlows.length) {
-    throw Error('Next step doesn\'t exist');
+    throw Error("Next step doesn't exist");
   }
   return filteredFlows[currentFlowIndex + 1];
-}
+};
 
 export const goToNextStep = (
   currentStepIdStore: Writable<string>,

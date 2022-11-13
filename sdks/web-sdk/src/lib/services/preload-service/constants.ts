@@ -15,7 +15,7 @@ import {
   finalStep,
   errorStep,
   resubmissionStep,
-  declineStep
+  declineStep,
 } from '../../default-configuration/theme';
 
 export const defaultStepsConfigurations: IStepConfiguration[] = [
@@ -34,5 +34,5 @@ export const defaultStepsConfigurations: IStepConfiguration[] = [
   loadingStep,
   errorStep,
   resubmissionStep,
-  declineStep
+  declineStep,
 ];

@@ -7,7 +7,12 @@
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
-  import { EActionNames, sendButtonClickEvent, sendFlowCompleteEvent, EVerificationStatuses } from '../utils/event-service';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    sendFlowCompleteEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
   import { flowError } from '../services/analytics';
   import merge from 'deepmerge';
   import { errorStep, layout } from '../default-configuration/theme';
@@ -23,15 +28,18 @@
   const style = makeStylesFromConfiguration(
     merge(
       injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {}
+      $configuration.layout || {},
     ),
-    step.style
+    step.style,
   );
 
   const message = $currentParams ? $currentParams.message : '';
 
   const handleClose = () => {
-    sendFlowCompleteEvent({ status: EVerificationStatuses.ERROR, idvResult: DecisionStatus.DECLINED });
+    sendFlowCompleteEvent({
+      status: EVerificationStatuses.ERROR,
+      idvResult: DecisionStatus.DECLINED,
+    });
   };
 
   flowError();
@@ -50,7 +58,12 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
         }}
       />
     {/if}

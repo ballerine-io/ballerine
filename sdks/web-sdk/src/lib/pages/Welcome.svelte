@@ -24,9 +24,9 @@
   const style = makeStylesFromConfiguration(
     merge(
       injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {}
+      $configuration.layout || {},
     ),
-    step.style
+    step.style,
   );
 
   preloadNextStepByCurrent($configuration, configuration, $currentStepId);
@@ -39,7 +39,12 @@
         <IconButton
           configuration={element.props}
           on:click={() => {
-            sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+            sendButtonClickEvent(
+              EActionNames.CLOSE,
+              { status: EVerificationStatuses.DATA_COLLECTION },
+              $appState,
+              true,
+            );
           }}
         />
       </div>
@@ -48,7 +53,12 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
         }}
       />
     {/if}

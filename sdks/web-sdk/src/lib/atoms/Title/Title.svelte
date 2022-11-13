@@ -11,7 +11,10 @@
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = makeStylesFromConfiguration(merge(title, $globalConfiguration.title || {}), styleProps);
+  const style = makeStylesFromConfiguration(
+    merge(title, $globalConfiguration.title || {}),
+    styleProps,
+  );
 </script>
 
 <h1 {style}>

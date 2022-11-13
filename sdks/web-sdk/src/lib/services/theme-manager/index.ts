@@ -1,1 +1,1 @@
-export { injectPrimaryIntoLayoutGradient } from "./utils";
+export { injectPrimaryIntoLayoutGradient } from './utils';

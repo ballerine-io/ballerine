@@ -8,7 +8,12 @@
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { flowApproved } from '../services/analytics';
-  import { EActionNames, sendButtonClickEvent, sendFlowCompleteEvent, EVerificationStatuses } from '../utils/event-service';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    sendFlowCompleteEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
   import { finalStep, layout } from '../default-configuration/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
   import { mergeStepConfig } from '../services/merge-service';
@@ -23,15 +28,18 @@
   const style = makeStylesFromConfiguration(
     merge(
       injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {}
+      $configuration.layout || {},
     ),
-    step.style
+    step.style,
   );
 
   flowApproved();
 
   const handleClose = () => {
-    sendFlowCompleteEvent({ status: EVerificationStatuses.COMPLETED, idvResult: DecisionStatus.APPROVED });
+    sendFlowCompleteEvent({
+      status: EVerificationStatuses.COMPLETED,
+      idvResult: DecisionStatus.APPROVED,
+    });
   };
 
   onDestroy(() => {
@@ -48,7 +56,12 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
         }}
       />
     {/if}

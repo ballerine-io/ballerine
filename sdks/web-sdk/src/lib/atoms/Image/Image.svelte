@@ -12,8 +12,10 @@
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
   const attributes = configuration.attributes as IAttributes;
-  const style = makeStylesFromConfiguration(merge(image, $globalConfiguration.image || {}), styleProps);
-
+  const style = makeStylesFromConfiguration(
+    merge(image, $globalConfiguration.image || {}),
+    styleProps,
+  );
 </script>
 
 <div {style} height={attributes.height} width={attributes.width}>
