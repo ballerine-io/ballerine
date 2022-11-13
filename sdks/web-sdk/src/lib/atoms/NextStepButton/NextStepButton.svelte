@@ -8,6 +8,7 @@
   import merge from 'lodash.merge';
   import { Loader } from './Loader';
 
+  // TODO: Use the createToggle hook, and make sure an exported prop is not being mutated.
   export let isDisabled = false;
   export let isLoading = false;
   export let configuration: IElementProps;

@@ -12,13 +12,14 @@
   import { updateDocument } from '../utils/photo-utils';
   import { documentPhotoBackStep, layout, settings } from '../default-configuration/theme';
   import merge from 'lodash.merge';
+  import { createToggle } from '../hooks/createToggle/createToggle';
 
   export let stepId;
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  let isDisabled = false;
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const step = merge(documentPhotoBackStep, $configuration.steps[stepId]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
@@ -52,14 +53,14 @@
 
   const handleTakePhoto = () => {
     const document = $documents.find(d => d.type === documentType);
-    if (!cameraPhoto || !document || isDisabled) return;
+    if (!cameraPhoto || !document || $isDisabled) return;
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings || settings.cameraSettings,
     );
     const newDocumentsState = updateDocument(document.type, base64, $documents);
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
-    isDisabled = true;
+    toggleOnIsDisabled();
   };
 </script>
 
@@ -97,7 +98,11 @@
   {/if}
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} {isDisabled} />
+      <CameraButton
+        on:click={handleTakePhoto}
+        configuration={element.props}
+        isDisabled={$isDisabled}
+      />
     {/if}
   {/each}
 </div>

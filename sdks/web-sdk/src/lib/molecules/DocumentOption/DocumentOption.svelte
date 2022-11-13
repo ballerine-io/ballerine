@@ -14,24 +14,24 @@
   import Icon from '../../atoms/Icons/Icon.svelte';
   import { ICameraEvent, nativeCameraHandler } from '../../utils/photo-utils';
   import { isNativeCamera } from '../../contexts/flows/hooks';
+  import { createToggle } from '../../hooks/createToggle/createToggle';
 
   export let configuration: IDocumentOptions;
   export let active: boolean;
   export let attributes: IAttributes;
   export let document: IDocumentInfo;
 
-  let isDisabled = false;
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
   let hover = false;
 
   const setHover = (status: boolean) => (hover = status);
 
   const dispatch = createEventDispatcher();
-
   const handleSelect = () => {
-    if (isDisabled) return;
+    if ($isDisabled) return;
 
     dispatch('selectOption', document.type);
-    isDisabled = true;
+    toggleOnIsDisabled();
   };
 
   const handler = async (e: ICameraEvent) => {
@@ -46,7 +46,7 @@
 <div
   {style}
   class="document-option"
-  class:disabled={isDisabled}
+  class:disabled={$isDisabled}
   class:active
   on:click={handleSelect}
   on:mouseover={() => setHover(true)}

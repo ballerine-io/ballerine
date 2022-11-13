@@ -13,13 +13,14 @@
   import { isMobile } from '../utils/is-mobile';
   import { layout, selfieStep, settings } from '../default-configuration/theme';
   import merge from 'lodash.merge';
+  import { createToggle } from '../hooks/createToggle/createToggle';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
   export let stepId;
 
-  let isDisabled = false;
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const step = merge(selfieStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
@@ -48,14 +49,14 @@
   });
 
   const handleTakePhoto = () => {
-    if (!cameraPhoto || isDisabled) return;
+    if (!cameraPhoto || $isDisabled) return;
 
     const dataUri = cameraPhoto.getDataUri(
       $configuration.settings?.selfieCameraSettings || settings.cameraSettings,
     );
     $selfieUri = dataUri;
     goToNextStep(currentStepId, $configuration, $currentStepId);
-    isDisabled = true;
+    toggleOnIsDisabled();
   };
 </script>
 
@@ -87,7 +88,11 @@
   <Overlay type={DocumentType.SELFIE} />
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} {isDisabled} />
+      <CameraButton
+        on:click={handleTakePhoto}
+        configuration={element.props}
+        isDisabled={$isDisabled}
+      />
     {/if}
   {/each}
 </div>

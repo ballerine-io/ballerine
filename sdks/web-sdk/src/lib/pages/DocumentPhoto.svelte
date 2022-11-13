@@ -17,6 +17,7 @@
     settings,
   } from '../default-configuration/theme';
   import merge from 'lodash.merge';
+  import { createToggle } from '../hooks/createToggle/createToggle';
 
   export let stepId;
 
@@ -24,7 +25,7 @@
   let container: HTMLDivElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  let isDisabled = false;
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const step = merge(documentPhotoStep, $configuration.steps[stepId]);
   const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
@@ -78,9 +79,9 @@
   };
 
   const handleTakePhoto = () => {
-    if (!cameraPhoto || isDisabled) return;
+    if (!cameraPhoto || $isDisabled) return;
 
-    isDisabled = true;
+    toggleOnIsDisabled();
 
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings || settings.cameraSettings,
@@ -128,7 +129,11 @@
   {/if}
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} {isDisabled} />
+      <CameraButton
+        on:click={handleTakePhoto}
+        configuration={element.props}
+        isDisabled={$isDisabled}
+      />
     {/if}
   {/each}
 </div>
