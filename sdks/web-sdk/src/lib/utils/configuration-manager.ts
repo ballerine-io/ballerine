@@ -1,5 +1,4 @@
 import mergeObj from 'deepmerge';
-import toObjByKey from 'lodash.keyby';
 import translation from '../default-configuration/translation.json';
 import { TranslationType } from '../contexts/translation';
 import {
@@ -13,6 +12,21 @@ import { IFlow } from '../contexts/flows';
 import { IDocumentOptionItem } from '../organisms/DocumentOptions/types';
 import { AnyRecord } from '../../types';
 import { preloadStepImages } from '../services/preload-service/utils';
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+const keyBy = (array: any[], key: string | Function): any =>
+  (array || []).reduce((r, x) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const calcluatedKey = typeof key === 'function' ? key(x) : key;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    return { ...r, [calcluatedKey]: x };
+  }, {});
+const toObjByKey = (collection: any, key: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const c = collection || {};
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument
+  return Array.isArray(c) ? keyBy(c, key) : keyBy(Object.values(c), key);
+};
 
 export let texts: TranslationType = translation;
 
