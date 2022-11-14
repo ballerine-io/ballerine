@@ -41,7 +41,6 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
   const config = configurationResult as unknown as IAppConfiguration;
 
   config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome]);
-
   configuration.update(() => config);
 };
 
@@ -64,7 +63,7 @@ export const mergeConfig = (
   originalConfig: IAppConfiguration,
   overrides: RecursivePartial<FlowsInitOptions>,
 ) => {
-  const newConfig: IAppConfiguration = mergeObj(originalConfig, v1adapter(overrides));
+  const newConfig: IAppConfiguration = mergeObj(originalConfig, v1adapter(overrides, originalConfig));
   if (
     newConfig.steps &&
     newConfig.steps[Steps.DocumentSelection] &&
@@ -94,6 +93,7 @@ const calcualteStepId = (step: RecursivePartial<IStepConfiguration>) => {
 
 const v1adapter = (
   config: RecursivePartial<FlowsInitOptions>,
+  originalConfig: IAppConfiguration
 ):
   | IAppConfiguration
   // We should either infer the return type or correct it. endUserInfo is not supposed to be a partial and general not undefined.
@@ -128,7 +128,7 @@ const v1adapter = (
     backendConfig,
     flows: newFlows,
     steps: flowSteps,
-    general,
+    general: general || originalConfig.general,
     ...components,
   };
 };
