@@ -8,16 +8,30 @@
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
   import { flowResubmission } from '../services/analytics';
   import { onDestroy } from 'svelte';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { layout, resubmissionStep } from '../default-configuration/theme';
-  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
 
   export let stepId;
 
-  const step = merge(resubmissionStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(resubmissionStep, $configuration.steps[stepId]);
+
   const stepNamespace = step.namespace!;
   const hasDocumentSelection = !!$configuration.steps[Steps.DocumentSelection];
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
 
   const reasonCode = $currentParams ? $currentParams.reasonCode : null;
 
@@ -45,7 +59,12 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
         }}
       />
     {/if}

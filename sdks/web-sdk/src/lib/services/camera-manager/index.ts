@@ -1,1 +1,1 @@
-export { checkIsCameraAvailable } from "./utils";
+export { checkIsCameraAvailable } from './utils';

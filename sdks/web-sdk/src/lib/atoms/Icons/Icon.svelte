@@ -3,6 +3,7 @@
   import Passport from './Passport.svelte';
   import License from './License.svelte';
   import PassportTwo from './PassportTwo.svelte';
+  import Voter from './Voter.svelte';
   import { makesLocalStyles } from '../../utils/css-utils';
 
   import type { SvelteComponent } from 'svelte';
@@ -14,6 +15,7 @@
     Passport,
     License,
     PassportTwo,
+    Voter,
   };
 
   export let name: Icons = 'Card';

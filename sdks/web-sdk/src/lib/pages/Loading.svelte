@@ -13,25 +13,35 @@
     selfieUri,
   } from '../contexts/app-state';
   import { sendVerificationUpdateEvent } from '../utils/event-service';
-
   import { ISendDocumentsResponse, EVerificationStatuses } from '../utils/event-service/types';
   import { onDestroy, onMount } from 'svelte';
   import { t } from '../contexts/translation/hooks';
   import { flowUploadLoader } from '../services/analytics';
   import { getFlowConfig } from '../contexts/flows/hooks';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { layout, loadingStep } from '../default-configuration/theme';
   import { generateParams, getVerificationStatus, verifyDocuments } from '../services/http';
   import { DecisionStatus } from '../contexts/app-state/types';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { preloadStepById } from '../services/preload-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   flowUploadLoader();
 
   const WAITING_TIME = 1000 * 60 * 3; // 3 minutes
 
   export let stepId;
 
-  const step = merge(loadingStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(loadingStep, $configuration.steps[stepId]);
+
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
 
   let timeout: number;
   let veryficationTimeout: number;
@@ -64,14 +74,17 @@
         response.idvResult === DecisionStatus.REVIEW
       ) {
         $currentParams = params;
+        await preloadStepById($configuration, configuration, 'decline');
         $currentStepId = 'decline';
       }
       if (response.idvResult === DecisionStatus.RESUBMISSION_REQUESTED) {
         $currentParams = params;
+        await preloadStepById($configuration, configuration, 'resubmission');
         $currentStepId = 'resubmission';
       }
       if (response.idvResult === DecisionStatus.APPROVED) {
         $currentParams = params;
+        await preloadStepById($configuration, configuration, 'final');
         $currentStepId = 'final';
       }
     } catch (error) {
@@ -88,6 +101,7 @@
       toast.push(t('general', 'errorDocuments'));
       console.error('Error sending documents', error);
       $currentParams = { message: error } as ISelectedParams;
+      await preloadStepById($configuration, configuration, 'error');
       $currentStepId = 'error';
       return;
     }
@@ -99,6 +113,7 @@
       return;
     }
     showText = false;
+    await preloadStepById($configuration, configuration, 'final');
     $currentStepId = 'final';
   };
 
@@ -109,8 +124,9 @@
       selfie: $selfieUri,
     };
     makeRequest(data);
-    timeout = setTimeout(() => {
+    timeout = setTimeout(async () => {
       showText = false;
+      await preloadStepById($configuration, configuration, 'decline');
       $currentStepId = 'decline';
     }, WAITING_TIME);
   });

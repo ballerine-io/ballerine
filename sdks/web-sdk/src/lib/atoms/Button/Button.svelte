@@ -1,18 +1,30 @@
 <script lang="ts">
   import {
     configuration as globalConfiguration,
-    ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
   import { primaryButton } from '../../default-configuration/theme';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
 
   export let configuration: IElementProps;
-  const styleProps = configuration?.style as ICSSProperties;
+  export let isBack = false;
+
+  const background = !isBack
+    ? $globalConfiguration.button?.background ||
+      $globalConfiguration.general.colors.primary ||
+      primaryButton.background
+    : undefined;
+
+  const styleProps = {
+    ...configuration?.style,
+    background,
+  };
+
+  const buttonConfiguration = isBack ? configuration?.style : $globalConfiguration.button;
 
   const style = makeStylesFromConfiguration(
-    merge(primaryButton, $globalConfiguration.button),
+    merge(primaryButton, buttonConfiguration || {}),
     styleProps,
   );
 </script>
@@ -24,7 +36,7 @@
 <style>
   button {
     cursor: pointer;
-    border: none;
+    border: var(--border);
     outline: none;
     padding: var(--padding);
     font-size: var(--font-size);

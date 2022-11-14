@@ -83,7 +83,7 @@ export class RunFlow {
   async takeSelfie() {
     if (this.skipSelfie) return;
 
-    const selfie = this.page.getByRole('button', { name: /take\sa\sselfie/i });
+    const selfie = this.page.getByRole('button', { name: /take\sa\sselfie/i }).first();
 
     await selfie.click();
 
@@ -94,9 +94,11 @@ export class RunFlow {
   async takeDocumentBackSide() {
     if (this.skipDocumentBackSide) return;
 
-    const idBackSide = this.page.getByRole('button', {
-      name: /take\sphoto/i,
-    });
+    const idBackSide = this.page
+      .getByRole('button', {
+        name: /take\sphoto/i,
+      })
+      .first();
 
     await idBackSide.click();
 
@@ -106,7 +108,7 @@ export class RunFlow {
 
   async start() {
     // The page should not be empty
-    const button = this.page.getByRole('button', { name: /choose\sdocument\stype/i });
+    const button = this.page.getByRole('button', { name: /choose\sdocument\stype/i }).first();
 
     // The page should be interactive
     await button.click();
@@ -114,16 +116,18 @@ export class RunFlow {
     // Run KYB specific steps if this.isKyb is true
     await this.kyb();
 
-    const title = this.page.getByRole('heading', {
-      name: /upload\sid/i,
-    });
+    const title = this.page
+      .getByRole('heading', {
+        name: /upload\sid/i,
+      })
+      .first();
 
     await expect(title).toBeVisible();
 
     // Step 1
 
     // Pick the document type
-    const documentOption = this.page.getByText(this.regex);
+    const documentOption = this.page.getByText(this.regex).first();
     await documentOption.click();
 
     // Take a picture, and press looks good if not a KYB flow
@@ -138,7 +142,7 @@ export class RunFlow {
     await this.takeSelfie();
 
     // Final step - wait for result
-    const success = this.page.getByRole('heading', { name: /success/i });
+    const success = this.page.getByRole('heading', { name: /success/i }).first();
 
     await expect(success).toBeVisible();
   }

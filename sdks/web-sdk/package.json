@@ -63,7 +63,6 @@
     "@tsconfig/svelte": "^2.0.1",
     "@types/jslib-html5-camera-photo": "^3.1.2",
     "@types/lodash.keyby": "^4.6.7",
-    "@types/lodash.merge": "^4.6.7",
     "@types/node": "^18.11.9",
     "@types/testing-library__jest-dom": "^5.14.5",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
@@ -77,6 +76,7 @@
     "postcss": "^8.4.18",
     "prettier": "^2.7.1",
     "prettier-plugin-svelte": "^2.8.0",
+    "rollup-plugin-visualizer": "^5.8.3",
     "svelte": "^3.39.0",
     "svelte-check": "^2.2.7",
     "svelte-preprocess": "^4.9.8",
@@ -90,8 +90,6 @@
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "dotenv": "^16.0.3",
-    "jslib-html5-camera-photo": "^3.3.3",
-    "lodash.keyby": "^4.6.0",
-    "lodash.merge": "^4.6.2"
+    "jslib-html5-camera-photo": "^3.3.3"
   }
 }

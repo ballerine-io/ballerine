@@ -2,7 +2,7 @@ import { IAppConfiguration } from '../contexts/configuration';
 import { DocumentType, IDocument, IDocumentPage } from '../contexts/app-state';
 import Compressor from 'compressorjs';
 import { documentOptions } from '../default-configuration/theme';
-import merge from 'lodash.merge';
+import merge from 'deepmerge';
 
 export type FileEventTarget = EventTarget & { files: FileList };
 export type ICameraEvent = Event & { currentTarget: EventTarget & HTMLInputElement };
@@ -42,7 +42,7 @@ export const clearDocs = (
   configuration: IAppConfiguration,
   documents: IDocument[],
 ): IDocument[] => {
-  const documentOptionsConfiguration = merge(documentOptions, configuration.documentOptions);
+  const documentOptionsConfiguration = merge(documentOptions, configuration.documentOptions || {});
   const { options } = documentOptionsConfiguration;
   const isFromOptions = Object.keys(options).find(t => t === type);
   if (isFromOptions) {

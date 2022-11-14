@@ -83,7 +83,7 @@ interface ICSSPropertiesAll {
   'z-index': string;
 }
 
-export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo';
+export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo' | 'Voter';
 
 interface IAttributesAll {
   icon: Icons;
@@ -133,7 +133,7 @@ export interface IStepConfiguration {
   overlayStyle?: ICSSProperties;
   elements: IElement[];
   form?: IFormProps;
-  type: DocumentType;
+  type?: DocumentType;
   id: string;
   namespace?: string;
   cameraConfig?: CaptureConfigOption;

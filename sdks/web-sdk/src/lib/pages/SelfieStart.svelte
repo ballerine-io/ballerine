@@ -7,16 +7,36 @@
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { isNativeCamera } from '../contexts/flows/hooks';
-  import { selectedDocumentInfo, selfieUri, currentStepId, appState } from '../contexts/app-state/stores';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import {
+    selectedDocumentInfo,
+    selfieUri,
+    currentStepId,
+    appState,
+  } from '../contexts/app-state/stores';
   import { layout, selfieStartStep } from '../default-configuration/theme';
-  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
 
   export let stepId;
 
-  const step = merge(selfieStartStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(selfieStartStep, $configuration.steps[stepId]);
+
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
 
   let skipBackSide = false;
 
@@ -31,6 +51,8 @@
     $selfieUri = await nativeCameraHandler(e);
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -51,7 +73,12 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
         }}
       />
     {/if}

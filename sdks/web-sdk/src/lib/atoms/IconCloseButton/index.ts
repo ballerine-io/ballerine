@@ -1,1 +1,1 @@
-export { default as IconCloseButton } from "./IconCloseButton.svelte";
+export { default as IconCloseButton } from './IconCloseButton.svelte';

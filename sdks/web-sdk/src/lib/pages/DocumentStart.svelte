@@ -1,24 +1,36 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
   import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
-  import { Elements, IStepConfiguration } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { documentStartStep, layout } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
-  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
+  import merge from 'deepmerge';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
   import { checkIsCameraAvailable } from '../services/camera-manager';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 
   export let stepId;
 
-  const step = merge(documentStartStep, $configuration.steps[stepId]) as IStepConfiguration;
+  const step = mergeStepConfig(documentStartStep, $configuration.steps[stepId]);
 
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
 
   const documentType =
     ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
@@ -65,7 +77,12 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
         }}
       />
     {/if}
