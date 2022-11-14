@@ -252,7 +252,7 @@ const backIconButton: IElement = {
   type: Elements.IconButton,
   props: {
     attributes: {
-      src: '/back.svg',
+      src: 'https://cdn.ballerine.io/ui-packs/default/images/back.svg',
       alt: 'back',
       width: '28px',
       height: '28px',
@@ -327,7 +327,7 @@ export const welcomeStep = {
           'flex-grow': 1,
         },
         attributes: {
-          src: '/welcome.svg',
+          src: 'https://cdn.ballerine.io/ui-packs/default/images/welcome.svg',
           alt: 'welcome',
           width: '248px',
           height: '212px',
@@ -386,7 +386,7 @@ export const documentStartStep = {
           'flex-grow': 1,
         },
         attributes: {
-          src: '/welcome.svg',
+          src: 'https://cdn.ballerine.io/ui-packs/default/images/welcome.svg',
           alt: 'welcome',
           width: '248px',
           height: '212px',
@@ -534,7 +534,7 @@ export const documentPhotoBackStartStep = {
           'flex-grow': 1,
         },
         attributes: {
-          src: '/document-photo-back-start.svg',
+          src: 'https://cdn.ballerine.io/ui-packs/default/images/document-photo-back-start.svg',
           alt: 'document-photo-back-start',
           width: '260px',
           height: '212px',
@@ -659,7 +659,7 @@ export const selfieStartStep = {
           'flex-grow': 1,
         },
         attributes: {
-          src: '/selfie-start.svg',
+          src: 'https://cdn.ballerine.io/ui-packs/default/images/selfie-start.svg',
           alt: 'selfie-start',
           width: '300x',
           height: '300px',
@@ -825,7 +825,7 @@ export const declineStep = {
           margin: '120px 0px 16px',
         },
         attributes: {
-          src: '/decline.svg',
+          src: 'https://cdn.ballerine.io/ui-packs/default/images/decline.svg',
           alt: 'decline',
           width: '80px',
           height: '80px',
@@ -875,7 +875,7 @@ export const errorStep = {
           margin: '120px 0px 16px',
         },
         attributes: {
-          src: '/decline.svg',
+          src: 'https://cdn.ballerine.io/ui-packs/default/images/decline.svg',
           alt: 'decline',
           width: '80px',
           height: '80px',
@@ -931,7 +931,7 @@ export const finalStep = {
           'align-self': 'center',
         },
         attributes: {
-          src: '/final.svg',
+          src: 'https://cdn.ballerine.io/ui-packs/default/images/final.svg',
           alt: 'final',
           width: '80px',
           height: '80px',
