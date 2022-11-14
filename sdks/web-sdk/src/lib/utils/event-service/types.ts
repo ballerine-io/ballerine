@@ -4,7 +4,7 @@ export enum EEventTypes {
   SYNC_FLOW_COMPLETE = 'sync_flow_complete',
   VERIFICATION_UPDATE = 'verification_update',
   NAVIGATION_UPDATE = 'navigation_update',
-  BUTTON_CLICK = 'button_click'
+  BUTTON_CLICK = 'button_click',
 }
 
 export enum EActionNames {
@@ -15,7 +15,7 @@ export enum EVerificationStatuses {
   COMPLETED = 'completed',
   PENDING = 'pending',
   ERROR = 'error',
-  DATA_COLLECTION = 'data_collection'
+  DATA_COLLECTION = 'data_collection',
 }
 
 export interface ISendDocumentsResponse {

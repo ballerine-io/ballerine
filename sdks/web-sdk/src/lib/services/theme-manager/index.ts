@@ -1,0 +1,1 @@
+export { injectPrimaryIntoLayoutGradient } from './utils';

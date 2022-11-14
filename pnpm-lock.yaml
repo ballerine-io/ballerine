@@ -15,10 +15,13 @@ importers:
       '@commitlint/config-conventional': ^17.1.0
       commitizen: ^4.2.5
       cz-conventional-changelog: ^3.3.0
+      deepmerge: ^4.2.2
       editorconfig: ^1.0.1
       husky: ^8.0.1
       nx: 15.0.2
       prettier: ^2.7.1
+    dependencies:
+      deepmerge: 4.2.2
     devDependencies:
       '@branchlint/cli': 1.0.3
       '@branchlint/default-config': 1.0.1
@@ -43,7 +46,6 @@ importers:
       '@tsconfig/svelte': ^2.0.1
       '@types/jslib-html5-camera-photo': ^3.1.2
       '@types/lodash.keyby': ^4.6.7
-      '@types/lodash.merge': ^4.6.7
       '@types/node': ^18.11.9
       '@types/testing-library__jest-dom': ^5.14.5
       '@typescript-eslint/eslint-plugin': ^5.41.0
@@ -58,11 +60,10 @@ importers:
       eslint-plugin-svelte3: ^4.0.0
       jsdom: ^20.0.2
       jslib-html5-camera-photo: ^3.3.3
-      lodash.keyby: ^4.6.0
-      lodash.merge: ^4.6.2
       postcss: ^8.4.18
       prettier: ^2.7.1
       prettier-plugin-svelte: ^2.8.0
+      rollup-plugin-visualizer: ^5.8.3
       svelte: ^3.39.0
       svelte-check: ^2.2.7
       svelte-preprocess: ^4.9.8
@@ -76,8 +77,6 @@ importers:
       compressorjs: 1.1.1
       dotenv: 16.0.3
       jslib-html5-camera-photo: 3.3.4
-      lodash.keyby: 4.6.0
-      lodash.merge: 4.6.2
     devDependencies:
       '@babel/core': 7.19.6
       '@playwright/test': 1.27.1
@@ -87,7 +86,6 @@ importers:
       '@tsconfig/svelte': 2.0.1
       '@types/jslib-html5-camera-photo': 3.1.2
       '@types/lodash.keyby': 4.6.7
-      '@types/lodash.merge': 4.6.7
       '@types/node': 18.11.9
       '@types/testing-library__jest-dom': 5.14.5
       '@typescript-eslint/eslint-plugin': 5.41.0_ii42b3tyaj4mcq7qkttdyoixza
@@ -101,6 +99,7 @@ importers:
       postcss: 8.4.18
       prettier: 2.7.1
       prettier-plugin-svelte: 2.8.0_lrllcp5xtrkmmdzifit4hd52ze
+      rollup-plugin-visualizer: 5.8.3
       svelte: 3.52.0
       svelte-check: 2.9.2_fc7tdasawxnhimpaw4emmfukcy
       svelte-preprocess: 4.10.7_hjktksajj3judmekqqh24km4cu
@@ -1155,12 +1154,6 @@ packages:
       '@types/lodash': 4.14.186
     dev: true
 
-  /@types/lodash.merge/4.6.7:
-    resolution: {integrity: sha512-OwxUJ9E50gw3LnAefSHJPHaBLGEKmQBQ7CZe/xflHkyy/wH2zVyEIAKReHvVrrn7zKdF58p16We9kMfh7v0RRQ==}
-    dependencies:
-      '@types/lodash': 4.14.186
-    dev: true
-
   /@types/lodash/4.14.186:
     resolution: {integrity: sha512-eHcVlLXP0c2FlMPm56ITode2AgLMSa6aJ05JTTbYbI+7EMkCEE5qk2E41d5g2lCVTqRe0GnnRFurmlCsDODrPw==}
     dev: true
@@ -2187,7 +2180,6 @@ packages:
   /deepmerge/4.2.2:
     resolution: {integrity: sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==}
     engines: {node: '>=0.10.0'}
-    dev: true
 
   /defaults/1.0.4:
     resolution: {integrity: sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==}
@@ -3987,16 +3979,13 @@ packages:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
     dev: true
 
-  /lodash.keyby/4.6.0:
-    resolution: {integrity: sha512-PRe4Cn20oJM2Sn6ljcZMeKgyhTHpzvzFmdsp9rK+6K0eJs6Tws0MqgGFpfX/o2HjcoQcBny1Eik9W7BnVTzjIQ==}
-    dev: false
-
   /lodash.map/4.6.0:
     resolution: {integrity: sha512-worNHGKLDetmcEYDvh2stPCrrQRkP20E4l0iIS7F8EvzMqBBi7ltvFN5m1HvTf1P7Jk1txKhvFcmYsCr8O2F1Q==}
     dev: true
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+    dev: true
 
   /lodash.startcase/4.4.0:
     resolution: {integrity: sha512-+WKqsK294HMSc2jEbNgpHpd0JfIBhp7rEV4aqXWqFr6AlXov+SlcgB1Fv01y2kGe3Gc8nMW7VA0SrGuSkRfIEg==}
@@ -4877,6 +4866,21 @@ packages:
       glob: 7.2.3
     dev: true
 
+  /rollup-plugin-visualizer/5.8.3:
+    resolution: {integrity: sha512-QGJk4Bqe4AOat5AjipOh8esZH1nck5X2KFpf4VytUdSUuuuSwvIQZjMGgjcxe/zXexltqaXp5Vx1V3LmnQH15Q==}
+    engines: {node: '>=14'}
+    hasBin: true
+    peerDependencies:
+      rollup: 2.x || 3.x
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      open: 8.4.0
+      source-map: 0.7.4
+      yargs: 17.6.2
+    dev: true
+
   /rollup/2.77.3:
     resolution: {integrity: sha512-/qxNTG7FbmefJWoeeYJFbHehJ2HNWnjkAFRKzWN/45eNBBF/r8lo992CwcJXEzyVxs5FmfId+vTSTQDb+bxA+g==}
     engines: {node: '>=10.0.0'}
@@ -5065,6 +5069,11 @@ packages:
   /source-map/0.6.1:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /source-map/0.7.4:
+    resolution: {integrity: sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==}
+    engines: {node: '>= 8'}
     dev: true
 
   /sourcemap-codec/1.4.8:

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import {
     configuration as globalConfiguration,
     IAttributes,

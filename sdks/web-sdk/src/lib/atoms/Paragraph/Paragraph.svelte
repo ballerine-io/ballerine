@@ -1,5 +1,5 @@
 <script lang="ts">
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import {
     configuration as globalConfiguration,
     ICSSProperties,
@@ -21,7 +21,7 @@
   const styleProps = configuration.style as ICSSProperties;
 
   const style = makeStylesFromConfiguration(
-    merge(paragraph, $globalConfiguration.paragraph),
+    merge(paragraph, $globalConfiguration.paragraph || {}),
     styleProps,
   );
 </script>

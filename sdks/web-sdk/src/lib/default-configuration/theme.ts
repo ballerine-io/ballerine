@@ -151,7 +151,7 @@ export const documentOptions = {
         variant: DocumentVariant.REGULAR,
       },
       attributes: {
-        icon: 'Card',
+        icon: 'Voter',
         width: 40,
         height: 40,
       },

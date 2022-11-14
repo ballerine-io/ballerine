@@ -1,27 +1,45 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import { T } from '../contexts/translation';
+  import merge from 'deepmerge';
   import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { appState, currentParams } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { flowApproved } from '../services/analytics';
-  import { EActionNames, sendButtonClickEvent, sendFlowCompleteEvent, EVerificationStatuses } from '../utils/event-service';
-  import merge from 'lodash.merge';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    sendFlowCompleteEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
   import { finalStep, layout } from '../default-configuration/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 
   export let stepId;
 
-  const step = merge(finalStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(finalStep, $configuration.steps[stepId]);
+
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
 
   flowApproved();
 
   const handleClose = () => {
-    sendFlowCompleteEvent({ status: EVerificationStatuses.COMPLETED, idvResult: DecisionStatus.APPROVED });
+    sendFlowCompleteEvent({
+      status: EVerificationStatuses.COMPLETED,
+      idvResult: DecisionStatus.APPROVED,
+    });
   };
 
   onDestroy(() => {
@@ -38,7 +56,12 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
         }}
       />
     {/if}

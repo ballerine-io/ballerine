@@ -1,10 +1,13 @@
-import mergeObj from 'lodash.merge';
-import toObjByKey from 'lodash.keyby';
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+import mergeObj from 'deepmerge';
 import translation from '../default-configuration/translation.json';
 import { TranslationType } from '../contexts/translation';
 import {
   configuration,
-  Elements,
   IAppConfiguration,
   IStepConfiguration,
   Steps,
@@ -13,58 +16,19 @@ import { FlowsEventsConfig, FlowsInitOptions, FlowsTranslations } from '../../ty
 import { IFlow } from '../contexts/flows';
 import { IDocumentOptionItem } from '../organisms/DocumentOptions/types';
 import { AnyRecord } from '../../types';
+import { preloadStepImages } from '../services/preload-service/utils';
+
+const keyBy = (array: any[], key: string | Function): any =>
+  (array || []).reduce((r, x) => {
+    const calcluatedKey = typeof key === 'function' ? key(x) : key;
+    return { ...r, [calcluatedKey]: x };
+  }, {});
+const toObjByKey = (collection: any, key: string | Function) => {
+  const c = collection || {};
+  return Array.isArray(c) ? keyBy(c, key) : keyBy(Object.values(c), key);
+};
 
 export let texts: TranslationType = translation;
-
-const preloadByExtension = async (src: string): Promise<string> => {
-  const extension = src.split('.').pop();
-  let svg: string | undefined;
-
-  if (extension === 'svg') {
-    const response = await fetch(src);
-
-    svg = await response.text();
-  }
-
-  return new Promise((resolve, reject) => {
-    if (svg) return resolve(svg);
-
-    const img = new Image();
-    img.onload = () => resolve(img.src);
-    img.onerror = reject;
-    img.src = src;
-  });
-};
-
-const updateSteps = async (steps: {
-  [key: string]: IStepConfiguration;
-}): Promise<{ [key: string]: IStepConfiguration }> => {
-  const updatedSteps: { [key: string]: IStepConfiguration } = { ...steps };
-  const stepsKeys = Object.keys(steps);
-  for (let i = 0; i < stepsKeys.length; i++) {
-    const step = steps[stepsKeys[i]];
-    step.namespace = step.namespace || step.id || step.name;
-    if (step.elements) {
-      for (let j = 0; j < step.elements.length; j++) {
-        const element = step.elements[j];
-        if (element.type === Elements.Image && element.props.attributes?.src) {
-          const { src } = element.props.attributes;
-          updatedSteps[stepsKeys[i]].elements[j].props.attributes!.src = await preloadByExtension(
-            src,
-          );
-        }
-      }
-    }
-  }
-  return updatedSteps;
-};
-
-const preloadImages = async (configuration: IAppConfiguration): Promise<IAppConfiguration> => {
-  return {
-    ...configuration,
-    steps: await updateSteps(configuration.steps),
-  };
-};
 
 export const updateConfiguration = async (configOverrides: RecursivePartial<FlowsInitOptions>) => {
   let configurationResult: IAppConfiguration | undefined = undefined;
@@ -75,9 +39,9 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
     return mergedConfig;
   });
   const config = configurationResult as unknown as IAppConfiguration;
-  const updatedConfig = await preloadImages(config);
 
-  configuration.update(() => updatedConfig);
+  config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome]);
+  configuration.update(() => config);
 };
 
 export const updateTranslations = async (translations: FlowsTranslations) => {
@@ -99,7 +63,10 @@ export const mergeConfig = (
   originalConfig: IAppConfiguration,
   overrides: RecursivePartial<FlowsInitOptions>,
 ) => {
-  const newConfig: IAppConfiguration = mergeObj(originalConfig, v1adapter(overrides));
+  const newConfig: IAppConfiguration = mergeObj(
+    originalConfig,
+    v1adapter(overrides, originalConfig),
+  );
   if (
     newConfig.steps &&
     newConfig.steps[Steps.DocumentSelection] &&
@@ -121,14 +88,14 @@ export const mergeConfig = (
   return newConfig;
 };
 
-const calcualteStepId = (step: RecursivePartial<IStepConfiguration>) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const calcualteStepId = (step: RecursivePartial<IStepConfiguration>): string => {
   if (!step.id || step.id === step.name) return `${step.name!}${step.type ? '-' + step.type : ''}`;
   return step.id;
 };
 
 const v1adapter = (
   config: RecursivePartial<FlowsInitOptions>,
+  originalConfig: IAppConfiguration,
 ):
   | IAppConfiguration
   // We should either infer the return type or correct it. endUserInfo is not supposed to be a partial and general not undefined.
@@ -163,7 +130,7 @@ const v1adapter = (
     backendConfig,
     flows: newFlows,
     steps: flowSteps,
-    general,
+    general: general || originalConfig.general,
     ...components,
   };
 };

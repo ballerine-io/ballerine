@@ -1,5 +1,5 @@
 <script lang="ts">
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import {
     configuration as globalConfiguration,
     IAttributes,
@@ -14,18 +14,13 @@
   const attributes = configuration.attributes as IAttributes;
 
   const style = makeStylesFromConfiguration(
-    merge(iconButton, $globalConfiguration.iconButton),
+    merge(iconButton, $globalConfiguration.iconButton || {}),
     styleProps,
   );
 </script>
 
-<button {style} on:click>
-  <img
-    src={attributes.src}
-    alt={attributes.alt}
-    width={attributes.width}
-    height={attributes.height}
-  />
+<button {style} on:click width={attributes.width} height={attributes.height}>
+  {@html attributes.src}
 </button>
 
 <style>

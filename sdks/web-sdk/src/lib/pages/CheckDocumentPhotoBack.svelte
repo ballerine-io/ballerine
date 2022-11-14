@@ -7,16 +7,30 @@
   import { goToPrevStep } from '../contexts/navigation';
   import { getDocImage, IDocumentInfo } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
-  import { documents, selectedDocumentInfo, currentStepId, appState } from '../contexts/app-state';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { checkDocumentPhotoBackStep, layout } from '../default-configuration/theme';
-  import { EActionNames, sendButtonClickEvent, EVerificationStatuses } from '../utils/event-service';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import { documents, selectedDocumentInfo, currentStepId, appState } from '../contexts/app-state';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
 
   export let stepId;
 
-  const step = merge(checkDocumentPhotoBackStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(checkDocumentPhotoBackStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
 
   let image: string;
   let documentInfo: IDocumentInfo | undefined = undefined;
@@ -30,6 +44,8 @@
       image = getDocImage(documentInfo.type, $documents, 'back');
     }
   }
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -44,7 +60,12 @@
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
-          sendButtonClickEvent(EActionNames.CLOSE, { status: EVerificationStatuses.DATA_COLLECTION }, $appState, true);
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
         }}
       />
     {/if}

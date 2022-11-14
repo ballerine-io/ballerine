@@ -1,12 +1,12 @@
 <svg width="41" height="41" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="3" y="3" width="35" height="35" rx="17.5" fill="#007AFF" />
+  <rect x="3" y="3" width="35" height="35" rx="17.5" fill="var(--primary-color)" />
   <rect
     x="3"
     y="3"
     width="35"
     height="35"
     rx="17.5"
-    stroke="#007AFF"
+    stroke="var(--primary-color)"
     stroke-opacity="0.2"
     stroke-width="5"
   />
