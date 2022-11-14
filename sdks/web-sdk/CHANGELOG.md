@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.1.36
+
+### Patch Changes
+
+- Enhanced customization, performance improvements & bug fixes
+
 ## 1.1.35
 
 ### Patch Changes
