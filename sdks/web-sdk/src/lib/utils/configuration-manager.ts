@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import mergeObj from 'deepmerge';
 import translation from '../default-configuration/translation.json';
 import { TranslationType } from '../contexts/translation';
@@ -13,18 +17,13 @@ import { IDocumentOptionItem } from '../organisms/DocumentOptions/types';
 import { AnyRecord } from '../../types';
 import { preloadStepImages } from '../services/preload-service/utils';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 const keyBy = (array: any[], key: string | Function): any =>
   (array || []).reduce((r, x) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const calcluatedKey = typeof key === 'function' ? key(x) : key;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     return { ...r, [calcluatedKey]: x };
   }, {});
-const toObjByKey = (collection: any, key: string) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const toObjByKey = (collection: any, key: string | Function) => {
   const c = collection || {};
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument
   return Array.isArray(c) ? keyBy(c, key) : keyBy(Object.values(c), key);
 };
 
@@ -63,7 +62,10 @@ export const mergeConfig = (
   originalConfig: IAppConfiguration,
   overrides: RecursivePartial<FlowsInitOptions>,
 ) => {
-  const newConfig: IAppConfiguration = mergeObj(originalConfig, v1adapter(overrides, originalConfig));
+  const newConfig: IAppConfiguration = mergeObj(
+    originalConfig,
+    v1adapter(overrides, originalConfig),
+  );
   if (
     newConfig.steps &&
     newConfig.steps[Steps.DocumentSelection] &&
@@ -85,15 +87,14 @@ export const mergeConfig = (
   return newConfig;
 };
 
-const calcualteStepId = (step: RecursivePartial<IStepConfiguration>) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const calcualteStepId = (step: RecursivePartial<IStepConfiguration>): string => {
   if (!step.id || step.id === step.name) return `${step.name!}${step.type ? '-' + step.type : ''}`;
   return step.id;
 };
 
 const v1adapter = (
   config: RecursivePartial<FlowsInitOptions>,
-  originalConfig: IAppConfiguration
+  originalConfig: IAppConfiguration,
 ):
   | IAppConfiguration
   // We should either infer the return type or correct it. endUserInfo is not supposed to be a partial and general not undefined.

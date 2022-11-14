@@ -60,11 +60,9 @@ importers:
       eslint-plugin-svelte3: ^4.0.0
       jsdom: ^20.0.2
       jslib-html5-camera-photo: ^3.3.3
-      lodash.keyby: ^4.6.0
       postcss: ^8.4.18
       prettier: ^2.7.1
       prettier-plugin-svelte: ^2.8.0
-      rollup-plugin-analyzer: ^4.0.0
       rollup-plugin-visualizer: ^5.8.3
       svelte: ^3.39.0
       svelte-check: ^2.2.7
@@ -79,7 +77,6 @@ importers:
       compressorjs: 1.1.1
       dotenv: 16.0.3
       jslib-html5-camera-photo: 3.3.4
-      lodash.keyby: 4.6.0
     devDependencies:
       '@babel/core': 7.19.6
       '@playwright/test': 1.27.1
@@ -102,7 +99,6 @@ importers:
       postcss: 8.4.18
       prettier: 2.7.1
       prettier-plugin-svelte: 2.8.0_lrllcp5xtrkmmdzifit4hd52ze
-      rollup-plugin-analyzer: 4.0.0
       rollup-plugin-visualizer: 5.8.3
       svelte: 3.52.0
       svelte-check: 2.9.2_fc7tdasawxnhimpaw4emmfukcy
@@ -3983,10 +3979,6 @@ packages:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
     dev: true
 
-  /lodash.keyby/4.6.0:
-    resolution: {integrity: sha512-PRe4Cn20oJM2Sn6ljcZMeKgyhTHpzvzFmdsp9rK+6K0eJs6Tws0MqgGFpfX/o2HjcoQcBny1Eik9W7BnVTzjIQ==}
-    dev: false
-
   /lodash.map/4.6.0:
     resolution: {integrity: sha512-worNHGKLDetmcEYDvh2stPCrrQRkP20E4l0iIS7F8EvzMqBBi7ltvFN5m1HvTf1P7Jk1txKhvFcmYsCr8O2F1Q==}
     dev: true
@@ -4872,11 +4864,6 @@ packages:
     hasBin: true
     dependencies:
       glob: 7.2.3
-    dev: true
-
-  /rollup-plugin-analyzer/4.0.0:
-    resolution: {integrity: sha512-LL9GEt3bkXp6Wa19SNR5MWcvHNMvuTFYg+eYBZN2OIFhSWN+pEJUQXEKu5BsOeABob3x9PDaLKW7w5iOJnsESQ==}
-    engines: {node: '>=8.0.0'}
     dev: true
 
   /rollup-plugin-visualizer/5.8.3:
