@@ -54,6 +54,8 @@ interface FlowsUIConfig {
       mobileNativeCamera?: boolean;
       syncFlow?: boolean;
       useFinalQueryParams?: boolean;
+      firstScreenBackButton?: boolean;
+      showCloseButton?: boolean;
     };
   };
   settings?: ConfigSettings;

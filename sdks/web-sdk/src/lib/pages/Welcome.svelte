@@ -15,11 +15,14 @@
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import { EActionNames, EVerificationStatuses } from '../utils/event-service';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
   const step = mergeStepConfig(welcomeStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
+
+  const flow = getFlowConfig($configuration);
 
   const style = makeStylesFromConfiguration(
     merge(
@@ -34,7 +37,7 @@
 
 <div class="container" {style}>
   {#each step.elements as element}
-    {#if element.type === Elements.IconButton}
+    {#if element.type === Elements.IconButton && flow.firstScreenBackButton}
       <div>
         <IconButton
           configuration={element.props}
@@ -49,7 +52,7 @@
         />
       </div>
     {/if}
-    {#if element.type === Elements.IconCloseButton}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {

@@ -14,18 +14,13 @@
   const attributes = configuration.attributes as IAttributes;
 
   const style = makeStylesFromConfiguration(
-    merge(iconCloseButton, $globalConfiguration.iconCloseButton),
+    merge(iconCloseButton, $globalConfiguration.iconCloseButton || {}),
     styleProps,
   );
 </script>
 
 <button {style} on:click>
-  <img
-    src={attributes.src}
-    alt={attributes.alt}
-    width={attributes.width}
-    height={attributes.height}
-  />
+  {@html attributes.src}
 </button>
 
 <style>
