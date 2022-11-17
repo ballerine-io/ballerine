@@ -17,7 +17,6 @@
   export let flowName;
   setFlowName($configuration.flows, flowName);
 
-  // Omri - query params task:
   $currentLanguage =
     ($configuration.endUserInfo.language as Languages) || $configuration.defaultLanguage;
 

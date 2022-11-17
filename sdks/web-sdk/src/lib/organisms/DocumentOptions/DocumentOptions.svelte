@@ -5,7 +5,6 @@
   import type { DocumentType, IDocument, IDocumentInfo } from '../../contexts/app-state';
   import { currentStepId, documents, selectedDocumentInfo } from '../../contexts/app-state/stores';
   import { addDocument } from '../../utils/photo-utils';
-  import { t } from '../../contexts/translation/hooks';
   import { isNativeCamera } from '../../contexts/flows/hooks';
   import { IDocumentOption } from '../../molecules/DocumentOption';
   import merge from 'deepmerge';

@@ -13,20 +13,25 @@
     VideoContainer,
   } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
-  import { DocumentType, IDocument, appState } from '../contexts/app-state';
+  import { appState, DocumentType, IDocument } from '../contexts/app-state';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
-  import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { documentOptions, documentPhotoStep, settings } from '../default-configuration/theme';
+  import { currentStepId, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import {
+    documentOptions,
+    documentPhotoStep,
+    layout,
+    settings,
+  } from '../default-configuration/theme';
+  import { createToggle } from '../hooks/createToggle/createToggle';
   import merge from 'deepmerge';
-  import { layout } from '../default-configuration/theme';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     EActionNames,
-    sendButtonClickEvent,
     EVerificationStatuses,
+    sendButtonClickEvent,
   } from '../utils/event-service';
 
   export let stepId;
@@ -35,6 +40,7 @@
   let container: HTMLDivElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
   const step = mergeStepConfig(documentPhotoStep, $configuration.steps[stepId]);
 
   const style = makeStylesFromConfiguration(
@@ -47,7 +53,7 @@
 
   const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions || {});
   const documentType =
-    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo?.type;
   const stepNamespace = `${step.namespace}.${documentType}`;
 
   $: {
@@ -95,7 +101,10 @@
   };
 
   const handleTakePhoto = () => {
-    if (!cameraPhoto) return;
+    if (!cameraPhoto || $isDisabled) return;
+
+    toggleOnIsDisabled();
+
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings || settings.cameraSettings,
     );
@@ -157,7 +166,11 @@
   {/if}
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} />
+      <CameraButton
+        on:click={handleTakePhoto}
+        configuration={element.props}
+        isDisabled={$isDisabled}
+      />
     {/if}
   {/each}
 </div>
@@ -173,6 +186,7 @@
     align-items: center;
     justify-content: space-between;
   }
+
   .header {
     text-align: center;
     display: flex;
