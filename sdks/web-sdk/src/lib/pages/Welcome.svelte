@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
+  import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
-  import { goToNextStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import List from '../molecules/List/List.svelte';
   import { T } from '../contexts/translation';
-  import { flowStart } from '../services/analytics';
   import { sendButtonClickEvent } from '../utils/event-service/utils';
   import { appState, currentStepId } from '../contexts/app-state';
   import merge from 'deepmerge';
@@ -79,15 +77,9 @@
       <List configuration={element.props} />
     {/if}
     {#if element.type === Elements.Button}
-      <Button
-        on:click={() => {
-          flowStart();
-          goToNextStep(currentStepId, $configuration, $currentStepId);
-        }}
-        configuration={element.props}
-      >
+      <NextStepButton configuration={element.props}>
         <T key="button" namespace={stepNamespace} />
-      </Button>
+      </NextStepButton>
     {/if}
   {/each}
 </div>

@@ -3,9 +3,9 @@
   import { Container } from '../../atoms';
   import Paragraph from '../../atoms/Paragraph/Paragraph.svelte';
   import {
-    ICSSProperties,
-    IAttributes,
     configuration as globalConfiguration,
+    IAttributes,
+    ICSSProperties,
   } from '../../contexts/configuration';
   import { IDocumentInfo } from '../../contexts/app-state';
   import { T } from '../../contexts/translation';
@@ -14,20 +14,24 @@
   import Icon from '../../atoms/Icons/Icon.svelte';
   import { ICameraEvent, nativeCameraHandler } from '../../utils/photo-utils';
   import { isNativeCamera } from '../../contexts/flows/hooks';
+  import { createToggle } from '../../hooks/createToggle/createToggle';
 
   export let configuration: IDocumentOptions;
   export let active: boolean;
   export let attributes: IAttributes;
   export let document: IDocumentInfo;
 
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
   let hover = false;
 
   const setHover = (status: boolean) => (hover = status);
 
   const dispatch = createEventDispatcher();
-
   const handleSelect = () => {
+    if ($isDisabled) return;
+
     dispatch('selectOption', document.type);
+    toggleOnIsDisabled();
   };
 
   const handler = async (e: ICameraEvent) => {
@@ -42,6 +46,7 @@
 <div
   {style}
   class="document-option"
+  class:disabled={$isDisabled}
   class:active
   on:click={handleSelect}
   on:mouseover={() => setHover(true)}
@@ -113,5 +118,10 @@
     left: 0px;
     z-index: 3;
     opacity: 0;
+  }
+
+  .disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 </style>

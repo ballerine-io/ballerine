@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, ButtonWithIcon, IconButton } from '../../atoms';
+  import { Button, ButtonWithIcon, IconButton, NextStepButton } from '../../atoms';
   import {
     configuration as globalConfiguration,
     ICSSProperties,
@@ -49,12 +49,9 @@
     </ButtonWithIcon>
   {/if}
   {#if configuration.nextButton.type === 'button'}
-    <Button
-      configuration={configuration.nextButton.props}
-      on:click={() => goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
-    >
+    <NextStepButton configuration={configuration.nextButton.props} {skipType}>
       <T key="next" namespace="navigation-buttons" />
-    </Button>
+    </NextStepButton>
   {:else if configuration.nextButton.type === 'iconButton'}
     <IconButton
       configuration={configuration.nextButton.props}

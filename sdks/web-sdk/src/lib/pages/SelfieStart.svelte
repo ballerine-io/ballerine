@@ -1,27 +1,28 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
+  import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { isNativeCamera } from '../contexts/flows/hooks';
+  import {
+    appState,
+    currentStepId,
+    selectedDocumentInfo,
+    selfieUri,
+  } from '../contexts/app-state/stores';
+  import { layout, selfieStartStep } from '../default-configuration/theme';
+  import { createToggle } from '../hooks/createToggle/createToggle';
   import merge from 'deepmerge';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { mergeStepConfig } from '../services/merge-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
-    selectedDocumentInfo,
-    selfieUri,
-    currentStepId,
-    appState,
-  } from '../contexts/app-state/stores';
-  import { layout, selfieStartStep } from '../default-configuration/theme';
-  import {
     EActionNames,
-    sendButtonClickEvent,
     EVerificationStatuses,
+    sendButtonClickEvent,
   } from '../utils/event-service';
 
   export let stepId;
@@ -46,10 +47,12 @@
     }
   }
 
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
   const handler = async (e: ICameraEvent) => {
-    if (!e.target) return;
+    if (!e.target || $isDisabled) return;
     $selfieUri = await nativeCameraHandler(e);
     goToNextStep(currentStepId, $configuration, $currentStepId);
+    toggleOnIsDisabled();
   };
 
   preloadNextStepByCurrent($configuration, configuration, $currentStepId);
@@ -106,12 +109,9 @@
             on:change={handler}
           />
         {/if}
-        <Button
-          on:click={() => goToNextStep(currentStepId, $configuration, $currentStepId)}
-          configuration={element.props}
-        >
+        <NextStepButton configuration={element.props} disabled={$isDisabled}>
           <T key="button" namespace={stepNamespace} />
-        </Button>
+        </NextStepButton>
       </div>
     {/if}
   {/each}
