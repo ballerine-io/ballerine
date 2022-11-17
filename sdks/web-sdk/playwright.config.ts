@@ -49,7 +49,6 @@ const config: PlaywrightTestConfig = {
       use: {
         ...devices['Desktop Chrome'],
         launchOptions: {
-          slowMo: 1000,
           args: [
             '--use-fake-device-for-media-stream',
             '--use-fake-ui-for-media-stream',
