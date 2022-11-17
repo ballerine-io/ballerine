@@ -5,8 +5,8 @@
   import { currentStepId } from '../../contexts/app-state';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
   import { primaryButton } from '../../default-configuration/theme';
-  import merge from 'lodash.merge';
   import { Loader } from './Loader';
+  import merge from 'deepmerge';
 
   // TODO: Use the createToggle hook, and make sure an exported prop is not being mutated.
   export let isDisabled = false;
@@ -16,7 +16,7 @@
 
   const styleProps = configuration?.style as ICSSProperties;
   const style = makeStylesFromConfiguration(
-    merge(primaryButton, $globalConfiguration.button),
+    merge(primaryButton, $globalConfiguration.button ?? {}),
     styleProps,
   );
   let disabled: boolean;

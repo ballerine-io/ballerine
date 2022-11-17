@@ -1,5 +1,5 @@
 <script lang="ts">
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { configuration, ICSSProperties } from '../../../contexts/configuration';
   import { makesLocalStyles } from '../../../utils/css-utils';
 
@@ -7,7 +7,7 @@
     background: $configuration.general.colors.primary,
   };
 
-  const styleProps = merge(loader, $configuration.loader) as ICSSProperties;
+  const styleProps = merge(loader, $configuration.loader ?? {}) as ICSSProperties;
 
   const style = makesLocalStyles(styleProps);
 </script>
