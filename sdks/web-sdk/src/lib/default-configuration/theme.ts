@@ -297,7 +297,6 @@ export const welcomeStep = {
   style: {},
   elements: [
     backIconButton,
-    closeIconButton,
     {
       type: Elements.Title,
       props: {
@@ -357,7 +356,6 @@ export const documentStartStep = {
   id: Steps.DocumentStart,
   elements: [
     backIconButton,
-    closeIconButton,
     {
       type: Elements.Title,
       props: {
@@ -406,7 +404,6 @@ export const documentSelectionStep = {
   id: Steps.DocumentSelection,
   elements: [
     backIconButton,
-    closeIconButton,
     {
       type: Elements.Title,
       props: {
@@ -477,7 +474,6 @@ export const checkDocumentStep = {
   id: Steps.CheckDocument,
   elements: [
     backIconButton,
-    closeIconButton,
     {
       type: Elements.Title,
       props: {
@@ -511,7 +507,6 @@ export const documentPhotoBackStartStep = {
   style: {},
   elements: [
     backIconButton,
-    closeIconButton,
     {
       type: Elements.Title,
       id: 'welcome-title1',
@@ -604,7 +599,6 @@ export const checkDocumentPhotoBackStep = {
   id: Steps.CheckDocumentPhotoBack,
   elements: [
     backIconButton,
-    closeIconButton,
     {
       type: Elements.Title,
       props: {
@@ -638,7 +632,6 @@ export const selfieStartStep = {
   style: {},
   elements: [
     backIconButton,
-    closeIconButton,
     {
       type: Elements.Title,
       props: {
@@ -726,7 +719,6 @@ export const checkSelfieStep = {
   id: Steps.CheckSelfie,
   elements: [
     backIconButton,
-    closeIconButton,
     {
       type: Elements.Title,
       props: {
@@ -764,7 +756,6 @@ export const resubmissionStep = {
   name: Steps.Resubmission,
   id: Steps.Resubmission,
   elements: [
-    closeIconButton,
     {
       type: Elements.Image,
       props: {
@@ -823,7 +814,6 @@ export const declineStep = {
   name: Steps.Decline,
   id: Steps.Decline,
   elements: [
-    closeIconButton,
     {
       type: Elements.Image,
       props: {
@@ -874,7 +864,6 @@ export const errorStep = {
   name: Steps.Error,
   id: Steps.Error,
   elements: [
-    closeIconButton,
     {
       type: Elements.Image,
       props: {
@@ -930,7 +919,6 @@ export const finalStep = {
   id: Steps.Final,
   style: {},
   elements: [
-    closeIconButton,
     {
       type: Elements.Image,
       props: {
