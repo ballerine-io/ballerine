@@ -9,7 +9,7 @@
   import { NavigationButtons } from '../molecules';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
   import merge from 'deepmerge';
-  import { checkDocumentStep, layout } from '../default-configuration/theme';
+  import { checkDocumentStep, layout } from '../ui-packs/default/theme';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
@@ -26,7 +26,7 @@
 
   const style = makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
       $configuration.layout || {},
     ),
     step.style,

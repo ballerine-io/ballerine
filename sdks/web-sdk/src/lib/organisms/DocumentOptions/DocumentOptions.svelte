@@ -9,7 +9,7 @@
   import { isNativeCamera } from '../../contexts/flows/hooks';
   import { IDocumentOption } from '../../molecules/DocumentOption';
   import merge from 'deepmerge';
-  import { documentOptions } from '../../default-configuration/theme';
+  import { documentOptions } from '../../ui-packs/default/theme';
   import { checkIsCameraAvailable } from '../../services/camera-manager';
 
   export let step: IStepConfiguration;

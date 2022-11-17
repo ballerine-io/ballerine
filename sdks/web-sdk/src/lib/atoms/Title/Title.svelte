@@ -5,7 +5,7 @@
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { title } from '../../default-configuration/theme';
+  import { title } from '../../ui-packs/default/theme';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
 
   export let configuration: IElementProps;

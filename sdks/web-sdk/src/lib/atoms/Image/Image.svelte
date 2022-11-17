@@ -6,7 +6,7 @@
     IElementProps,
     IAttributes,
   } from '../../contexts/configuration';
-  import { image } from '../../default-configuration/theme';
+  import { image } from '../../ui-packs/default/theme';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
 
   export let configuration: IElementProps;

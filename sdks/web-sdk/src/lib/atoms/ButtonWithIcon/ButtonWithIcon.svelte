@@ -6,7 +6,7 @@
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { buttonWithIcon } from '../../default-configuration/theme';
+  import { buttonWithIcon } from '../../ui-packs/default/theme';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
 
   export let configuration: IElementProps;

@@ -147,31 +147,9 @@ export interface IOverlayStyles {
   selfie?: ICSSProperties;
 }
 
-export interface IAppConfiguration {
-  isDevelopment: boolean;
-  backendConfig: FlowsBackendConfig;
-  endUserInfo: Omit<EndUserInfo, 'dateOfBirth' | 'endUserMetadata'> & {
-    token?: string;
-  };
-  general: {
-    progress: boolean;
-    borderRadius: string;
-    padding: string;
-    colors: {
-      primary: string;
-      secondary: string;
-      text: string;
-      danger: string;
-    };
-    fonts: {
-      name: string;
-      weight: number[];
-      link?: string;
-    };
-  };
-  flows: { [key: string]: IFlow };
-  defaultLanguage: 'en' | 'es';
-  steps: { [key: string]: IStepConfiguration };
+export type TSteps = { [key: string]: IStepConfiguration };
+
+export interface IAppConfigurationUI {
   container?: ICSSProperties;
   button?: ICSSProperties;
   buttonWithIcon?: ICSSProperties;
@@ -192,6 +170,33 @@ export interface IAppConfiguration {
   errorText?: ICSSProperties;
   overlay?: IOverlayStyles;
   settings?: ConfigSettings;
+  general: {
+    progress: boolean;
+    borderRadius: string;
+    padding: string;
+    colors: {
+      primary: string;
+      secondary: string;
+      text: string;
+      danger: string;
+    };
+    fonts: {
+      name: string;
+      weight: number[];
+      link?: string;
+    };
+  };
+  steps: TSteps;
+}
+
+export interface IAppConfiguration extends Partial<IAppConfigurationUI> {
+  isDevelopment: boolean;
+  backendConfig: FlowsBackendConfig;
+  endUserInfo: Omit<EndUserInfo, 'dateOfBirth' | 'endUserMetadata'> & {
+    token?: string;
+  };
+  flows: { [key: string]: IFlow };
+  defaultLanguage: 'en' | 'es';
 }
 
 export interface ConfigSettings {

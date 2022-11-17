@@ -1,30 +1,11 @@
-import { IMAGE_TYPES } from 'jslib-html5-camera-photo';
 import { IAppConfiguration } from '../contexts/configuration';
-import { Elements, ICSSProperties, IElement, Steps } from '../contexts/configuration/types';
-import { DocumentType } from '../contexts/app-state';
-import { DocumentVariant } from '../contexts/app-state/types';
+import { Steps } from '../contexts/configuration/types';
+import { uiTheme } from './theme';
 
 // Config prioritiztion:
 // 3. Theme configuration
 // 2. Step configuration
 // 1. Components configuration
-
-const general = {
-  progress: false,
-  borderRadius: '16px',
-  padding: '24px',
-  themeColor: '#080444',
-  colors: {
-    primary: '#080444',
-    secondary: '#080444',
-    text: '#788597',
-    danger: 'rgba(173, 0, 0, 0.8);',
-  },
-  fonts: {
-    name: 'Inter',
-    weight: [500, 700],
-  },
-};
 
 const defaultFlowOrder = [
   Steps.Welcome,
@@ -60,7 +41,6 @@ export const configuration: IAppConfiguration = {
   endUserInfo: {
     id: 'test-id123',
   },
-  general,
   flows: {
     default: {
       name: 'default',

@@ -4,7 +4,7 @@
     IElementProps,
   } from '../../contexts/configuration';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
-  import { primaryButton } from '../../default-configuration/theme';
+  import { primaryButton } from '../../ui-packs/default/theme';
   import merge from 'deepmerge';
 
   export let configuration: IElementProps;

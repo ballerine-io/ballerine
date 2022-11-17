@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import mergeObj from 'deepmerge';
-import translation from '../default-configuration/translation.json';
+import translation from '../configuration/translation.json';
 import { TranslationType } from '../contexts/translation';
 import {
   configuration,

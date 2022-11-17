@@ -18,9 +18,9 @@
   import Title from '../atoms/Title/Title.svelte';
   import { appState, selfieUri } from '../contexts/app-state/stores';
   import { isMobile } from '../utils/is-mobile';
-  import { selfieStep, settings } from '../default-configuration/theme';
+  import { selfieStep, settings } from '../ui-packs/default/theme';
   import merge from 'deepmerge';
-  import { layout } from '../default-configuration/theme';
+  import { layout } from '../ui-packs/default/theme';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { mergeStepConfig } from '../services/merge-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
@@ -41,7 +41,7 @@
 
   const style = makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
       $configuration.layout || {},
     ),
     step.style,

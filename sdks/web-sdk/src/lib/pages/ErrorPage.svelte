@@ -15,7 +15,7 @@
   } from '../utils/event-service';
   import { flowError } from '../services/analytics';
   import merge from 'deepmerge';
-  import { errorStep, layout } from '../default-configuration/theme';
+  import { errorStep, layout } from '../ui-packs/default/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
   import { mergeStepConfig } from '../services/merge-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
@@ -27,7 +27,7 @@
 
   const style = makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
       $configuration.layout || {},
     ),
     step.style,

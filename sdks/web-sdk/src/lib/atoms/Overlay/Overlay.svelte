@@ -4,7 +4,7 @@
   import { configuration as globalConfiguration } from '../../contexts/configuration';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
   import merge from 'deepmerge';
-  import { overlay } from '../../default-configuration/theme';
+  import { overlay } from '../../ui-packs/default/theme';
 
   export let type: DocumentType;
 

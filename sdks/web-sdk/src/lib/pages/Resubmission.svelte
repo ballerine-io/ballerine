@@ -9,7 +9,7 @@
   import { flowResubmission } from '../services/analytics';
   import { onDestroy } from 'svelte';
   import merge from 'deepmerge';
-  import { layout, resubmissionStep } from '../default-configuration/theme';
+  import { layout, resubmissionStep } from '../ui-packs/default/theme';
   import { mergeStepConfig } from '../services/merge-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
@@ -27,7 +27,7 @@
 
   const style = makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
       $configuration.layout || {},
     ),
     step.style,

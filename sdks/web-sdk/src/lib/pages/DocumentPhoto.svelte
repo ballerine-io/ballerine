@@ -17,9 +17,9 @@
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { documentOptions, documentPhotoStep, settings } from '../default-configuration/theme';
+  import { documentOptions, documentPhotoStep, settings } from '../ui-packs/default/theme';
   import merge from 'deepmerge';
-  import { layout } from '../default-configuration/theme';
+  import { layout } from '../ui-packs/default/theme';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
@@ -39,7 +39,7 @@
 
   const style = makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
       $configuration.layout || {},
     ),
     step.style,

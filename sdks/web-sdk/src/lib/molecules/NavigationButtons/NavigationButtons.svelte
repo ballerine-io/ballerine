@@ -10,7 +10,7 @@
   import { makesLocalStyles } from '../../utils/css-utils';
   import { currentStepId } from '../../contexts/app-state';
   import merge from 'deepmerge';
-  import { navigationButtons } from '../../default-configuration/theme';
+  import { navigationButtons } from '../../ui-packs/default/theme';
 
   const { navigationButtons: userConfiguration } = $globalConfiguration;
 

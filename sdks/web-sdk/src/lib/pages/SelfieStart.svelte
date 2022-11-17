@@ -17,7 +17,7 @@
     currentStepId,
     appState,
   } from '../contexts/app-state/stores';
-  import { layout, selfieStartStep } from '../default-configuration/theme';
+  import { layout, selfieStartStep } from '../ui-packs/default/theme';
   import {
     EActionNames,
     sendButtonClickEvent,
@@ -32,7 +32,7 @@
 
   const style = makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
       $configuration.layout || {},
     ),
     step.style,

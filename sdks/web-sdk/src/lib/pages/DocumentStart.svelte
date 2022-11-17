@@ -9,7 +9,7 @@
   import { isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { documentStartStep, layout } from '../default-configuration/theme';
+  import { documentStartStep, layout } from '../ui-packs/default/theme';
   import merge from 'deepmerge';
   import {
     EActionNames,
@@ -26,7 +26,7 @@
 
   const style = makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
       $configuration.layout || {},
     ),
     step.style,

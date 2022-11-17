@@ -2,7 +2,7 @@
   import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep } from '../contexts/navigation/hooks';
-  import { Elements } from '../contexts/configuration/types';
+  import { Elements, IStepConfiguration } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import List from '../molecules/List/List.svelte';
   import { T } from '../contexts/translation';
@@ -10,7 +10,7 @@
   import { sendButtonClickEvent } from '../utils/event-service/utils';
   import { appState, currentStepId } from '../contexts/app-state';
   import merge from 'deepmerge';
-  import { layout, welcomeStep } from '../default-configuration/theme';
+  import { uiPack } from '../ui-packs';
   import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
@@ -18,18 +18,18 @@
 
   export let stepId;
 
-  const step = mergeStepConfig(welcomeStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig($uiPack.steps.welcome, $configuration.steps ? $configuration.steps[stepId] : {} as IStepConfiguration);
   const stepNamespace = step.namespace!;
 
   const style = makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
       $configuration.layout || {},
     ),
     step.style,
   );
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
 </script>
 
 <div class="container" {style}>

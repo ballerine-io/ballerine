@@ -19,7 +19,7 @@
   import { flowUploadLoader } from '../services/analytics';
   import { getFlowConfig } from '../contexts/flows/hooks';
   import merge from 'deepmerge';
-  import { layout, loadingStep } from '../default-configuration/theme';
+  import { layout, loadingStep } from '../ui-packs/default/theme';
   import { generateParams, getVerificationStatus, verifyDocuments } from '../services/http';
   import { DecisionStatus } from '../contexts/app-state/types';
   import { mergeStepConfig } from '../services/merge-service';
@@ -37,7 +37,7 @@
 
   const style = makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
       $configuration.layout || {},
     ),
     step.style,

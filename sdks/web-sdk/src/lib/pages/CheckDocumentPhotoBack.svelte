@@ -8,7 +8,7 @@
   import { getDocImage, IDocumentInfo } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
   import merge from 'deepmerge';
-  import { checkDocumentPhotoBackStep, layout } from '../default-configuration/theme';
+  import { checkDocumentPhotoBackStep, layout } from '../ui-packs/default/theme';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { mergeStepConfig } from '../services/merge-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
@@ -26,7 +26,7 @@
 
   const style = makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
       $configuration.layout || {},
     ),
     step.style,
