@@ -1,22 +1,37 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { ICameraEvent, nativeCameraHandler, updateDocument } from '../utils/photo-utils';
-  import { IDocument, IDocumentInfo, currentStepId } from '../contexts/app-state';
+  import { IDocument, IDocumentInfo, currentStepId, appState } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { documentPhotoBackStartStep, layout } from '../default-configuration/theme';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
 
   export let stepId;
 
-  const step = merge(documentPhotoBackStartStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(documentPhotoBackStartStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
 
   let documentInfo: IDocumentInfo | undefined = undefined;
   let document: IDocument | undefined;
@@ -38,6 +53,8 @@
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -46,6 +63,19 @@
       <IconButton
         configuration={element.props}
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
       />
     {/if}
     {#if element.type === Elements.Image}

@@ -1,21 +1,33 @@
 <script lang="ts">
-  import { IconButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
+  import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
-  import { addCloseToURLParams } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import List from '../molecules/List/List.svelte';
   import { T } from '../contexts/translation';
   import { sendButtonClickEvent } from '../utils/event-service/utils';
-  import { appState } from '../contexts/app-state';
-  import merge from 'lodash.merge';
+  import { appState, currentStepId } from '../contexts/app-state';
+  import merge from 'deepmerge';
   import { layout, welcomeStep } from '../default-configuration/theme';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import { EActionNames, EVerificationStatuses } from '../utils/event-service';
 
   export let stepId;
 
-  const step = merge(welcomeStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(welcomeStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -25,11 +37,28 @@
         <IconButton
           configuration={element.props}
           on:click={() => {
-            sendButtonClickEvent('close', { status: 'document_collection' }, $appState, true);
-            addCloseToURLParams();
+            sendButtonClickEvent(
+              EActionNames.CLOSE,
+              { status: EVerificationStatuses.DATA_COLLECTION },
+              $appState,
+              true,
+            );
           }}
         />
       </div>
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
+      />
     {/if}
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />

@@ -67,5 +67,8 @@
     "overrides": {
       "vite": "2.9.15"
     }
+  },
+  "dependencies": {
+    "deepmerge": "^4.2.2"
   }
 }

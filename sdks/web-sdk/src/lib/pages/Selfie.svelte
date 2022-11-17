@@ -4,16 +4,31 @@
   import { configuration } from '../contexts/configuration';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
-  import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
+  import {
+    CameraButton,
+    IconButton,
+    IconCloseButton,
+    Overlay,
+    Paragraph,
+    VideoContainer,
+  } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import { currentStepId, DocumentType } from '../contexts/app-state';
   import Title from '../atoms/Title/Title.svelte';
-  import { selfieUri } from '../contexts/app-state/stores';
+  import { appState, selfieUri } from '../contexts/app-state/stores';
   import { isMobile } from '../utils/is-mobile';
   import { layout, selfieStep, settings } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
   import { createToggle } from '../hooks/createToggle/createToggle';
+  import merge from 'deepmerge';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import {
+    EActionNames,
+    EVerificationStatuses,
+    sendButtonClickEvent,
+  } from '../utils/event-service';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
@@ -21,10 +36,16 @@
   export let stepId;
 
   const [isDisabled, , toggleOnIsDisabled] = createToggle();
-
-  const step = merge(selfieStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(selfieStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
 
   const facingMode = isMobile() ? FACING_MODES.USER : FACING_MODES.ENVIRONMENT;
 
@@ -58,6 +79,8 @@
     goToNextStep(currentStepId, $configuration, $currentStepId);
     toggleOnIsDisabled();
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -66,6 +89,19 @@
       <IconButton
         configuration={element.props}
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
       />
     {/if}
     {#if element.type === Elements.VideoContainer}

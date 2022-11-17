@@ -1,22 +1,43 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { IconButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
+  import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { isNativeCamera } from '../contexts/flows/hooks';
-  import { currentStepId, selectedDocumentInfo, selfieUri } from '../contexts/app-state/stores';
-  import merge from 'lodash.merge';
+  import {
+    appState,
+    currentStepId,
+    selectedDocumentInfo,
+    selfieUri,
+  } from '../contexts/app-state/stores';
   import { layout, selfieStartStep } from '../default-configuration/theme';
   import { createToggle } from '../hooks/createToggle/createToggle';
+  import merge from 'deepmerge';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import {
+    EActionNames,
+    EVerificationStatuses,
+    sendButtonClickEvent,
+  } from '../utils/event-service';
 
   export let stepId;
 
-  const step = merge(selfieStartStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(selfieStartStep, $configuration.steps[stepId]);
+
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
 
   let skipBackSide = false;
 
@@ -33,6 +54,8 @@
     goToNextStep(currentStepId, $configuration, $currentStepId);
     toggleOnIsDisabled();
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -47,6 +70,19 @@
             $currentStepId,
             skipBackSide ? 'back-side' : undefined,
           )}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
       />
     {/if}
     {#if element.type === Elements.Image}

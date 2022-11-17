@@ -12,14 +12,7 @@ const filterOutByType = (flowIds: string[], configuration: IAppConfiguration, ty
   });
 };
 
-export const addCloseToURLParams = () => {
-  const url = new URL(window.location.href);
-  url.searchParams.set('close', 'true');
-  history.pushState('', '', url.search);
-};
-
-export const goToNextStep = (
-  currentStepIdStore: Writable<string>,
+export const getNextStepId = (
   globalConfiguration: IAppConfiguration,
   currentStepId: string,
   skipType?: string,
@@ -28,9 +21,19 @@ export const goToNextStep = (
   const filteredFlows = filterOutByType(stepsOrder, globalConfiguration, skipType);
   const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
   if (currentFlowIndex === filteredFlows.length) {
-    throw Error('Error moving next step, this is the last step');
+    throw Error("Next step doesn't exist");
   }
-  currentStepIdStore.set(filteredFlows[currentFlowIndex + 1]);
+  return filteredFlows[currentFlowIndex + 1];
+};
+
+export const goToNextStep = (
+  currentStepIdStore: Writable<string>,
+  globalConfiguration: IAppConfiguration,
+  currentStepId: string,
+  skipType?: string,
+) => {
+  const nextStepId = getNextStepId(globalConfiguration, currentStepId, skipType);
+  currentStepIdStore.set(nextStepId);
 };
 
 export const goToPrevStep = (

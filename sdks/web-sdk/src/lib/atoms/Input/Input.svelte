@@ -8,7 +8,7 @@
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
   import { IInputAttributes } from './types';
   import { t } from '../../contexts/translation/hooks';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
 
   export let configuration: IElementProps;
   export let translationContext: string;
@@ -25,7 +25,10 @@
   const styleProps = configuration.style as ICSSProperties;
   const attributes = configuration.attributes as IInputAttributes;
 
-  const style = makeStylesFromConfiguration(merge(input, $globalConfiguration.input), styleProps);
+  const style = makeStylesFromConfiguration(
+    merge(input, $globalConfiguration.input || {}),
+    styleProps,
+  );
 </script>
 
 <input

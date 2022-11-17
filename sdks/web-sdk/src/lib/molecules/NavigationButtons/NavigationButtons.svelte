@@ -9,7 +9,7 @@
   import { T } from '../../contexts/translation';
   import { makesLocalStyles } from '../../utils/css-utils';
   import { currentStepId } from '../../contexts/app-state';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { navigationButtons } from '../../default-configuration/theme';
 
   const { navigationButtons: userConfiguration } = $globalConfiguration;
@@ -29,6 +29,7 @@
 <div {style} class="navigation-buttons">
   {#if configuration.backButton.type === 'button'}
     <Button
+      isBack
       configuration={configuration.backButton.props}
       on:click={() => goToPrevStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >

@@ -1,28 +1,43 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import { T } from '../contexts/translation';
-  import { Image, Button, Title } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { Image, Button, Title, IconCloseButton } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
-  import { sendFlowCompleteEvent } from '../utils/event-service';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    sendFlowCompleteEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
   import { flowDeclined } from '../services/analytics';
-  import { addCloseToURLParams } from '../contexts/navigation/hooks';
-  import { currentParams } from '../contexts/app-state';
+  import { currentParams, appState } from '../contexts/app-state';
   import { declineStep, layout } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { DecisionStatus } from '../contexts/app-state/types';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 
   export let stepId;
 
-  const step = merge(declineStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(declineStep, $configuration.steps[stepId]);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
 
   const handleClose = () => {
-    sendFlowCompleteEvent({ status: 'completed', idvResult: DecisionStatus.DECLINED });
-    addCloseToURLParams();
+    sendFlowCompleteEvent({
+      status: EVerificationStatuses.COMPLETED,
+      idvResult: DecisionStatus.DECLINED,
+    });
   };
 
   onDestroy(() => {
@@ -34,6 +49,19 @@
 
 <div class="container" {style}>
   {#each step.elements as element}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
+      />
+    {/if}
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />
     {/if}

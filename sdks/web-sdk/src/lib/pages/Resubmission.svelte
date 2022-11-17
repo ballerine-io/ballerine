@@ -1,22 +1,37 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title } from '../atoms';
+  import { Image, Button, Title, IconCloseButton } from '../atoms';
   import { configuration, Steps } from '../contexts/configuration';
-  import { currentStepId, currentParams } from '../contexts/app-state';
+  import { currentStepId, currentParams, appState } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
   import { flowResubmission } from '../services/analytics';
   import { onDestroy } from 'svelte';
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import { layout, resubmissionStep } from '../default-configuration/theme';
+  import { mergeStepConfig } from '../services/merge-service';
+  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
 
   export let stepId;
 
-  const step = merge(resubmissionStep, $configuration.steps[stepId]);
+  const step = mergeStepConfig(resubmissionStep, $configuration.steps[stepId]);
+
   const stepNamespace = step.namespace!;
   const hasDocumentSelection = !!$configuration.steps[Steps.DocumentSelection];
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  const style = makeStylesFromConfiguration(
+    merge(
+      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
+      $configuration.layout || {},
+    ),
+    step.style,
+  );
 
   const reasonCode = $currentParams ? $currentParams.reasonCode : null;
 
@@ -39,6 +54,19 @@
   {#each step.elements as element}
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />
+    {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
+      />
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
