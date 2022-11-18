@@ -7,12 +7,15 @@
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
 
   export let configuration: IElementProps;
+  export let isDisabled = false;
   const styleProps = configuration.style as ICSSProperties;
 
   const style = makeStylesFromConfiguration($globalConfiguration.cameraButton, styleProps);
 </script>
 
-<button {style} on:click aria-label="take picture"><span class="inner-container" /></button>
+<button {style} on:click aria-label="take picture" disabled={isDisabled}>
+  <span class="inner-container" />
+</button>
 
 <style>
   button {
@@ -36,5 +39,10 @@
     min-width: 64px;
     background: #fff;
     border-radius: 50%;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 </style>

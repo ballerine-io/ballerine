@@ -18,16 +18,16 @@
   import Title from '../atoms/Title/Title.svelte';
   import { appState, selfieUri } from '../contexts/app-state/stores';
   import { isMobile } from '../utils/is-mobile';
-  import { selfieStep, settings } from '../default-configuration/theme';
+  import { layout, selfieStep, settings } from '../default-configuration/theme';
+  import { createToggle } from '../hooks/createToggle/createToggle';
   import merge from 'deepmerge';
-  import { layout } from '../default-configuration/theme';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { mergeStepConfig } from '../services/merge-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     EActionNames,
-    sendButtonClickEvent,
     EVerificationStatuses,
+    sendButtonClickEvent,
   } from '../utils/event-service';
 
   let video: HTMLVideoElement;
@@ -35,8 +35,8 @@
 
   export let stepId;
 
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
   const step = mergeStepConfig(selfieStep, $configuration.steps[stepId]);
-
   const stepNamespace = step.namespace!;
 
   const style = makeStylesFromConfiguration(
@@ -70,12 +70,14 @@
   });
 
   const handleTakePhoto = () => {
-    if (!cameraPhoto) return;
+    if (!cameraPhoto || $isDisabled) return;
+
     const dataUri = cameraPhoto.getDataUri(
       $configuration.settings?.selfieCameraSettings || settings.cameraSettings,
     );
     $selfieUri = dataUri;
     goToNextStep(currentStepId, $configuration, $currentStepId);
+    toggleOnIsDisabled();
   };
 
   preloadNextStepByCurrent($configuration, configuration, $currentStepId);
@@ -122,7 +124,11 @@
   <Overlay type={DocumentType.SELFIE} />
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} />
+      <CameraButton
+        on:click={handleTakePhoto}
+        configuration={element.props}
+        isDisabled={$isDisabled}
+      />
     {/if}
   {/each}
 </div>
