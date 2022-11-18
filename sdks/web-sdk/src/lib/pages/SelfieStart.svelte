@@ -6,7 +6,7 @@
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
-  import { isNativeCamera } from '../contexts/flows/hooks';
+  import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
   import {
     appState,
     currentStepId,
@@ -28,6 +28,8 @@
   export let stepId;
 
   const step = mergeStepConfig(selfieStartStep, $configuration.steps[stepId]);
+
+  const flow = getFlowConfig($configuration);
 
   const stepNamespace = step.namespace!;
 
@@ -72,7 +74,7 @@
           )}
       />
     {/if}
-    {#if element.type === Elements.IconCloseButton}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
