@@ -19,10 +19,14 @@
   import { DecisionStatus } from '../contexts/app-state/types';
   import { mergeStepConfig } from '../services/merge-service';
   import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
   const step = mergeStepConfig(declineStep, $configuration.steps[stepId]);
+
+  const flow = getFlowConfig($configuration);
+
   const stepNamespace = step.namespace!;
 
   const style = makeStylesFromConfiguration(
@@ -49,7 +53,7 @@
 
 <div class="container" {style}>
   {#each step.elements as element}
-    {#if element.type === Elements.IconCloseButton}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {

@@ -6,7 +6,7 @@
   import { Elements } from '../contexts/configuration/types';
   import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
-  import { isNativeCamera } from '../contexts/flows/hooks';
+  import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { documentStartStep, layout } from '../default-configuration/theme';
@@ -23,6 +23,8 @@
   export let stepId;
 
   const step = mergeStepConfig(documentStartStep, $configuration.steps[stepId]);
+
+  const flow = getFlowConfig($configuration);
 
   const style = makeStylesFromConfiguration(
     merge(
@@ -73,7 +75,7 @@
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
-    {#if element.type === Elements.IconCloseButton}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {

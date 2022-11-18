@@ -29,6 +29,7 @@
     EVerificationStatuses,
     sendButtonClickEvent,
   } from '../utils/event-service';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
@@ -94,19 +95,6 @@
       <IconButton
         configuration={element.props}
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
-      />
-    {/if}
-    {#if element.type === Elements.IconCloseButton}
-      <IconCloseButton
-        configuration={element.props}
-        on:click={() => {
-          sendButtonClickEvent(
-            EActionNames.CLOSE,
-            { status: EVerificationStatuses.DATA_COLLECTION },
-            $appState,
-            true,
-          );
-        }}
       />
     {/if}
     {#if element.type === Elements.VideoContainer}

@@ -17,10 +17,13 @@
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
   const step = mergeStepConfig(resubmissionStep, $configuration.steps[stepId]);
+
+  const flow = getFlowConfig($configuration);
 
   const stepNamespace = step.namespace!;
   const hasDocumentSelection = !!$configuration.steps[Steps.DocumentSelection];
@@ -55,7 +58,7 @@
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />
     {/if}
-    {#if element.type === Elements.IconCloseButton}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
