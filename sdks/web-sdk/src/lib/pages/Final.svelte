@@ -55,7 +55,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton configuration={element.props} />
     {/if}
-    {#if flow.showCloseButton || element.type === Elements.IconCloseButton }
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {

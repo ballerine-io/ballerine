@@ -53,7 +53,7 @@
 
 <div class="container" {style}>
   {#each step.elements as element}
-    {#if flow.showCloseButton || element.type === Elements.IconCloseButton }
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {

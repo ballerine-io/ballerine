@@ -46,7 +46,7 @@
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
-    {#if flow.showCloseButton || element.type === Elements.IconCloseButton }
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
