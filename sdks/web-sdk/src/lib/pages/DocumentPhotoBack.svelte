@@ -2,7 +2,6 @@
   import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
   import { configuration } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
   import {
     CameraButton,
@@ -13,41 +12,31 @@
     Title,
     VideoContainer,
   } from '../atoms';
-  import { Elements } from '../contexts/configuration/types';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import { currentStepId, appState } from '../contexts/app-state';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { updateDocument } from '../utils/photo-utils';
-  import { documentPhotoBackStep, settings } from '../ui-packs/default/theme';
-  import merge from 'deepmerge';
-  import { layout } from '../ui-packs/default/theme';
   import { DocumentType } from '../contexts/app-state';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     EActionNames,
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   export let stepId;
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = mergeStepConfig(documentPhotoBackStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentPhotoBack], stepId);
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const documentType =
-    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+    ($uiPack.steps[$currentStepId].type as DocumentType || ($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) || $selectedDocumentInfo.type;
 
   const stepNamespace = `${step.namespace}.${documentType}`;
   $: {
@@ -78,14 +67,14 @@
     const document = $documents.find(d => d.type === documentType);
     if (!cameraPhoto || !document) return;
     const base64 = cameraPhoto.getDataUri(
-      $configuration.settings?.cameraSettings || settings.cameraSettings,
+      $configuration.settings?.cameraSettings || $uiPack.settings.cameraSettings,
     );
     const newDocumentsState = updateDocument(document.type, base64, $documents);
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
 </script>
 
 <div class="container" {style}>

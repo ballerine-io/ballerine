@@ -150,26 +150,26 @@ export interface IOverlayStyles {
 export type TSteps = { [key: string]: IStepConfiguration };
 
 export interface IAppConfigurationUI {
-  container?: ICSSProperties;
-  button?: ICSSProperties;
-  buttonWithIcon?: ICSSProperties;
-  iconButton?: ICSSProperties;
-  iconCloseButton?: ICSSProperties;
-  layout?: ICSSProperties;
-  photo?: ICSSProperties;
+  container: ICSSProperties;
+  button: ICSSProperties;
+  buttonWithIcon: ICSSProperties;
+  iconButton: ICSSProperties;
+  iconCloseButton: ICSSProperties;
+  layout: ICSSProperties;
+  photo: ICSSProperties;
   title: ICSSProperties;
-  paragraph?: ICSSProperties;
-  documentOptions?: IDocumentOptions;
-  list?: IList;
-  navigationButtons?: INavigationButtons;
-  image?: ICSSProperties;
-  cameraButton?: ICSSProperties;
-  videoContainer?: ICSSProperties;
-  input?: ICSSProperties;
-  loader?: ICSSProperties;
-  errorText?: ICSSProperties;
-  overlay?: IOverlayStyles;
-  settings?: ConfigSettings;
+  paragraph: ICSSProperties;
+  documentOptions: IDocumentOptions;
+  list: IList;
+  navigationButtons: INavigationButtons;
+  image: ICSSProperties;
+  cameraButton: ICSSProperties;
+  videoContainer: ICSSProperties;
+  input: ICSSProperties;
+  loader: ICSSProperties;
+  errorText: ICSSProperties;
+  overlay: IOverlayStyles;
+  settings: ConfigSettings;
   general: {
     progress: boolean;
     borderRadius: string;

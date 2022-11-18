@@ -3,40 +3,30 @@
   import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
-  import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { isNativeCamera } from '../contexts/flows/hooks';
-  import merge from 'deepmerge';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     selectedDocumentInfo,
     selfieUri,
     currentStepId,
     appState,
   } from '../contexts/app-state/stores';
-  import { layout, selfieStartStep } from '../ui-packs/default/theme';
   import {
     EActionNames,
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   export let stepId;
 
-  const step = mergeStepConfig(selfieStartStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.SelfieStart], stepId);
 
   const stepNamespace = step.namespace!;
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   let skipBackSide = false;
 
@@ -52,7 +42,7 @@
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
 </script>
 
 <div class="container" {style}>

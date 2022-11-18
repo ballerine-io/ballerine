@@ -1,11 +1,10 @@
 <script lang="ts">
-  import merge from 'deepmerge';
   import {
     configuration as globalConfiguration,
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { getComponentStyles, uiPack } from '../../ui-packs';
 
   export let configuration: IElementProps;
   export let active = false;
@@ -13,17 +12,14 @@
   const paragraph = {
     'font-weight': 400,
     'font-size': '16px',
-    color: $globalConfiguration.general.colors.text,
+    color: $uiPack.general.colors.text,
     'text-align': 'center',
     margin: '0px',
   };
 
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = makeStylesFromConfiguration(
-    merge(paragraph, $globalConfiguration.paragraph || {}),
-    styleProps,
-  );
+  const style = getComponentStyles(paragraph, $globalConfiguration, styleProps);
 </script>
 
 <p {style} class:active>

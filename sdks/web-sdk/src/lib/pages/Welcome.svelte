@@ -2,34 +2,25 @@
   import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep } from '../contexts/navigation/hooks';
-  import { Elements, IStepConfiguration } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import List from '../molecules/List/List.svelte';
   import { T } from '../contexts/translation';
   import { flowStart } from '../services/analytics';
   import { sendButtonClickEvent } from '../utils/event-service/utils';
   import { appState, currentStepId } from '../contexts/app-state';
-  import merge from 'deepmerge';
   import { uiPack } from '../ui-packs';
-  import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import { EActionNames, EVerificationStatuses } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
 
   export let stepId;
 
-  const step = mergeStepConfig($uiPack.steps.welcome, $configuration.steps ? $configuration.steps[stepId] : {} as IStepConfiguration);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Welcome], stepId);
   const stepNamespace = step.namespace!;
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
+  preloadNextStepByCurrent($configuration, configuration, stepId, $uiPack);
 </script>
 
 <div class="container" {style}>

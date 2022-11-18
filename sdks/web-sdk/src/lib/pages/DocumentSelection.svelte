@@ -1,37 +1,27 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
   import { Image, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
-  import { configuration } from '../contexts/configuration';
+  import { configuration, Steps } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { DocumentOptions } from '../organisms';
   import { goToPrevStep } from '../contexts/navigation';
-  import merge from 'deepmerge';
-  import { documentSelectionStep, layout } from '../ui-packs/default/theme';
-  import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import { currentStepId, appState } from '../contexts/app-state';
   import {
     EActionNames,
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   export let stepId;
 
-  const step = mergeStepConfig(documentSelectionStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentSelection], stepId);
   const stepNamespace = step.namespace!;
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, stepId, $uiPack);
 </script>
 
 <div class="container" {style}>

@@ -3,37 +3,27 @@
   import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
-  import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { documentStartStep, layout } from '../ui-packs/default/theme';
-  import merge from 'deepmerge';
   import {
     EActionNames,
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
   import { checkIsCameraAvailable } from '../services/camera-manager';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   export let stepId;
 
-  const step = mergeStepConfig(documentStartStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentStart], stepId);
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const documentType =
-    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+    ($uiPack.steps[$currentStepId].type as DocumentType || ($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) || $selectedDocumentInfo.type;
 
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
@@ -57,6 +47,7 @@
       document.type,
       image,
       $configuration,
+      $uiPack,
       $documents,
       document,
     );

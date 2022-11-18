@@ -17,6 +17,8 @@ import { IFlow } from '../contexts/flows';
 import { IDocumentOptionItem } from '../organisms/DocumentOptions/types';
 import { AnyRecord } from '../../types';
 import { preloadStepImages } from '../services/preload-service/utils';
+import { uiPack,  } from '../ui-packs';
+import { uiTheme } from '../ui-packs/default/theme';
 
 const keyBy = (array: any[], key: string | Function): any =>
   (array || []).reduce((r, x) => {
@@ -39,8 +41,7 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
     return mergedConfig;
   });
   const config = configurationResult as unknown as IAppConfiguration;
-
-  config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome]);
+  config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome], uiTheme);
   configuration.update(() => config);
 };
 

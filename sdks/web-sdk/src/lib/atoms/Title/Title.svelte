@@ -1,20 +1,15 @@
 <script lang="ts">
-  import merge from 'deepmerge';
   import {
     configuration as globalConfiguration,
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { title } from '../../ui-packs/default/theme';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { getComponentStyles, uiPack } from '../../ui-packs';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = makeStylesFromConfiguration(
-    merge(title, $globalConfiguration.title || {}),
-    styleProps,
-  );
+  const style = getComponentStyles($uiPack.title, $globalConfiguration, styleProps);
 </script>
 
 <h1 {style}>

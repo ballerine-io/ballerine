@@ -2,7 +2,6 @@
   import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
   import { configuration } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
   import {
     CameraButton,
@@ -12,22 +11,19 @@
     Paragraph,
     VideoContainer,
   } from '../atoms';
-  import { Elements } from '../contexts/configuration/types';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import { DocumentType, IDocument, appState } from '../contexts/app-state';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { documentOptions, documentPhotoStep, settings } from '../ui-packs/default/theme';
   import merge from 'deepmerge';
-  import { layout } from '../ui-packs/default/theme';
-  import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     EActionNames,
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   export let stepId;
 
@@ -35,19 +31,13 @@
   let container: HTMLDivElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = mergeStepConfig(documentPhotoStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentPhoto], stepId);
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
-  const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions || {});
+  const documentOptionsConfiguration = merge($uiPack.documentOptions, $configuration.documentOptions || {});
   const documentType =
-    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+  ($uiPack.steps[$currentStepId].type as DocumentType || ($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) || $selectedDocumentInfo.type;
   const stepNamespace = `${step.namespace}.${documentType}`;
 
   $: {
@@ -107,7 +97,7 @@
     return goToPrevStep(currentStepId, $configuration, $currentStepId);
   };
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
 </script>
 
 <div class="container" {style} bind:this={container}>

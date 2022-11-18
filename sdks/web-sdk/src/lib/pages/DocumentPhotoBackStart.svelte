@@ -3,35 +3,25 @@
   import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import { ICameraEvent, nativeCameraHandler, updateDocument } from '../utils/photo-utils';
   import { IDocument, IDocumentInfo, currentStepId, appState } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import merge from 'deepmerge';
-  import { documentPhotoBackStartStep, layout } from '../ui-packs/default/theme';
-  import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     EActionNames,
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   export let stepId;
 
-  const step = mergeStepConfig(documentPhotoBackStartStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentPhotoBackStart], stepId);
   const stepNamespace = step.namespace!;
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   let documentInfo: IDocumentInfo | undefined = undefined;
   let document: IDocument | undefined;
@@ -54,7 +44,7 @@
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
 </script>
 
 <div class="container" {style}>

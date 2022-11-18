@@ -1,12 +1,10 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import { T } from '../contexts/translation';
-  import merge from 'deepmerge';
   import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { appState, currentParams } from '../contexts/app-state';
-  import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import { flowApproved } from '../services/analytics';
   import {
     EActionNames,
@@ -14,24 +12,16 @@
     sendFlowCompleteEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
-  import { finalStep, layout } from '../ui-packs/default/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   export let stepId;
 
-  const step = mergeStepConfig(finalStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Final], stepId);
 
   const stepNamespace = step.namespace!;
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   flowApproved();
 

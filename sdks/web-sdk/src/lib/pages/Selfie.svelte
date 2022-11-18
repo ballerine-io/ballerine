@@ -2,7 +2,6 @@
   import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
   import { configuration } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
   import {
     CameraButton,
@@ -12,40 +11,30 @@
     Paragraph,
     VideoContainer,
   } from '../atoms';
-  import { Elements } from '../contexts/configuration/types';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import { currentStepId, DocumentType } from '../contexts/app-state';
   import Title from '../atoms/Title/Title.svelte';
   import { appState, selfieUri } from '../contexts/app-state/stores';
   import { isMobile } from '../utils/is-mobile';
-  import { selfieStep, settings } from '../ui-packs/default/theme';
-  import merge from 'deepmerge';
-  import { layout } from '../ui-packs/default/theme';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     EActionNames,
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
   export let stepId;
 
-  const step = mergeStepConfig(selfieStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Selfie], stepId);
 
   const stepNamespace = step.namespace!;
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const facingMode = isMobile() ? FACING_MODES.USER : FACING_MODES.ENVIRONMENT;
 
@@ -72,13 +61,13 @@
   const handleTakePhoto = () => {
     if (!cameraPhoto) return;
     const dataUri = cameraPhoto.getDataUri(
-      $configuration.settings?.selfieCameraSettings || settings.cameraSettings,
+      $configuration.settings?.selfieCameraSettings || $uiPack.settings.cameraSettings,
     );
     $selfieUri = dataUri;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
 </script>
 
 <div class="container" {style}>

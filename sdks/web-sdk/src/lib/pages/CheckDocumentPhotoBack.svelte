@@ -2,16 +2,12 @@
   import { T } from '../contexts/translation';
   import { Title, IconButton, Photo, Paragraph, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
-  import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import { goToPrevStep } from '../contexts/navigation';
   import { getDocImage, IDocumentInfo } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
-  import merge from 'deepmerge';
-  import { checkDocumentPhotoBackStep, layout } from '../ui-packs/default/theme';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import { documents, selectedDocumentInfo, currentStepId, appState } from '../contexts/app-state';
   import {
     EActionNames,
@@ -21,16 +17,10 @@
 
   export let stepId;
 
-  const step = mergeStepConfig(checkDocumentPhotoBackStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.CheckDocumentPhotoBack], stepId);
   const stepNamespace = step.namespace!;
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   let image: string;
   let documentInfo: IDocumentInfo | undefined = undefined;
@@ -45,7 +35,7 @@
     }
   }
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
 </script>
 
 <div class="container" {style}>
@@ -83,7 +73,7 @@
       <Photo configuration={element.props} src={image} />
     {/if}
   {/each}
-  <NavigationButtons {step} />
+  <NavigationButtons />
 </div>
 
 <style>

@@ -4,8 +4,7 @@
   import { Image, Button, Title, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { appState, currentParams } from '../contexts/app-state';
-  import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
   import {
     EActionNames,
@@ -14,24 +13,16 @@
     EVerificationStatuses,
   } from '../utils/event-service';
   import { flowError } from '../services/analytics';
-  import merge from 'deepmerge';
-  import { errorStep, layout } from '../ui-packs/default/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   export let stepId;
 
-  const step = mergeStepConfig(errorStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Error], stepId);
+
   const stepNamespace = step.namespace!;
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const message = $currentParams ? $currentParams.message : '';
 

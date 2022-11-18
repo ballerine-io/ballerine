@@ -2,38 +2,28 @@
   import { T } from '../contexts/translation';
   import { Title, IconButton, Photo, Paragraph, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
-  import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import { goToPrevStep } from '../contexts/navigation';
   import { DocumentType, getDocImage, appState } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import merge from 'deepmerge';
-  import { checkDocumentStep, layout } from '../ui-packs/default/theme';
-  import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     EActionNames,
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   export let stepId;
 
-  const step = mergeStepConfig(checkDocumentStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.CheckDocument], stepId);
   const stepNamespace = step.namespace!;
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const documentType =
-    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+  ($uiPack.steps[$currentStepId].type as DocumentType || ($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) || $selectedDocumentInfo.type;
 
   let image = '';
   let skipBackSide = false;
@@ -52,6 +42,7 @@
       $configuration,
       configuration,
       $currentStepId,
+      $uiPack,
       skipBackSide ? 'back-side' : undefined,
     );
   }
@@ -92,7 +83,7 @@
       <Photo configuration={element.props} src={image} />
     {/if}
   {/each}
-  <NavigationButtons {step} {skipBackSide} />
+  <NavigationButtons {skipBackSide} />
 </div>
 
 <style>

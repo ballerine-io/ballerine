@@ -1,8 +1,7 @@
 <script lang="ts">
   import { toast } from '@zerodevx/svelte-toast';
   import { FlyingText, Loader } from '../atoms';
-  import { configuration } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { configuration, Steps } from '../contexts/configuration';
   import {
     currentParams,
     currentStepId,
@@ -18,30 +17,21 @@
   import { t } from '../contexts/translation/hooks';
   import { flowUploadLoader } from '../services/analytics';
   import { getFlowConfig } from '../contexts/flows/hooks';
-  import merge from 'deepmerge';
-  import { layout, loadingStep } from '../ui-packs/default/theme';
   import { generateParams, getVerificationStatus, verifyDocuments } from '../services/http';
   import { DecisionStatus } from '../contexts/app-state/types';
-  import { mergeStepConfig } from '../services/merge-service';
   import { preloadStepById } from '../services/preload-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
   flowUploadLoader();
 
   const WAITING_TIME = 1000 * 60 * 3; // 3 minutes
 
   export let stepId;
 
-  const step = mergeStepConfig(loadingStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Loading], stepId);
 
   const stepNamespace = step.namespace!;
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient($uiPack.layout || {}, $uiPack.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   let timeout: number;
   let veryficationTimeout: number;
@@ -74,17 +64,17 @@
         response.idvResult === DecisionStatus.REVIEW
       ) {
         $currentParams = params;
-        await preloadStepById($configuration, configuration, 'decline');
+        await preloadStepById($configuration, configuration, 'decline', $uiPack);
         $currentStepId = 'decline';
       }
       if (response.idvResult === DecisionStatus.RESUBMISSION_REQUESTED) {
         $currentParams = params;
-        await preloadStepById($configuration, configuration, 'resubmission');
+        await preloadStepById($configuration, configuration, 'resubmission', $uiPack);
         $currentStepId = 'resubmission';
       }
       if (response.idvResult === DecisionStatus.APPROVED) {
         $currentParams = params;
-        await preloadStepById($configuration, configuration, 'final');
+        await preloadStepById($configuration, configuration, 'final', $uiPack);
         $currentStepId = 'final';
       }
     } catch (error) {
@@ -101,7 +91,7 @@
       toast.push(t('general', 'errorDocuments'));
       console.error('Error sending documents', error);
       $currentParams = { message: error } as ISelectedParams;
-      await preloadStepById($configuration, configuration, 'error');
+      await preloadStepById($configuration, configuration, 'error', $uiPack);
       $currentStepId = 'error';
       return;
     }
@@ -113,7 +103,7 @@
       return;
     }
     showText = false;
-    await preloadStepById($configuration, configuration, 'final');
+    await preloadStepById($configuration, configuration, 'final', $uiPack);
     $currentStepId = 'final';
   };
 
@@ -126,7 +116,7 @@
     makeRequest(data);
     timeout = setTimeout(async () => {
       showText = false;
-      await preloadStepById($configuration, configuration, 'decline');
+      await preloadStepById($configuration, configuration, 'decline', $uiPack);
       $currentStepId = 'decline';
     }, WAITING_TIME);
   });
