@@ -11,10 +11,9 @@
   export let configuration: IElementProps;
   export let isBack = false;
 
-
-
   const background = !isBack
     ? $globalConfiguration.button?.background ||
+      $globalConfiguration.general?.colors.primary ||
       $uiPack.general.colors.primary ||
       $uiPack.button.background
     : undefined;

@@ -11,16 +11,16 @@ export const getStepConfiguration = (configuration:  IAppConfiguration, uiPackSt
 export const getLayoutStyles = (configuration:  IAppConfiguration, uiPack: IAppConfigurationUI, step: IStepConfiguration) => {
   return makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(uiPack.layout, uiPack.general.colors.primary),
+      injectPrimaryIntoLayoutGradient(uiPack.layout, configuration.general?.colors.primary || uiPack.general.colors.primary),
       configuration.layout || {},
     ),
     step.style,
   );
 }
 
-export const getComponentStyles = (uiPackComponentStyle: ICSSProperties, configuration: IAppConfiguration, style: ICSSProperties) => {
+export const getComponentStyles = (uiPackComponentStyle: ICSSProperties, configurationStyles: ICSSProperties, style: ICSSProperties) => {
   return makeStylesFromConfiguration(
-    merge(uiPackComponentStyle, configuration.iconButton || {}),
+    merge(uiPackComponentStyle, configurationStyles || {}),
     style,
   );
 }

@@ -19,7 +19,7 @@
 
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = getComponentStyles(paragraph, $globalConfiguration, styleProps);
+  const style = getComponentStyles(paragraph, $globalConfiguration.paragraph, styleProps);
 </script>
 
 <p {style} class:active>

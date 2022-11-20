@@ -89,9 +89,9 @@
     if (!cameraPhoto || $isDisabled) return;
 
     toggleOnIsDisabled();
-
+    console.log($uiPack);
     const base64 = cameraPhoto.getDataUri(
-      $configuration.settings?.cameraSettings || settings.cameraSettings,
+      $configuration.settings?.cameraSettings || $uiPack.settings.cameraSettings,
     );
     if (documentType) {
       const document = { type: documentType, pages: [], metadata: {} };

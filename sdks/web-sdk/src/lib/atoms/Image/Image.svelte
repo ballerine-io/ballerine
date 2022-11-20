@@ -10,7 +10,7 @@
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
   const attributes = configuration.attributes as IAttributes;
-  const style = getComponentStyles($uiPack.image, $globalConfiguration, styleProps);
+  const style = getComponentStyles($uiPack.image, $globalConfiguration.image, styleProps);
 </script>
 
 <div {style} height={attributes.height} width={attributes.width}>

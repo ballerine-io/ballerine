@@ -11,7 +11,7 @@
   const styleProps = configuration.style as ICSSProperties;
   const attributes = configuration.attributes as IAttributes;
 
-  const style = getComponentStyles($uiPack.iconButton, $globalConfiguration, styleProps);
+  const style = getComponentStyles($uiPack.iconButton, $globalConfiguration.iconButton, styleProps);
 </script>
 
 <button {style} on:click width={attributes.width} height={attributes.height}>

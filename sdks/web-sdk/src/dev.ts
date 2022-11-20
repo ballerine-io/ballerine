@@ -21,6 +21,8 @@ const ballerineInitConfig: FlowsInitOptions = {
     },
     flows: {
       ['my-kyc-flow']: {
+        showCloseButton: true,
+        firstScreenBackButton: true,
         steps: [
           { name: Steps.Welcome, id: Steps.Welcome },
           {

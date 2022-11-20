@@ -10,7 +10,7 @@
 
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = getComponentStyles($uiPack.errorText, $globalConfiguration, styleProps);
+  const style = getComponentStyles($uiPack.errorText, $globalConfiguration.errorText, styleProps);
 </script>
 
 <div {style}>

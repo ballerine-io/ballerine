@@ -10,7 +10,7 @@
   export let active = false;
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = getComponentStyles($uiPack.container, $globalConfiguration, styleProps);
+  const style = getComponentStyles($uiPack.container, $globalConfiguration.container, styleProps);
 </script>
 
 <div {style} class="container" class:active>

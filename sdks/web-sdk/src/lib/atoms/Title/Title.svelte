@@ -9,7 +9,7 @@
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = getComponentStyles($uiPack.title, $globalConfiguration, styleProps);
+  const style = getComponentStyles($uiPack.title, $globalConfiguration.title, styleProps);
 </script>
 
 <h1 {style}>

@@ -53,7 +53,7 @@ const stepsTheme: TSteps = {
     style: {},
     elements: [
       backIconButton,
-      //closeIconButton,
+      closeIconButton,
       {
         type: Elements.Title,
         props: {
@@ -112,6 +112,7 @@ const stepsTheme: TSteps = {
     id: Steps.DocumentStart,
     elements: [
       backIconButton,
+      closeIconButton,
       {
         type: Elements.Title,
         props: {
@@ -159,6 +160,7 @@ const stepsTheme: TSteps = {
     id: Steps.DocumentSelection,
     elements: [
       backIconButton,
+      closeIconButton,
       {
         type: Elements.Title,
         props: {
@@ -227,6 +229,7 @@ const stepsTheme: TSteps = {
     id: Steps.CheckDocument,
     elements: [
       backIconButton,
+      closeIconButton,
       {
         type: Elements.Title,
         props: {
@@ -259,7 +262,7 @@ const stepsTheme: TSteps = {
     style: {},
     elements: [
       backIconButton,
-      //closeIconButton,
+      closeIconButton,
       {
         type: Elements.Title,
         id: 'welcome-title1',
@@ -350,6 +353,7 @@ const stepsTheme: TSteps = {
     id: Steps.CheckDocumentPhotoBack,
     elements: [
       backIconButton,
+      closeIconButton,
       {
         type: Elements.Title,
         props: {
@@ -382,7 +386,7 @@ const stepsTheme: TSteps = {
     style: {},
     elements: [
       backIconButton,
-      // closeIconButton,
+      closeIconButton,
       {
         type: Elements.Title,
         props: {
@@ -425,7 +429,6 @@ const stepsTheme: TSteps = {
     id: Steps.Selfie,
     elements: [
       backWhiteIconButton,
-      //closeIconButton,
       {
         type: Elements.Title,
         props: {
@@ -469,6 +472,7 @@ const stepsTheme: TSteps = {
     id: Steps.CheckSelfie,
     elements: [
       backIconButton,
+      closeIconButton,
       {
         type: Elements.Title,
         props: {
@@ -504,6 +508,7 @@ const stepsTheme: TSteps = {
     name: Steps.Resubmission,
     id: Steps.Resubmission,
     elements: [
+      closeIconButton,
       {
         type: Elements.Image,
         props: {
@@ -561,6 +566,7 @@ const stepsTheme: TSteps = {
     name: Steps.Decline,
     id: Steps.Decline,
     elements: [
+      closeIconButton,
       {
         type: Elements.Image,
         props: {
@@ -610,6 +616,7 @@ const stepsTheme: TSteps = {
     name: Steps.Error,
     id: Steps.Error,
     elements: [
+      closeIconButton,
       {
         type: Elements.Image,
         props: {
@@ -644,7 +651,6 @@ const stepsTheme: TSteps = {
           },
         },
       },
-
       {
         type: Elements.ErrorText,
         props: {
@@ -664,6 +670,7 @@ const stepsTheme: TSteps = {
     id: Steps.Final,
     style: {},
     elements: [
+      closeIconButton,
       {
         type: Elements.Image,
         props: {
@@ -747,10 +754,15 @@ export const uiTheme: IAppConfigurationUI = {
       weight: [500, 700],
     },
   },
+  photo: {},
+  paragraph: {},
+  cameraButton: {},
+  videoContainer: {},
+  input: {},
+  loader: {},
   button: {
     'font-size': '16px',
     padding: '20px 20px',
-    background: 'linear-gradient(180deg, rgba(0,122,255,1) 0%, rgba(0,112,235,1) 100%)',
     width: '100%',
     color: '#fff',
     'font-weight': 700,
@@ -760,7 +772,6 @@ export const uiTheme: IAppConfigurationUI = {
   buttonWithIcon: {
     'font-size': '16px',
     padding: '20px 20px',
-    background: 'linear-gradient(180deg, rgba(0,122,255,1) 0%, rgba(0,112,235,1) 100%)',
     width: '100%',
     color: '#fff',
     'font-weight': 700,
@@ -964,6 +975,11 @@ export const uiTheme: IAppConfigurationUI = {
     selfie: {
       'background-position-y': '30%'
     }
+  },
+  list: {
+    titleProps: {},
+    listProps: {},
+    listElementProps: {},
   },
   container: {
     width: '100%',
