@@ -15,10 +15,12 @@
   import { currentParams, appState } from '../contexts/app-state';
   import { DecisionStatus } from '../contexts/app-state/types';
   import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
   const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Decline], stepId);
+  const flow = getFlowConfig($configuration);
 
   const stepNamespace = step.namespace!;
 
@@ -40,7 +42,7 @@
 
 <div class="container" {style}>
   {#each step.elements as element}
-    {#if element.type === Elements.IconCloseButton}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {

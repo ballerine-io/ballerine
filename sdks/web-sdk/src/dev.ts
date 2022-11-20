@@ -9,7 +9,6 @@ const ballerineInitConfig: FlowsInitOptions = {
     overrides: {},
   },
   uiConfig: {
-
     general: {
       colors: {
         primary: 'blue',

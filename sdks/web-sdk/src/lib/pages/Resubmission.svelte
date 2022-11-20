@@ -13,15 +13,17 @@
     EVerificationStatuses,
   } from '../utils/event-service';
   import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
   const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Resubmission], stepId);
+  const style = getLayoutStyles($configuration, $uiPack, step);
+  const flow = getFlowConfig($configuration);
 
   const stepNamespace = step.namespace!;
   const hasDocumentSelection = !!($configuration.steps && $configuration.steps[Steps.DocumentSelection]) && !!$uiPack.steps[Steps.DocumentSelection];
 
-  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const reasonCode = $currentParams ? $currentParams.reasonCode : null;
 
@@ -45,7 +47,7 @@
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />
     {/if}
-    {#if element.type === Elements.IconCloseButton}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {

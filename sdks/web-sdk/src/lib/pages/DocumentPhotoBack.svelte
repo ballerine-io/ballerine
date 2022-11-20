@@ -6,7 +6,6 @@
   import {
     CameraButton,
     IconButton,
-    IconCloseButton,
     Overlay,
     Paragraph,
     Title,
@@ -14,16 +13,11 @@
   } from '../atoms';
   import { Elements, Steps } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { currentStepId, appState } from '../contexts/app-state';
+  import { currentStepId, DocumentType } from '../contexts/app-state';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { updateDocument } from '../utils/photo-utils';
-  import { DocumentType } from '../contexts/app-state';
+  import { createToggle } from '../hooks/createToggle/createToggle';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import {
-    EActionNames,
-    sendButtonClickEvent,
-    EVerificationStatuses,
-  } from '../utils/event-service';
   import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   export let stepId;
@@ -34,6 +28,8 @@
   const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentPhotoBack], stepId);
 
   const style = getLayoutStyles($configuration, $uiPack, step);
+
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const documentType =
     ($uiPack.steps[$currentStepId].type as DocumentType || ($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) || $selectedDocumentInfo.type;
@@ -65,13 +61,14 @@
 
   const handleTakePhoto = () => {
     const document = $documents.find(d => d.type === documentType);
-    if (!cameraPhoto || !document) return;
+    if (!cameraPhoto || !document || $isDisabled) return;
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings || $uiPack.settings.cameraSettings,
     );
     const newDocumentsState = updateDocument(document.type, base64, $documents);
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
+    toggleOnIsDisabled();
   };
 
   preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
@@ -83,19 +80,6 @@
       <IconButton
         configuration={element.props}
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
-      />
-    {/if}
-    {#if element.type === Elements.IconCloseButton}
-      <IconCloseButton
-        configuration={element.props}
-        on:click={() => {
-          sendButtonClickEvent(
-            EActionNames.CLOSE,
-            { status: EVerificationStatuses.DATA_COLLECTION },
-            $appState,
-            true,
-          );
-        }}
       />
     {/if}
     {#if element.type === Elements.VideoContainer}
@@ -124,7 +108,11 @@
   {/if}
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} />
+      <CameraButton
+        on:click={handleTakePhoto}
+        configuration={element.props}
+        isDisabled={$isDisabled}
+      />
     {/if}
   {/each}
 </div>

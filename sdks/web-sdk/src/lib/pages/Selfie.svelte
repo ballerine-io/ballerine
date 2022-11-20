@@ -17,11 +17,12 @@
   import Title from '../atoms/Title/Title.svelte';
   import { appState, selfieUri } from '../contexts/app-state/stores';
   import { isMobile } from '../utils/is-mobile';
+  import { createToggle } from '../hooks/createToggle/createToggle';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import {
     EActionNames,
-    sendButtonClickEvent,
     EVerificationStatuses,
+    sendButtonClickEvent,
   } from '../utils/event-service';
   import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
@@ -31,10 +32,10 @@
   export let stepId;
 
   const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Selfie], stepId);
-
   const stepNamespace = step.namespace!;
-
   const style = getLayoutStyles($configuration, $uiPack, step);
+
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const facingMode = isMobile() ? FACING_MODES.USER : FACING_MODES.ENVIRONMENT;
 
@@ -59,12 +60,14 @@
   });
 
   const handleTakePhoto = () => {
-    if (!cameraPhoto) return;
+    if (!cameraPhoto || $isDisabled) return;
+
     const dataUri = cameraPhoto.getDataUri(
       $configuration.settings?.selfieCameraSettings || $uiPack.settings.cameraSettings,
     );
     $selfieUri = dataUri;
     goToNextStep(currentStepId, $configuration, $currentStepId);
+    toggleOnIsDisabled();
   };
 
   preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
@@ -111,7 +114,11 @@
   <Overlay type={DocumentType.SELFIE} />
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} />
+      <CameraButton
+        on:click={handleTakePhoto}
+        configuration={element.props}
+        isDisabled={$isDisabled}
+      />
     {/if}
   {/each}
 </div>

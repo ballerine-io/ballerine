@@ -1,17 +1,15 @@
 <script lang="ts">
-  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
+  import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
-  import { goToNextStep } from '../contexts/navigation/hooks';
   import { Elements, Steps } from '../contexts/configuration/types';
   import List from '../molecules/List/List.svelte';
   import { T } from '../contexts/translation';
-  import { flowStart } from '../services/analytics';
   import { sendButtonClickEvent } from '../utils/event-service/utils';
-  import { appState, currentStepId } from '../contexts/app-state';
-  import { uiPack } from '../ui-packs';
+  import { appState } from '../contexts/app-state';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { EActionNames, EVerificationStatuses } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
@@ -19,13 +17,14 @@
   const stepNamespace = step.namespace!;
 
   const style = getLayoutStyles($configuration, $uiPack, step);
+  const flow = getFlowConfig($configuration);
 
   preloadNextStepByCurrent($configuration, configuration, stepId, $uiPack);
 </script>
 
 <div class="container" {style}>
   {#each step.elements as element}
-    {#if element.type === Elements.IconButton}
+    {#if element.type === Elements.IconButton && flow.firstScreenBackButton}
       <div>
         <IconButton
           configuration={element.props}
@@ -40,7 +39,7 @@
         />
       </div>
     {/if}
-    {#if element.type === Elements.IconCloseButton}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {
@@ -70,15 +69,9 @@
       <List configuration={element.props} />
     {/if}
     {#if element.type === Elements.Button}
-      <Button
-        on:click={() => {
-          flowStart();
-          goToNextStep(currentStepId, $configuration, $currentStepId);
-        }}
-        configuration={element.props}
-      >
+      <NextStepButton configuration={element.props}>
         <T key="button" namespace={stepNamespace} />
-      </Button>
+      </NextStepButton>
     {/if}
   {/each}
 </div>

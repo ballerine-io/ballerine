@@ -8,4 +8,6 @@ export interface IFlow {
   syncFlow?: boolean;
   useFinalQueryParams?: boolean;
   callbacks?: FlowsEventsConfig;
+  firstScreenBackButton?: boolean;
+  showCloseButton?: boolean;
 }

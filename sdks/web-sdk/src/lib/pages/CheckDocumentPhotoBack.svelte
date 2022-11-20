@@ -14,10 +14,12 @@
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
   const step = getStepConfiguration($configuration, $uiPack.steps[Steps.CheckDocumentPhotoBack], stepId);
+  const flow = getFlowConfig($configuration);
   const stepNamespace = step.namespace!;
 
   const style = getLayoutStyles($configuration, $uiPack, step);
@@ -46,7 +48,7 @@
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
-    {#if element.type === Elements.IconCloseButton}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {

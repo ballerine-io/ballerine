@@ -5,7 +5,7 @@
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements, Steps } from '../contexts/configuration/types';
   import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
-  import { isNativeCamera } from '../contexts/flows/hooks';
+  import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import {
@@ -19,8 +19,8 @@
   export let stepId;
 
   const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentStart], stepId);
-
   const style = getLayoutStyles($configuration, $uiPack, step);
+  const flow = getFlowConfig($configuration);
 
   const documentType =
     ($uiPack.steps[$currentStepId].type as DocumentType || ($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) || $selectedDocumentInfo.type;
@@ -64,7 +64,7 @@
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
-    {#if element.type === Elements.IconCloseButton}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {

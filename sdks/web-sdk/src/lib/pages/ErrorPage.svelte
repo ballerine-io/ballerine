@@ -15,14 +15,15 @@
   import { flowError } from '../services/analytics';
   import { DecisionStatus } from '../contexts/app-state/types';
   import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
   const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Error], stepId);
-
+  const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
   const stepNamespace = step.namespace!;
 
-  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const message = $currentParams ? $currentParams.message : '';
 
@@ -45,7 +46,7 @@
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />
     {/if}
-    {#if element.type === Elements.IconCloseButton}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
         configuration={element.props}
         on:click={() => {

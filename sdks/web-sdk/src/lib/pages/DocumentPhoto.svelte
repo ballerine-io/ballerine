@@ -20,10 +20,11 @@
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import {
     EActionNames,
-    sendButtonClickEvent,
     EVerificationStatuses,
+    sendButtonClickEvent,
   } from '../utils/event-service';
   import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { createToggle } from '../hooks/createToggle/createToggle';
 
   export let stepId;
 
@@ -32,8 +33,8 @@
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
   const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentPhoto], stepId);
-
   const style = getLayoutStyles($configuration, $uiPack, step);
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const documentOptionsConfiguration = merge($uiPack.documentOptions, $configuration.documentOptions || {});
   const documentType =
@@ -85,7 +86,10 @@
   };
 
   const handleTakePhoto = () => {
-    if (!cameraPhoto) return;
+    if (!cameraPhoto || $isDisabled) return;
+
+    toggleOnIsDisabled();
+
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings || settings.cameraSettings,
     );
@@ -147,7 +151,11 @@
   {/if}
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} />
+      <CameraButton
+        on:click={handleTakePhoto}
+        configuration={element.props}
+        isDisabled={$isDisabled}
+      />
     {/if}
   {/each}
 </div>
@@ -163,6 +171,7 @@
     align-items: center;
     justify-content: space-between;
   }
+
   .header {
     text-align: center;
     display: flex;
