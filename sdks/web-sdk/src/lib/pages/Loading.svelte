@@ -1,7 +1,7 @@
 <script lang="ts">
   import { toast } from '@zerodevx/svelte-toast';
   import { FlyingText, Loader } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import {
     currentParams,
     currentStepId,
@@ -27,11 +27,10 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Loading], stepId);
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const stepNamespace = step.namespace!;
-
-  const style = getLayoutStyles($configuration, $uiPack, step);
 
   let timeout: number;
   let veryficationTimeout: number;

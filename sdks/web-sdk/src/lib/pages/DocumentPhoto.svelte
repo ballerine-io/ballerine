@@ -11,7 +11,7 @@
     Paragraph,
     VideoContainer,
   } from '../atoms';
-  import { Elements, Steps } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import { DocumentType, IDocument, appState } from '../contexts/app-state';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
@@ -32,8 +32,9 @@
   let container: HTMLDivElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentPhoto], stepId);
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const style = getLayoutStyles($configuration, $uiPack, step);
+
   const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const documentOptionsConfiguration = merge($uiPack.documentOptions, $configuration.documentOptions || {});

@@ -23,13 +23,11 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.SelfieStart], stepId);
-
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const stepNamespace = step.namespace!;
-
-  const style = getLayoutStyles($configuration, $uiPack, step);
 
   let skipBackSide = false;
 

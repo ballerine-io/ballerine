@@ -1,7 +1,7 @@
 <script lang="ts">
   import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
-  import { Elements, Steps } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import List from '../molecules/List/List.svelte';
   import { T } from '../contexts/translation';
   import { sendButtonClickEvent } from '../utils/event-service/utils';
@@ -13,11 +13,11 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Welcome], stepId);
-  const stepNamespace = step.namespace!;
-
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
+
+  const stepNamespace = step.namespace!;
 
   preloadNextStepByCurrent($configuration, configuration, stepId, $uiPack);
 </script>

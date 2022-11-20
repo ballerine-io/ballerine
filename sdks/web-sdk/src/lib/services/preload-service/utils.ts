@@ -30,6 +30,8 @@ export const preloadStepImages = async (step: IStepConfiguration, uiPack: IAppCo
   ) as string;
   const defaultStep = uiPack.steps[defaultStepKey];
   const mergedStep = merge(defaultStep, step);
+  // TODO: Think about merging elements
+  mergedStep.elements = step.elements || defaultStep.elements;
   const elements = [];
   for (let index = 0; index < mergedStep.elements.length; index++) {
     const element = mergedStep.elements[index];

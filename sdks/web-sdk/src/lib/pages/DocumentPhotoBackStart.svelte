@@ -3,7 +3,7 @@
   import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { Elements, Steps } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import { ICameraEvent, nativeCameraHandler, updateDocument } from '../utils/photo-utils';
   import { IDocument, IDocumentInfo, currentStepId, appState } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows';
@@ -19,11 +19,11 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentPhotoBackStart], stepId);
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
-  const stepNamespace = step.namespace!;
-
   const style = getLayoutStyles($configuration, $uiPack, step);
+
+  const stepNamespace = step.namespace!;
 
   let documentInfo: IDocumentInfo | undefined = undefined;
   let document: IDocument | undefined;

@@ -4,7 +4,7 @@
   import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { appState, currentParams } from '../contexts/app-state';
-  import { Elements, Steps } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import { flowApproved } from '../services/analytics';
   import {
     EActionNames,
@@ -18,13 +18,11 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Final], stepId);
-
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const stepNamespace = step.namespace!;
-
-  const style = getLayoutStyles($configuration, $uiPack, step);
 
   flowApproved();
 

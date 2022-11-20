@@ -2,7 +2,7 @@
   import { T } from '../contexts/translation';
   import { Title, IconButton, Photo, Paragraph, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
-  import { Elements, Steps } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import { goToPrevStep } from '../contexts/navigation';
   import { DocumentType, getDocImage, appState } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
@@ -18,12 +18,11 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.CheckDocument], stepId);
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
-  const stepNamespace = step.namespace!;
-
   const style = getLayoutStyles($configuration, $uiPack, step);
 
+  const stepNamespace = step.namespace!;
   const documentType =
   ($uiPack.steps[$currentStepId].type as DocumentType || ($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) || $selectedDocumentInfo.type;
 

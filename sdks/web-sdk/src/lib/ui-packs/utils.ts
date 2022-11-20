@@ -4,8 +4,8 @@ import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 import { makeStylesFromConfiguration } from '../utils/css-utils';
 import merge from 'deepmerge';
 
-export const getStepConfiguration = (configuration:  IAppConfiguration, uiPackStep: IStepConfiguration, stepId: string) => {
-  return mergeStepConfig(uiPackStep, configuration.steps ? configuration.steps[stepId] : {} as IStepConfiguration);
+export const getStepConfiguration = (configuration:  IAppConfiguration, uiPack: IAppConfigurationUI, stepId: string) => {
+  return mergeStepConfig(uiPack.steps[stepId], configuration.steps ? configuration.steps[stepId] : {} as IStepConfiguration);
 }
 
 export const getLayoutStyles = (configuration:  IAppConfiguration, uiPack: IAppConfigurationUI, step: IStepConfiguration) => {

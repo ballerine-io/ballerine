@@ -3,7 +3,7 @@
   import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
-  import { Elements, Steps } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
   import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
@@ -18,9 +18,9 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentStart], stepId);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const documentType =
     ($uiPack.steps[$currentStepId].type as DocumentType || ($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) || $selectedDocumentInfo.type;

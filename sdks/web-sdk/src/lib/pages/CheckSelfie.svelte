@@ -2,7 +2,7 @@
   import { T } from '../contexts/translation';
   import { Title, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
-  import { Elements, Steps } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import { goToPrevStep } from '../contexts/navigation';
   import Paragraph from '../atoms/Paragraph/Paragraph.svelte';
   import NavigationButtons from '../molecules/NavigationButtons/NavigationButtons.svelte';
@@ -18,11 +18,12 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.CheckSelfie], stepId);
-  const stepNamespace = step.namespace!;
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
-
   const style = getLayoutStyles($configuration, $uiPack, step);
+
+  const stepNamespace = step.namespace!;
+
 </script>
 
 <div class="container" {style}>

@@ -17,9 +17,9 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Resubmission], stepId);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const stepNamespace = step.namespace!;
   const hasDocumentSelection = !!($configuration.steps && $configuration.steps[Steps.DocumentSelection]) && !!$uiPack.steps[Steps.DocumentSelection];

@@ -11,7 +11,7 @@
     Title,
     VideoContainer,
   } from '../atoms';
-  import { Elements, Steps } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import { currentStepId, DocumentType } from '../contexts/app-state';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
@@ -25,8 +25,7 @@
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentPhotoBack], stepId);
-
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const style = getLayoutStyles($configuration, $uiPack, step);
 
   const [isDisabled, , toggleOnIsDisabled] = createToggle();

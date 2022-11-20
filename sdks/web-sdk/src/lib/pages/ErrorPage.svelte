@@ -4,7 +4,7 @@
   import { Image, Button, Title, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { appState, currentParams } from '../contexts/app-state';
-  import { Elements, Steps } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
   import {
     EActionNames,
@@ -19,12 +19,11 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Error], stepId);
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
   const style = getLayoutStyles($configuration, $uiPack, step);
+
   const stepNamespace = step.namespace!;
-
-
   const message = $currentParams ? $currentParams.message : '';
 
   const handleClose = () => {

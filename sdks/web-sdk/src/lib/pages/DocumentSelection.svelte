@@ -1,7 +1,7 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
   import { Image, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration';
   import { DocumentOptions } from '../organisms';
   import { goToPrevStep } from '../contexts/navigation';
@@ -17,11 +17,11 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.DocumentSelection], stepId);
-  const stepNamespace = step.namespace!;
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
-
   const style = getLayoutStyles($configuration, $uiPack, step);
+
+  const stepNamespace = step.namespace!;
 
   preloadNextStepByCurrent($configuration, configuration, stepId, $uiPack);
 </script>

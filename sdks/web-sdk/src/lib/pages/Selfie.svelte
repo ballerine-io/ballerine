@@ -11,7 +11,7 @@
     Paragraph,
     VideoContainer,
   } from '../atoms';
-  import { Elements, Steps } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import { currentStepId, DocumentType } from '../contexts/app-state';
   import Title from '../atoms/Title/Title.svelte';
@@ -31,7 +31,7 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack.steps[Steps.Selfie], stepId);
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const stepNamespace = step.namespace!;
   const style = getLayoutStyles($configuration, $uiPack, step);
 
