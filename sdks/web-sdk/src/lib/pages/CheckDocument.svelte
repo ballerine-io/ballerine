@@ -24,7 +24,8 @@
 
   const stepNamespace = step.namespace!;
   const documentType =
-  ($uiPack.steps[$currentStepId].type as DocumentType || ($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) || $selectedDocumentInfo.type;
+    (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType || $uiPack.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+
 
   let image = '';
   let skipBackSide = false;

@@ -5,6 +5,11 @@ import { makeStylesFromConfiguration } from '../utils/css-utils';
 import merge from 'deepmerge';
 
 export const getStepConfiguration = (configuration:  IAppConfiguration, uiPack: IAppConfigurationUI, stepId: string) => {
+  if (!uiPack.steps[stepId] && configuration.steps && configuration.steps[stepId]) {
+    const step = configuration.steps[stepId];
+    const uiStep = uiPack.steps[step.id];
+    return mergeStepConfig(uiStep, configuration.steps[stepId]);
+  }
   return mergeStepConfig(uiPack.steps[stepId], configuration.steps ? configuration.steps[stepId] : {} as IStepConfiguration);
 }
 

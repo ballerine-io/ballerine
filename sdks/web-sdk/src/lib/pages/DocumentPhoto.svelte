@@ -38,8 +38,10 @@
   const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const documentOptionsConfiguration = merge($uiPack.documentOptions, $configuration.documentOptions || {});
+
   const documentType =
-  ($uiPack.steps[$currentStepId].type as DocumentType || ($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) || $selectedDocumentInfo.type;
+    (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType || $uiPack.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+
   const stepNamespace = `${step.namespace}.${documentType}`;
 
   $: {

@@ -68,8 +68,9 @@ export const preloadNextStepByCurrent = async (
   skipType?: string,
 ) => {
   const nextStepId = getNextStepId(globalConfiguration, currentStepId, skipType);
+  console.log("nextStepId", nextStepId)
   if (preloadedSteps[nextStepId]) return;
-  const step = uiPack.steps[nextStepId];
+  const step = globalConfiguration.steps ? globalConfiguration.steps[nextStepId] : uiPack.steps[nextStepId];
   const updatedStep = await preloadStepImages(step, uiPack);
   const updatedConfiguration = {
     ...globalConfiguration,
