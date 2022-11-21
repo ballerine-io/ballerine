@@ -9,17 +9,9 @@
   export let configuration: IElementProps;
   export let active = false;
 
-  const paragraph = {
-    'font-weight': 400,
-    'font-size': '16px',
-    color: $uiPack.general.colors.text,
-    'text-align': 'center',
-    margin: '0px',
-  };
-
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = getComponentStyles(paragraph, $globalConfiguration.paragraph, styleProps);
+  const style = getComponentStyles($uiPack.paragraph, $globalConfiguration.paragraph || {}, styleProps);
 </script>
 
 <p {style} class:active>

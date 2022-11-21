@@ -17,8 +17,7 @@ import { IFlow } from '../contexts/flows';
 import { IDocumentOptionItem } from '../organisms/DocumentOptions/types';
 import { AnyRecord } from '../../types';
 import { preloadStepImages } from '../services/preload-service/utils';
-import { uiPack,  } from '../ui-packs';
-import { uiTheme } from '../ui-packs/default/theme';
+import { packs, uiPack } from '../ui-packs';
 
 const keyBy = (array: any[], key: string | Function): any =>
   (array || []).reduce((r, x) => {
@@ -34,11 +33,22 @@ export let texts: TranslationType = translation;
 
 export const updateConfiguration = async (configOverrides: RecursivePartial<FlowsInitOptions>) => {
   let configurationResult: IAppConfiguration | undefined = undefined;
+  let uiTheme = packs.blue;
 
   configuration.update(currentConfig => {
     const mergedConfig = mergeConfig(currentConfig, configOverrides);
     configurationResult = mergedConfig;
     return mergedConfig;
+  });
+
+  uiPack.update(currentPack => {
+    const packName = configOverrides.uiConfig?.uiPack as string;
+    // Check by existing ui pack names or link
+    if (!Object.keys(packs).includes(packName)) return currentPack;
+    const _packName = packName as 'dark' | 'blue';
+    const updatedPack = packs[_packName];
+    uiTheme = packs[_packName];
+    return updatedPack;
   });
   const config = configurationResult as unknown as IAppConfiguration;
   config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome], uiTheme);

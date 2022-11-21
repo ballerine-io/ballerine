@@ -62,7 +62,7 @@
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={element.props.context || ''} namespace={stepNamespace} />
+        <T key={element.props.context || 'description'} namespace={stepNamespace} />
       </Paragraph>
     {/if}
     {#if element.type === Elements.List}

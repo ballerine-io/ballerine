@@ -15,7 +15,7 @@
   export let skipType: string;
 
   const background = $globalConfiguration.button?.background ||
-    $globalConfiguration.general?.colors.primary ||
+    $globalConfiguration.general?.colors?.primary ||
     $uiPack.general.colors.primary ||
     $uiPack.button.background
 
@@ -67,6 +67,9 @@
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     margin: var(--margin);
+    position: var(--position);
+    bottom: var(--bottom);
+    left: var(--left);
   }
 
   button:disabled {

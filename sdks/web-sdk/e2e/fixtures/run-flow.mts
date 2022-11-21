@@ -54,7 +54,7 @@ export class RunFlow {
 
     const title = this.page.getByRole('heading', {
       name: /business\sregistration/i,
-    });
+    }).first();
 
     await expect(title).toBeVisible();
 

@@ -7,6 +7,7 @@
   import Routes from './Routes.svelte';
   import { t } from './lib/contexts/translation/hooks';
   import { setFlowName } from './lib/contexts/flows';
+  import { uiPack } from './lib/ui-packs';
 
   subscribe();
   initConnectionCheck(t);
@@ -21,14 +22,14 @@
     ($configuration.endUserInfo.language as Languages) || $configuration.defaultLanguage;
 
   const style = `
-    --font-family: ${$configuration.general.fonts.name};
-    --primary-color: ${$configuration.general.colors.primary};
+    --font-family: ${$configuration.general?.fonts?.name || $uiPack.general.fonts.name};
+    --primary-color: ${$configuration.general?.colors?.primary || $uiPack.general.colors.primary};
   `;
 </script>
 
 <svelte:head>
-  {#if $configuration.general.fonts.link}
-    <link href={$configuration.general.fonts.link} rel="stylesheet" />
+  {#if $configuration.general?.fonts?.link || $uiPack.general.fonts.link}
+    <link href={$configuration.general?.fonts?.link || $uiPack.general.fonts.link} rel="stylesheet" />
   {/if}
 </svelte:head>
 
@@ -38,8 +39,8 @@
   <SvelteToast
     options={{
       theme: {
-        '--toastBackground': $configuration.general.colors.primary,
-        '--toastBarBackground': $configuration.general.colors.primary,
+        '--toastBackground': $configuration.general?.colors?.primary || $uiPack.general.colors.primary,
+        '--toastBarBackground': $configuration.general?.colors?.primary || $uiPack.general.colors.primary,
       },
     }}
   />

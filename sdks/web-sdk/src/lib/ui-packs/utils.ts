@@ -11,7 +11,7 @@ export const getStepConfiguration = (configuration:  IAppConfiguration, uiPack: 
 export const getLayoutStyles = (configuration:  IAppConfiguration, uiPack: IAppConfigurationUI, step: IStepConfiguration) => {
   return makeStylesFromConfiguration(
     merge(
-      injectPrimaryIntoLayoutGradient(uiPack.layout, configuration.general?.colors.primary || uiPack.general.colors.primary),
+      injectPrimaryIntoLayoutGradient(uiPack.layout, configuration.general?.colors?.primary || uiPack.general.colors.primary),
       configuration.layout || {},
     ),
     step.style,

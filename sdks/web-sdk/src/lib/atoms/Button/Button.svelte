@@ -13,7 +13,7 @@
 
   const background = !isBack
     ? $globalConfiguration.button?.background ||
-      $globalConfiguration.general?.colors.primary ||
+      $globalConfiguration.general?.colors?.primary ||
       $uiPack.general.colors.primary ||
       $uiPack.button.background
     : undefined;
