@@ -25,8 +25,10 @@ import {
   Styles,
   Tooltip,
   TooltipProps,
+  Text,
 } from '@pankod/refine-mantine';
 import { IconChevronLeft, IconChevronRight, IconDashboard, IconList, IconLogout, IconMenu2 } from '@tabler/icons';
+import packageInfo from '../../../../package.json';
 
 import { Title as DefaultTitle } from '../title';
 
@@ -246,6 +248,9 @@ export const Sider: typeof DefaultSider = ({ render }) => {
             {renderSider()}
           </Navbar.Section>
           <Navbar.Section>
+            <Text mt={6} weight={200} size="xs" color="#212529">
+              v{packageInfo.version}
+            </Text>
             <Button
               sx={{
                 background: 'rgba(0,0,0,.5)',
