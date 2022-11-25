@@ -1,5 +1,5 @@
 import { useTranslate } from '@pankod/refine-core';
-import { Edit, Select, TextInput, useForm, useSelect, Text } from '@pankod/refine-mantine';
+import { Edit, Select, Text, TextInput, useForm, useSelect } from '@pankod/refine-mantine';
 import { RichTextEditor } from '@mantine/rte';
 
 export const UsersEdit: React.FC = () => {
@@ -31,7 +31,11 @@ export const UsersEdit: React.FC = () => {
 
   const { selectProps } = useSelect({
     resource: 'categories',
-    defaultValue: queryResult?.data?.data.category.id,
+    defaultValue: (
+      queryResult?.data?.data?.category as {
+        id: string;
+      }
+    )?.id,
   });
 
   return (

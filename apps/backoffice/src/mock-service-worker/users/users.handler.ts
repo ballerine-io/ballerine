@@ -2,6 +2,7 @@ import { rest } from 'msw';
 import { sleep } from '../../utils/sleep/sleep';
 import { data } from './users.data';
 import { DEFAULT_RESPONSE_TIME } from '../constants';
+import { isValidState } from '../../utils/is-valid-state/is-valid-state';
 
 // Get all users
 const getUsers = rest.get('/users', async (req, res, ctx) => {
@@ -23,9 +24,14 @@ const getUser = rest.get('/users/:id', async (req, res, ctx) => {
 const updateUserState = rest.patch('/users/:id', async (req, res, ctx) => {
   await sleep(DEFAULT_RESPONSE_TIME);
 
-  const { state } = await req.json();
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  const { state } = await req.json<{
+    state: string;
+  }>();
+
+  if (!isValidState(state)) {
+    return res(ctx.status(400));
+  }
+
   data.users = data.users.map(user =>
     user.id === req.params.id
       ? {

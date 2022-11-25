@@ -2,3 +2,5 @@ node_modules
 dist
 .eslintrc.cjs
 craco.config.cjs
+mockServiceWorker.js
+reportWebVitals.ts

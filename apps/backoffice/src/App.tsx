@@ -1,7 +1,6 @@
 // import React from 'react';
 import { Refine } from '@pankod/refine-core';
 import {
-  // AuthPage,
   ColorScheme,
   ColorSchemeProvider,
   DarkTheme,
@@ -69,7 +68,8 @@ function App() {
                   const enforcer = await newEnforcer(model, adapter);
 
                   if (action === 'field') {
-                    const can = await enforcer.enforce('admin', `${resource}/${params?.field}`, action);
+                    const field = typeof params?.field === 'string' ? `/${params?.field}` : '';
+                    const can = await enforcer.enforce('admin', `${resource}${field}`, action);
 
                     return Promise.resolve({ can });
                   }
