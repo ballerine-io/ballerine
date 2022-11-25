@@ -1,5 +1,5 @@
 import { useTranslate } from '@pankod/refine-core';
-import { Edit, Select, TextInput, useForm, useSelect, Text } from '@pankod/refine-mantine';
+import { Edit, Select, Text, TextInput, useForm, useSelect } from '@pankod/refine-mantine';
 import { RichTextEditor } from '@mantine/rte';
 
 export const KYBEdit: React.FC = () => {
@@ -28,10 +28,13 @@ export const KYBEdit: React.FC = () => {
       content: value => (value.length < 10 ? 'Too short content' : null),
     },
   });
-
   const { selectProps } = useSelect({
     resource: 'categories',
-    defaultValue: queryResult?.data?.data.category.id,
+    defaultValue: (
+      queryResult?.data?.data?.category as {
+        id: string;
+      }
+    )?.id,
   });
 
   return (

@@ -1,7 +1,6 @@
-import { derived, get, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import { steps } from '../navigation';
-import { IDocument, IDocumentInfo } from './store/types';
-import { IAppState, ISelectedParams } from './types';
+import { IAppState, IDocument, IDocumentInfo, ISelectedParams } from './types';
 
 // const STORAGE_SELFIE_KEY = "selfie";
 // const STORAGE_DOCUMENTS_KEY = "documents";
@@ -44,7 +43,7 @@ export const currentRoute = writable<string>();
 let previousPage = 'none';
 
 export const appState = derived(currentRoute, $currentRoute => {
-  const index = steps.findIndex(s => s.route === $currentRoute);
+  const index = steps.findIndex(s => s.name === $currentRoute);
 
   const appState: IAppState = {
     currentStepIdx: index,

@@ -1,15 +1,20 @@
 import { useGetIdentity, useGetLocale, useSetLocale } from '@pankod/refine-core';
-import { ActionIcon, Group, MantineHeader, Title, Avatar, useMantineColorScheme, Menu } from '@pankod/refine-mantine';
-import { IconSun, IconMoonStars, IconLanguage } from '@tabler/icons';
+import { ActionIcon, Avatar, Group, MantineHeader, Menu, Title, useMantineColorScheme } from '@pankod/refine-mantine';
+import { IconLanguage, IconMoonStars, IconSun } from '@tabler/icons';
 
 import i18n from 'i18n';
 
-export const Header: React.FC = () => {
-  const { data: user } = useGetIdentity();
-  const showUserInfo = user && (user.name || user.avatar);
+export interface IAuthUser {
+  name?: string;
+  avatar?: string;
+}
 
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const dark = colorScheme === 'dark';
+export const Header: React.FC = () => {
+  const { data: user } = useGetIdentity<IAuthUser>();
+  const showUserInfo = !!user?.name || !!user?.avatar;
+
+  const mantineColorScheme = useMantineColorScheme();
+  const dark = mantineColorScheme.colorScheme === 'dark';
 
   const changeLanguage = useSetLocale();
   const locale = useGetLocale();
@@ -29,9 +34,7 @@ export const Header: React.FC = () => {
             {[...(i18n.languages ?? [])].sort().map((lang: string) => (
               <Menu.Item
                 key={lang}
-                onClick={() => {
-                  changeLanguage(lang);
-                }}
+                onClick={void (async () => changeLanguage(lang))}
                 value={lang}
                 color={lang === currentLocale ? 'primary' : undefined}
                 icon={<Avatar src={`/images/flags/${lang}.svg`} size={18} radius="lg" />}
@@ -44,7 +47,7 @@ export const Header: React.FC = () => {
         <ActionIcon
           variant="outline"
           color={dark ? 'yellow' : 'primary'}
-          onClick={() => toggleColorScheme()}
+          onClick={() => mantineColorScheme.toggleColorScheme()}
           title="Toggle color scheme"
         >
           {dark ? <IconSun size={18} /> : <IconMoonStars size={18} />}

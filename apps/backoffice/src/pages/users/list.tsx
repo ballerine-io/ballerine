@@ -16,8 +16,10 @@ import { wordsToSnakeCase } from '../../utils/words-to-snake-case/words-to-snake
  * @description Handles the state and logic of UsersList and returns data consumed by UsersList's children.
  */
 export const useUsersList = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const { id = '' } = routerProvider.useParams() as { id: string };
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  const { id = '' } = routerProvider.useParams() as {
+    id: string;
+  };
   const { data: { data } = {} } = useUsersQuery();
 
   // Apply search, filter, sort, and pagination on the users array
@@ -67,7 +69,6 @@ export const useUsersList = () => {
 
   const handleFilter = useCallback(
     (key: keyof IUser) => (value: Array<string>) => {
-      // @ts-ignore
       onFilter({
         [key]: value,
       });
