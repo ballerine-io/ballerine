@@ -1,5 +1,5 @@
 import relativeTime from 'dayjs/plugin/relativeTime';
-import React, { FunctionComponent, useEffect, useRef } from 'react';
+import React, { FunctionComponent, useEffect, useLayoutEffect, useRef } from 'react';
 import { CanAccess, useTranslate } from '@pankod/refine-core';
 import { Button, Divider, Group, HoverCard, ScrollArea, Skeleton, Stack, Title } from '@pankod/refine-mantine';
 import { ActionIcon, Center, Flex, Kbd, Loader, Transition } from '@mantine/core';
@@ -22,13 +22,14 @@ import {
 import { IconDotsVertical } from '@tabler/icons';
 import { formatDate, isValidDate } from 'utils';
 import { SubjectImageViewer } from './SubjectImageViewer';
+import { createWorker } from 'tesseract.js';
 
-// const worker = createWorker();
-// const ocrInitPromise = async () => {
-//   await worker.load();
-//   await worker.loadLanguage('eng');
-//   await worker.initialize('eng');
-// };
+const worker = createWorker();
+const ocrInitPromise = async () => {
+  await worker.load();
+  await worker.loadLanguage('eng');
+  await worker.initialize('eng');
+};
 // For the fromNow method.
 dayjs.extend(relativeTime);
 
@@ -102,7 +103,7 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
     );
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     void (async () => {
       console.log('calculating face similarity');
 
@@ -137,17 +138,17 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
     })();
   }, [selfieRef.current, docFaceRef.current, selectedUser?.data?.id]);
 
-  // useEffect(() => {
-  //   void (async () => {
-  //     console.log('OCR calculation');
-  //     // await ocrInitPromise();
+  useEffect(() => {
+    void (async () => {
+      console.log('OCR calculation');
+      await ocrInitPromise();
 
-  //     if (!images[0]?.url) return;
+      if (!images[0]?.url) return;
 
-  //     // const { data } = await worker.recognize(images[0].url);
-  //     // setOcrText(data.text);
-  //   })();
-  // }, [images[0]?.url]);
+      const { data } = await worker.recognize(images[0].url);
+      setOcrText(data.text);
+    })();
+  }, [images[0]?.url]);
 
   useEffect(() => {
     setContentMounted(!isFetching);
