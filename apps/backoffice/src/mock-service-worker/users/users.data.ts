@@ -101,6 +101,14 @@ export let data = {
         selfie_check: generateState(),
         scanned_by: 'IDV Vendor',
       },
+      address: {
+        city: faker.address.city(),
+        country,
+        street: faker.address.streetAddress().replace(/\d/g, '').trim(),
+        house_num: faker.datatype.number({ min: 1, max: 100 }).toString(),
+        apt_num: faker.datatype.number({ min: 1, max: 100 }).toString(),
+        zip_code: faker.address.zipCode(),
+      },
       documents: mockDocumentSets[Math.floor(Math.random() * mockDocumentSets.length)],
     };
   }),

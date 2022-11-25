@@ -38,6 +38,15 @@ export interface IUser {
     id_check: EState;
     selfie_check: EState;
   };
+  address: {
+    city: string;
+    country: string;
+    street: string;
+    // Could be 21 A.
+    house_num: string;
+    apt_num: string;
+    zip_code: string;
+  };
   // Array of images
   documents: Array<{
     url: string;
