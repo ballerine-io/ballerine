@@ -25,12 +25,12 @@ import { formatDate, isValidDate } from 'utils';
 import { OcrToggle } from './OcrToggle';
 import { SubjectImageViewer } from './SubjectImageViewer';
 
-const worker = createWorker();
-const ocrInitPromise = async () => {
-  await worker.load();
-  await worker.loadLanguage('eng');
-  await worker.initialize('eng');
-};
+// const worker = createWorker();
+// const ocrInitPromise = async () => {
+//   await worker.load();
+//   await worker.loadLanguage('eng');
+//   await worker.initialize('eng');
+// };
 // For the fromNow method.
 dayjs.extend(relativeTime);
 // @ts-ignore
@@ -129,17 +129,17 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
     })();
   }, [selfieRef.current, docFaceRef.current, selectedUser?.data?.id]);
 
-  useEffect(() => {
-    void (async () => {
-      console.log('OCR calculation');
-      await ocrInitPromise();
+  // useEffect(() => {
+  //   void (async () => {
+  //     console.log('OCR calculation');
+  //     // await ocrInitPromise();
 
-      if (!images[0]?.url) return;
+  //     if (!images[0]?.url) return;
 
-      const { data } = await worker.recognize(images[0].url);
-      setOcrText(data.text);
-    })();
-  }, [images[0]?.url]);
+  //     // const { data } = await worker.recognize(images[0].url);
+  //     // setOcrText(data.text);
+  //   })();
+  // }, [images[0]?.url]);
 
   useEffect(() => {
     setContentMounted(!isFetching);

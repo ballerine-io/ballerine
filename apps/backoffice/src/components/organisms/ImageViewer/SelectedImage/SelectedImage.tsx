@@ -5,6 +5,15 @@ import { ISelectedImageProps } from './interfaces';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { BallerineImage } from '../../../atoms/BallerineImage/BallerineImage';
 import 'react-image-crop/dist/ReactCrop.css';
+import { createWorker } from 'tesseract.js';
+import { notificationProvider } from '@pankod/refine-mantine';
+
+const worker = createWorker();
+const ocrInitPromise = async () => {
+  await worker.load();
+  await worker.loadLanguage('eng');
+  await worker.initialize('eng');
+};
 
 const cropImage = async (image: HTMLImageElement, crop: Crop) => {
   const canvas = document.createElement('canvas');
@@ -33,9 +42,11 @@ const cropImage = async (image: HTMLImageElement, crop: Crop) => {
   );
 
   // Converting to base64
-  const base64Image = canvas.toDataURL('image/png').replace('data:image/png;base64,', '');
-  console.log('base64Image', base64Image);
-  await navigator.clipboard.write([new ClipboardItem({ 'image/png': b64toBlob(base64Image) })]);
+  const base64Image = canvas.toDataURL('image/png');
+  await ocrInitPromise();
+  const { data } = await worker.recognize(base64Image);
+  notificationProvider().open({ message: `"${data.text}" Copied to clipboard!`, type: 'success' });
+  await navigator.clipboard.writeText(data.text);
 };
 
 const b64toBlob = (b64Data: string, sliceSize = 512) => {
