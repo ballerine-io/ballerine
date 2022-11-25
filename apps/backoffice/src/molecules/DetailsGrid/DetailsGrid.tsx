@@ -20,8 +20,8 @@ import { ChevronDownSvg } from '../../atoms/ChevronDownSvg/ChevronDownSvg';
 export const DetailsGrid = <TRecord extends Record<PropertyKey, any>>(
   props: PropsWithRef<IDetailsGridProps<TRecord>>,
 ) => {
-  const { data, title, Header, Footer, children, ...rest } = props;
-  const { dataFields } = useDetailsGrid(data ?? {});
+  const { data = {}, title, Header, Footer, children, ...rest } = props;
+  const { dataFields } = useDetailsGrid(data);
   const [isCollapsed, toggleIsCollapsed] = useToggle();
   // Not using toggleIsCollapsed directly to avoid passing in the event.
   const onToggleIsCollapsed = useCallback(() => toggleIsCollapsed(), [toggleIsCollapsed]);

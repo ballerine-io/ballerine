@@ -33,12 +33,16 @@ import { SubjectImageViewer } from './SubjectImageViewer';
 // };
 // For the fromNow method.
 dayjs.extend(relativeTime);
-// @ts-ignore
+
 const faceapiInitPromise = faceapi.loadFaceRecognitionModel('https://justadudewhohacks.github.io/face-api.js/models');
 
 export interface ISubjectContentProps {
   nextId: string;
 }
+
+export const isTwoDimensionalArray = (
+  array: Array<any> | Float32Array,
+): array is Array<Array<any>> | Array<Float32Array> => array.every(Array.isArray);
 
 export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId }) => {
   const t = useTranslate();
@@ -47,8 +51,10 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
   const [ocrText, setOcrText] = React.useState<string>('');
   const { selectUser } = useHandleSelectedUser();
   const { data: selectedUser, isLoading: isLoadingSelectedUser } = useSelectedUserQuery();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const { id = '' } = routerProvider.useParams() as { id: string };
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  const { id = '' } = routerProvider.useParams() as {
+    id: string;
+  };
   const { isFetching, isLoading } = useUserQuery(id);
   const { personalDetails, passportDetails, checkResults, addressDetails, images } = useMockData();
   const selfieRef = useRef<HTMLImageElement | null>(null);
@@ -114,10 +120,14 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
 
         console.log('face similarity calculated', documentFacePhotoDesc, selfieDesc);
 
-        let distance = faceapi.utils.round(
-          // @ts-ignore
-          faceapi.euclideanDistance(documentFacePhotoDesc, selfieDesc),
-        );
+        // Both elements can be Float32Array | Float32Array[] when faceapi.euclideanDistance expects Float32Array | number[].
+        if (isTwoDimensionalArray(documentFacePhotoDesc) || isTwoDimensionalArray(selfieDesc)) {
+          console.error('Two dimensional arrays are not supported.');
+
+          return;
+        }
+
+        let distance = faceapi.utils.round(faceapi.euclideanDistance(documentFacePhotoDesc, selfieDesc));
 
         distance = Math.round((1 - distance) * 100 * 1.5);
         distance = distance > 100 ? 100 : distance;
@@ -187,7 +197,11 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
                 style={{ maxWidth: '170px', minWidth: '170px' }}
                 variant="light"
                 color="red"
-                onClick={onRejectUser}
+                // Appeases ESLint at the expense of recreating the function on every render.
+                // When trying onClick={void onRejectUser} the handler does not work.
+                onClick={() => {
+                  return void onRejectUser();
+                }}
                 loading={isLoadingRejectUserMutation}
               >
                 Reject
@@ -207,7 +221,9 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
                 style={{ maxWidth: '170px', minWidth: '170px' }}
                 variant="light"
                 color="green"
-                onClick={onApproveUser}
+                onClick={() => {
+                  return void onApproveUser();
+                }}
                 loading={isLoadingApproveUserMutation}
               >
                 Approve

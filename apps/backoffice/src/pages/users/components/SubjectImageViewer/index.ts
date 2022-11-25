@@ -1,1 +1,1 @@
-export { SubjectImageViewer } from "./SubjectImageViewer";
+export { SubjectImageViewer } from './SubjectImageViewer';

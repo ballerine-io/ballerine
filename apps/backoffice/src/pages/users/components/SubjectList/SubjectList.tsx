@@ -2,7 +2,6 @@ import { ChangeEvent, FunctionComponent } from 'react';
 import { Button, Pagination, ScrollArea, Select, Stack, TextInput, UnstyledButton } from '@pankod/refine-mantine';
 import { Box, Center, Checkbox, Divider, Flex, Loader, Menu } from '@mantine/core';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import routerProvider from '@pankod/refine-react-router-v6';
 import { SortSvg } from '../../../../atoms/SortSvg/SortSvg';
 import { MagnifyingGlassSvg } from '../../../../components/atoms/MagnifyingGlassSvg/MagnifyingGlassSvg';
 import { FilterSvg } from '../../../../atoms/FilterSvg/FilterSvg';
@@ -13,6 +12,7 @@ import { SubjectListItem } from '../SubjectListItem';
 import { IUser } from '../../../../mock-service-worker/users/interfaces';
 import { snakeCaseToStartCaseWords } from '../../../../utils/snake-case-to-start-case-words/snake-case-to-start-case-words';
 import styles from './SubjectList.module.css';
+import routerProvider from '@pankod/refine-react-router-v6';
 
 export interface ISubjectListProps {
   handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -27,8 +27,10 @@ export interface ISubjectListProps {
 
 export const SubjectList: FunctionComponent<ISubjectListProps> = props => {
   const { handleSearch, handleFilter, onPaginate, handleSortBy, filter, data, currentPage, pagesCount } = props;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const { id = '' } = routerProvider.useParams();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  const { id = '' } = routerProvider.useParams() as {
+    id: string;
+  };
   const { isLoading } = useUsersQuery();
   const { selectUser } = useHandleSelectedUser();
   const sortBy: Array<keyof IUser> = ['first_name', 'last_name', 'created_at'];
@@ -99,12 +101,7 @@ export const SubjectList: FunctionComponent<ISubjectListProps> = props => {
             </Menu.Target>
             <Menu.Dropdown>
               <Menu.Item>
-                <Checkbox.Group
-                  label={'User state'}
-                  // @ts-ignore
-                  value={filter?.state}
-                  onChange={handleFilter('state')}
-                >
+                <Checkbox.Group label={'User state'} value={filter?.state} onChange={handleFilter('state')}>
                   {Object.values(EState).map(state => (
                     <Checkbox key={`${state}-filter`} label={toStartCase(state)} value={state} />
                   ))}
@@ -113,7 +110,6 @@ export const SubjectList: FunctionComponent<ISubjectListProps> = props => {
               <Menu.Item>
                 <Checkbox.Group
                   label={'User type'}
-                  // @ts-ignore
                   value={filter?.enduser_type}
                   onChange={handleFilter('enduser_type')}
                 >

@@ -1,24 +1,29 @@
-import React, { useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { ActionIcon, Group, Menu, Stack, TextInput } from '@pankod/refine-mantine';
 import { IconCheck, IconFilter, IconX } from '@tabler/icons';
 
 import { ColumnButtonProps } from 'interfaces';
 
 export const ColumnFilter: React.FC<ColumnButtonProps> = ({ column }) => {
-  const [state, setState] = useState(null as null | { value: any });
+  const [state, setState] = useState<null | { value: string }>(null);
 
   if (!column.getCanFilter()) {
     return null;
   }
 
-  const open = () =>
+  const open = () => {
+    const value = column.getFilterValue();
+
+    if (typeof value !== 'string') return;
+
     setState({
-      value: column.getFilterValue(),
+      value,
     });
+  };
 
   const close = () => setState(null);
 
-  const change = (value: any) => setState({ value });
+  const change = (value: string) => setState({ value });
 
   const clear = () => {
     column.setFilterValue(undefined);
@@ -32,13 +37,17 @@ export const ColumnFilter: React.FC<ColumnButtonProps> = ({ column }) => {
   };
 
   const renderFilterElement = () => {
-    const FilterComponent = (column.columnDef?.meta as any)?.filterElement;
+    const FilterComponent = (
+      column.columnDef?.meta as {
+        filterElement: FunctionComponent<{ value: string; onChange: (value: string) => void }>;
+      }
+    )?.filterElement;
 
     if (!FilterComponent && !!state) {
       return <TextInput autoComplete="off" value={state.value} onChange={e => change(e.target.value)} />;
     }
 
-    return <FilterComponent value={state?.value} onChange={change} />;
+    return <FilterComponent value={state?.value ?? ''} onChange={change} />;
   };
 
   return (

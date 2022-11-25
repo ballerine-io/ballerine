@@ -7,8 +7,10 @@ import { useCallback, useEffect } from 'react';
  * @description Centralizes the mock user data received by Mock Service Worker and consumed by the DetailsGrid.
  */
 export const useMockData = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const { id = '' } = routerProvider.useParams() as { id: string };
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  const { id = '' } = routerProvider.useParams() as {
+    id: string;
+  };
   const { data: { data } = {} } = useUserQuery(id);
 
   // Personal info
@@ -87,15 +89,19 @@ export const useMockData = () => {
 };
 
 export const useSelectedUserQuery = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const { id = '' } = routerProvider.useParams() as { id: string };
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  const { id = '' } = routerProvider.useParams() as {
+    id: string;
+  };
   const { data, ...query } = useList<IUser>({
     resource: 'users',
     id,
     queryOptions: {
       enabled: !!id,
+      // Refine forces the select output type to match the input type, defeating the purpose of select.
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      select: ({ data }) => {
+      select: ({ data, total }) => {
         const selectedUser = data?.find(user => user.id === id);
         const { first_name = '', last_name = '' } = selectedUser ?? {};
 
@@ -104,6 +110,7 @@ export const useSelectedUserQuery = () => {
             id,
             fullName: `${first_name} ${last_name}`,
           },
+          total,
         };
       },
     },
@@ -115,6 +122,7 @@ export const useSelectedUserQuery = () => {
         id: string;
         fullName: string;
       };
+      total: number;
     },
     ...query,
   };
@@ -138,8 +146,10 @@ export const useUserQuery = (id: string) =>
  * @description Sets the selected user to the first user in the array on mount if no user is currently selected. Returns the select user handler.
  */
 export const useHandleSelectedUser = (data?: Array<IUser>) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const { id = '' } = routerProvider.useParams() as { id: string };
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  const { id = '' } = routerProvider.useParams() as {
+    id: string;
+  };
   const firstUserId = data?.[0]?.id;
   const { show } = useNavigation();
   const selectUser = useCallback(

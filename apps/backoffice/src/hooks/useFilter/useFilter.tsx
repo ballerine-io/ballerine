@@ -16,7 +16,9 @@ export const useFilter = <TRecord extends Record<PropertyKey, any>>({
 }) => {
   const [filter, setFilter] = useState(initialState);
   const onFilter = useCallback(
-    (value: Record<keyof TRecord, Array<string>>) => {
+    (value: {
+      [key in keyof TRecord]?: Array<string>;
+    }) => {
       setFilter(prevState => ({
         ...prevState,
         ...value,

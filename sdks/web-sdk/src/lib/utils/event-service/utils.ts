@@ -1,6 +1,6 @@
 import { appState, IAppState } from '../../contexts/app-state';
 import { currentLanguage, Languages } from '../../contexts/translation';
-import { IDocumentVerificationResponse, IOuterEvent, EActionNames, EEventTypes } from './types';
+import { EActionNames, EEventTypes, IDocumentVerificationResponse, IOuterEvent } from './types';
 import { get } from 'svelte/store';
 import { flowEventBus } from '../../services/flow-event-bus/flow-event-bus';
 import { EFlowEvent } from '../../services/flow-event-bus/enums';
