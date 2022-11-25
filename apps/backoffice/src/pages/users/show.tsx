@@ -3,7 +3,6 @@ import { MarkdownField, Show, Text, Title } from '@pankod/refine-mantine';
 
 import { ICategory, IPost } from 'interfaces';
 
-//
 export const UsersShow: React.FC = () => {
   const t = useTranslate();
 

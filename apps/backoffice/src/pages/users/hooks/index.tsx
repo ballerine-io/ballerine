@@ -59,6 +59,16 @@ export const useMockData = () => {
     selfieCheck,
   };
 
+  // Address
+  const addressDetails = {
+    city: 'Tel-Aviv',
+    country: 'Israel',
+    street: 'Malkey Yisrael',
+    houseNumber: '2',
+    aptNumber: '31',
+    zipCode: '66882791',
+  };
+
   // Images
   const images =
     data?.documents?.map(({ url, doctype: docType }) => ({
@@ -70,6 +80,7 @@ export const useMockData = () => {
     passportDetails,
     checkResults,
     personalDetails,
+    addressDetails,
     images,
   };
 };
