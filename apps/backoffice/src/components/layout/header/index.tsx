@@ -11,7 +11,7 @@ export interface IAuthUser {
 
 export const Header: React.FC = () => {
   const { data: user } = useGetIdentity<IAuthUser>();
-  const showUserInfo = user?.name || user?.avatar;
+  const showUserInfo = !!user?.name || !!user?.avatar;
 
   const mantineColorScheme = useMantineColorScheme();
   const dark = mantineColorScheme.colorScheme === 'dark';
