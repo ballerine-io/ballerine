@@ -8,7 +8,7 @@ export interface IAuthUser {
   name?: string;
   avatar?: string;
 }
-//
+
 export const Header: React.FC = () => {
   const { data: user } = useGetIdentity<IAuthUser>();
   const showUserInfo = !!user?.name || !!user?.avatar;
