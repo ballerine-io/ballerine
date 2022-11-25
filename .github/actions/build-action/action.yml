@@ -16,7 +16,7 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: pnpm i --no-frozen-lockfile
+      run: pnpm i --no-frozen-lockfile --shamefully-hoist
 
     - name: Build
       shell: bash
