@@ -280,6 +280,12 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
                     }}
                   />
                 </Group>
+                <Divider
+                  sx={{
+                    borderRadius: '49px',
+                    borderColor: '#F2F2F2',
+                  }}
+                />
 
                 <DetailsGrid
                   title={'Personal info'}
