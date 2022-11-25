@@ -30,7 +30,7 @@
     "test:e2e": "nx run-many --target=test:e2e",
     "dev": "nx run-many --target=dev --projects=@ballerine/web-sdk,@ballerine/backoffice",
     "start": "nx run-many --target=start --projects=@ballerine/web-sdk",
-    "build": "nx run-many --target=build",
+    "build": "nx run-many --target=build --projects=@ballerine/backoffice",
     "web-sdk:dev": "nx run @ballerine/web-sdk:dev",
     "web-sdk:start": "nx run @ballerine/web-sdk:start",
     "web-sdk:build": "nx run @ballerine/web-sdk:build",
