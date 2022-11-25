@@ -26,7 +26,6 @@ import { IconDotsVertical } from '@tabler/icons';
 import { formatDate, isValidDate } from 'utils';
 import { OcrToggle } from './OcrToggle';
 
-//
 const worker = createWorker();
 const ocrInitPromise = async () => {
   await worker.load();
