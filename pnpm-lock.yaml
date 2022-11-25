@@ -90,6 +90,7 @@ importers:
       process: ^0.11.10
       react: ^18.2.0
       react-avatar: ^5.0.3
+      react-dev-utils: ^12.0.1
       react-dom: ^18.2.0
       react-i18next: ^11.8.11
       react-router-dom: ^6.4.3
@@ -98,6 +99,7 @@ importers:
       stream-browserify: ^3.0.0
       stream-http: ^3.2.0
       tesseract.js: ^3.0.3
+      tsconfig-paths-webpack-plugin: ^4.0.0
       typescript: ^4.7.4
       url: ^0.11.0
       web-vitals: ^1.1.1
@@ -108,7 +110,7 @@ importers:
       '@mantine/rte': 5.8.3_gtqqcbkbecpo5mfxa3iuc57uvi
       '@pankod/refine-core': 3.90.0_cn3ejhfta5lq2dae4xucvtkwvu
       '@pankod/refine-kbar': 0.8.0_n2vjsajjvepcvvqdugrlppkj2e
-      '@pankod/refine-mantine': 1.11.6_nyenxmel2hjgj3j66tv2gyogki
+      '@pankod/refine-mantine': 1.11.8_nyenxmel2hjgj3j66tv2gyogki
       '@pankod/refine-react-router-v6': 3.36.2_3kl7ilmiwvrof6ohisrtxeuaci
       '@pankod/refine-react-table': 4.9.0_ej2dqxhqn5k7uer2oywoqw63cq
       '@pankod/refine-simple-rest': 3.35.2_@pankod+refine-core@3.90.0
@@ -163,8 +165,10 @@ importers:
       path-browserify: 1.0.1
       prettier: 2.8.0
       process: 0.11.10
+      react-dev-utils: 12.0.1_ldhvdzmzh3nrzpvmo5e5nln4le
       stream-browserify: 3.0.0
       stream-http: 3.2.0
+      tsconfig-paths-webpack-plugin: 4.0.0
       typescript: 4.9.3
       url: 0.11.0
       webpack: 5.75.0
@@ -2832,8 +2836,8 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@pankod/refine-mantine/1.11.6_nyenxmel2hjgj3j66tv2gyogki:
-    resolution: {integrity: sha512-tLshPCPhHqYGGnPN9ag4uKQv63YNpZeeltPJTPRlMc7mQ9YfaU3BAyr5QCEpOoZU8mZYjWfC1sZOaFsBP9WcXw==}
+  /@pankod/refine-mantine/1.11.8_nyenxmel2hjgj3j66tv2gyogki:
+    resolution: {integrity: sha512-4QvBQhSZmVppcrwG9SIwBMDzMvJkFX41u4OeGCYK21gG8blWQU+dBDyKVTlQwcQtfZCiwbkyH6D3TvwP5tsMTA==}
     peerDependencies:
       '@mantine/core': ^5.5.6
       '@mantine/form': ^5.5.6
@@ -7579,6 +7583,7 @@ packages:
       minimatch: 3.0.5
       once: 1.4.0
       path-is-absolute: 1.0.1
+    dev: true
 
   /glob/7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
@@ -8100,7 +8105,7 @@ packages:
     engines: {node: '>=12.0.0'}
     dependencies:
       ansi-escapes: 4.3.2
-      chalk: 4.1.1
+      chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-width: 3.0.0
       external-editor: 3.1.0
@@ -9838,6 +9843,7 @@ packages:
     resolution: {integrity: sha512-tUpxzX0VAzJHjLu0xUfFv1gwVp9ba3IOuRAVH2EGuRW8a5emA2FlACLqiT/lDVtS1W+TGNwqz3sWaNyLgDJWuw==}
     dependencies:
       brace-expansion: 1.1.11
+    dev: true
 
   /minimatch/3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
@@ -12078,7 +12084,7 @@ packages:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
     hasBin: true
     dependencies:
-      glob: 7.1.4
+      glob: 7.2.3
 
   /ripemd160/2.0.2:
     resolution: {integrity: sha512-ii4iagi25WusVoiC4B4lq7pbXfAp3D9v5CwfkY33vffw2+pkDjY1D8GaN7spsxvCSx8dkPqOZCEZyfxcmJG2IA==}
@@ -13303,6 +13309,15 @@ packages:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
+  /tsconfig-paths-webpack-plugin/4.0.0:
+    resolution: {integrity: sha512-fw/7265mIWukrSHd0i+wSwx64kYUSAKPfxRDksjKIYTxSAp9W9/xcZVBF4Kl0eqQd5eBpAQ/oQrc5RyM/0c1GQ==}
+    engines: {node: '>=10.13.0'}
+    dependencies:
+      chalk: 4.1.2
+      enhanced-resolve: 5.12.0
+      tsconfig-paths: 4.1.0
+    dev: true
+
   /tsconfig-paths/3.14.1:
     resolution: {integrity: sha512-fxDhWnFSLt3VuTwtvJt5fpwxBHg5AdKWMsgcPOOIilyjymcYVZoCQF8fvFRezCNfblEXmi+PcM1eYHeOAgXCOQ==}
     dependencies:
@@ -13310,6 +13325,15 @@ packages:
       json5: 1.0.1
       minimist: 1.2.7
       strip-bom: 3.0.0
+
+  /tsconfig-paths/4.1.0:
+    resolution: {integrity: sha512-AHx4Euop/dXFC+Vx589alFba8QItjF+8hf8LtmuiCwHyI4rHXQtOOENaM8kvYf5fR0dRChy3wzWIZ9WbB7FWow==}
+    engines: {node: '>=6'}
+    dependencies:
+      json5: 2.2.1
+      minimist: 1.2.7
+      strip-bom: 3.0.0
+    dev: true
 
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
