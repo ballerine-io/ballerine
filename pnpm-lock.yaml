@@ -90,7 +90,6 @@ importers:
       process: ^0.11.10
       react: ^18.2.0
       react-avatar: ^5.0.3
-      react-dev-utils: ^12.0.1
       react-dom: ^18.2.0
       react-i18next: ^11.8.11
       react-router-dom: ^6.4.3
@@ -99,7 +98,6 @@ importers:
       stream-browserify: ^3.0.0
       stream-http: ^3.2.0
       tesseract.js: ^3.0.3
-      tsconfig-paths-webpack-plugin: ^4.0.0
       typescript: ^4.7.4
       url: ^0.11.0
       web-vitals: ^1.1.1
@@ -165,10 +163,8 @@ importers:
       path-browserify: 1.0.1
       prettier: 2.8.0
       process: 0.11.10
-      react-dev-utils: 12.0.1_ldhvdzmzh3nrzpvmo5e5nln4le
       stream-browserify: 3.0.0
       stream-http: 3.2.0
-      tsconfig-paths-webpack-plugin: 4.0.0
       typescript: 4.9.3
       url: 0.11.0
       webpack: 5.75.0
@@ -13309,15 +13305,6 @@ packages:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  /tsconfig-paths-webpack-plugin/4.0.0:
-    resolution: {integrity: sha512-fw/7265mIWukrSHd0i+wSwx64kYUSAKPfxRDksjKIYTxSAp9W9/xcZVBF4Kl0eqQd5eBpAQ/oQrc5RyM/0c1GQ==}
-    engines: {node: '>=10.13.0'}
-    dependencies:
-      chalk: 4.1.2
-      enhanced-resolve: 5.12.0
-      tsconfig-paths: 4.1.0
-    dev: true
-
   /tsconfig-paths/3.14.1:
     resolution: {integrity: sha512-fxDhWnFSLt3VuTwtvJt5fpwxBHg5AdKWMsgcPOOIilyjymcYVZoCQF8fvFRezCNfblEXmi+PcM1eYHeOAgXCOQ==}
     dependencies:
@@ -13325,15 +13312,6 @@ packages:
       json5: 1.0.1
       minimist: 1.2.7
       strip-bom: 3.0.0
-
-  /tsconfig-paths/4.1.0:
-    resolution: {integrity: sha512-AHx4Euop/dXFC+Vx589alFba8QItjF+8hf8LtmuiCwHyI4rHXQtOOENaM8kvYf5fR0dRChy3wzWIZ9WbB7FWow==}
-    engines: {node: '>=6'}
-    dependencies:
-      json5: 2.2.1
-      minimist: 1.2.7
-      strip-bom: 3.0.0
-    dev: true
 
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
