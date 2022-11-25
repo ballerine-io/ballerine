@@ -1,7 +1,7 @@
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { CanAccess, useTranslate } from '@pankod/refine-core';
-import { Box, Button, Divider, Group, HoverCard, Skeleton, Stack, Title } from '@pankod/refine-mantine';
+import { Button, Divider, Group, HoverCard, Skeleton, Stack, Title } from '@pankod/refine-mantine';
 import { ActionIcon, Center, Flex, Kbd, Loader, Transition } from '@mantine/core';
 import { DetailsGrid } from '../../../molecules/DetailsGrid/DetailsGrid';
 import { WarningAlert } from '../../../components/atoms/WarningAlert/WarningAlert';
@@ -26,6 +26,7 @@ import { IconDotsVertical } from '@tabler/icons';
 import { formatDate, isValidDate } from 'utils';
 import { OcrToggle } from './OcrToggle';
 
+//
 const worker = createWorker();
 const ocrInitPromise = async () => {
   await worker.load();
