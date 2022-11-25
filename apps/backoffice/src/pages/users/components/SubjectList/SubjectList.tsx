@@ -183,7 +183,11 @@ export const SubjectList: FunctionComponent<ISubjectListProps> = props => {
               return (
                 <CSSTransition key={item.id} timeout={700} classNames={{ exitActive: styles.item }}>
                   <>
-                    <UnstyledButton sx={{ '&:hover': { backgroundColor: '#fff' } }} onClick={selectUser(item.id)}>
+                    <UnstyledButton
+                      style={{ width: '100%' }}
+                      sx={{ '&:hover': { backgroundColor: '#fff' } }}
+                      onClick={selectUser(item.id)}
+                    >
                       <Box
                         sx={{
                           padding: 10,
