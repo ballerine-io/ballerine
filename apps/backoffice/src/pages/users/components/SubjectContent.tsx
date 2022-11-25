@@ -439,6 +439,7 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
                   style={{
                     height: '100%',
                     padding: '3.125rem',
+                    alignSelf: 'flex-start',
                   }}
                 >
                   <CanAccess resource={'image-viewer'} action={'show'}>
