@@ -1,1 +1,1 @@
-export { mergeStepConfig } from './utils';
+export { mergeStepConfig, isUrl } from './utils';

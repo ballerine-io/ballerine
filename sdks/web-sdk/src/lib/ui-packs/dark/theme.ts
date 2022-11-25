@@ -69,7 +69,7 @@ const stepsTheme: TSteps = {
             'flex-grow': 1,
           },
           attributes: {
-            src: '/welcome.svg',
+            src: 'https://cdn.ballerine.io/ui-packs/default/images/welcome.svg',
             alt: 'welcome',
             width: '218px',
             height: '218px',
@@ -228,7 +228,7 @@ const stepsTheme: TSteps = {
             'flex-grow': 1,
           },
           attributes: {
-            src: '/document-photo-back-start.svg',
+            src: 'https://cdn.ballerine.io/ui-packs/default/images/document-photo-back-start.svg',
             alt: 'document-photo-back-start',
             width: '260px',
             height: '212px',

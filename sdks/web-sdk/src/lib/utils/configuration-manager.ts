@@ -18,6 +18,7 @@ import { IDocumentOptionItem } from '../organisms/DocumentOptions/types';
 import { AnyRecord } from '../../types';
 import { preloadStepImages } from '../services/preload-service/utils';
 import { packs, uiPack } from '../ui-packs';
+import { isUrl } from '../services/merge-service';
 
 const keyBy = (array: any[], key: string | Function): any =>
   (array || []).reduce((r, x) => {
@@ -41,18 +42,27 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
     return mergedConfig;
   });
 
-  uiPack.update(currentPack => {
-    const packName = configOverrides.uiConfig?.uiPack as string;
-    // Check by existing ui pack names or link
-    if (!Object.keys(packs).includes(packName)) return currentPack;
-    const _packName = packName as 'dark' | 'blue';
-    const updatedPack = packs[_packName];
-    uiTheme = packs[_packName];
-    return updatedPack;
-  });
   const config = configurationResult as unknown as IAppConfiguration;
   config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome], uiTheme);
   configuration.update(() => config);
+
+  const pack = configOverrides.uiConfig?.uiPack as string;
+  if (isUrl(pack)) {
+    const packConfigResponse = await fetch(pack);
+    const packConfig = await packConfigResponse.json();
+    uiPack.set(packConfig);
+    return;
+  }
+
+  uiPack.update(currentPack => {
+    // Check by existing ui pack names
+    if (!Object.keys(packs).includes(pack)) return currentPack;
+    const packName = pack as 'dark' | 'blue';
+    const updatedPack = packs[packName];
+    uiTheme = packs[packName];
+    console.log("uiTheme", JSON.stringify(uiTheme));
+    return updatedPack;
+  });
 };
 
 export const updateTranslations = async (translations: FlowsTranslations) => {
