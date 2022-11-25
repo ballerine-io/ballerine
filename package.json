@@ -25,7 +25,7 @@
   "scripts": {
     "branchlint": "branchlint -u -c --prefix \"$(git config --global user.name)\"",
     "format": "nx run-many --target=format",
-    "lint": "nx run-many --target=lint",
+    "lint": "nx run-many --target=lint --projects=@ballerine/web-sdk",
     "test": "nx run-many --target=test",
     "test:e2e": "nx run-many --target=test:e2e",
     "dev": "nx run-many --target=dev --projects=@ballerine/web-sdk,@ballerine/backoffice",
