@@ -7,4 +7,5 @@ export interface ISelectedImageProps extends PropsWithChildren, ButtonProps {
   initialImage: string;
   // Used to open the selected image's modal.
   ZoomButton: <TProps extends HTMLProps<HTMLButtonElement> & { onClick: () => void }>(props: TProps) => JSX.Element;
+  OcrButton: <TProps extends HTMLProps<HTMLButtonElement> & { onClick: () => void, isSubmittable: boolean }>(props: TProps) => JSX.Element;
 }
