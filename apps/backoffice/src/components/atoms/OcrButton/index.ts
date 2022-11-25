@@ -1,1 +1,1 @@
-export { OcrButton } from "./OcrButton";
+export { OcrButton } from './OcrButton';
