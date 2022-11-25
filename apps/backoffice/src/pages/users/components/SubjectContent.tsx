@@ -259,7 +259,28 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
                     src={images?.find(({ docType }) => docType === 'ID Document (Face)')?.url ?? ''}
                   />
                 </Flex>
-                <Box>Face Similarity: {faceSimilarity}%</Box>
+                <Group style={{ marginTop: '1.5rem' }} position="left" spacing="xl">
+                  <DataField
+                    title={'Face Similarity'}
+                    text={`${faceSimilarity}%`}
+                    textProps={{ color: faceSimilarity > 80 ? 'green' : 'red' }}
+                    sx={{
+                      textTransform: 'capitalize',
+                      color: faceSimilarity > 80 ? 'green' : 'red',
+                      textColor: faceSimilarity > 60 ? 'green' : 'red',
+                    }}
+                  />
+                  <DataField
+                    title={'Image Quality'}
+                    text={'OK'}
+                    sx={{
+                      textTransform: 'capitalize',
+                      color: 'green',
+                      textColor: 'green',
+                    }}
+                  />
+                </Group>
+
                 <DetailsGrid
                   title={'Personal info'}
                   data={personalDetails}
