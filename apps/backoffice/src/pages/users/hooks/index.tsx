@@ -59,6 +59,17 @@ export const useMockData = () => {
     selfieCheck,
   };
 
+  // Address
+  const { city, country, street, house_num: houseNum, apt_num: aptNum, zip_code: zipCode } = data?.address ?? {};
+  const addressDetails = {
+    city,
+    country,
+    street,
+    houseNum,
+    aptNum,
+    zipCode,
+  };
+
   // Images
   const images =
     data?.documents?.map(({ url, doctype: docType }) => ({
@@ -70,6 +81,7 @@ export const useMockData = () => {
     passportDetails,
     checkResults,
     personalDetails,
+    addressDetails,
     images,
   };
 };

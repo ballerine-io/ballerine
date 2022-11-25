@@ -1,7 +1,7 @@
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { CanAccess, useTranslate } from '@pankod/refine-core';
-import { Box, Button, Divider, Group, HoverCard, Skeleton, Stack, Title } from '@pankod/refine-mantine';
+import { Button, Divider, Group, HoverCard, Skeleton, Stack, Title } from '@pankod/refine-mantine';
 import { ActionIcon, Center, Flex, Kbd, Loader, Transition } from '@mantine/core';
 import { DetailsGrid } from '../../../molecules/DetailsGrid/DetailsGrid';
 import { WarningAlert } from '../../../components/atoms/WarningAlert/WarningAlert';
@@ -51,7 +51,7 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const { id = '' } = routerProvider.useParams() as { id: string };
   const { isFetching, isLoading } = useUserQuery(id);
-  const { personalDetails, passportDetails, checkResults, images } = useMockData();
+  const { personalDetails, passportDetails, checkResults, addressDetails, images } = useMockData();
   const selfieRef = useRef<HTMLImageElement | null>(null);
   const docFaceRef = useRef<HTMLImageElement | null>(null);
   // For OCR.
@@ -399,6 +399,18 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
                       />
                     );
                   }}
+                </DetailsGrid>
+                <DetailsGrid title={'Address'} data={addressDetails}>
+                  {({ text, title, ...rest }) => (
+                    <DataField
+                      title={title.replace(/^apt/i, 'Apt.')}
+                      text={text}
+                      sx={{
+                        textTransform: 'capitalize',
+                      }}
+                      {...rest}
+                    />
+                  )}
                 </DetailsGrid>
               </Stack>
               <Stack
