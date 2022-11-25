@@ -1,3 +1,4 @@
+import { Divider } from '@pankod/refine-mantine';
 import { MagnifyingGlassButton } from 'components/atoms/MagnifyingGlassButton/MagnifyingGlassButton';
 import { OcrButton } from 'components/atoms/OcrButton';
 import { ImageViewer } from 'components/organisms/ImageViewer/ImageViewer';
@@ -56,7 +57,12 @@ export const SubjectImageViewer: FC<Props> = ({ isLoading, ocrText, images }) =>
             ))}
         </ImageViewer.ImageList>
       </ImageViewer>
-      <OcrToggle ocrText={ocrText} />
+      <Divider
+        sx={{
+          borderRadius: '49px',
+          borderColor: '#F2F2F2',
+        }}
+      />
     </>
   );
 };
