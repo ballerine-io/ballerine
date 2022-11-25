@@ -13,7 +13,7 @@ import {
   ReadyPage,
   useLocalStorage,
 } from '@pankod/refine-mantine';
-
+import { Button } from '@mantine/core';
 import routerProvider from '@pankod/refine-react-router-v6';
 import dataProvider from '@pankod/refine-simple-rest';
 import { RefineKbarProvider } from '@pankod/refine-kbar';
@@ -25,7 +25,14 @@ import { UsersCreate, UsersEdit, UsersList } from 'pages/users';
 import { newEnforcer } from 'casbin';
 import { adapter, model } from './access-control';
 import { CommingSoon } from 'pages/common';
-import { IconBuilding, IconCheckbox, IconReceipt2, IconUserCheck } from '@tabler/icons';
+import {
+  IconBrandGithub,
+  IconBuilding,
+  IconCheckbox,
+  IconReceipt2,
+  IconStar,
+  IconUserCheck,
+} from '@tabler/icons';
 
 LightTheme.colors!.primary = [
   '#e9f5f9',
@@ -139,6 +146,22 @@ function App() {
               OffLayoutArea={OffLayoutArea}
               i18nProvider={i18nProvider}
             />
+            <Button
+              leftIcon={<IconBrandGithub color="white" size={14} />}
+              rightIcon={<IconStar color="yellow" fill="yellow" size={14} />}
+              component="a"
+              href="https://github.com/ballerine-io/ballerine/"
+              style={{
+                position: 'fixed',
+                bottom: '50px',
+                right: '50px',
+                cursor: 'pointer',
+                borderRadius: '7px',
+                backgroundColor: '#000000',
+              }}
+            >
+              Star us on Github
+            </Button>
           </RefineKbarProvider>
         </NotificationsProvider>
       </MantineProvider>
