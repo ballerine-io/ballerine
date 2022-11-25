@@ -76,7 +76,7 @@
     "lint": "eslint \"./**/*.{cjs,js,ts,mts,tsx}\" --fix",
     "dev": "craco start",
     "build": "craco build",
-    "test": "craco test",
+    "test": "craco test --watchAll=false --passWithNoTests",
     "eject": "react-scripts eject"
   },
   "browserslist": {
