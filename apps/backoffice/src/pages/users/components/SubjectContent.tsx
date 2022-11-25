@@ -1,13 +1,11 @@
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { CanAccess, useTranslate } from '@pankod/refine-core';
-import { Box, Button, Divider, Group, HoverCard, Skeleton, Stack, Title } from '@pankod/refine-mantine';
+import { Button, Divider, Group, HoverCard, Skeleton, Stack, Title } from '@pankod/refine-mantine';
 import { ActionIcon, Center, Flex, Kbd, Loader, Transition } from '@mantine/core';
 import { DetailsGrid } from '../../../molecules/DetailsGrid/DetailsGrid';
 import { WarningAlert } from '../../../components/atoms/WarningAlert/WarningAlert';
 import { DataField } from '../../../components/molecules/DataField/DataField';
-import { ImageViewer } from '../../../components/organisms/ImageViewer/ImageViewer';
-import { MagnifyingGlassButton } from '../../../components/atoms/MagnifyingGlassButton/MagnifyingGlassButton';
 import routerProvider from '@pankod/refine-react-router-v6';
 import { EState } from '../../../mock-service-worker/users/enums';
 import dayjs from 'dayjs';
@@ -25,6 +23,7 @@ import {
 import { IconDotsVertical } from '@tabler/icons';
 import { formatDate, isValidDate } from 'utils';
 import { OcrToggle } from './OcrToggle';
+import { SubjectImageViewer } from './SubjectImageViewer';
 
 const worker = createWorker();
 const ocrInitPromise = async () => {
@@ -408,39 +407,7 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
                 }}
               >
                 <CanAccess resource={'image-viewer'} action={'show'}>
-                  <ImageViewer>
-                    <ImageViewer.ZoomModal />
-                    <ImageViewer.SelectedImage
-                      initialImage={isLoading || !images?.[0]?.url ? '' : images[0].url}
-                      ZoomButton={props => (
-                        <MagnifyingGlassButton
-                          {...props}
-                          sx={{
-                            position: 'absolute',
-                            bottom: '1rem',
-                            right: '1rem',
-                          }}
-                        />
-                      )}
-                    />
-                    <ImageViewer.ImageList>
-                      {!isLoading &&
-                        images?.map(({ url, docType }) => (
-                          <ImageViewer.ImageItem
-                            key={`${url}${docType}`}
-                            src={url}
-                            caption={docType}
-                            alt={docType}
-                            buttonProps={{
-                              sx: {
-                                textTransform: 'capitalize',
-                              },
-                            }}
-                          />
-                        ))}
-                    </ImageViewer.ImageList>
-                  </ImageViewer>
-                  <OcrToggle ocrText={ocrText} />
+                  <SubjectImageViewer isLoading={isLoading} ocrText={ocrText} images={images} />
                 </CanAccess>
               </Stack>
             </Group>

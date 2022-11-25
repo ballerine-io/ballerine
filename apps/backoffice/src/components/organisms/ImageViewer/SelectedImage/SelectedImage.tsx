@@ -1,8 +1,10 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
+import ReactCrop, { Crop } from 'react-image-crop';
 import { Button } from '@mantine/core';
 import { ISelectedImageProps } from './interfaces';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { BallerineImage } from '../../../atoms/BallerineImage/BallerineImage';
+import 'react-image-crop/dist/ReactCrop.css';
 
 /**
  * @description To be used by ImageViewer. Uses Mantine's Image component to display the currently selected image with default styling.
@@ -14,9 +16,19 @@ import { BallerineImage } from '../../../atoms/BallerineImage/BallerineImage';
  * @constructor
  */
 export const SelectedImage: FunctionComponent<ISelectedImageProps> = props => {
-  const { sx, imageProps = {}, initialImage, ZoomButton, ...rest } = props;
+  const [crop, setCrop] = useState<Crop>();
+  const [cropActive, setCropActive] = useState(false);
+  const { sx, imageProps = {}, initialImage, ZoomButton, OcrButton, ...rest } = props;
   const { sx: imageSx, ...restImage } = imageProps;
   const { selectedImage, toggleOnZoomModal } = useSelectedImage(initialImage);
+
+  const toggleCropActive = useCallback(() => {
+    setCropActive(!cropActive);
+  }, [cropActive]);
+
+  const saveCrop = () => {
+    console.log(crop);
+  };
 
   return (
     <Button
@@ -38,21 +50,27 @@ export const SelectedImage: FunctionComponent<ISelectedImageProps> = props => {
         ...sx,
       }}
       aria-label={'Open zoom selected image modal'}
-      onClick={toggleOnZoomModal}
       {...rest}
     >
-      <BallerineImage
-        src={selectedImage}
-        alt={'Selected image'}
-        sx={{
-          '& img': {
-            border: '2px solid transparent',
-          },
-          ...imageSx,
-        }}
-        {...restImage}
-      />
+      <ReactCrop crop={crop} onChange={c => setCrop(c)} disabled={!cropActive}>
+        <BallerineImage
+          src={selectedImage}
+          alt={'Selected image'}
+          sx={{
+            '& img': {
+              border: '2px solid transparent',
+            },
+            ...imageSx,
+          }}
+          {...restImage}
+        />
+      </ReactCrop>
       <ZoomButton onClick={toggleOnZoomModal} aria-label={'Open zoom selected image modal'} />
+      <OcrButton
+        onClick={!crop ? toggleCropActive : saveCrop}
+        isSubmittable={!!crop}
+        aria-label={'Open crop selected image view'}
+      />
     </Button>
   );
 };
