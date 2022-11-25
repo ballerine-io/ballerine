@@ -39,6 +39,7 @@ LightTheme.colors!.primary = [
   '#3ba1c5',
   '#2596be',
 ];
+
 function App() {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: 'mantine-color-scheme',
@@ -144,6 +145,7 @@ function App() {
               rightIcon={<IconStar color="yellow" fill="yellow" size={14} />}
               component="a"
               href="https://github.com/ballerine-io/ballerine/"
+              target={'_blank'}
               style={{
                 position: 'fixed',
                 bottom: '50px',

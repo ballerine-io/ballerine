@@ -65,7 +65,7 @@ export const ImageItem: FunctionComponent<IImageItemProps> = props => {
           alt={alt}
           {...restImage}
         />
-        <span style={{ fontSize: '12px', color:'#000000' }}>{caption}</span>
+        <span style={{ fontSize: '12px', color: '#000000' }}>{caption}</span>
       </Button>
     </List.Item>
   );

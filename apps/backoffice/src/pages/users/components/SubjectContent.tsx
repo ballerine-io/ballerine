@@ -266,16 +266,18 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
                     <BallerineImage
                       ref={selfieRef}
                       alt={'User avatar 1'}
+                      src={images?.find(({ docType }) => docType === 'Selfie')?.url ?? ''}
                       width={114}
                       height={143}
-                      src={images?.find(({ docType }) => docType === 'Selfie')?.url ?? ''}
+                      fit={'cover'}
                     />
                     <BallerineImage
                       ref={docFaceRef}
                       alt={'User avatar 2'}
+                      src={images?.find(({ docType }) => docType === 'ID Document (Face)')?.url ?? ''}
                       width={114}
                       height={143}
-                      src={images?.find(({ docType }) => docType === 'ID Document (Face)')?.url ?? ''}
+                      fit={'cover'}
                     />
                   </Flex>
                   <Group style={{ marginTop: '1.5rem' }} position="left" spacing="xl">
