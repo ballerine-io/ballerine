@@ -60,13 +60,14 @@ export const useMockData = () => {
   };
 
   // Address
+  const { city, country, street, house_num: houseNum, apt_num: aptNum, zip_code: zipCode } = data?.address ?? {};
   const addressDetails = {
-    city: 'Tel-Aviv',
-    country: 'Israel',
-    street: 'Malkey Yisrael',
-    houseNumber: '2',
-    aptNumber: '31',
-    zipCode: '66882791',
+    city,
+    country,
+    street,
+    houseNum,
+    aptNum,
+    zipCode,
   };
 
   // Images

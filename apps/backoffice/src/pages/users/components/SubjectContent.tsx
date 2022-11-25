@@ -403,7 +403,7 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
                 <DetailsGrid title={'Address'} data={addressDetails}>
                   {({ text, title, ...rest }) => (
                     <DataField
-                      title={title}
+                      title={title.replace(/^apt/i, 'Apt.')}
                       text={text}
                       sx={{
                         textTransform: 'capitalize',
