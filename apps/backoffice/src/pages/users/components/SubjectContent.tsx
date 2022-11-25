@@ -1,7 +1,7 @@
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { CanAccess, useTranslate } from '@pankod/refine-core';
-import { Button, Divider, Group, HoverCard, Skeleton, Stack, Title } from '@pankod/refine-mantine';
+import { Button, Divider, Group, HoverCard, ScrollArea, Skeleton, Stack, Title } from '@pankod/refine-mantine';
 import { ActionIcon, Center, Flex, Kbd, Loader, Transition } from '@mantine/core';
 import { DetailsGrid } from '../../../molecules/DetailsGrid/DetailsGrid';
 import { WarningAlert } from '../../../components/atoms/WarningAlert/WarningAlert';
@@ -10,7 +10,6 @@ import routerProvider from '@pankod/refine-react-router-v6';
 import { EState } from '../../../mock-service-worker/users/enums';
 import dayjs from 'dayjs';
 import * as faceapi from 'face-api.js';
-import { createWorker } from 'tesseract.js';
 import { BallerineImage } from '../../../components/atoms/BallerineImage/BallerineImage';
 import {
   useApproveUserMutation,
@@ -22,7 +21,6 @@ import {
 } from '../hooks';
 import { IconDotsVertical } from '@tabler/icons';
 import { formatDate, isValidDate } from 'utils';
-import { OcrToggle } from './OcrToggle';
 import { SubjectImageViewer } from './SubjectImageViewer';
 
 // const worker = createWorker();
@@ -249,198 +247,205 @@ export const SubjectContent: FunctionComponent<ISubjectContentProps> = ({ nextId
         </Center>
       )}
       {!isFetching && (
-        <Transition mounted={contentMounted} transition={shiftTop} duration={200} timingFunction="ease">
-          {transitionStyles => (
-            <Group grow style={{ flex: 1, height: '100%', ...transitionStyles }}>
-              <Stack
-                style={{
-                  height: '100%',
-                  padding: '3.125rem',
-                }}
-              >
-                <Flex sx={{ columnGap: '1.5rem' }}>
-                  <BallerineImage
-                    ref={selfieRef}
-                    alt={'User avatar 1'}
-                    width={114}
-                    height={143}
-                    src={images?.find(({ docType }) => docType === 'Selfie')?.url ?? ''}
-                  />
-                  <BallerineImage
-                    ref={docFaceRef}
-                    alt={'User avatar 2'}
-                    width={114}
-                    height={143}
-                    src={images?.find(({ docType }) => docType === 'ID Document (Face)')?.url ?? ''}
-                  />
-                </Flex>
-                <Group style={{ marginTop: '1.5rem' }} position="left" spacing="xl">
-                  <DataField
-                    title={'Face Similarity'}
-                    text={`${faceSimilarity}%`}
-                    textProps={{ color: faceSimilarity > 80 ? 'green' : 'red' }}
-                    sx={{
-                      textTransform: 'capitalize',
-                      color: faceSimilarity > 80 ? 'green' : 'red',
-                      textColor: faceSimilarity > 60 ? 'green' : 'red',
-                    }}
-                  />
-                  <DataField
-                    title={'Image Quality'}
-                    text={'OK'}
-                    sx={{
-                      textTransform: 'capitalize',
-                      color: 'green',
-                      textColor: 'green',
-                    }}
-                  />
-                </Group>
-                <Divider
-                  sx={{
-                    borderRadius: '49px',
-                    borderColor: '#F2F2F2',
+        <ScrollArea
+          sx={{
+            // Header's height * 2.
+            height: 'calc(100vh - 126px)',
+          }}
+        >
+          <Transition mounted={contentMounted} transition={shiftTop} duration={200} timingFunction="ease">
+            {transitionStyles => (
+              <Group grow style={{ flex: 1, height: '100%', ...transitionStyles }}>
+                <Stack
+                  style={{
+                    height: '100%',
+                    padding: '3.125rem',
                   }}
-                />
-
-                <DetailsGrid
-                  title={'Personal info'}
-                  data={personalDetails}
-                  Footer={
-                    <WarningAlert>
-                      <Flex
-                        sx={{
-                          justifyContent: 'space-between',
-                          color: '#4D4D4D',
-                        }}
-                      >
-                        OCR & Given details mismatch
-                        <Button
-                          variant={'outline'}
-                          sx={{
-                            height: 'unset',
-                            color: '#3F77FF',
-                            border: 'none',
-                            fontWeight: 400,
-                            fontSize: '0.875rem',
-                            '&:hover': {
-                              backgroundColor: 'transparent',
-                              textDecoration: 'underline',
-                            },
-                          }}
-                        >
-                          Resolve
-                        </Button>
-                      </Flex>
-                    </WarningAlert>
-                  }
                 >
-                  {({ text, title, ...rest }) => {
-                    const value = isValidDate(text) ? formatDate(new Date(text)) : text;
-
-                    return (
-                      <DataField
-                        title={title}
-                        text={value}
-                        sx={{
-                          textTransform: 'capitalize',
-                        }}
-                        {...rest}
-                      />
-                    );
-                  }}
-                </DetailsGrid>
-                <DetailsGrid title={'Passport info'} data={passportDetails}>
-                  {({ text, title, ...rest }) => {
-                    const value = isValidDate(text) ? formatDate(new Date(text)) : text;
-
-                    return (
-                      <DataField
-                        title={title}
-                        text={value}
-                        sx={{
-                          textTransform: 'capitalize',
-                        }}
-                        {...rest}
-                      />
-                    );
-                  }}
-                </DetailsGrid>
-                <DetailsGrid
-                  title={'Check results'}
-                  data={checkResults}
-                  Header={
-                    <Button
-                      variant={'outline'}
-                      sx={{
-                        color: '#3F77FF',
-                        border: 'none',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        height: 'unset',
-                        '&:hover': {
-                          backgroundColor: 'transparent',
-                          textDecoration: 'underline',
-                        },
-                      }}
-                    >
-                      View full report
-                    </Button>
-                  }
-                >
-                  {({ text, title, ...rest }) => {
-                    const color = (() => {
-                      if (text === EState.APPROVED) {
-                        return '#1ED400';
-                      }
-
-                      if (text === EState.REJECTED) {
-                        return '#D40000FF';
-                      }
-
-                      return '';
-                    })();
-
-                    return (
-                      <DataField
-                        title={title.replace(/aml/i, 'AML')}
-                        text={text}
-                        textProps={{
-                          sx: {
-                            color,
-                            textTransform: 'capitalize',
-                          },
-                        }}
-                        {...rest}
-                      />
-                    );
-                  }}
-                </DetailsGrid>
-                <DetailsGrid title={'Address'} data={addressDetails}>
-                  {({ text, title, ...rest }) => (
+                  <Flex sx={{ columnGap: '1.5rem' }}>
+                    <BallerineImage
+                      ref={selfieRef}
+                      alt={'User avatar 1'}
+                      width={114}
+                      height={143}
+                      src={images?.find(({ docType }) => docType === 'Selfie')?.url ?? ''}
+                    />
+                    <BallerineImage
+                      ref={docFaceRef}
+                      alt={'User avatar 2'}
+                      width={114}
+                      height={143}
+                      src={images?.find(({ docType }) => docType === 'ID Document (Face)')?.url ?? ''}
+                    />
+                  </Flex>
+                  <Group style={{ marginTop: '1.5rem' }} position="left" spacing="xl">
                     <DataField
-                      title={title.replace(/^apt/i, 'Apt.')}
-                      text={text}
+                      title={'Face Similarity'}
+                      text={`${faceSimilarity}%`}
+                      textProps={{ color: faceSimilarity > 80 ? 'green' : 'red' }}
                       sx={{
                         textTransform: 'capitalize',
+                        color: faceSimilarity > 80 ? 'green' : 'red',
+                        textColor: faceSimilarity > 60 ? 'green' : 'red',
                       }}
-                      {...rest}
                     />
-                  )}
-                </DetailsGrid>
-              </Stack>
-              <Stack
-                style={{
-                  height: '100%',
-                  padding: '3.125rem',
-                }}
-              >
-                <CanAccess resource={'image-viewer'} action={'show'}>
-                  <SubjectImageViewer isLoading={isLoading} ocrText={ocrText} images={images} />
-                </CanAccess>
-              </Stack>
-            </Group>
-          )}
-        </Transition>
+                    <DataField
+                      title={'Image Quality'}
+                      text={'OK'}
+                      sx={{
+                        textTransform: 'capitalize',
+                        color: 'green',
+                        textColor: 'green',
+                      }}
+                    />
+                  </Group>
+                  <Divider
+                    sx={{
+                      borderRadius: '49px',
+                      borderColor: '#F2F2F2',
+                    }}
+                  />
+
+                  <DetailsGrid
+                    title={'Personal info'}
+                    data={personalDetails}
+                    Footer={
+                      <WarningAlert>
+                        <Flex
+                          sx={{
+                            justifyContent: 'space-between',
+                            color: '#4D4D4D',
+                          }}
+                        >
+                          OCR & Given details mismatch
+                          <Button
+                            variant={'outline'}
+                            sx={{
+                              height: 'unset',
+                              color: '#3F77FF',
+                              border: 'none',
+                              fontWeight: 400,
+                              fontSize: '0.875rem',
+                              '&:hover': {
+                                backgroundColor: 'transparent',
+                                textDecoration: 'underline',
+                              },
+                            }}
+                          >
+                            Resolve
+                          </Button>
+                        </Flex>
+                      </WarningAlert>
+                    }
+                  >
+                    {({ text, title, ...rest }) => {
+                      const value = isValidDate(text) ? formatDate(new Date(text)) : text;
+
+                      return (
+                        <DataField
+                          title={title}
+                          text={value}
+                          sx={{
+                            textTransform: 'capitalize',
+                          }}
+                          {...rest}
+                        />
+                      );
+                    }}
+                  </DetailsGrid>
+                  <DetailsGrid title={'Passport info'} data={passportDetails}>
+                    {({ text, title, ...rest }) => {
+                      const value = isValidDate(text) ? formatDate(new Date(text)) : text;
+
+                      return (
+                        <DataField
+                          title={title}
+                          text={value}
+                          sx={{
+                            textTransform: 'capitalize',
+                          }}
+                          {...rest}
+                        />
+                      );
+                    }}
+                  </DetailsGrid>
+                  <DetailsGrid
+                    title={'Check results'}
+                    data={checkResults}
+                    Header={
+                      <Button
+                        variant={'outline'}
+                        sx={{
+                          color: '#3F77FF',
+                          border: 'none',
+                          fontWeight: 400,
+                          fontSize: '0.875rem',
+                          height: 'unset',
+                          '&:hover': {
+                            backgroundColor: 'transparent',
+                            textDecoration: 'underline',
+                          },
+                        }}
+                      >
+                        View full report
+                      </Button>
+                    }
+                  >
+                    {({ text, title, ...rest }) => {
+                      const color = (() => {
+                        if (text === EState.APPROVED) {
+                          return '#1ED400';
+                        }
+
+                        if (text === EState.REJECTED) {
+                          return '#D40000FF';
+                        }
+
+                        return '';
+                      })();
+
+                      return (
+                        <DataField
+                          title={title.replace(/aml/i, 'AML')}
+                          text={text}
+                          textProps={{
+                            sx: {
+                              color,
+                              textTransform: 'capitalize',
+                            },
+                          }}
+                          {...rest}
+                        />
+                      );
+                    }}
+                  </DetailsGrid>
+                  <DetailsGrid title={'Address'} data={addressDetails}>
+                    {({ text, title, ...rest }) => (
+                      <DataField
+                        title={title.replace(/^apt/i, 'Apt.')}
+                        text={text}
+                        sx={{
+                          textTransform: 'capitalize',
+                        }}
+                        {...rest}
+                      />
+                    )}
+                  </DetailsGrid>
+                </Stack>
+                <Stack
+                  style={{
+                    height: '100%',
+                    padding: '3.125rem',
+                  }}
+                >
+                  <CanAccess resource={'image-viewer'} action={'show'}>
+                    <SubjectImageViewer isLoading={isLoading} ocrText={ocrText} images={images} />
+                  </CanAccess>
+                </Stack>
+              </Group>
+            )}
+          </Transition>
+        </ScrollArea>
       )}
     </div>
   );

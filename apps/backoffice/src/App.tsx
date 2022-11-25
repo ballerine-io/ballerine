@@ -25,14 +25,7 @@ import { UsersCreate, UsersEdit, UsersList } from 'pages/users';
 import { newEnforcer } from 'casbin';
 import { adapter, model } from './access-control';
 import { CommingSoon } from 'pages/common';
-import {
-  IconBrandGithub,
-  IconBuilding,
-  IconCheckbox,
-  IconReceipt2,
-  IconStar,
-  IconUserCheck,
-} from '@tabler/icons';
+import { IconBrandGithub, IconBuilding, IconCheckbox, IconReceipt2, IconStar, IconUserCheck } from '@tabler/icons';
 
 LightTheme.colors!.primary = [
   '#e9f5f9',
