@@ -35,7 +35,7 @@ const ocrInitPromise = async () => {
 // For the fromNow method.
 dayjs.extend(relativeTime);
 // @ts-ignore
-const faceapiInitPromise = faceapi.loadFaceRecognitionModel('/models');
+const faceapiInitPromise = faceapi.loadFaceRecognitionModel('https://justadudewhohacks.github.io/face-api.js/models');
 
 export interface ISubjectContentProps {
   nextId: string;
