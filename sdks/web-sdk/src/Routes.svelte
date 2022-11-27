@@ -10,22 +10,27 @@
   let stepId = configurationStepIds[0];
   let step = steps.find(s => s.name === $configuration.steps[stepId].name);
 
-  $: {
-    const configurationStepId = configurationStepIds.find((key: string) => key === $currentStepId);
+  const routeInit = (currentStepId: string, currentStepIdx: number) => {
+    const configurationStepId = configurationStepIds.find((key: string) => key === currentStepId);
+    if (configurationStepId === stepId) return;
     if (!configurationStepId) {
-      step = steps.find(s => s.name === $currentStepId);
+      step = steps.find(s => s.name === currentStepId);
     } else {
       stepId = configurationStepId;
       step = steps.find(s => s.name === $configuration.steps[stepId].name);
       const newStepIndex = configurationStepIds.indexOf(stepId);
-      if (newStepIndex !== $currentStepIdx) {
-        $currentStepIdx = newStepIndex;
+      if (newStepIndex !== currentStepIdx) {
+        currentStepIdx = newStepIndex;
         sendNavigationUpdateEvent();
-        visitedPage($currentStepId, $currentParams ? $currentParams.toString() : '');
+        visitedPage(currentStepId, $currentParams ? $currentParams.toString() : '');
       } else {
         // 404 error handling here
       }
     }
+  };
+
+  $: {
+    routeInit($currentStepId, $currentStepIdx);
   }
 </script>
 
