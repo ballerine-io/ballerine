@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.1.37
+
+### Patch Changes
+
+- Fixed svg issue oin iOS
+
 ## 1.1.36
 
 ### Patch Changes
