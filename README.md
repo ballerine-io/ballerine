@@ -1,4 +1,5 @@
 
+
 <div align="center">
 
 <a href="https://ballerine.io" title="Ballerine - Open-source Infrastructure for Identity and Risk management.">
@@ -11,8 +12,10 @@
 
   <!-- Bagdes - Start -->
  
+
    <a href="https://github.com/ballerine-io/ballerine/stargazers"><img src="https://img.shields.io/github/stars/ballerine-io/ballerine?logo=GitHub&style=flat-square"></a>
-   <a href="https://simple-kyc-demo.ballerine.app/"><img src="https://img.shields.io/website?color=%233F77FF&down_color=%233F77FF&down_message=Web%20SDK&label=Flow%20Demo&logo=svelte&logoColor=white&style=flat-square&up_color=%233F77FF&up_message=Web%20SDK&url=https%3A%2F%2Fsimple-kyc-demo.ballerine.app%2F"></a>
+      <a href="https://simple-kyc-demo.ballerine.app/"><img src="https://img.shields.io/website?color=%233F77FF&down_color=%233F77FF&down_message=Off&label=SDK%20Flow%20Demo&logo=Svelte&logoColor=%23FFFFFF&style=flat-square&up_color=%233F77FF&up_message=Live&url=https%3A%2F%2Fsimple-kyc-demo.ballerine.app%2F"></a>
+   <a href="https://www.backoffice-demo.ballerine.app/"><img src="https://img.shields.io/website?color=%233F77FF&down_color=%233F77FF&down_message=Off&label=Dashboard%20Demo&logo=Checkmarx&logoColor=%23FFFFFF&style=flat-square&up_color=%233F77FF&up_message=Live&url=https%3A%2F%2Fwww.backoffice-demo.ballerine.app%2F"></a>
    <a href="https://discord.gg/e2rQE4YygA"><img src="https://img.shields.io/website?color=%237289DA&down_color=%237289DA&down_message=Join&label=Discord&logo=discord&logoColor=white&style=flat-square&up_color=%237289DA&up_message=Join&url=https%3A%2F%2Fdiscord.gg%2Fe2rQE4YygA"></a>
    <a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw"><img src="https://img.shields.io/website?color=%23441949&down_color=%23441949&down_message=Join&label=Slack&logo=slack&logoColor=white&style=flat-square&up_color=%23441949&up_message=Join&url=https%3A%2F%2Fjoin.slack.com%2Ft%2Fballerine-oss%2Fshared_invite%2Fzt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw"></a>
    <a href="https://twitter.com/ballerine_io"><img src="https://img.shields.io/website?color=%231DA1F2&down_color=%231DA1F2&down_message=Follow&label=Twitter&logo=twitter&logoColor=%231DA1F2&style=flat-square&up_color=%231DA1F2&up_message=%40ballerine.io&url=https%3A%2F%2Ftwitter.com%2FBallerine_io"></a>
@@ -30,14 +33,23 @@
 Ballerine helps any company verify its customers’ identity while providing an amazing user experience by composing verification processes for any vertical and geography using modular building blocks, components, and 3rd party integrations.
 
 ### What can you find in this project?
- * KYC/KYB flows and UI in Mobile & web SDK - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk) | [Live demos](#description-1) | [Docs](#getting-started-with-sdks-flows)
- * Case management dashboard for users approval/rejection - 🎉 Final stages of Open Sourcing!
+
+  *   :red_circle: **New**  - Case management dashboard for users approval - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/apps/backoffice) | [Live demo](#case-management) | [Docs](#getting-started-with-case-management-dashboard) </br>
+ * KYC/KYB flows and UI in Mobile & web SDK - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk) | [Live demos](#sdk-ui-flows) | [Docs](#getting-started-with-sdks-flows)
  * Identity & risk vendors orchestration - :hourglass_flowing_sand: Almost done
  * No-code rule engine to control Frontend and backend flows - :construction: WIP
+
+
+</br>
+<p align="center">
+<a href="#case-management" rel="some text"><img src="https://github.com/ballerine-io/ballerine/blob/main/docs/optimized_gif.gif?raw=true">
+</a>
+</p>
+
  
 [See Detailed Roadmap](#roadmap)
 
-Join our mailing list so you know whenever we release something (like liveliness or the case management back office).
+Join our mailing list so you know whenever we release something (like liveliness or the rule engine).
 
 <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
@@ -68,12 +80,16 @@ If you currently don't have a commercial agreement with KYC vendors, you can use
 
 </details>
 
-___
+
+
+
+
 
 ## Table of Contents
 
+
+- [Case management ](#case-management)
 - [SDK UI Flows](#sdk-ui-flows)
-- [Case management (soon Open Source)](#case-management-soon-open-source)
 - [Workflow builder & Rule engine (WIP)](#workflow-builder--rule-engine-wip)
 - [Getting Started with SDK's Flows](#getting-started-with-sdks-flows)
      - [Installation](#installation)
@@ -84,33 +100,78 @@ ___
        + [Customization](#customization)
  - [Roadmap](#roadmap)
 
+
+
+# Case management
+
+
+### Description
+Give your operating team Ballerine’s case management dashboard so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
+
+* A case management dashboard to approve, reject or classify users manually.
+* Create workflows operators can trigger from the interface.
+* Optimize manual work by customizing the layouts and information presented.
+* Use as a standalone tool or embed in your existing dashboard - Soon.
+
+
+<br/>
+
+<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
+
+**Live demo:**
+[Case management dashboard](https://www.backoffice-demo.ballerine.app/)
+
+
+**Getting started**
+[Click here](#getting-started-with-case-management-dashboard)
+
+**Ballerine's Case Management Dashboard Benefits:**
+* **Vendor agnostic** inject data and capabilities from any vendor.
+* **Multiplayer compatible** for companies with more than 1 operator, to avoid conflicts. <sub>Soon</sub>
+* **Embeddable**, use different vendors in the backend. <sub>Soon</sub>
+* **Role based**, for different capabilities of different operators. <sub>Soon</sub>
+
+
+---
+
+Join our mailing list so you know whenever we release more capabilities.
+
+<a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
+    <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
+</a>
+
+
+
 # SDK UI Flows
 
 ### Description
 With Ballerine's Web & Mobile SDK Flows you can generate custom-made, branded flows to collect KYC/KYB documents and user information.
 The SDK UI is embeddable inside existing apps or deployed as a web app.
 
+
+
+
 <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/phones.png">
 
-**Web SDK Benefits:**
-* Pre-made KYC/KYB **Templates and UI Packs**.
-* **Customizable UI** and flow to fit your desired experience and brand.
-* **Vendor agnostic**, use different vendors in the backend.
-* **Multi-platform support** (Desktop, mobile web, mobile native).
-* Edges cases and **long-tail devices covered and tested**.
-* Lightweight and performant, built with Svelte (**less than 50kb gzipped**).
-
-Live demos:
+**Live demo:**
 [KYC](https://simple-kyc-demo.ballerine.app/)
 
-Playground:
+**Playground:**
 [jsfiddle](https://jsfiddle.net/ballerine/7d0g53xn)
 
-Getting started
+**Getting started:**
 [Click here](#getting-started-with-sdks-flows)
 
 
 <sub>Note - We don't store any data or documents that are being sent in the examples or demos</sub>
+
+**Web SDK Benefits:**
+* Pre-made KYC/KYB **Templates and UI Packs**.
+* **Customizable UI** and flow to fit your desired experience and brand.
+* **Embeddable**, use different vendors in the backend.
+* Edges cases and **long-tail devices covered and tested**.
+* Lightweight and performant, built with Svelte (**less than 50kb gzipped**).
+
 
 ___
 
@@ -124,32 +185,8 @@ ___
 </details>
 
 
-# Case management (soon Open Source)
 
 
-### Description
-Give your operating team Ballerine’s case management dashboard so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
-
-* A case management dashboard to approve, reject or classify users manually.
-* Create workflows operators can trigger from the interface.
-* Optimize manual work by customizing the layouts and information presented.
-* Use as a standalone tool or embed in your existing dashboard.
-
-<br/>
-
-> *We are working on releasing our case management dashboard as Open-Source. Join our mailing list in the button below to get an update once it's out.*	
-> <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
-> <br/>
-> <br/>
- >   <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
-</a>
-
-
-<br/>
-
-<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
-
-___
 
 # Workflow builder & Rule engine (WIP)
 
@@ -179,6 +216,13 @@ Customize your identity and risk workflows in code or with a low-code platform n
 
 <br/>
 
+# Getting Started with Case Management Dashboard
+
+#### Quick start
+1. ```git clone https://github.com/ballerine-io/ballerine```
+1. ```pnpm install```
+2. ```pnpm backoffice:dev```
+4. Open `https://localhost:3001`
 
 # Getting Started with SDK's Flows
 #### Installation
@@ -449,7 +493,7 @@ Click below to tell us what we should work on next by creating feature requests 
 #### Get to know when we release more parts
 
 
-Leave us your email on our mailing list and we'll let you know whenever we release a feature or improvement (like liveliness on the camera or the case management back office).
+Leave us your email on our mailing list and we'll let you know whenever we release a feature or improvement (like liveliness on the camera or the rule engine).
 
 <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">

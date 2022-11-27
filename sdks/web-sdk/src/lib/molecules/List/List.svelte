@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { Title, ListItem } from '../../atoms';
+  import { ListItem, Title } from '../../atoms';
   import {
+    configuration as globalConfiguration,
     ICSSProperties,
     IElementProps,
-    configuration as globalConfiguration,
   } from '../../contexts/configuration';
   import { getFlowName } from '../../contexts/flows';
-  import { currentLanguage, T } from '../../contexts/translation';
+  import { currentLanguage, T, TranslationType } from '../../contexts/translation';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
   import { getListLength } from './utils';
   import { uiPack } from '../../ui-packs';
@@ -21,7 +21,10 @@
   const style = makeStylesFromConfiguration(globalListStyles, configuration.style);
 
   const flowId = getFlowName();
-  const listItems = new Array(getListLength($currentLanguage, `list-${flowId}`)).fill(null);
+  // There's no list-${flowId} key in the translations json.
+  const listItems = new Array(
+    getListLength($currentLanguage, `list-${flowId}` as TranslationType[typeof $currentLanguage]),
+  ).fill(null);
 </script>
 
 <div {style} class="container">
