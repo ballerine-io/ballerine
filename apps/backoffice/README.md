@@ -32,12 +32,6 @@
 ## Description
 Ballerine’s case management helps back-office operators to approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company.
 
-### What can you find in this project?
-
-* A case management to approve, reject or classify users manually.
-* Create workflows operators can trigger from the interface.
-* Optimize manual work by customizing the layouts and information presented.
-* Use as a standalone tool or embed in your existing backoffice - Soon.
 
 
 </br>
@@ -46,23 +40,18 @@ Ballerine’s case management helps back-office operators to approve or reject u
 </a>
 </p>
 
- 
-[See Detailed Roadmap](https://github.com/ballerine-io/ballerine#roadmap)
-
-Join our mailing list so you know whenever we release something (like liveliness or the rule engine).
-
-<a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
-    <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
-</a>
-
 ____
 	
 **Live demo:**
 [Case management](https://www.backoffice-demo.ballerine.app/)
 
+### What can you find in this project?
 
-**Getting started**
-[Click here](#getting-started-with-case-management)
+* A case management to approve, reject or classify users manually.
+* Create workflows operators can trigger from the interface.
+* Optimize manual work by customizing the layouts and information presented.
+* Use as a standalone tool or embed in your existing backoffice - Soon.
+
 
 **Ballerine's Case Management Benefits:**
 * **Vendor agnostic** inject data and capabilities from any vendor.
@@ -83,6 +72,14 @@ ____
 
 
 ---
+
+[See Detailed Roadmap](https://github.com/ballerine-io/ballerine#roadmap)
+
+Join our mailing list so you know whenever we release something new.
+
+<a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
+    <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
+</a>
 
 </br>
 Or join our community channels:
