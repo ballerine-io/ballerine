@@ -30,14 +30,14 @@
 
 
 ## Description
-Give your operating team Ballerine’s case management so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
+Ballerine’s case management helps back-office operators to approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company.
+
+### What can you find in this project?
 
 * A case management to approve, reject or classify users manually.
 * Create workflows operators can trigger from the interface.
 * Optimize manual work by customizing the layouts and information presented.
 * Use as a standalone tool or embed in your existing backoffice - Soon.
-
-### What can you find in this project?
 
 
 </br>
@@ -47,7 +47,7 @@ Give your operating team Ballerine’s case management so they can approve or re
 </p>
 
  
-[See Detailed Roadmap](#roadmap)
+[See Detailed Roadmap](https://github.com/ballerine-io/ballerine#roadmap)
 
 Join our mailing list so you know whenever we release something (like liveliness or the rule engine).
 
@@ -57,9 +57,6 @@ Join our mailing list so you know whenever we release something (like liveliness
 
 ____
 	
-
-<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
-
 **Live demo:**
 [Case management](https://www.backoffice-demo.ballerine.app/)
 
@@ -73,14 +70,19 @@ ____
 * **Embeddable**, use different vendors in the backend. <sub>Soon</sub>
 * **Role based**, for different capabilities of different operators. <sub>Soon</sub>
 
+# Getting Started with Case Management Dashboard
+
+#### Quick start
+1. ```git clone https://github.com/ballerine-io/ballerine```
+1. ```pnpm install```
+2. ```pnpm backoffice:dev```
+4. Open `https://localhost:3001`
+
+
+<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
+
 
 ---
-
-Join our mailing list so you know whenever we release more capabilities.
-
-<a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
-    <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
-</a>
 
 </br>
 Or join our community channels:
