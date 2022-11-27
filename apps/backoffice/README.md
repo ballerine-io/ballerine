@@ -1,5 +1,4 @@
 
-
 <div align="center">
 
 <a href="https://ballerine.io" title="Ballerine - Open-source Infrastructure for Identity and Risk management.">
@@ -24,7 +23,11 @@
 
 <!-- Bagdes - END -->
 
+Ballerine's case management is a part of <a href="https://github.com/ballerine-io/ballerine" rel=" open-source Infrastructure for User Identity and Risk Management">Ballerine's open-source Infrastructure for User Identity and Risk Management.
+</a>
+
 </div>
+</br>
 
 
 ## Description
@@ -34,7 +37,7 @@ Ballerine’s case management helps back-office operators to approve or reject u
 
 </br>
 <p align="center">
-<a href="#case-management" rel="some text"><img src="https://github.com/ballerine-io/ballerine/blob/main/docs/optimized_gif.gif?raw=true">
+<a href="https://www.backoffice-demo.ballerine.app/" rel="some text"><img src="https://github.com/ballerine-io/ballerine/blob/main/docs/optimized_gif.gif?raw=true">
 </a>
 </p>
 
@@ -48,7 +51,7 @@ ____
 * A case management to approve, reject or classify users manually.
 * Create workflows operators can trigger from the interface.
 * Optimize manual work by customizing the layouts and information presented.
-* Use as a standalone tool or embed in your existing backoffice - Soon.
+* Use as a standalone tool or embed in your existing back-office - Soon.
 
 
 **Features:**
@@ -56,7 +59,7 @@ ____
 * **Facematching with TensorFlow.js**.
 * **Vendor agnostic** inject data and capabilities from any vendor.
 * **Multiplayer compatible** for companies with more than 1 operator, to avoid conflicts. <sub>Soon</sub>
-* **Embeddable**, use different vendors in the backend. <sub>Soon</sub>
+* **Embeddable**, use as a standalone tool or embed it in your existing back-office. <sub>Soon</sub>
 * **Role based**, for different capabilities of different operators. <sub>Soon</sub>
 
 
@@ -68,8 +71,9 @@ ____
 2. ```pnpm backoffice:dev```
 4. Open `https://localhost:3001`
 
-
-<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
+<a href="https://www.backoffice-demo.ballerine.app/case-management/users/show/3cc2c550-dd8c-4cf0-b85c-71d505b9e157" title="Ballerine - Live Demo">
+    <img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png" alt="Live Demo">
+</a>
 
 
 ---
