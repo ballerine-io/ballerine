@@ -8,13 +8,13 @@
   import { isNativeCamera } from '../../contexts/flows/hooks';
   import { IDocumentOption } from '../../molecules/DocumentOption';
   import merge from 'deepmerge';
-  import { documentOptions } from '../../default-configuration/theme';
   import { checkIsCameraAvailable } from '../../services/camera-manager';
+  import { uiPack } from '../../ui-packs';
 
   export let step: IStepConfiguration;
   const ducumentOptions: IDocumentOption[] = [];
 
-  const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions || {});
+  const documentOptionsConfiguration = merge($uiPack.documentOptions, $configuration.documentOptions || {});
 
   Object.keys(documentOptionsConfiguration.options).forEach((key: string) => {
     const type = key as DocumentType;
@@ -39,6 +39,7 @@
       document.type,
       detail.image,
       $configuration,
+      $uiPack,
       $documents,
       document,
     );

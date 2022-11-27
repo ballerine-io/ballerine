@@ -3,15 +3,11 @@
   import { Title, IconButton, Photo, Paragraph, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { goToPrevStep } from '../contexts/navigation';
   import { getDocImage, IDocumentInfo } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
-  import merge from 'deepmerge';
-  import { checkDocumentPhotoBackStep, layout } from '../default-configuration/theme';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import { documents, selectedDocumentInfo, currentStepId, appState } from '../contexts/app-state';
   import {
     EActionNames,
@@ -22,19 +18,11 @@
 
   export let stepId;
 
-  const step = mergeStepConfig(checkDocumentPhotoBackStep, $configuration.steps[stepId]);
-
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const stepNamespace = step.namespace!;
-
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
 
   let image: string;
   let documentInfo: IDocumentInfo | undefined = undefined;
@@ -49,7 +37,7 @@
     }
   }
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
 </script>
 
 <div class="container" {style}>
@@ -87,7 +75,7 @@
       <Photo configuration={element.props} src={image} />
     {/if}
   {/each}
-  <NavigationButtons {step} />
+  <NavigationButtons />
 </div>
 
 <style>

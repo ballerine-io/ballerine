@@ -1,12 +1,12 @@
 <script lang="ts">
   import { goToNextStep } from '../../contexts/navigation';
-  import type { ICSSProperties, IElementProps } from '../../contexts/configuration';
+  import type { IElementProps } from '../../contexts/configuration';
   import { configuration as globalConfiguration } from '../../contexts/configuration';
   import { currentStepId } from '../../contexts/app-state';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
-  import { primaryButton } from '../../default-configuration/theme';
   import { Loader } from './Loader';
   import merge from 'deepmerge';
+  import { uiPack } from '../../ui-packs';
 
   // TODO: Use the createToggle hook, and make sure an exported prop is not being mutated.
   export let isDisabled = false;
@@ -14,11 +14,21 @@
   export let configuration: IElementProps;
   export let skipType: string;
 
-  const styleProps = configuration?.style as ICSSProperties;
+  const background = $globalConfiguration.button?.background ||
+    $globalConfiguration.general?.colors?.primary ||
+    $uiPack.general.colors.primary ||
+    $uiPack.button.background
+
+  const styleProps = {
+    ...configuration?.style,
+    background,
+  };
+
   const style = makeStylesFromConfiguration(
-    merge(primaryButton, $globalConfiguration.button ?? {}),
+    merge($uiPack.button, $globalConfiguration.button || {}),
     styleProps,
   );
+
   let disabled: boolean;
   const onClick = () => {
     if (disabled) return;
@@ -57,6 +67,9 @@
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     margin: var(--margin);
+    position: var(--position);
+    bottom: var(--bottom);
+    left: var(--left);
   }
 
   button:disabled {

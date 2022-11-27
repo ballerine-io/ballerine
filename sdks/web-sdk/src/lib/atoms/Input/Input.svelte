@@ -18,8 +18,8 @@
     width: '100%',
     margin: '10px 0px',
     padding: '12px 24px',
-    'border-radius': $globalConfiguration.general.borderRadius,
-    border: `2px solid ${$globalConfiguration.general.colors.primary}`,
+    'border-radius': $globalConfiguration.general?.borderRadius,
+    border: `2px solid ${$globalConfiguration.general?.colors.primary}`,
   };
 
   const styleProps = configuration.style as ICSSProperties;

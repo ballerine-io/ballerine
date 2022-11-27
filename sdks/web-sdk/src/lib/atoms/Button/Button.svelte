@@ -4,16 +4,18 @@
     IElementProps,
   } from '../../contexts/configuration';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
-  import { primaryButton } from '../../default-configuration/theme';
+
   import merge from 'deepmerge';
+  import { uiPack } from '../../ui-packs';
 
   export let configuration: IElementProps;
   export let isBack = false;
 
   const background = !isBack
     ? $globalConfiguration.button?.background ||
-      $globalConfiguration.general.colors.primary ||
-      primaryButton.background
+      $globalConfiguration.general?.colors?.primary ||
+      $uiPack.general.colors.primary ||
+      $uiPack.button.background
     : undefined;
 
   const styleProps = {
@@ -24,7 +26,7 @@
   const buttonConfiguration = isBack ? configuration?.style : $globalConfiguration.button;
 
   const style = makeStylesFromConfiguration(
-    merge(primaryButton, buttonConfiguration || {}),
+    merge($uiPack.button, buttonConfiguration || {}),
     styleProps,
   );
 </script>

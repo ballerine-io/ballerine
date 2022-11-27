@@ -3,43 +3,31 @@
   import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
-  import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { Elements, Steps } from '../contexts/configuration/types';
   import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
   import {
-    appState,
-    currentStepId,
     selectedDocumentInfo,
     selfieUri,
+    currentStepId,
+    appState,
   } from '../contexts/app-state/stores';
-  import { layout, selfieStartStep } from '../default-configuration/theme';
-  import { createToggle } from '../hooks/createToggle/createToggle';
-  import merge from 'deepmerge';
-  import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     EActionNames,
     EVerificationStatuses,
     sendButtonClickEvent,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { createToggle } from '../hooks/createToggle/createToggle';
 
   export let stepId;
 
-  const step = mergeStepConfig(selfieStartStep, $configuration.steps[stepId]);
-
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const stepNamespace = step.namespace!;
-
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
 
   let skipBackSide = false;
 
@@ -57,7 +45,7 @@
     toggleOnIsDisabled();
   };
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
 </script>
 
 <div class="container" {style}>

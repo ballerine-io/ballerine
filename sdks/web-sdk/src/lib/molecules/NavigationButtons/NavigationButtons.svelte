@@ -3,22 +3,20 @@
   import {
     configuration as globalConfiguration,
     ICSSProperties,
-    IStepConfiguration,
   } from '../../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../../contexts/navigation';
   import { T } from '../../contexts/translation';
   import { makesLocalStyles } from '../../utils/css-utils';
   import { currentStepId } from '../../contexts/app-state';
   import merge from 'deepmerge';
-  import { navigationButtons } from '../../default-configuration/theme';
+  import { uiPack } from '../../ui-packs';
 
   const { navigationButtons: userConfiguration } = $globalConfiguration;
 
   const configuration = userConfiguration
-    ? merge(navigationButtons, userConfiguration)
-    : navigationButtons;
+    ? merge($uiPack.navigationButtons, userConfiguration)
+    : $uiPack.navigationButtons;
 
-  export let step: IStepConfiguration;
   export let skipBackSide = false;
 
   const style = makesLocalStyles(configuration.props.style as ICSSProperties);

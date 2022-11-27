@@ -1,16 +1,17 @@
 <script lang="ts">
   import merge from 'deepmerge';
   import { configuration, ICSSProperties } from '../../contexts/configuration';
+  import { uiPack } from '../../ui-packs';
   import { makesLocalStyles } from '../../utils/css-utils';
 
   export let size: 'small' | 'medium' = 'medium';
   export let fullPage = true;
 
   const loader = {
-    background: $configuration.general.colors.primary,
+    background: $configuration.general?.colors.primary || $uiPack.general.colors.primary,
   };
 
-  const styleProps = merge(loader, $configuration.loader || {}) as ICSSProperties;
+  const styleProps = merge(loader, $configuration.loader || $uiPack.loader) as ICSSProperties;
 
   const style = makesLocalStyles(styleProps);
 </script>

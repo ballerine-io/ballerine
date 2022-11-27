@@ -2,7 +2,6 @@
   import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
   import { configuration } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
   import {
     CameraButton,
@@ -18,34 +17,25 @@
   import Title from '../atoms/Title/Title.svelte';
   import { appState, selfieUri } from '../contexts/app-state/stores';
   import { isMobile } from '../utils/is-mobile';
-  import { layout, selfieStep, settings } from '../default-configuration/theme';
   import { createToggle } from '../hooks/createToggle/createToggle';
-  import merge from 'deepmerge';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     EActionNames,
     EVerificationStatuses,
     sendButtonClickEvent,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
   export let stepId;
 
-  const [isDisabled, , toggleOnIsDisabled] = createToggle();
-  const step = mergeStepConfig(selfieStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const stepNamespace = step.namespace!;
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const facingMode = isMobile() ? FACING_MODES.USER : FACING_MODES.ENVIRONMENT;
 
@@ -73,14 +63,14 @@
     if (!cameraPhoto || $isDisabled) return;
 
     const dataUri = cameraPhoto.getDataUri(
-      $configuration.settings?.selfieCameraSettings || settings.cameraSettings,
+      $configuration.settings?.selfieCameraSettings || $uiPack.settings.cameraSettings,
     );
     $selfieUri = dataUri;
     goToNextStep(currentStepId, $configuration, $currentStepId);
     toggleOnIsDisabled();
   };
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
 </script>
 
 <div class="container" {style}>

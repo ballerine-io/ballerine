@@ -1,16 +1,11 @@
 <script lang="ts">
   import { getOverlayDocumentType } from './utils';
   import { DocumentType } from '../../contexts/app-state';
-  import { configuration as globalConfiguration } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
-  import merge from 'deepmerge';
-  import { overlay } from '../../default-configuration/theme';
 
   export let type: DocumentType;
 
   const overlayType = getOverlayDocumentType(type);
 
-  const style = makeStylesFromConfiguration(merge(overlay, $globalConfiguration.overlay || {}));
 </script>
 
 <div class="overlay {overlayType}" />
