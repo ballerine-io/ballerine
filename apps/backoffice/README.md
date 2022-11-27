@@ -14,14 +14,12 @@
  
 
    <a href="https://github.com/ballerine-io/ballerine/stargazers"><img src="https://img.shields.io/github/stars/ballerine-io/ballerine?logo=GitHub&style=flat-square"></a>
-      <a href="https://simple-kyc-demo.ballerine.app/"><img src="https://img.shields.io/website?color=%233F77FF&down_color=%233F77FF&down_message=Off&label=SDK%20Flow%20Demo&logo=Svelte&logoColor=%23FFFFFF&style=flat-square&up_color=%233F77FF&up_message=Live&url=https%3A%2F%2Fsimple-kyc-demo.ballerine.app%2F"></a>
    <a href="https://www.backoffice-demo.ballerine.app/"><img src="https://img.shields.io/website?color=%233F77FF&down_color=%233F77FF&down_message=Off&label=Dashboard%20Demo&logo=Checkmarx&logoColor=%23FFFFFF&style=flat-square&up_color=%233F77FF&up_message=Live&url=https%3A%2F%2Fwww.backoffice-demo.ballerine.app%2F"></a>
    <a href="https://discord.gg/e2rQE4YygA"><img src="https://img.shields.io/website?color=%237289DA&down_color=%237289DA&down_message=Join&label=Discord&logo=discord&logoColor=white&style=flat-square&up_color=%237289DA&up_message=Join&url=https%3A%2F%2Fdiscord.gg%2Fe2rQE4YygA"></a>
    <a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw"><img src="https://img.shields.io/website?color=%23441949&down_color=%23441949&down_message=Join&label=Slack&logo=slack&logoColor=white&style=flat-square&up_color=%23441949&up_message=Join&url=https%3A%2F%2Fjoin.slack.com%2Ft%2Fballerine-oss%2Fshared_invite%2Fzt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw"></a>
    <a href="https://twitter.com/ballerine_io"><img src="https://img.shields.io/website?color=%231DA1F2&down_color=%231DA1F2&down_message=Follow&label=Twitter&logo=twitter&logoColor=%231DA1F2&style=flat-square&up_color=%231DA1F2&up_message=%40ballerine.io&url=https%3A%2F%2Ftwitter.com%2FBallerine_io"></a>
    <a href="https://ycombinator.com"><img src="https://img.shields.io/website?color=%23f26522&down_message=Y%20Combinator&label=Backed&logo=ycombinator&style=flat-square&up_message=Y%20Combinator&url=https%3A%2F%2Fwww.ycombinator.com"></a>
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
-[![GitHub release](https://img.shields.io/github/v/release/ballerine-io/ballerine?label=last-release&style=flat-square)](https://github.com/ballerine-io/ballerine/releases)
 [![GitHub release](https://img.shields.io/github/workflow/status/ballerine-io/ballerine/CI/main?label=e2e&style=flat-square)](https://github.com/ballerine-io/ballerine/actions/workflows/ci.yml)
 
 <!-- Bagdes - END -->
