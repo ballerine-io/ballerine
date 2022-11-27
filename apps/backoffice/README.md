@@ -6,7 +6,7 @@
     <img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/ballerine-logo.png" alt="Ballerine's website">
 </a>
 
-# Open-source case management and backoffice for user & companies onboarding 
+  # Open source case management for KYC, KYB & transaction monitoring
 
 </br>
 
@@ -30,9 +30,9 @@
 
 
 ## Description
-Give your operating team Ballerine’s case management backoffice so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
+Give your operating team Ballerine’s case management so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
 
-* A case management backoffice to approve, reject or classify users manually.
+* A case management to approve, reject or classify users manually.
 * Create workflows operators can trigger from the interface.
 * Optimize manual work by customizing the layouts and information presented.
 * Use as a standalone tool or embed in your existing backoffice - Soon.
@@ -61,13 +61,13 @@ ____
 <img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
 
 **Live demo:**
-[Case management backoffice](https://www.backoffice-demo.ballerine.app/)
+[Case management](https://www.backoffice-demo.ballerine.app/)
 
 
 **Getting started**
-[Click here](#getting-started-with-case-management-backoffice)
+[Click here](#getting-started-with-case-management)
 
-**Ballerine's Case Management backoffice Benefits:**
+**Ballerine's Case Management Benefits:**
 * **Vendor agnostic** inject data and capabilities from any vendor.
 * **Multiplayer compatible** for companies with more than 1 operator, to avoid conflicts. <sub>Soon</sub>
 * **Embeddable**, use different vendors in the backend. <sub>Soon</sub>
