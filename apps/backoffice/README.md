@@ -54,10 +54,13 @@ ____
 
 
 **Ballerine's Case Management Benefits:**
+* **Built in OCR Capabilities with Tesseract.js**.
+* **Facematching with TensorFlow.js**.
 * **Vendor agnostic** inject data and capabilities from any vendor.
 * **Multiplayer compatible** for companies with more than 1 operator, to avoid conflicts. <sub>Soon</sub>
 * **Embeddable**, use different vendors in the backend. <sub>Soon</sub>
 * **Role based**, for different capabilities of different operators. <sub>Soon</sub>
+
 
 # Getting Started with Case Management Dashboard
 
