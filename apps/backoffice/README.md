@@ -30,12 +30,12 @@
 
 
 ## Description
-Give your operating team Ballerine’s case management dashboard so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
+Give your operating team Ballerine’s case management backoffice so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
 
-* A case management dashboard to approve, reject or classify users manually.
+* A case management backoffice to approve, reject or classify users manually.
 * Create workflows operators can trigger from the interface.
 * Optimize manual work by customizing the layouts and information presented.
-* Use as a standalone tool or embed in your existing dashboard - Soon.
+* Use as a standalone tool or embed in your existing backoffice - Soon.
 
 ### What can you find in this project?
 
@@ -61,13 +61,13 @@ ____
 <img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
 
 **Live demo:**
-[Case management dashboard](https://www.backoffice-demo.ballerine.app/)
+[Case management backoffice](https://www.backoffice-demo.ballerine.app/)
 
 
 **Getting started**
-[Click here](#getting-started-with-case-management-dashboard)
+[Click here](#getting-started-with-case-management-backoffice)
 
-**Ballerine's Case Management Dashboard Benefits:**
+**Ballerine's Case Management backoffice Benefits:**
 * **Vendor agnostic** inject data and capabilities from any vendor.
 * **Multiplayer compatible** for companies with more than 1 operator, to avoid conflicts. <sub>Soon</sub>
 * **Embeddable**, use different vendors in the backend. <sub>Soon</sub>
@@ -82,16 +82,6 @@ Join our mailing list so you know whenever we release more capabilities.
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
 </a>
 
-
-#### Get to know when we release more parts
-
-
-Leave us your email on our mailing list and we'll let you know whenever we release a feature or improvement (like liveliness on the camera or the rule engine).
-
-<a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
-    <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
-</a>
-</br>
 </br>
 Or join our community channels:
 </br>
