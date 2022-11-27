@@ -53,7 +53,7 @@ ____
 * Use as a standalone tool or embed in your existing backoffice - Soon.
 
 
-**Ballerine's Case Management Benefits:**
+**Features:**
 * **Built in OCR Capabilities with Tesseract.js**.
 * **Facematching with TensorFlow.js**.
 * **Vendor agnostic** inject data and capabilities from any vendor.
