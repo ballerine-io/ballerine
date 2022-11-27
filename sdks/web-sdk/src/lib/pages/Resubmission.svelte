@@ -4,37 +4,26 @@
   import { configuration, Steps } from '../contexts/configuration';
   import { currentStepId, currentParams, appState } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
   import { flowResubmission } from '../services/analytics';
   import { onDestroy } from 'svelte';
-  import merge from 'deepmerge';
-  import { layout, resubmissionStep } from '../default-configuration/theme';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     EActionNames,
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
-  const step = mergeStepConfig(resubmissionStep, $configuration.steps[stepId]);
-
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const stepNamespace = step.namespace!;
-  const hasDocumentSelection = !!$configuration.steps[Steps.DocumentSelection];
+  const hasDocumentSelection = !!($configuration.steps && $configuration.steps[Steps.DocumentSelection]) && !!$uiPack.steps[Steps.DocumentSelection];
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
 
   const reasonCode = $currentParams ? $currentParams.reasonCode : null;
 

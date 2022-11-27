@@ -1,22 +1,17 @@
 <script lang="ts">
-  import merge from 'deepmerge';
   import {
     configuration as globalConfiguration,
     IAttributes,
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { buttonWithIcon } from '../../default-configuration/theme';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { getComponentStyles, uiPack } from '../../ui-packs';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
   const attributes = configuration.attributes as IAttributes;
 
-  const style = makeStylesFromConfiguration(
-    merge(buttonWithIcon, $globalConfiguration.buttonWithIcon || {}),
-    styleProps,
-  );
+  const style = getComponentStyles($uiPack.buttonWithIcon, $globalConfiguration.buttonWithIcon, styleProps);
 </script>
 
 <button {style} on:click>

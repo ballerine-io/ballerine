@@ -1,4 +1,5 @@
 export type {
+  IAppConfigurationUI,
   IAppConfiguration,
   IAttributes,
   IStepConfiguration,
@@ -7,6 +8,7 @@ export type {
   IButton,
   IElement,
   IFormProps,
+  TSteps,
 } from './types';
 export { Steps, Elements } from './types';
 export { configuration } from './store';

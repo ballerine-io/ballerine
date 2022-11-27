@@ -5,6 +5,7 @@
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
+  import { uiPack } from '../../ui-packs';
   import { makeStylesFromConfiguration } from '../../utils/css-utils';
   import Loader from '../Loader/Loader.svelte';
 
@@ -13,7 +14,7 @@
   const styleProps = configuration.style as ICSSProperties;
 
   const defaultStyle = {
-    'border-radius': $globalConfiguration.general.borderRadius,
+    'border-radius': $globalConfiguration.general?.borderRadius || $uiPack.general.borderRadius,
   };
 
   const style = makeStylesFromConfiguration(

@@ -147,12 +147,29 @@ export interface IOverlayStyles {
   selfie?: ICSSProperties;
 }
 
-export interface IAppConfiguration {
-  isDevelopment: boolean;
-  backendConfig: FlowsBackendConfig;
-  endUserInfo: Omit<EndUserInfo, 'dateOfBirth' | 'endUserMetadata'> & {
-    token?: string;
-  };
+export type TSteps = { [key: string]: IStepConfiguration };
+
+export interface IAppConfigurationUI {
+  container: ICSSProperties;
+  button: ICSSProperties;
+  buttonWithIcon: ICSSProperties;
+  iconButton: ICSSProperties;
+  iconCloseButton: ICSSProperties;
+  layout: ICSSProperties;
+  photo: ICSSProperties;
+  title: ICSSProperties;
+  paragraph: ICSSProperties;
+  documentOptions: IDocumentOptions;
+  list: IList;
+  navigationButtons: INavigationButtons;
+  image: ICSSProperties;
+  cameraButton: ICSSProperties;
+  videoContainer: ICSSProperties;
+  input: ICSSProperties;
+  loader: ICSSProperties;
+  errorText: ICSSProperties;
+  overlay: IOverlayStyles;
+  settings: ConfigSettings;
   general: {
     progress: boolean;
     borderRadius: string;
@@ -169,29 +186,17 @@ export interface IAppConfiguration {
       link?: string;
     };
   };
+  steps: TSteps;
+}
+
+export interface IAppConfiguration extends Partial<IAppConfigurationUI> {
+  isDevelopment: boolean;
+  backendConfig: FlowsBackendConfig;
+  endUserInfo: Omit<EndUserInfo, 'dateOfBirth' | 'endUserMetadata'> & {
+    token?: string;
+  };
   flows: { [key: string]: IFlow };
   defaultLanguage: 'en' | 'es';
-  steps: { [key: string]: IStepConfiguration };
-  container?: ICSSProperties;
-  button?: ICSSProperties;
-  buttonWithIcon?: ICSSProperties;
-  iconButton?: ICSSProperties;
-  iconCloseButton?: ICSSProperties;
-  layout?: ICSSProperties;
-  photo?: ICSSProperties;
-  title: ICSSProperties;
-  paragraph?: ICSSProperties;
-  documentOptions?: IDocumentOptions;
-  list?: IList;
-  navigationButtons?: INavigationButtons;
-  image?: ICSSProperties;
-  cameraButton?: ICSSProperties;
-  videoContainer?: ICSSProperties;
-  input?: ICSSProperties;
-  loader?: ICSSProperties;
-  errorText?: ICSSProperties;
-  overlay?: IOverlayStyles;
-  settings?: ConfigSettings;
 }
 
 export interface ConfigSettings {

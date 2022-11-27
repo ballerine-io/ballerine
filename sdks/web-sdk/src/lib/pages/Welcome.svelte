@@ -2,35 +2,24 @@
   import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import List from '../molecules/List/List.svelte';
   import { T } from '../contexts/translation';
   import { sendButtonClickEvent } from '../utils/event-service/utils';
-  import { appState, currentStepId } from '../contexts/app-state';
-  import merge from 'deepmerge';
-  import { layout, welcomeStep } from '../default-configuration/theme';
-  import { mergeStepConfig } from '../services/merge-service';
+  import { appState } from '../contexts/app-state';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import { EActionNames, EVerificationStatuses } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
-  const step = mergeStepConfig(welcomeStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
+  const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
+
   const stepNamespace = step.namespace!;
 
-  const flow = getFlowConfig($configuration);
-
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
-
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, stepId, $uiPack);
 </script>
 
 <div class="container" {style}>
@@ -73,7 +62,7 @@
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={element.props.context || ''} namespace={stepNamespace} />
+        <T key={element.props.context || 'description'} namespace={stepNamespace} />
       </Paragraph>
     {/if}
     {#if element.type === Elements.List}

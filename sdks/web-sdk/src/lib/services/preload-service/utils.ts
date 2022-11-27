@@ -1,8 +1,7 @@
 import merge from 'deepmerge';
 import { Writable } from 'svelte/store';
-import { IAppConfiguration, IStepConfiguration } from '../../contexts/configuration';
+import { IAppConfiguration, IAppConfigurationUI, IStepConfiguration } from '../../contexts/configuration';
 import { getNextStepId } from '../../contexts/navigation';
-import { defaultStepsConfigurations } from './constants';
 
 const preloadByExtension = async (src: string): Promise<string> => {
   if (src.includes('</svg>')) return src;
@@ -25,11 +24,14 @@ const preloadByExtension = async (src: string): Promise<string> => {
   });
 };
 
-export const preloadStepImages = async (step: IStepConfiguration): Promise<IStepConfiguration> => {
-  const defaultStep = defaultStepsConfigurations.find(
-    s => s.name === step.name,
-  ) as IStepConfiguration;
+export const preloadStepImages = async (step: IStepConfiguration, uiPack: IAppConfigurationUI): Promise<IStepConfiguration> => {
+  const defaultStepKey = Object.keys(uiPack.steps).find(
+    s => s === step.name,
+  ) as string;
+  const defaultStep = uiPack.steps[defaultStepKey];
   const mergedStep = merge(defaultStep, step);
+  // TODO: Think about merging elements
+  mergedStep.elements = step.elements || defaultStep.elements;
   const elements = [];
   for (let index = 0; index < mergedStep.elements.length; index++) {
     const element = mergedStep.elements[index];
@@ -62,12 +64,14 @@ export const preloadNextStepByCurrent = async (
   globalConfiguration: IAppConfiguration,
   configuration: Writable<IAppConfiguration>,
   currentStepId: string,
+  uiPack: IAppConfigurationUI,
   skipType?: string,
 ) => {
   const nextStepId = getNextStepId(globalConfiguration, currentStepId, skipType);
+  console.log("nextStepId", nextStepId)
   if (preloadedSteps[nextStepId]) return;
-  const step = globalConfiguration.steps[nextStepId];
-  const updatedStep = await preloadStepImages(step);
+  const step = globalConfiguration.steps ? globalConfiguration.steps[nextStepId] : uiPack.steps[nextStepId];
+  const updatedStep = await preloadStepImages(step, uiPack);
   const updatedConfiguration = {
     ...globalConfiguration,
     steps: {
@@ -83,10 +87,11 @@ export const preloadStepById = async (
   globalConfiguration: IAppConfiguration,
   configuration: Writable<IAppConfiguration>,
   currentStepId: string,
+  uiPack: IAppConfigurationUI,
 ) => {
   if (preloadedSteps[currentStepId]) return;
-  const step = globalConfiguration.steps[currentStepId];
-  const updatedStep = await preloadStepImages(step);
+  const step = uiPack.steps[currentStepId];
+  const updatedStep = await preloadStepImages(step, uiPack);
   const updatedConfiguration = {
     ...globalConfiguration,
     steps: {

@@ -4,7 +4,6 @@
   import { Image, Button, Title, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
   import {
     EActionNames,
@@ -14,28 +13,17 @@
   } from '../utils/event-service';
   import { flowDeclined } from '../services/analytics';
   import { currentParams, appState } from '../contexts/app-state';
-  import { declineStep, layout } from '../default-configuration/theme';
-  import merge from 'deepmerge';
   import { DecisionStatus } from '../contexts/app-state/types';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
-  const step = mergeStepConfig(declineStep, $configuration.steps[stepId]);
-
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const stepNamespace = step.namespace!;
-
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
 
   const handleClose = () => {
     sendFlowCompleteEvent({

@@ -1,7 +1,6 @@
-import { IAppConfiguration } from '../contexts/configuration';
+import { IAppConfiguration, IAppConfigurationUI } from '../contexts/configuration';
 import { DocumentType, IDocument, IDocumentPage } from '../contexts/app-state';
 import Compressor from 'compressorjs';
-import { documentOptions } from '../default-configuration/theme';
 import merge from 'deepmerge';
 
 export type FileEventTarget = EventTarget & { files: FileList };
@@ -40,9 +39,10 @@ export const nativeCameraHandler = (e: ICameraEvent): Promise<string> => {
 export const clearDocs = (
   type: DocumentType,
   configuration: IAppConfiguration,
+  uiPack: IAppConfigurationUI,
   documents: IDocument[],
 ): IDocument[] => {
-  const documentOptionsConfiguration = merge(documentOptions, configuration.documentOptions || {});
+  const documentOptionsConfiguration = merge(uiPack.documentOptions || {}, configuration.documentOptions || {});
   const { options } = documentOptionsConfiguration;
   const isFromOptions = Object.keys(options).find(t => t === type);
   if (isFromOptions) {
@@ -55,10 +55,11 @@ export const addDocument = (
   type: DocumentType,
   base64: string,
   configuration: IAppConfiguration,
+  uiPack: IAppConfigurationUI,
   documents: IDocument[],
   document: IDocument,
 ): IDocument[] => {
-  const clearedDocuments = clearDocs(type, configuration, documents);
+  const clearedDocuments = clearDocs(type, configuration, uiPack, documents);
   return [
     ...clearedDocuments,
     {

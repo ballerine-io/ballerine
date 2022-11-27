@@ -2,7 +2,6 @@
   import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
   import { configuration } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { onDestroy, onMount } from 'svelte';
   import {
     CameraButton,
@@ -13,26 +12,19 @@
     VideoContainer,
   } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
-  import { appState, DocumentType, IDocument } from '../contexts/app-state';
+  import { DocumentType, IDocument, appState } from '../contexts/app-state';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
-  import { currentStepId, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import {
-    documentOptions,
-    documentPhotoStep,
-    layout,
-    settings,
-  } from '../default-configuration/theme';
-  import { createToggle } from '../hooks/createToggle/createToggle';
+  import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
   import merge from 'deepmerge';
-  import { mergeStepConfig } from '../services/merge-service';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import {
     EActionNames,
     EVerificationStatuses,
     sendButtonClickEvent,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { createToggle } from '../hooks/createToggle/createToggle';
 
   export let stepId;
 
@@ -40,20 +32,16 @@
   let container: HTMLDivElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
+  const style = getLayoutStyles($configuration, $uiPack, step);
+
   const [isDisabled, , toggleOnIsDisabled] = createToggle();
-  const step = mergeStepConfig(documentPhotoStep, $configuration.steps[stepId]);
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
+  const documentOptionsConfiguration = merge($uiPack.documentOptions, $configuration.documentOptions || {});
 
-  const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions || {});
   const documentType =
-    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo?.type;
+    (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType || $uiPack.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+
   const stepNamespace = `${step.namespace}.${documentType}`;
 
   $: {
@@ -104,9 +92,9 @@
     if (!cameraPhoto || $isDisabled) return;
 
     toggleOnIsDisabled();
-
+    console.log($uiPack);
     const base64 = cameraPhoto.getDataUri(
-      $configuration.settings?.cameraSettings || settings.cameraSettings,
+      $configuration.settings?.cameraSettings || $uiPack.settings.cameraSettings,
     );
     if (documentType) {
       const document = { type: documentType, pages: [], metadata: {} };
@@ -116,7 +104,7 @@
     return goToPrevStep(currentStepId, $configuration, $currentStepId);
   };
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
 </script>
 
 <div class="container" {style} bind:this={container}>

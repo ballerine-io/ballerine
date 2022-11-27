@@ -3,38 +3,27 @@
   import { Title, IconButton, IconCloseButton } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { goToPrevStep } from '../contexts/navigation';
   import Paragraph from '../atoms/Paragraph/Paragraph.svelte';
   import NavigationButtons from '../molecules/NavigationButtons/NavigationButtons.svelte';
   import Photo from '../atoms/Photo/Photo.svelte';
-  import merge from 'deepmerge';
-  import { mergeStepConfig } from '../services/merge-service';
-  import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
   import { selfieUri, currentStepId, appState } from '../contexts/app-state';
-  import { checkSelfieStep, layout } from '../default-configuration/theme';
   import {
     EActionNames,
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
-  const step = mergeStepConfig(checkSelfieStep, $configuration.steps[stepId]);
-
+  const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, $uiPack, step);
 
   const stepNamespace = step.namespace!;
 
-  const style = makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient(layout, $configuration.general.colors.primary),
-      $configuration.layout || {},
-    ),
-    step.style,
-  );
 </script>
 
 <div class="container" {style}>
@@ -72,7 +61,7 @@
       </Paragraph>
     {/if}
   {/each}
-  <NavigationButtons {step} />
+  <NavigationButtons />
 </div>
 
 <style>
