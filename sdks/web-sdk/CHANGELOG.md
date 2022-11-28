@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.1.38
+
+### Patch Changes
+
+- UI-Packs improvments
+
 ## 1.1.37
 
 ### Patch Changes
