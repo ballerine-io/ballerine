@@ -26,7 +26,7 @@ export const nativeCameraHandler = (e: ICameraEvent): Promise<string> => {
         reader.readAsDataURL(result);
         reader.onload = e => {
           const image = e.target?.result;
-          resolve(image);
+          resolve(image as string);
         };
       },
       error(err) {
@@ -42,7 +42,11 @@ export const clearDocs = (
   uiPack: IAppConfigurationUI,
   documents: IDocument[],
 ): IDocument[] => {
-  const documentOptionsConfiguration = merge(uiPack.documentOptions || {}, configuration.documentOptions || {});
+  const documentOptionsConfiguration = merge(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    uiPack.documentOptions || {},
+    configuration.documentOptions || {},
+  );
   const { options } = documentOptionsConfiguration;
   const isFromOptions = Object.keys(options).find(t => t === type);
   if (isFromOptions) {
