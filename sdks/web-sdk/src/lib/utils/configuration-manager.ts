@@ -42,7 +42,7 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
     return mergedConfig;
   });
 
-  const config = configurationResult as unknown as IAppConfiguration;
+  const config = (configurationResult as unknown as IAppConfiguration);
   config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome], uiTheme);
   configuration.update(() => config);
 
@@ -60,7 +60,7 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
     const packName = pack as 'dark' | 'blue';
     const updatedPack = packs[packName];
     uiTheme = packs[packName];
-    console.log("uiTheme", JSON.stringify(uiTheme));
+    console.log('uiTheme', JSON.stringify(uiTheme));
     return updatedPack;
   });
 };
@@ -84,6 +84,8 @@ export const mergeConfig = (
   originalConfig: IAppConfiguration,
   overrides: RecursivePartial<FlowsInitOptions>,
 ) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const newConfig: IAppConfiguration = mergeObj(
     originalConfig,
     v1adapter(overrides, originalConfig),

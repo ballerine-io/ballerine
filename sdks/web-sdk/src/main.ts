@@ -1,5 +1,5 @@
 import ConfigurationProvider from './ConfigurationProvider.svelte';
-import type { BallerineSDKFlows } from './types/BallerineSDK';
+import type { BallerineSDKFlows, FlowsInitOptions } from './types/BallerineSDK';
 import {
   setFlowCallbacks,
   updateConfiguration,
@@ -84,7 +84,7 @@ export const flows: BallerineSDKFlows = {
         .catch(reject);
     });
   },
-  set: function (key: string, value: any): void {
+  setConfig: function (config: FlowsInitOptions): Promise<void> {
     throw new Error('Function not implemented.');
   },
 };

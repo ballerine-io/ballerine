@@ -56,6 +56,7 @@ interface FlowsUIConfig {
       useFinalQueryParams?: boolean;
       firstScreenBackButton?: boolean;
       showCloseButton?: boolean;
+      callbacks?: () => void;
     };
   };
   settings?: ConfigSettings;

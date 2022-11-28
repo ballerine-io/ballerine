@@ -5,6 +5,7 @@ import { get } from 'svelte/store';
 import { flowEventBus } from '../../services/flow-event-bus/flow-event-bus';
 import { EFlowEvent } from '../../services/flow-event-bus/enums';
 import { BALLERINE_EVENT } from './constants';
+import { IEventOptions } from '../../services/flow-event-bus/interfaces';
 
 const outerScopeContext = window.__blrn_context;
 const isProd = window.__blrn_is_prod;
@@ -30,7 +31,7 @@ export const subscribe = () => {
   });
 };
 
-export const sendIframeEvent = eventOptions => {
+export const sendIframeEvent = (eventOptions: IEventOptions) => {
   window.parent.postMessage(eventOptions, '*'); // iframe
 };
 

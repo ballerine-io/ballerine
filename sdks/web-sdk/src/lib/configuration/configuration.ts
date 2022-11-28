@@ -1,6 +1,5 @@
 import { IAppConfiguration } from '../contexts/configuration';
 import { Steps } from '../contexts/configuration/types';
-import { uiTheme } from './theme';
 
 // Config prioritiztion:
 // 3. Theme configuration

@@ -1,4 +1,4 @@
-import translations from '../../default-configuration/translation.json';
+import translations from '../../configuration/translation.json';
 
 export type Languages = 'en' | 'es' | 'fr';
 
