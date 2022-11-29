@@ -34,7 +34,7 @@ Ballerine helps any company verify its customers’ identity while providing an 
 
 ### What can you find in this project?
 
-  *   :red_circle: **New**  - Case management dashboard for users approval - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/apps/backoffice) | [Live demo](#case-management) | [Docs](#getting-started-with-case-management-dashboard) </br>
+  *   :red_circle: **New**  - Case management dashboard for users approval - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/apps/backoffice) | [Live demo](https://www.backoffice-demo.ballerine.app/) | [Docs](#getting-started-with-case-management-dashboard) </br>
  * KYC/KYB flows and UI in Mobile & web SDK - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk) | [Live demos](#sdk-ui-flows) | [Docs](#getting-started-with-sdks-flows)
  * Identity & risk vendors orchestration - :hourglass_flowing_sand: Almost done
  * No-code rule engine to control Frontend and backend flows - :construction: WIP
