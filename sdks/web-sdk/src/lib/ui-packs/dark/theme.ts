@@ -51,7 +51,7 @@ const stepsTheme: TSteps = {
     name: Steps.Welcome,
     id: Steps.Welcome,
     elements: [
-      backIconButton,
+      backWhiteIconButton,
       closeIconButton,
       {
         type: Elements.Title,
@@ -69,7 +69,7 @@ const stepsTheme: TSteps = {
             'flex-grow': 1,
           },
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/welcome.svg',
+            src: '/welcome.svg',
             alt: 'welcome',
             width: '218px',
             height: '218px',
@@ -99,13 +99,13 @@ const stepsTheme: TSteps = {
     name: Steps.DocumentSelection,
     id: Steps.DocumentSelection,
     elements: [
-      backIconButton,
+      backWhiteIconButton,
       closeIconButton,
       {
         type: Elements.Title,
         props: {
           style: {
-            padding: '8px 24px 18px',
+            padding: '5px 24px 18px',
           },
         },
       },
@@ -131,8 +131,9 @@ const stepsTheme: TSteps = {
           style: {
             color: '#fff',
             'font-weight': 700,
+            "font-size": "18px",
             'align-self': 'center',
-            padding: '48px 0px 18px 0px',
+            padding: '5px 0px 18px 0px',
           },
         },
       },
@@ -141,7 +142,7 @@ const stepsTheme: TSteps = {
         props: {
           style: {
             margin: '0px 20px 18px 40px',
-            color: '#fff',
+            color: '#DDDDDD',
             'text-align': 'center',
           },
         },
@@ -168,7 +169,7 @@ const stepsTheme: TSteps = {
     name: Steps.CheckDocument,
     id: Steps.CheckDocument,
     elements: [
-      backIconButton,
+      backWhiteIconButton,
       closeIconButton,
       {
         type: Elements.Title,
@@ -201,14 +202,14 @@ const stepsTheme: TSteps = {
     id: Steps.DocumentPhotoBackStart,
     style: {},
     elements: [
-      backIconButton,
+      backWhiteIconButton,
       closeIconButton,
       {
         type: Elements.Title,
         id: 'welcome-title1',
         props: {
           style: {
-            padding: '8px 24px 18px',
+            padding: '5px 24px 18px',
           },
         },
       },
@@ -228,7 +229,7 @@ const stepsTheme: TSteps = {
             'flex-grow': 1,
           },
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/document-photo-back-start.svg',
+            src: '/document-photo-back-start.svg',
             alt: 'document-photo-back-start',
             width: '260px',
             height: '212px',
@@ -257,7 +258,7 @@ const stepsTheme: TSteps = {
             color: '#fff',
             'font-weight': 700,
             'align-self': 'center',
-            padding: '48px 0px 18px 0px',
+            padding: '8px 0px 18px 0px',
           },
         },
       },
@@ -266,7 +267,7 @@ const stepsTheme: TSteps = {
         props: {
           style: {
             margin: '0px 20px 18px 40px',
-            color: '#fff',
+            color: '#DDDDDD',
           },
         },
       },
@@ -292,13 +293,13 @@ const stepsTheme: TSteps = {
     name: Steps.CheckDocumentPhotoBack,
     id: Steps.CheckDocumentPhotoBack,
     elements: [
-      backIconButton,
+      backWhiteIconButton,
       closeIconButton,
       {
         type: Elements.Title,
         props: {
           style: {
-            padding: '8px 24px 18px',
+            padding: '5px 24px 18px',
           },
         },
       },
@@ -325,13 +326,13 @@ const stepsTheme: TSteps = {
     id: Steps.SelfieStart,
     style: {},
     elements: [
-      backIconButton,
+      backWhiteIconButton,
       closeIconButton,
       {
         type: Elements.Title,
         props: {
           style: {
-            padding: '8px 24px 18px',
+            padding: '5px 24px 18px',
           },
         },
       },
@@ -351,7 +352,7 @@ const stepsTheme: TSteps = {
             'flex-grow': 1,
           },
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/selfie-start.svg',
+            src: '/selfie-start.svg',
             alt: 'selfie-start',
             width: '300x',
             height: '300px',
@@ -385,7 +386,7 @@ const stepsTheme: TSteps = {
         props: {
           style: {
             margin: '0px 20px 18px 40px',
-            color: '#fff',
+            color: '#DDDDDD',
           },
         },
       },
@@ -411,13 +412,13 @@ const stepsTheme: TSteps = {
     name: Steps.CheckSelfie,
     id: Steps.CheckSelfie,
     elements: [
-      backIconButton,
+      backWhiteIconButton,
       closeIconButton,
       {
         type: Elements.Title,
         props: {
           style: {
-            padding: '8px 24px 18px',
+            padding: '5px 24px 18px',
           },
         },
       },
@@ -450,6 +451,15 @@ const stepsTheme: TSteps = {
     elements: [
       closeIconButton,
       {
+        type: Elements.Title,
+        props: {
+          style: {
+            padding: '8px 0px 6px',
+            'text-align': 'center',
+          },
+        },
+      },
+      {
         type: Elements.Image,
         props: {
           style: {
@@ -457,19 +467,10 @@ const stepsTheme: TSteps = {
             'align-self': 'center',
           },
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/resubmit.svg',
+            src: '/resubmit.svg',
             alt: 'decline',
             width: '80px',
             height: '80px',
-          },
-        },
-      },
-      {
-        type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 0px 6px',
-            'text-align': 'center',
           },
         },
       },
@@ -508,25 +509,25 @@ const stepsTheme: TSteps = {
     elements: [
       closeIconButton,
       {
+        type: Elements.Title,
+        props: {
+          style: {
+            padding: '8px 0px 6px',
+            'text-align': 'center',
+          },
+        },
+      },
+      {
         type: Elements.Image,
         props: {
           style: {
             margin: '120px 0px 16px',
           },
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/decline.svg',
+            src: '/decline.svg',
             alt: 'decline',
             width: '80px',
             height: '80px',
-          },
-        },
-      },
-      {
-        type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 0px 6px',
-            'text-align': 'center',
           },
         },
       },
@@ -558,25 +559,25 @@ const stepsTheme: TSteps = {
     elements: [
       closeIconButton,
       {
+        type: Elements.Title,
+        props: {
+          style: {
+            padding: '8px 0px 6px',
+            'text-align': 'center',
+          },
+        },
+      },
+      {
         type: Elements.Image,
         props: {
           style: {
             margin: '120px 0px 16px',
           },
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/decline.svg',
+            src: '/decline.svg',
             alt: 'decline',
             width: '80px',
             height: '80px',
-          },
-        },
-      },
-      {
-        type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 0px 6px',
-            'text-align': 'center',
           },
         },
       },
@@ -612,6 +613,15 @@ const stepsTheme: TSteps = {
     elements: [
       closeIconButton,
       {
+        type: Elements.Title,
+        props: {
+          style: {
+            padding: '8px 0px 6px',
+            'text-align': 'none',
+          },
+        },
+      },
+      {
         type: Elements.Image,
         props: {
           style: {
@@ -619,19 +629,10 @@ const stepsTheme: TSteps = {
             'align-self': 'center',
           },
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/final.svg',
+            src: '/final.svg',
             alt: 'final',
             width: '80px',
             height: '80px',
-          },
-        },
-      },
-      {
-        type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 0px 6px',
-            'text-align': 'none',
           },
         },
       },
@@ -684,14 +685,15 @@ export const uiTheme: IAppConfigurationUI = {
     borderRadius: '16px',
     padding: '24px',
     colors: {
-      primary: '#7000FF',
-      secondary: '#080444',
+      primary: '#F260FF',
+      secondary: '#7000FF',
       text: '#788597',
       danger: 'rgba(173, 0, 0, 0.8);',
     },
     fonts: {
-      name: 'Inter',
-      weight: [500, 700],
+      name: 'IBM Plex Mono',
+      weight: [400, 500, 700],
+      link: "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap"
     },
   },
   photo: {},
@@ -705,9 +707,10 @@ export const uiTheme: IAppConfigurationUI = {
   loader: {},
   button: {
     'font-size': '16px',
-    padding: '20px 20px',
+    padding: '15px 20px',
     width: '100%',
     color: '#fff',
+    background: "linear-gradient(267.68deg, var(--primary-color) 23.95%, var(--secondary-color) 95.08%)",
     'font-weight': 700,
     'border-radius': '100px',
     'box-shadow': '0px 6px 9px 5px #007AFF1a;-webkit-box-shadow: 0px 6px 9px 5px #007AFF1a;',
@@ -741,7 +744,7 @@ export const uiTheme: IAppConfigurationUI = {
     props: {
       style: {
         display: 'flex',
-        'flex-direction': 'row',
+        'flex-direction': 'column-reverse',
         margin: '70px 0px 0px',
         padding: '0px',
       },
@@ -751,14 +754,17 @@ export const uiTheme: IAppConfigurationUI = {
       props: {
         style: {
           width: '100%',
-          margin: '67px 20px 0px 0px',
-          padding: '0px',
+          margin: '32px 0px 0px 0px',
+          padding: '15px 20px',
           'font-weight': 400,
-          background: '#fff',
-          color: '#6A6A6A',
-          border: '1px solid #BFBFBF',
+          background: {
+            color: "var(--primary-color)",
+            opacity: 0.2
+          },
+          color: '#fff',
+          border: '1px solid var(--primary-color)',
           'box-shadow':
-            '0px 6px 9px 5px rgba(0,122,255,0);-webkit-box-shadow: 0px 6px 9px 5px rgba(0,122,255,0);',
+            '0px 3px 10px rgba(0, 0, 0, 0.05), 0px 6px 30px rgba(0, 122, 255, 0.1)',
         },
       },
     },
@@ -766,7 +772,13 @@ export const uiTheme: IAppConfigurationUI = {
       type: 'button',
       props: {
         style: {
+          'font-size': '16px',
+          padding: '15px 20px',
           width: '100%',
+          color: '#fff',
+          'font-weight': 700,
+          'border-radius': '100px',
+          'box-shadow': '0px 6px 9px 5px #007AFF1a;-webkit-box-shadow: 0px 6px 9px 5px #007AFF1a;',
         },
       },
     },
@@ -851,35 +863,44 @@ export const uiTheme: IAppConfigurationUI = {
     descriptionProps: {
       style: {
         'font-size': '12px',
-        color: '#788597',
+        color: '#926A90',
         margin: '3px 0px 0px 0px',
         hover: {
-          color: '#788597',
+          color: '#926A90',
         },
         active: {
-          color: '#788597',
+          color: '#926A90',
         },
       },
     },
     optionProps: {
       style: {
-        background: '#fff',
+        background: {
+          color: "var(--primary-color)",
+          opacity: 0.2,
+        },
         margin: '0 0 22px 0px',
-        border: '1px solid #ffffff',
+        border: '1px solid var(--primary-color)',
         'border-radius': '13px',
         width: '100%',
-        padding: '20px 18px',
+        padding: '14px 18px',
         'box-shadow':
           '0px 6px 30px 0px #007AFF1a , 0px 3px 10px 0px #0000000a ;-webkit-box-shadow: 0px 6px 30px 0px #007AFF1a , 0px 3px 10px 0px #0000000a ;',
         display: 'flex',
         'text-align': 'left',
         hover: {
-          border: '1px solid #007AFF21',
-          background: '#fff',
+          border: '1px solid var(--primary-color)',
+          background: {
+            color: "var(--primary-color)",
+            opacity: 0.4,
+          },
         },
         active: {
-          border: '1px solid #007AFF21',
-          background: '#F1F1F1',
+          border: '1px solid var(--primary-color)',
+          background: {
+            color: "var(--primary-color)",
+            opacity: 0.4,
+          },
         },
       },
     },
@@ -890,26 +911,28 @@ export const uiTheme: IAppConfigurationUI = {
         margin: '0px 15px 0px 0px',
         padding: '0px',
         background: 'transparent',
+        hover: {
+          background: 'transparent'
+        },
         active: {
-          background: '#fff',
+          background: 'transparent'
         },
       },
     },
     iconProps: {
       style: {
-        fill: '#000',
-        active: {
-          fill: '#0079FA',
-        },
       },
     },
     titleProps: {
       style: {
-        color: '#434345',
+        color: '#fff',
         'text-align': 'left',
         margin: '4px 0px 0px',
+        hover: {
+          color: '#fff'
+        },
         active: {
-          color: '#434345',
+          color: '#fff'
         },
       },
     },

@@ -24,12 +24,18 @@
   const style = `
     --font-family: ${$configuration.general?.fonts?.name || $uiPack.general.fonts.name};
     --primary-color: ${$configuration.general?.colors?.primary || $uiPack.general.colors.primary};
+    --secondary-color: ${
+      $configuration.general?.colors?.secondary || $uiPack.general.colors.secondary
+    };
   `;
 </script>
 
 <svelte:head>
   {#if $configuration.general?.fonts?.link || $uiPack.general.fonts.link}
-    <link href={$configuration.general?.fonts?.link || $uiPack.general.fonts.link} rel="stylesheet" />
+    <link
+      href={$configuration.general?.fonts?.link || $uiPack.general.fonts.link}
+      rel="stylesheet"
+    />
   {/if}
 </svelte:head>
 
@@ -39,8 +45,10 @@
   <SvelteToast
     options={{
       theme: {
-        '--toastBackground': $configuration.general?.colors?.primary || $uiPack.general.colors.primary,
-        '--toastBarBackground': $configuration.general?.colors?.primary || $uiPack.general.colors.primary,
+        '--toastBackground':
+          $configuration.general?.colors?.primary || $uiPack.general.colors.primary,
+        '--toastBarBackground':
+          $configuration.general?.colors?.primary || $uiPack.general.colors.primary,
       },
     }}
   />

@@ -13,15 +13,17 @@
   const style = getComponentStyles($uiPack.image, $globalConfiguration.image, styleProps);
 </script>
 
-<div {style} height={attributes.height} width={attributes.width}>
+<div {style} height={attributes.height} width={attributes.width} class="container">
   {@html attributes.src}
 </div>
 
 <style>
-  div {
+  .container {
     margin: var(--margin);
-    max-width: 100%;
     flex-grow: var(--flex-grow, 0);
     text-align: center;
+  }
+  .container > :global(svg) {
+    max-width: 100%;
   }
 </style>

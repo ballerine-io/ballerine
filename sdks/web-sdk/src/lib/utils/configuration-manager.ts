@@ -43,15 +43,22 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
   });
 
   const config = (configurationResult as unknown as IAppConfiguration);
-  config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome], uiTheme);
-  configuration.update(() => config);
 
   const pack = configOverrides.uiConfig?.uiPack as string;
+
   if (isUrl(pack)) {
     const packConfigResponse = await fetch(pack);
     const packConfig = await packConfigResponse.json();
     uiPack.set(packConfig);
-    return;
+  } else {
+    uiPack.update(currentPack => {
+      // Check by existing ui pack names
+      if (!Object.keys(packs).includes(pack)) return currentPack;
+      const packName = pack as 'dark' | 'blue';
+      const updatedPack = packs[packName];
+      uiTheme = packs[packName];
+      return updatedPack;
+    });
   }
 
   uiPack.update(currentPack => {
@@ -60,9 +67,11 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
     const packName = pack as 'dark' | 'blue';
     const updatedPack = packs[packName];
     uiTheme = packs[packName];
-    console.log('uiTheme', JSON.stringify(uiTheme));
     return updatedPack;
   });
+
+  config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome], uiTheme);
+  configuration.update(() => config);
 };
 
 export const updateTranslations = async (translations: FlowsTranslations) => {

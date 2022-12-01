@@ -46,6 +46,11 @@ export enum Elements {
   ErrorText = 'error-text',
 }
 
+export interface IOpacityColor {
+  color: string;
+  opacity: number;
+}
+
 interface ICSSPropertiesAll {
   margin: string;
   padding: string;
@@ -59,7 +64,7 @@ interface ICSSPropertiesAll {
   '-webkit-box-shadow': string;
   width: string;
   height: string;
-  background?: string;
+  background?: string | IOpacityColor;
   color?: string;
   'border-radius'?: string;
   border: string;
