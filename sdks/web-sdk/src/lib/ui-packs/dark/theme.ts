@@ -69,7 +69,7 @@ const stepsTheme: TSteps = {
             'flex-grow': 1,
           },
           attributes: {
-            src: '/welcome.svg',
+            src: 'https://cdn.ballerine.io/ui-packs/future/welcome.svg',
             alt: 'welcome',
             width: '218px',
             height: '218px',
@@ -229,7 +229,7 @@ const stepsTheme: TSteps = {
             'flex-grow': 1,
           },
           attributes: {
-            src: '/document-photo-back-start.svg',
+            src: 'https://cdn.ballerine.io/ui-packs/future/document-photo-back-start.svg',
             alt: 'document-photo-back-start',
             width: '260px',
             height: '212px',
@@ -352,7 +352,7 @@ const stepsTheme: TSteps = {
             'flex-grow': 1,
           },
           attributes: {
-            src: '/selfie-start.svg',
+            src: 'https://cdn.ballerine.io/ui-packs/future/selfie-start.svg',
             alt: 'selfie-start',
             width: '300x',
             height: '300px',
@@ -467,7 +467,7 @@ const stepsTheme: TSteps = {
             'align-self': 'center',
           },
           attributes: {
-            src: '/resubmit.svg',
+            src: 'https://cdn.ballerine.io/ui-packs/future/resubmit.svg',
             alt: 'decline',
             width: '80px',
             height: '80px',
@@ -524,7 +524,7 @@ const stepsTheme: TSteps = {
             margin: '120px 0px 16px',
           },
           attributes: {
-            src: '/decline.svg',
+            src: 'https://cdn.ballerine.io/ui-packs/future/decline.svg',
             alt: 'decline',
             width: '80px',
             height: '80px',
@@ -574,7 +574,7 @@ const stepsTheme: TSteps = {
             margin: '120px 0px 16px',
           },
           attributes: {
-            src: '/decline.svg',
+            src: 'https://cdn.ballerine.io/ui-packs/future/decline.svg',
             alt: 'decline',
             width: '80px',
             height: '80px',
@@ -629,7 +629,7 @@ const stepsTheme: TSteps = {
             'align-self': 'center',
           },
           attributes: {
-            src: '/final.svg',
+            src: 'https://cdn.ballerine.io/ui-packs/future/final.svg',
             alt: 'final',
             width: '80px',
             height: '80px',
