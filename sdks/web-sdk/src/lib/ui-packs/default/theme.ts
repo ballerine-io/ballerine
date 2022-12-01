@@ -215,6 +215,10 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        type: Elements.Loader,
+        props: {},
+      },
+      {
         type: Elements.CameraButton,
         props: {
           style: {

@@ -10,6 +10,7 @@
     Overlay,
     Paragraph,
     VideoContainer,
+    Loader,
   } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { DocumentType, IDocument, appState } from '../contexts/app-state';
@@ -42,6 +43,7 @@
   const documentType =
     (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType || $uiPack.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
 
+  let stream: MediaStream;
   const stepNamespace = `${step.namespace}.${documentType}`;
 
   $: {
@@ -56,8 +58,9 @@
         width: 1920,
         height: 1080,
       })
-      .then(stream => {
-        console.log('stream', stream);
+      .then(cameraStream => {
+        console.log('stream', cameraStream);
+        stream = cameraStream;
       })
       .catch(error => {
         console.log('error', error);
@@ -133,6 +136,9 @@
         <!-- svelte-ignore a11y-media-has-caption -->
         <video bind:this={video} autoplay playsinline />
       </VideoContainer>
+    {/if}
+    {#if element.type === Elements.Loader && stream === undefined}
+      <Loader />
     {/if}
   {/each}
   <div class="header">
