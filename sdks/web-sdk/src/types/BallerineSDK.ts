@@ -47,7 +47,7 @@ interface FlowsUIConfig {
     loader?: ICSSProperties;
     errorText?: ICSSProperties;
     overlay?: ICSSProperties;
-    documentOptions?: IDocumentOptions;
+    documentOptions?: Partial<IDocumentOptions>;
   };
   flows?: {
     [key: string]: {
