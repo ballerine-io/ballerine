@@ -143,8 +143,8 @@ const cssProperties: (keyof ICSSProperties)[] = [
 
 const setBackgroundWithOpacity = (style: IOpacityColor, styles: string[], prefix = ''): string[] => {
   if (style.color.includes("primary")) {
-    const main = document.querySelector("main") as HTMLDivElement
-    const color = getComputedStyle(main).getPropertyValue('--primary-color');
+    const app = document.getElementById("blrn-app") as HTMLDivElement
+    const color = getComputedStyle(app).getPropertyValue('--primary-color');
     return [...styles, `--${prefix}background: ${color}${hexTransparencies[style.opacity * 100] as string};`]
   }
   return styles;

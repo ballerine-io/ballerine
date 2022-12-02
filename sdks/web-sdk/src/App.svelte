@@ -39,7 +39,7 @@
   {/if}
 </svelte:head>
 
-<main {style}>
+<main {style} id="blrn-app">
   <!-- <button on:click={handle}>Change</button> -->
   <Routes />
   <SvelteToast
