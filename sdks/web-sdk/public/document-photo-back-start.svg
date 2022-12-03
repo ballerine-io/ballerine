@@ -1,15 +1,15 @@
 <svg width="375" height="240" viewBox="0 0 375 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="54.3759" y="60.9601" width="194" height="136.821" rx="16.3368" fill="var(--secondary-color)" fill-opacity="0.4"/>
+<rect x="54.3759" y="60.9601" width="194" height="136.821" rx="16.3368" fill="var(--general-colors-secondary)" fill-opacity="0.4"/>
 <rect x="54.3759" y="54.9601" width="194" height="136.821" rx="16.3368" fill="white"/>
-<rect x="55.3969" y="55.9811" width="191.958" height="134.779" rx="15.3158" fill="url(#paint0_linear_1247_9821)" stroke="var(--secondary-color)" stroke-width="2.04211"/>
-<path opacity="0.2" d="M161 86.5H186" stroke="var(--secondary-color)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
-<path opacity="0.2" d="M161 104.5H214" stroke="var(--secondary-color)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
-<path opacity="0.2" d="M160.565 121.869H191.197" stroke="var(--secondary-color)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
-<path opacity="0.2" d="M161 139.5H197" stroke="var(--secondary-color)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
-<path opacity="0.2" d="M87 86.5H122" stroke="var(--secondary-color)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
-<path opacity="0.2" d="M87 104.5H105" stroke="var(--secondary-color)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
-<path opacity="0.2" d="M87.0001 121.869H117.632" stroke="var(--secondary-color)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
-<path opacity="0.2" d="M88 139.5H103" stroke="var(--secondary-color)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="55.3969" y="55.9811" width="191.958" height="134.779" rx="15.3158" fill="url(#paint0_linear_1247_9821)" stroke="var(--general-colors-secondary)" stroke-width="2.04211"/>
+<path opacity="0.2" d="M161 86.5H186" stroke="var(--general-colors-secondary)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
+<path opacity="0.2" d="M161 104.5H214" stroke="var(--general-colors-secondary)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
+<path opacity="0.2" d="M160.565 121.869H191.197" stroke="var(--general-colors-secondary)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
+<path opacity="0.2" d="M161 139.5H197" stroke="var(--general-colors-secondary)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
+<path opacity="0.2" d="M87 86.5H122" stroke="var(--general-colors-secondary)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
+<path opacity="0.2" d="M87 104.5H105" stroke="var(--general-colors-secondary)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
+<path opacity="0.2" d="M87.0001 121.869H117.632" stroke="var(--general-colors-secondary)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
+<path opacity="0.2" d="M88 139.5H103" stroke="var(--general-colors-secondary)" stroke-width="8.5278" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M62 160.5L246 160.5L246 175.5C246 183.232 239.732 189.5 232 189.5L76 189.5C68.268 189.5 62 183.232 62 175.5L62 160.5Z" fill="var(--general-colors-primary)" fill-opacity="0.4"/>
 <g filter="url(#filter0_b_1247_9821)">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M375 0H0V240H375V0ZM185.895 229.151C246.335 229.151 295.332 180.154 295.332 119.713C295.332 59.2724 246.335 10.2755 185.895 10.2755C125.454 10.2755 76.4569 59.2724 76.4569 119.713C76.4569 180.154 125.454 229.151 185.895 229.151Z" fill="black" fill-opacity="0.52"/>
@@ -27,7 +27,7 @@
 </filter>
 <linearGradient id="paint0_linear_1247_9821" x1="151.376" y1="54.9601" x2="151.376" y2="191.781" gradientUnits="userSpaceOnUse">
 <stop stop-color="var(--general-colors-primary)"/>
-<stop offset="1" stop-color="var(--secondary-color)" stop-opacity="0.2"/>
+<stop offset="1" stop-color="var(--general-colors-secondary)" stop-opacity="0.2"/>
 </linearGradient>
 <linearGradient id="paint1_linear_1247_9821" x1="255.5" y1="151.5" x2="289.5" y2="146.5" gradientUnits="userSpaceOnUse">
 <stop stop-color="white"/>

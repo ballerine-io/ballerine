@@ -22,11 +22,11 @@
     ($configuration.endUserInfo.language as Languages) || $configuration.defaultLanguage;
 
   const style = `
-    --font-family: ${$configuration.general?.fonts?.name || $uiPack.general.fonts.name};
+    --general-fonts-name: ${$configuration.general?.fonts?.name || $uiPack.general.fonts.name};
     --general-colors-primary: ${
       $configuration.general?.colors?.primary || $uiPack.general.colors.primary
     };
-    --secondary-color: ${
+    --general-colors-secondary: ${
       $configuration.general?.colors?.secondary || $uiPack.general.colors.secondary
     };
   `;
@@ -78,6 +78,6 @@
   }
 
   :global(p, div, body, button) {
-    font-family: var(--font-family);
+    font-family: var(--general-fonts-name);
   }
 </style>

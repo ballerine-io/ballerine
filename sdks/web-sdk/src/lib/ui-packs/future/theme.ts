@@ -710,7 +710,7 @@ export const uiTheme: IAppConfigurationUI = {
     padding: '15px 20px',
     width: '100%',
     color: '#fff',
-    background: "linear-gradient(267.68deg, var(--general-colors-primary) 23.95%, var(--secondary-color) 95.08%)",
+    background: "linear-gradient(267.68deg, var(--general-colors-primary) 23.95%, var(--general-colors-secondary) 95.08%)",
     'font-weight': 700,
     'border-radius': '100px',
     'box-shadow': '0px 6px 9px 5px #007AFF1a;-webkit-box-shadow: 0px 6px 9px 5px #007AFF1a;',
