@@ -147,6 +147,10 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        type: Elements.Loader,
+        props: {},
+      },
+      {
         type: Elements.VideoContainer,
         props: {
           style: {
