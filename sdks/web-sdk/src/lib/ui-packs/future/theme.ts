@@ -148,6 +148,10 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        type: Elements.Loader,
+        props: {},
+      },
+      {
         type: Elements.VideoContainer,
         props: {
           style: {
@@ -280,6 +284,10 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        type: Elements.Loader,
+        props: {},
+      },
+      {
         type: Elements.CameraButton,
         props: {
           style: {
@@ -397,6 +405,10 @@ const stepsTheme: TSteps = {
             margin: '0px',
           },
         },
+      },
+      {
+        type: Elements.Loader,
+        props: {},
       },
       {
         type: Elements.CameraButton,
