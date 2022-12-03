@@ -710,7 +710,7 @@ export const uiTheme: IAppConfigurationUI = {
     padding: '15px 20px',
     width: '100%',
     color: '#fff',
-    background: "linear-gradient(267.68deg, var(--primary-color) 23.95%, var(--secondary-color) 95.08%)",
+    background: "linear-gradient(267.68deg, var(--general-colors-primary) 23.95%, var(--secondary-color) 95.08%)",
     'font-weight': 700,
     'border-radius': '100px',
     'box-shadow': '0px 6px 9px 5px #007AFF1a;-webkit-box-shadow: 0px 6px 9px 5px #007AFF1a;',
@@ -758,11 +758,11 @@ export const uiTheme: IAppConfigurationUI = {
           padding: '15px 20px',
           'font-weight': 400,
           background: {
-            color: "var(--primary-color)",
+            color: "var(--general-colors-primary)",
             opacity: 0.2
           },
           color: '#fff',
-          border: '1px solid var(--primary-color)',
+          border: '1px solid var(--general-colors-primary)',
           'box-shadow':
             '0px 3px 10px rgba(0, 0, 0, 0.05), 0px 6px 30px rgba(0, 122, 255, 0.1)',
         },
@@ -876,11 +876,11 @@ export const uiTheme: IAppConfigurationUI = {
     optionProps: {
       style: {
         background: {
-          color: "var(--primary-color)",
+          color: "var(--general-colors-primary)",
           opacity: 0.2,
         },
         margin: '0 0 22px 0px',
-        border: '1px solid var(--primary-color)',
+        border: '1px solid var(--general-colors-primary)',
         'border-radius': '13px',
         width: '100%',
         padding: '14px 18px',
@@ -889,16 +889,16 @@ export const uiTheme: IAppConfigurationUI = {
         display: 'flex',
         'text-align': 'left',
         hover: {
-          border: '1px solid var(--primary-color)',
+          border: '1px solid var(--general-colors-primary)',
           background: {
-            color: "var(--primary-color)",
+            color: "var(--general-colors-primary)",
             opacity: 0.4,
           },
         },
         active: {
-          border: '1px solid var(--primary-color)',
+          border: '1px solid var(--general-colors-primary)',
           background: {
-            color: "var(--primary-color)",
+            color: "var(--general-colors-primary)",
             opacity: 0.4,
           },
         },

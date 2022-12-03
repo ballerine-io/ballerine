@@ -3,7 +3,7 @@
   import type { IElementProps } from '../../contexts/configuration';
   import { configuration as globalConfiguration } from '../../contexts/configuration';
   import { currentStepId } from '../../contexts/app-state';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { makeStylesFromConfiguration } from '../../services/css-manager';
   import { Loader } from './Loader';
   import merge from 'deepmerge';
   import { uiPack } from '../../ui-packs';

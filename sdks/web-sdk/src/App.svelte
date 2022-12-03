@@ -23,7 +23,9 @@
 
   const style = `
     --font-family: ${$configuration.general?.fonts?.name || $uiPack.general.fonts.name};
-    --primary-color: ${$configuration.general?.colors?.primary || $uiPack.general.colors.primary};
+    --general-colors-primary: ${
+      $configuration.general?.colors?.primary || $uiPack.general.colors.primary
+    };
     --secondary-color: ${
       $configuration.general?.colors?.secondary || $uiPack.general.colors.secondary
     };

@@ -28,23 +28,23 @@
 </filter>
 <linearGradient id="paint0_linear_1247_9851" x1="186" y1="123.5" x2="186" y2="231.5" gradientUnits="userSpaceOnUse">
 <stop stop-color="white"/>
-<stop offset="1" stop-color="var(--primary-color)"/>
+<stop offset="1" stop-color="var(--general-colors-primary)"/>
 </linearGradient>
 <linearGradient id="paint1_linear_1247_9851" x1="186" y1="123.5" x2="186" y2="231.5" gradientUnits="userSpaceOnUse">
-<stop stop-color="var(--primary-color)" stop-opacity="0"/>
+<stop stop-color="var(--general-colors-primary)" stop-opacity="0"/>
 <stop offset="1" stop-color="var(--secondary-color)"/>
 </linearGradient>
 <radialGradient id="paint2_radial_1247_9851" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(184 127.5) rotate(101.508) scale(85.213 119.535)">
-<stop stop-color="var(--primary-color)"/>
+<stop stop-color="var(--general-colors-primary)"/>
 <stop offset="1" stop-color="var(--secondary-color)" stop-opacity="0"/>
 </radialGradient>
 <radialGradient id="paint3_radial_1247_9851" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(186 123.5) rotate(90) scale(40 49.6296)">
 <stop stop-color="var(--secondary-color)"/>
-<stop offset="1" stop-color="var(--primary-color)" stop-opacity="0"/>
+<stop offset="1" stop-color="var(--general-colors-primary)" stop-opacity="0"/>
 </radialGradient>
 <radialGradient id="paint4_radial_1247_9851" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(185.5 92.5) rotate(90) scale(32)">
 <stop stop-color="white"/>
-<stop offset="1" stop-color="var(--primary-color)"/>
+<stop offset="1" stop-color="var(--general-colors-primary)"/>
 </radialGradient>
 <radialGradient id="paint5_radial_1247_9851" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(185.5 65.5) rotate(90) scale(70)">
 <stop offset="0.692708" stop-color="var(--secondary-color)" stop-opacity="0"/>

@@ -23,7 +23,7 @@
 <feBlend mode="normal" in="SourceGraphic" in2="effect1_backgroundBlur_1247_9766" result="shape"/>
 </filter>
 <linearGradient id="paint0_linear_1247_9766" x1="243.094" y1="33.9021" x2="243.094" y2="170.723" gradientUnits="userSpaceOnUse">
-<stop stop-color="var(--primary-color)"/>
+<stop stop-color="var(--general-colors-primary)"/>
 <stop offset="1" stop-color="var(--secondary-color)" stop-opacity="0.2"/>
 </linearGradient>
 </defs>
