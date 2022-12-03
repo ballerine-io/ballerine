@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.2.0
+
+### Minor Changes
+
+- UI packs capabilities, new ui packs (future)
+
 ## 1.1.38
 
 ### Patch Changes
