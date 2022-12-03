@@ -14,10 +14,11 @@
   export let configuration: IElementProps;
   export let skipType: string;
 
-  const background = $globalConfiguration.button?.background ||
+  const background =
+    $globalConfiguration.button?.background ||
+    $uiPack.button.background ||
     $globalConfiguration.general?.colors?.primary ||
-    $uiPack.general.colors.primary ||
-    $uiPack.button.background
+    $uiPack.general.colors.primary;
 
   const styleProps = {
     ...configuration?.style,
