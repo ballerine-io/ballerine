@@ -44,6 +44,7 @@ export enum Elements {
   VideoContainer = 'video-container',
   List = 'list',
   ErrorText = 'error-text',
+  Loader = 'loader'
 }
 
 interface ICSSPropertiesAll {

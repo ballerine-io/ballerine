@@ -10,6 +10,7 @@
     Overlay,
     Paragraph,
     VideoContainer,
+    Loader,
   } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
@@ -38,6 +39,7 @@
   const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const facingMode = isMobile() ? FACING_MODES.USER : FACING_MODES.ENVIRONMENT;
+  let stream: MediaStream;
 
   onMount(() => {
     if (!video) return;
@@ -47,8 +49,9 @@
         width: 1920,
         height: 1080,
       })
-      .then(stream => {
-        console.log('stream', stream);
+      .then(cameraStream => {
+        console.log('stream', cameraStream);
+        stream = cameraStream
       })
       .catch(error => {
         console.log('error', error);
@@ -99,6 +102,9 @@
         <!-- svelte-ignore a11y-media-has-caption -->
         <video bind:this={video} autoplay playsinline />
       </VideoContainer>
+    {/if}
+    {#if element.type === Elements.Loader && stream === undefined}
+      <Loader />
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
