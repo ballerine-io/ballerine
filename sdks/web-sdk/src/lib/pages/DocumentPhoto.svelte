@@ -38,10 +38,15 @@
 
   const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
-  const documentOptionsConfiguration = merge($uiPack.documentOptions, $configuration.documentOptions || {});
+  const documentOptionsConfiguration = merge(
+    $uiPack.documentOptions,
+    $configuration.documentOptions || {},
+  );
 
   const documentType =
-    (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType || $uiPack.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+    (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) ||
+    ($uiPack.steps[$currentStepId].type as DocumentType) ||
+    $selectedDocumentInfo.type;
 
   let stream: MediaStream;
   const stepNamespace = `${step.namespace}.${documentType}`;
@@ -95,7 +100,6 @@
     if (!cameraPhoto || $isDisabled) return;
 
     toggleOnIsDisabled();
-    console.log($uiPack);
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings || $uiPack.settings.cameraSettings,
     );

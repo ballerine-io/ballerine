@@ -756,7 +756,7 @@ export const uiTheme: IAppConfigurationUI = {
     borderRadius: '16px',
     padding: '24px',
     colors: {
-      primary: '#080444',
+      primary: '#007AFF',
       secondary: '#080444',
       text: '#788597',
       danger: 'rgba(173, 0, 0, 0.8);',
@@ -764,6 +764,7 @@ export const uiTheme: IAppConfigurationUI = {
     fonts: {
       name: 'Inter',
       weight: [500, 700],
+      link: "https://fonts.googleapis.com/css2?family=Inter:wght@500;700"
     },
   },
   photo: {},

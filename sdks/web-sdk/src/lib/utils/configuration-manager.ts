@@ -34,7 +34,7 @@ export let texts: TranslationType = translation;
 
 export const updateConfiguration = async (configOverrides: RecursivePartial<FlowsInitOptions>) => {
   let configurationResult: IAppConfiguration | undefined = undefined;
-  let uiTheme = packs.blue;
+  let uiTheme = packs.default;
 
   configuration.update(currentConfig => {
     const mergedConfig = mergeConfig(currentConfig, configOverrides);
@@ -43,26 +43,35 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
   });
 
   const config = (configurationResult as unknown as IAppConfiguration);
-  config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome], uiTheme);
-  configuration.update(() => config);
 
   const pack = configOverrides.uiConfig?.uiPack as string;
+
   if (isUrl(pack)) {
     const packConfigResponse = await fetch(pack);
     const packConfig = await packConfigResponse.json();
     uiPack.set(packConfig);
-    return;
+  } else {
+    uiPack.update(currentPack => {
+      // Check by existing ui pack names
+      if (!Object.keys(packs).includes(pack)) return currentPack;
+      const packName = pack as 'default' | 'future';
+      const updatedPack = packs[packName];
+      uiTheme = packs[packName];
+      return updatedPack;
+    });
   }
 
   uiPack.update(currentPack => {
     // Check by existing ui pack names
     if (!Object.keys(packs).includes(pack)) return currentPack;
-    const packName = pack as 'dark' | 'blue';
+    const packName = pack as 'default' | 'future';
     const updatedPack = packs[packName];
     uiTheme = packs[packName];
-    console.log('uiTheme', JSON.stringify(uiTheme));
     return updatedPack;
   });
+
+  config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome], uiTheme);
+  configuration.update(() => config);
 };
 
 export const updateTranslations = async (translations: FlowsTranslations) => {

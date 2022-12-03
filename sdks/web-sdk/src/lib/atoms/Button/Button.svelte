@@ -13,9 +13,9 @@
 
   const background = !isBack
     ? $globalConfiguration.button?.background ||
+      $uiPack.button.background ||
       $globalConfiguration.general?.colors?.primary ||
-      $uiPack.general.colors.primary ||
-      $uiPack.button.background
+      $uiPack.general.colors.primary
     : undefined;
 
   const styleProps = {
