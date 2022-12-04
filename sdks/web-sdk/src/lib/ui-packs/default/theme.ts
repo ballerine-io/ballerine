@@ -215,6 +215,10 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        type: Elements.Loader,
+        props: {},
+      },
+      {
         type: Elements.CameraButton,
         props: {
           style: {
@@ -329,6 +333,10 @@ const stepsTheme: TSteps = {
             color: '#fff',
           },
         },
+      },
+      {
+        type: Elements.Loader,
+        props: {},
       },
       {
         type: Elements.VideoContainer,
@@ -448,6 +456,10 @@ const stepsTheme: TSteps = {
             color: '#fff',
           },
         },
+      },
+      {
+        type: Elements.Loader,
+        props: {},
       },
       {
         type: Elements.VideoContainer,
