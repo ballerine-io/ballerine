@@ -35,6 +35,62 @@ const closeIconButton: IElement = {
   },
 };
 
+const imageTopStyles = {
+  position: "absolute",
+  top: "0px",
+  right: "0px"
+}
+
+const imageBottomStyle = {
+  position: "absolute",
+  bottom: "-5px",
+  left: "0px"
+}
+
+const ellipseRedTop = {
+  type: Elements.Image,
+  props: {
+    style: imageTopStyles,
+    attributes: {
+      src: '/ellipse-red-top.svg',
+      alt: 'ellipse-red',
+    },
+  },
+};
+
+const ellipseRedBottom = {
+  type: Elements.Image,
+  props: {
+    style: imageBottomStyle,
+    attributes: {
+      src: '/ellipse-red-bottom.svg',
+      alt: 'ellipse-red',
+    },
+  },
+};
+
+const ellipseBlueTop = {
+  type: Elements.Image,
+  props: {
+    style: imageTopStyles,
+    attributes: {
+      src: '/ellipse-blue-top.svg',
+      alt: 'ellipse-blue',
+    },
+  },
+};
+
+const ellipseBlueBottom = {
+  type: Elements.Image,
+  props: {
+    style: imageBottomStyle,
+    attributes: {
+      src: '/ellipse-blue-bottom.svg',
+      alt: 'ellipse-blue',
+    },
+  },
+};
+
 const backWhiteIconButton: IElement = {
   type: Elements.IconButton,
   props: {
@@ -76,6 +132,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         type: Elements.Paragraph,
         props: {
@@ -118,6 +176,8 @@ const stepsTheme: TSteps = {
           context: 'description',
         },
       },
+      ellipseRedBottom,
+      ellipseBlueTop,
     ],
   },
   [Steps.DocumentPhoto]: {
@@ -195,6 +255,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
     ],
   },
   [Steps.DocumentPhotoBackStart]: {
@@ -236,6 +298,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         type: Elements.Button,
         props: {
@@ -319,6 +383,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
     ],
   },
   [Steps.SelfieStart]: {
@@ -359,6 +425,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         type: Elements.Button,
         props: {},
@@ -438,12 +506,20 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
     ],
   },
   [Steps.Loading]: {
     name: Steps.Loading,
     id: Steps.Loading,
-    elements: [],
+    style: {
+      color: "#fff",
+    },
+    elements: [
+      ellipseRedTop,
+      ellipseBlueBottom,
+    ],
   },
   [Steps.Resubmission]: {
     name: Steps.Resubmission,
@@ -474,6 +550,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         type: Elements.Paragraph,
         props: {
@@ -531,6 +609,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         type: Elements.Paragraph,
         props: {
@@ -581,6 +661,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         type: Elements.Paragraph,
         props: {
@@ -625,6 +707,38 @@ const stepsTheme: TSteps = {
         type: Elements.Image,
         props: {
           style: {
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            right: "0px",
+            width: "100%"
+          },
+          attributes: {
+            src: '/ellipse-red-final.svg',
+            alt: 'ellipse-red',
+          },
+        },
+      },
+      {
+        type: Elements.Image,
+        props: {
+          style: {
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            right: "0px",
+            width: "100%"
+          },
+          attributes: {
+            src: '/ellipse-blue-final.svg',
+            alt: 'ellipse-red',
+          },
+        },
+      },
+      {
+        type: Elements.Image,
+        props: {
+          style: {
             margin: '170px auto 16px',
             'align-self': 'center',
           },
@@ -636,6 +750,7 @@ const stepsTheme: TSteps = {
           },
         },
       },
+
       {
         type: Elements.Paragraph,
         props: {
