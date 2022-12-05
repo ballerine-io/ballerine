@@ -404,8 +404,8 @@
         "description": "Weka pasipoti yako ndani ya fremu kisha piga \npicha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
       },
       "voter_id": {
-        "title": "Kitambulisho cha Mpiga Kura upande wa mbele",
-        "description": "Place your voter card ndani ya fremu kisha piga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+        "title": "Kitambulisho cha Mpiga Kura \nupande wa mbele",
+        "description": "Weka kitambulisho chako cha mpiga kura ndani ya fremu kisha piga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
       },
       "drivers_license": {
         "title": "Leseni ya Udereva",
