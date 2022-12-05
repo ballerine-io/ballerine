@@ -51,7 +51,7 @@
       "description": "Place the document inside the frame and take a picture. Make sure it is not cut or has any glare.",
       "id_card": {
         "title": "Upload ID",
-        "description": "Place your ID inside the from and take a picture. \nMake sure it is not cut or has any glare."
+        "description": "Place your ID inside the frame and take a picture. \nMake sure it is not cut or has any glare."
       },
       "passport": {
         "title": "Passport",
@@ -128,7 +128,7 @@
     },
     "selfie": {
       "title": "Selfie",
-      "description": "Place your face inside the frome and take a picture. \nMake sure it is clearly visable."
+      "description": "Place your face inside the frame and take a picture. \nMake sure it is clearly visable."
     },
     "check-selfie": {
       "title": "Review picture",
@@ -322,7 +322,7 @@
     },
     "selfie": {
       "title": "es: Selfie",
-      "description": "es: Place your face inside the frome and take a picture. \nMake sure it is clearly visable."
+      "description": "es: Place your face inside the frame and take a picture. \nMake sure it is clearly visable."
     },
     "check-selfie": {
       "title": "es: Review picture",
