@@ -51,7 +51,7 @@
       "description": "Place the document inside the frame and take a picture. Make sure it is not cut or has any glare.",
       "id_card": {
         "title": "Upload ID",
-        "description": "Place your ID inside the from and take a picture. \nMake sure it is not cut or has any glare."
+        "description": "Place your ID inside the frame and take a picture. \nMake sure it is not cut or has any glare."
       },
       "passport": {
         "title": "Passport",
@@ -128,7 +128,7 @@
     },
     "selfie": {
       "title": "Selfie",
-      "description": "Place your face inside the frome and take a picture. \nMake sure it is clearly visable."
+      "description": "Place your face inside the frame and take a picture. \nMake sure it is clearly visible."
     },
     "check-selfie": {
       "title": "Review picture",
@@ -147,10 +147,10 @@
     "resubmission": {
       "201-title": "Missing images",
       "201-button": "Retry uploading",
-      "201-description": "It seems like you haven't sent us all of the images we need in order to verify you. please retry uploading the images.",
+      "201-description": "It seems like you haven't sent us all of the images we need in order to verify you. Please retry uploading the images.",
       "204-title": "Couldn’t verify the images",
       "204-button": "Retry uploading",
-      "204-description": "The image of the document you have sent us was in bad quality. please retry uploading the images",
+      "204-description": "The image of the document you have sent us was in bad quality. Please retry uploading the images",
       "205-title": "Couldn’t verify the images",
       "205-button": "Retry uploading",
       "205-description": "The document you have sent us seems to be damaged, please retry uploading using a different document.",
@@ -262,10 +262,10 @@
     "resubmission": {
       "201-title": "es: Missing images",
       "201-button": "es: Retry uploading",
-      "201-description": "es: It seems like you haven't sent us all of the images we need in order to verify you. please retry uploading the images.",
+      "201-description": "es: It seems like you haven't sent us all of the images we need in order to verify you. Please retry uploading the images.",
       "204-title": "es: Couldn’t verify the images",
       "204-button": "es: Retry uploading",
-      "204-description": "es: The image of the document you have sent us was in bad quality. please retry uploading the images",
+      "204-description": "es: The image of the document you have sent us was in bad quality. Please retry uploading the images",
       "205-title": "es: Couldn’t verify the images",
       "205-button": "es: Retry uploading",
       "205-description": "es: The document you have sent us seems to be damaged, please retry uploading using a different document.",
@@ -322,7 +322,7 @@
     },
     "selfie": {
       "title": "es: Selfie",
-      "description": "es: Place your face inside the frome and take a picture. \nMake sure it is clearly visable."
+      "description": "es: Place your face inside the frame and take a picture. \nMake sure it is clearly visible."
     },
     "check-selfie": {
       "title": "es: Review picture",
@@ -343,6 +343,202 @@
       "offline": "es: You are offline, please check your connection",
       "errorDocuments": "es: Error sending documents",
       "errorDocumentVerification": "es: Error document verification"
+    }
+  },
+  "sw": {
+    "welcome": {
+      "title": "Thibitisha utambulisho wako",
+      "button": "Chagua aina ya hati",
+      "description": "Tunahitaji maelezo kidogo ili kutusaidia kuthibitisha \nutambulisho wako.",
+      "tip": "Uthibitishaji huchukua sekunde chache."
+    },
+    "document-selection": {
+      "title": "Pakia Kitambulisho",
+      "description": "Chagua aina ya hati ambayo ungependa \nkutambulika nayo",
+      "tip": "Chagua aina ya hati"
+    },
+    "document-options": {
+      "passport-title": "Pasipoti",
+      "passport-description": "Hati yako rasmi ya kusafiria.",
+      "id_card-title": "Kitambulisho",
+      "id_card-description": "Kitambulisho binafsi kilichotolewa na serikali.",
+      "drivers_license-title": "Leseni ya Udereva",
+      "drivers_license-description": "Leseni ya udereva iliotolewa na serikali",
+      "voter_id-title": "Kitambulisho cha Mpiga Kura",
+      "voter_id-description": "Kitambulisho cha mpiga kura kilichotolewa na serikali"
+    },
+    "document-start": {
+      "title": "Hati",
+      "button": "Piga picha",
+      "description": "Tafadhali piga picha ya hati yako. Hakikisha hati inaonekana kikamilifu ndani ya picha.",
+      "operating_license": {
+        "title": "Leseni ya Uendeshaji",
+        "button": "Piga picha",
+        "description": "Tafadhali piga picha leseni ya uendeshaji ya biashara yako. Hakikisha hati inaonekana kikamilifu ndani ya picha."
+      },
+      "business_registration": {
+        "title": "Usajili wa Biashara",
+        "button": "Piga picha",
+        "description": "Tafadhali piga picha ya hati ya usajili wa biashara yako. Hakikisha hati inaonekana kikamilifu ndani ya picha."
+      },
+      "proof_of_business_tax_id": {
+        "title": "Hati ya Utambulisho wa Mlipa Kodi",
+        "button": "Piga picha",
+        "description": "Tafadhali piga picha hati ya utambulisho wa mlipa kodi ya biashara yako. Hakikisha hati inaonekana kikamilifu ndani ya picha."
+      },
+      "bank_statement": {
+        "title": "Taarifa ya/Barua kutoka Benki",
+        "button": "Piga picha",
+        "description": "Tafadhali piga picha taarifa ya benki au barua kutoka benki. Hakikisha nyaraka inaonekana kikamilifu ndani ya picha."
+      }
+    },
+    "document-photo": {
+      "title": "Pakia Nyaraka",
+      "description": "Weka nyaraka yako ndani ya fremu kisha piga picha. Hakikisha kuwa haijakatwa na haina mwako wowote.",
+      "id_card": {
+        "title": "Pakia Kitambulisho",
+        "description": "Weka kitambulisho chako ndani ya fremu kisha piga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "passport": {
+        "title": "Pasipoti",
+        "description": "Weka pasipoti yako ndani ya fremu kisha piga \npicha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "voter_id": {
+        "title": "Kitambulisho cha Mpiga Kura \nupande wa mbele",
+        "description": "Weka kitambulisho chako cha mpiga kura ndani ya fremu kisha piga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "drivers_license": {
+        "title": "Leseni ya Udereva",
+        "description": "Weka leseni yako ya udereva ndani ya fremu kisha piga \npicha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "proof_of_business_tax_id": {
+        "title": "Hati ya Utambulisho wa Mlipa Kodi ya Biashara",
+        "description": "Hati ya utambulisho wa mlipa kodi ya biashara ndani ya fremu kisha piga picha. Hakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "bank_statement": {
+        "title": "Taarifa ya/Barua kutoka Benki",
+        "description": "Weka taarifa ya benki ndani ya fremu kisha piga picha. Hakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "business_registration": {
+        "title": "Usajili wa Biashara",
+        "description": "Weka hati ya usajili wa biashara ndani ya fremu kisha piga picha. Hakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "operating_license": {
+        "title": "Leseni ya Uendeshaji",
+        "description": "Weka hati ya leseni ya uendeshaji ndani ya fremu kisha piga picha. Hakikisha kuwa haijakatwa na haina mwako wowote."
+      }
+    },
+    "document-photo-back": {
+      "id_card": {
+        "title": "Kitambulisho upande wa nyuma",
+        "description": "Place the upande wa nyuma wa kitambulisho chako ndani ya fremu kisha \npiga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "voter_id": {
+        "title": "Kitambulisho cha Mpiga Kura upande wa nyuma",
+        "description": "Weka upande wa nyuma wa kitambulisho chako cha mpiga kura ndani ya fremu kisha \npiga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "drivers_license": {
+        "title": "Leseni ya udereva upande wa nyuma",
+        "description": "Weka upande wa nyuma wa leseni yako ya udereva ndani \nya fremu kisha piga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      }
+    },
+    "check-document": {
+      "title": "Kagua picha",
+      "description": "Hakikisha taarifa zinaonekana vizuri, bila ukungu \nau mwako."
+    },
+    "document-photo-back-start": {
+      "title": "Kitambulisho upande wa nyuma",
+      "description": "Tafadhali piga picha upande wa nyuma wa kitambulisho chako",
+      "button": "Piga picha",
+      "voter_id": {
+        "description": "Tafadhali piga picha upande wa nyuma wa kitambulisho chako cha mpiga kura",
+        "title": "Kitambulisho cha mpiga kura upande wa nyuma"
+      },
+      "drivers_license": {
+        "title": "Leseni ya udereva upande wa nyuma",
+        "description": "Tafadhali piga picha upande wa nyuma wa leseni yako ya \nudereva"
+      }
+    },
+    "check-document-photo-back": {
+      "title": "Kagua picha",
+      "description": "Hakikisha taarifa zinaonekana vizuri, bila ukungu \nau mwako."
+    },
+    "navigation-buttons": {
+      "next": "Iko vizuri",
+      "back": "Piga tena"
+    },
+    "selfie-start": {
+      "title": "Selfie",
+      "button": "Piga selfie",
+      "description": "Hakikisha uso wako unaonekana vizuri na uko ndani kabisa ya \nfremu."
+    },
+    "selfie": {
+      "title": "Selfie",
+      "description": "Weka uso wako ndani ya fremu kisha piga picha. \nHakikisha inaonekana vizuri."
+    },
+    "check-selfie": {
+      "title": "Kagua picha",
+      "description": "Hakikisha uso wako unaonekana vizuri na uko ndani kabisa ya \nfremu."
+    },
+    "final": {
+      "title": "Imefanikiwa",
+      "description": "Utambulisho wako umefanikiwa kuthibitishwa.",
+      "button": "Endelea"
+    },
+    "loader": {
+      "text-one": "Tunathibitisha nyaraka zako",
+      "text-two": "Hii inaweza kuchukua sekunde chache",
+      "text-three": "Inachukua muda mrefu kuliko kawaida"
+    },
+    "resubmission": {
+      "201-title": "Picha zinakosekana",
+      "201-button": "Jaribu kupakia tena",
+      "201-description": "Inaonakana hukututumia picha zote tunazohitaji ili kukuthibitisha. Tafadhali jaribu kupakia tena hizo picha.",
+      "204-title": "Picha hazikuweza kuthibitishwa",
+      "204-button": "Jaribu kupakia tena",
+      "204-description": "Picha ya hati uliotutumia ilikua katika ubora mbaya. Tafadhali jaribu kupakia tena hizo picha",
+      "205-title": "Picha hazikuweza kuthibitishwa",
+      "205-button": "Jaribu kupakia tena",
+      "205-description": "Hati uliotutumia inaonakana kuharibika. Tafadhali jaribu kupakia tena kwa kutumia hati nyingine.",
+      "206-title": "Hati haikubaliki",
+      "206-button": "Chagua hati nyingine",
+      "206-description": "Hati uliotutumia haikubaliki. Tafadhali piga picha ya hati halali.",
+      "207-title": "Hati imeisha muda wake",
+      "207-button": "Jaribu kupakia tena",
+      "207-description": "Hati uliotuma inaonekana imeisha muda wake. Tafadhali piga picha ya hati halali.",
+      "606-title": "Selfie sio safi",
+      "606-button": "Jaribu kupakia tena",
+      "606-description": "Inaonekana picha ya sura yako haikua safi, tafadhali jaribu tena.",
+      "614-title": "Hati haionekani kikamilifu",
+      "614-button": "Jaribu kupakia tena",
+      "614-description": "Hati uliotuma haiko ndani ya picha kikamilifu.",
+      "615-title": "Upande wa nyuma hauonekani kikamilifu",
+      "615-button": "Jaribu kupakia tena",
+      "615-description": "Upande wa nyuma wa hati uliotuma hauko ndani ya picha kikamilifu."
+    },
+    "loading": {
+      "review-hint": "Inachukua muda mrefu kuliko kawaida"
+    },
+    "decline": {
+      "title": "Uthibitisho umeshindikana",
+      "button": "Funga",
+      "description": "Inaonekana kulikuwa na tatizo katika kuthibitisha hati zako."
+    },
+    "error": {
+      "title": "Uthibitisho umeshindikana",
+      "button": "Funga"
+    },
+    "timeout": {
+      "title": "Hitilafu imetokea",
+      "button": "Funga",
+      "description": "Inaonekana kulikuwa na tatizo katika kuthibitisha hati zako."
+    },
+    "general": {
+      "online": "Mtandao unapatikana!",
+      "offline": "Mtandao haupatikani, tafadhali angalia mtandao wako",
+      "errorDocuments": "Hitilafu katika kutuma hati",
+      "errorDocumentVerification": "Hitilafu katika uthibitishaji wa hati",
+      "errorCameraAccess": "Imeshindikana kufikia kamera ya kifaa chako. Ili kuendelea, nenda kwenye mipangilio ya aplikesheni na uruhusu matumizi kamera."
     }
   },
   "fr": {}
