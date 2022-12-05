@@ -59,7 +59,7 @@
       },
       "voter_id": {
         "title": "Voter ID front side",
-        "description": "Place your voter card inside the frome and take a picture. \nMake sure it is not cut or has any glare."
+        "description": "Place your voter card inside the frame and take a picture. \nMake sure it is not cut or has any glare."
       },
       "drivers_license": {
         "title": "Drivers license",
@@ -223,7 +223,7 @@
       "passport-title": "es: Passport",
       "passport-description": "es: Place your passport inside the frame and take a \npicture. \nMake sure it is not cut or has any glare.",
       "voter_id-title": "es: Voter ID front side",
-      "voter_id-description": "es: Place your voter card inside the frome and take a picture. \nMake sure it is not cut or has any glare.",
+      "voter_id-description": "es: Place your voter card inside the frame and take a picture. \nMake sure it is not cut or has any glare.",
       "drivers_license-title": "es: Drivers license",
       "drivers_license-description": "es: Place your drivers license inside the frame and take \na picture. \nMake sure it is not cut or has any glare.",
       "proof_of_business_tax_id-title": "TIN ID / Certificate",
