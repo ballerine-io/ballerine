@@ -4,6 +4,7 @@ export type {
   IAttributes,
   IStepConfiguration,
   IElementProps,
+  IOpacityColor,
   IButton,
   IElement,
   IFormProps,

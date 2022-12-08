@@ -45,6 +45,12 @@ export enum Elements {
   VideoContainer = 'video-container',
   List = 'list',
   ErrorText = 'error-text',
+  Loader = 'loader'
+}
+
+export interface IOpacityColor {
+  color: string;
+  opacity: number;
 }
 
 export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo' | 'Voter';
