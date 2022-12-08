@@ -770,19 +770,11 @@ export const uiTheme: IAppConfigurationUI = {
           padding: '15px 20px',
           'font-weight': 400,
           background: {
-<<<<<<< HEAD
             color: "var(--general-colors-primary)",
             opacity: 0.2
           },
           color: '#fff',
           border: '1px solid var(--general-colors-primary)',
-=======
-            color: "var(--primary-color)",
-            opacity: 0.2
-          },
-          color: '#fff',
-          border: '1px solid var(--primary-color)',
->>>>>>> origin/main
           'box-shadow':
             '0px 3px 10px rgba(0, 0, 0, 0.05), 0px 6px 30px rgba(0, 122, 255, 0.1)',
         },
@@ -896,19 +888,11 @@ export const uiTheme: IAppConfigurationUI = {
     optionProps: {
       style: {
         background: {
-<<<<<<< HEAD
           color: "var(--general-colors-primary)",
           opacity: 0.2,
         },
         margin: '0 0 22px 0px',
         border: '1px solid var(--general-colors-primary)',
-=======
-          color: "var(--primary-color)",
-          opacity: 0.2,
-        },
-        margin: '0 0 22px 0px',
-        border: '1px solid var(--primary-color)',
->>>>>>> origin/main
         'border-radius': '13px',
         width: '100%',
         padding: '14px 18px',
@@ -917,28 +901,16 @@ export const uiTheme: IAppConfigurationUI = {
         display: 'flex',
         'text-align': 'left',
         hover: {
-<<<<<<< HEAD
           border: '1px solid var(--general-colors-primary)',
           background: {
             color: "var(--general-colors-primary)",
-=======
-          border: '1px solid var(--primary-color)',
-          background: {
-            color: "var(--primary-color)",
->>>>>>> origin/main
             opacity: 0.4,
           },
         },
         active: {
-<<<<<<< HEAD
           border: '1px solid var(--general-colors-primary)',
           background: {
             color: "var(--general-colors-primary)",
-=======
-          border: '1px solid var(--primary-color)',
-          background: {
-            color: "var(--primary-color)",
->>>>>>> origin/main
             opacity: 0.4,
           },
         },
