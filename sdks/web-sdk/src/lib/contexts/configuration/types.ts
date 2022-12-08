@@ -127,9 +127,10 @@ export interface IElementProps {
 }
 
 export interface IElement {
-  id?: string;
+  id: string;
   props: IElementProps;
   type: Elements;
+  disabled?: boolean;
   elements?: IElement[];
 }
 

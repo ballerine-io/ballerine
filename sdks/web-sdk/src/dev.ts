@@ -1,4 +1,4 @@
-import { Steps } from './lib/contexts/configuration';
+import { Elements, Steps } from './lib/contexts/configuration';
 import { flows } from './main';
 import { DocumentType } from './lib/contexts/app-state';
 import { FlowsInitOptions } from './types/BallerineSDK';
@@ -9,10 +9,33 @@ const ballerineInitConfig: FlowsInitOptions = {
     overrides: {},
   },
   uiConfig: {
+    general: {
+      colors: {
+        primary: "#000",
+      }
+    },
+    components: {
+      paragraph: {
+        "text-align": "left",
+      }
+    },
     flows: {
       ['my-kyc-flow']: {
         steps: [
-          { name: Steps.Welcome, id: Steps.Welcome },
+          { name: Steps.Welcome, id: Steps.Welcome, elements: [
+            {
+              type: Elements.Paragraph,
+              id: "tip1",
+              props: {
+                style: {
+                  margin: '32px 0px 100px',
+                  'font-size': '16px',
+                  "text-align": "center"
+                },
+                context: 'tip',
+              },
+            },
+          ] },
           {
             name: Steps.DocumentSelection,
             id: Steps.DocumentSelection,

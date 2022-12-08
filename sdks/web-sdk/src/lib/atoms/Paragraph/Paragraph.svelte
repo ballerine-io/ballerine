@@ -11,7 +11,11 @@
 
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = getComponentStyles($uiPack.paragraph, $globalConfiguration.paragraph || {}, styleProps);
+  const style = getComponentStyles(
+    $uiPack.paragraph,
+    $globalConfiguration.paragraph || {},
+    styleProps,
+  );
 </script>
 
 <p {style} class:active>

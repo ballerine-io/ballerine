@@ -23,11 +23,14 @@
   const style = getLayoutStyles($configuration, $uiPack, step);
 
   const documentType =
-    (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType || $uiPack.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+    (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) ||
+    ($uiPack.steps[$currentStepId].type as DocumentType) ||
+    $selectedDocumentInfo.type;
 
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
   }
+
   const stepNamespace = `${step.namespace}.${documentType}`;
 
   const handleGoToNextStep = async () => {

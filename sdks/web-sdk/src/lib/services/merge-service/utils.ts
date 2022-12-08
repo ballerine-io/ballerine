@@ -6,7 +6,6 @@ export const mergeStepConfig = (
   overrides: IStepConfiguration,
 ): IStepConfiguration => {
   const mergedConfig = merge(defaultConfig, overrides);
-  console.log("mergedConfig", mergedConfig)
   return {
     ...mergedConfig,
     elements: overrides.elements || defaultConfig.elements,
