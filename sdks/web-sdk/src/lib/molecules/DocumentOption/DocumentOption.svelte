@@ -10,7 +10,7 @@
   import { IDocumentInfo } from '../../contexts/app-state';
   import { T } from '../../contexts/translation';
   import { IDocumentOptions } from '../../organisms/DocumentOptions';
-  import { makesLocalStyles } from '../../utils/css-utils';
+  import { makesLocalStyles } from '../../services/css-manager';
   import Icon from '../../atoms/Icons/Icon.svelte';
   import { ICameraEvent, nativeCameraHandler } from '../../utils/photo-utils';
   import { isNativeCamera } from '../../contexts/flows/hooks';
