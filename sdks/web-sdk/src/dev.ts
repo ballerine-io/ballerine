@@ -9,6 +9,7 @@ const ballerineInitConfig: FlowsInitOptions = {
     overrides: {},
   },
   uiConfig: {
+    uiPack: "future",
     flows: {
       ['my-kyc-flow']: {
         steps: [

@@ -6,7 +6,7 @@
     IElementProps,
   } from '../../contexts/configuration';
   import { uiPack } from '../../ui-packs';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { makeStylesFromConfiguration } from '../../services/css-manager';
   import Loader from '../Loader/Loader.svelte';
 
   export let configuration: IElementProps;

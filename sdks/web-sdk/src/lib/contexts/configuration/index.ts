@@ -3,7 +3,6 @@ export type {
   IAppConfiguration,
   IAttributes,
   IStepConfiguration,
-  ICSSProperties,
   IElementProps,
   IOpacityColor,
   IButton,

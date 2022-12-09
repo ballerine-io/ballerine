@@ -1,7 +1,7 @@
-import { IAppConfiguration, IAppConfigurationUI, ICSSProperties, IStepConfiguration } from "../contexts/configuration";
+import { IAppConfiguration, IAppConfigurationUI, IStepConfiguration } from "../contexts/configuration";
 import { mergeStepConfig } from "../services/merge-service";
 import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
-import { makeStylesFromConfiguration } from '../utils/css-utils';
+import { makeStylesFromConfiguration, ICSSProperties } from '../services/css-manager';
 import merge from 'deepmerge';
 
 export const getStepConfiguration = (configuration:  IAppConfiguration, uiPack: IAppConfigurationUI, stepId: string) => {
