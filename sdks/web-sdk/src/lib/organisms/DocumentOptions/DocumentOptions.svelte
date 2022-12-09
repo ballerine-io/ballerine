@@ -14,7 +14,10 @@
   export let step: IStepConfiguration;
   const ducumentOptions: IDocumentOption[] = [];
 
-  const documentOptionsConfiguration = merge($uiPack.documentOptions, $configuration.documentOptions || {});
+  const documentOptionsConfiguration = merge(
+    $uiPack.documentOptions,
+    $configuration.documentOptions || {},
+  );
 
   Object.keys(documentOptionsConfiguration.options).forEach((key: string) => {
     const type = key as DocumentType;

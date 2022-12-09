@@ -4,7 +4,7 @@
   import License from './License.svelte';
   import PassportTwo from './PassportTwo.svelte';
   import Voter from './Voter.svelte';
-  import { makesLocalStyles } from '../../utils/css-utils';
+  import { makesLocalStyles } from '../../services/css-manager';
 
   import type { SvelteComponent } from 'svelte';
   import type { Icons } from '../../contexts/configuration/types';

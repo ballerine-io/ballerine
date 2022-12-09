@@ -2,7 +2,7 @@
   import merge from 'deepmerge';
   import { configuration, ICSSProperties } from '../../contexts/configuration';
   import { uiPack } from '../../ui-packs';
-  import { makesLocalStyles } from '../../utils/css-utils';
+  import { makesLocalStyles } from '../../services/css-manager';
 
   export let size: 'small' | 'medium' = 'medium';
   export let fullPage = true;

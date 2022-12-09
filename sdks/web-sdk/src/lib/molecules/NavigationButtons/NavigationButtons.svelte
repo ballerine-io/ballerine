@@ -6,7 +6,7 @@
   } from '../../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../../contexts/navigation';
   import { T } from '../../contexts/translation';
-  import { makesLocalStyles } from '../../utils/css-utils';
+  import { makesLocalStyles } from '../../services/css-manager';
   import { currentStepId } from '../../contexts/app-state';
   import merge from 'deepmerge';
   import { uiPack } from '../../ui-packs';

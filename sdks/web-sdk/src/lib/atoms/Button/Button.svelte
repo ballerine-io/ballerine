@@ -3,7 +3,7 @@
     configuration as globalConfiguration,
     IElementProps,
   } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { makeStylesFromConfiguration } from '../../services/css-manager';
 
   import merge from 'deepmerge';
   import { uiPack } from '../../ui-packs';

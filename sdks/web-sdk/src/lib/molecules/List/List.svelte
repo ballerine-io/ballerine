@@ -7,16 +7,19 @@
   } from '../../contexts/configuration';
   import { getFlowName } from '../../contexts/flows';
   import { currentLanguage, T, TranslationType } from '../../contexts/translation';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { makeStylesFromConfiguration } from '../../services/css-manager';
   import { getListLength } from './utils';
   import { uiPack } from '../../ui-packs';
 
   export let configuration: IElementProps;
 
-  const globalListProps = $globalConfiguration.list?.listProps as IElementProps || $uiPack.list.listProps;
+  const globalListProps =
+    ($globalConfiguration.list?.listProps as IElementProps) || $uiPack.list.listProps;
   const globalListStyles = globalListProps.style as ICSSProperties;
-  const titleProps = $globalConfiguration.list?.titleProps as IElementProps || $uiPack.list.titleProps;
-  const listElementProps = $globalConfiguration.list?.listElementProps as IElementProps || $uiPack.list.listElementProps;
+  const titleProps =
+    ($globalConfiguration.list?.titleProps as IElementProps) || $uiPack.list.titleProps;
+  const listElementProps =
+    ($globalConfiguration.list?.listElementProps as IElementProps) || $uiPack.list.listElementProps;
 
   const style = makeStylesFromConfiguration(globalListStyles, configuration.style);
 
