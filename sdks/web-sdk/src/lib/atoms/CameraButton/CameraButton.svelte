@@ -4,7 +4,7 @@
     ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { makeStylesFromConfiguration } from '../../services/css-manager';
 
   export let configuration: IElementProps;
   export let isDisabled = false;
