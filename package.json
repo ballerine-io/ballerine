@@ -61,11 +61,7 @@
     "nx": "15.0.2",
     "prettier": "^2.7.1"
   },
-  "pnpm": {
-    "overrides": {
-      "vite": "2.9.15"
-    }
-  },
+
   "dependencies": {
     "deepmerge": "^4.2.2"
   }
