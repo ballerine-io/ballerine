@@ -1,6 +1,6 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Title, IconButton, Photo, Paragraph, IconCloseButton } from '../atoms';
+  import { Title, IconButton, Photo, Paragraph, IconCloseButton, Image } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
   import { goToPrevStep } from '../contexts/navigation';
@@ -73,6 +73,9 @@
     {/if}
     {#if element.type === Elements.Photo}
       <Photo configuration={element.props} src={image} />
+    {/if}
+    {#if element.type === Elements.Image}
+      <Image configuration={element.props} />
     {/if}
   {/each}
   <NavigationButtons />
