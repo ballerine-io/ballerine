@@ -19,6 +19,3 @@
 [submodule "packages/ballerine-ui-components"]
 	path = packages/ui-components
 	url = git@github.com:ballerine-io/ballerine-ui-components.git
-[submodule "apps/ballerine-docs"]
-	path = apps/docs
-	url = git@github.com:ballerine-io/ballerine-docs.git
