@@ -49,5 +49,6 @@
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     margin: var(--margin);
+    z-index: 1;
   }
 </style>

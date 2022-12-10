@@ -20,10 +20,16 @@
 <style>
   .container {
     margin: var(--margin);
+    position: var(--position);
+    top: var(--top);
+    bottom: var(--bottom);
+    right: var(--right);
+    left: var(--left);
     flex-grow: var(--flex-grow, 0);
     text-align: center;
   }
   .container > :global(svg) {
     max-width: 100%;
+    width: var(--width);
   }
 </style>

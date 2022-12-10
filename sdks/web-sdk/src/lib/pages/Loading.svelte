@@ -1,6 +1,7 @@
 <script lang="ts">
   import { toast } from '@zerodevx/svelte-toast';
-  import { FlyingText, Loader } from '../atoms';
+  import { Elements } from '../contexts/configuration/types';
+  import { FlyingText, Loader, Image } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import {
     currentParams,
@@ -26,7 +27,6 @@
   const WAITING_TIME = 1000 * 60 * 3; // 3 minutes
 
   export let stepId;
-
   const step = getStepConfiguration($configuration, $uiPack, stepId);
   const style = getLayoutStyles($configuration, $uiPack, step);
 
@@ -91,7 +91,7 @@
       console.error('Error sending documents', error);
       $currentParams = { message: error } as ISelectedParams;
       await preloadStepById($configuration, configuration, 'error', $uiPack);
-      $currentStepId = 'error';
+      //$currentStepId = 'error';
       return;
     }
 
@@ -116,7 +116,7 @@
     timeout = setTimeout(async () => {
       showText = false;
       await preloadStepById($configuration, configuration, 'decline', $uiPack);
-      $currentStepId = 'decline';
+      //$currentStepId = 'decline';
     }, WAITING_TIME);
   });
 
@@ -149,12 +149,18 @@
       </div>
     {/if}
   {/if}
+  {#each step.elements as element}
+    {#if element.type === Elements.Image}
+      <Image configuration={element.props} />
+    {/if}
+  {/each}
   <Loader />
 </div>
 
 <style>
   .container {
     padding: var(--padding);
+    color: var(--color);
     position: relative;
     background: var(--background);
     text-align: center;

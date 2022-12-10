@@ -38,7 +38,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: white;
+    background: 'transparent';
   }
 
   .loader-wrapper {

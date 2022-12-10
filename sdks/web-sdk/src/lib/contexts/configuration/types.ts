@@ -48,11 +48,6 @@ export enum Elements {
   Loader = 'loader'
 }
 
-export interface IOpacityColor {
-  color: string;
-  opacity: number;
-}
-
 export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo' | 'Voter';
 
 interface IAttributesAll {
