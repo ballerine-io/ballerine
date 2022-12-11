@@ -142,8 +142,6 @@ export const mergeConfig = (
     newConfig.documentOptions.options = documentOptions;
   }
 
-  console.log("newConfig", newConfig)
-
   if (!newConfig.steps) {
     return newConfig;
   }
@@ -170,15 +168,13 @@ export const mergeConfig = (
       // element configuration provided to edit element
       elements.push(mergeObj(element, stepElement))
     })
+    // elements configuration provided to add element
     const newElements = step.elements.filter(stepElement => {
-      return !uiTheme.steps[stepKey].elements.find(packElement => packElement.id !== stepElement.id);
+      const uiPackElements = uiTheme.steps[stepKey].elements;
+      return !uiPackElements.find(packElement => packElement.id === stepElement.id);
     });
     newConfig.steps[stepKey].elements = [...elements, ...newElements];
   });
-
-
-
-
 
   return newConfig;
 };
