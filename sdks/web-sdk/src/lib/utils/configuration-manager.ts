@@ -94,6 +94,8 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
   });
 
   config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome], uiTheme);
+  config.steps[Steps.Loading] = await preloadStepImages(config.steps[Steps.Loading], uiTheme);
+  config.steps[Steps.Final] = await preloadStepImages(config.steps[Steps.Final], uiTheme);
   configuration.update(() => config);
 };
 

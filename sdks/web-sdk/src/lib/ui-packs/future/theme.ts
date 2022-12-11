@@ -37,6 +37,62 @@ const closeIconButton: IElement = {
   },
 };
 
+const imageTopStyles = {
+  position: "absolute",
+  top: "0px",
+  right: "0px"
+}
+
+const imageBottomStyle = {
+  position: "absolute",
+  bottom: "-5px",
+  left: "0px"
+}
+
+const ellipseRedTop = {
+  type: Elements.Image,
+  props: {
+    style: imageTopStyles,
+    attributes: {
+      src: 'https://cdn.ballerine.io/ui-packs/future/ellipse-red-top.svg',
+      alt: 'ellipse-red',
+    },
+  },
+};
+
+const ellipseRedBottom = {
+  type: Elements.Image,
+  props: {
+    style: imageBottomStyle,
+    attributes: {
+      src: 'https://cdn.ballerine.io/ui-packs/future/ellipse-red-bottom.svg',
+      alt: 'ellipse-red',
+    },
+  },
+};
+
+const ellipseBlueTop = {
+  type: Elements.Image,
+  props: {
+    style: imageTopStyles,
+    attributes: {
+      src: 'https://cdn.ballerine.io/ui-packs/future/ellipse-blue-top.svg',
+      alt: 'ellipse-blue',
+    },
+  },
+};
+
+const ellipseBlueBottom = {
+  type: Elements.Image,
+  props: {
+    style: imageBottomStyle,
+    attributes: {
+      src: 'https://cdn.ballerine.io/ui-packs/future/ellipse-blue-bottom.svg',
+      alt: 'ellipse-blue',
+    },
+  },
+};
+
 const backWhiteIconButton: IElement = {
   id: "back-white-icon-button",
   type: Elements.IconButton,
@@ -81,6 +137,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         id: "description",
         type: Elements.Paragraph,
@@ -127,6 +185,8 @@ const stepsTheme: TSteps = {
           context: 'description',
         },
       },
+      ellipseRedBottom,
+      ellipseBlueTop,
     ],
   },
   [Steps.DocumentPhoto]: {
@@ -216,6 +276,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
     ],
   },
   [Steps.DocumentPhotoBackStart]: {
@@ -259,6 +321,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         id: "button",
         type: Elements.Button,
@@ -355,6 +419,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
     ],
   },
   [Steps.SelfieStart]: {
@@ -398,6 +464,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         id: "button",
         type: Elements.Button,
@@ -490,12 +558,20 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
     ],
   },
   [Steps.Loading]: {
     name: Steps.Loading,
     id: Steps.Loading,
-    elements: [],
+    style: {
+      color: "#fff",
+    },
+    elements: [
+      ellipseRedTop,
+      ellipseBlueBottom,
+    ],
   },
   [Steps.Resubmission]: {
     name: Steps.Resubmission,
@@ -528,6 +604,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         id: "description",
         type: Elements.Paragraph,
@@ -589,6 +667,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         id: "description",
         type: Elements.Paragraph,
@@ -643,6 +723,8 @@ const stepsTheme: TSteps = {
           },
         },
       },
+      ellipseRedTop,
+      ellipseBlueBottom,
       {
         id: "description",
         type: Elements.Paragraph,
@@ -689,6 +771,38 @@ const stepsTheme: TSteps = {
       },
       {
         id: "image",
+        type: Elements.Image,
+        props: {
+          style: {
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            right: "0px",
+            width: "100%"
+          },
+          attributes: {
+            src: 'https://cdn.ballerine.io/ui-packs/future/ellipse-red-final.svg',
+            alt: 'ellipse-red',
+          },
+        },
+      },
+      {
+        type: Elements.Image,
+        props: {
+          style: {
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            right: "0px",
+            width: "100%"
+          },
+          attributes: {
+            src: 'https://cdn.ballerine.io/ui-packs/future/ellipse-blue-final.svg',
+            alt: 'ellipse-red',
+          },
+        },
+      },
+      {
         type: Elements.Image,
         props: {
           style: {
