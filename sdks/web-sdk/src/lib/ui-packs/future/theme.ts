@@ -49,7 +49,8 @@ const imageBottomStyle = {
   left: "0px"
 }
 
-const ellipseRedTop = {
+const ellipseRedTop: IElement = {
+  id: "ellipse-red-top",
   type: Elements.Image,
   props: {
     style: imageTopStyles,
@@ -60,7 +61,8 @@ const ellipseRedTop = {
   },
 };
 
-const ellipseRedBottom = {
+const ellipseRedBottom: IElement = {
+  id: "ellipse-red-bottom",
   type: Elements.Image,
   props: {
     style: imageBottomStyle,
@@ -71,7 +73,8 @@ const ellipseRedBottom = {
   },
 };
 
-const ellipseBlueTop = {
+const ellipseBlueTop: IElement = {
+  id: "ellipse-blue-top",
   type: Elements.Image,
   props: {
     style: imageTopStyles,
@@ -82,7 +85,8 @@ const ellipseBlueTop = {
   },
 };
 
-const ellipseBlueBottom = {
+const ellipseBlueBottom: IElement = {
+  id: "ellipse-blue-bottom",
   type: Elements.Image,
   props: {
     style: imageBottomStyle,
@@ -770,7 +774,7 @@ const stepsTheme: TSteps = {
         },
       },
       {
-        id: "image",
+        id: "ellipse-red",
         type: Elements.Image,
         props: {
           style: {
@@ -787,6 +791,7 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        id: "ellipse-blue",
         type: Elements.Image,
         props: {
           style: {
@@ -798,11 +803,12 @@ const stepsTheme: TSteps = {
           },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/future/ellipse-blue-final.svg',
-            alt: 'ellipse-red',
+            alt: 'ellipse-blue',
           },
         },
       },
       {
+        id: "ellipse-red",
         type: Elements.Image,
         props: {
           style: {

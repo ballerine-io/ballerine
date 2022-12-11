@@ -22,20 +22,7 @@ const ballerineInitConfig: FlowsInitOptions = {
     flows: {
       ['my-kyc-flow']: {
         steps: [
-          { name: Steps.Welcome, id: Steps.Welcome, elements: [
-            {
-              type: Elements.Paragraph,
-              id: "tip1",
-              props: {
-                style: {
-                  margin: '32px 0px 100px',
-                  'font-size': '16px',
-                  "text-align": "center"
-                },
-                context: 'tip',
-              },
-            },
-          ] },
+          { name: Steps.Welcome, id: Steps.Welcome },
           {
             name: Steps.DocumentSelection,
             id: Steps.DocumentSelection,
