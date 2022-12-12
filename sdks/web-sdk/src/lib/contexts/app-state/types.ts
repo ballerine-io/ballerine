@@ -25,6 +25,7 @@ export interface IDocumentInfo {
   backSide: boolean;
   variant: DocumentVariant;
   type: DocumentType;
+  orderIndex: number;
 }
 
 export type IPageSide = 'front' | 'back';

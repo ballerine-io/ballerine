@@ -166,7 +166,8 @@ export const mergeConfig = (
     newConfig.steps &&
     newConfig.steps[Steps.DocumentSelection] &&
     newConfig.steps[Steps.DocumentSelection].documentOptions &&
-    newConfig.documentOptions
+    newConfig.documentOptions &&
+    newConfig.documentOptions.options
   ) {
     const documentOptions = newConfig.steps[Steps.DocumentSelection].documentOptions?.reduce(
       (docOpts, docType) => {

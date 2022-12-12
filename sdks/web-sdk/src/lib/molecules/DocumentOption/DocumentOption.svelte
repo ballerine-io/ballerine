@@ -93,6 +93,7 @@
     border: var(--border);
     display: var(--display);
     text-align: var(--text-align);
+    align-items: var(--align-items);
     background: var(--background);
     transition: all 0.1s ease-in;
     user-select: none;

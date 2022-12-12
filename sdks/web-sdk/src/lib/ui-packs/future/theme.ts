@@ -775,7 +775,7 @@ const stepsTheme: TSteps = {
         },
       },
       {
-        id: "title",
+        id: "error-text",
         orderIndex: 70,
         type: Elements.ErrorText,
         props: {},
@@ -1077,6 +1077,7 @@ export const uiTheme: IAppConfigurationUI = {
     options: {
       [DocumentType.ID_CARD]: {
         document: {
+          orderIndex: 10,
           type: DocumentType.ID_CARD,
           backSide: true,
           variant: DocumentVariant.REGULAR,
@@ -1089,6 +1090,7 @@ export const uiTheme: IAppConfigurationUI = {
       },
       [DocumentType.DRIVERS_LICENSE]: {
         document: {
+          orderIndex: 20,
           type: DocumentType.DRIVERS_LICENSE,
           backSide: true,
           variant: DocumentVariant.REGULAR,
@@ -1101,6 +1103,7 @@ export const uiTheme: IAppConfigurationUI = {
       },
       [DocumentType.PASSPORT]: {
         document: {
+          orderIndex: 30,
           type: DocumentType.PASSPORT,
           backSide: false,
           variant: DocumentVariant.REGULAR,
@@ -1113,6 +1116,7 @@ export const uiTheme: IAppConfigurationUI = {
       },
       [DocumentType.VOTER_ID]: {
         document: {
+          orderIndex: 40,
           type: DocumentType.VOTER_ID,
           backSide: true,
           variant: DocumentVariant.REGULAR,

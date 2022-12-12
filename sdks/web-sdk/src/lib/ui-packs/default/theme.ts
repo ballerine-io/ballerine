@@ -680,8 +680,8 @@ export const uiTheme: IAppConfigurationUI = {
     },
     fonts: {
       name: 'Inter',
-      weight: [400, 500, 700],
-      link: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700"
+      weight: [400, 500, 600, 700],
+      link: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700"
     },
   },
   photo: {},
@@ -796,6 +796,7 @@ export const uiTheme: IAppConfigurationUI = {
           type: DocumentType.ID_CARD,
           backSide: true,
           variant: DocumentVariant.REGULAR,
+          orderIndex: 10,
         },
         attributes: {
           icon: 'Card',
@@ -808,6 +809,7 @@ export const uiTheme: IAppConfigurationUI = {
           type: DocumentType.DRIVERS_LICENSE,
           backSide: true,
           variant: DocumentVariant.REGULAR,
+          orderIndex: 20,
         },
         attributes: {
           icon: 'License',
@@ -820,6 +822,7 @@ export const uiTheme: IAppConfigurationUI = {
           type: DocumentType.PASSPORT,
           backSide: false,
           variant: DocumentVariant.REGULAR,
+          orderIndex: 30,
         },
         attributes: {
           icon: 'PassportTwo',
@@ -832,6 +835,7 @@ export const uiTheme: IAppConfigurationUI = {
           type: DocumentType.VOTER_ID,
           backSide: true,
           variant: DocumentVariant.REGULAR,
+          orderIndex: 40,
         },
         attributes: {
           icon: 'Voter',

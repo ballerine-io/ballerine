@@ -12,7 +12,8 @@
   import { uiPack } from '../../ui-packs';
 
   export let step: IStepConfiguration;
-  const ducumentOptions: IDocumentOption[] = [];
+
+  const documentOptions: IDocumentOption[] = [];
 
   const documentOptionsConfiguration = merge(
     $uiPack.documentOptions,
@@ -22,7 +23,7 @@
   Object.keys(documentOptionsConfiguration.options).forEach((key: string) => {
     const type = key as DocumentType;
     const option = documentOptionsConfiguration.options[type] as IDocumentOption;
-    ducumentOptions.push(option);
+    documentOptions.push(option);
   });
 
   const handleSelectOption = async ({ detail }: { detail: string }) => {
@@ -53,7 +54,7 @@
 </script>
 
 <div class="document-options">
-  {#each ducumentOptions as documentOption}
+  {#each documentOptions.sort((o1, o2) => o1.document.orderIndex - o2.document.orderIndex) as documentOption}
     <DocumentOption
       on:selectOption={handleSelectOption}
       on:photoTake={handleTakePhoto}
