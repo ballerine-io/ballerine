@@ -9,61 +9,12 @@ const ballerineInitConfig: FlowsInitOptions = {
     overrides: {},
   },
   uiConfig: {
-    general: {
-      colors: {
-        primary: "#000",
-      }
-    },
-    components: {
-      button: {
-        "border-radius": "41px",
-      },
-      layout: {
-        background: "#fff",
-      },
-      title: {
-        "font-size": "20px",
-        "text-align": "left",
-        color: "#001B39",
-        padding: '11px 0px 18px 26px',
-      },
-      paragraph: {
-        "text-align": "left",
-        color: "#788597",
-        "font-size": "12px",
-        "font-weight": 400
-      }
-    },
     flows: {
       ['my-kyc-flow']: {
-        firstScreenBackButton: true,
         steps: [
           {
             name: Steps.Welcome,
-            id: Steps.Welcome, elements: [
-              {
-                id: "image",
-                type: Elements.Image,
-                props: {
-                  attributes: {
-                    src: '/welcome.svg',
-                    alt: 'welcome',
-                    width: '166px',
-                    height: '164px',
-                  },
-                }
-              },
-              {
-                id: "tip",
-                orderIndex: 55,
-                props: {
-                  style: {
-                    "text-align": "center",
-                    margin: "0 0 32px 0"
-                  }
-                }
-              }
-            ]
+            id: Steps.Welcome
           },
           {
             name: Steps.DocumentSelection,
