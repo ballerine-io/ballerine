@@ -87,7 +87,6 @@ const mergeStepElements = (config: IAppConfiguration, uiTheme: IAppConfiguration
       return !uiPackElements.find(packElement => packElement.id === stepElement.id);
     });
     updatedConfig.steps[stepKey].elements = [...elements, ...newElements].sort((e1, e2) => (e1.orderIndex - e2.orderIndex));
-    console.log(stepKey, updatedConfig.steps[stepKey].elements)
   });
   return updatedConfig;
 }
