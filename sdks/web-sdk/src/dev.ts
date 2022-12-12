@@ -9,20 +9,46 @@ const ballerineInitConfig: FlowsInitOptions = {
     overrides: {},
   },
   uiConfig: {
-    general: {
-      colors: {
-        primary: "#000",
-      }
-    },
-    components: {
-      paragraph: {
-        "text-align": "left",
-      }
-    },
+    // general: {
+    //   colors: {
+    //     primary: "#000",
+    //   }
+    // },
+    // components: {
+    //   layout: {
+    //     background: "#fff",
+    //   },
+    //   title: {
+    //     "font-size": "20px",
+    //     "text-align": "left",
+    //   },
+    //   paragraph: {
+    //     "text-align": "left",
+    //     color: "#788597",
+    //     "font-size": "12px",
+    //     "font-weight": 400
+    //   }
+    // },
     flows: {
       ['my-kyc-flow']: {
         steps: [
           { name: Steps.Welcome, id: Steps.Welcome },
+          // { name: Steps.Welcome, id: Steps.Welcome, elements: [{
+          //   id: "image",
+          //   type: Elements.Image,
+          //   props: {
+          //     style: {
+          //       margin: '120px 0px 16px',
+          //       'align-self': 'center',
+          //     },
+          //     attributes: {
+          //       src: '/welcome.svg',
+          //       alt: 'welcome',
+          //       width: '166px',
+          //       height: '164px',
+          //     },
+          //   },
+          // },] },
           {
             name: Steps.DocumentSelection,
             id: Steps.DocumentSelection,

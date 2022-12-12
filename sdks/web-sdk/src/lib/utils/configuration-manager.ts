@@ -34,7 +34,7 @@ const toObjByKey = (collection: any, key: string | Function) => {
   return Array.isArray(c) ? keyBy(c, key) : keyBy(Object.values(c), key);
 };
 
-const mergeStepsElements = (
+const setElementsFromOverrides = (
   steps: Record<string, IStepConfiguration>,
   overrides: Record<string, IStepConfiguration>,
 ) => {
@@ -50,7 +50,45 @@ const mergeStepsElements = (
       elements: flowStep.elements
     };
   });
-  return updatedSteps;
+  return {
+    ...overrides,
+    ...updatedSteps
+  };
+}
+
+const mergeStepElements = (config: IAppConfiguration, uiTheme: IAppConfigurationUI) => {
+  const updatedConfig = config;
+  if (!updatedConfig.steps) return config;
+  // Merge elements with uiPack
+  Object.keys(updatedConfig.steps).forEach(stepKey => {
+    const steps = updatedConfig.steps as TSteps;
+    const step = steps[stepKey];
+    if (!step.elements || step.elements.length === 0) {
+      return;
+    }
+    const elements: IElement[] = [];
+    uiTheme.steps[stepKey].elements.forEach(element => {
+      const stepElement = step.elements.find(e => e.id === element.id);
+      // element configuration not provided - using ui pack element
+      if (!stepElement) {
+        elements.push(element);
+        return;
+      }
+      // element configuration provided to remove element
+      if (stepElement.disabled) {
+        return
+      }
+      // element configuration provided to edit element
+      elements.push(mergeObj(element, stepElement))
+    })
+    // elements configuration provided to add element
+    const newElements = step.elements.filter(stepElement => {
+      const uiPackElements = uiTheme.steps[stepKey].elements;
+      return !uiPackElements.find(packElement => packElement.id === stepElement.id);
+    });
+    updatedConfig.steps[stepKey].elements = [...elements, ...newElements];
+  });
+  return updatedConfig;
 }
 
 export let texts: TranslationType = translation;
@@ -58,7 +96,6 @@ export let texts: TranslationType = translation;
 export const updateConfiguration = async (configOverrides: RecursivePartial<FlowsInitOptions>) => {
   let configurationResult: IAppConfiguration | undefined = undefined;
   let uiTheme = packs.default;
-
   configuration.update(currentConfig => {
     const mergedConfig = mergeConfig(currentConfig, configOverrides, uiTheme);
     configurationResult = mergedConfig;
@@ -117,7 +154,7 @@ export const updateTranslations = async (translations: FlowsTranslations) => {
 export const mergeConfig = (
   originalConfig: IAppConfiguration,
   overrides: RecursivePartial<FlowsInitOptions>,
-  uiTheme: IAppConfigurationUI
+  uiTheme: IAppConfigurationUI,
 ) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -144,41 +181,9 @@ export const mergeConfig = (
     newConfig.documentOptions.options = documentOptions;
   }
 
-  if (!newConfig.steps) {
-    return newConfig;
-  }
+  const updatedConfig = mergeStepElements(newConfig, uiTheme);
 
-  // Merge elements with uiPack
-  Object.keys(newConfig.steps).forEach(stepKey => {
-    const steps = newConfig.steps as TSteps;
-    const step = steps[stepKey];
-    if (!step.elements || step.elements.length === 0) {
-      return;
-    }
-    const elements: IElement[] = [];
-    uiTheme.steps[stepKey].elements.forEach(element => {
-      const stepElement = step.elements.find(e => e.id === element.id);
-      // element configuration not provided - using ui pack element
-      if (!stepElement) {
-        elements.push(element);
-        return;
-      }
-      // element configuration provided to remove element
-      if (stepElement.disabled) {
-        return
-      }
-      // element configuration provided to edit element
-      elements.push(mergeObj(element, stepElement))
-    })
-    // elements configuration provided to add element
-    const newElements = step.elements.filter(stepElement => {
-      const uiPackElements = uiTheme.steps[stepKey].elements;
-      return !uiPackElements.find(packElement => packElement.id === stepElement.id);
-    });
-    newConfig.steps[stepKey].elements = [...elements, ...newElements];
-  });
-
-  return newConfig;
+  return updatedConfig;
 };
 
 const calculateStepId = (step: RecursivePartial<IStepConfiguration>): string => {
@@ -197,7 +202,6 @@ const v1adapter = (
   const { flows = {}, general, components } = uiConfig;
   const newFlows = {} as { [key: string]: IFlow };
   let flowSteps = {};
-
   for (const [flowName, flow] of Object.entries(flows)) {
     if (flow) {
       const { steps, ...flowConfig } = flow;
@@ -212,7 +216,7 @@ const v1adapter = (
           .filter((v): v is string => typeof v === 'string'); // check ts
       }
       const stepsConfig = toObjByKey(steps, calculateStepId);
-      flowSteps = mergeStepsElements(stepsConfig, flowSteps);
+      flowSteps = setElementsFromOverrides(stepsConfig, flowSteps);
     }
   }
   return {

@@ -18,11 +18,9 @@
   import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
-
   const step = getStepConfiguration($configuration, $uiPack, stepId);
   const flow = getFlowConfig($configuration);
   const style = getLayoutStyles($configuration, $uiPack, step);
-
   const stepNamespace = step.namespace!;
   const message = $currentParams ? $currentParams.message : '';
 

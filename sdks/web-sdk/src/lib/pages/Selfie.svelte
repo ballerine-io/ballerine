@@ -51,7 +51,7 @@
       })
       .then(cameraStream => {
         console.log('stream', cameraStream);
-        stream = cameraStream
+        stream = cameraStream;
       })
       .catch(error => {
         console.log('error', error);
@@ -106,17 +106,21 @@
     {#if element.type === Elements.Loader && stream === undefined}
       <Loader />
     {/if}
-    {#if element.type === Elements.Title}
-      <Title configuration={element.props}>
-        <T key="title" namespace={stepNamespace} />
-      </Title>
-    {/if}
-    {#if element.type === Elements.Paragraph}
-      <Paragraph configuration={element.props}>
-        <T key="description" namespace={stepNamespace} />
-      </Paragraph>
-    {/if}
   {/each}
+  <div class="header">
+    {#each step.elements as element}
+      {#if element.type === Elements.Title}
+        <Title configuration={element.props}>
+          <T key={'title'} namespace={stepNamespace} />
+        </Title>
+      {/if}
+      {#if element.type === Elements.Paragraph}
+        <Paragraph configuration={element.props}>
+          <T key={'description'} namespace={stepNamespace} />
+        </Paragraph>
+      {/if}
+    {/each}
+  </div>
   <Overlay type={DocumentType.SELFIE} />
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
@@ -134,6 +138,14 @@
     height: 100%;
     position: var(--position);
     background: var(--background);
+    padding: var(--padding);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .header {
     text-align: center;
     display: flex;
     flex-direction: column;
