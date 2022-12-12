@@ -5,6 +5,7 @@ import { Elements, IElement, Steps, IAppConfigurationUI, TSteps } from '../../co
 
 const backIconButton: IElement = {
   id: "back-icon-button",
+  orderIndex: 10,
   type: Elements.IconButton,
   props: {
     attributes: {
@@ -22,6 +23,7 @@ const backIconButton: IElement = {
 
 const closeIconButton: IElement = {
   id: "close-icon-button",
+  orderIndex: 20,
   type: Elements.IconCloseButton,
   props: {
     attributes: {
@@ -39,6 +41,7 @@ const closeIconButton: IElement = {
 
 const backWhiteIconButton: IElement = {
   id: "back-white-icon-button",
+  orderIndex: 10,
   type: Elements.IconButton,
   props: {
     attributes: {
@@ -59,16 +62,19 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         type: Elements.Title,
+        orderIndex: 30,
         id: "title",
         props: {},
       },
       {
         type: Elements.Paragraph,
+        orderIndex: 40,
         id: "description",
         props: {},
       },
       {
         type: Elements.Image,
+        orderIndex: 50,
         id: "image",
         props: {
           attributes: {
@@ -81,11 +87,13 @@ const stepsTheme: TSteps = {
       },
       {
         type: Elements.Button,
+        orderIndex: 60,
         id: "button",
         props: {},
       },
       {
         type: Elements.Paragraph,
+        orderIndex: 70,
         id: "tip",
         props: {
           style: {
@@ -105,16 +113,19 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         id: "title",
+        orderIndex: 40,
         type: Elements.Title,
         props: {},
       },
       {
         id: "description",
+        orderIndex: 50,
         type: Elements.Paragraph,
         props: {},
       },
       {
         id: "image",
+        orderIndex: 60,
         type: Elements.Image,
         props: {
           attributes: {
@@ -127,6 +138,7 @@ const stepsTheme: TSteps = {
       },
       {
         id: "button",
+        orderIndex: 80,
         type: Elements.Button,
         props: {},
       },
@@ -140,11 +152,13 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         id: "title",
+        orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
         id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
@@ -157,6 +171,7 @@ const stepsTheme: TSteps = {
       backWhiteIconButton,
       {
         id: "title",
+        orderIndex: 20,
         type: Elements.Title,
         props: {
           style: {
@@ -166,6 +181,7 @@ const stepsTheme: TSteps = {
       },
       {
         id: "description",
+        orderIndex: 30,
         type: Elements.Paragraph,
         props: {
           style: {
@@ -175,16 +191,19 @@ const stepsTheme: TSteps = {
       },
       {
         id: "video",
+        orderIndex: 40,
         type: Elements.VideoContainer,
         props: {},
       },
       {
         id: "loader",
+        orderIndex: 50,
         type: Elements.Loader,
         props: {},
       },
       {
         id: "button",
+        orderIndex: 60,
         type: Elements.CameraButton,
         props: {},
       },
@@ -198,16 +217,19 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         id: "title",
+        orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
         id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
         id: "photo",
+        orderIndex: 50,
         type: Elements.Photo,
         props: {},
       },
@@ -222,16 +244,19 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         type: Elements.Title,
+        orderIndex: 30,
         id: 'title',
         props: {},
       },
       {
         id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
         id: "image",
+        orderIndex: 50,
         type: Elements.Image,
         props: {
           attributes: {
@@ -244,6 +269,7 @@ const stepsTheme: TSteps = {
       },
       {
         id: "button",
+        orderIndex: 60,
         type: Elements.Button,
         props: {},
       },
@@ -256,6 +282,7 @@ const stepsTheme: TSteps = {
       backWhiteIconButton,
       {
         id: "title",
+        orderIndex: 20,
         type: Elements.Title,
         props: {
           style: {
@@ -265,6 +292,7 @@ const stepsTheme: TSteps = {
       },
       {
         id: "description",
+        orderIndex: 30,
         type: Elements.Paragraph,
         props: {
           style: {
@@ -274,16 +302,19 @@ const stepsTheme: TSteps = {
       },
       {
         id: "loader",
+        orderIndex: 40,
         type: Elements.Loader,
         props: {},
       },
       {
         id: "video",
+        orderIndex: 50,
         type: Elements.VideoContainer,
         props: {},
       },
       {
         id: "button",
+        orderIndex: 60,
         type: Elements.CameraButton,
         props: {},
       },
@@ -297,16 +328,19 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         id: "title",
+        orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
         id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
         id: "photo",
+        orderIndex: 50,
         type: Elements.Photo,
         props: {},
       },
@@ -321,16 +355,19 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         id: "title",
+        orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
         id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
         id: "image",
+        orderIndex: 50,
         type: Elements.Image,
         props: {
           attributes: {
@@ -343,6 +380,7 @@ const stepsTheme: TSteps = {
       },
       {
         id: "button",
+        orderIndex: 60,
         type: Elements.Button,
         props: {},
       },
@@ -355,6 +393,7 @@ const stepsTheme: TSteps = {
       backWhiteIconButton,
       {
         id: "title",
+        orderIndex: 20,
         type: Elements.Title,
         props: {
           style: {
@@ -364,6 +403,7 @@ const stepsTheme: TSteps = {
       },
       {
         id: "description",
+        orderIndex: 30,
         type: Elements.Paragraph,
         props: {
           style: {
@@ -373,16 +413,19 @@ const stepsTheme: TSteps = {
       },
       {
         id: "loader",
+        orderIndex: 40,
         type: Elements.Loader,
         props: {},
       },
       {
         id: "video",
+        orderIndex: 50,
         type: Elements.VideoContainer,
         props: {},
       },
       {
         id: "button",
+        orderIndex: 60,
         type: Elements.CameraButton,
         props: {},
       },
@@ -396,16 +439,19 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         id: "title",
+        orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
         id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
         id: "photo",
+        orderIndex: 50,
         type: Elements.Photo,
         props: {},
       },
@@ -423,6 +469,7 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         id: "image",
+        orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
@@ -439,21 +486,25 @@ const stepsTheme: TSteps = {
       },
       {
         id: "title",
+        orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
         id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
         id: "error-text",
+        orderIndex: 50,
         type: Elements.ErrorText,
         props: {},
       },
       {
         id: "button",
+        orderIndex: 60,
         type: Elements.Button,
         props: {
           style: {
@@ -470,6 +521,7 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         id: "image",
+        orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
@@ -486,21 +538,25 @@ const stepsTheme: TSteps = {
       },
       {
         id: "title",
+        orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
         id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
         id: "error-text",
+        orderIndex: 50,
         type: Elements.ErrorText,
         props: {},
       },
       {
         id: "button",
+        orderIndex: 60,
         type: Elements.Button,
         props: {
           style: {
@@ -517,6 +573,7 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         id: "image",
+        orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
@@ -533,21 +590,25 @@ const stepsTheme: TSteps = {
       },
       {
         id: "title",
+        orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
         id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
         id: "error-text",
+        orderIndex: 50,
         type: Elements.ErrorText,
         props: {},
       },
       {
         id: "button",
+        orderIndex: 60,
         type: Elements.Button,
         props: {
           style: {
@@ -565,6 +626,7 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         id: "image",
+        orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
@@ -581,16 +643,19 @@ const stepsTheme: TSteps = {
       },
       {
         id: "title",
+        orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
         id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
         id: "button",
+        orderIndex: 50,
         type: Elements.Button,
         props: {
           style: {

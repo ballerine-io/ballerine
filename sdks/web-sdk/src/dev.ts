@@ -9,46 +9,62 @@ const ballerineInitConfig: FlowsInitOptions = {
     overrides: {},
   },
   uiConfig: {
-    // general: {
-    //   colors: {
-    //     primary: "#000",
-    //   }
-    // },
-    // components: {
-    //   layout: {
-    //     background: "#fff",
-    //   },
-    //   title: {
-    //     "font-size": "20px",
-    //     "text-align": "left",
-    //   },
-    //   paragraph: {
-    //     "text-align": "left",
-    //     color: "#788597",
-    //     "font-size": "12px",
-    //     "font-weight": 400
-    //   }
-    // },
+    general: {
+      colors: {
+        primary: "#000",
+      }
+    },
+    components: {
+      button: {
+        "border-radius": "41px",
+      },
+      layout: {
+        background: "#fff",
+      },
+      title: {
+        "font-size": "20px",
+        "text-align": "left",
+        color: "#001B39",
+        padding: '11px 0px 18px 26px',
+      },
+      paragraph: {
+        "text-align": "left",
+        color: "#788597",
+        "font-size": "12px",
+        "font-weight": 400
+      }
+    },
     flows: {
       ['my-kyc-flow']: {
+        firstScreenBackButton: true,
         steps: [
-          { name: Steps.Welcome, id: Steps.Welcome },
-          // { name: Steps.Welcome, id: Steps.Welcome, elements: [{
-          //   id: "image",
-          //   type: Elements.Image,
-          //   props: {
-          //     style: {
-          //       margin: '120px 0px 16px',
-          //       'align-self': 'center',
-          //     },
-          //     attributes: {
-          //       src: '/welcome.svg',
-          //       alt: 'welcome',
-          //       width: '166px',
-          //       height: '164px',
-          //     },
-          //   },
-          // },] },
+          {
+            name: Steps.Welcome,
+            id: Steps.Welcome, elements: [
+              {
+                id: "image",
+                type: Elements.Image,
+                props: {
+                  attributes: {
+                    src: '/welcome.svg',
+                    alt: 'welcome',
+                    width: '166px',
+                    height: '164px',
+                  },
+                }
+              },
+              {
+                id: "tip",
+                orderIndex: 55,
+                props: {
+                  style: {
+                    "text-align": "center",
+                    margin: "0 0 32px 0"
+                  }
+                }
+              }
+            ]
+          },
           {
             name: Steps.DocumentSelection,
             id: Steps.DocumentSelection,
