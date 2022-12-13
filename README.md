@@ -1,5 +1,6 @@
 
 
+
 <div align="center">
 
 <a href="https://ballerine.io" title="Ballerine - Open-source Infrastructure for Identity and Risk management.">
@@ -34,7 +35,7 @@ Ballerine helps any company verify its customers’ identity while providing an 
 
 ### What can you find in this project?
 
-  *   :red_circle: **New**  - Case management dashboard for users approval - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/apps/backoffice) | [Live demo](https://www.backoffice-demo.ballerine.app/) | [Docs](#getting-started-with-case-management-dashboard) </br>
+  * Case management dashboard for users approval - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/apps/backoffice) | [Live demo](https://www.backoffice-demo.ballerine.app/) | [Docs](#getting-started-with-case-management-dashboard) </br>
  * KYC/KYB flows and UI in Mobile & web SDK - :white_check_mark: Open Source! - [See the code](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk) | [Live demos](#sdk-ui-flows) | [Docs](#getting-started-with-sdks-flows)
  * Identity & risk vendors orchestration - :hourglass_flowing_sand: Almost done
  * No-code rule engine to control Frontend and backend flows - :construction: WIP
@@ -119,7 +120,7 @@ Give your operating team Ballerine’s case management dashboard so they can app
 <img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
 
 **Live demo:**
-[Case management dashboard](https://www.backoffice-demo.ballerine.app/)
+<a href="https://www.backoffice-demo.ballerine.app/" target="_blank">Case management dashboard</a>
 
 
 **Getting started**
@@ -154,10 +155,10 @@ The SDK UI is embeddable inside existing apps or deployed as a web app.
 <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/phones.png">
 
 **Live demo:**
-[KYC](https://simple-kyc-demo.ballerine.app/)
+<a href="https://simple-kyc-demo.ballerine.app/" target="_blank">Simple KYC</a> , <a href="https://examples-future.ballerine.app/" target="_blank">Crypto KYC</a>
 
 **Playground:**
-[jsfiddle](https://jsfiddle.net/ballerine/7d0g53xn)
+<a href="https://jsfiddle.net/ballerine/7d0g53xn" target="_blank">jsfiddle</a>
 
 **Getting started:**
 [Click here](#getting-started-with-sdks-flows)
