@@ -13,7 +13,7 @@
     Loader,
   } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
-  import { DocumentType, IDocument, appState } from '../contexts/app-state';
+  import { EDocumentType, IDocument, appState } from '../contexts/app-state';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
@@ -44,12 +44,14 @@
   );
 
   const documentType =
-    (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) ||
-    ($uiPack.steps[$currentStepId].type as DocumentType) ||
+    (($configuration.steps && $configuration.steps[$currentStepId].type) as EDocumentType) ||
+    ($uiPack.steps[$currentStepId].type as EDocumentType) ||
     $selectedDocumentInfo.type;
 
+  const documentKind = $selectedDocumentInfo ? $selectedDocumentInfo.kind : undefined;
+
   let stream: MediaStream;
-  const stepNamespace = `${step.namespace}.${documentType}`;
+  const stepNamespace = `${step.namespace}.${documentKind || documentType}`;
 
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
@@ -76,7 +78,7 @@
     cameraPhoto?.stopCamera();
   });
 
-  const clearDocs = (type: DocumentType): IDocument[] => {
+  const clearDocs = (type: EDocumentType): IDocument[] => {
     const { options } = documentOptionsConfiguration;
     const isFromOptions = Object.keys(options).find(key => key === type);
     if (isFromOptions) {
@@ -85,7 +87,7 @@
     return $documents.filter(d => type !== d.type);
   };
 
-  const addDocument = (type: DocumentType, base64: string, document: IDocument): IDocument[] => {
+  const addDocument = (type: EDocumentType, base64: string, document: IDocument): IDocument[] => {
     const clearedDocuments = clearDocs(type);
     return [
       ...clearedDocuments,
@@ -104,7 +106,12 @@
       $configuration.settings?.cameraSettings || $uiPack.settings.cameraSettings,
     );
     if (documentType) {
-      const document = { type: documentType, pages: [], metadata: {} };
+      const document = {
+        type: documentType,
+        pages: [],
+        metadata: {},
+        kind: $selectedDocumentInfo.kind,
+      };
       $documents = addDocument(document.type, base64, document);
       return goToNextStep(currentStepId, $configuration, $currentStepId);
     }

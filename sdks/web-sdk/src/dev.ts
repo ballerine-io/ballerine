@@ -1,8 +1,7 @@
 import { Elements, IElement, Steps } from './lib/contexts/configuration';
 import { flows } from './main';
-import { DocumentType } from './lib/contexts/app-state';
+import { EDocumentType, EDocumentKind } from './lib/contexts/app-state';
 import { FlowsInitOptions } from './types/BallerineSDK';
-import { DocumentVariant } from './lib/contexts/app-state/types';
 
 const backIconButton: IElement = {
   id: "back-icon-button",
@@ -10,7 +9,7 @@ const backIconButton: IElement = {
   type: Elements.IconButton,
   props: {
     attributes: {
-      src: '/back.svg',
+      src: 'https://cdn.ballerine.io/rio/back.svg',
       alt: 'back',
       width: '28px',
       height: '28px',
@@ -28,7 +27,7 @@ const backWhiteIconButton: IElement = {
   type: Elements.IconButton,
   props: {
     attributes: {
-      src: '/back-white.svg',
+      src: 'https://cdn.ballerine.io/rio/back-white.svg',
       alt: 'back',
       width: '28px',
       height: '28px',
@@ -46,8 +45,8 @@ const ballerineInitConfig: FlowsInitOptions = {
     overrides: {
       en: {
         "document-options": {
-          "id_card-title": "IFE card",
-          "voter_id-title": "INE card",
+          "ife_card-title": "IFE card",
+          "ine_card-title": "INE card",
         },
       }
     },
@@ -169,7 +168,7 @@ const ballerineInitConfig: FlowsInitOptions = {
                 type: Elements.Image,
                 props: {
                   attributes: {
-                    src: '/welcome.svg',
+                    src: 'https://cdn.ballerine.io/rio/welcome.svg',
                     alt: 'welcome',
                     width: '166px',
                     height: '164px',
@@ -209,9 +208,10 @@ const ballerineInitConfig: FlowsInitOptions = {
               }
             ],
             documentOptions: [
-              DocumentType.ID_CARD,
-              DocumentType.DRIVERS_LICENSE,
-              DocumentType.PASSPORT,
+              { type: EDocumentType.DRIVERS_LICENSE, kind: EDocumentKind.DRIVERS_LICENSE },
+              { type: EDocumentType.PASSPORT, kind: EDocumentKind.PASSPORT },
+              { type: EDocumentType.VOTER_ID, kind: EDocumentKind.IFE_CARD },
+              { type: EDocumentType.VOTER_ID, kind: EDocumentKind.INE_CARD },
             ],
           },
           { name: Steps.DocumentPhoto,
@@ -247,7 +247,7 @@ const ballerineInitConfig: FlowsInitOptions = {
                 type: Elements.Image,
                 props: {
                   attributes: {
-                    src: '/photo-back.svg',
+                    src: 'https://cdn.ballerine.io/rio/photo-back.svg',
                     alt: 'photo-back',
                     width: '166px',
                     height: '164px',
@@ -290,7 +290,7 @@ const ballerineInitConfig: FlowsInitOptions = {
                 type: Elements.Image,
                 props: {
                   attributes: {
-                    src: '/selfie-start.svg',
+                    src: 'https://cdn.ballerine.io/rio/selfie-start.svg',
                     alt: 'selfie',
                   },
                 }
@@ -322,57 +322,7 @@ const ballerineInitConfig: FlowsInitOptions = {
             ]
           },
         ],
-      },
-      ['my-kyb-flow']: {
-        steps: [
-          { name: Steps.Welcome, id: Steps.Welcome },
-          {
-            name: Steps.DocumentStart,
-            id: Steps.DocumentStart,
-            type: DocumentType.BUSINESS_REGISTRATION,
-          },
-          {
-            name: Steps.DocumentPhoto,
-            id: Steps.DocumentPhoto,
-            type: DocumentType.BUSINESS_REGISTRATION,
-          },
-          {
-            name: Steps.DocumentStart,
-            id: Steps.DocumentStart,
-            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
-          },
-          {
-            name: Steps.DocumentPhoto,
-            id: Steps.DocumentPhoto,
-            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
-          },
-
-          {
-            name: Steps.DocumentStart,
-            id: Steps.DocumentStart,
-            type: DocumentType.BANK_STATEMENT,
-          },
-          {
-            name: Steps.DocumentPhoto,
-            id: Steps.DocumentPhoto,
-            type: DocumentType.BANK_STATEMENT,
-          },
-          {
-            name: Steps.DocumentSelection,
-            id: Steps.DocumentSelection,
-            documentOptions: [
-              DocumentType.ID_CARD,
-              DocumentType.DRIVERS_LICENSE,
-              DocumentType.PASSPORT,
-            ],
-          },
-          { name: Steps.DocumentPhoto, id: Steps.DocumentPhoto },
-          { name: Steps.DocumentPhotoBackStart, id: Steps.DocumentPhotoBackStart },
-          { name: Steps.DocumentPhotoBack, id: Steps.DocumentPhotoBack },
-          { name: Steps.Loading, id: Steps.Loading },
-          { name: Steps.Final, id: Steps.Final },
-        ],
-      },
+      }
     },
   },
 };

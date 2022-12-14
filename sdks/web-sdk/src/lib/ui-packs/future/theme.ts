@@ -1,6 +1,6 @@
 import { IMAGE_TYPES } from 'jslib-html5-camera-photo';
-import { DocumentType } from '../../contexts/app-state';
-import { DocumentVariant } from '../../contexts/app-state/types';
+import { EDocumentType } from '../../contexts/app-state';
+import { DocumentVariant, EDocumentKind } from '../../contexts/app-state/types';
 import { Elements, IElement, Steps, IAppConfigurationUI, TSteps } from '../../contexts/configuration';
 
 const backIconButton: IElement = {
@@ -1075,10 +1075,11 @@ export const uiTheme: IAppConfigurationUI = {
   },
   documentOptions: {
     options: {
-      [DocumentType.ID_CARD]: {
+      [EDocumentType.ID_CARD]: {
         document: {
           orderIndex: 10,
-          type: DocumentType.ID_CARD,
+          type: EDocumentType.ID_CARD,
+          kind: EDocumentKind.ID_CARD,
           backSide: true,
           variant: DocumentVariant.REGULAR,
         },
@@ -1088,10 +1089,11 @@ export const uiTheme: IAppConfigurationUI = {
           height: 40,
         },
       },
-      [DocumentType.DRIVERS_LICENSE]: {
+      [EDocumentType.DRIVERS_LICENSE]: {
         document: {
           orderIndex: 20,
-          type: DocumentType.DRIVERS_LICENSE,
+          type: EDocumentType.DRIVERS_LICENSE,
+          kind: EDocumentKind.DRIVERS_LICENSE,
           backSide: true,
           variant: DocumentVariant.REGULAR,
         },
@@ -1101,10 +1103,11 @@ export const uiTheme: IAppConfigurationUI = {
           height: 40,
         },
       },
-      [DocumentType.PASSPORT]: {
+      [EDocumentType.PASSPORT]: {
         document: {
           orderIndex: 30,
-          type: DocumentType.PASSPORT,
+          type: EDocumentType.PASSPORT,
+          kind: EDocumentKind.PASSPORT,
           backSide: false,
           variant: DocumentVariant.REGULAR,
         },
@@ -1114,10 +1117,11 @@ export const uiTheme: IAppConfigurationUI = {
           height: 40,
         },
       },
-      [DocumentType.VOTER_ID]: {
+      [EDocumentType.VOTER_ID]: {
         document: {
           orderIndex: 40,
-          type: DocumentType.VOTER_ID,
+          type: EDocumentType.VOTER_ID,
+          kind: EDocumentKind.VOTER_ID,
           backSide: true,
           variant: DocumentVariant.REGULAR,
         },

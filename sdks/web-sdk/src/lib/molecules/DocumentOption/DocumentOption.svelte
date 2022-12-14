@@ -2,11 +2,8 @@
   import { createEventDispatcher } from 'svelte';
   import { Container } from '../../atoms';
   import Paragraph from '../../atoms/Paragraph/Paragraph.svelte';
-  import {
-    configuration as globalConfiguration,
-    IAttributes,
-    ICSSProperties,
-  } from '../../contexts/configuration';
+  import { configuration as globalConfiguration, IAttributes } from '../../contexts/configuration';
+  import { ICSSProperties } from '../../services/css-manager';
   import { IDocumentInfo } from '../../contexts/app-state';
   import { T } from '../../contexts/translation';
   import { IDocumentOptions } from '../../organisms/DocumentOptions';
@@ -30,7 +27,7 @@
   const handleSelect = () => {
     if ($isDisabled) return;
 
-    dispatch('selectOption', document.type);
+    dispatch('selectOption', document.kind);
     toggleOnIsDisabled();
   };
 
@@ -73,11 +70,11 @@
   </Container>
   <div class="text-container">
     <Paragraph configuration={configuration.titleProps} active={hover || active}>
-      <T key={`${document.type}-title`} namespace="document-options" />
+      <T key={`${document.kind}-title`} namespace="document-options" />
     </Paragraph>
     {#if configuration.descriptionProps}
       <Paragraph configuration={configuration.descriptionProps} active={hover || active}>
-        <T key={`${document.type}-description`} namespace="document-options" />
+        <T key={`${document.kind}-description`} namespace="document-options" />
       </Paragraph>
     {/if}
   </div>
