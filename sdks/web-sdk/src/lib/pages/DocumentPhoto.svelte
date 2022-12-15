@@ -178,11 +178,11 @@
     height: 100%;
     position: var(--position);
     background: var(--background);
+    padding: var(--padding);
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
   }
 
   .header {

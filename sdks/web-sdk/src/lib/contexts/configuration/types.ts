@@ -84,9 +84,11 @@ export interface IElementProps {
 }
 
 export interface IElement {
-  id?: string;
+  id: string;
   props: IElementProps;
   type: Elements;
+  disabled?: boolean;
+  orderIndex: number;
   elements?: IElement[];
 }
 

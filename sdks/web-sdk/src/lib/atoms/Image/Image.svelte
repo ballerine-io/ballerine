@@ -1,16 +1,16 @@
 <script lang="ts">
   import {
     configuration as globalConfiguration,
-    ICSSProperties,
     IElementProps,
     IAttributes,
   } from '../../contexts/configuration';
+  import { ICSSProperties } from '../../services/css-manager';
   import { getComponentStyles, uiPack } from '../../ui-packs';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
   const attributes = configuration.attributes as IAttributes;
-  const style = getComponentStyles($uiPack.image, $globalConfiguration.image, styleProps);
+  const style = getComponentStyles($uiPack.image, $globalConfiguration.image || {}, styleProps);
 </script>
 
 <div {style} height={attributes.height} width={attributes.width} class="container">
@@ -21,6 +21,9 @@
   .container {
     margin: var(--margin);
     position: var(--position);
+    display: var(--display);
+    align-items: var(--align-items);
+    justify-content: var(--justify-content);
     top: var(--top);
     bottom: var(--bottom);
     right: var(--right);

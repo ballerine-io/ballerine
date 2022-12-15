@@ -9,8 +9,11 @@ import { TranslationType } from '../contexts/translation';
 import {
   configuration,
   IAppConfiguration,
+  IAppConfigurationUI,
+  IElement,
   IStepConfiguration,
   Steps,
+  TSteps,
 } from '../contexts/configuration';
 import { FlowsEventsConfig, FlowsInitOptions, FlowsTranslations } from '../../types/BallerineSDK';
 import { IFlow } from '../contexts/flows';
@@ -25,19 +28,76 @@ const keyBy = (array: any[], key: string | Function): any =>
     const calcluatedKey = typeof key === 'function' ? key(x) : key;
     return { ...r, [calcluatedKey]: x };
   }, {});
+
 const toObjByKey = (collection: any, key: string | Function) => {
   const c = collection || {};
   return Array.isArray(c) ? keyBy(c, key) : keyBy(Object.values(c), key);
 };
+
+const setElementsFromOverrides = (
+  steps: Record<string, IStepConfiguration>,
+  overrides: Record<string, IStepConfiguration>,
+) => {
+  const updatedSteps: Record<string, IStepConfiguration> = {};
+  Object.keys(steps).forEach(stepKey => {
+    const flowStep = overrides[stepKey];
+    if (!flowStep || !flowStep.elements || flowStep.elements.length === 0) {
+      updatedSteps[stepKey] = steps[stepKey];
+      return;
+    }
+    updatedSteps[stepKey] = {
+      ...steps[stepKey],
+      elements: flowStep.elements
+    };
+  });
+  return {
+    ...overrides,
+    ...updatedSteps
+  };
+}
+
+const mergeStepElements = (config: IAppConfiguration, uiTheme: IAppConfigurationUI) => {
+  const updatedConfig = config;
+  if (!updatedConfig.steps) return config;
+  // Merge elements with uiPack
+  Object.keys(updatedConfig.steps).forEach(stepKey => {
+    const steps = updatedConfig.steps as TSteps;
+    const step = steps[stepKey];
+    if (!step.elements || step.elements.length === 0) {
+      return;
+    }
+    const elements: IElement[] = [];
+    uiTheme.steps[stepKey].elements.forEach(element => {
+      const stepElement = step.elements.find(e => e.id === element.id);
+      // element configuration not provided - using ui pack element
+      if (!stepElement) {
+        elements.push(element);
+        return;
+      }
+      // element configuration provided to remove element
+      if (stepElement.disabled) {
+        return
+      }
+      // element configuration provided to edit element
+      elements.push(mergeObj(element, stepElement))
+    })
+    // elements configuration provided to add element
+    const newElements = step.elements.filter(stepElement => {
+      const uiPackElements = uiTheme.steps[stepKey].elements;
+      return !uiPackElements.find(packElement => packElement.id === stepElement.id);
+    });
+    updatedConfig.steps[stepKey].elements = [...elements, ...newElements].sort((e1, e2) => (e1.orderIndex - e2.orderIndex));
+  });
+  return updatedConfig;
+}
 
 export let texts: TranslationType = translation;
 
 export const updateConfiguration = async (configOverrides: RecursivePartial<FlowsInitOptions>) => {
   let configurationResult: IAppConfiguration | undefined = undefined;
   let uiTheme = packs.default;
-
   configuration.update(currentConfig => {
-    const mergedConfig = mergeConfig(currentConfig, configOverrides);
+    const mergedConfig = mergeConfig(currentConfig, configOverrides, uiTheme);
     configurationResult = mergedConfig;
     return mergedConfig;
   });
@@ -94,6 +154,7 @@ export const updateTranslations = async (translations: FlowsTranslations) => {
 export const mergeConfig = (
   originalConfig: IAppConfiguration,
   overrides: RecursivePartial<FlowsInitOptions>,
+  uiTheme: IAppConfigurationUI,
 ) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -119,10 +180,13 @@ export const mergeConfig = (
 
     newConfig.documentOptions.options = documentOptions;
   }
-  return newConfig;
+
+  const updatedConfig = mergeStepElements(newConfig, uiTheme);
+
+  return updatedConfig;
 };
 
-const calcualteStepId = (step: RecursivePartial<IStepConfiguration>): string => {
+const calculateStepId = (step: RecursivePartial<IStepConfiguration>): string => {
   if (!step.id || step.id === step.name) return `${step.name!}${step.type ? '-' + step.type : ''}`;
   return step.id;
 };
@@ -147,18 +211,14 @@ const v1adapter = (
       };
       if (steps) {
         newFlows[flowName].stepsOrder = steps
-          .map(e => calcualteStepId(e!))
+          .map(e => calculateStepId(e!))
           // Not using !!v | Boolean(v) to be more explicit.
           .filter((v): v is string => typeof v === 'string'); // check ts
       }
-      const stepsConfig = toObjByKey(steps, calcualteStepId);
-      flowSteps = {
-        ...flowSteps,
-        ...stepsConfig,
-      };
+      const stepsConfig = toObjByKey(steps, calculateStepId);
+      flowSteps = setElementsFromOverrides(stepsConfig, flowSteps);
     }
   }
-
   return {
     endUserInfo,
     backendConfig,

@@ -54,6 +54,7 @@
         veryficationTimeout = setTimeout(() => checkStatus(data), 2000);
         return;
       }
+
       const params = generateParams(response);
       sendVerificationUpdateEvent(response, response.idvResult === DecisionStatus.APPROVED);
 

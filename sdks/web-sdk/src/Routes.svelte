@@ -14,6 +14,7 @@
     const configurationStepId = configurationStepIds.find((key: string) => key === currentStepId);
     if (configurationStepId === stepId) return;
     if (!configurationStepId) {
+      stepId = currentStepId;
       step = steps.find(s => s.name === currentStepId);
     } else {
       stepId = configurationStepId;
