@@ -32,7 +32,9 @@
   const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const documentType =
-    ($uiPack.steps[$currentStepId].type as DocumentType || ($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) || $selectedDocumentInfo.type;
+    ($uiPack.steps[$currentStepId].type as DocumentType) ||
+    (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) ||
+    $selectedDocumentInfo.type;
 
   let stream: MediaStream;
   const stepNamespace = `${step.namespace}.${documentType}`;
@@ -127,6 +129,7 @@
     height: 100%;
     position: var(--position);
     background: var(--background);
+    padding: var(--padding);
     text-align: center;
     display: flex;
     flex-direction: column;

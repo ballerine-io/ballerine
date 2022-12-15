@@ -34,7 +34,7 @@ interface ICSSPropertiesAll {
   hover: ICSSProperties;
   active: ICSSProperties;
   fill: string;
-  'flex-grow': number;
+  'flex-grow': number | string;
   'background-position-y': string;
   outline: string;
   'z-index': string;

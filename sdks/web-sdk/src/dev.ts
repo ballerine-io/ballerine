@@ -1,4 +1,4 @@
-import { Steps } from './lib/contexts/configuration';
+import { Elements, Steps } from './lib/contexts/configuration';
 import { flows } from './main';
 import { DocumentType } from './lib/contexts/app-state';
 import { FlowsInitOptions } from './types/BallerineSDK';
@@ -9,11 +9,13 @@ const ballerineInitConfig: FlowsInitOptions = {
     overrides: {},
   },
   uiConfig: {
-    uiPack: "future",
     flows: {
       ['my-kyc-flow']: {
         steps: [
-          { name: Steps.Welcome, id: Steps.Welcome },
+          {
+            name: Steps.Welcome,
+            id: Steps.Welcome
+          },
           {
             name: Steps.DocumentSelection,
             id: Steps.DocumentSelection,

@@ -4,6 +4,8 @@ import { DocumentVariant } from '../../contexts/app-state/types';
 import { Elements, IElement, Steps, IAppConfigurationUI, TSteps } from '../../contexts/configuration';
 
 const backIconButton: IElement = {
+  id: "back-icon-button",
+  orderIndex: 10,
   type: Elements.IconButton,
   props: {
     attributes: {
@@ -20,6 +22,8 @@ const backIconButton: IElement = {
 };
 
 const closeIconButton: IElement = {
+  id: "close-icon-button",
+  orderIndex: 20,
   type: Elements.IconCloseButton,
   props: {
     attributes: {
@@ -36,6 +40,8 @@ const closeIconButton: IElement = {
 };
 
 const backWhiteIconButton: IElement = {
+  id: "back-white-icon-button",
+  orderIndex: 10,
   type: Elements.IconButton,
   props: {
     attributes: {
@@ -56,32 +62,21 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         type: Elements.Title,
-        props: {
-          style: {
-            'text-align': 'center',
-            padding: '8px 0px 20px',
-            'font-size': '18px',
-          },
-        },
+        orderIndex: 30,
+        id: "title",
+        props: {},
       },
       {
         type: Elements.Paragraph,
-        props: {
-          style: {
-            'text-align': 'center',
-            margin: '0px',
-            'font-size': '16px',
-          },
-          context: 'description',
-        },
+        orderIndex: 40,
+        id: "description",
+        props: {},
       },
       {
         type: Elements.Image,
+        orderIndex: 50,
+        id: "image",
         props: {
-          style: {
-            margin: '8px auto',
-            'flex-grow': 1,
-          },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/welcome.svg',
             alt: 'welcome',
@@ -92,14 +87,17 @@ const stepsTheme: TSteps = {
       },
       {
         type: Elements.Button,
+        orderIndex: 60,
+        id: "button",
         props: {},
       },
       {
         type: Elements.Paragraph,
+        orderIndex: 70,
+        id: "tip",
         props: {
           style: {
-            margin: '32px 0px 100px',
-            'text-align': 'center',
+            margin: '32px 0px 0px',
             'font-size': '16px',
           },
           context: 'tip',
@@ -114,33 +112,22 @@ const stepsTheme: TSteps = {
       backIconButton,
       closeIconButton,
       {
+        id: "title",
+        orderIndex: 40,
         type: Elements.Title,
-        props: {
-          style: {
-            'text-align': 'center',
-            padding: '8px 0px 20px',
-            'font-size': '18px',
-          },
-        },
+        props: {},
       },
       {
+        id: "description",
+        orderIndex: 50,
         type: Elements.Paragraph,
-        props: {
-          style: {
-            'text-align': 'center',
-            margin: '0px',
-            'font-size': '16px',
-          },
-          context: 'description',
-        },
+        props: {},
       },
       {
+        id: "image",
+        orderIndex: 60,
         type: Elements.Image,
         props: {
-          style: {
-            margin: '8px auto',
-            'flex-grow': 1,
-          },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/welcome.svg',
             alt: 'welcome',
@@ -150,6 +137,8 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        id: "button",
+        orderIndex: 80,
         type: Elements.Button,
         props: {},
       },
@@ -162,21 +151,16 @@ const stepsTheme: TSteps = {
       backIconButton,
       closeIconButton,
       {
+        id: "title",
+        orderIndex: 30,
         type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 24px 18px',
-          },
-        },
+        props: {},
       },
       {
+        id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
-        props: {
-          style: {
-            margin: '0 20px 30px 20px',
-          },
-          context: 'description',
-        },
+        props: {},
       },
     ],
   },
@@ -186,45 +170,42 @@ const stepsTheme: TSteps = {
     elements: [
       backWhiteIconButton,
       {
+        id: "title",
+        orderIndex: 20,
         type: Elements.Title,
         props: {
           style: {
             color: '#fff',
-            'font-weight': 700,
-            'align-self': 'center',
-            padding: '48px 0px 18px 0px',
           },
         },
       },
       {
+        id: "description",
+        orderIndex: 30,
         type: Elements.Paragraph,
         props: {
           style: {
-            margin: '0px 20px 18px 40px',
             color: '#fff',
-            'text-align': 'center',
           },
         },
       },
       {
+        id: "video",
+        orderIndex: 40,
         type: Elements.VideoContainer,
-        props: {
-          style: {
-            margin: '0px',
-          },
-        },
+        props: {},
       },
       {
+        id: "loader",
+        orderIndex: 50,
         type: Elements.Loader,
         props: {},
       },
       {
+        id: "button",
+        orderIndex: 60,
         type: Elements.CameraButton,
-        props: {
-          style: {
-            margin: '24px 0px 30px',
-          },
-        },
+        props: {},
       },
     ],
   },
@@ -235,28 +216,22 @@ const stepsTheme: TSteps = {
       backIconButton,
       closeIconButton,
       {
+        id: "title",
+        orderIndex: 30,
         type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 30px 18px',
-          },
-        },
+        props: {},
       },
       {
+        id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
-        props: {
-          style: {
-            margin: '0px 0px 48px',
-          },
-        },
+        props: {},
       },
       {
+        id: "photo",
+        orderIndex: 50,
         type: Elements.Photo,
-        props: {
-          style: {
-            margin: '0px',
-          },
-        },
+        props: {},
       },
     ],
   },
@@ -269,28 +244,21 @@ const stepsTheme: TSteps = {
       closeIconButton,
       {
         type: Elements.Title,
-        id: 'welcome-title1',
-        props: {
-          style: {
-            padding: '8px 24px 18px',
-          },
-        },
+        orderIndex: 30,
+        id: 'title',
+        props: {},
       },
       {
+        id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
-        props: {
-          style: {
-            margin: '0',
-          },
-        },
+        props: {},
       },
       {
+        id: "image",
+        orderIndex: 50,
         type: Elements.Image,
         props: {
-          style: {
-            margin: '8px auto',
-            'flex-grow': 1,
-          },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/document-photo-back-start.svg',
             alt: 'document-photo-back-start',
@@ -300,12 +268,10 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        id: "button",
+        orderIndex: 60,
         type: Elements.Button,
-        props: {
-          style: {
-            margin: '0px 0px 100px 0px',
-          },
-        },
+        props: {},
       },
     ],
   },
@@ -315,44 +281,42 @@ const stepsTheme: TSteps = {
     elements: [
       backWhiteIconButton,
       {
+        id: "title",
+        orderIndex: 20,
         type: Elements.Title,
         props: {
           style: {
             color: '#fff',
-            'font-weight': 700,
-            'align-self': 'center',
-            padding: '48px 0px 18px 0px',
           },
         },
       },
       {
+        id: "description",
+        orderIndex: 30,
         type: Elements.Paragraph,
         props: {
           style: {
-            margin: '0px 20px 18px 40px',
             color: '#fff',
           },
         },
       },
       {
+        id: "loader",
+        orderIndex: 40,
         type: Elements.Loader,
         props: {},
       },
       {
+        id: "video",
+        orderIndex: 50,
         type: Elements.VideoContainer,
-        props: {
-          style: {
-            margin: '0px',
-          },
-        },
+        props: {},
       },
       {
+        id: "button",
+        orderIndex: 60,
         type: Elements.CameraButton,
-        props: {
-          style: {
-            margin: '24px 0px 30px',
-          },
-        },
+        props: {},
       },
     ],
   },
@@ -363,28 +327,22 @@ const stepsTheme: TSteps = {
       backIconButton,
       closeIconButton,
       {
+        id: "title",
+        orderIndex: 30,
         type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 24px 18px',
-          },
-        },
+        props: {},
       },
       {
+        id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
-        props: {
-          style: {
-            margin: '0px 0px 48px',
-          },
-        },
+        props: {},
       },
       {
+        id: "photo",
+        orderIndex: 50,
         type: Elements.Photo,
-        props: {
-          style: {
-            margin: '0px',
-          },
-        },
+        props: {},
       },
     ],
   },
@@ -396,28 +354,22 @@ const stepsTheme: TSteps = {
       backIconButton,
       closeIconButton,
       {
+        id: "title",
+        orderIndex: 30,
         type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 24px 18px',
-          },
-        },
+        props: {},
       },
       {
+        id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
-        props: {
-          style: {
-            margin: '0',
-          },
-        },
+        props: {},
       },
       {
+        id: "image",
+        orderIndex: 50,
         type: Elements.Image,
         props: {
-          style: {
-            margin: '8px auto',
-            'flex-grow': 1,
-          },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/selfie-start.svg',
             alt: 'selfie-start',
@@ -427,6 +379,8 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        id: "button",
+        orderIndex: 60,
         type: Elements.Button,
         props: {},
       },
@@ -438,44 +392,42 @@ const stepsTheme: TSteps = {
     elements: [
       backWhiteIconButton,
       {
+        id: "title",
+        orderIndex: 20,
         type: Elements.Title,
         props: {
           style: {
             color: '#fff',
-            'font-weight': 700,
-            'align-self': 'center',
-            padding: '48px 0px 18px 0px',
           },
         },
       },
       {
+        id: "description",
+        orderIndex: 30,
         type: Elements.Paragraph,
         props: {
           style: {
-            margin: '0px 20px 18px 40px',
             color: '#fff',
           },
         },
       },
       {
+        id: "loader",
+        orderIndex: 40,
         type: Elements.Loader,
         props: {},
       },
       {
+        id: "video",
+        orderIndex: 50,
         type: Elements.VideoContainer,
-        props: {
-          style: {
-            margin: '0px',
-          },
-        },
+        props: {},
       },
       {
+        id: "button",
+        orderIndex: 60,
         type: Elements.CameraButton,
-        props: {
-          style: {
-            margin: '24px 0px 30px',
-          },
-        },
+        props: {},
       },
     ],
   },
@@ -486,28 +438,22 @@ const stepsTheme: TSteps = {
       backIconButton,
       closeIconButton,
       {
+        id: "title",
+        orderIndex: 30,
         type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 24px 18px',
-          },
-        },
+        props: {},
       },
       {
+        id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
-        props: {
-          style: {
-            margin: '0px 0px 48px',
-          },
-        },
+        props: {},
       },
       {
+        id: "photo",
+        orderIndex: 50,
         type: Elements.Photo,
-        props: {
-          style: {
-            margin: '0px',
-          },
-        },
+        props: {},
       },
     ],
   },
@@ -522,11 +468,13 @@ const stepsTheme: TSteps = {
     elements: [
       closeIconButton,
       {
+        id: "image",
+        orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
-            margin: '120px 0px 16px',
-            'align-self': 'center',
+            "flex-grow": "0",
+            margin: "40% 0 0 0"
           },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/resubmit.svg',
@@ -537,40 +485,32 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        id: "title",
+        orderIndex: 30,
         type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 0px 6px',
-            'text-align': 'center',
-          },
-        },
-      },
-      {
-        type: Elements.Paragraph,
-        props: {
-          style: {
-            background: 'transparent',
-            margin: '0px 0px 48px',
-            border: 'none',
-            color: '#788597',
-          },
-        },
-      },
-
-      {
-        type: Elements.ErrorText,
-        props: {
-          style: {
-            background: 'transparent',
-            margin: '0px 0px 48px',
-            border: 'none',
-            color: '#788597',
-          },
-        },
-      },
-      {
-        type: Elements.Button,
         props: {},
+      },
+      {
+        id: "description",
+        orderIndex: 40,
+        type: Elements.Paragraph,
+        props: {},
+      },
+      {
+        id: "error-text",
+        orderIndex: 50,
+        type: Elements.ErrorText,
+        props: {},
+      },
+      {
+        id: "button",
+        orderIndex: 60,
+        type: Elements.Button,
+        props: {
+          style: {
+            margin: "auto 0 0 0"
+          }
+        },
       },
     ],
   },
@@ -580,10 +520,13 @@ const stepsTheme: TSteps = {
     elements: [
       closeIconButton,
       {
+        id: "image",
+        orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
-            margin: '120px 0px 16px',
+            "flex-grow": "0",
+            margin: "40% 0 0 0"
           },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/decline.svg',
@@ -594,33 +537,32 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        id: "title",
+        orderIndex: 30,
         type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 0px 6px',
-            'text-align': 'center',
-          },
-        },
+        props: {},
       },
       {
+        id: "description",
+        orderIndex: 40,
         type: Elements.Paragraph,
-        props: {
-          style: {
-            background: 'transparent',
-            margin: '0px 0px 48px',
-            border: 'none',
-            color: '#788597',
-          },
-        },
+        props: {},
       },
-
       {
+        id: "error-text",
+        orderIndex: 50,
         type: Elements.ErrorText,
         props: {},
       },
       {
+        id: "button",
+        orderIndex: 60,
         type: Elements.Button,
-        props: {},
+        props: {
+          style: {
+            margin: "auto 0 0 0"
+          }
+        },
       },
     ],
   },
@@ -630,10 +572,13 @@ const stepsTheme: TSteps = {
     elements: [
       closeIconButton,
       {
+        id: "image",
+        orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
-            margin: '120px 0px 16px',
+            "flex-grow": "0",
+            margin: "40% 0 0 0"
           },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/decline.svg',
@@ -644,36 +589,32 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        id: "title",
+        orderIndex: 30,
         type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 0px 6px',
-            'text-align': 'center',
-          },
-        },
-      },
-      {
-        type: Elements.Paragraph,
-        props: {
-          style: {
-            background: 'transparent',
-            margin: '0px 0px 48px',
-            border: 'none',
-            color: '#788597',
-          },
-        },
-      },
-      {
-        type: Elements.ErrorText,
-        props: {
-          style: {
-            margin: '20px 0px',
-          },
-        },
-      },
-      {
-        type: Elements.Button,
         props: {},
+      },
+      {
+        id: "description",
+        orderIndex: 40,
+        type: Elements.Paragraph,
+        props: {},
+      },
+      {
+        id: "error-text",
+        orderIndex: 50,
+        type: Elements.ErrorText,
+        props: {},
+      },
+      {
+        id: "button",
+        orderIndex: 60,
+        type: Elements.Button,
+        props: {
+          style: {
+            margin: "auto 0 0 0"
+          }
+        },
       },
     ],
   },
@@ -684,11 +625,13 @@ const stepsTheme: TSteps = {
     elements: [
       closeIconButton,
       {
+        id: "image",
+        orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
-            margin: '170px auto 16px',
-            'align-self': 'center',
+            "flex-grow": "0",
+            margin: "40% 0 0 0"
           },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/final.svg',
@@ -699,52 +642,26 @@ const stepsTheme: TSteps = {
         },
       },
       {
+        id: "title",
+        orderIndex: 30,
         type: Elements.Title,
-        props: {
-          style: {
-            padding: '8px 0px 6px',
-            'text-align': 'none',
-          },
-        },
-      },
-      {
-        type: Elements.Paragraph,
-        props: {
-          style: {
-            margin: '0px 0px 60px',
-            'text-align': 'center',
-          },
-        },
-      },
-
-      {
-        type: Elements.Input,
-        props: {
-          attributes: {
-            name: 'first-name',
-            type: 'text',
-            placeholder: 'placeholder1',
-            validate: () => true,
-            defaultValue: 'John',
-          },
-          style: {},
-        },
-      },
-      {
-        type: Elements.Input,
-        props: {
-          attributes: {
-            name: 'last-name',
-            type: 'text',
-            placeholder: 'placeholder2',
-            validate: () => true,
-          },
-          style: {},
-        },
-      },
-      {
-        type: Elements.Button,
         props: {},
+      },
+      {
+        id: "description",
+        orderIndex: 40,
+        type: Elements.Paragraph,
+        props: {},
+      },
+      {
+        id: "button",
+        orderIndex: 50,
+        type: Elements.Button,
+        props: {
+          style: {
+            margin: "auto 0 0 0"
+          }
+        },
       },
     ],
   }
@@ -763,13 +680,19 @@ export const uiTheme: IAppConfigurationUI = {
     },
     fonts: {
       name: 'Inter',
-      weight: [500, 700],
-      link: "https://fonts.googleapis.com/css2?family=Inter:wght@500;700"
+      weight: [400, 500, 700],
+      link: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700"
     },
   },
   photo: {},
-  paragraph: {},
-  cameraButton: {},
+  paragraph: {
+    "font-size": "14px",
+    'text-align': 'center',
+    color: "#788597"
+  },
+  cameraButton: {
+    margin: '24px 0px 30px',
+  },
   videoContainer: {},
   input: {},
   loader: {},
@@ -842,10 +765,10 @@ export const uiTheme: IAppConfigurationUI = {
     },
   },
   errorText: {
-    border: '1px solid #DF2222',
-    background: 'rgba(223, 34, 34, 0.2)',
-    'border-radius': '6px',
-    padding: '8px',
+    background: 'transparent',
+    margin: '0px 0px 48px',
+    border: 'none',
+    color: '#788597',
   },
   settings: {
     cameraSettings: {
@@ -934,7 +857,7 @@ export const uiTheme: IAppConfigurationUI = {
     optionProps: {
       style: {
         background: '#fff',
-        margin: '0 0 22px 0px',
+        margin: '20px 0 0',
         border: '1px solid #ffffff',
         'border-radius': '13px',
         width: '100%',
@@ -944,11 +867,11 @@ export const uiTheme: IAppConfigurationUI = {
         display: 'flex',
         'text-align': 'left',
         hover: {
-          border: '1px solid #007AFF21',
+          border: '1px solid #BADBFF',
           background: '#fff',
         },
         active: {
-          border: '1px solid #007AFF21',
+          border: '1px solid #BADBFF',
           background: '#F1F1F1',
         },
       },
@@ -1002,11 +925,16 @@ export const uiTheme: IAppConfigurationUI = {
   },
   image: {
     margin: '0px',
+    "flex-grow": 1,
+    display: "flex",
+    "align-items": "center",
+    "justify-content": "center"
   },
   title: {
     'font-weight': 700,
-    'font-size': '20px',
+    'font-size': '18px',
     'text-align': 'center',
+    padding: '10px 0px 24px',
     color: '#001B39',
   },
   steps: stepsTheme,
