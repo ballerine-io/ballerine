@@ -1,8 +1,8 @@
 <script lang="ts">
   import { getOverlayDocumentType } from './utils';
-  import { DocumentType } from '../../contexts/app-state';
+  import { EDocumentType } from '../../contexts/app-state';
 
-  export let type: DocumentType;
+  export let type: EDocumentType;
 
   const overlayType = getOverlayDocumentType(type);
 </script>

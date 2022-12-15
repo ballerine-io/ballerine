@@ -14,7 +14,7 @@
   } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { currentStepId, DocumentType } from '../contexts/app-state';
+  import { currentStepId, EDocumentType } from '../contexts/app-state';
   import Title from '../atoms/Title/Title.svelte';
   import { appState, selfieUri } from '../contexts/app-state/stores';
   import { isMobile } from '../utils/is-mobile';
@@ -121,7 +121,7 @@
       {/if}
     {/each}
   </div>
-  <Overlay type={DocumentType.SELFIE} />
+  <Overlay type={EDocumentType.SELFIE} />
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
       <CameraButton

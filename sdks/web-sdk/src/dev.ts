@@ -1,6 +1,6 @@
-import { Elements, Steps } from './lib/contexts/configuration';
+import { Steps } from './lib/contexts/configuration';
 import { flows } from './main';
-import { DocumentType } from './lib/contexts/app-state';
+import { EDocumentKind, EDocumentType } from './lib/contexts/app-state';
 import { FlowsInitOptions } from './types/BallerineSDK';
 
 const ballerineInitConfig: FlowsInitOptions = {
@@ -20,9 +20,10 @@ const ballerineInitConfig: FlowsInitOptions = {
             name: Steps.DocumentSelection,
             id: Steps.DocumentSelection,
             documentOptions: [
-              DocumentType.ID_CARD,
-              DocumentType.DRIVERS_LICENSE,
-              DocumentType.PASSPORT,
+              { type: EDocumentType.ID_CARD, kind: EDocumentKind.ID_CARD },
+              { type: EDocumentType.DRIVERS_LICENSE, kind: EDocumentKind.DRIVERS_LICENSE },
+              { type: EDocumentType.PASSPORT, kind: EDocumentKind.PASSPORT },
+              { type: EDocumentType.VOTER_ID, kind: EDocumentKind.VOTER_ID },
             ],
           },
           { name: Steps.DocumentPhoto, id: Steps.DocumentPhoto },
@@ -43,41 +44,42 @@ const ballerineInitConfig: FlowsInitOptions = {
           {
             name: Steps.DocumentStart,
             id: Steps.DocumentStart,
-            type: DocumentType.BUSINESS_REGISTRATION,
+            type: EDocumentType.BUSINESS_REGISTRATION,
           },
           {
             name: Steps.DocumentPhoto,
             id: Steps.DocumentPhoto,
-            type: DocumentType.BUSINESS_REGISTRATION,
+            type: EDocumentType.BUSINESS_REGISTRATION,
           },
           {
             name: Steps.DocumentStart,
             id: Steps.DocumentStart,
-            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
+            type: EDocumentType.PROOF_OF_BUSINESS_TAX_ID,
           },
           {
             name: Steps.DocumentPhoto,
             id: Steps.DocumentPhoto,
-            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
+            type: EDocumentType.PROOF_OF_BUSINESS_TAX_ID,
           },
 
           {
             name: Steps.DocumentStart,
             id: Steps.DocumentStart,
-            type: DocumentType.BANK_STATEMENT,
+            type: EDocumentType.BANK_STATEMENT,
           },
           {
             name: Steps.DocumentPhoto,
             id: Steps.DocumentPhoto,
-            type: DocumentType.BANK_STATEMENT,
+            type: EDocumentType.BANK_STATEMENT,
           },
           {
             name: Steps.DocumentSelection,
             id: Steps.DocumentSelection,
             documentOptions: [
-              DocumentType.ID_CARD,
-              DocumentType.DRIVERS_LICENSE,
-              DocumentType.PASSPORT,
+              { type: EDocumentType.ID_CARD, kind: EDocumentKind.ID_CARD },
+              { type: EDocumentType.DRIVERS_LICENSE, kind: EDocumentKind.DRIVERS_LICENSE },
+              { type: EDocumentType.PASSPORT, kind: EDocumentKind.PASSPORT },
+              { type: EDocumentType.VOTER_ID, kind: EDocumentKind.VOTER_ID },
             ],
           },
           { name: Steps.DocumentPhoto, id: Steps.DocumentPhoto },

@@ -41,7 +41,7 @@
       throw Error("document context wasn't provided");
     }
     if (!document) return;
-    const newDocumentsState = updateDocument(document.type, image, $documents);
+    const newDocumentsState = updateDocument(document, image, $documents);
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };

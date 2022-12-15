@@ -1,7 +1,7 @@
 import { SvelteComponent } from 'svelte';
 import { Steps } from '../configuration/types';
 
-export enum DocumentType {
+export enum EDocumentType {
   PASSPORT = 'passport', // CARD
   DRIVERS_LICENSE = 'drivers_license', // CARD
   RESIDENCE_PERMIT = 'residence_permit', // CARD
@@ -16,6 +16,16 @@ export enum DocumentType {
   SELFIE = 'selfie',
 }
 
+export enum EDocumentKind {
+  PASSPORT = 'passport',
+  ID_CARD = 'id_card',
+  DRIVERS_LICENSE = 'drivers_license',
+  SELFIE = 'selfie',
+  VOTER_ID = 'voter_id',
+  IFE_CARD = 'ife_card',
+  INE_CARD = 'ine_card',
+}
+
 export enum DocumentVariant {
   A4 = 'a4',
   REGULAR = 'regular',
@@ -24,7 +34,9 @@ export enum DocumentVariant {
 export interface IDocumentInfo {
   backSide: boolean;
   variant: DocumentVariant;
-  type: DocumentType;
+  type: EDocumentType;
+  kind: EDocumentKind;
+  orderIndex: number;
 }
 
 export type IPageSide = 'front' | 'back';
@@ -35,7 +47,8 @@ export interface IDocumentPage {
 }
 
 export interface IDocument {
-  type: DocumentType;
+  type: EDocumentType;
+  kind?: EDocumentKind;
   metadata: Record<string, string>;
   pages: IDocumentPage[];
 }

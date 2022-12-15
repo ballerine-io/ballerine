@@ -35,15 +35,18 @@ export const sendIframeEvent = (eventOptions: IEventOptions) => {
   window.parent.postMessage(eventOptions, '*'); // iframe
 };
 
-export const sendFlowCompleteEvent = (verificationResponse: IDocumentVerificationResponse) => {
-  const { status, idvResult } = verificationResponse;
-  const payload = { status, idvResult };
+// without arguments sending events without payload
+export const sendFlowCompleteEvent = (verificationResponse?: IDocumentVerificationResponse) => {
   const eventOptions = {
     eventName: BALLERINE_EVENT,
     eventType: EEventTypes.SYNC_FLOW_COMPLETE,
     shouldExit: true,
-    payload,
   };
+  if (verificationResponse) {
+    const { status, idvResult } = verificationResponse;
+    const payload = { status, idvResult };
+    eventOptions.payload = payload;
+  }
 
   sendIframeEvent(eventOptions);
   // Should finalize the signature on the callbacks interface

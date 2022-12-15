@@ -4,7 +4,7 @@ import { IDocumentOptions } from '../../organisms/DocumentOptions';
 import type { CaptureConfigOption } from 'jslib-html5-camera-photo';
 import { IFlow } from '../flows';
 import { EndUserInfo, FlowsBackendConfig } from '../../../types/BallerineSDK';
-import { DocumentType } from '../app-state';
+import { EDocumentType, EDocumentKind } from '../app-state';
 import { ICSSProperties } from '../../services/css-manager';
 
 export enum Steps {
@@ -98,11 +98,11 @@ export interface IStepConfiguration {
   overlayStyle?: ICSSProperties;
   elements: IElement[];
   form?: IFormProps;
-  type?: DocumentType;
+  type?: EDocumentType;
   id: string;
   namespace?: string;
   cameraConfig?: CaptureConfigOption;
-  documentOptions?: DocumentType[];
+  documentOptions?: { type: EDocumentType, kind: EDocumentKind }[];
 }
 
 export interface IOverlayStyles {
