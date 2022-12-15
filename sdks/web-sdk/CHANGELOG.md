@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.2.1
+
+### Patch Changes
+
+- Adding advanced ui configuration capabilities
+
 ## 1.2.0
 
 ### Minor Changes
