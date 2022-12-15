@@ -20,6 +20,7 @@
     font-size: var(--font-size);
     font-weight: var(--font-weight);
     margin: var(--margin);
+    width: var(--width);
     padding: var(--padding);
     text-align: var(--text-align);
     color: var(--color);

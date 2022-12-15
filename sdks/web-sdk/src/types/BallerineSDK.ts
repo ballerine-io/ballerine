@@ -1,6 +1,7 @@
 import { ICSSProperties, IStepConfiguration } from '../lib/contexts/configuration';
 import { ConfigSettings } from '../lib/contexts/configuration/types';
 import { INavigationButtons } from '../lib/molecules/NavigationButtons';
+import { IDocumentOptions } from '../lib/organisms/DocumentOptions';
 import {
   IFlowCompletePayload,
   IFlowErrorPayload,
@@ -39,6 +40,7 @@ interface FlowsUIConfig {
     title?: ICSSProperties;
     paragraph?: ICSSProperties;
     navigationButtons?: INavigationButtons;
+    documentOptions?: IDocumentOptions;
     image?: ICSSProperties;
     cameraButton?: ICSSProperties;
     videoContainer?: ICSSProperties;

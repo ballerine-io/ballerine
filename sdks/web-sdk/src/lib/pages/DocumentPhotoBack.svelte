@@ -14,7 +14,7 @@
   } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { currentStepId, DocumentType } from '../contexts/app-state';
+  import { currentStepId, EDocumentType } from '../contexts/app-state';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { updateDocument } from '../utils/photo-utils';
   import { createToggle } from '../hooks/createToggle/createToggle';
@@ -32,12 +32,14 @@
   const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
   const documentType =
-    ($uiPack.steps[$currentStepId].type as DocumentType) ||
-    (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) ||
+    ($uiPack.steps[$currentStepId].type as EDocumentType) ||
+    (($configuration.steps && $configuration.steps[$currentStepId].type) as EDocumentType) ||
     $selectedDocumentInfo.type;
 
+  const documentKind = $selectedDocumentInfo ? $selectedDocumentInfo.kind : undefined;
+
   let stream: MediaStream;
-  const stepNamespace = `${step.namespace}.${documentType}`;
+  const stepNamespace = `${step.namespace}.${documentKind || documentType}`;
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
   }
@@ -64,12 +66,14 @@
   });
 
   const handleTakePhoto = () => {
-    const document = $documents.find(d => d.type === documentType);
+    const document = $documents.find(
+      d => (d.kind && d.kind === documentKind) || d.type === documentType,
+    );
     if (!cameraPhoto || !document || $isDisabled) return;
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings || $uiPack.settings.cameraSettings,
     );
-    const newDocumentsState = updateDocument(document.type, base64, $documents);
+    const newDocumentsState = updateDocument(document, base64, $documents);
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
     toggleOnIsDisabled();

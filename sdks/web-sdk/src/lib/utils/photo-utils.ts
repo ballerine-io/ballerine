@@ -1,5 +1,5 @@
 import { IAppConfiguration, IAppConfigurationUI } from '../contexts/configuration';
-import { DocumentType, IDocument, IDocumentPage } from '../contexts/app-state';
+import { EDocumentType, IDocument, IDocumentPage } from '../contexts/app-state';
 import Compressor from 'compressorjs';
 import merge from 'deepmerge';
 
@@ -37,7 +37,7 @@ export const nativeCameraHandler = (e: ICameraEvent): Promise<string> => {
 };
 
 export const clearDocs = (
-  type: DocumentType,
+  type: EDocumentType,
   configuration: IAppConfiguration,
   uiPack: IAppConfigurationUI,
   documents: IDocument[],
@@ -56,7 +56,7 @@ export const clearDocs = (
 };
 
 export const addDocument = (
-  type: DocumentType,
+  type: EDocumentType,
   base64: string,
   configuration: IAppConfiguration,
   uiPack: IAppConfigurationUI,
@@ -91,12 +91,12 @@ const getUpdatedPages = (base64: string, doc: IDocument): IDocumentPage[] => {
 };
 
 export const updateDocument = (
-  type: DocumentType,
+  document: IDocument,
   base64: string,
   documents: IDocument[],
 ): IDocument[] => {
   return documents.map(doc => {
-    if (doc.type === type) {
+    if ((document.kind && document.kind === doc.kind) || doc.type === document.type) {
       const newPagesState = getUpdatedPages(base64, doc);
       return { ...doc, pages: newPagesState };
     }

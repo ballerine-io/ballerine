@@ -129,10 +129,13 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
     uiTheme = packs[packName];
     return updatedPack;
   });
-
   config.steps[Steps.Welcome] = await preloadStepImages(config.steps[Steps.Welcome], uiTheme);
-  config.steps[Steps.Loading] = await preloadStepImages(config.steps[Steps.Loading], uiTheme);
-  config.steps[Steps.Final] = await preloadStepImages(config.steps[Steps.Final], uiTheme);
+  if (config.steps[Steps.Loading]) {
+    config.steps[Steps.Loading] = await preloadStepImages(config.steps[Steps.Loading], uiTheme);
+  }
+  if (config.steps[Steps.Final]) {
+    config.steps[Steps.Final] = await preloadStepImages(config.steps[Steps.Final], uiTheme);
+  }
   configuration.update(() => config);
 };
 
@@ -166,7 +169,8 @@ export const mergeConfig = (
     newConfig.steps &&
     newConfig.steps[Steps.DocumentSelection] &&
     newConfig.steps[Steps.DocumentSelection].documentOptions &&
-    newConfig.documentOptions
+    newConfig.documentOptions &&
+    newConfig.documentOptions.options
   ) {
     const documentOptions = newConfig.steps[Steps.DocumentSelection].documentOptions?.reduce(
       (docOpts, docType) => {

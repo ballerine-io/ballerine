@@ -4,7 +4,7 @@
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
-  import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
+  import { IDocument, currentStepId, EDocumentType } from '../contexts/app-state';
   import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
@@ -23,8 +23,8 @@
   const style = getLayoutStyles($configuration, $uiPack, step);
 
   const documentType =
-    (($configuration.steps && $configuration.steps[$currentStepId].type) as DocumentType) ||
-    ($uiPack.steps[$currentStepId].type as DocumentType) ||
+    (($configuration.steps && $configuration.steps[$currentStepId].type) as EDocumentType) ||
+    ($uiPack.steps[$currentStepId].type as EDocumentType) ||
     $selectedDocumentInfo.type;
 
   $: {

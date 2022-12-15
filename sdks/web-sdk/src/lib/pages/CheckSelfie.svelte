@@ -7,7 +7,7 @@
   import Paragraph from '../atoms/Paragraph/Paragraph.svelte';
   import NavigationButtons from '../molecules/NavigationButtons/NavigationButtons.svelte';
   import Photo from '../atoms/Photo/Photo.svelte';
-  import { selfieUri, currentStepId, appState } from '../contexts/app-state';
+  import { selfieUri, currentStepId, appState, documents } from '../contexts/app-state';
   import {
     EActionNames,
     sendButtonClickEvent,

@@ -1,7 +1,7 @@
-import { DocumentType, IDocument, IPageSide } from './types';
+import { EDocumentType, IDocument, IPageSide } from './types';
 
 export const getDocImage = (
-  type: DocumentType,
+  type: EDocumentType,
   docs: IDocument[],
   pageSide?: IPageSide,
 ): string => {

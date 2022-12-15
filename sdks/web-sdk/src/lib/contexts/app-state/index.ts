@@ -16,5 +16,5 @@ export type {
   IStoreData,
   ISelectedParams,
 } from './types';
-export { DocumentType } from './types';
+export { EDocumentType, EDocumentKind } from './types';
 export { getDocImage } from './utils';

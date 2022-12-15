@@ -61,6 +61,14 @@
         "title": "Voter ID front side",
         "description": "Place your voter card inside the frame and take a picture. \nMake sure it is not cut or has any glare."
       },
+      "ife_card": {
+        "title": "IFE card front side",
+        "description": "Place your IFE card inside the frame and take a picture. \nMake sure it is not cut or has any glare."
+      },
+      "ine_card": {
+        "title": "INE card front side",
+        "description": "Place your INE card inside the frame and take a picture. \nMake sure it is not cut or has any glare."
+      },
       "drivers_license": {
         "title": "Drivers license",
         "description": "Place your drivers license inside the frame and take \na picture. \nMake sure it is not cut or has any glare."
@@ -90,6 +98,14 @@
       "voter_id": {
         "title": "Voter ID back side",
         "description": "Place the back side of your Voter ID inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
+      },
+      "ife_card": {
+        "title": "IFE card back side",
+        "description": "Place the back side of your IFE card inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
+      },
+      "ine_card": {
+        "title": "INE card back side",
+        "description": "Place the back side of your INE card inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
       },
       "drivers_license": {
         "title": "Drivers license back side",

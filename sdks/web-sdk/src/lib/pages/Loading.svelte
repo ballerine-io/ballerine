@@ -22,6 +22,7 @@
   import { DecisionStatus } from '../contexts/app-state/types';
   import { preloadStepById } from '../services/preload-service';
   import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { broofa } from '../utils/api-utils';
   flowUploadLoader();
 
   const WAITING_TIME = 1000 * 60 * 3; // 3 minutes
@@ -37,14 +38,6 @@
   let dataVerified = false;
   let review = false;
   let showText = true;
-
-  const broofa = () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = (Math.random() * 16) | 0,
-        v = c == 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-  };
 
   const endUserId = $configuration.endUserInfo.id || broofa();
   const checkStatus = async (data: ISendDocumentsResponse) => {
