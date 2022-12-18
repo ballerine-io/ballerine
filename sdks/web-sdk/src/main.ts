@@ -22,19 +22,20 @@ export const flows: BallerineSDKFlows = {
       console.error('BallerineSDK: Could not find element with id', elementId);
     }
 
+    // Merge the passed in callbacks into the Svelte configuration store of the specified flow.
+    // Calling setFlowCallbacks after ConfigurationProvider results in stale state on instances of get(configuration).
+    if (config.callbacks) {
+      await setFlowCallbacks(flowName, config.callbacks);
+    }
+
     new ConfigurationProvider({
       target: document.getElementById(elementId) as HTMLElement,
       props: {
         flowName,
       },
     });
-
-    // Merge the passed in callbacks into the Svelte configuration store of the specified flow.
-    if (!config.callbacks) return;
-
-    await setFlowCallbacks(flowName, config.callbacks);
   },
-  openModal(flowName, config) {
+  async openModal(flowName, config) {
     const hostElement = document.querySelector('body');
     if (hostElement) {
       hostElement.innerHTML = `<div class="loader-container" id="blrn-loader">
@@ -43,6 +44,12 @@ export const flows: BallerineSDKFlows = {
     `;
     } else {
       console.error('BallerineSDK: Could not find element body');
+    }
+
+    // Merge the passed in callbacks into the Svelte configuration store of the specified flow.
+    // Calling setFlowCallbacks after ConfigurationProvider results in stale state on instances of get(configuration).
+    if (config.callbacks) {
+      await setFlowCallbacks(flowName, config.callbacks);
     }
 
     new ConfigurationProvider({
