@@ -2,7 +2,7 @@ import { Steps } from './lib/contexts/configuration';
 import { flows } from './main';
 import { EDocumentKind, EDocumentType } from './lib/contexts/app-state';
 import { FlowsInitOptions } from './types/BallerineSDK';
-
+//
 const ballerineInitConfig: FlowsInitOptions = {
   endUserInfo: { id: 'test-id' },
   translations: {
@@ -14,7 +14,7 @@ const ballerineInitConfig: FlowsInitOptions = {
         steps: [
           {
             name: Steps.Welcome,
-            id: Steps.Welcome
+            id: Steps.Welcome,
           },
           {
             name: Steps.DocumentSelection,
