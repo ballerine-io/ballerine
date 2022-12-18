@@ -23,6 +23,7 @@ examples/**
 !examples/standalone
 !examples/standalone-future
 !examples/sdk
+!examples/sdk-react
 !examples/**/index.html
 !examples/**/README.md
 !examples/**/*.svg
