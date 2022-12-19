@@ -6,7 +6,7 @@ import {
   updateTranslations,
 } from './lib/utils/configuration-manager';
 import { getConfigFromQueryParams } from './lib/utils/get-config-from-query-params';
-
+//
 export const flows: BallerineSDKFlows = {
   // Use the b_fid query param as the default flowName, fallback to the passed flowName arg.
   // Optional args/args with default values should probably be last.
