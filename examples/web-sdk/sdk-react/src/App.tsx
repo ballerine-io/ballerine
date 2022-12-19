@@ -1,22 +1,20 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { flows } from '@ballerine/web-sdk';
-import { defaultInitConfig, defaultModalConfig } from './configs/default-config';
+import { rioInitConfig, rioModalConfig } from './configs/rio-config';
 
 function App() {
-  const isMounted = useRef(false);
+  const startFlow = useCallback(
+    async () => await flows.openModal('my-kyc-flow', rioModalConfig),
+    [],
+  );
 
   useEffect(() => {
-    if (isMounted.current) return;
-
-    isMounted.current = true;
-
     (async () => {
-      await flows.init(defaultInitConfig);
-      await flows.openModal('my-kyc-flow', defaultModalConfig);
+      await flows.init(rioInitConfig);
     })();
   }, []);
 
-  return null;
+  return <button onClick={startFlow}>Start Flow</button>;
 }
 
 export default App;
