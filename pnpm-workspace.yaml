@@ -4,4 +4,3 @@ packages:
   - 'sdks/*'
   - 'services/*'
   - 'websites/*'
-  - 'examples/**/*'
