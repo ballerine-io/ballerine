@@ -14,7 +14,7 @@ const ballerineInitConfig: FlowsInitOptions = {
         steps: [
           {
             name: Steps.Welcome,
-            id: Steps.Welcome
+            id: Steps.Welcome,
           },
           {
             name: Steps.DocumentSelection,
@@ -95,5 +95,5 @@ const ballerineInitConfig: FlowsInitOptions = {
 console.log(ballerineInitConfig);
 
 void flows.init(ballerineInitConfig).then(() => {
-  flows.openModal('my-kyc-flow', {});
+  void flows.openModal('my-kyc-flow', {});
 });

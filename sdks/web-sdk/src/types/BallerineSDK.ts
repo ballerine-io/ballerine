@@ -119,7 +119,7 @@ export interface FlowsTranslations {
 export interface BallerineSDKFlows {
   init: (config: FlowsInitOptions) => Promise<void>;
   mount: (flowName: string, elementId: string, config: FlowsMountOptions) => Promise<void>;
-  openModal: (flowName: string, config: FlowsMountOptions) => void;
+  openModal: (flowName: string, config: FlowsMountOptions) => Promise<void>;
   setConfig: (config: FlowsInitOptions) => Promise<void>;
 }
 
