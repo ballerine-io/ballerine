@@ -28,6 +28,10 @@ export interface IFlowNavigationUpdatePayload extends IEventOptions {
   };
 }
 
+export interface IFlowDecisionUpdatePayload extends IEventOptions {
+  payload: AnyRecord;
+}
+
 export interface IFlowEventBusParams<
   TType extends EFlowEvent,
   TPayload extends TFlowEventBusPayload,
@@ -48,4 +52,9 @@ export interface IFlowEventBus {
     type,
     payload,
   }: IFlowEventBusParams<EFlowEvent.FLOW_NAVIGATION_UPDATE, IFlowNavigationUpdatePayload>): void;
+
+  ({
+    type,
+    payload,
+  }: IFlowEventBusParams<EFlowEvent.FLOW_DECISION_UPDATE, IFlowDecisionUpdatePayload>): void;
 }

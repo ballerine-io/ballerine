@@ -67,6 +67,11 @@ export const sendVerificationUpdateEvent = (
     details,
   };
   window.parent.postMessage(eventOptions, '*');
+
+  flowEventBus({
+    type: EFlowEvent.FLOW_DECISION_UPDATE,
+    payload: eventOptions,
+  });
 };
 
 export const sendNavigationUpdateEvent = () => {

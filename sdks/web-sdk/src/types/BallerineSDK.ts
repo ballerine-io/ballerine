@@ -4,6 +4,7 @@ import { INavigationButtons } from '../lib/molecules/NavigationButtons';
 import { IDocumentOptions } from '../lib/organisms/DocumentOptions';
 import {
   IFlowCompletePayload,
+  IFlowDecisionUpdatePayload,
   IFlowErrorPayload,
   IFlowExitPayload,
   IFlowNavigationUpdatePayload,
@@ -69,6 +70,7 @@ export interface FlowsEventsConfig {
   onFlowExit?: (payload: IFlowExitPayload) => void;
   onFlowError?: (payload: IFlowErrorPayload) => void;
   onFlowNavigationUpdate?: (payload: IFlowNavigationUpdatePayload) => void;
+  onFlowDecisionUpdate?: (payload: IFlowDecisionUpdatePayload) => void;
 }
 
 export interface EndUserInfo {
