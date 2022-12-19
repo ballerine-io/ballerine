@@ -1,6 +1,6 @@
-import {useEffect, useRef} from "react";
-import {flows} from "@ballerine/web-sdk";
-import {defaultConfig} from "./configs/default-config";
+import { useEffect, useRef } from 'react';
+import { flows } from '@ballerine/web-sdk';
+import { defaultInitConfig, defaultModalConfig } from './configs/default-config';
 
 function App() {
   const isMounted = useRef(false);
@@ -11,30 +11,12 @@ function App() {
     isMounted.current = true;
 
     (async () => {
-      await flows.init(defaultConfig);
-      await flows.mount('my-kyc-flow', 'kyc-host', {
-        callbacks: {
-          onFlowNavigationUpdate(payload) {
-            console.log('onFlowNavigation', payload);
-          },
-          onFlowExit(payload) {
-            console.log('onFlowExit', payload);
-          },
-          onFlowError: (payload) => {
-            console.log('onFlowError', payload);
-          },
-          onFlowComplete(payload) {
-            console.log('onFlowComplete', payload);
-          },
-        },
-      });
+      await flows.init(defaultInitConfig);
+      await flows.openModal('my-kyc-flow', defaultModalConfig);
     })();
   }, []);
 
-
-  return (
-    <div id="kyc-host"></div>
-  )
+  return null;
 }
 
-export default App
+export default App;
