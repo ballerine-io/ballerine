@@ -1,10 +1,13 @@
-**.env**
 # Logs
 logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 node_modules
-.vscode
 dist
 dist-ssr
 *.local
@@ -19,10 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-examples/**
-!examples/standalone
-!examples/standalone-future
-!examples/sdk
-!examples/**/index.html
-!examples/**/README.md
-!examples/**/*.svg
+
+# SDK configs
+src/configs/rio-config.ts
