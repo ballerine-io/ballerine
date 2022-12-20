@@ -1,5 +1,11 @@
 # web-sdk
 
+## 1.2.3
+
+### Patch Changes
+
+- a24a4cc: Init now handles multiple calls by resetting the config as a first step
+
 ## 1.2.2
 
 ### Patch Changes
