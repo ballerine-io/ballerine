@@ -109,3 +109,21 @@ export const sendButtonClickEvent = (
 
   window.parent.postMessage(eventOptions, '*');
 };
+
+export const sendFlowErrorEvent = (error: Error, shouldExit = false) => {
+  const as = get(appState);
+  const eventOptions = {
+    eventName: BALLERINE_EVENT,
+    eventType: EEventTypes.FLOW_ERROR,
+    shouldExit,
+    details: {
+      currentIdx: as.currentStepIdx,
+      currentPage: as.currentPage,
+    },
+  };
+  window.parent.postMessage(eventOptions, '*');
+  flowEventBus({
+    type: EFlowEvent.FLOW_ERROR,
+    payload: eventOptions,
+  });
+};
