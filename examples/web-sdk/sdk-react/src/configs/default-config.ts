@@ -68,7 +68,7 @@ export const defaultInitConfig: FlowsInitOptions = {
   },
 };
 
-export const defaultModalConfig: Parameters<BallerineSDKFlows['openModal']>[1] = {
+export const defaultModalFlowConfig: Parameters<BallerineSDKFlows['openModal']>[1] = {
   callbacks: {
     onFlowNavigationUpdate(payload) {
       console.log('onFlowNavigation', payload);
