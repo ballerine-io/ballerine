@@ -5,7 +5,7 @@ export const defaultInitConfig: FlowsInitOptions = {
   uiConfig: {
     general: {
       colors: {
-        primary: '#000',
+        primary: '#007AFF',
       },
     },
     flows: {

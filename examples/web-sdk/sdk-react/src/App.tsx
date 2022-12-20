@@ -1,16 +1,16 @@
 import { useCallback, useEffect } from 'react';
 import { flows } from '@ballerine/web-sdk';
-import { rioInitConfig, rioModalConfig } from './configs/rio';
+import { defaultInitConfig } from './configs/default-config';
 
 function App() {
   const startFlow = useCallback(
-    async () => await flows.openModal('my-kyc-flow', rioModalConfig),
+    async () => await flows.openModal('my-kyc-flow', {}),
     [],
   );
 
   useEffect(() => {
     (async () => {
-      await flows.init(rioInitConfig);
+      await flows.init(defaultInitConfig);
     })();
   }, []);
 
