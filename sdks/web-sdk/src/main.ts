@@ -6,7 +6,10 @@ import {
   updateTranslations,
 } from './lib/utils/configuration-manager';
 import { getConfigFromQueryParams } from './lib/utils/get-config-from-query-params';
-
+import { configuration } from './lib/contexts/configuration';
+import { configuration as defaultConfiguration } from './lib/configuration/configuration';
+import { resetAppState } from './lib/contexts/app-state/utils';
+//
 export const flows: BallerineSDKFlows = {
   // Use the b_fid query param as the default flowName, fallback to the passed flowName arg.
   // Optional args/args with default values should probably be last.
@@ -67,6 +70,13 @@ export const flows: BallerineSDKFlows = {
         __APP_VERSION__,
         config,
       );
+
+      // Always init with no state. This ensures using init to reset the flow returns to the first step with no data.
+      resetAppState();
+      // Always init with no configuration. This handles multiple calls to init, i.e React re-renders.
+      // Otherwise, the steps array could keep growing.
+      configuration.set(defaultConfiguration);
+
       const { translations, ...restConfig } = config;
       // Extract config from query params
       const {
