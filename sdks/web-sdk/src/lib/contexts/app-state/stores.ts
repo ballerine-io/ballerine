@@ -22,7 +22,7 @@ export const documents = writable<IDocument[]>([]);
 // });
 
 //selected docs
-export const selectedDocumentInfo = writable<IDocumentInfo>();
+export const selectedDocumentInfo = writable<IDocumentInfo | undefined>();
 // let savedSelectedDocs = sessionStorage.getItem(STORAGE_DOCUMENT_INFO_KEY);
 // export const selectedDocumentInfo = writable<IDocumentInfo>(savedSelectedDocs ? JSON.parse(savedSelectedDocs) : "");
 // selectedDocumentInfo.subscribe(docInfo => {
