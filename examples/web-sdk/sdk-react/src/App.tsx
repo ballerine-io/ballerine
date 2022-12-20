@@ -1,10 +1,10 @@
 import { useCallback, useEffect } from 'react';
 import { flows } from '@ballerine/web-sdk';
-import { defaultInitConfig } from './configs/default-config';
+import { defaultInitConfig, defaultModalFlowConfig } from './configs/default-config';
 
 function App() {
   const startFlow = useCallback(
-    async () => await flows.openModal('my-kyc-flow', {}),
+    async () => await flows.openModal('my-kyc-flow', defaultModalFlowConfig),
     [],
   );
 
