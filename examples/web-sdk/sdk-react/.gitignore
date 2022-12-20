@@ -24,4 +24,5 @@ dist-ssr
 *.sw?
 
 # SDK configs
-src/configs/rio-config.ts
+src/configs
+!src/configs/default-config.ts

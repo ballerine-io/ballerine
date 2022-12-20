@@ -1,5 +1,5 @@
-import {flows} from "@ballerine/web-sdk";
-import {defaultConfig} from "./configs/default-config";
+import { flows } from '@ballerine/web-sdk';
+import { defaultConfig } from './configs/default-config';
 
 (async () => {
   await flows.init(defaultConfig);
@@ -11,7 +11,7 @@ import {defaultConfig} from "./configs/default-config";
       onFlowExit(payload) {
         console.log('onFlowExit', payload);
       },
-      onFlowError: (payload) => {
+      onFlowError: payload => {
         console.log('onFlowError', payload);
       },
       onFlowComplete(payload) {

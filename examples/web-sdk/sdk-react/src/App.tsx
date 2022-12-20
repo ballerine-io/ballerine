@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { flows } from '@ballerine/web-sdk';
-import { rioInitConfig, rioModalConfig } from './configs/rio-config';
+import { rioInitConfig, rioModalConfig } from './configs/rio';
 
 function App() {
   const startFlow = useCallback(
