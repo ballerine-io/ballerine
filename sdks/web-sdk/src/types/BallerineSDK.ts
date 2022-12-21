@@ -1,5 +1,6 @@
 import { ICSSProperties, IStepConfiguration } from '../lib/contexts/configuration';
 import { ConfigSettings } from '../lib/contexts/configuration/types';
+import { TranslationType } from '../lib/contexts/translation';
 import { INavigationButtons } from '../lib/molecules/NavigationButtons';
 import { IDocumentOptions } from '../lib/organisms/DocumentOptions';
 import {
@@ -10,7 +11,7 @@ import {
 } from '../lib/services/flow-event-bus/interfaces';
 import { AnyRecord } from '../types';
 
-interface FlowsGeneralTheme {
+export interface FlowsGeneralTheme {
   progress?: boolean;
   borderRadius?: string;
   padding?: string;
@@ -112,14 +113,14 @@ interface FlowsMountOptions {
 type FlowsModalOptions = FlowsMountOptions;
 
 export interface FlowsTranslations {
-  overrides?: Record<string, AnyRecord>;
+  overrides?: TranslationType;
   remoteUrl?: string;
 }
 
 export interface BallerineSDKFlows {
   init: (config: FlowsInitOptions) => Promise<void>;
-  mount: (flowName: string, elementId: string, config: FlowsMountOptions) => Promise<void>;
-  openModal: (flowName: string, config: FlowsMountOptions) => Promise<void>;
+  mount: (flowName: string, elementId: string, config: FlowsMountOptions) => void;
+  openModal: (flowName: string, config: FlowsMountOptions) => void;
   setConfig: (config: FlowsInitOptions) => Promise<void>;
 }
 

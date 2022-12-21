@@ -3,7 +3,7 @@ import { INavigationButtons } from '../../molecules/NavigationButtons';
 import { IDocumentOptions } from '../../organisms/DocumentOptions';
 import type { CaptureConfigOption } from 'jslib-html5-camera-photo';
 import { IFlow } from '../flows';
-import { EndUserInfo, FlowsBackendConfig } from '../../../types/BallerineSDK';
+import { EndUserInfo, FlowsBackendConfig, FlowsEventsConfig, FlowsGeneralTheme } from '../../../types/BallerineSDK';
 import { EDocumentType, EDocumentKind } from '../app-state';
 import { ICSSProperties } from '../../services/css-manager';
 
@@ -115,43 +115,40 @@ export interface IOverlayStyles {
 export type TSteps = { [key: string]: IStepConfiguration };
 
 export interface IAppConfigurationUI {
-  container: ICSSProperties;
-  button: ICSSProperties;
-  buttonWithIcon: ICSSProperties;
-  iconButton: ICSSProperties;
-  iconCloseButton: ICSSProperties;
-  layout: ICSSProperties;
-  photo: ICSSProperties;
-  title: ICSSProperties;
-  paragraph: ICSSProperties;
-  documentOptions: IDocumentOptions;
-  list: IList;
-  navigationButtons: INavigationButtons;
-  image: ICSSProperties;
-  cameraButton: ICSSProperties;
-  videoContainer: ICSSProperties;
-  input: ICSSProperties;
-  loader: ICSSProperties;
-  errorText: ICSSProperties;
-  overlay: IOverlayStyles;
-  settings: ConfigSettings;
-  general: {
-    progress: boolean;
-    borderRadius: string;
-    padding: string;
-    colors: {
-      primary: string;
-      secondary: string;
-      text: string;
-      danger: string;
-    };
-    fonts: {
-      name: string;
-      weight: number[];
-      link?: string;
+  uiPack?: string;
+  general?: FlowsGeneralTheme;
+  components?: {
+    container?: ICSSProperties;
+    button?: ICSSProperties;
+    buttonWithIcon?: ICSSProperties;
+    iconButton?: ICSSProperties;
+    layout?: ICSSProperties;
+    photo?: ICSSProperties;
+    title?: ICSSProperties;
+    paragraph?: ICSSProperties;
+    navigationButtons?: INavigationButtons;
+    documentOptions?: IDocumentOptions;
+    image?: ICSSProperties;
+    cameraButton?: ICSSProperties;
+    videoContainer?: ICSSProperties;
+    input?: ICSSProperties;
+    loader?: ICSSProperties;
+    errorText?: ICSSProperties;
+    overlay?: ICSSProperties;
+  };
+  flows?: {
+    [key: string]: {
+      steps?: RecursivePartial<IStepConfiguration>[];
+      userType?: string;
+      mobileNativeCamera?: boolean;
+      syncFlow?: boolean;
+      useFinalQueryParams?: boolean;
+      firstScreenBackButton?: boolean;
+      showCloseButton?: boolean;
+      callbacks?: FlowsEventsConfig;
     };
   };
-  steps: TSteps;
+  settings?: ConfigSettings;
 }
 
 export interface IAppConfiguration extends Partial<IAppConfigurationUI> {
