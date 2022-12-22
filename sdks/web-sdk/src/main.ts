@@ -15,32 +15,16 @@ export const flows: BallerineSDKFlows = {
   // Use the b_fid query param as the default flowName, fallback to the passed flowName arg.
   // Optional args/args with default values should probably be last.
   // Async due to setFlowCallbacks using updateConfiguration, which is async.
-  async mount(flowName = getConfigFromQueryParams().flowName, elementId, config) {
-    const hostElement = document.getElementById(elementId);
-    if (hostElement) {
-      hostElement.innerHTML = `<div class="loader-container" id="blrn-loader">
-      <div class="loader"></div>
-    </div>
-    `;
-    } else {
-      console.error('BallerineSDK: Could not find element with id', elementId);
-    }
-
-    // Merge the passed in callbacks into the Svelte configuration store of the specified flow.
-    // Calling setFlowCallbacks below ConfigurationProvider results in stale state for instances of get(configuration).
-    if (config.callbacks) {
-      await setFlowCallbacks(flowName, config.callbacks);
-    }
-
-    new ConfigurationProvider({
-      target: document.getElementById(elementId) as HTMLElement,
-      props: {
-        flowName,
-      },
-    });
-  },
-  async openModal(flowName, { callbacks, jwt }) {
-    const hostElement = document.querySelector('body');
+  async mount({
+    flowName = getConfigFromQueryParams().flowName,
+    callbacks,
+    jwt,
+    useModal = false,
+    elementId = '',
+  }) {
+    const hostElement = useModal
+      ? document.querySelector('body')
+      : document.getElementById(elementId);
 
     if (hostElement) {
       hostElement.innerHTML = `<div class="loader-container" id="blrn-loader">
@@ -48,7 +32,9 @@ export const flows: BallerineSDKFlows = {
     </div>
     `;
     } else {
-      console.error('BallerineSDK: Could not find element body');
+      const message = useModal ? 'body' : `with id ${elementId}`;
+
+      console.error(`BallerineSDK: Could not find element ${message}`);
     }
 
     // Merge the passed in callbacks into the Svelte configuration store of the specified flow.
@@ -66,7 +52,7 @@ export const flows: BallerineSDKFlows = {
       target: hostElement as HTMLElement,
       props: {
         flowName,
-        useModal: true,
+        useModal,
       },
     });
   },
