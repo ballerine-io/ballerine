@@ -59,7 +59,7 @@ interface FlowsUIConfig {
       useFinalQueryParams?: boolean;
       firstScreenBackButton?: boolean;
       showCloseButton?: boolean;
-      callbacks?: () => void;
+      callbacks?: FlowsEventsConfig;
     };
   };
   settings?: ConfigSettings;
@@ -67,7 +67,14 @@ interface FlowsUIConfig {
 
 export interface FlowsEventsConfig {
   onFlowComplete?: (payload: IFlowCompletePayload) => void;
-  onFlowExit?: (payload: IFlowExitPayload) => void;
+  onFlowExit?: (payload: IFlow
+
+
+
+
+
+
+    ExitPayload) => void;
   onFlowError?: (payload: IFlowErrorPayload) => void;
   onFlowNavigationUpdate?: (payload: IFlowNavigationUpdatePayload) => void;
 }

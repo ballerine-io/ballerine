@@ -15,6 +15,14 @@ const ballerineInitConfig: FlowsInitOptions = {
           {
             name: Steps.Welcome,
             id: Steps.Welcome,
+            elements: [{
+              id: "tip",
+              props: {
+                style: {
+                  "text-align": "left"
+                }
+              }
+            }]
           },
           {
             name: Steps.DocumentSelection,

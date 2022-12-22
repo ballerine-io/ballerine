@@ -112,30 +112,31 @@ export interface IOverlayStyles {
   selfie?: ICSSProperties;
 }
 
-export type TSteps = { [key: string]: IStepConfiguration };
+export type TSteps = IStepConfiguration[];
+export interface IConfigurationComponents {
+  container?: ICSSProperties;
+  button?: ICSSProperties;
+  buttonWithIcon?: ICSSProperties;
+  iconButton?: ICSSProperties;
+  layout?: ICSSProperties;
+  photo?: ICSSProperties;
+  title?: ICSSProperties;
+  paragraph?: ICSSProperties;
+  navigationButtons?: INavigationButtons;
+  documentOptions?: IDocumentOptions;
+  image?: ICSSProperties;
+  cameraButton?: ICSSProperties;
+  videoContainer?: ICSSProperties;
+  input?: ICSSProperties;
+  loader?: ICSSProperties;
+  errorText?: ICSSProperties;
+  overlay?: ICSSProperties;
+}
 
 export interface IAppConfigurationUI {
   uiPack?: string;
   general?: FlowsGeneralTheme;
-  components?: {
-    container?: ICSSProperties;
-    button?: ICSSProperties;
-    buttonWithIcon?: ICSSProperties;
-    iconButton?: ICSSProperties;
-    layout?: ICSSProperties;
-    photo?: ICSSProperties;
-    title?: ICSSProperties;
-    paragraph?: ICSSProperties;
-    navigationButtons?: INavigationButtons;
-    documentOptions?: IDocumentOptions;
-    image?: ICSSProperties;
-    cameraButton?: ICSSProperties;
-    videoContainer?: ICSSProperties;
-    input?: ICSSProperties;
-    loader?: ICSSProperties;
-    errorText?: ICSSProperties;
-    overlay?: ICSSProperties;
-  };
+  components?: IConfigurationComponents;
   flows?: {
     [key: string]: {
       steps?: RecursivePartial<IStepConfiguration>[];

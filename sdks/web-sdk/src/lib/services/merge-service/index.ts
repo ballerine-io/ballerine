@@ -1,1 +1,1 @@
-export { mergeStepConfig, isUrl, mergeTranslations } from './utils';
+export { mergeStepConfig, isUrl, mergeTranslations, mergeConfigurationWithUiPack } from './utils';

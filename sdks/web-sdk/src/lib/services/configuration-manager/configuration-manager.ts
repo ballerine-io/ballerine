@@ -1,16 +1,18 @@
 import { FlowsEventsConfig, FlowsInitOptions, FlowsTranslations } from "../../../types/BallerineSDK";
 import { TranslationType } from "../../contexts/translation";
 import translation from '../../configuration/translation.json';
-import { mergeTranslations } from '../merge-service';
-import { configuration as configurationStore, IAppConfiguration } from "../../contexts/configuration";
+import { isUrl, mergeConfigurationWithUiPack, mergeTranslations } from '../merge-service';
+import { configuration as configurationStore, IAppConfiguration, IAppConfigurationUI } from "../../contexts/configuration";
 import deepmerge from "deepmerge";
 import { get } from "svelte/store";
+import { uiPack as uiPackStore, EUIPackTypes, packs, IUIPackTheme } from "../../ui-packs";
 
 export let texts: TranslationType = translation;
 
-export const appInit = (overrides: FlowsInitOptions) => {
-  const configuration = mergeConfigOverrides(overrides);
-  console.log("configuration", configuration);
+export const appInit = async (flowName: string, overrides: FlowsInitOptions) => {
+  let configuration = mergeConfigOverrides(overrides);
+  configuration = await populateConfigurationByUiPack(configuration);
+  configurationStore.update(() => configuration);
 }
 
 /**
@@ -26,6 +28,27 @@ const mergeConfigOverrides = (overrides: FlowsInitOptions): IAppConfiguration =>
     return mergedConfiguration;
   });
   return mergedConfiguration;
+}
+
+/**
+ * @description Extends provided by user configuration with selected ui pack
+ * @param configuration provided user configuration
+ */
+const populateConfigurationByUiPack = async (configuration: IAppConfiguration) => {
+  const packType = configuration.uiPack;
+  if (isUrl(packType)) {
+    const response = await fetch(packType as string);
+    const uiPack = await response.json() as IUIPackTheme;
+    uiPackStore.set(uiPack);
+    return mergeConfigurationWithUiPack(configuration, uiPack);
+  }
+  if (!packType) {
+    return mergeConfigurationWithUiPack(configuration, packs.default);
+  }
+  if (!Object.values(EUIPackTypes).includes(packType as EUIPackTypes)) {
+    return mergeConfigurationWithUiPack(configuration, packs.default);
+  }
+  return mergeConfigurationWithUiPack(configuration, packs[packType as EUIPackTypes]);
 }
 
 /**

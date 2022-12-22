@@ -1,24 +1,28 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
   import { steps } from './lib/contexts/navigation';
-  import { configuration, IAppConfiguration } from './lib/contexts/configuration';
+  import { configuration, IStepConfiguration } from './lib/contexts/configuration';
   import { sendNavigationUpdateEvent } from './lib/utils/event-service';
   import { visitedPage } from './lib/services/analytics';
   import { currentStepId, currentStepIdx, currentParams } from './lib/contexts/app-state';
+  import { getContext } from 'svelte';
 
-  const configurationStepIds = Object.keys($configuration.steps);
+  const flowName = getContext('flowName') as string;
+  const flow = $configuration.flows[flowName];
+  const flowSteps = flow.steps as RecursivePartial<IStepConfiguration>[];
+  const configurationStepIds = flowSteps.map(s => s.id);
   let stepId = configurationStepIds[0];
-  let step = steps.find(s => s.name === $configuration.steps[stepId].name);
-
+  const flowStep = flowSteps.find(s => s.id === stepId) as IStepConfiguration;
+  let step = steps.find(s => s.name === flowStep.id);
   const routeInit = (currentStepId: string, currentStepIdx: number) => {
-    const configurationStepId = configurationStepIds.find((key: string) => key === currentStepId);
+    const configurationStepId = configurationStepIds.find((id: string) => id === currentStepId);
     if (configurationStepId === stepId) return;
     if (!configurationStepId) {
       stepId = currentStepId;
       step = steps.find(s => s.name === currentStepId);
     } else {
       stepId = configurationStepId;
-      step = steps.find(s => s.name === $configuration.steps[stepId].name);
+      step = steps.find(s => s.id === stepId);
       const newStepIndex = configurationStepIds.indexOf(stepId);
       if (newStepIndex !== currentStepIdx) {
         currentStepIdx = newStepIndex;

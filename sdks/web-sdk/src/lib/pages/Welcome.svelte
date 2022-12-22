@@ -13,11 +13,12 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack, stepId);
+  const step = getStepConfiguration($configuration, stepId);
+  console.log('$configuration', $configuration);
   const flow = getFlowConfig($configuration);
   const style = getLayoutStyles($configuration, $uiPack, step);
 
-  const stepNamespace = step.namespace!;
+  const stepNamespace = step.id!;
 
   preloadNextStepByCurrent($configuration, configuration, stepId, $uiPack);
 </script>
