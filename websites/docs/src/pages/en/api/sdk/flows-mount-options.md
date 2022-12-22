@@ -34,6 +34,10 @@ Required if useModal is not used or is set to false. The string id attribute of 
 
 • **flowName**: `string`
 
+**`Description`**
+
+The object key of the flow to be rendered.
+
 #### Defined in
 
 [BallerineSDK.ts:109](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-sdk/src/types/BallerineSDK.ts#L109)

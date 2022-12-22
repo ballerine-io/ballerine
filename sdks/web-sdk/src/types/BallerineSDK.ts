@@ -106,6 +106,9 @@ export interface FlowsInitOptions {
 }
 
 export interface IFlowsMountOptions {
+  /**
+   * @description The object key of the flow to be rendered.
+   */
   flowName: string;
   /**
    * @description A boolean to decide where to mount the flow - if true, the flow will be mounted in the body element.
