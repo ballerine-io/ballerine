@@ -12,6 +12,44 @@ import { configuration as defaultConfiguration } from './lib/configuration/confi
 import { resetAppState } from './lib/contexts/app-state/utils';
 
 export const flows: BallerineSDKFlows = {
+  init: config => {
+    return new Promise((resolve, reject) => {
+      console.log(
+        'BallerineSDK: Initializing BallerineSDK with version: ',
+        __APP_VERSION__,
+        config,
+      );
+
+      // Always init with no state. This ensures using init to reset the flow returns to the first step with no data.
+      resetAppState();
+      // Always init with no configuration. This handles multiple calls to init, i.e React re-renders.
+      // Otherwise, the steps array could keep growing.
+      configuration.set(defaultConfiguration);
+
+      const { translations, ...restConfig } = config;
+      // Extract config from query params
+      const {
+        clientId: _clientId,
+        flowName: _flowName,
+        ...endUserInfo
+      } = getConfigFromQueryParams();
+      // Merge the two config objects
+      const mergedConfig = {
+        ...restConfig,
+        endUserInfo: {
+          ...restConfig.endUserInfo,
+          ...endUserInfo,
+        },
+      };
+      const configPromise = updateConfiguration(mergedConfig);
+      const translationsPromise = config.translations
+        ? updateTranslations(config.translations)
+        : undefined;
+      Promise.all([configPromise, translationsPromise])
+        .then(() => resolve())
+        .catch(reject);
+    });
+  },
   // Use the b_fid query param as the default flowName, fallback to the passed flowName arg.
   // Optional args/args with default values should probably be last.
   // Async due to setFlowCallbacks using updateConfiguration, which is async.
@@ -54,44 +92,6 @@ export const flows: BallerineSDKFlows = {
         flowName,
         useModal,
       },
-    });
-  },
-  init: config => {
-    return new Promise((resolve, reject) => {
-      console.log(
-        'BallerineSDK: Initializing BallerineSDK with version: ',
-        __APP_VERSION__,
-        config,
-      );
-
-      // Always init with no state. This ensures using init to reset the flow returns to the first step with no data.
-      resetAppState();
-      // Always init with no configuration. This handles multiple calls to init, i.e React re-renders.
-      // Otherwise, the steps array could keep growing.
-      configuration.set(defaultConfiguration);
-
-      const { translations, ...restConfig } = config;
-      // Extract config from query params
-      const {
-        clientId: _clientId,
-        flowName: _flowName,
-        ...endUserInfo
-      } = getConfigFromQueryParams();
-      // Merge the two config objects
-      const mergedConfig = {
-        ...restConfig,
-        endUserInfo: {
-          ...restConfig.endUserInfo,
-          ...endUserInfo,
-        },
-      };
-      const configPromise = updateConfiguration(mergedConfig);
-      const translationsPromise = config.translations
-        ? updateTranslations(config.translations)
-        : undefined;
-      Promise.all([configPromise, translationsPromise])
-        .then(() => resolve())
-        .catch(reject);
     });
   },
   setConfig: function (config: FlowsInitOptions): Promise<void> {
