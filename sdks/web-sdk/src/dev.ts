@@ -91,6 +91,9 @@ const ballerineInitConfig: FlowsInitOptions = {
       },
     },
   },
+  metricsConfig: {
+    enabled: false
+  }
 };
 console.log(ballerineInitConfig);
 
