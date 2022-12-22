@@ -26,4 +26,4 @@
 ```
 
 4. Add the JWT to the init config under `backendConfig.auth.auhtorizationHeader` as "Bearer [JWT]"
-5. Import the new configuration and pass it to `init` and `openModal` or `mount` functions
+5. Import the new configuration and pass it to `init` and `mount` functions
