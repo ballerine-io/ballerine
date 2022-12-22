@@ -64,6 +64,10 @@ interface FlowsUIConfig {
   settings?: ConfigSettings;
 }
 
+export interface MetricsConfig {
+  enabled?: boolean;
+}
+
 export interface FlowsEventsConfig {
   onFlowComplete?: (payload: IFlowCompletePayload) => void;
   onFlowExit?: (payload: IFlowExitPayload) => void;
@@ -100,6 +104,7 @@ export interface FlowsBackendConfig {
 export interface FlowsInitOptions {
   version?: string;
   uiConfig?: Partial<FlowsUIConfig>;
+  metricsConfig?: Partial<MetricsConfig>;
   endUserInfo: EndUserInfo;
   backendConfig?: FlowsBackendConfig;
   translations?: FlowsTranslations;

@@ -6,6 +6,8 @@ import { IFlow } from '../flows';
 import { EndUserInfo, FlowsBackendConfig } from '../../../types/BallerineSDK';
 import { EDocumentType, EDocumentKind } from '../app-state';
 import { ICSSProperties } from '../../services/css-manager';
+import { MetricsConfig} from '../../../types/BallerineSDK'
+
 
 export enum Steps {
   Welcome = 'welcome',
@@ -162,9 +164,11 @@ export interface IAppConfiguration extends Partial<IAppConfigurationUI> {
   };
   flows: { [key: string]: IFlow };
   defaultLanguage: 'en' | 'es';
+  metricsConfig: MetricsConfig;
 }
 
 export interface ConfigSettings {
   cameraSettings: CaptureConfigOption;
   selfieCameraSettings: CaptureConfigOption;
 }
+
