@@ -105,7 +105,7 @@ export interface FlowsInitOptions {
   translations?: FlowsTranslations;
 }
 
-interface IFlowsMountOptions {
+export interface IFlowsMountOptions {
   flowName: string;
   /**
    * @description A boolean to decide where to mount the flow - if true, the flow will be mounted in the body element.
