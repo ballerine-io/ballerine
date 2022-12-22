@@ -108,7 +108,7 @@ export interface FlowsInitOptions {
 interface FlowsMountOptions {
   callbacks?: FlowsEventsConfig;
   /**
-   * Requires {@link FlowsInitOptions.backendConfig.auth} method to be set as 'jwt'
+   * @description A JWT token to use in the Authorization header. Requires {@link FlowsInitOptions.backendConfig.auth} method to be set as 'jwt'
    */
   jwt?: string;
 }
