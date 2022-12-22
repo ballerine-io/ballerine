@@ -1,6 +1,7 @@
 import ConfigurationProvider from './ConfigurationProvider.svelte';
 import type { BallerineSDKFlows, FlowsInitOptions } from './types/BallerineSDK';
 import {
+  setAuthorizationHeaderJwt,
   setFlowCallbacks,
   updateConfiguration,
   updateTranslations,
@@ -38,8 +39,9 @@ export const flows: BallerineSDKFlows = {
       },
     });
   },
-  async openModal(flowName, config) {
+  async openModal(flowName, { callbacks, jwt }) {
     const hostElement = document.querySelector('body');
+
     if (hostElement) {
       hostElement.innerHTML = `<div class="loader-container" id="blrn-loader">
       <div class="loader"></div>
@@ -51,8 +53,13 @@ export const flows: BallerineSDKFlows = {
 
     // Merge the passed in callbacks into the Svelte configuration store of the specified flow.
     // Calling setFlowCallbacks below ConfigurationProvider results in stale state for instances of get(configuration).
-    if (config.callbacks) {
-      await setFlowCallbacks(flowName, config.callbacks);
+    if (callbacks) {
+      await setFlowCallbacks(flowName, callbacks);
+    }
+
+    // Skipped if not using JWT auth.
+    if (jwt) {
+      setAuthorizationHeaderJwt(jwt);
     }
 
     new ConfigurationProvider({

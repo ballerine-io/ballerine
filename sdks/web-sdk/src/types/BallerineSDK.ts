@@ -107,6 +107,10 @@ export interface FlowsInitOptions {
 
 interface FlowsMountOptions {
   callbacks?: FlowsEventsConfig;
+  /**
+   * Requires {@link FlowsInitOptions.backendConfig.auth} method to be set as 'jwt'
+   */
+  jwt?: string;
 }
 
 type FlowsModalOptions = FlowsMountOptions;

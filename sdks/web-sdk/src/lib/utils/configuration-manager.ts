@@ -22,6 +22,7 @@ import { AnyRecord } from '../../types';
 import { preloadStepImages } from '../services/preload-service/utils';
 import { packs, uiPack } from '../ui-packs';
 import { isUrl } from '../services/merge-service';
+import { get } from 'svelte/store';
 
 const keyBy = (array: any[], key: string | Function): any =>
   (array || []).reduce((r, x) => {
@@ -47,14 +48,14 @@ const setElementsFromOverrides = (
     }
     updatedSteps[stepKey] = {
       ...steps[stepKey],
-      elements: flowStep.elements
+      elements: flowStep.elements,
     };
   });
   return {
     ...overrides,
-    ...updatedSteps
+    ...updatedSteps,
   };
-}
+};
 
 const mergeStepElements = (config: IAppConfiguration, uiTheme: IAppConfigurationUI) => {
   const updatedConfig = config;
@@ -76,20 +77,22 @@ const mergeStepElements = (config: IAppConfiguration, uiTheme: IAppConfiguration
       }
       // element configuration provided to remove element
       if (stepElement.disabled) {
-        return
+        return;
       }
       // element configuration provided to edit element
-      elements.push(mergeObj(element, stepElement))
-    })
+      elements.push(mergeObj(element, stepElement));
+    });
     // elements configuration provided to add element
     const newElements = step.elements.filter(stepElement => {
       const uiPackElements = uiTheme.steps[stepKey].elements;
       return !uiPackElements.find(packElement => packElement.id === stepElement.id);
     });
-    updatedConfig.steps[stepKey].elements = [...elements, ...newElements].sort((e1, e2) => (e1.orderIndex - e2.orderIndex));
+    updatedConfig.steps[stepKey].elements = [...elements, ...newElements].sort(
+      (e1, e2) => e1.orderIndex - e2.orderIndex,
+    );
   });
   return updatedConfig;
-}
+};
 
 export let texts: TranslationType = translation;
 
@@ -102,7 +105,7 @@ export const updateConfiguration = async (configOverrides: RecursivePartial<Flow
     return mergedConfig;
   });
 
-  const config = (configurationResult as unknown as IAppConfiguration);
+  const config = configurationResult as unknown as IAppConfiguration;
 
   const pack = configOverrides.uiConfig?.uiPack as string;
 
@@ -248,4 +251,28 @@ export const setFlowCallbacks = async (flowName: string, callbacks: FlowsEventsC
       },
     },
   });
+};
+
+/**
+ * @description If {@link configuration.backendConfig.auth.method} is set to 'jwt' sets {@link configuration.backendConfig.auth.authorizationHeader} to \`Bearer ${jwt}\`
+ * @param jwt - JWT token as string
+ *
+ * @see {@link configuration.backendConfig.auth}
+ */
+export const setAuthorizationHeaderJwt = (jwt: string) => {
+  const { backendConfig } = get(configuration);
+  const { method } = backendConfig?.auth ?? {};
+
+  if (method !== 'jwt') return;
+
+  return configuration.update(config => ({
+    ...config,
+    backendConfig: {
+      ...config.backendConfig,
+      auth: {
+        ...config.backendConfig.auth,
+        authorizationHeader: `Bearer ${jwt}`,
+      },
+    },
+  }));
 };
