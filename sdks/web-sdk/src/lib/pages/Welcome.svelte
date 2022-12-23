@@ -8,19 +8,18 @@
   import { appState } from '../contexts/app-state';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { EActionNames, EVerificationStatuses } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
   const step = getStepConfiguration($configuration, stepId);
-  console.log('$configuration', $configuration);
   const flow = getFlowConfig($configuration);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const style = getLayoutStyles($configuration, step);
 
-  const stepNamespace = step.id!;
+  const stepNamespace = step.namespace!;
 
-  preloadNextStepByCurrent($configuration, configuration, stepId, $uiPack);
+  preloadNextStepByCurrent($configuration, configuration, stepId);
 </script>
 
 <div class="container" {style}>

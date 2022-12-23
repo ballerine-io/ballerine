@@ -1,4 +1,3 @@
-import { IList } from '../../molecules/List';
 import { INavigationButtons } from '../../molecules/NavigationButtons';
 import { IDocumentOptions } from '../../organisms/DocumentOptions';
 import type { CaptureConfigOption } from 'jslib-html5-camera-photo';
@@ -118,6 +117,7 @@ export interface IConfigurationComponents {
   button?: ICSSProperties;
   buttonWithIcon?: ICSSProperties;
   iconButton?: ICSSProperties;
+  iconCloseButton?: ICSSProperties;
   layout?: ICSSProperties;
   photo?: ICSSProperties;
   title?: ICSSProperties;

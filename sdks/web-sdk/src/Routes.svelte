@@ -16,13 +16,14 @@
   let step = steps.find(s => s.name === flowStep.id);
   const routeInit = (currentStepId: string, currentStepIdx: number) => {
     const configurationStepId = configurationStepIds.find((id: string) => id === currentStepId);
+    console.log('configurationStepId', configurationStepId);
     if (configurationStepId === stepId) return;
     if (!configurationStepId) {
       stepId = currentStepId;
       step = steps.find(s => s.name === currentStepId);
     } else {
       stepId = configurationStepId;
-      step = steps.find(s => s.id === stepId);
+      step = steps.find(s => s.name === stepId);
       const newStepIndex = configurationStepIds.indexOf(stepId);
       if (newStepIndex !== currentStepIdx) {
         currentStepIdx = newStepIndex;

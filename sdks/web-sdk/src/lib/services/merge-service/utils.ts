@@ -1,6 +1,6 @@
 import deepmerge from 'deepmerge';
 import merge from 'deepmerge';
-import { FlowsTranslations } from '../../../types/BallerineSDK';
+import { FlowsGeneralTheme, FlowsTranslations } from '../../../types/BallerineSDK';
 import { IAppConfiguration, IConfigurationComponents, IElement, IStepConfiguration } from '../../contexts/configuration';
 import { IFlow } from '../../contexts/flows';
 import { TranslationType } from '../../contexts/translation';
@@ -66,9 +66,13 @@ export const mergeConfigurationWithUiPack = (configuration: IAppConfiguration, u
       [flowName]: flow
     }
   });
+
+  const mergedConfiguration = deepmerge(uiTheme, configuration);
+
   return {
-    ...configuration,
+    ...mergedConfiguration,
     components: mergeComponents(uiTheme.components, configuration.components),
+    general: mergeGeneral(uiTheme.general, configuration.general),
     flows,
   }
 }
@@ -88,8 +92,10 @@ const mergeConfigurationFlowsWithUiPack = (flowName: string, configuration: IApp
       if (!themeStep) {
         throw new Error(`Invalid step id provided: ${flowStep.id as string}`);
       }
+      const mergedStep = deepmerge(themeStep, flowStep);
       return {
-        ...themeStep,
+        ...mergedStep,
+        namespace: mergedStep.namespace ? mergedStep.namespace : mergedStep.id,
         elements: mergeStepElements(themeStep.elements, flowStep.elements as RecursivePartial<IElement>[] | undefined)
       }
     })
@@ -112,6 +118,19 @@ const mergeComponents = (
 ): IConfigurationComponents => {
   if (!configurationComponents) return uiThemeComponents;
   return deepmerge(uiThemeComponents, configurationComponents);
+}
+
+/**
+ * @description Merges general configuration with ui theme configuration
+ * @param uiThemeGeneral theme general configuration
+ * @param configurationGeneral general configuration provided by user
+ */
+const mergeGeneral = (
+  uiThemeGeneral: FlowsGeneralTheme,
+  configurationGeneral?: FlowsGeneralTheme
+): FlowsGeneralTheme => {
+  if (!configurationGeneral) return uiThemeGeneral;
+  return deepmerge(uiThemeGeneral, configurationGeneral);
 }
 
 /**

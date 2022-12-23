@@ -1055,20 +1055,6 @@ export const uiTheme: IAppConfigurationUI = {
       'border-radius': '6px',
       padding: '8px',
     },
-    settings: {
-      cameraSettings: {
-        sizeFactor: 1,
-        imageType: IMAGE_TYPES.JPG,
-        imageCompression: 0,
-        isImageMirror: false,
-      },
-      selfieCameraSettings: {
-        sizeFactor: 1,
-        imageType: IMAGE_TYPES.JPG,
-        imageCompression: 0,
-        isImageMirror: true,
-      },
-    },
     layout: {
       padding: '40px',
       position: 'relative',
@@ -1235,6 +1221,20 @@ export const uiTheme: IAppConfigurationUI = {
       'font-size': '27px',
       'text-align': 'center',
       color: '#fff',
+    },
+  },
+  settings: {
+    cameraSettings: {
+      sizeFactor: 1,
+      imageType: IMAGE_TYPES.JPG,
+      imageCompression: 0,
+      isImageMirror: false,
+    },
+    selfieCameraSettings: {
+      sizeFactor: 1,
+      imageType: IMAGE_TYPES.JPG,
+      imageCompression: 0,
+      isImageMirror: true,
     },
   },
   steps: stepsTheme,

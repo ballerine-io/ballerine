@@ -1,28 +1,25 @@
-import { IAppConfiguration, IAppConfigurationUI, IStepConfiguration } from "../contexts/configuration";
-import { mergeStepConfig } from "../services/merge-service";
+import { IAppConfiguration, IStepConfiguration } from "../contexts/configuration";
 import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 import { makeStylesFromConfiguration, ICSSProperties } from '../services/css-manager';
-import merge from 'deepmerge';
 import { getContext } from "svelte";
 
 export const getStepConfiguration = (configuration:  IAppConfiguration, stepId: string) => {
-  const flowName = getContext("flowName");
-  return configuration.flows[flowName].steps.find(step => step.id === stepId);
+  const flowName: string = getContext("flowName");
+  const steps = configuration.flows[flowName].steps as IStepConfiguration[];
+  return steps.find(step => step.id === stepId) as IStepConfiguration;
 }
 
-export const getLayoutStyles = (configuration:  IAppConfiguration, uiPack: IAppConfigurationUI, step: IStepConfiguration) => {
+export const getLayoutStyles = (configuration: IAppConfiguration, step: IStepConfiguration) => {
+  console.log(configuration)
   return makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient(configuration.general?.colors?.primary || uiPack.general.colors.primary),
-      configuration.components.layout || {},
-    ),
+    injectPrimaryIntoLayoutGradient(configuration.components?.layout || {}, configuration.general?.colors?.primary as string),
     step.style,
   );
 }
 
-export const getComponentStyles = (uiPackComponentStyle: ICSSProperties, configurationStyles: ICSSProperties, style: ICSSProperties) => {
+export const getComponentStyles = (configurationStyles: ICSSProperties, style: ICSSProperties) => {
   return makeStylesFromConfiguration(
-    merge(uiPackComponentStyle, configurationStyles || {}),
+    configurationStyles || {},
     style,
   );
 }

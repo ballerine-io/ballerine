@@ -28,8 +28,8 @@
   const WAITING_TIME = 1000 * 60 * 3; // 3 minutes
 
   export let stepId;
-  const step = getStepConfiguration($configuration, $uiPack, stepId);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const step = getStepConfiguration($configuration, stepId);
+  const style = getLayoutStyles($configuration, step);
 
   const stepNamespace = step.namespace!;
 

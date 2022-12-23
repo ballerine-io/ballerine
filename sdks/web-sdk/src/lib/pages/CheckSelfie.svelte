@@ -7,20 +7,20 @@
   import Paragraph from '../atoms/Paragraph/Paragraph.svelte';
   import NavigationButtons from '../molecules/NavigationButtons/NavigationButtons.svelte';
   import Photo from '../atoms/Photo/Photo.svelte';
-  import { selfieUri, currentStepId, appState, documents } from '../contexts/app-state';
+  import { selfieUri, currentStepId, appState } from '../contexts/app-state';
   import {
     EActionNames,
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack, stepId);
+  const step = getStepConfiguration($configuration, stepId);
   const flow = getFlowConfig($configuration);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const style = getLayoutStyles($configuration, step);
 
   const stepNamespace = step.namespace!;
 </script>

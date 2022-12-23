@@ -1,21 +1,16 @@
 <script lang="ts">
   import { Button, ButtonWithIcon, IconButton, NextStepButton } from '../../atoms';
-  import {
-    configuration as globalConfiguration,
-    ICSSProperties,
-  } from '../../contexts/configuration';
+  import { configuration as globalConfiguration } from '../../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../../contexts/navigation';
   import { T } from '../../contexts/translation';
-  import { makesLocalStyles } from '../../services/css-manager';
+  import { ICSSProperties, makesLocalStyles } from '../../services/css-manager';
   import { currentStepId } from '../../contexts/app-state';
   import merge from 'deepmerge';
   import { uiPack } from '../../ui-packs';
 
-  const { navigationButtons: userConfiguration } = $globalConfiguration;
+  const { navigationButtons: userConfiguration } = $globalConfiguration.components;
 
-  const configuration = userConfiguration
-    ? merge($uiPack.navigationButtons, userConfiguration)
-    : $uiPack.navigationButtons;
+  const configuration = userConfiguration;
 
   export let skipBackSide = false;
 

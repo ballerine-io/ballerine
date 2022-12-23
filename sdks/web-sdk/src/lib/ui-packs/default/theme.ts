@@ -817,20 +817,6 @@ export const uiTheme: IUIPackTheme = {
       border: 'none',
       color: '#788597',
     },
-    settings: {
-      cameraSettings: {
-        sizeFactor: 1,
-        imageType: IMAGE_TYPES.JPG,
-        imageCompression: 0,
-        isImageMirror: false,
-      },
-      selfieCameraSettings: {
-        sizeFactor: 1,
-        imageType: IMAGE_TYPES.JPG,
-        imageCompression: 0,
-        isImageMirror: true,
-      },
-    },
     layout: {
       padding: '40px',
       position: 'relative',
@@ -991,6 +977,20 @@ export const uiTheme: IUIPackTheme = {
       'text-align': 'center',
       padding: '10px 0px 24px',
       color: '#001B39',
+    },
+  },
+  settings: {
+    cameraSettings: {
+      sizeFactor: 1,
+      imageType: IMAGE_TYPES.JPG,
+      imageCompression: 0,
+      isImageMirror: false,
+    },
+    selfieCameraSettings: {
+      sizeFactor: 1,
+      imageType: IMAGE_TYPES.JPG,
+      imageCompression: 0,
+      isImageMirror: true,
     },
   },
   steps: stepsTheme,

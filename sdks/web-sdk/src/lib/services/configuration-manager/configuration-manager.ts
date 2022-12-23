@@ -2,16 +2,20 @@ import { FlowsEventsConfig, FlowsInitOptions, FlowsTranslations } from "../../..
 import { TranslationType } from "../../contexts/translation";
 import translation from '../../configuration/translation.json';
 import { isUrl, mergeConfigurationWithUiPack, mergeTranslations } from '../merge-service';
-import { configuration as configurationStore, IAppConfiguration, IAppConfigurationUI } from "../../contexts/configuration";
+import { configuration as configurationStore, IAppConfiguration, IAppConfigurationUI, IStepConfiguration, Steps } from "../../contexts/configuration";
 import deepmerge from "deepmerge";
 import { get } from "svelte/store";
 import { uiPack as uiPackStore, EUIPackTypes, packs, IUIPackTheme } from "../../ui-packs";
+import { preloadStepImages } from "../preload-service/utils";
+import { getContext } from "svelte";
+import { IFlow } from "../../contexts/flows";
 
 export let texts: TranslationType = translation;
 
 export const appInit = async (flowName: string, overrides: FlowsInitOptions) => {
   let configuration = mergeConfigOverrides(overrides);
   configuration = await populateConfigurationByUiPack(configuration);
+  configuration = await preloadFlowBasicSteps(configuration);
   configurationStore.update(() => configuration);
 }
 
@@ -81,3 +85,33 @@ export const mergeTranslationsOverrides = async (translations?: FlowsTranslation
   texts = await mergeTranslations(texts, translations);
   return texts;
 };
+
+const preloadFlowBasicSteps = async (configuration: IAppConfiguration) => {
+  let flows: IFlow = {};
+  for (const flowName of Object.keys(configuration.flows)) {
+    const preloadedFlow = await preloadBasicSteps(configuration.flows[flowName]);
+    flows = {
+      ...flows,
+      [flowName]: preloadedFlow
+    }
+  }
+  return {
+    ...configuration,
+    flows
+  }
+}
+
+const preloadBasicSteps = async (flow: IFlow): Promise<IFlow> => {
+  const steps = flow.steps as IStepConfiguration[];
+  let preloadedSteps = steps;
+  // WelcomeStepPreload
+  const welcomeStep = steps.find(s => s.name === Steps.Welcome);
+  if (welcomeStep) {
+    const updatedWelcomeStep = await preloadStepImages(welcomeStep);
+    preloadedSteps = preloadedSteps.map(s => s.name === welcomeStep.name ? updatedWelcomeStep : s);
+  }
+  return {
+    ...flow,
+    steps: preloadedSteps
+  }
+}

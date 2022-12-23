@@ -23,7 +23,6 @@ export const getNextStepId = (
   skipType?: string,
 ) => {
   const stepsOrder = getFlowOrders(globalConfiguration) as string[];
-  console.log("stepsOrder", stepsOrder)
   const filteredFlows = filterOutByType(stepsOrder, globalConfiguration, skipType);
   const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
   if (currentFlowIndex === (filteredFlows.length - 1)) {

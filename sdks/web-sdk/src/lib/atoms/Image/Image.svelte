@@ -5,12 +5,12 @@
     IAttributes,
   } from '../../contexts/configuration';
   import { ICSSProperties } from '../../services/css-manager';
-  import { getComponentStyles, uiPack } from '../../ui-packs';
+  import { getComponentStyles } from '../../ui-packs';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
   const attributes = configuration.attributes as IAttributes;
-  const style = getComponentStyles($uiPack.image, $globalConfiguration.image || {}, styleProps);
+  const style = getComponentStyles($globalConfiguration.components?.image || {}, styleProps);
 </script>
 
 <div {style} height={attributes.height} width={attributes.width} class="container">

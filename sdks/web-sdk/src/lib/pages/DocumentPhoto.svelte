@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
+  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
   import { configuration } from '../contexts/configuration';
   import { onDestroy, onMount } from 'svelte';
@@ -17,15 +17,16 @@
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import merge from 'deepmerge';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import {
     EActionNames,
     EVerificationStatuses,
     sendButtonClickEvent,
   } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { createToggle } from '../hooks/createToggle/createToggle';
+  import { getDocumentType } from '../utils/documents-utils';
+  import { IDocumentOptions } from '../organisms/DocumentOptions';
 
   export let stepId;
 
@@ -33,20 +34,15 @@
   let container: HTMLDivElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = getStepConfiguration($configuration, $uiPack, stepId);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const step = getStepConfiguration($configuration, stepId);
+  const style = getLayoutStyles($configuration, step);
 
   const [isDisabled, , toggleOnIsDisabled] = createToggle();
 
-  const documentOptionsConfiguration = merge(
-    $uiPack.documentOptions,
-    $configuration.documentOptions || {},
-  );
+  const documentOptionsConfiguration = $configuration.components
+    ?.documentOptions as IDocumentOptions;
 
-  const documentType =
-    (($configuration.steps && $configuration.steps[$currentStepId].type) as EDocumentType) ||
-    ($uiPack.steps[$currentStepId].type as EDocumentType) ||
-    $selectedDocumentInfo.type;
+  const documentType = getDocumentType(step, $selectedDocumentInfo);
 
   const documentKind = $selectedDocumentInfo ? $selectedDocumentInfo.kind : undefined;
 
@@ -102,15 +98,16 @@
     if (!cameraPhoto || $isDisabled) return;
 
     toggleOnIsDisabled();
+    console.log($configuration);
     const base64 = cameraPhoto.getDataUri(
-      $configuration.settings?.cameraSettings || $uiPack.settings.cameraSettings,
+      $configuration.settings?.cameraSettings as CaptureConfigOption,
     );
     if (documentType) {
       const document = {
         type: documentType,
         pages: [],
         metadata: {},
-        kind: $selectedDocumentInfo.kind,
+        kind: $selectedDocumentInfo?.kind,
       };
       $documents = addDocument(document.type, base64, document);
       return goToNextStep(currentStepId, $configuration, $currentStepId);
@@ -118,7 +115,7 @@
     return goToPrevStep(currentStepId, $configuration, $currentStepId);
   };
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style} bind:this={container}>

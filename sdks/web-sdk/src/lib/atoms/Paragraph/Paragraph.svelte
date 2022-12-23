@@ -1,21 +1,17 @@
 <script lang="ts">
   import {
     configuration as globalConfiguration,
-    ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { getComponentStyles, uiPack } from '../../ui-packs';
+  import { ICSSProperties } from '../../services/css-manager';
+  import { getComponentStyles } from '../../ui-packs';
 
   export let configuration: IElementProps;
   export let active = false;
 
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = getComponentStyles(
-    $uiPack.paragraph,
-    $globalConfiguration.paragraph || {},
-    styleProps,
-  );
+  const style = getComponentStyles($globalConfiguration.components?.paragraph || {}, styleProps);
 </script>
 
 <p {style} class:active>
