@@ -176,6 +176,64 @@ const stepsTheme: TSteps = [
     ],
   },
   {
+    name: Steps.DocumentStart,
+    id: Steps.DocumentStart,
+    elements: [
+      backWhiteIconButton,
+      closeIconButton,
+      {
+        id: "title",
+        orderIndex: 30,
+        type: Elements.Title,
+        props: {
+          style: {
+            padding: '28px 0px 70px',
+          },
+        },
+      },
+      {
+        id: "image",
+        orderIndex: 40,
+        type: Elements.Image,
+        props: {
+          style: {
+            margin: '0px auto 25px',
+            'flex-grow': 1,
+          },
+          attributes: {
+            src: 'https://cdn.ballerine.io/ui-packs/future/welcome.svg',
+            alt: 'welcome',
+            width: '218px',
+            height: '218px',
+          },
+        },
+      },
+      ellipseRedTop,
+      ellipseBlueBottom,
+      {
+        id: "description",
+        orderIndex: 70,
+        type: Elements.Paragraph,
+        props: {
+          style: {
+            'text-align': 'center',
+            margin: '0px 0px 50px',
+            'font-size': '16px',
+          },
+        },
+      },
+      {
+        id: "button",
+        orderIndex: 80,
+        type: Elements.Button,
+        props: {
+          style: {
+          }
+        },
+      },
+    ],
+  },
+  {
     name: Steps.DocumentSelection,
     id: Steps.DocumentSelection,
     elements: [
@@ -389,6 +447,7 @@ const stepsTheme: TSteps = [
             color: '#fff',
             'font-weight': 700,
             'align-self': 'center',
+            "font-size": "18px",
             padding: '8px 0px 18px 0px',
           },
         },
@@ -552,6 +611,7 @@ const stepsTheme: TSteps = [
             color: '#fff',
             'font-weight': 700,
             'align-self': 'center',
+            "font-size": "18px",
             padding: '48px 0px 18px 0px',
           },
         },
@@ -1029,6 +1089,7 @@ export const uiTheme: IAppConfigurationUI = {
             },
             color: '#fff',
             border: '1px solid var(--general-colors-primary)',
+            'border-radius': '100px',
             'box-shadow':
               '0px 3px 10px rgba(0, 0, 0, 0.05), 0px 6px 30px rgba(0, 122, 255, 0.1)',
           },

@@ -1,4 +1,4 @@
-import { Steps } from './lib/contexts/configuration';
+import { Elements, Steps } from './lib/contexts/configuration';
 import { flows } from './main';
 import { EDocumentKind, EDocumentType } from './lib/contexts/app-state';
 import { FlowsInitOptions } from './types/BallerineSDK';
@@ -15,14 +15,6 @@ const ballerineInitConfig: FlowsInitOptions = {
           {
             name: Steps.Welcome,
             id: Steps.Welcome,
-            elements: [{
-              id: "tip",
-              props: {
-                style: {
-                  "text-align": "left"
-                }
-              }
-            }]
           },
           {
             name: Steps.DocumentSelection,

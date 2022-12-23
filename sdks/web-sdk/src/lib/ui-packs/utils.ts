@@ -10,7 +10,6 @@ export const getStepConfiguration = (configuration:  IAppConfiguration, stepId: 
 }
 
 export const getLayoutStyles = (configuration: IAppConfiguration, step: IStepConfiguration) => {
-  console.log(configuration)
   return makeStylesFromConfiguration(
     injectPrimaryIntoLayoutGradient(configuration.components?.layout || {}, configuration.general?.colors?.primary as string),
     step.style,

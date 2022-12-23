@@ -2,12 +2,11 @@ import { FlowsEventsConfig, FlowsInitOptions, FlowsTranslations } from "../../..
 import { TranslationType } from "../../contexts/translation";
 import translation from '../../configuration/translation.json';
 import { isUrl, mergeConfigurationWithUiPack, mergeTranslations } from '../merge-service';
-import { configuration as configurationStore, IAppConfiguration, IAppConfigurationUI, IStepConfiguration, Steps } from "../../contexts/configuration";
+import { configuration as configurationStore, IAppConfiguration, IStepConfiguration, Steps } from "../../contexts/configuration";
 import deepmerge from "deepmerge";
 import { get } from "svelte/store";
 import { uiPack as uiPackStore, EUIPackTypes, packs, IUIPackTheme } from "../../ui-packs";
 import { preloadStepImages } from "../preload-service/utils";
-import { getContext } from "svelte";
 import { IFlow } from "../../contexts/flows";
 
 export let texts: TranslationType = translation;
@@ -104,11 +103,17 @@ const preloadFlowBasicSteps = async (configuration: IAppConfiguration) => {
 const preloadBasicSteps = async (flow: IFlow): Promise<IFlow> => {
   const steps = flow.steps as IStepConfiguration[];
   let preloadedSteps = steps;
-  // WelcomeStepPreload
+  // Welcome step preload
   const welcomeStep = steps.find(s => s.name === Steps.Welcome);
   if (welcomeStep) {
     const updatedWelcomeStep = await preloadStepImages(welcomeStep);
     preloadedSteps = preloadedSteps.map(s => s.name === welcomeStep.name ? updatedWelcomeStep : s);
+  }
+  // Loading step preload
+  const loadingStep = steps.find(s => s.name === Steps.Loading);
+  if (loadingStep) {
+    const updatedLoadingStep = await preloadStepImages(loadingStep);
+    preloadedSteps = preloadedSteps.map(s => s.name === loadingStep.name ? updatedLoadingStep : s);
   }
   return {
     ...flow,

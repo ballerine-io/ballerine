@@ -14,6 +14,7 @@
   export let stepId;
 
   const step = getStepConfiguration($configuration, stepId);
+  console.log(step);
   const flow = getFlowConfig($configuration);
   const style = getLayoutStyles($configuration, step);
 

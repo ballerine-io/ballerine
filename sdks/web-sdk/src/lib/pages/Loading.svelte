@@ -14,20 +14,21 @@
   } from '../contexts/app-state';
   import { sendVerificationUpdateEvent } from '../utils/event-service';
   import { ISendDocumentsResponse, EVerificationStatuses } from '../utils/event-service/types';
-  import { onDestroy, onMount } from 'svelte';
+  import { getContext, onDestroy, onMount } from 'svelte';
   import { t } from '../contexts/translation/hooks';
   import { flowUploadLoader } from '../services/analytics';
   import { getFlowConfig } from '../contexts/flows/hooks';
   import { generateParams, getVerificationStatus, verifyDocuments } from '../services/http';
   import { DecisionStatus } from '../contexts/app-state/types';
   import { preloadStepById } from '../services/preload-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { broofa } from '../utils/api-utils';
   flowUploadLoader();
 
   const WAITING_TIME = 1000 * 60 * 3; // 3 minutes
 
   export let stepId;
+  const flowName: string = getContext('flowName');
   const step = getStepConfiguration($configuration, stepId);
   const style = getLayoutStyles($configuration, step);
 
@@ -57,17 +58,17 @@
         response.idvResult === DecisionStatus.REVIEW
       ) {
         $currentParams = params;
-        await preloadStepById($configuration, configuration, 'decline', $uiPack);
+        await preloadStepById($configuration, configuration, 'decline', flowName);
         $currentStepId = 'decline';
       }
       if (response.idvResult === DecisionStatus.RESUBMISSION_REQUESTED) {
         $currentParams = params;
-        await preloadStepById($configuration, configuration, 'resubmission', $uiPack);
+        await preloadStepById($configuration, configuration, 'resubmission', flowName);
         $currentStepId = 'resubmission';
       }
       if (response.idvResult === DecisionStatus.APPROVED) {
         $currentParams = params;
-        await preloadStepById($configuration, configuration, 'final', $uiPack);
+        await preloadStepById($configuration, configuration, 'final', flowName);
         $currentStepId = 'final';
       }
     } catch (error) {
@@ -84,7 +85,7 @@
       toast.push(t('general', 'errorDocuments'));
       console.error('Error sending documents', error);
       $currentParams = { message: error } as ISelectedParams;
-      await preloadStepById($configuration, configuration, 'error', $uiPack);
+      await preloadStepById($configuration, configuration, 'error', flowName);
       //$currentStepId = 'error';
       return;
     }
@@ -96,7 +97,7 @@
       return;
     }
     showText = false;
-    await preloadStepById($configuration, configuration, 'final', $uiPack);
+    await preloadStepById($configuration, configuration, 'final', flowName);
     $currentStepId = 'final';
   };
 
@@ -109,7 +110,7 @@
     makeRequest(data);
     timeout = setTimeout(async () => {
       showText = false;
-      await preloadStepById($configuration, configuration, 'decline', $uiPack);
+      await preloadStepById($configuration, configuration, 'decline', flowName);
       //$currentStepId = 'decline';
     }, WAITING_TIME);
   });

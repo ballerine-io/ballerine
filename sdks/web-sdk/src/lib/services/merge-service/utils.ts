@@ -88,6 +88,7 @@ const mergeConfigurationFlowsWithUiPack = (flowName: string, configuration: IApp
   let steps: IStepConfiguration[] = uiTheme.steps;
   if (flowSteps) {
     steps = flowSteps.map(flowStep => {
+      console.log("flowStep.elements", flowStep.elements)
       const themeStep = uiTheme.steps.find(s => s.id === flowStep.id);
       if (!themeStep) {
         throw new Error(`Invalid step id provided: ${flowStep.id as string}`);
@@ -140,11 +141,17 @@ const mergeGeneral = (
  */
 const mergeStepElements = (uiThemeElements: IElement[], configurationElements?: RecursivePartial<IElement>[]) => {
   if (!configurationElements) return uiThemeElements;
-  return uiThemeElements.map(uiThemeElement => {
+  // Elements update
+  let elements = uiThemeElements.map(uiThemeElement => {
     const configurationElement = configurationElements.find(e => e.id === uiThemeElement.id);
     if (configurationElement) {
       return deepmerge(uiThemeElement, configurationElement);
     }
     return uiThemeElement;
-  })
+  });
+  // Elements delete
+  elements = elements.filter(e => !e.disabled);
+  // Elements add
+  const newElements = configurationElements.filter(element => !uiThemeElements.some(e => e.id === element.id));
+  return [...elements, ...newElements].sort((e1, e2) => e1.orderIndex - e2.orderIndex);
 }

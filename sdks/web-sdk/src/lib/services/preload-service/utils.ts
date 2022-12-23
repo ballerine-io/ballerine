@@ -1,7 +1,6 @@
 import { getContext } from 'svelte';
 import { Writable } from 'svelte/store';
-import { IAppConfiguration, IAppConfigurationUI, IStepConfiguration } from '../../contexts/configuration';
-import { IFlow } from '../../contexts/flows';
+import { IAppConfiguration, IStepConfiguration } from '../../contexts/configuration';
 import { getNextStepId } from '../../contexts/navigation';
 
 const preloadByExtension = async (src: string): Promise<string> => {
@@ -84,8 +83,8 @@ export const preloadStepById = async (
   globalConfiguration: IAppConfiguration,
   configuration: Writable<IAppConfiguration>,
   stepId: string,
+  flowName: string,
 ) => {
-  const flowName: string = getContext("flowName");
   const steps = globalConfiguration.flows[flowName].steps as IStepConfiguration[];
   const step = steps.find(s => s.id === stepId) as IStepConfiguration;
   const updatedStep = await preloadStepImages(step);
