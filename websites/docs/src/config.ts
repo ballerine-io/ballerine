@@ -84,6 +84,7 @@ export const SIDEBAR: Sidebar = {
           { text: `SDK Events`, link: `sdk-events` },
           { text: `SDK Backend Configuration`, link: `sdk-backend-configuration` },
           { text: `SDK UI Configuration`, link: `sdk-ui-configuration` },
+          { text: `SDK Translations`, link: `sdk-translations` },
           { text: `Case Management`, link: `case-management` },
           { text: `SDK UI Flows`, link: `sdk-ui-flows` },
           {
