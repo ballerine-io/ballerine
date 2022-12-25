@@ -1,17 +1,17 @@
-import { IAppConfiguration } from '../configuration';
+import { IAppConfiguration, IStepConfiguration } from '../configuration';
 import { steps } from './constants';
 import { getFlowOrders } from '../flows/hooks';
 import { Writable } from '../../../../node_modules/svelte/types/runtime/store/index';
-import { verifyDocuments } from '../../services/http';
-import { broofa, verifyDocumentsAndCloseFlow } from '../../utils/api-utils';
+import { verifyDocumentsAndCloseFlow } from '../../utils/api-utils';
 import { sendFlowCompleteEvent } from '../../utils/event-service';
 import { getContext } from 'svelte';
 
 const filterOutByType = (flowIds: string[], configuration: IAppConfiguration, type?: string) => {
   if (!type) return flowIds;
-  const flowName = getContext("flowName");
+  const flowName: string = getContext("flowName");
   return flowIds.filter(id => {
-    const stepConfiguration = configuration.flows[flowName].steps.find(s => s.id === id);
+    const flowSteps = configuration.flows[flowName].steps as IStepConfiguration[];
+    const stepConfiguration = flowSteps.find(s => s.id === id) as IStepConfiguration;
     const step = steps.find(s => s.name === stepConfiguration.name);
     return step?.type !== type;
   });

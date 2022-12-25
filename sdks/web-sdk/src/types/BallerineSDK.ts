@@ -1,15 +1,15 @@
-import { ICSSProperties, IStepConfiguration } from '../lib/contexts/configuration';
+import { IStepConfiguration } from '../lib/contexts/configuration';
 import { ConfigSettings } from '../lib/contexts/configuration/types';
 import { TranslationType } from '../lib/contexts/translation';
 import { INavigationButtons } from '../lib/molecules/NavigationButtons';
 import { IDocumentOptions } from '../lib/organisms/DocumentOptions';
+import { ICSSProperties } from '../lib/services/css-manager';
 import {
   IFlowCompletePayload,
   IFlowErrorPayload,
   IFlowExitPayload,
   IFlowNavigationUpdatePayload,
 } from '../lib/services/flow-event-bus/interfaces';
-import { AnyRecord } from '../types';
 
 export interface FlowsGeneralTheme {
   progress?: boolean;
@@ -67,14 +67,7 @@ interface FlowsUIConfig {
 
 export interface FlowsEventsConfig {
   onFlowComplete?: (payload: IFlowCompletePayload) => void;
-  onFlowExit?: (payload: IFlow
-
-
-
-
-
-
-    ExitPayload) => void;
+  onFlowExit?: (payload: IFlowExitPayload) => void;
   onFlowError?: (payload: IFlowErrorPayload) => void;
   onFlowNavigationUpdate?: (payload: IFlowNavigationUpdatePayload) => void;
 }

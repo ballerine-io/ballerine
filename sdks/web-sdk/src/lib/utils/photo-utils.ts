@@ -2,6 +2,7 @@ import { IAppConfiguration, IAppConfigurationUI } from '../contexts/configuratio
 import { EDocumentType, IDocument, IDocumentPage } from '../contexts/app-state';
 import Compressor from 'compressorjs';
 import merge from 'deepmerge';
+import { IDocumentOptions } from '../organisms/DocumentOptions';
 
 export type FileEventTarget = EventTarget & { files: FileList };
 export type ICameraEvent = Event & { currentTarget: EventTarget & HTMLInputElement };
@@ -42,11 +43,7 @@ export const clearDocs = (
   uiPack: IAppConfigurationUI,
   documents: IDocument[],
 ): IDocument[] => {
-  const documentOptionsConfiguration = merge(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-    uiPack.documentOptions || {},
-    configuration.documentOptions || {},
-  );
+  const documentOptionsConfiguration = configuration.components?.documentOptions as IDocumentOptions;
   const { options } = documentOptionsConfiguration;
   const isFromOptions = Object.keys(options).find(t => t === type);
   if (isFromOptions) {
