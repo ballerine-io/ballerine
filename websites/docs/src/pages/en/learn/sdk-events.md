@@ -10,17 +10,20 @@ An SDK flow has a number of events that may occur such as flow error, or flow st
 
 ## Events
 
-- `FLOW_COMPLETE` - Fires at the last step of the flow.
-- `FLOW_EXIT` - Fires when the flow is exited (i.e via close button).
-- `FLOW_ERROR` - Fires when an error occurs in the flow.
-- `FLOW_NAVIGATION_UPDATE` - Fires when moving to the next or previous flow step.
+- `onFlowComplete` - Fires at the last step of the flow.
+- `onFlowError` - Fires when an error occurs in the flow.
+- `onFlowExit` - Fires when the flow is exited (i.e via close button).
+- `onFlowNavigationUpdate` - Fires when moving to the next or previous flow step.
 
 ## Code Example
 
-The following API can be used to listen to the flow [events](#events)
+The following API can be used to listen to the flow [events](#events) - [API reference](/en/api/sdk/flows-events-config)
 
 ```typescript
+import { flows } from '@ballerine/web-sdk';
+
 await flows.mount({
+  // ...
   elementId: 'my-kyc-flow',
   callbacks: {
       onFlowComplete: (data) => {
@@ -35,6 +38,7 @@ await flows.mount({
       onFlowNavigationUpdate: (data) => {
         console.log('Flow navigation update', data);
       },
-  }
+  },
+  // ...
 })
 ```
