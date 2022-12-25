@@ -14,7 +14,8 @@ Customize your identity and risk workflows in code or with a low-code platform n
 
 <br/>
 
-> _Our rule engine is still in development. Join our mailing list in the button below to get an update once it's out._ > <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access"> > <br/> > <br/> > <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access"> > </a>
+> _Our rule engine is still in development. Join our mailing list in the button below to get an update once it's out._
+> <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access"> <br/> <br/> <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access"> </a>
 
 <br/>
 
