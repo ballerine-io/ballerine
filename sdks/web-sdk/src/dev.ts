@@ -22,7 +22,6 @@ const ballerineInitConfig: FlowsInitOptions = {
             documentOptions: [
               { type: EDocumentType.ID_CARD, kind: EDocumentKind.ID_CARD },
               { type: EDocumentType.DRIVERS_LICENSE, kind: EDocumentKind.DRIVERS_LICENSE },
-              { type: EDocumentType.PASSPORT, kind: EDocumentKind.PASSPORT },
               { type: EDocumentType.VOTER_ID, kind: EDocumentKind.VOTER_ID },
             ],
           },
@@ -95,5 +94,11 @@ const ballerineInitConfig: FlowsInitOptions = {
 console.log(ballerineInitConfig);
 
 void flows.init(ballerineInitConfig).then(() => {
-  void flows.openModal('my-kyc-flow', {});
+  void flows.openModal('my-kyc-flow', {
+    callbacks: {
+      onFlowNavigationUpdate: (payload) => {
+        console.log(payload)
+      }
+    }
+  });
 });

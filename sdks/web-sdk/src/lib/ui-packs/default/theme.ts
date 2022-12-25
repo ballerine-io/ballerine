@@ -797,6 +797,7 @@ export const uiTheme: IUIPackTheme = {
             background: '#fff',
             color: '#6A6A6A',
             border: '1px solid #BFBFBF',
+            'border-radius': '12px',
             'box-shadow':
               '0px 6px 9px 5px rgba(0,122,255,0);-webkit-box-shadow: 0px 6px 9px 5px rgba(0,122,255,0);',
           },
