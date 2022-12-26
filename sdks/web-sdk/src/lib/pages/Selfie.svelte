@@ -1,31 +1,31 @@
 <script lang="ts">
-  import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
-  import { T } from '../contexts/translation';
-  import { configuration } from '../contexts/configuration';
-  import { onDestroy, onMount } from 'svelte';
+  import CameraPhoto, { FACING_MODES } from "jslib-html5-camera-photo";
+  import { T } from "../contexts/translation";
+  import { configuration } from "../contexts/configuration";
+  import { onDestroy, onMount } from "svelte";
   import {
     CameraButton,
     IconButton,
     IconCloseButton,
+    Loader,
     Overlay,
     Paragraph,
-    VideoContainer,
-    Loader,
-  } from '../atoms';
-  import { Elements } from '../contexts/configuration/types';
-  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { currentStepId, EDocumentType } from '../contexts/app-state';
-  import Title from '../atoms/Title/Title.svelte';
-  import { appState, selfieUri } from '../contexts/app-state/stores';
-  import { isMobile } from '../utils/is-mobile';
-  import { createToggle } from '../hooks/createToggle/createToggle';
-  import { preloadNextStepByCurrent } from '../services/preload-service';
+    VideoContainer
+  } from "../atoms";
+  import { Elements } from "../contexts/configuration/types";
+  import { goToNextStep, goToPrevStep } from "../contexts/navigation";
+  import { currentStepId, EDocumentType } from "../contexts/app-state";
+  import Title from "../atoms/Title/Title.svelte";
+  import { appState, selfieUri } from "../contexts/app-state/stores";
+  import { isMobile } from "../utils/is-mobile";
+  import { createToggle } from "../hooks/createToggle/createToggle";
+  import { preloadNextStepByCurrent } from "../services/preload-service";
   import {
     EActionNames,
     EVerificationStatuses,
-    sendButtonClickEvent,
-  } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+    sendButtonClickEvent
+  } from "../utils/event-service";
+  import { getLayoutStyles, getStepConfiguration, uiPack } from "../ui-packs";
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
@@ -36,7 +36,7 @@
   const stepNamespace = step.namespace!;
   const style = getLayoutStyles($configuration, $uiPack, step);
 
-  const [isDisabled, , toggleOnIsDisabled] = createToggle();
+  const [isDisabled, , toggleOnIsDisabled, toggleOffIsDisabled] = createToggle(true);
 
   const facingMode = isMobile() ? FACING_MODES.USER : FACING_MODES.ENVIRONMENT;
   let stream: MediaStream;
@@ -52,6 +52,7 @@
       .then(cameraStream => {
         console.log('stream', cameraStream);
         stream = cameraStream;
+        toggleOffIsDisabled();
       })
       .catch(error => {
         console.log('error', error);

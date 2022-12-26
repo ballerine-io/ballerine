@@ -1,25 +1,25 @@
 <script lang="ts">
-  import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
-  import { T } from '../contexts/translation';
-  import { configuration } from '../contexts/configuration';
-  import { onDestroy, onMount } from 'svelte';
+  import CameraPhoto, { FACING_MODES } from "jslib-html5-camera-photo";
+  import { T } from "../contexts/translation";
+  import { configuration } from "../contexts/configuration";
+  import { onDestroy, onMount } from "svelte";
   import {
     CameraButton,
     IconButton,
+    Loader,
     Overlay,
     Paragraph,
     Title,
-    VideoContainer,
-    Loader,
-  } from '../atoms';
-  import { Elements } from '../contexts/configuration/types';
-  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { currentStepId, EDocumentType } from '../contexts/app-state';
-  import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { updateDocument } from '../utils/photo-utils';
-  import { createToggle } from '../hooks/createToggle/createToggle';
-  import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+    VideoContainer
+  } from "../atoms";
+  import { Elements } from "../contexts/configuration/types";
+  import { goToNextStep, goToPrevStep } from "../contexts/navigation";
+  import { currentStepId, EDocumentType } from "../contexts/app-state";
+  import { documents, selectedDocumentInfo } from "../contexts/app-state/stores";
+  import { updateDocument } from "../utils/photo-utils";
+  import { createToggle } from "../hooks/createToggle/createToggle";
+  import { preloadNextStepByCurrent } from "../services/preload-service";
+  import { getLayoutStyles, getStepConfiguration, uiPack } from "../ui-packs";
 
   export let stepId;
 
@@ -29,7 +29,7 @@
   const step = getStepConfiguration($configuration, $uiPack, stepId);
   const style = getLayoutStyles($configuration, $uiPack, step);
 
-  const [isDisabled, , toggleOnIsDisabled] = createToggle();
+  const [isDisabled, , toggleOnIsDisabled, toggleOffIsDisabled] = createToggle(true);
 
   const documentType =
     ($uiPack.steps[$currentStepId].type as EDocumentType) ||
@@ -55,6 +55,7 @@
       .then(cameraStream => {
         console.log('stream', cameraStream);
         stream = cameraStream;
+        toggleOffIsDisabled();
       })
       .catch(error => {
         console.log('error', error);
