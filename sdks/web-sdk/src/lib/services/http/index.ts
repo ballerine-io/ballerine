@@ -124,6 +124,5 @@ export const verifyDocuments = async (
     }
   >(getStartVerificationEndpoint(), payload);
   localStorage.setItem('verificationId', verificationRes.verificationId);
-  throw new Error('Not implemented');
   return verificationRes;
 };
