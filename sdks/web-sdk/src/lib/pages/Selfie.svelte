@@ -7,10 +7,10 @@
     CameraButton,
     IconButton,
     IconCloseButton,
+    Loader,
     Overlay,
     Paragraph,
     VideoContainer,
-    Loader,
   } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
@@ -36,7 +36,7 @@
   const stepNamespace = step.namespace!;
   const style = getLayoutStyles($configuration, step);
 
-  const [isDisabled, , toggleOnIsDisabled] = createToggle();
+  const [isDisabled, , toggleOnIsDisabled, toggleOffIsDisabled] = createToggle(true);
 
   const facingMode = isMobile() ? FACING_MODES.USER : FACING_MODES.ENVIRONMENT;
   let stream: MediaStream;
@@ -52,6 +52,7 @@
       .then(cameraStream => {
         console.log('stream', cameraStream);
         stream = cameraStream;
+        toggleOffIsDisabled();
       })
       .catch(error => {
         console.log('error', error);

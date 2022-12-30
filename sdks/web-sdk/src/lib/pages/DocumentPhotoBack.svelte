@@ -6,11 +6,11 @@
   import {
     CameraButton,
     IconButton,
+    Loader,
     Overlay,
     Paragraph,
     Title,
     VideoContainer,
-    Loader,
   } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
@@ -30,7 +30,7 @@
   const step = getStepConfiguration($configuration, stepId);
   const style = getLayoutStyles($configuration, step);
 
-  const [isDisabled, , toggleOnIsDisabled] = createToggle();
+  const [isDisabled, , toggleOnIsDisabled, toggleOffIsDisabled] = createToggle(true);
 
   const documentType = getDocumentType(step, $selectedDocumentInfo);
 
@@ -53,6 +53,7 @@
       .then(cameraStream => {
         console.log('stream', cameraStream);
         stream = cameraStream;
+        toggleOffIsDisabled();
       })
       .catch(error => {
         console.log('error', error);
