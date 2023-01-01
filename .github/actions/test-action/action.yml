@@ -24,7 +24,7 @@ runs:
 
     - name: Install Playwright browsers
       shell: bash
-      run: npx playwright install-deps && npx playwright install
+      run: pnpm exec playwright install --with-deps
 
     - name: Test e2e
       shell: bash
