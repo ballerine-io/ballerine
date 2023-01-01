@@ -10,7 +10,7 @@ While we offer our own backend for the Ballerine SDK as a default, you can also 
 
 ## Configuration
 
-- `baseUrl` - The URL of the backend to use. Set to `https://api.ballerine.io` by default.
+- `baseUrl` - The URL of the backend to use. Set to `https://api-dev.ballerine.io` by default.
 - `auth` - Used to configure the method of authentication such as `jwt` or `cookie`, and the `Authorization` header.
 - `endpoints` - Used to configure which endpoints to use for different requests such as starting a verification.
 
@@ -25,20 +25,20 @@ await flows.init({
   // ...
   // Default configuration - every property is optional.
   backendConfig: {
-      // Prepended to the endpoints below
-      baseUrl: 'https://api.ballerine.io',
-      auth: {
-        method: 'jwt',
-        authorizationHeader: 'Bearer [JWT]',
-      },
-      // Appended to the baseUrl above
-      endpoints: {
-        getConfig: '/v2/clients/{clientId}/config',
-        getVerificationStatus: '/v2/enduser/verify/status/{verificationId}',
-        processStepData: '/v2/enduser/verify/partial',
-        startVerification: '/v2/enduser/verify',
-      }
+    // Prepended to the endpoints below
+    baseUrl: 'https://api-dev.ballerine.io',
+    auth: {
+      method: 'jwt',
+      authorizationHeader: 'Bearer [JWT]',
+    },
+    // Appended to the baseUrl above
+    endpoints: {
+      getConfig: '/v2/clients/{clientId}/config',
+      getVerificationStatus: '/v2/enduser/verify/status/{verificationId}',
+      processStepData: '/v2/enduser/verify/partial',
+      startVerification: '/v2/enduser/verify',
+    },
   },
   // ...
-})
+});
 ```
