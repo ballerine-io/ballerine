@@ -10,7 +10,7 @@ import { getConfigFromQueryParams } from './lib/utils/get-config-from-query-para
 import { configuration } from './lib/contexts/configuration';
 import { configuration as defaultConfiguration } from './lib/configuration/configuration';
 import { resetAppState } from './lib/contexts/app-state/utils';
-
+//
 export const flows: BallerineSDKFlows = {
   init: config => {
     return new Promise((resolve, reject) => {
