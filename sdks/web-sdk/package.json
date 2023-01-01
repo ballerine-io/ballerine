@@ -26,8 +26,8 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/ballerine-sdk.umd.js",
-  "module": "./dist/ballerine-sdk.es.js",
+  "main": "./dist/ballerine-sdk.umd.cjs",
+  "module": "./dist/ballerine-sdk.js",
   "exports": {
     ".": {
       "import": "./dist/ballerine-sdk.js",
@@ -47,11 +47,11 @@
     "lint": "eslint \"./**/*.{cjs,js,ts,mts,svelte}\" --fix",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "build:examples": "npm run build && for i in ./examples/sdk ./examples/standalone ./examples/standalone-future; do cp -R ./dist/ballerine-sdk.umd.js $i; done",
+    "build:examples": "npm run build && for i in ./examples/sdk ./examples/standalone ./examples/standalone-future; do cp -R ./dist/ballerine-sdk.umd.cjs $i; done",
     "example:sdk": "npm run build:examples && npx http-server ./examples/sdk -p 8081",
     "example:standalone": "npm run build:examples && npx http-server ./examples/standalone -p 9090",
     "example:standalone-future": "npm run build:examples && npx http-server ./examples/standalone-future -p 9090",
-    "deploy:cdn:cf": "vite build && aws s3 cp ./dist/ballerine-sdk.umd.js s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.js && aws s3 cp ./dist/ballerine-sdk.umd.js.map s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.js.map",
+    "deploy:cdn:cf": "vite build && aws s3 cp ./dist/ballerine-sdk.umd.cjs s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.cjs && aws s3 cp ./dist/ballerine-sdk.umd.cjs.map s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.cjs.map",
     "publish:patch": "vite build && npm version patch && npm publish && npm run deploy:cdn:cf"
   },
   "devDependencies": {
