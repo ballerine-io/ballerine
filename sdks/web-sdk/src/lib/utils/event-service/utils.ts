@@ -6,6 +6,8 @@ import { flowEventBus } from '../../services/flow-event-bus/flow-event-bus';
 import { EFlowEvent } from '../../services/flow-event-bus/enums';
 import { BALLERINE_EVENT } from './constants';
 import { IEventOptions } from '../../services/flow-event-bus/interfaces';
+import { configuration } from '../../contexts/configuration';
+import { getFlowConfig } from '../../contexts/flows/hooks';
 
 const outerScopeContext = window.__blrn_context;
 const isProd = window.__blrn_is_prod;
@@ -37,16 +39,19 @@ export const sendIframeEvent = (eventOptions: IEventOptions) => {
 
 // without arguments sending events without payload
 export const sendFlowCompleteEvent = (verificationResponse?: IDocumentVerificationResponse) => {
+  const { syncFlow } = getFlowConfig(get(configuration));
+  const { status, idvResult } = verificationResponse ?? {};
   const eventOptions = {
     eventName: BALLERINE_EVENT,
-    eventType: EEventTypes.SYNC_FLOW_COMPLETE,
+    eventType: syncFlow ? EEventTypes.SYNC_FLOW_COMPLETE : EEventTypes.ASYNC_FLOW_COMPLETE,
     shouldExit: true,
+    payload: syncFlow
+      ? {
+          status,
+          idvResult,
+        }
+      : undefined,
   };
-  if (verificationResponse) {
-    const { status, idvResult } = verificationResponse;
-    const payload = { status, idvResult };
-    eventOptions.payload = payload;
-  }
 
   sendIframeEvent(eventOptions);
   // Should finalize the signature on the callbacks interface

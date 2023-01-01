@@ -65,7 +65,11 @@ interface FlowsUIConfig {
 }
 
 export interface FlowsEventsConfig {
-  onFlowComplete?: (payload: IFlowCompletePayload) => void;
+  /**
+   *
+   * @param payload - only available in synchronous flows.
+   */
+  onFlowComplete?: (payload?: IFlowCompletePayload) => void;
   onFlowExit?: (payload: IFlowExitPayload) => void;
   onFlowError?: (payload: IFlowErrorPayload) => void;
   onFlowNavigationUpdate?: (payload: IFlowNavigationUpdatePayload) => void;
