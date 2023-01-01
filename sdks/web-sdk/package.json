@@ -80,6 +80,8 @@
     "svelte": "^3.39.0",
     "svelte-check": "^2.2.7",
     "svelte-preprocess": "^4.9.8",
+    "typedoc": "^0.23.23",
+    "typedoc-plugin-markdown": "^3.14.0",
     "typescript": "^4.5.4",
     "vite": "2.9.15",
     "vite-plugin-dts": "^1.6.6",

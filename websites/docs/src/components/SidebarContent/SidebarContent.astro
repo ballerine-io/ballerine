@@ -47,7 +47,7 @@ const lang = getLanguageFromURL(Astro.url.pathname);
                 href={
                   external
                     ? link
-                    : `${Astro.site?.pathname}${lang}/${type}/${link}/`
+                    : `${Astro.site?.pathname}${lang}/${type}/${link}`
                 }
                 aria-current={`${
                   currentPageMatch.endsWith(link) ? `page` : `false`

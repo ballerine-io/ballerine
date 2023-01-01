@@ -105,12 +105,27 @@ export interface FlowsInitOptions {
   translations?: FlowsTranslations;
 }
 
-interface FlowsMountOptions {
+export interface IFlowsMountOptions {
+  /**
+   * @description The object key of the flow to be rendered.
+   */
+  flowName: string;
+  /**
+   * @description A boolean to decide where to mount the flow - if true, the flow will be mounted in the body element.
+   *
+   * @default false
+   */
+  useModal?: boolean;
+  /**
+   * @description Required if useModal is not used or is set to false. The string id attribute of the element to mount the flow in.
+   */
+  elementId?: string;
   callbacks?: FlowsEventsConfig;
+  /**
+   * @description A JWT token to use in the Authorization header. Requires {@link FlowsInitOptions.backendConfig.auth} method to be set as 'jwt'
+   */
+  jwt?: string;
 }
-
-type FlowsModalOptions = FlowsMountOptions;
-
 export interface FlowsTranslations {
   overrides?: Record<string, AnyRecord>;
   remoteUrl?: string;
@@ -118,8 +133,7 @@ export interface FlowsTranslations {
 
 export interface BallerineSDKFlows {
   init: (config: FlowsInitOptions) => Promise<void>;
-  mount: (flowName: string, elementId: string, config: FlowsMountOptions) => Promise<void>;
-  openModal: (flowName: string, config: FlowsMountOptions) => Promise<void>;
+  mount: (config: IFlowsMountOptions) => Promise<void>;
   setConfig: (config: FlowsInitOptions) => Promise<void>;
 }
 
