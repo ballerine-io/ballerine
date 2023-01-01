@@ -95,5 +95,8 @@ const ballerineInitConfig: FlowsInitOptions = {
 console.log(ballerineInitConfig);
 
 void flows.init(ballerineInitConfig).then(() => {
-  void flows.openModal('my-kyc-flow', {});
+  void flows.mount({
+    flowName: 'my-kyc-flow',
+    useModal: true,
+  });
 });
