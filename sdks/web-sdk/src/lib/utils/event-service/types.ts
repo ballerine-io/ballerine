@@ -6,6 +6,7 @@ export enum EEventTypes {
   VERIFICATION_UPDATE = 'verification_update',
   NAVIGATION_UPDATE = 'navigation_update',
   BUTTON_CLICK = 'button_click',
+  FLOW_ERROR = 'flow_error',
 }
 
 export enum EActionNames {
