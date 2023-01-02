@@ -99,7 +99,6 @@
     if (!cameraPhoto || $isDisabled) return;
 
     toggleOnIsDisabled();
-    console.log($configuration);
     const base64 = cameraPhoto.getDataUri(
       $configuration.settings?.cameraSettings as CaptureConfigOption,
     );

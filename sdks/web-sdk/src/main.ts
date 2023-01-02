@@ -84,7 +84,7 @@ export const flows: BallerineSDKFlows = {
           ...endUserInfo,
         },
       };
-      const configPromise = appInit(_flowName, mergedConfig);
+      const configPromise = appInit(mergedConfig);
       const translationsPromise = mergeTranslationsOverrides(config.translations);
       Promise.all([configPromise, translationsPromise])
         .then(() => resolve())

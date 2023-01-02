@@ -57,8 +57,8 @@ export const mergeTranslations = async (original: TranslationType, overridesTran
  * @param configuration provided user configuration
  * @param uiTheme selected default ui theme
  */
-export const mergeConfigurationWithUiPack = (configuration: IAppConfiguration, uiTheme: IUIPackTheme) => {
-  let flows: IFlow = {};
+export const mergeConfigurationWithUiPack = (configuration: IAppConfiguration, uiTheme: IUIPackTheme): IAppConfiguration => {
+  let flows: { [key: string]: IFlow } = {};
   Object.keys(configuration.flows).map((flowName) => {
     const flow = mergeConfigurationFlowsWithUiPack(flowName, configuration, uiTheme);
     flows = {
@@ -88,7 +88,6 @@ const mergeConfigurationFlowsWithUiPack = (flowName: string, configuration: IApp
   let steps: IStepConfiguration[] = uiTheme.steps;
   if (flowSteps) {
     steps = flowSteps.map(flowStep => {
-      console.log("flowStep.elements", flowStep.elements)
       const themeStep = uiTheme.steps.find(s => s.id === flowStep.id);
       if (!themeStep) {
         throw new Error(`Invalid step id provided: ${flowStep.id as string}`);
@@ -96,10 +95,11 @@ const mergeConfigurationFlowsWithUiPack = (flowName: string, configuration: IApp
       const mergedStep = deepmerge(themeStep, flowStep);
       return {
         ...mergedStep,
+        id:  mergedStep.type ? `${mergedStep.id}-${mergedStep.type}` : mergedStep.id,
         namespace: mergedStep.namespace ? mergedStep.namespace : mergedStep.id,
         elements: mergeStepElements(themeStep.elements, flowStep.elements as RecursivePartial<IElement>[] | undefined)
       }
-    })
+    }) as IStepConfiguration[];
   }
 
   return {

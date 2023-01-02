@@ -16,6 +16,7 @@
   import { checkIsCameraAvailable } from '../services/camera-manager';
   import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
   import { getDocumentType } from '../utils/documents-utils';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
 
   export let stepId;
 
@@ -55,6 +56,8 @@
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>

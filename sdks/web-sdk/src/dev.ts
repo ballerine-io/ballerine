@@ -51,6 +51,11 @@ const ballerineInitConfig: FlowsInitOptions = {
             type: EDocumentType.BUSINESS_REGISTRATION,
           },
           {
+            name: Steps.CheckDocument,
+            id: Steps.CheckDocument,
+            type: EDocumentType.BUSINESS_REGISTRATION,
+          },
+          {
             name: Steps.DocumentStart,
             id: Steps.DocumentStart,
             type: EDocumentType.PROOF_OF_BUSINESS_TAX_ID,
@@ -60,7 +65,11 @@ const ballerineInitConfig: FlowsInitOptions = {
             id: Steps.DocumentPhoto,
             type: EDocumentType.PROOF_OF_BUSINESS_TAX_ID,
           },
-
+          {
+            name: Steps.CheckDocument,
+            id: Steps.CheckDocument,
+            type: EDocumentType.PROOF_OF_BUSINESS_TAX_ID,
+          },
           {
             name: Steps.DocumentStart,
             id: Steps.DocumentStart,
@@ -69,6 +78,11 @@ const ballerineInitConfig: FlowsInitOptions = {
           {
             name: Steps.DocumentPhoto,
             id: Steps.DocumentPhoto,
+            type: EDocumentType.BANK_STATEMENT,
+          },
+          {
+            name: Steps.CheckDocument,
+            id: Steps.CheckDocument,
             type: EDocumentType.BANK_STATEMENT,
           },
           {
@@ -94,7 +108,7 @@ const ballerineInitConfig: FlowsInitOptions = {
 console.log(ballerineInitConfig);
 
 void flows.init(ballerineInitConfig).then(() => {
-  void flows.openModal('my-kyc-flow', {
+  void flows.openModal('my-kyb-flow', {
     callbacks: {
       onFlowNavigationUpdate: (payload) => {
         console.log(payload)

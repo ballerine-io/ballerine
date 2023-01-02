@@ -11,7 +11,7 @@ import { IFlow } from "../../contexts/flows";
 
 export let texts: TranslationType = translation;
 
-export const appInit = async (flowName: string, overrides: FlowsInitOptions) => {
+export const appInit = async (overrides: FlowsInitOptions) => {
   let configuration = mergeConfigOverrides(overrides);
   configuration = await populateConfigurationByUiPack(configuration);
   configuration = await preloadFlowBasicSteps(configuration);
@@ -23,11 +23,14 @@ export const appInit = async (flowName: string, overrides: FlowsInitOptions) => 
  * Updates store with merged configuration
  * @param overrides configuration provided by the user
  */
-const mergeConfigOverrides = (overrides: FlowsInitOptions): IAppConfiguration => {
+export const mergeConfigOverrides = (overrides: FlowsInitOptions): IAppConfiguration => {
   let mergedConfiguration = get(configurationStore);
   configurationStore.update(configuration => {
-    if (!overrides.uiConfig) return configuration;
-    mergedConfiguration = deepmerge(configuration, overrides.uiConfig) as IAppConfiguration;
+    const { uiConfig, ...restConfig } = overrides;
+    mergedConfiguration = deepmerge(configuration, restConfig) as IAppConfiguration;
+    if (uiConfig) {
+      mergedConfiguration = deepmerge(mergedConfiguration, uiConfig) as IAppConfiguration;
+    }
     return mergedConfiguration;
   });
   return mergedConfiguration;
@@ -37,7 +40,7 @@ const mergeConfigOverrides = (overrides: FlowsInitOptions): IAppConfiguration =>
  * @description Extends provided by user configuration with selected ui pack
  * @param configuration provided user configuration
  */
-const populateConfigurationByUiPack = async (configuration: IAppConfiguration) => {
+export const populateConfigurationByUiPack = async (configuration: IAppConfiguration): Promise<IAppConfiguration> => {
   const packType = configuration.uiPack;
   if (isUrl(packType)) {
     const response = await fetch(packType as string);
@@ -85,8 +88,12 @@ export const mergeTranslationsOverrides = async (translations?: FlowsTranslation
   return texts;
 };
 
-const preloadFlowBasicSteps = async (configuration: IAppConfiguration) => {
-  let flows: IFlow = {};
+/**
+ * @description Preload basic steps in the flow in case they exist
+ * @param configuration merged general configuration
+ */
+const preloadFlowBasicSteps = async (configuration: IAppConfiguration): Promise<IAppConfiguration> => {
+  let flows: { [key: string]: IFlow } = {};
   for (const flowName of Object.keys(configuration.flows)) {
     const preloadedFlow = await preloadBasicSteps(configuration.flows[flowName]);
     flows = {
@@ -100,6 +107,10 @@ const preloadFlowBasicSteps = async (configuration: IAppConfiguration) => {
   }
 }
 
+/**
+ * @description Preload basic steps in specific flow
+ * @param flow
+ */
 const preloadBasicSteps = async (flow: IFlow): Promise<IFlow> => {
   const steps = flow.steps as IStepConfiguration[];
   let preloadedSteps = steps;

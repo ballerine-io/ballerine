@@ -10,20 +10,22 @@
   const flowName = getContext('flowName') as string;
   const flow = $configuration.flows[flowName];
   const flowSteps = flow.steps as RecursivePartial<IStepConfiguration>[];
-  const configurationStepIds = flowSteps.map(s => s.id);
+  const configurationStepIds = flowSteps.map(s => s.id) as string[];
   let stepId = configurationStepIds[0];
   const flowStep = flowSteps.find(s => s.id === stepId) as IStepConfiguration;
-  let step = steps.find(s => s.name === flowStep.id);
+  let step = steps.find(s => s.name === flowStep.name);
+
   const routeInit = (currentStepId: string, currentStepIdx: number) => {
     const configurationStepId = configurationStepIds.find((id: string) => id === currentStepId);
-    console.log('configurationStepId', configurationStepId);
     if (configurationStepId === stepId) return;
     if (!configurationStepId) {
       stepId = currentStepId;
-      step = steps.find(s => s.name === currentStepId);
+      const flowStep = flowSteps.find(s => s.id === currentStepId) as IStepConfiguration;
+      step = steps.find(s => s.name === flowStep.name);
     } else {
       stepId = configurationStepId;
-      step = steps.find(s => s.name === stepId);
+      const flowStep = flowSteps.find(s => s.id === currentStepId) as IStepConfiguration;
+      step = steps.find(s => s.name === flowStep.name);
       const newStepIndex = configurationStepIds.indexOf(stepId);
       if (newStepIndex !== currentStepIdx) {
         currentStepIdx = newStepIndex;

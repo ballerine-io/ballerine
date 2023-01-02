@@ -159,7 +159,7 @@
         };
         await BallerineSDK.flows.init(ballerineInitConfig);
         const elementId = 'kyc-flow-1';
-        await BallerineSDK.flows.mount('my-kyc-flow', elementId, {
+        await BallerineSDK.flows.mount('my-kyb-flow', elementId, {
           callbacks: {
             onFlowNavigationUpdate(payload) {
               console.log('onFlowNavigation', payload);
