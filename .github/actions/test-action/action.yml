@@ -18,9 +18,9 @@ runs:
       shell: bash
       run: pnpm i --no-frozen-lockfile
 
-    #    - name: Test
-    #      shell: bash
-    #      run: pnpm test
+    - name: Test
+      shell: bash
+      run: pnpm test
 
     - name: Install Playwright browsers
       shell: bash
