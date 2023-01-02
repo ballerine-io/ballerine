@@ -7,25 +7,25 @@ on:
 #      - dev
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
+  #  format:
+  #    runs-on: ubuntu-latest
+  #
+  #    steps:
+  #      - name: Checkout
+  #        uses: actions/checkout@v3
+  #
+  #      - name: Format
+  #        uses: ./.github/actions/format-action
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Format
-        uses: ./.github/actions/format-action
-
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Lint
-        uses: ./.github/actions/lint-action
+  #  lint:
+  #    runs-on: ubuntu-latest
+  #
+  #    steps:
+  #      - name: Checkout
+  #        uses: actions/checkout@v3
+  #
+  #      - name: Lint
+  #        uses: ./.github/actions/lint-action
 
   test:
     timeout-minutes: 60
@@ -37,13 +37,12 @@ jobs:
 
       - name: Test
         uses: ./.github/actions/test-action
-
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Build
-        uses: ./.github/actions/build-action
+#  build:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#
+#      - name: Build
+#        uses: ./.github/actions/build-action

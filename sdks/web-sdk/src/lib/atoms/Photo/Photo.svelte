@@ -1,13 +1,12 @@
 <script lang="ts">
-  import merge from 'deepmerge';
+  import merge from "deepmerge";
   import {
     configuration as globalConfiguration,
-    ICSSProperties,
-    IElementProps,
-  } from '../../contexts/configuration';
-  import { uiPack } from '../../ui-packs';
-  import { makeStylesFromConfiguration } from '../../services/css-manager';
-  import Loader from '../Loader/Loader.svelte';
+    IElementProps
+  } from "../../contexts/configuration";
+  import { uiPack } from "../../ui-packs";
+  import { ICSSProperties, makeStylesFromConfiguration } from "../../services/css-manager";
+  import Loader from "../Loader/Loader.svelte";
 
   export let configuration: IElementProps;
   export let src: string;

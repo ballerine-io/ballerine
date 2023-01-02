@@ -1,4 +1,4 @@
-import { ICSSProperties, IStepConfiguration } from '../lib/contexts/configuration';
+import { IStepConfiguration } from '../lib/contexts/configuration';
 import { ConfigSettings } from '../lib/contexts/configuration/types';
 import { INavigationButtons } from '../lib/molecules/NavigationButtons';
 import { IDocumentOptions } from '../lib/organisms/DocumentOptions';
@@ -9,6 +9,7 @@ import {
   IFlowNavigationUpdatePayload,
 } from '../lib/services/flow-event-bus/interfaces';
 import { AnyRecord } from '../types';
+import { ICSSProperties } from '../lib/services/css-manager';
 
 interface FlowsGeneralTheme {
   progress?: boolean;

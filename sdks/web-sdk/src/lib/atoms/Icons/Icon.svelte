@@ -1,14 +1,14 @@
 <script lang="ts">
-  import Card from './Card.svelte';
-  import Passport from './Passport.svelte';
-  import License from './License.svelte';
-  import PassportTwo from './PassportTwo.svelte';
-  import Voter from './Voter.svelte';
-  import { makesLocalStyles } from '../../services/css-manager';
+  import Card from "./Card.svelte";
+  import Passport from "./Passport.svelte";
+  import License from "./License.svelte";
+  import PassportTwo from "./PassportTwo.svelte";
+  import Voter from "./Voter.svelte";
+  import { ICSSProperties, makesLocalStyles } from "../../services/css-manager";
 
-  import type { SvelteComponent } from 'svelte';
-  import type { Icons } from '../../contexts/configuration/types';
-  import type { ICSSProperties, IElementProps } from '../../contexts/configuration';
+  import type { SvelteComponent } from "svelte";
+  import type { Icons } from "../../contexts/configuration/types";
+  import type { IElementProps } from "../../contexts/configuration";
 
   let icons: Record<Icons, typeof SvelteComponent> = {
     Card,

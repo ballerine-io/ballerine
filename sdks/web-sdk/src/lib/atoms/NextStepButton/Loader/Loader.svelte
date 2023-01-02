@@ -1,7 +1,7 @@
 <script lang="ts">
-  import merge from 'deepmerge';
-  import { configuration, ICSSProperties } from '../../../contexts/configuration';
-  import { makesLocalStyles } from '../../../services/css-manager';
+  import merge from "deepmerge";
+  import { configuration } from "../../../contexts/configuration";
+  import { ICSSProperties, makesLocalStyles } from "../../../services/css-manager";
 
   const loader = {
     background: $configuration.general?.colors.primary,
