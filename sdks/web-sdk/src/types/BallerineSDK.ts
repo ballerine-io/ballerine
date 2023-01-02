@@ -113,7 +113,7 @@ interface FlowsMountOptions {
 type FlowsModalOptions = FlowsMountOptions;
 
 export interface FlowsTranslations {
-  overrides?: TranslationType;
+  overrides?: Partial<TranslationType>;
   remoteUrl?: string;
 }
 
