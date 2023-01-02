@@ -45,7 +45,7 @@ export enum Elements {
   VideoContainer = 'video-container',
   List = 'list',
   ErrorText = 'error-text',
-  Loader = 'loader'
+  Loader = 'loader',
 }
 
 export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo' | 'Voter';
@@ -102,7 +102,7 @@ export interface IStepConfiguration {
   id: string;
   namespace?: string;
   cameraConfig?: CaptureConfigOption;
-  documentOptions?: { type: EDocumentType, kind: EDocumentKind }[];
+  documentOptions?: { type: EDocumentType; kind: EDocumentKind }[];
 }
 
 export interface IOverlayStyles {

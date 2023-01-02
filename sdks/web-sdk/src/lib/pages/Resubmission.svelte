@@ -22,8 +22,9 @@
   const style = getLayoutStyles($configuration, $uiPack, step);
 
   const stepNamespace = step.namespace!;
-  const hasDocumentSelection = !!($configuration.steps && $configuration.steps[Steps.DocumentSelection]) && !!$uiPack.steps[Steps.DocumentSelection];
-
+  const hasDocumentSelection =
+    !!($configuration.steps && $configuration.steps[Steps.DocumentSelection]) &&
+    !!$uiPack.steps[Steps.DocumentSelection];
 
   const reasonCode = $currentParams ? $currentParams.reasonCode : null;
 

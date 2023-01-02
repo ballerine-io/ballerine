@@ -1,6 +1,10 @@
 import merge from 'deepmerge';
 import { Writable } from 'svelte/store';
-import { IAppConfiguration, IAppConfigurationUI, IStepConfiguration } from '../../contexts/configuration';
+import {
+  IAppConfiguration,
+  IAppConfigurationUI,
+  IStepConfiguration,
+} from '../../contexts/configuration';
 import { getNextStepId } from '../../contexts/navigation';
 
 const preloadByExtension = async (src: string): Promise<string> => {
@@ -24,10 +28,11 @@ const preloadByExtension = async (src: string): Promise<string> => {
   });
 };
 
-export const preloadStepImages = async (step: IStepConfiguration, uiPack: IAppConfigurationUI): Promise<IStepConfiguration> => {
-  const defaultStepKey = Object.keys(uiPack.steps).find(
-    s => s === step.name,
-  ) as string;
+export const preloadStepImages = async (
+  step: IStepConfiguration,
+  uiPack: IAppConfigurationUI,
+): Promise<IStepConfiguration> => {
+  const defaultStepKey = Object.keys(uiPack.steps).find(s => s === step.name) as string;
   const defaultStep = uiPack.steps[defaultStepKey];
   const mergedStep = merge(defaultStep, step);
   // TODO: Think about merging elements
@@ -69,7 +74,9 @@ export const preloadNextStepByCurrent = async (
 ) => {
   const nextStepId = getNextStepId(globalConfiguration, currentStepId, skipType);
   if (!nextStepId || preloadedSteps[nextStepId]) return;
-  const step = globalConfiguration.steps ? globalConfiguration.steps[nextStepId] : uiPack.steps[nextStepId];
+  const step = globalConfiguration.steps
+    ? globalConfiguration.steps[nextStepId]
+    : uiPack.steps[nextStepId];
   const updatedStep = await preloadStepImages(step, uiPack);
   const updatedConfiguration = {
     ...globalConfiguration,
@@ -90,7 +97,7 @@ export const preloadStepById = async (
 ) => {
   if (preloadedSteps[currentStepId]) return;
   const step = uiPack.steps[currentStepId];
-  console.log(currentStepId, step)
+  console.log(currentStepId, step);
   const updatedStep = await preloadStepImages(step, uiPack);
   const updatedConfiguration = {
     ...globalConfiguration,

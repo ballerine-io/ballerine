@@ -11,7 +11,11 @@
   const styleProps = configuration.style as ICSSProperties;
   const attributes = configuration.attributes as IAttributes;
 
-  const style = getComponentStyles($uiPack.iconCloseButton, $globalConfiguration.iconCloseButton, styleProps);
+  const style = getComponentStyles(
+    $uiPack.iconCloseButton,
+    $globalConfiguration.iconCloseButton,
+    styleProps,
+  );
 </script>
 
 <button {style} on:click>

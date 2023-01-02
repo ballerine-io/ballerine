@@ -1,8 +1,8 @@
 <script lang="ts">
-  import CameraPhoto, { FACING_MODES } from "jslib-html5-camera-photo";
-  import { T } from "../contexts/translation";
-  import { configuration } from "../contexts/configuration";
-  import { onDestroy, onMount } from "svelte";
+  import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
+  import { T } from '../contexts/translation';
+  import { configuration } from '../contexts/configuration';
+  import { onDestroy, onMount } from 'svelte';
   import {
     CameraButton,
     IconButton,
@@ -10,22 +10,22 @@
     Loader,
     Overlay,
     Paragraph,
-    VideoContainer
-  } from "../atoms";
-  import { Elements } from "../contexts/configuration/types";
-  import { appState, EDocumentType, IDocument } from "../contexts/app-state";
-  import { goToNextStep, goToPrevStep } from "../contexts/navigation";
-  import Title from "../atoms/Title/Title.svelte";
-  import { currentStepId, documents, selectedDocumentInfo } from "../contexts/app-state/stores";
-  import merge from "deepmerge";
-  import { preloadNextStepByCurrent } from "../services/preload-service";
+    VideoContainer,
+  } from '../atoms';
+  import { Elements } from '../contexts/configuration/types';
+  import { appState, EDocumentType, IDocument } from '../contexts/app-state';
+  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
+  import Title from '../atoms/Title/Title.svelte';
+  import { currentStepId, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import merge from 'deepmerge';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
   import {
     EActionNames,
     EVerificationStatuses,
-    sendButtonClickEvent
-  } from "../utils/event-service";
-  import { getLayoutStyles, getStepConfiguration, uiPack } from "../ui-packs";
-  import { createToggle } from "../hooks/createToggle/createToggle";
+    sendButtonClickEvent,
+  } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { createToggle } from '../hooks/createToggle/createToggle';
 
   export let stepId;
 
