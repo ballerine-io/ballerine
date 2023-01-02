@@ -92,7 +92,7 @@ export const mergeTranslationsOverrides = async (translations?: FlowsTranslation
  * @description Preload basic steps in the flow in case they exist
  * @param configuration merged general configuration
  */
-const preloadFlowBasicSteps = async (configuration: IAppConfiguration): Promise<IAppConfiguration> => {
+export const preloadFlowBasicSteps = async (configuration: IAppConfiguration): Promise<IAppConfiguration> => {
   let flows: { [key: string]: IFlow } = {};
   for (const flowName of Object.keys(configuration.flows)) {
     const preloadedFlow = await preloadBasicSteps(configuration.flows[flowName]);
