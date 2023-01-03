@@ -15,15 +15,14 @@
   import merge from 'deepmerge';
   import { checkIsCameraAvailable } from '../../services/camera-manager';
   import { uiPack } from '../../ui-packs';
+  import { IDocumentOptions } from './types';
 
   export let step: IStepConfiguration;
 
   const documentOptions: IDocumentOption[] = [];
 
-  const documentOptionsConfiguration = merge(
-    $uiPack.documentOptions,
-    $configuration.documentOptions || {},
-  );
+  const documentOptionsConfiguration = $configuration.components
+    ?.documentOptions as IDocumentOptions;
 
   if (step.documentOptions) {
     step.documentOptions.forEach(option => {
@@ -47,8 +46,6 @@
       documentOptions.push(option);
     });
   }
-
-  console.log(documentOptions);
 
   const handleSelectOption = async ({ detail }: { detail: string }) => {
     if (isNativeCamera($configuration)) return;

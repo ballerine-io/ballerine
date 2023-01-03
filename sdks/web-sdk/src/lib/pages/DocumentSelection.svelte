@@ -12,18 +12,18 @@
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack, stepId);
+  const step = getStepConfiguration($configuration, stepId);
   const flow = getFlowConfig($configuration);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const style = getLayoutStyles($configuration, step);
 
   const stepNamespace = step.namespace!;
 
-  preloadNextStepByCurrent($configuration, configuration, stepId, $uiPack);
+  preloadNextStepByCurrent($configuration, configuration, stepId);
 </script>
 
 <div class="container" {style}>

@@ -1,10 +1,10 @@
 export type {
   IAppConfigurationUI,
   IAppConfiguration,
+  IConfigurationComponents,
   IAttributes,
   IStepConfiguration,
   IElementProps,
-  IOpacityColor,
   IButton,
   IElement,
   IFormProps,

@@ -1,16 +1,18 @@
 <script lang="ts">
   import {
     configuration as globalConfiguration,
-    ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../services/css-manager';
+  import { ICSSProperties, makeStylesFromConfiguration } from '../../services/css-manager';
 
   export let configuration: IElementProps;
   export let isDisabled = false;
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = makeStylesFromConfiguration($globalConfiguration.cameraButton, styleProps);
+  const style = makeStylesFromConfiguration(
+    $globalConfiguration.components?.cameraButton || {},
+    styleProps,
+  );
 </script>
 
 <button {style} on:click aria-label="take picture" disabled={isDisabled}>

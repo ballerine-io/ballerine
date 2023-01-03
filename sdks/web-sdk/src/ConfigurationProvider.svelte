@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, setContext } from 'svelte';
   import App from './App.svelte';
   import { BALLERINE_EVENT } from './lib/utils/event-service';
   import { IOuterEvent } from './lib/utils/event-service/types';
@@ -15,7 +15,9 @@
     const loader = document.getElementById('blrn-loader') as HTMLDivElement;
     loader.style.display = 'none';
   });
+
   export let flowName: string;
+  setContext('flowName', flowName);
 
   export let useModal = false;
 

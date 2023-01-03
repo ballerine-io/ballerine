@@ -1,17 +1,19 @@
 <script lang="ts">
   import {
     configuration as globalConfiguration,
-    ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../services/css-manager';
+  import { ICSSProperties, makeStylesFromConfiguration } from '../../services/css-manager';
 
   export let configuration: IElementProps;
   export let isSelfie = false;
 
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = makeStylesFromConfiguration($globalConfiguration.videoContainer, styleProps);
+  const style = makeStylesFromConfiguration(
+    $globalConfiguration.components?.videoContainer || {},
+    styleProps,
+  );
 </script>
 
 <div class="container" class:mirror={isSelfie} {style}>

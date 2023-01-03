@@ -5,8 +5,6 @@
   import { currentStepId } from '../../contexts/app-state';
   import { makeStylesFromConfiguration } from '../../services/css-manager';
   import { Loader } from './Loader';
-  import merge from 'deepmerge';
-  import { uiPack } from '../../ui-packs';
 
   // TODO: Use the createToggle hook, and make sure an exported prop is not being mutated.
   export let isDisabled = false;
@@ -15,10 +13,8 @@
   export let skipType: string;
 
   const background =
-    $globalConfiguration.button?.background ||
-    $uiPack.button.background ||
-    $globalConfiguration.general?.colors?.primary ||
-    $uiPack.general.colors.primary;
+    $globalConfiguration.components?.button?.background ||
+    $globalConfiguration.general?.colors?.primary;
 
   const styleProps = {
     ...configuration?.style,
@@ -26,7 +22,7 @@
   };
 
   const style = makeStylesFromConfiguration(
-    merge($uiPack.button, $globalConfiguration.button || {}),
+    $globalConfiguration.components?.button || {},
     styleProps,
   );
 

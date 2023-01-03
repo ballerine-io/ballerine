@@ -1,31 +1,24 @@
-import { IAppConfiguration, IAppConfigurationUI, IStepConfiguration } from "../contexts/configuration";
-import { mergeStepConfig } from "../services/merge-service";
+import { IAppConfiguration, IStepConfiguration } from "../contexts/configuration";
 import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 import { makeStylesFromConfiguration, ICSSProperties } from '../services/css-manager';
-import merge from 'deepmerge';
+import { getContext } from "svelte";
 
-export const getStepConfiguration = (configuration:  IAppConfiguration, uiPack: IAppConfigurationUI, stepId: string) => {
-  if (!uiPack.steps[stepId] && configuration.steps && configuration.steps[stepId]) {
-    const step = configuration.steps[stepId];
-    const uiStep = uiPack.steps[step.id];
-    return mergeStepConfig(uiStep, configuration.steps[stepId]);
-  }
-  return mergeStepConfig(uiPack.steps[stepId], configuration.steps ? configuration.steps[stepId] : {} as IStepConfiguration);
+export const getStepConfiguration = (configuration:  IAppConfiguration, stepId: string) => {
+  const flowName: string = getContext("flowName");
+  const steps = configuration.flows[flowName].steps as IStepConfiguration[];
+  return steps.find(step => step.id === stepId) as IStepConfiguration;
 }
 
-export const getLayoutStyles = (configuration:  IAppConfiguration, uiPack: IAppConfigurationUI, step: IStepConfiguration) => {
+export const getLayoutStyles = (configuration: IAppConfiguration, step: IStepConfiguration) => {
   return makeStylesFromConfiguration(
-    merge(
-      injectPrimaryIntoLayoutGradient(uiPack.layout, configuration.general?.colors?.primary || uiPack.general.colors.primary),
-      configuration.layout || {},
-    ),
+    injectPrimaryIntoLayoutGradient(configuration.components?.layout || {}, configuration.general?.colors?.primary as string),
     step.style,
   );
 }
 
-export const getComponentStyles = (uiPackComponentStyle: ICSSProperties, configurationStyles: ICSSProperties, style: ICSSProperties) => {
+export const getComponentStyles = (configurationStyles: ICSSProperties, style: ICSSProperties) => {
   return makeStylesFromConfiguration(
-    merge(uiPackComponentStyle, configurationStyles || {}),
+    configurationStyles || {},
     style,
   );
 }

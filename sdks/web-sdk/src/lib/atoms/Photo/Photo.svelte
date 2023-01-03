@@ -2,11 +2,9 @@
   import merge from 'deepmerge';
   import {
     configuration as globalConfiguration,
-    ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { uiPack } from '../../ui-packs';
-  import { makeStylesFromConfiguration } from '../../services/css-manager';
+  import { ICSSProperties, makeStylesFromConfiguration } from '../../services/css-manager';
   import Loader from '../Loader/Loader.svelte';
 
   export let configuration: IElementProps;
@@ -14,11 +12,11 @@
   const styleProps = configuration.style as ICSSProperties;
 
   const defaultStyle = {
-    'border-radius': $globalConfiguration.general?.borderRadius || $uiPack.general.borderRadius,
+    'border-radius': $globalConfiguration.general?.borderRadius,
   };
 
   const style = makeStylesFromConfiguration(
-    merge(defaultStyle, $globalConfiguration.photo || {}),
+    merge(defaultStyle, $globalConfiguration.components?.photo || {}),
     styleProps,
   );
 </script>

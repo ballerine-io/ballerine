@@ -6,7 +6,7 @@
   import { goToPrevStep } from '../contexts/navigation';
   import { getDocImage, IDocumentInfo } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { documents, selectedDocumentInfo, currentStepId, appState } from '../contexts/app-state';
   import {
@@ -18,9 +18,9 @@
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack, stepId);
+  const step = getStepConfiguration($configuration, stepId);
   const flow = getFlowConfig($configuration);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const style = getLayoutStyles($configuration, step);
 
   const stepNamespace = step.namespace!;
 
@@ -37,7 +37,7 @@
     }
   }
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>

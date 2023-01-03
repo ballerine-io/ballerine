@@ -5,17 +5,12 @@
   } from '../../contexts/configuration';
   import { makeStylesFromConfiguration } from '../../services/css-manager';
 
-  import merge from 'deepmerge';
-  import { uiPack } from '../../ui-packs';
-
   export let configuration: IElementProps;
   export let isBack = false;
 
   const background = !isBack
-    ? $globalConfiguration.button?.background ||
-      $uiPack.button.background ||
-      $globalConfiguration.general?.colors?.primary ||
-      $uiPack.general.colors.primary
+    ? $globalConfiguration.components?.button?.background ||
+      $globalConfiguration.general?.colors?.primary
     : undefined;
 
   const styleProps = {
@@ -23,12 +18,11 @@
     background,
   };
 
-  const buttonConfiguration = isBack ? configuration?.style : $globalConfiguration.button;
+  const buttonConfiguration = isBack
+    ? configuration?.style
+    : $globalConfiguration.components?.button;
 
-  const style = makeStylesFromConfiguration(
-    merge($uiPack.button, buttonConfiguration || {}),
-    styleProps,
-  );
+  const style = makeStylesFromConfiguration(buttonConfiguration, styleProps);
 </script>
 
 <button {style} on:click>

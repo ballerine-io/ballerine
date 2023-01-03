@@ -3,7 +3,7 @@
   import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
-  import { Elements, Steps } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration/types';
   import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
   import { preloadNextStepByCurrent } from '../services/preload-service';
@@ -18,14 +18,14 @@
     EVerificationStatuses,
     sendButtonClickEvent,
   } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { createToggle } from '../hooks/createToggle/createToggle';
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack, stepId);
+  const step = getStepConfiguration($configuration, stepId);
   const flow = getFlowConfig($configuration);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const style = getLayoutStyles($configuration, step);
 
   const stepNamespace = step.namespace!;
 
@@ -45,7 +45,7 @@
     toggleOnIsDisabled();
   };
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
