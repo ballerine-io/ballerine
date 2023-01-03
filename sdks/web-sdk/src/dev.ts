@@ -1,8 +1,8 @@
-import { Elements, Steps } from './lib/contexts/configuration';
+import { Steps } from './lib/contexts/configuration';
 import { flows } from './main';
 import { EDocumentKind, EDocumentType } from './lib/contexts/app-state';
 import { FlowsInitOptions } from './types/BallerineSDK';
-//
+
 const ballerineInitConfig: FlowsInitOptions = {
   endUserInfo: { id: 'test-id' },
   translations: {
@@ -108,11 +108,8 @@ const ballerineInitConfig: FlowsInitOptions = {
 console.log(ballerineInitConfig);
 
 void flows.init(ballerineInitConfig).then(() => {
-  void flows.openModal('my-kyb-flow', {
-    callbacks: {
-      onFlowNavigationUpdate: (payload) => {
-        console.log(payload)
-      }
-    }
+  void flows.mount({
+    flowName: 'my-kyc-flow',
+    useModal: true,
   });
 });

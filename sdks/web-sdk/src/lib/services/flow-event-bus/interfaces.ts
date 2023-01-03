@@ -1,7 +1,7 @@
 import { EEventTypes, IDocumentVerificationResponse } from '../../utils/event-service';
 import { EFlowEvent } from './enums';
-import { TFlowEventBusPayload } from './types';
 import { AnyRecord } from '../../../types';
+import { TFlowEventBusPayload } from './types';
 
 export interface IEventOptions {
   eventName: string;

@@ -5,6 +5,7 @@ import { Writable } from '../../../../node_modules/svelte/types/runtime/store/in
 import { verifyDocumentsAndCloseFlow } from '../../utils/api-utils';
 import { sendFlowCompleteEvent } from '../../utils/event-service';
 import { getContext } from 'svelte';
+import { sendFlowErrorEvent } from '../../utils/event-service/utils';
 
 const filterOutByType = (flowIds: string[], configuration: IAppConfiguration, type?: string) => {
   if (!type) return flowIds;
@@ -25,9 +26,9 @@ export const getNextStepId = (
   const stepsOrder = getFlowOrders(globalConfiguration) as string[];
   const filteredFlows = filterOutByType(stepsOrder, globalConfiguration, skipType);
   const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
-  if (currentFlowIndex === (filteredFlows.length - 1)) {
+  if (currentFlowIndex === filteredFlows.length - 1) {
     // end of the flow
-    void verifyDocumentsAndCloseFlow(globalConfiguration);
+    void verifyDocumentsAndCloseFlow(globalConfiguration).catch(err => sendFlowErrorEvent(err));
     sendFlowCompleteEvent();
     return;
   }
