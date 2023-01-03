@@ -1,9 +1,9 @@
 <script lang="ts">
   import {
     configuration as globalConfiguration,
-    IElementProps
-  } from "../../contexts/configuration";
-  import { ICSSProperties, makeStylesFromConfiguration } from "../../services/css-manager";
+    IElementProps,
+  } from '../../contexts/configuration';
+  import { ICSSProperties, makeStylesFromConfiguration } from '../../services/css-manager';
 
   export let configuration: IElementProps;
   export let isDisabled = false;

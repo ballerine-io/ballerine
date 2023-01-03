@@ -1,8 +1,8 @@
 <script lang="ts">
-  import merge from "deepmerge";
-  import { configuration } from "../../contexts/configuration";
-  import { uiPack } from "../../ui-packs";
-  import { ICSSProperties, makesLocalStyles } from "../../services/css-manager";
+  import merge from 'deepmerge';
+  import { configuration } from '../../contexts/configuration';
+  import { uiPack } from '../../ui-packs';
+  import { ICSSProperties, makesLocalStyles } from '../../services/css-manager';
 
   export let size: 'small' | 'medium' = 'medium';
   export let fullPage = true;

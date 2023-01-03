@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { Writable } from "svelte/store";
+  import { Writable } from 'svelte/store';
   import {
     configuration as globalConfiguration,
-    IElementProps
-  } from "../../contexts/configuration";
-  import { ICSSProperties, makeStylesFromConfiguration } from "../../services/css-manager";
-  import { IInputAttributes } from "./types";
-  import { t } from "../../contexts/translation/hooks";
-  import merge from "deepmerge";
+    IElementProps,
+  } from '../../contexts/configuration';
+  import { ICSSProperties, makeStylesFromConfiguration } from '../../services/css-manager';
+  import { IInputAttributes } from './types';
+  import { t } from '../../contexts/translation/hooks';
+  import merge from 'deepmerge';
 
   export let configuration: IElementProps;
   export let translationContext: string;

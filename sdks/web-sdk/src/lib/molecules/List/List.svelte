@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { ListItem, Title } from "../../atoms";
+  import { ListItem, Title } from '../../atoms';
   import {
     configuration as globalConfiguration,
-    IElementProps
-  } from "../../contexts/configuration";
-  import { getFlowName } from "../../contexts/flows";
-  import { currentLanguage, T, TranslationType } from "../../contexts/translation";
-  import { ICSSProperties, makeStylesFromConfiguration } from "../../services/css-manager";
-  import { getListLength } from "./utils";
-  import { uiPack } from "../../ui-packs";
+    IElementProps,
+  } from '../../contexts/configuration';
+  import { getFlowName } from '../../contexts/flows';
+  import { currentLanguage, T, TranslationType } from '../../contexts/translation';
+  import { ICSSProperties, makeStylesFromConfiguration } from '../../services/css-manager';
+  import { getListLength } from './utils';
+  import { uiPack } from '../../ui-packs';
 
   export let configuration: IElementProps;
 

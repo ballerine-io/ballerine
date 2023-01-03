@@ -2,10 +2,10 @@
   import {
     configuration as globalConfiguration,
     IAttributes,
-    IElementProps
-  } from "../../contexts/configuration";
-  import { getComponentStyles, uiPack } from "../../ui-packs";
-  import { ICSSProperties } from "../../services/css-manager";
+    IElementProps,
+  } from '../../contexts/configuration';
+  import { getComponentStyles, uiPack } from '../../ui-packs';
+  import { ICSSProperties } from '../../services/css-manager';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;

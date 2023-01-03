@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { IElementProps } from "../../contexts/configuration";
-  import { ICSSProperties, makesLocalStyles } from "../../services/css-manager";
+  import { IElementProps } from '../../contexts/configuration';
+  import { ICSSProperties, makesLocalStyles } from '../../services/css-manager';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
