@@ -235,7 +235,7 @@ Add this code to your index.html header
 ```html
 <script
   async
-  src="https://cdn.ballerine.io/js/1.1.27/ballerine-sdk.umd.js"
+  src="https://cdn.ballerine.io/js/1.3.0/ballerine-sdk.umd.js"
   crossorigin="anonymous"
 ></script>
 ```
