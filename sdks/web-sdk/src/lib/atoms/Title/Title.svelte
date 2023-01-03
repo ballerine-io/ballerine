@@ -4,11 +4,11 @@
     IElementProps,
   } from '../../contexts/configuration';
   import { ICSSProperties } from '../../services/css-manager';
-  import { getComponentStyles, uiPack } from '../../ui-packs';
+  import { getComponentStyles } from '../../ui-packs';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
-  const style = getComponentStyles($uiPack.title, $globalConfiguration.title || {}, styleProps);
+  const style = getComponentStyles($globalConfiguration.components?.title || {}, styleProps);
 </script>
 
 <h1 {style}>

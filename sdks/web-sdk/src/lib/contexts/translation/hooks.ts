@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { Languages } from './types';
-import { texts } from '../../utils/configuration-manager';
+import { texts } from '../../services/configuration-manager';
 
 export const currentLanguage = writable<Languages>('en');
 

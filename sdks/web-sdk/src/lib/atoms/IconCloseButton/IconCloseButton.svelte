@@ -2,16 +2,19 @@
   import {
     configuration as globalConfiguration,
     IAttributes,
-    ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { getComponentStyles, uiPack } from '../../ui-packs';
+  import { ICSSProperties } from '../../services/css-manager';
+  import { getComponentStyles } from '../../ui-packs';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
   const attributes = configuration.attributes as IAttributes;
 
-  const style = getComponentStyles($uiPack.iconCloseButton, $globalConfiguration.iconCloseButton, styleProps);
+  const style = getComponentStyles(
+    $globalConfiguration.components?.iconCloseButton || {},
+    styleProps,
+  );
 </script>
 
 <button {style} on:click>

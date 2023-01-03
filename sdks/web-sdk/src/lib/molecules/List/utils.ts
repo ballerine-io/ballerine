@@ -1,5 +1,5 @@
 import { Languages, TranslationType } from '../../contexts/translation';
-import { texts } from '../../utils/configuration-manager';
+import { texts } from '../../services/configuration-manager';
 
 export const getListLength = <
   TLanguage extends Languages,

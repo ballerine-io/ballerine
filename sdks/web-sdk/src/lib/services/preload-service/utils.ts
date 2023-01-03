@@ -1,6 +1,6 @@
-import merge from 'deepmerge';
+import { getContext } from 'svelte';
 import { Writable } from 'svelte/store';
-import { IAppConfiguration, IAppConfigurationUI, IStepConfiguration } from '../../contexts/configuration';
+import { IAppConfiguration, IStepConfiguration } from '../../contexts/configuration';
 import { getNextStepId } from '../../contexts/navigation';
 
 const preloadByExtension = async (src: string): Promise<string> => {
@@ -24,17 +24,9 @@ const preloadByExtension = async (src: string): Promise<string> => {
   });
 };
 
-export const preloadStepImages = async (step: IStepConfiguration, uiPack: IAppConfigurationUI): Promise<IStepConfiguration> => {
-  const defaultStepKey = Object.keys(uiPack.steps).find(
-    s => s === step.name,
-  ) as string;
-  const defaultStep = uiPack.steps[defaultStepKey];
-  const mergedStep = merge(defaultStep, step);
-  // TODO: Think about merging elements
-  mergedStep.elements = step.elements || defaultStep.elements;
+export const preloadStepImages = async (step: IStepConfiguration): Promise<IStepConfiguration> => {
   const elements = [];
-  for (let index = 0; index < mergedStep.elements.length; index++) {
-    const element = mergedStep.elements[index];
+  for (const element of step.elements) {
     if (element.props.attributes?.src) {
       const src = await preloadByExtension(element.props.attributes?.src);
       elements.push({
@@ -64,19 +56,24 @@ export const preloadNextStepByCurrent = async (
   globalConfiguration: IAppConfiguration,
   configuration: Writable<IAppConfiguration>,
   currentStepId: string,
-  uiPack: IAppConfigurationUI,
   skipType?: string,
 ) => {
+  const flowName: string = getContext("flowName");
   const nextStepId = getNextStepId(globalConfiguration, currentStepId, skipType);
   if (!nextStepId || preloadedSteps[nextStepId]) return;
-  const step = globalConfiguration.steps ? globalConfiguration.steps[nextStepId] : uiPack.steps[nextStepId];
-  const updatedStep = await preloadStepImages(step, uiPack);
-  const updatedConfiguration = {
+  const steps = globalConfiguration.flows[flowName].steps as IStepConfiguration[];
+  const step = steps.find(s => s.id === nextStepId) as IStepConfiguration;
+  const updatedStep = await preloadStepImages(step);
+  const updatedSteps = steps.map(s => s.id === nextStepId ? updatedStep : s);
+  const updatedConfiguration: IAppConfiguration = {
     ...globalConfiguration,
-    steps: {
-      ...globalConfiguration.steps,
-      [nextStepId]: updatedStep,
-    },
+    flows: {
+      ...globalConfiguration.flows,
+      [flowName]: {
+        ...globalConfiguration.flows[flowName],
+        steps: updatedSteps
+      }
+    }
   };
   configuration.set(updatedConfiguration);
   preloadedSteps[nextStepId] = true;
@@ -85,20 +82,22 @@ export const preloadNextStepByCurrent = async (
 export const preloadStepById = async (
   globalConfiguration: IAppConfiguration,
   configuration: Writable<IAppConfiguration>,
-  currentStepId: string,
-  uiPack: IAppConfigurationUI,
+  stepId: string,
+  flowName: string,
 ) => {
-  if (preloadedSteps[currentStepId]) return;
-  const step = uiPack.steps[currentStepId];
-  console.log(currentStepId, step)
-  const updatedStep = await preloadStepImages(step, uiPack);
-  const updatedConfiguration = {
+  const steps = globalConfiguration.flows[flowName].steps as IStepConfiguration[];
+  const step = steps.find(s => s.id === stepId) as IStepConfiguration;
+  const updatedStep = await preloadStepImages(step);
+  const updatedSteps = steps.map(step => step.id === updatedStep.id ? updatedStep : step);
+  const updatedConfiguration: IAppConfiguration = {
     ...globalConfiguration,
-    steps: {
-      ...globalConfiguration.steps,
-      [currentStepId]: updatedStep,
-    },
+    flows: {
+      ...globalConfiguration.flows,
+      [flowName]: {
+        ...globalConfiguration.flows[flowName],
+        steps: updatedSteps
+      }
+    }
   };
   configuration.set(updatedConfiguration);
-  preloadedSteps[currentStepId] = true;
 };

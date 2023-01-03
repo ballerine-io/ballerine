@@ -19,10 +19,10 @@ export const getFlowOrders = (configuration: IAppConfiguration) => {
     return new Error("Flow name wasn't provided");
   }
   const flowConfiguration = configuration.flows[flowName];
-  if (!flowConfiguration) {
+  if (!flowConfiguration || !flowConfiguration.steps) {
     return new Error(`Flow configuration doesn't exist for the name: ${flowName}`);
   }
-  return flowConfiguration.stepsOrder;
+  return flowConfiguration.steps.map(s => s.id);
 };
 
 export const getFlowConfig = (configuration: IAppConfiguration): IFlow => {

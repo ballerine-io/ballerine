@@ -4,7 +4,7 @@
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
-  import { IDocument, currentStepId, EDocumentType } from '../contexts/app-state';
+  import { IDocument, currentStepId } from '../contexts/app-state';
   import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
   import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
@@ -15,17 +15,16 @@
   } from '../utils/event-service';
   import { checkIsCameraAvailable } from '../services/camera-manager';
   import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getDocumentType } from '../utils/documents-utils';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack, stepId);
+  const step = getStepConfiguration($configuration, stepId);
   const flow = getFlowConfig($configuration);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const style = getLayoutStyles($configuration, step);
 
-  const documentType =
-    (($configuration.steps && $configuration.steps[$currentStepId].type) as EDocumentType) ||
-    ($uiPack.steps[$currentStepId].type as EDocumentType) ||
-    $selectedDocumentInfo.type;
+  const documentType = getDocumentType(step, $selectedDocumentInfo);
 
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
@@ -57,6 +56,8 @@
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
