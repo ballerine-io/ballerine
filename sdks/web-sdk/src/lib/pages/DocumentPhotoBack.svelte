@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
+  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
   import { configuration } from '../contexts/configuration';
   import { onDestroy, onMount } from 'svelte';
@@ -14,27 +14,25 @@
   } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { currentStepId, EDocumentType } from '../contexts/app-state';
+  import { currentStepId } from '../contexts/app-state';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { updateDocument } from '../utils/photo-utils';
   import { createToggle } from '../hooks/createToggle/createToggle';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getDocumentType } from '../utils/documents-utils';
 
   export let stepId;
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = getStepConfiguration($configuration, $uiPack, stepId);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const step = getStepConfiguration($configuration, stepId);
+  const style = getLayoutStyles($configuration, step);
 
   const [isDisabled, , toggleOnIsDisabled, toggleOffIsDisabled] = createToggle(true);
 
-  const documentType =
-    ($uiPack.steps[$currentStepId].type as EDocumentType) ||
-    (($configuration.steps && $configuration.steps[$currentStepId].type) as EDocumentType) ||
-    $selectedDocumentInfo.type;
+  const documentType = getDocumentType(step, $selectedDocumentInfo);
 
   const documentKind = $selectedDocumentInfo ? $selectedDocumentInfo.kind : undefined;
 
@@ -72,7 +70,7 @@
     );
     if (!cameraPhoto || !document || $isDisabled) return;
     const base64 = cameraPhoto.getDataUri(
-      $configuration.settings?.cameraSettings || $uiPack.settings.cameraSettings,
+      $configuration.settings?.cameraSettings as CaptureConfigOption,
     );
     const newDocumentsState = updateDocument(document, base64, $documents);
     $documents = newDocumentsState;
@@ -80,7 +78,7 @@
     toggleOnIsDisabled();
   };
 
-  preloadNextStepByCurrent($configuration, configuration, $currentStepId, $uiPack);
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>

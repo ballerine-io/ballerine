@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { IAppConfigurationUI } from '../contexts/configuration';
 import { uiTheme } from './default/theme';
+import { IUIPackTheme } from './types';
 
-export const uiPack = writable<IAppConfigurationUI>(uiTheme);
+export const uiPack = writable<IUIPackTheme>(uiTheme);

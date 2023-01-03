@@ -1,17 +1,17 @@
 import { IStepConfiguration } from '../lib/contexts/configuration';
 import { ConfigSettings } from '../lib/contexts/configuration/types';
+import { TranslationType } from '../lib/contexts/translation';
 import { INavigationButtons } from '../lib/molecules/NavigationButtons';
 import { IDocumentOptions } from '../lib/organisms/DocumentOptions';
+import { ICSSProperties } from '../lib/services/css-manager';
 import {
   IFlowCompletePayload,
   IFlowErrorPayload,
   IFlowExitPayload,
   IFlowNavigationUpdatePayload,
 } from '../lib/services/flow-event-bus/interfaces';
-import { AnyRecord } from '../types';
-import { ICSSProperties } from '../lib/services/css-manager';
 
-interface FlowsGeneralTheme {
+export interface FlowsGeneralTheme {
   progress?: boolean;
   borderRadius?: string;
   padding?: string;
@@ -59,7 +59,7 @@ interface FlowsUIConfig {
       useFinalQueryParams?: boolean;
       firstScreenBackButton?: boolean;
       showCloseButton?: boolean;
-      callbacks?: () => void;
+      callbacks?: FlowsEventsConfig;
     };
   };
   settings?: ConfigSettings;
@@ -132,13 +132,13 @@ export interface IFlowsMountOptions {
   jwt?: string;
 }
 export interface FlowsTranslations {
-  overrides?: Record<string, AnyRecord>;
+  overrides?: Partial<TranslationType>;
   remoteUrl?: string;
 }
 
 export interface BallerineSDKFlows {
   init: (config: FlowsInitOptions) => Promise<void>;
-  mount: (config: IFlowsMountOptions) => Promise<void>;
+  mount: (config: IFlowsMountOptions) => void;
   setConfig: (config: FlowsInitOptions) => Promise<void>;
 }
 

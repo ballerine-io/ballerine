@@ -1,30 +1,29 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, IconCloseButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
-  import { currentStepId, currentParams, appState } from '../contexts/app-state';
+  import { Button, IconCloseButton, Image, Title } from '../atoms';
+  import { configuration } from '../contexts/configuration';
+  import { appState, currentParams, currentStepId } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
   import { flowResubmission } from '../services/analytics';
   import { onDestroy } from 'svelte';
   import {
     EActionNames,
-    sendButtonClickEvent,
     EVerificationStatuses,
+    sendButtonClickEvent,
   } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
+  import { isDocumentSelectionStepExists } from '../utils/documents-utils';
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack, stepId);
+  const step = getStepConfiguration($configuration, stepId);
   const flow = getFlowConfig($configuration);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const style = getLayoutStyles($configuration, step);
 
   const stepNamespace = step.namespace!;
-  const hasDocumentSelection =
-    !!($configuration.steps && $configuration.steps[Steps.DocumentSelection]) &&
-    !!$uiPack.steps[Steps.DocumentSelection];
+  const hasDocumentSelection = isDocumentSelectionStepExists($configuration);
 
   const reasonCode = $currentParams ? $currentParams.reasonCode : null;
 

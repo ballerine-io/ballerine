@@ -4,7 +4,7 @@
   import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
   import { goToPrevStep } from '../contexts/navigation';
-  import { EDocumentType, getDocImage, appState } from '../contexts/app-state';
+  import { getDocImage, appState } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { preloadNextStepByCurrent } from '../services/preload-service';
@@ -13,20 +13,18 @@
     sendButtonClickEvent,
     EVerificationStatuses,
   } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
+  import { getDocumentType } from '../utils/documents-utils';
 
   export let stepId;
 
-  const step = getStepConfiguration($configuration, $uiPack, stepId);
+  const step = getStepConfiguration($configuration, stepId);
   const flow = getFlowConfig($configuration);
-  const style = getLayoutStyles($configuration, $uiPack, step);
+  const style = getLayoutStyles($configuration, step);
 
   const stepNamespace = step.namespace!;
-  const documentType =
-    (($configuration.steps && $configuration.steps[$currentStepId].type) as EDocumentType) ||
-    ($uiPack.steps[$currentStepId].type as EDocumentType) ||
-    $selectedDocumentInfo.type;
+  const documentType = getDocumentType(step, $selectedDocumentInfo);
 
   let image = '';
   let skipBackSide = false;
@@ -45,7 +43,6 @@
       $configuration,
       configuration,
       $currentStepId,
-      $uiPack,
       skipBackSide ? 'back-side' : undefined,
     );
   }

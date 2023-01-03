@@ -43,6 +43,7 @@
   .overlay.a4 {
     border-radius: 12px;
     aspect-ratio: 3/4;
+    max-width: 80%;
   }
   .overlay.selfie {
     border-radius: 100%;

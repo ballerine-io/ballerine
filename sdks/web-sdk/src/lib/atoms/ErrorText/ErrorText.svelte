@@ -3,14 +3,14 @@
     configuration as globalConfiguration,
     IElementProps,
   } from '../../contexts/configuration';
-  import { getComponentStyles, uiPack } from '../../ui-packs';
   import { ICSSProperties } from '../../services/css-manager';
+  import { getComponentStyles } from '../../ui-packs';
 
   export let configuration: IElementProps;
 
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = getComponentStyles($uiPack.errorText, $globalConfiguration.errorText, styleProps);
+  const style = getComponentStyles($globalConfiguration.components?.errorText || {}, styleProps);
 </script>
 
 <div {style}>

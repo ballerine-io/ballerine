@@ -22,7 +22,6 @@ const ballerineInitConfig: FlowsInitOptions = {
             documentOptions: [
               { type: EDocumentType.ID_CARD, kind: EDocumentKind.ID_CARD },
               { type: EDocumentType.DRIVERS_LICENSE, kind: EDocumentKind.DRIVERS_LICENSE },
-              { type: EDocumentType.PASSPORT, kind: EDocumentKind.PASSPORT },
               { type: EDocumentType.VOTER_ID, kind: EDocumentKind.VOTER_ID },
             ],
           },
@@ -52,6 +51,11 @@ const ballerineInitConfig: FlowsInitOptions = {
             type: EDocumentType.BUSINESS_REGISTRATION,
           },
           {
+            name: Steps.CheckDocument,
+            id: Steps.CheckDocument,
+            type: EDocumentType.BUSINESS_REGISTRATION,
+          },
+          {
             name: Steps.DocumentStart,
             id: Steps.DocumentStart,
             type: EDocumentType.PROOF_OF_BUSINESS_TAX_ID,
@@ -61,7 +65,11 @@ const ballerineInitConfig: FlowsInitOptions = {
             id: Steps.DocumentPhoto,
             type: EDocumentType.PROOF_OF_BUSINESS_TAX_ID,
           },
-
+          {
+            name: Steps.CheckDocument,
+            id: Steps.CheckDocument,
+            type: EDocumentType.PROOF_OF_BUSINESS_TAX_ID,
+          },
           {
             name: Steps.DocumentStart,
             id: Steps.DocumentStart,
@@ -70,6 +78,11 @@ const ballerineInitConfig: FlowsInitOptions = {
           {
             name: Steps.DocumentPhoto,
             id: Steps.DocumentPhoto,
+            type: EDocumentType.BANK_STATEMENT,
+          },
+          {
+            name: Steps.CheckDocument,
+            id: Steps.CheckDocument,
             type: EDocumentType.BANK_STATEMENT,
           },
           {

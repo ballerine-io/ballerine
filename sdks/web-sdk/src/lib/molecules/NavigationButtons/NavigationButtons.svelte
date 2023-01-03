@@ -8,11 +8,9 @@
   import merge from 'deepmerge';
   import { uiPack } from '../../ui-packs';
 
-  const { navigationButtons: userConfiguration } = $globalConfiguration;
+  const { navigationButtons: userConfiguration } = $globalConfiguration.components;
 
-  const configuration = userConfiguration
-    ? merge($uiPack.navigationButtons, userConfiguration)
-    : $uiPack.navigationButtons;
+  const configuration = userConfiguration;
 
   export let skipBackSide = false;
 

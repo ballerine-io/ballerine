@@ -10,7 +10,10 @@
 
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = makeStylesFromConfiguration($globalConfiguration.videoContainer, styleProps);
+  const style = makeStylesFromConfiguration(
+    $globalConfiguration.components?.videoContainer || {},
+    styleProps,
+  );
 </script>
 
 <div class="container" class:mirror={isSelfie} {style}>

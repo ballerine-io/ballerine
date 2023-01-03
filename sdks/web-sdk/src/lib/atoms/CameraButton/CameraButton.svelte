@@ -9,7 +9,10 @@
   export let isDisabled = false;
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = makeStylesFromConfiguration($globalConfiguration.cameraButton, styleProps);
+  const style = makeStylesFromConfiguration(
+    $globalConfiguration.components?.cameraButton || {},
+    styleProps,
+  );
 </script>
 
 <button {style} on:click aria-label="take picture" disabled={isDisabled}>

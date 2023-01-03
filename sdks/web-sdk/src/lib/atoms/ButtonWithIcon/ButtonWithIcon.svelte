@@ -4,7 +4,7 @@
     IAttributes,
     IElementProps,
   } from '../../contexts/configuration';
-  import { getComponentStyles, uiPack } from '../../ui-packs';
+  import { getComponentStyles } from '../../ui-packs';
   import { ICSSProperties } from '../../services/css-manager';
 
   export let configuration: IElementProps;
@@ -12,8 +12,7 @@
   const attributes = configuration.attributes as IAttributes;
 
   const style = getComponentStyles(
-    $uiPack.buttonWithIcon,
-    $globalConfiguration.buttonWithIcon,
+    $globalConfiguration.components?.buttonWithIcon || {},
     styleProps,
   );
 </script>
