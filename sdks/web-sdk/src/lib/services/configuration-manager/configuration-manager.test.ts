@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
-import mock from 'jest-mock';
+import { vi } from 'vitest';
 import { FlowsInitOptions } from '../../../types/BallerineSDK';
-import { configuration, Elements, IAppConfiguration, IAppConfigurationUI, IStepConfiguration, Steps } from '../../contexts/configuration';
+import { configuration, Elements, IAppConfiguration, IStepConfiguration, Steps } from '../../contexts/configuration';
 import { TranslationType } from '../../contexts/translation';
 import { mergeConfigOverrides, mergeTranslationsOverrides, populateConfigurationByUiPack, preloadFlowBasicSteps, setFlowCallbacks } from './configuration-manager';
 
@@ -50,9 +50,9 @@ describe('configuration-manager', () => {
   it('mergeConfigOverrides should be populated with future ui pack', async () => {
     configuration.set(mockConfig);
     const mockUiPack = { general: { colors: { primary: "#fff" } } };
-    global.fetch = mock.fn(() => Promise.resolve({
+    global.fetch = vi.fn(() => Promise.resolve({
       json: () => Promise.resolve(mockUiPack)
-    }) as Promise<Response>) as jest.Mock;
+    }) as Promise<Response>);
     const result = await populateConfigurationByUiPack({ ...mockConfig, uiPack: "https://test.com.link" });
     expect(result.general?.colors?.primary).toEqual("#fff");
   });
@@ -77,9 +77,9 @@ describe('configuration-manager', () => {
   // mergeTranslationsOverrides
   it('mergeTranslationsOverrides should change translations for a specific language and key', async () => {
     configuration.set(mockConfig);
-    global.fetch = mock.fn(() => Promise.resolve({
+    global.fetch = vi.fn(() => Promise.resolve({
       json: () => Promise.resolve({ en: { welcome: { title: "remote" } } })
-    })) as jest.Mock;
+    }) as Promise<Response>);
     const result = await mergeTranslationsOverrides({ remoteUrl: "https://test.com.link" });
     expect(result.en.welcome.title).toEqual("remote");
   });
@@ -87,9 +87,9 @@ describe('configuration-manager', () => {
   // preloadFlowBasicSteps
   it('preloadFlowBasicSteps should preload images', async () => {
     const configurationWithUiPack = await populateConfigurationByUiPack({ ...mockConfig, flows: { 'test-flow': { steps: [{ id: Steps.Welcome, name: Steps.Welcome }] } } });
-    global.fetch = mock.fn(() => Promise.resolve({
+    global.fetch = vi.fn(() => Promise.resolve({
       text: () => Promise.resolve("svg")
-    })) as jest.Mock;
+    }) as Promise<Response>);
     const result = await preloadFlowBasicSteps(configurationWithUiPack);
     const welcomeStep = result.flows['test-flow'].steps?.find(s => s.name === Steps.Welcome) as IStepConfiguration;
     const element = welcomeStep.elements.find(e => e.type === Elements.Image);

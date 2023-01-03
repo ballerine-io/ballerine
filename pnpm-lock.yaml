@@ -192,7 +192,6 @@ importers:
       eslint-config-prettier: ^8.5.0
       eslint-plugin-storybook: ^0.6.6
       eslint-plugin-svelte3: ^4.0.0
-      jest-mock: ^29.3.1
       jsdom: ^20.0.2
       jslib-html5-camera-photo: ^3.3.3
       postcss: ^8.4.18
@@ -230,7 +229,6 @@ importers:
       eslint-config-prettier: 8.5.0_eslint@8.22.0
       eslint-plugin-storybook: 0.6.8_sq327paf6wzcma7omk5wjhfcfa
       eslint-plugin-svelte3: 4.0.0_pcz6ec6o4gpzmmpoud3kkd3ihe
-      jest-mock: 29.3.1
       jsdom: 20.0.3
       postcss: 8.4.20
       prettier: 2.8.1
@@ -11086,15 +11084,6 @@ packages:
     dependencies:
       '@jest/types': 27.5.1
       '@types/node': 12.20.55
-
-  /jest-mock/29.3.1:
-    resolution: {integrity: sha512-H8/qFDtDVMFvFP4X8NuOT3XRDzOUTz+FeACjufHzsOIBAxivLqkB1PoLCaJx9iPPQ8dZThHPp/G3WRWyMgA3JA==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    dependencies:
-      '@jest/types': 29.3.1
-      '@types/node': 18.11.17
-      jest-util: 29.3.1
-    dev: true
 
   /jest-pnp-resolver/1.2.3_jest-resolve@27.5.1:
     resolution: {integrity: sha512-+3NpwQEnRoIBtx4fyhblQDPgJI0H1IEIkX7ShLUjPGA7TtUTvI1oiKi3SR4oBR0hQhQR80l4WAe5RrXBwWMA8w==}
