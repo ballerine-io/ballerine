@@ -19,7 +19,7 @@ export const appInit = async (overrides: FlowsInitOptions) => {
 }
 
 /**
- * @description Merges default configuration a  nd overrides provided by the user
+ * @description Merges default configuration and overrides provided by the user
  * Updates store with merged configuration
  * @param overrides configuration provided by the user
  */
@@ -144,7 +144,7 @@ export const setAuthorizationHeaderJwt = (jwt: string) => {
 
   if (method !== 'jwt') return;
 
-  return configuration.update(config => ({
+  return configurationStore.update(config => ({
     ...config,
     backendConfig: {
       ...config.backendConfig,
