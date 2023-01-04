@@ -22,6 +22,7 @@ const ballerineInitConfig: FlowsInitOptions = {
             documentOptions: [
               { type: EDocumentType.ID_CARD, kind: EDocumentKind.ID_CARD },
               { type: EDocumentType.DRIVERS_LICENSE, kind: EDocumentKind.DRIVERS_LICENSE },
+              { type: EDocumentType.PASSPORT, kind: EDocumentKind.PASSPORT },
               { type: EDocumentType.VOTER_ID, kind: EDocumentKind.VOTER_ID },
             ],
           },
