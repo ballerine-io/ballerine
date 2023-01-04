@@ -5,8 +5,6 @@
   import { T } from '../../contexts/translation';
   import { ICSSProperties, makesLocalStyles } from '../../services/css-manager';
   import { currentStepId } from '../../contexts/app-state';
-  import merge from 'deepmerge';
-  import { uiPack } from '../../ui-packs';
 
   const { navigationButtons: userConfiguration } = $globalConfiguration.components;
 
