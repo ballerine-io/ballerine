@@ -91,6 +91,10 @@
       }
     },
     "document-photo-back": {
+      "passport": {
+        "title": "Passport back side",
+        "description": "Place the back side of your Passport card inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
+      },
       "id_card": {
         "title": "ID Card back side",
         "description": "Place the back side of your ID Card inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
