@@ -1,10 +1,10 @@
 import { IAppConfiguration, IStepConfiguration } from '../contexts/configuration';
 import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
 import { ICSSProperties, makeStylesFromConfiguration } from '../services/css-manager';
-import { getContext } from 'svelte';
+import { getFlowName } from '../contexts/flows';
 
 export const getStepConfiguration = (configuration: IAppConfiguration, stepId: string) => {
-  const flowName: string = getContext('flowName');
+  const flowName: string = getFlowName();
   const steps = configuration.flows[flowName].steps as IStepConfiguration[];
   return steps.find(step => step.id === stepId) as IStepConfiguration;
 };

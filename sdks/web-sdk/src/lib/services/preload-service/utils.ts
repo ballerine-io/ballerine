@@ -1,6 +1,6 @@
-import { getContext } from 'svelte';
 import { Writable } from 'svelte/store';
 import { IAppConfiguration, IStepConfiguration } from '../../contexts/configuration';
+import { getFlowName } from '../../contexts/flows';
 import { getNextStepId } from '../../contexts/navigation';
 
 const preloadByExtension = async (src: string): Promise<string> => {
@@ -50,7 +50,9 @@ export const preloadStepImages = async (step: IStepConfiguration): Promise<IStep
 };
 
 // To prevent preload twice
-const preloadedSteps: Record<string, boolean> = {};
+const preloadedSteps: Record<string, Record<string, boolean>> = {};
+
+let isPreloadingInProgress = false;
 
 export const preloadNextStepByCurrent = async (
   globalConfiguration: IAppConfiguration,
@@ -58,9 +60,18 @@ export const preloadNextStepByCurrent = async (
   currentStepId: string,
   skipType?: string,
 ) => {
-  const flowName: string = getContext('flowName');
+  if (isPreloadingInProgress) {
+    return setTimeout(() => {
+      void preloadNextStepByCurrent(globalConfiguration, configuration, currentStepId, skipType);
+    }, 100);
+  }
+  isPreloadingInProgress = true;
+  const flowName: string = getFlowName();
   const nextStepId = getNextStepId(globalConfiguration, currentStepId, skipType);
-  if (!nextStepId || preloadedSteps[nextStepId]) return;
+  if (!nextStepId || (preloadedSteps[flowName] && preloadedSteps[flowName][nextStepId])) {
+    isPreloadingInProgress = false;
+    return;
+  }
   const steps = globalConfiguration.flows[flowName].steps as IStepConfiguration[];
   const step = steps.find(s => s.id === nextStepId) as IStepConfiguration;
   const updatedStep = await preloadStepImages(step);
@@ -76,7 +87,9 @@ export const preloadNextStepByCurrent = async (
     },
   };
   configuration.set(updatedConfiguration);
-  preloadedSteps[nextStepId] = true;
+  if (!preloadedSteps[flowName]) preloadedSteps[flowName] = {};
+  preloadedSteps[flowName][nextStepId] = true;
+  isPreloadingInProgress = false;
 };
 
 export const preloadStepById = async (
