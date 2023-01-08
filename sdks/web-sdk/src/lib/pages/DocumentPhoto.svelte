@@ -1,8 +1,8 @@
 <script lang="ts">
-  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
-  import { T } from '../contexts/translation';
-  import { configuration } from '../contexts/configuration';
-  import { onDestroy, onMount } from 'svelte';
+  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from "jslib-html5-camera-photo";
+  import { T } from "../contexts/translation";
+  import { configuration } from "../contexts/configuration";
+  import { onDestroy, onMount } from "svelte";
   import {
     CameraButton,
     IconButton,
@@ -10,23 +10,20 @@
     Loader,
     Overlay,
     Paragraph,
-    VideoContainer,
-  } from '../atoms';
-  import { Elements } from '../contexts/configuration/types';
-  import { EDocumentType, IDocument, appState } from '../contexts/app-state';
-  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import Title from '../atoms/Title/Title.svelte';
-  import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { preloadNextStepByCurrent } from '../services/preload-service';
-  import {
-    EActionNames,
-    EVerificationStatuses,
-    sendButtonClickEvent,
-  } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
-  import { createToggle } from '../hooks/createToggle/createToggle';
-  import { getDocumentType } from '../utils/documents-utils';
-  import { IDocumentOptions } from '../organisms/DocumentOptions';
+    VideoContainer
+  } from "../atoms";
+  import { Elements } from "../contexts/configuration/types";
+  import { appState, IDocument } from "../contexts/app-state";
+  import { goToNextStep, goToPrevStep } from "../contexts/navigation";
+  import Title from "../atoms/Title/Title.svelte";
+  import { currentStepId, documents, selectedDocumentInfo } from "../contexts/app-state/stores";
+  import { preloadNextStepByCurrent } from "../services/preload-service";
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from "../utils/event-service";
+  import { getLayoutStyles, getStepConfiguration } from "../ui-packs";
+  import { createToggle } from "../hooks/createToggle/createToggle";
+  import { getDocumentType } from "../utils/documents-utils";
+  import { IDocumentOptions } from "../organisms/DocumentOptions";
+  import { TDocumentType } from "../contexts/app-state/types";
 
   export let stepId;
 
@@ -75,7 +72,7 @@
     cameraPhoto?.stopCamera();
   });
 
-  const clearDocs = (type: EDocumentType): IDocument[] => {
+  const clearDocs = (type: TDocumentType): IDocument[] => {
     const { options } = documentOptionsConfiguration;
     const isFromOptions = Object.keys(options).find(key => key === type);
     if (isFromOptions) {
@@ -84,7 +81,7 @@
     return $documents.filter(d => type !== d.type);
   };
 
-  const addDocument = (type: EDocumentType, base64: string, document: IDocument): IDocument[] => {
+  const addDocument = (type: TDocumentType, base64: string, document: IDocument): IDocument[] => {
     const clearedDocuments = clearDocs(type);
     return [
       ...clearedDocuments,
@@ -131,8 +128,8 @@
         configuration={element.props}
         on:click={() => {
           sendButtonClickEvent(
-            EActionNames.CLOSE,
-            { status: EVerificationStatuses.DATA_COLLECTION },
+            ActionNames.CLOSE,
+            { status: VerificationStatuses.DATA_COLLECTION },
             $appState,
             true,
           );

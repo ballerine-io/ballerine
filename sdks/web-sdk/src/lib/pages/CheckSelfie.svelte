@@ -1,20 +1,16 @@
 <script lang="ts">
-  import { T } from '../contexts/translation';
-  import { Title, IconButton, IconCloseButton, Image } from '../atoms';
-  import { configuration } from '../contexts/configuration';
-  import { Elements } from '../contexts/configuration/types';
-  import { goToPrevStep } from '../contexts/navigation';
-  import Paragraph from '../atoms/Paragraph/Paragraph.svelte';
-  import NavigationButtons from '../molecules/NavigationButtons/NavigationButtons.svelte';
-  import Photo from '../atoms/Photo/Photo.svelte';
-  import { selfieUri, currentStepId, appState } from '../contexts/app-state';
-  import {
-    EActionNames,
-    sendButtonClickEvent,
-    EVerificationStatuses,
-  } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
-  import { getFlowConfig } from '../contexts/flows/hooks';
+  import { T } from "../contexts/translation";
+  import { IconButton, IconCloseButton, Image, Title } from "../atoms";
+  import { configuration } from "../contexts/configuration";
+  import { Elements } from "../contexts/configuration/types";
+  import { goToPrevStep } from "../contexts/navigation";
+  import Paragraph from "../atoms/Paragraph/Paragraph.svelte";
+  import NavigationButtons from "../molecules/NavigationButtons/NavigationButtons.svelte";
+  import Photo from "../atoms/Photo/Photo.svelte";
+  import { appState, currentStepId, selfieUri } from "../contexts/app-state";
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from "../utils/event-service";
+  import { getLayoutStyles, getStepConfiguration } from "../ui-packs";
+  import { getFlowConfig } from "../contexts/flows/hooks";
 
   export let stepId;
 
@@ -41,8 +37,8 @@
         configuration={element.props}
         on:click={() => {
           sendButtonClickEvent(
-            EActionNames.CLOSE,
-            { status: EVerificationStatuses.DATA_COLLECTION },
+            ActionNames.CLOSE,
+            { status: VerificationStatuses.DATA_COLLECTION },
             $appState,
             true,
           );

@@ -1,9 +1,9 @@
 import { appState, IAppState } from '../../contexts/app-state';
 import { currentLanguage, Languages } from '../../contexts/translation';
-import { EActionNames, EEventTypes, IDocumentVerificationResponse, IOuterEvent } from './types';
+import { EventTypes, IDocumentVerificationResponse, IOuterEvent, TActionNames } from './types';
 import { get } from 'svelte/store';
 import { flowEventBus } from '../../services/flow-event-bus/flow-event-bus';
-import { EFlowEvent } from '../../services/flow-event-bus/enums';
+import { FlowEvent } from '../../services/flow-event-bus/enums';
 import { BALLERINE_EVENT } from './constants';
 import { IEventOptions } from '../../services/flow-event-bus/interfaces';
 import { configuration } from '../../contexts/configuration';
@@ -43,7 +43,7 @@ export const sendFlowCompleteEvent = (verificationResponse?: IDocumentVerificati
   const { status, idvResult } = verificationResponse ?? {};
   const eventOptions = {
     eventName: BALLERINE_EVENT,
-    eventType: syncFlow ? EEventTypes.SYNC_FLOW_COMPLETE : EEventTypes.ASYNC_FLOW_COMPLETE,
+    eventType: syncFlow ? EventTypes.SYNC_FLOW_COMPLETE : EventTypes.ASYNC_FLOW_COMPLETE,
     shouldExit: true,
     payload: syncFlow
       ? {
@@ -56,7 +56,7 @@ export const sendFlowCompleteEvent = (verificationResponse?: IDocumentVerificati
   sendIframeEvent(eventOptions);
   // Should finalize the signature on the callbacks interface
   flowEventBus({
-    type: EFlowEvent.FLOW_COMPLETE,
+    type: FlowEvent.FLOW_COMPLETE,
     payload: eventOptions,
   });
 };
@@ -67,7 +67,7 @@ export const sendVerificationUpdateEvent = (
 ) => {
   const eventOptions = {
     eventName: BALLERINE_EVENT,
-    eventType: EEventTypes.VERIFICATION_UPDATE,
+    eventType: EventTypes.VERIFICATION_UPDATE,
     shouldExit,
     details,
   };
@@ -79,7 +79,7 @@ export const sendNavigationUpdateEvent = () => {
 
   const eventOptions = {
     eventName: BALLERINE_EVENT,
-    eventType: EEventTypes.NAVIGATION_UPDATE,
+    eventType: EventTypes.NAVIGATION_UPDATE,
     details: {
       currentIdx: as.currentStepIdx,
       // FIXME: currentPage and previousPage typed as a string by IAppState.
@@ -89,20 +89,20 @@ export const sendNavigationUpdateEvent = () => {
   };
   window.parent.postMessage(eventOptions, '*');
   flowEventBus({
-    type: EFlowEvent.FLOW_NAVIGATION_UPDATE,
+    type: FlowEvent.FLOW_NAVIGATION_UPDATE,
     payload: eventOptions,
   });
 };
 
 export const sendButtonClickEvent = (
-  actionName: EActionNames,
+  actionName: TActionNames,
   status: IDocumentVerificationResponse,
   as: IAppState,
   shouldExit = false,
 ) => {
   const eventOptions = {
     eventName: BALLERINE_EVENT,
-    eventType: EEventTypes.BUTTON_CLICK,
+    eventType: EventTypes.BUTTON_CLICK,
     shouldExit,
     details: {
       actionName,
@@ -119,7 +119,7 @@ export const sendFlowErrorEvent = (error: Error, shouldExit = false) => {
   const as = get(appState);
   const eventOptions = {
     eventName: BALLERINE_EVENT,
-    eventType: EEventTypes.FLOW_ERROR,
+    eventType: EventTypes.FLOW_ERROR,
     shouldExit,
     details: {
       currentIdx: as.currentStepIdx,
@@ -128,7 +128,7 @@ export const sendFlowErrorEvent = (error: Error, shouldExit = false) => {
   };
   window.parent.postMessage(eventOptions, '*');
   flowEventBus({
-    type: EFlowEvent.FLOW_ERROR,
+    type: FlowEvent.FLOW_ERROR,
     payload: eventOptions,
   });
 };

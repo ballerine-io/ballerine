@@ -1,6 +1,6 @@
 import { Steps } from './lib/contexts/configuration';
 import { flows } from './main';
-import { EDocumentKind, EDocumentType } from './lib/contexts/app-state';
+import { DocumentKind, DocumentType } from './lib/contexts/app-state';
 import { FlowsInitOptions } from './types/BallerineSDK';
 
 const ballerineInitConfig: FlowsInitOptions = {
@@ -20,10 +20,10 @@ const ballerineInitConfig: FlowsInitOptions = {
             name: Steps.DocumentSelection,
             id: Steps.DocumentSelection,
             documentOptions: [
-              { type: EDocumentType.ID_CARD, kind: EDocumentKind.ID_CARD },
-              { type: EDocumentType.DRIVERS_LICENSE, kind: EDocumentKind.DRIVERS_LICENSE },
-              { type: EDocumentType.PASSPORT, kind: EDocumentKind.PASSPORT },
-              { type: EDocumentType.VOTER_ID, kind: EDocumentKind.VOTER_ID },
+              { type: DocumentType.ID_CARD, kind: DocumentKind.ID_CARD },
+              { type: DocumentType.DRIVERS_LICENSE, kind: DocumentKind.DRIVERS_LICENSE },
+              { type: DocumentType.PASSPORT, kind: DocumentKind.PASSPORT },
+              { type: DocumentType.VOTER_ID, kind: DocumentKind.VOTER_ID },
             ],
           },
           { name: Steps.DocumentPhoto, id: Steps.DocumentPhoto },
@@ -44,56 +44,56 @@ const ballerineInitConfig: FlowsInitOptions = {
           {
             name: Steps.DocumentStart,
             id: Steps.DocumentStart,
-            type: EDocumentType.BUSINESS_REGISTRATION,
+            type: DocumentType.BUSINESS_REGISTRATION,
           },
           {
             name: Steps.DocumentPhoto,
             id: Steps.DocumentPhoto,
-            type: EDocumentType.BUSINESS_REGISTRATION,
+            type: DocumentType.BUSINESS_REGISTRATION,
           },
           {
             name: Steps.CheckDocument,
             id: Steps.CheckDocument,
-            type: EDocumentType.BUSINESS_REGISTRATION,
+            type: DocumentType.BUSINESS_REGISTRATION,
           },
           {
             name: Steps.DocumentStart,
             id: Steps.DocumentStart,
-            type: EDocumentType.PROOF_OF_BUSINESS_TAX_ID,
+            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
           },
           {
             name: Steps.DocumentPhoto,
             id: Steps.DocumentPhoto,
-            type: EDocumentType.PROOF_OF_BUSINESS_TAX_ID,
+            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
           },
           {
             name: Steps.CheckDocument,
             id: Steps.CheckDocument,
-            type: EDocumentType.PROOF_OF_BUSINESS_TAX_ID,
+            type: DocumentType.PROOF_OF_BUSINESS_TAX_ID,
           },
           {
             name: Steps.DocumentStart,
             id: Steps.DocumentStart,
-            type: EDocumentType.BANK_STATEMENT,
+            type: DocumentType.BANK_STATEMENT,
           },
           {
             name: Steps.DocumentPhoto,
             id: Steps.DocumentPhoto,
-            type: EDocumentType.BANK_STATEMENT,
+            type: DocumentType.BANK_STATEMENT,
           },
           {
             name: Steps.CheckDocument,
             id: Steps.CheckDocument,
-            type: EDocumentType.BANK_STATEMENT,
+            type: DocumentType.BANK_STATEMENT,
           },
           {
             name: Steps.DocumentSelection,
             id: Steps.DocumentSelection,
             documentOptions: [
-              { type: EDocumentType.ID_CARD, kind: EDocumentKind.ID_CARD },
-              { type: EDocumentType.DRIVERS_LICENSE, kind: EDocumentKind.DRIVERS_LICENSE },
-              { type: EDocumentType.PASSPORT, kind: EDocumentKind.PASSPORT },
-              { type: EDocumentType.VOTER_ID, kind: EDocumentKind.VOTER_ID },
+              { type: DocumentType.ID_CARD, kind: DocumentKind.ID_CARD },
+              { type: DocumentType.DRIVERS_LICENSE, kind: DocumentKind.DRIVERS_LICENSE },
+              { type: DocumentType.PASSPORT, kind: DocumentKind.PASSPORT },
+              { type: DocumentType.VOTER_ID, kind: DocumentKind.VOTER_ID },
             ],
           },
           { name: Steps.DocumentPhoto, id: Steps.DocumentPhoto },

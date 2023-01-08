@@ -1,19 +1,14 @@
 <script lang="ts">
-  import { T } from '../contexts/translation';
-  import { Image, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
-  import { configuration } from '../contexts/configuration';
-  import { Elements } from '../contexts/configuration';
-  import { DocumentOptions } from '../organisms';
-  import { goToPrevStep } from '../contexts/navigation';
-  import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { currentStepId, appState } from '../contexts/app-state';
-  import {
-    EActionNames,
-    sendButtonClickEvent,
-    EVerificationStatuses,
-  } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
-  import { getFlowConfig } from '../contexts/flows/hooks';
+  import { T } from "../contexts/translation";
+  import { IconButton, IconCloseButton, Image, Paragraph, Title } from "../atoms";
+  import { configuration, Elements } from "../contexts/configuration";
+  import { DocumentOptions } from "../organisms";
+  import { goToPrevStep } from "../contexts/navigation";
+  import { preloadNextStepByCurrent } from "../services/preload-service";
+  import { appState, currentStepId } from "../contexts/app-state";
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from "../utils/event-service";
+  import { getLayoutStyles, getStepConfiguration } from "../ui-packs";
+  import { getFlowConfig } from "../contexts/flows/hooks";
 
   export let stepId;
 
@@ -39,8 +34,8 @@
         configuration={element.props}
         on:click={() => {
           sendButtonClickEvent(
-            EActionNames.CLOSE,
-            { status: EVerificationStatuses.DATA_COLLECTION },
+            ActionNames.CLOSE,
+            { status: VerificationStatuses.DATA_COLLECTION },
             $appState,
             true,
           );
