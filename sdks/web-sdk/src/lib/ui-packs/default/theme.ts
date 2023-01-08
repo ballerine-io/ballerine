@@ -1,11 +1,11 @@
 import { IMAGE_TYPES } from 'jslib-html5-camera-photo';
-import { EDocumentType } from '../../contexts/app-state';
-import { DocumentVariant, EDocumentKind } from '../../contexts/app-state/types';
-import { Elements, IElement, Steps, IAppConfigurationUI, TSteps } from '../../contexts/configuration';
+import { DocumentType } from '../../contexts/app-state';
+import { DocumentKind, DocumentVariant } from '../../contexts/app-state/types';
+import { Elements, IElement, Steps, TStepsConfigurations } from '../../contexts/configuration';
 import { IUIPackTheme } from '../types';
 
 const backIconButton: IElement = {
-  id: "back-icon-button",
+  id: 'back-icon-button',
   orderIndex: 10,
   type: Elements.IconButton,
   props: {
@@ -23,7 +23,7 @@ const backIconButton: IElement = {
 };
 
 const closeIconButton: IElement = {
-  id: "close-icon-button",
+  id: 'close-icon-button',
   orderIndex: 20,
   type: Elements.IconCloseButton,
   props: {
@@ -41,7 +41,7 @@ const closeIconButton: IElement = {
 };
 
 const backWhiteIconButton: IElement = {
-  id: "back-white-icon-button",
+  id: 'back-white-icon-button',
   orderIndex: 10,
   type: Elements.IconButton,
   props: {
@@ -53,7 +53,7 @@ const backWhiteIconButton: IElement = {
   },
 };
 
-const stepsTheme: TSteps = [
+const stepsTheme: TStepsConfigurations = [
   {
     name: Steps.Welcome,
     id: Steps.Welcome,
@@ -64,19 +64,19 @@ const stepsTheme: TSteps = [
       {
         type: Elements.Title,
         orderIndex: 30,
-        id: "title",
+        id: 'title',
         props: {},
       },
       {
         type: Elements.Paragraph,
         orderIndex: 40,
-        id: "description",
+        id: 'description',
         props: {},
       },
       {
         type: Elements.Image,
         orderIndex: 50,
-        id: "image",
+        id: 'image',
         props: {
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/welcome.svg',
@@ -89,13 +89,13 @@ const stepsTheme: TSteps = [
       {
         type: Elements.Button,
         orderIndex: 60,
-        id: "button",
+        id: 'button',
         props: {},
       },
       {
         type: Elements.Paragraph,
         orderIndex: 70,
-        id: "tip",
+        id: 'tip',
         props: {
           style: {
             margin: '32px 0px 0px',
@@ -113,19 +113,19 @@ const stepsTheme: TSteps = [
       backIconButton,
       closeIconButton,
       {
-        id: "title",
+        id: 'title',
         orderIndex: 40,
         type: Elements.Title,
         props: {},
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 50,
         type: Elements.Paragraph,
         props: {},
       },
       {
-        id: "image",
+        id: 'image',
         orderIndex: 60,
         type: Elements.Image,
         props: {
@@ -138,7 +138,7 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "button",
+        id: 'button',
         orderIndex: 80,
         type: Elements.Button,
         props: {},
@@ -152,13 +152,13 @@ const stepsTheme: TSteps = [
       backIconButton,
       closeIconButton,
       {
-        id: "title",
+        id: 'title',
         orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
@@ -171,7 +171,7 @@ const stepsTheme: TSteps = [
     elements: [
       backWhiteIconButton,
       {
-        id: "title",
+        id: 'title',
         orderIndex: 20,
         type: Elements.Title,
         props: {
@@ -181,7 +181,7 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 30,
         type: Elements.Paragraph,
         props: {
@@ -191,19 +191,19 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "video",
+        id: 'video',
         orderIndex: 40,
         type: Elements.VideoContainer,
         props: {},
       },
       {
-        id: "loader",
+        id: 'loader',
         orderIndex: 50,
         type: Elements.Loader,
         props: {},
       },
       {
-        id: "button",
+        id: 'button',
         orderIndex: 60,
         type: Elements.CameraButton,
         props: {},
@@ -216,7 +216,7 @@ const stepsTheme: TSteps = [
     elements: [
       backWhiteIconButton,
       {
-        id: "title",
+        id: 'title',
         orderIndex: 20,
         type: Elements.Title,
         props: {
@@ -226,7 +226,7 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 30,
         type: Elements.Paragraph,
         props: {
@@ -236,19 +236,19 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "video",
+        id: 'video',
         orderIndex: 40,
         type: Elements.VideoContainer,
         props: {},
       },
       {
-        id: "loader",
+        id: 'loader',
         orderIndex: 50,
         type: Elements.Loader,
         props: {},
       },
       {
-        id: "button",
+        id: 'button',
         orderIndex: 60,
         type: Elements.CameraButton,
         props: {},
@@ -262,19 +262,19 @@ const stepsTheme: TSteps = [
       backIconButton,
       closeIconButton,
       {
-        id: "title",
+        id: 'title',
         orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
-        id: "photo",
+        id: 'photo',
         orderIndex: 50,
         type: Elements.Photo,
         props: {},
@@ -295,13 +295,13 @@ const stepsTheme: TSteps = [
         props: {},
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
-        id: "image",
+        id: 'image',
         orderIndex: 50,
         type: Elements.Image,
         props: {
@@ -314,7 +314,7 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "button",
+        id: 'button',
         orderIndex: 60,
         type: Elements.Button,
         props: {},
@@ -327,7 +327,7 @@ const stepsTheme: TSteps = [
     elements: [
       backWhiteIconButton,
       {
-        id: "title",
+        id: 'title',
         orderIndex: 20,
         type: Elements.Title,
         props: {
@@ -337,7 +337,7 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 30,
         type: Elements.Paragraph,
         props: {
@@ -347,19 +347,19 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "loader",
+        id: 'loader',
         orderIndex: 40,
         type: Elements.Loader,
         props: {},
       },
       {
-        id: "video",
+        id: 'video',
         orderIndex: 50,
         type: Elements.VideoContainer,
         props: {},
       },
       {
-        id: "button",
+        id: 'button',
         orderIndex: 60,
         type: Elements.CameraButton,
         props: {},
@@ -373,19 +373,19 @@ const stepsTheme: TSteps = [
       backIconButton,
       closeIconButton,
       {
-        id: "title",
+        id: 'title',
         orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
-        id: "photo",
+        id: 'photo',
         orderIndex: 50,
         type: Elements.Photo,
         props: {},
@@ -400,19 +400,19 @@ const stepsTheme: TSteps = [
       backIconButton,
       closeIconButton,
       {
-        id: "title",
+        id: 'title',
         orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
-        id: "image",
+        id: 'image',
         orderIndex: 50,
         type: Elements.Image,
         props: {
@@ -425,7 +425,7 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "button",
+        id: 'button',
         orderIndex: 60,
         type: Elements.Button,
         props: {},
@@ -438,7 +438,7 @@ const stepsTheme: TSteps = [
     elements: [
       backWhiteIconButton,
       {
-        id: "title",
+        id: 'title',
         orderIndex: 20,
         type: Elements.Title,
         props: {
@@ -448,7 +448,7 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 30,
         type: Elements.Paragraph,
         props: {
@@ -458,19 +458,19 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "loader",
+        id: 'loader',
         orderIndex: 40,
         type: Elements.Loader,
         props: {},
       },
       {
-        id: "video",
+        id: 'video',
         orderIndex: 50,
         type: Elements.VideoContainer,
         props: {},
       },
       {
-        id: "button",
+        id: 'button',
         orderIndex: 60,
         type: Elements.CameraButton,
         props: {},
@@ -484,19 +484,19 @@ const stepsTheme: TSteps = [
       backIconButton,
       closeIconButton,
       {
-        id: "title",
+        id: 'title',
         orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
-        id: "photo",
+        id: 'photo',
         orderIndex: 50,
         type: Elements.Photo,
         props: {},
@@ -514,13 +514,13 @@ const stepsTheme: TSteps = [
     elements: [
       closeIconButton,
       {
-        id: "image",
+        id: 'image',
         orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
-            "flex-grow": "0",
-            margin: "40% 0 0 0"
+            'flex-grow': '0',
+            margin: '40% 0 0 0',
           },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/resubmit.svg',
@@ -531,31 +531,31 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "title",
+        id: 'title',
         orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
-        id: "error-text",
+        id: 'error-text',
         orderIndex: 50,
         type: Elements.ErrorText,
         props: {},
       },
       {
-        id: "button",
+        id: 'button',
         orderIndex: 60,
         type: Elements.Button,
         props: {
           style: {
-            margin: "auto 0 0 0"
-          }
+            margin: 'auto 0 0 0',
+          },
         },
       },
     ],
@@ -566,13 +566,13 @@ const stepsTheme: TSteps = [
     elements: [
       closeIconButton,
       {
-        id: "image",
+        id: 'image',
         orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
-            "flex-grow": "0",
-            margin: "40% 0 0 0"
+            'flex-grow': '0',
+            margin: '40% 0 0 0',
           },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/decline.svg',
@@ -583,31 +583,31 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "title",
+        id: 'title',
         orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
-        id: "error-text",
+        id: 'error-text',
         orderIndex: 50,
         type: Elements.ErrorText,
         props: {},
       },
       {
-        id: "button",
+        id: 'button',
         orderIndex: 60,
         type: Elements.Button,
         props: {
           style: {
-            margin: "auto 0 0 0"
-          }
+            margin: 'auto 0 0 0',
+          },
         },
       },
     ],
@@ -618,13 +618,13 @@ const stepsTheme: TSteps = [
     elements: [
       closeIconButton,
       {
-        id: "image",
+        id: 'image',
         orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
-            "flex-grow": "0",
-            margin: "40% 0 0 0"
+            'flex-grow': '0',
+            margin: '40% 0 0 0',
           },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/decline.svg',
@@ -635,31 +635,31 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "title",
+        id: 'title',
         orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
-        id: "error-text",
+        id: 'error-text',
         orderIndex: 50,
         type: Elements.ErrorText,
         props: {},
       },
       {
-        id: "button",
+        id: 'button',
         orderIndex: 60,
         type: Elements.Button,
         props: {
           style: {
-            margin: "auto 0 0 0"
-          }
+            margin: 'auto 0 0 0',
+          },
         },
       },
     ],
@@ -671,13 +671,13 @@ const stepsTheme: TSteps = [
     elements: [
       closeIconButton,
       {
-        id: "image",
+        id: 'image',
         orderIndex: 20,
         type: Elements.Image,
         props: {
           style: {
-            "flex-grow": "0",
-            margin: "40% 0 0 0"
+            'flex-grow': '0',
+            margin: '40% 0 0 0',
           },
           attributes: {
             src: 'https://cdn.ballerine.io/ui-packs/default/images/final.svg',
@@ -688,30 +688,30 @@ const stepsTheme: TSteps = [
         },
       },
       {
-        id: "title",
+        id: 'title',
         orderIndex: 30,
         type: Elements.Title,
         props: {},
       },
       {
-        id: "description",
+        id: 'description',
         orderIndex: 40,
         type: Elements.Paragraph,
         props: {},
       },
       {
-        id: "button",
+        id: 'button',
         orderIndex: 50,
         type: Elements.Button,
         props: {
           style: {
-            margin: "auto 0 0 0"
-          }
+            margin: 'auto 0 0 0',
+          },
         },
       },
     ],
-  }
-]
+  },
+];
 
 export const uiTheme: IUIPackTheme = {
   general: {
@@ -727,15 +727,15 @@ export const uiTheme: IUIPackTheme = {
     fonts: {
       name: 'Inter',
       weight: [400, 500, 600, 700],
-      link: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700"
+      link: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700',
     },
   },
   components: {
     photo: {},
     paragraph: {
-      "font-size": "14px",
+      'font-size': '14px',
       'text-align': 'center',
-      color: "#788597"
+      color: '#788597',
     },
     cameraButton: {
       margin: '24px 0px 30px',
@@ -825,10 +825,10 @@ export const uiTheme: IUIPackTheme = {
     },
     documentOptions: {
       options: {
-        [EDocumentType.ID_CARD]: {
+        [DocumentType.ID_CARD]: {
           document: {
-            type: EDocumentType.ID_CARD,
-            kind: EDocumentKind.ID_CARD,
+            type: DocumentType.ID_CARD,
+            kind: DocumentKind.ID_CARD,
             backSide: true,
             variant: DocumentVariant.REGULAR,
             orderIndex: 10,
@@ -839,10 +839,10 @@ export const uiTheme: IUIPackTheme = {
             height: 40,
           },
         },
-        [EDocumentType.DRIVERS_LICENSE]: {
+        [DocumentType.DRIVERS_LICENSE]: {
           document: {
-            type: EDocumentType.DRIVERS_LICENSE,
-            kind: EDocumentKind.DRIVERS_LICENSE,
+            type: DocumentType.DRIVERS_LICENSE,
+            kind: DocumentKind.DRIVERS_LICENSE,
             backSide: true,
             variant: DocumentVariant.REGULAR,
             orderIndex: 20,
@@ -853,10 +853,10 @@ export const uiTheme: IUIPackTheme = {
             height: 40,
           },
         },
-        [EDocumentType.PASSPORT]: {
+        [DocumentType.PASSPORT]: {
           document: {
-            type: EDocumentType.PASSPORT,
-            kind: EDocumentKind.PASSPORT,
+            type: DocumentType.PASSPORT,
+            kind: DocumentKind.PASSPORT,
             backSide: false,
             variant: DocumentVariant.REGULAR,
             orderIndex: 30,
@@ -867,10 +867,10 @@ export const uiTheme: IUIPackTheme = {
             height: 40,
           },
         },
-        [EDocumentType.VOTER_ID]: {
+        [DocumentType.VOTER_ID]: {
           document: {
-            type: EDocumentType.VOTER_ID,
-            kind: EDocumentKind.VOTER_ID,
+            type: DocumentType.VOTER_ID,
+            kind: DocumentKind.VOTER_ID,
             backSide: true,
             variant: DocumentVariant.REGULAR,
             orderIndex: 40,
@@ -951,8 +951,8 @@ export const uiTheme: IUIPackTheme = {
     },
     overlay: {
       selfie: {
-        'background-position-y': '30%'
-      }
+        'background-position-y': '30%',
+      },
     },
     list: {
       titleProps: {},
@@ -967,10 +967,10 @@ export const uiTheme: IUIPackTheme = {
     },
     image: {
       margin: '0px',
-      "flex-grow": 1,
-      display: "flex",
-      "align-items": "center",
-      "justify-content": "center"
+      'flex-grow': 1,
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
     },
     title: {
       'font-weight': 700,
@@ -995,4 +995,4 @@ export const uiTheme: IUIPackTheme = {
     },
   },
   steps: stepsTheme,
-}
+};

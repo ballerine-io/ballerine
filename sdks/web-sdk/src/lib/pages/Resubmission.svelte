@@ -1,20 +1,16 @@
 <script lang="ts">
-  import { T } from '../contexts/translation';
-  import { Image, Button, Title, IconCloseButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
-  import { currentStepId, currentParams, appState } from '../contexts/app-state';
-  import { Elements } from '../contexts/configuration/types';
-  import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
-  import { flowResubmission } from '../services/analytics';
-  import { onDestroy } from 'svelte';
-  import {
-    EActionNames,
-    sendButtonClickEvent,
-    EVerificationStatuses,
-  } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
-  import { getFlowConfig } from '../contexts/flows/hooks';
-  import { isDocumentSelectionStepExists } from '../utils/documents-utils';
+  import { T } from "../contexts/translation";
+  import { Button, IconCloseButton, Image, Title } from "../atoms";
+  import { configuration } from "../contexts/configuration";
+  import { appState, currentParams, currentStepId } from "../contexts/app-state";
+  import { Elements } from "../contexts/configuration/types";
+  import ErrorText from "../atoms/ErrorText/ErrorText.svelte";
+  import { flowResubmission } from "../services/analytics";
+  import { onDestroy } from "svelte";
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from "../utils/event-service";
+  import { getLayoutStyles, getStepConfiguration } from "../ui-packs";
+  import { getFlowConfig } from "../contexts/flows/hooks";
+  import { isDocumentSelectionStepExists } from "../utils/documents-utils";
 
   export let stepId;
 
@@ -52,8 +48,8 @@
         configuration={element.props}
         on:click={() => {
           sendButtonClickEvent(
-            EActionNames.CLOSE,
-            { status: EVerificationStatuses.DATA_COLLECTION },
+            ActionNames.CLOSE,
+            { status: VerificationStatuses.DATA_COLLECTION },
             $appState,
             true,
           );

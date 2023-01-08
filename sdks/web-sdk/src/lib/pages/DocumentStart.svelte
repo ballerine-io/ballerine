@@ -1,22 +1,18 @@
 <script lang="ts">
-  import { T } from '../contexts/translation';
-  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
-  import { configuration } from '../contexts/configuration';
-  import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
-  import { Elements } from '../contexts/configuration/types';
-  import { IDocument, currentStepId } from '../contexts/app-state';
-  import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
-  import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
-  import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import {
-    EActionNames,
-    sendButtonClickEvent,
-    EVerificationStatuses,
-  } from '../utils/event-service';
-  import { checkIsCameraAvailable } from '../services/camera-manager';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
-  import { getDocumentType } from '../utils/documents-utils';
-  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { T } from "../contexts/translation";
+  import { Button, IconButton, IconCloseButton, Image, Paragraph, Title } from "../atoms";
+  import { configuration } from "../contexts/configuration";
+  import { goToNextStep, goToPrevStep } from "../contexts/navigation/hooks";
+  import { Elements } from "../contexts/configuration/types";
+  import { currentStepId, IDocument } from "../contexts/app-state";
+  import { getFlowConfig, isNativeCamera } from "../contexts/flows/hooks";
+  import { addDocument, ICameraEvent, nativeCameraHandler } from "../utils/photo-utils";
+  import { appState, documents, selectedDocumentInfo } from "../contexts/app-state/stores";
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from "../utils/event-service";
+  import { checkIsCameraAvailable } from "../services/camera-manager";
+  import { getLayoutStyles, getStepConfiguration, uiPack } from "../ui-packs";
+  import { getDocumentType } from "../utils/documents-utils";
+  import { preloadNextStepByCurrent } from "../services/preload-service";
 
   export let stepId;
 
@@ -73,8 +69,8 @@
         configuration={element.props}
         on:click={() => {
           sendButtonClickEvent(
-            EActionNames.CLOSE,
-            { status: EVerificationStatuses.DATA_COLLECTION },
+            ActionNames.CLOSE,
+            { status: VerificationStatuses.DATA_COLLECTION },
             $appState,
             true,
           );

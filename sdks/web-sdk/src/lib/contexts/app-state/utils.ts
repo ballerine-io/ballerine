@@ -1,4 +1,4 @@
-import { EDocumentType, IDocument, IPageSide } from './types';
+import { IDocument, IPageSide, TDocumentType } from './types';
 import {
   currentParams,
   currentRoute,
@@ -11,7 +11,7 @@ import {
 import { Steps } from '../configuration';
 
 export const getDocImage = (
-  type: EDocumentType,
+  type: TDocumentType,
   docs: IDocument[],
   pageSide?: IPageSide,
 ): string => {

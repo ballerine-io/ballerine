@@ -8,4 +8,4 @@ export {
 
 export { BALLERINE_EVENT } from './constants';
 export type { IDocumentVerificationResponse } from './types';
-export { EEventTypes, EActionNames, EVerificationStatuses } from './types';
+export { EventTypes, ActionNames, VerificationStatuses } from './types';

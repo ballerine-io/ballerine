@@ -1,24 +1,25 @@
-import { EDocumentType } from '../../contexts/app-state';
+import { DocumentType } from '../../contexts/app-state';
+import { TDocumentType } from '../../contexts/app-state/types';
 
 export const getOverlayDocumentType = (
-  documentType: EDocumentType,
+  documentType: TDocumentType,
 ): 'card' | 'passport' | 'a4' | 'selfie' => {
   const cardOverlayDocumentTypes = [
-    EDocumentType.DRIVERS_LICENSE,
-    EDocumentType.RESIDENCE_PERMIT,
-    EDocumentType.ID_CARD,
-    EDocumentType.VOTER_ID,
-    EDocumentType.WORK_PERMIT,
-    EDocumentType.VISA,
+    DocumentType.DRIVERS_LICENSE,
+    DocumentType.RESIDENCE_PERMIT,
+    DocumentType.ID_CARD,
+    DocumentType.VOTER_ID,
+    DocumentType.WORK_PERMIT,
+    DocumentType.VISA,
   ];
 
   if (cardOverlayDocumentTypes.includes(documentType)) {
     return 'card';
   }
-  if (documentType === EDocumentType.PASSPORT) {
+  if (documentType === DocumentType.PASSPORT) {
     return 'passport';
   }
-  if (documentType === EDocumentType.SELFIE) {
+  if (documentType === DocumentType.SELFIE) {
     return 'selfie';
   }
   return 'a4';

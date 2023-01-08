@@ -1,10 +1,10 @@
 import { IStepConfiguration } from '../../contexts/configuration';
-import { EDocumentType } from '../../contexts/app-state';
+import { TDocumentType } from '../../contexts/app-state/types';
 
 // Document types that only can be one chosen
-export const getElementsTypes = (configuration: IStepConfiguration): EDocumentType[] => {
+export const getElementsTypes = (configuration: IStepConfiguration): TDocumentType[] => {
   return configuration.elements.map(option => {
     const type = option.props.attributes?.value as unknown;
-    return type as EDocumentType;
+    return type as TDocumentType;
   });
 };

@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { toast } from '@zerodevx/svelte-toast';
-  import { Elements } from '../contexts/configuration/types';
-  import { FlyingText, Image, Loader } from '../atoms';
-  import { configuration } from '../contexts/configuration';
+  import { toast } from "@zerodevx/svelte-toast";
+  import { Elements } from "../contexts/configuration/types";
+  import { FlyingText, Image, Loader } from "../atoms";
+  import { configuration } from "../contexts/configuration";
   import {
     currentParams,
     currentStepId,
@@ -10,20 +10,20 @@
     ISelectedParams,
     IStoreData,
     selectedDocumentInfo,
-    selfieUri,
-  } from '../contexts/app-state';
-  import { sendVerificationUpdateEvent } from '../utils/event-service';
-  import { EVerificationStatuses, ISendDocumentsResponse } from '../utils/event-service/types';
-  import { getContext, onDestroy, onMount } from 'svelte';
-  import { t } from '../contexts/translation/hooks';
-  import { flowUploadLoader } from '../services/analytics';
-  import { getFlowConfig } from '../contexts/flows/hooks';
-  import { generateParams, getVerificationStatus, verifyDocuments } from '../services/http';
-  import { DecisionStatus } from '../contexts/app-state/types';
-  import { preloadStepById } from '../services/preload-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
-  import { broofa } from '../utils/api-utils';
-  import { sendFlowErrorEvent } from '../utils/event-service/utils';
+    selfieUri
+  } from "../contexts/app-state";
+  import { sendVerificationUpdateEvent } from "../utils/event-service";
+  import { ISendDocumentsResponse, VerificationStatuses } from "../utils/event-service/types";
+  import { getContext, onDestroy, onMount } from "svelte";
+  import { t } from "../contexts/translation/hooks";
+  import { flowUploadLoader } from "../services/analytics";
+  import { getFlowConfig } from "../contexts/flows/hooks";
+  import { generateParams, getVerificationStatus, verifyDocuments } from "../services/http";
+  import { DecisionStatus } from "../contexts/app-state/types";
+  import { preloadStepById } from "../services/preload-service";
+  import { getLayoutStyles, getStepConfiguration } from "../ui-packs";
+  import { broofa } from "../utils/api-utils";
+  import { sendFlowErrorEvent } from "../utils/event-service/utils";
 
   flowUploadLoader();
 
@@ -45,7 +45,7 @@
   const checkStatus = async (data: ISendDocumentsResponse) => {
     try {
       const response = await getVerificationStatus(endUserId);
-      if (response.status === EVerificationStatuses.PENDING) {
+      if (response.status === VerificationStatuses.PENDING) {
         veryficationTimeout = setTimeout(() => checkStatus(data), 2000);
         return;
       }
