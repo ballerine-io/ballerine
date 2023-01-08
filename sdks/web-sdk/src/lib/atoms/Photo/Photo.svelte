@@ -1,11 +1,10 @@
 <script lang="ts">
-  import merge from 'lodash.merge';
+  import merge from 'deepmerge';
   import {
     configuration as globalConfiguration,
-    ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { ICSSProperties, makeStylesFromConfiguration } from '../../services/css-manager';
   import Loader from '../Loader/Loader.svelte';
 
   export let configuration: IElementProps;
@@ -13,11 +12,11 @@
   const styleProps = configuration.style as ICSSProperties;
 
   const defaultStyle = {
-    'border-radius': $globalConfiguration.general.borderRadius,
+    'border-radius': $globalConfiguration.general?.borderRadius,
   };
 
   const style = makeStylesFromConfiguration(
-    merge(defaultStyle, $globalConfiguration.photo),
+    merge(defaultStyle, $globalConfiguration.components?.photo || {}),
     styleProps,
   );
 </script>

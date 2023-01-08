@@ -1,24 +1,15 @@
 <script lang="ts">
-  import { Button, ButtonWithIcon, IconButton } from '../../atoms';
-  import {
-    configuration as globalConfiguration,
-    ICSSProperties,
-    IStepConfiguration,
-  } from '../../contexts/configuration';
+  import { Button, ButtonWithIcon, IconButton, NextStepButton } from '../../atoms';
+  import { configuration as globalConfiguration } from '../../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../../contexts/navigation';
   import { T } from '../../contexts/translation';
-  import { makesLocalStyles } from '../../utils/css-utils';
+  import { ICSSProperties, makesLocalStyles } from '../../services/css-manager';
   import { currentStepId } from '../../contexts/app-state';
-  import merge from 'lodash.merge';
-  import { navigationButtons } from '../../default-configuration/theme';
 
-  const { navigationButtons: userConfiguration } = $globalConfiguration;
+  const { navigationButtons: userConfiguration } = $globalConfiguration.components;
 
-  const configuration = userConfiguration
-    ? merge(navigationButtons, userConfiguration)
-    : navigationButtons;
+  const configuration = userConfiguration;
 
-  export let step: IStepConfiguration;
   export let skipBackSide = false;
 
   const style = makesLocalStyles(configuration.props.style as ICSSProperties);
@@ -29,6 +20,7 @@
 <div {style} class="navigation-buttons">
   {#if configuration.backButton.type === 'button'}
     <Button
+      isBack
       configuration={configuration.backButton.props}
       on:click={() => goToPrevStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >
@@ -48,12 +40,9 @@
     </ButtonWithIcon>
   {/if}
   {#if configuration.nextButton.type === 'button'}
-    <Button
-      configuration={configuration.nextButton.props}
-      on:click={() => goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
-    >
+    <NextStepButton configuration={configuration.nextButton.props} {skipType}>
       <T key="next" namespace="navigation-buttons" />
-    </Button>
+    </NextStepButton>
   {:else if configuration.nextButton.type === 'iconButton'}
     <IconButton
       configuration={configuration.nextButton.props}

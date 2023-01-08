@@ -1,9 +1,13 @@
 import { appState, IAppState } from '../../contexts/app-state';
 import { currentLanguage, Languages } from '../../contexts/translation';
-import { IDocumentVerificationResponse, IOuterEvent } from './types';
+import { EActionNames, EEventTypes, IDocumentVerificationResponse, IOuterEvent } from './types';
 import { get } from 'svelte/store';
 import { flowEventBus } from '../../services/flow-event-bus/flow-event-bus';
 import { EFlowEvent } from '../../services/flow-event-bus/enums';
+import { BALLERINE_EVENT } from './constants';
+import { IEventOptions } from '../../services/flow-event-bus/interfaces';
+import { configuration } from '../../contexts/configuration';
+import { getFlowConfig } from '../../contexts/flows/hooks';
 
 const outerScopeContext = window.__blrn_context;
 const isProd = window.__blrn_is_prod;
@@ -29,17 +33,24 @@ export const subscribe = () => {
   });
 };
 
-export const sendIframeEvent = eventOptions => {
+export const sendIframeEvent = (eventOptions: IEventOptions) => {
   window.parent.postMessage(eventOptions, '*'); // iframe
 };
 
-export const sendFlowCompleteEvent = (verificationResponse: IDocumentVerificationResponse) => {
-  const { status, idvResult } = verificationResponse;
-  const payload = { status, idvResult };
+// without arguments sending events without payload
+export const sendFlowCompleteEvent = (verificationResponse?: IDocumentVerificationResponse) => {
+  const { syncFlow } = getFlowConfig(get(configuration));
+  const { status, idvResult } = verificationResponse ?? {};
   const eventOptions = {
-    eventName: 'blrn_event',
-    eventType: 'sync_flow_complete',
-    payload,
+    eventName: BALLERINE_EVENT,
+    eventType: syncFlow ? EEventTypes.SYNC_FLOW_COMPLETE : EEventTypes.ASYNC_FLOW_COMPLETE,
+    shouldExit: true,
+    payload: syncFlow
+      ? {
+          status,
+          idvResult,
+        }
+      : undefined,
   };
 
   sendIframeEvent(eventOptions);
@@ -55,8 +66,8 @@ export const sendVerificationUpdateEvent = (
   shouldExit = false,
 ) => {
   const eventOptions = {
-    eventName: 'blrn_event',
-    eventType: 'verification_update',
+    eventName: BALLERINE_EVENT,
+    eventType: EEventTypes.VERIFICATION_UPDATE,
     shouldExit,
     details,
   };
@@ -67,8 +78,8 @@ export const sendNavigationUpdateEvent = () => {
   const as = get(appState);
 
   const eventOptions = {
-    eventName: 'blrn_event',
-    eventType: 'navigation_update',
+    eventName: BALLERINE_EVENT,
+    eventType: EEventTypes.NAVIGATION_UPDATE,
     details: {
       currentIdx: as.currentStepIdx,
       // FIXME: currentPage and previousPage typed as a string by IAppState.
@@ -84,14 +95,14 @@ export const sendNavigationUpdateEvent = () => {
 };
 
 export const sendButtonClickEvent = (
-  actionName: string,
+  actionName: EActionNames,
   status: IDocumentVerificationResponse,
   as: IAppState,
   shouldExit = false,
 ) => {
   const eventOptions = {
-    eventName: 'blrn_event',
-    eventType: 'button_click',
+    eventName: BALLERINE_EVENT,
+    eventType: EEventTypes.BUTTON_CLICK,
     shouldExit,
     details: {
       actionName,
@@ -102,4 +113,22 @@ export const sendButtonClickEvent = (
   };
 
   window.parent.postMessage(eventOptions, '*');
+};
+
+export const sendFlowErrorEvent = (error: Error, shouldExit = false) => {
+  const as = get(appState);
+  const eventOptions = {
+    eventName: BALLERINE_EVENT,
+    eventType: EEventTypes.FLOW_ERROR,
+    shouldExit,
+    details: {
+      currentIdx: as.currentStepIdx,
+      currentPage: as.currentPage,
+    },
+  };
+  window.parent.postMessage(eventOptions, '*');
+  flowEventBus({
+    type: EFlowEvent.FLOW_ERROR,
+    payload: eventOptions,
+  });
 };

@@ -1,10 +1,10 @@
-import { IList } from '../../molecules/List';
 import { INavigationButtons } from '../../molecules/NavigationButtons';
 import { IDocumentOptions } from '../../organisms/DocumentOptions';
 import type { CaptureConfigOption } from 'jslib-html5-camera-photo';
 import { IFlow } from '../flows';
-import { EndUserInfo, FlowsBackendConfig } from '../../../types/BallerineSDK';
-import { DocumentType } from '../app-state';
+import { EndUserInfo, FlowsBackendConfig, FlowsEventsConfig, FlowsGeneralTheme } from '../../../types/BallerineSDK';
+import { EDocumentType, EDocumentKind } from '../app-state';
+import { ICSSProperties } from '../../services/css-manager';
 
 export enum Steps {
   Welcome = 'welcome',
@@ -39,50 +39,15 @@ export enum Elements {
   Container = 'container',
   DocumentOption = 'document-option',
   IconButton = 'icon-button',
+  IconCloseButton = 'icon-close-button',
   CameraButton = 'camera-button',
   VideoContainer = 'video-container',
   List = 'list',
   ErrorText = 'error-text',
+  Loader = 'loader'
 }
 
-interface ICSSPropertiesAll {
-  margin: string;
-  padding: string;
-  'font-family': string;
-  'font-size': string;
-  'font-weight': number;
-  'text-align': string;
-  'line-height': string;
-  'vertical-align': string;
-  'box-shadow': string;
-  '-webkit-box-shadow': string;
-  width: string;
-  height: string;
-  background?: string;
-  color?: string;
-  'border-radius'?: string;
-  border: string;
-  display: string;
-  cursor: string;
-  'align-items': string;
-  'justify-content': string;
-  'flex-direction': string;
-  position: string;
-  top: string;
-  bottom: string;
-  left: string;
-  right: string;
-  'align-self': string;
-  hover: ICSSProperties;
-  active: ICSSProperties;
-  fill: string;
-  'flex-grow': number;
-  'background-position-y': string;
-  outline: string;
-  'z-index': string;
-}
-
-export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo';
+export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo' | 'Voter';
 
 interface IAttributesAll {
   icon: Icons;
@@ -98,8 +63,6 @@ interface IAttributesAll {
   validate: () => boolean;
   defaultValue: string;
 }
-
-export type ICSSProperties = Partial<ICSSPropertiesAll>;
 export type IAttributes = Partial<IAttributesAll>;
 
 export interface IFormProps {
@@ -120,9 +83,11 @@ export interface IElementProps {
 }
 
 export interface IElement {
-  id?: string;
+  id: string;
   props: IElementProps;
   type: Elements;
+  disabled?: boolean;
+  orderIndex: number;
   elements?: IElement[];
 }
 
@@ -132,11 +97,11 @@ export interface IStepConfiguration {
   overlayStyle?: ICSSProperties;
   elements: IElement[];
   form?: IFormProps;
-  type: DocumentType;
+  type?: EDocumentType;
   id: string;
   namespace?: string;
   cameraConfig?: CaptureConfigOption;
-  documentOptions?: DocumentType[];
+  documentOptions?: { type: EDocumentType, kind: EDocumentKind }[];
 }
 
 export interface IOverlayStyles {
@@ -146,50 +111,55 @@ export interface IOverlayStyles {
   selfie?: ICSSProperties;
 }
 
-export interface IAppConfiguration {
-  isDevelopment: boolean;
-  backendConfig: FlowsBackendConfig;
-  endUserInfo: Omit<EndUserInfo, 'dateOfBirth' | 'endUserMetadata'> & {
-    token?: string;
-  };
-  general: {
-    progress: boolean;
-    borderRadius: string;
-    padding: string;
-    colors: {
-      primary: string;
-      secondary: string;
-      text: string;
-      danger: string;
-    };
-    fonts: {
-      name: string;
-      weight: number[];
-      link?: string;
-    };
-  };
-  flows: { [key: string]: IFlow };
-  defaultLanguage: 'en' | 'es';
-  steps: { [key: string]: IStepConfiguration };
+export type TSteps = IStepConfiguration[];
+export interface IConfigurationComponents {
   container?: ICSSProperties;
   button?: ICSSProperties;
   buttonWithIcon?: ICSSProperties;
   iconButton?: ICSSProperties;
+  iconCloseButton?: ICSSProperties;
   layout?: ICSSProperties;
   photo?: ICSSProperties;
-  title: ICSSProperties;
+  title?: ICSSProperties;
   paragraph?: ICSSProperties;
-  documentOptions?: IDocumentOptions;
-  list?: IList;
   navigationButtons?: INavigationButtons;
+  documentOptions?: IDocumentOptions;
   image?: ICSSProperties;
   cameraButton?: ICSSProperties;
   videoContainer?: ICSSProperties;
   input?: ICSSProperties;
   loader?: ICSSProperties;
   errorText?: ICSSProperties;
-  overlay?: IOverlayStyles;
+  overlay?: ICSSProperties;
+}
+
+export interface IAppConfigurationUI {
+  uiPack?: string;
+  general?: FlowsGeneralTheme;
+  components?: IConfigurationComponents;
+  flows?: {
+    [key: string]: {
+      steps?: RecursivePartial<IStepConfiguration>[];
+      userType?: string;
+      mobileNativeCamera?: boolean;
+      syncFlow?: boolean;
+      useFinalQueryParams?: boolean;
+      firstScreenBackButton?: boolean;
+      showCloseButton?: boolean;
+      callbacks?: FlowsEventsConfig;
+    };
+  };
   settings?: ConfigSettings;
+}
+
+export interface IAppConfiguration extends Partial<IAppConfigurationUI> {
+  isDevelopment: boolean;
+  backendConfig: FlowsBackendConfig;
+  endUserInfo: Omit<EndUserInfo, 'dateOfBirth' | 'endUserMetadata'> & {
+    token?: string;
+  };
+  flows: { [key: string]: IFlow };
+  defaultLanguage: 'en' | 'es';
 }
 
 export interface ConfigSettings {

@@ -1,0 +1,565 @@
+{
+  "en": {
+    "welcome": {
+      "title": "Verify your identity",
+      "button": "Choose document type",
+      "description": "We need some information to help us confirm \nyour identity.",
+      "tip": "Verifying usually takes a few seconds."
+    },
+    "document-selection": {
+      "title": "Upload ID",
+      "description": "Choose the document type you would like to \nidentify with",
+      "tip": "Choose document type"
+    },
+    "document-options": {
+      "passport-title": "Passport",
+      "passport-description": "Your official travel document.",
+      "id_card-title": "ID Card",
+      "id_card-description": "Government-issued personal ID.",
+      "drivers_license-title": "Drivers license",
+      "drivers_license-description": "Government-issued Drivers license",
+      "voter_id-title": "Voter ID",
+      "voter_id-description": "Government-issued Voter ID"
+    },
+    "document-start": {
+      "title": "Document",
+      "button": "Take a picture",
+      "description": "Please take a picture of your document. Make sure its fully visible inside the picture.",
+      "operating_license": {
+        "title": "Operating license",
+        "button": "Take a picture",
+        "description": "Please take a picture of your business’s operating license. Make sure the document is fully visible inside the picture."
+      },
+      "business_registration": {
+        "title": "Business Registration",
+        "button": "Take a picture",
+        "description": "Please take a picture of your business registration document. Make sure the document is fully visible inside the picture."
+      },
+      "proof_of_business_tax_id": {
+        "title": "TIN ID / Certificate",
+        "button": "Take a picture",
+        "description": "Please take a picture of your business TIN ID or certificate. Make sure the document is fully visible inside the picture."
+      },
+      "bank_statement": {
+        "title": "Bank Statement/Letter",
+        "button": "Take a picture",
+        "description": "Please take a picture of a bank statement or of a letter from the bank. Make sure the document is fully visible inside the picture."
+      }
+    },
+    "document-photo": {
+      "title": "Document Upload",
+      "description": "Place the document inside the frame and take a picture. Make sure it is not cut or has any glare.",
+      "id_card": {
+        "title": "Upload ID",
+        "description": "Place your ID inside the frame and take a picture. \nMake sure it is not cut or has any glare."
+      },
+      "passport": {
+        "title": "Passport",
+        "description": "Place your passport inside the frame and take a \npicture. \nMake sure it is not cut or has any glare."
+      },
+      "voter_id": {
+        "title": "Voter ID front side",
+        "description": "Place your voter card inside the frame and take a picture. \nMake sure it is not cut or has any glare."
+      },
+      "ife_card": {
+        "title": "IFE card front side",
+        "description": "Place your IFE card inside the frame and take a picture. \nMake sure it is not cut or has any glare."
+      },
+      "ine_card": {
+        "title": "INE card front side",
+        "description": "Place your INE card inside the frame and take a picture. \nMake sure it is not cut or has any glare."
+      },
+      "drivers_license": {
+        "title": "Drivers license",
+        "description": "Place your drivers license inside the frame and take \na picture. \nMake sure it is not cut or has any glare."
+      },
+      "proof_of_business_tax_id": {
+        "title": "Business TIN ID/certificate",
+        "description": "Place the business TIN ID/certificate inside the frame and take a picture. Make sure it is not cut or has any glare."
+      },
+      "bank_statement": {
+        "title": "Bank Statement/Letter",
+        "description": "Place the bank Statement/letter inside the frame and take a picture. Make sure it is not cut or has any glare."
+      },
+      "business_registration": {
+        "title": "Business Registration",
+        "description": "Place the business registration document inside the frame and take a picture. Make sure it is not cut or has any glare."
+      },
+      "operating_license": {
+        "title": "Operating license",
+        "description": "Place the operating license document inside the frame and take a picture. Make sure it is not cut or has any glare."
+      }
+    },
+    "document-photo-back": {
+      "passport": {
+        "title": "Passport back side",
+        "description": "Place the back side of your Passport card inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
+      },
+      "id_card": {
+        "title": "ID Card back side",
+        "description": "Place the back side of your ID Card inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
+      },
+      "voter_id": {
+        "title": "Voter ID back side",
+        "description": "Place the back side of your Voter ID inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
+      },
+      "ife_card": {
+        "title": "IFE card back side",
+        "description": "Place the back side of your IFE card inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
+      },
+      "ine_card": {
+        "title": "INE card back side",
+        "description": "Place the back side of your INE card inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare."
+      },
+      "drivers_license": {
+        "title": "Drivers license back side",
+        "description": "Place the back side of your Drivers license inside \nthe frame and take a picture. \nMake sure it is not cut or has any glare."
+      }
+    },
+    "check-document": {
+      "title": "Review picture",
+      "description": "Make sure the information is seen clearly, with no blur \nor glare."
+    },
+    "document-photo-back-start": {
+      "title": "ID back side",
+      "description": "Please take a picture of the back side of your ID",
+      "button": "Take photo",
+      "voter_id": {
+        "description": "Please take a picture of the back side of your Voter ID",
+        "title": "Voter ID back side"
+      },
+      "drivers_license": {
+        "title": "Drivers license back side",
+        "description": "Please take a picture of the back side of your Drivers \nlicense"
+      }
+    },
+    "check-document-photo-back": {
+      "title": "Review picture",
+      "description": "Make sure the information is seen clearly, with no blur \nor glare."
+    },
+    "navigation-buttons": {
+      "next": "Looks good",
+      "back": "Take again"
+    },
+    "selfie-start": {
+      "title": "Selfie",
+      "button": "Take a selfie",
+      "description": "Make sure your face is clear and is fully inside the \nframe."
+    },
+    "selfie": {
+      "title": "Selfie",
+      "description": "Place your face inside the frame and take a picture. \nMake sure it is clearly visible."
+    },
+    "check-selfie": {
+      "title": "Review picture",
+      "description": "Make sure your face is clearly visible and fits inside \nthe frame."
+    },
+    "final": {
+      "title": "Success",
+      "description": "Your identity has been successfully verified.",
+      "button": "Next"
+    },
+    "loader": {
+      "text-one": "We're verifying your documents",
+      "text-two": "This may take a few seconds",
+      "text-three": "Taking more than usual"
+    },
+    "resubmission": {
+      "201-title": "Missing images",
+      "201-button": "Retry uploading",
+      "201-description": "It seems like you haven't sent us all of the images we need in order to verify you. Please retry uploading the images.",
+      "204-title": "Couldn’t verify the images",
+      "204-button": "Retry uploading",
+      "204-description": "The image of the document you have sent us was in bad quality. Please retry uploading the images",
+      "205-title": "Couldn’t verify the images",
+      "205-button": "Retry uploading",
+      "205-description": "The document you have sent us seems to be damaged, please retry uploading using a different document.",
+      "206-title": "Unsupported document",
+      "206-button": "Choose different document",
+      "206-description": "The document you have sent us was not supported. Please take a photo of a valid document.",
+      "207-title": "Expired document",
+      "207-button": "Retry uploading",
+      "207-description": "The document you have sent seems to be expired. Please take a photo of a valid document.",
+      "606-title": "Unclear selfie",
+      "606-button": "Retry uploading",
+      "606-description": "It seems like the photo of your face was not clear, please try again.",
+      "614-title": "Document not fully visible",
+      "614-button": "Retry uploading",
+      "614-description": "The document you have sent is not fully inside the picture.",
+      "615-title": "Back side not fully visible",
+      "615-button": "Retry uploading",
+      "615-description": "The back side of the document you have sent is not fully inside the picture."
+    },
+    "loading": {
+      "review-hint": "Taking longer than usual"
+    },
+    "decline": {
+      "title": "Failed to verify",
+      "button": "Close",
+      "description": "It seems like there was an issue verifying your documents."
+    },
+    "error": {
+      "title": "Failed to verify",
+      "button": "Close"
+    },
+    "timeout": {
+      "title": "Something went wrong",
+      "button": "Close",
+      "description": "It seems like there was an issue verifiying your documents."
+    },
+    "general": {
+      "online": "You are online!",
+      "offline": "You are offline, please check your connection",
+      "errorDocuments": "Error sending documents",
+      "errorDocumentVerification": "Error document verification",
+      "errorCameraAccess": "Cannot access your device's camera. To proceed, go to the app's settings and enable camera permissions."
+    }
+  },
+  "es": {
+    "welcome": {
+      "title": "es: Verify your identity",
+      "button": "es: Choose document type",
+      "description": "es: We need some information to help us confirm \nyour identity.",
+      "tip": "es: Verifying usually takes a few seconds."
+    },
+    "document-selection": {
+      "title": "es: Upload ID",
+      "description": "es: Choose the document type you would like to \nidentify with",
+      "tip": "es: Choose document type"
+    },
+    "document-options": {
+      "passport-title": "es: Passport",
+      "passport-description": "es: ",
+      "id_card-title": "es: ID Card",
+      "card-description": "es: ",
+      "drivers_license-title": "es: Drivers license",
+      "drivers_license-description": "es: ",
+      "voter_id-title": "es: Voter ID",
+      "voter_id-description": "es: "
+    },
+    "document-photo": {
+      "id_card-title": "es: Upload ID",
+      "id_card-description": "es: To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
+      "passport-title": "es: Passport",
+      "passport-description": "es: Place your passport inside the frame and take a \npicture. \nMake sure it is not cut or has any glare.",
+      "voter_id-title": "es: Voter ID front side",
+      "voter_id-description": "es: Place your voter card inside the frame and take a picture. \nMake sure it is not cut or has any glare.",
+      "drivers_license-title": "es: Drivers license",
+      "drivers_license-description": "es: Place your drivers license inside the frame and take \na picture. \nMake sure it is not cut or has any glare.",
+      "proof_of_business_tax_id-title": "TIN ID / Certificate",
+      "proof_of_business_tax_id-button": "Take a picture",
+      "proof_of_business_tax_id-description": "Please take a picture of your business TIN ID or certificate. Make sure the document is fully visible inside the picture.",
+      "bank_statement-title": "Bank Statement/Letter",
+      "bank_statement-button": "Take a picture",
+      "bank_statement-description": "Please take a picture of a bank statement or of a letter from the bank. Make sure the document is fully visible inside the picture.",
+      "business_registration-title": "Business Registration",
+      "business_registration-button": "Take a picture",
+      "business_registration-description": "Please take a picture of your business registration document. Make sure the document is fully visible inside the picture.",
+      "operating_license-title": "Operating license",
+      "operating_license-button": "Take a picture",
+      "operating_license-description": "Please take a picture of your business’s operating license. Make sure the document is fully visible inside the picture."
+    },
+    "document-photo-back": {
+      "id_card-title": "es: Upload ID",
+      "id_card-description": "es: To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
+      "passport-title": "es: Upload ID",
+      "passport-description": "es: To open an account, we need to verify your identity. Please prepare your ID, passport, or resident card.",
+      "voter_id-title": "es: Voter ID back side",
+      "voter_id-description": "es: Place the back side of your Voter ID inside the frame and \ntake a picture. \nMake sure it is not cut or has any glare.",
+      "drivers_license-title": "es: Drivers license back side",
+      "drivers_license-description": "es: Place the back side of your Drivers license inside \nthe frame and take a picture. \nMake sure it is not cut or has any glare."
+    },
+    "check-document": {
+      "id_card-title": "es: Review picture",
+      "id_card-description": "es: Make sure the information is seen clearly, with no blur \nor glare.",
+      "passport-title": "es: Review picture",
+      "passport-description": "es: Make sure the information is seen clearly, with no blur \nor glare.",
+      "voter_id-title": "es: Review picture",
+      "voter_id-description": "es: Make sure the information is seen clearly, with no blur \nor glare.",
+      "drivers_license-title": "es: Review picture",
+      "drivers_license-description": "es: Make sure the information is seen clearly, with no blur \nor glare."
+    },
+    "resubmission": {
+      "201-title": "es: Missing images",
+      "201-button": "es: Retry uploading",
+      "201-description": "es: It seems like you haven't sent us all of the images we need in order to verify you. Please retry uploading the images.",
+      "204-title": "es: Couldn’t verify the images",
+      "204-button": "es: Retry uploading",
+      "204-description": "es: The image of the document you have sent us was in bad quality. Please retry uploading the images",
+      "205-title": "es: Couldn’t verify the images",
+      "205-button": "es: Retry uploading",
+      "205-description": "es: The document you have sent us seems to be damaged, please retry uploading using a different document.",
+      "206-title": "es: Unsupported document",
+      "206-button": "es: Choose different document",
+      "206-description": "es: The document you have sent us was not supported. Please take a photo of a valid document.",
+      "207-title": "es: Expired document",
+      "207-button": "es: Retry uploading",
+      "207-description": "es: The document you have sent seems to be expired. Please take a photo of a valid document.",
+      "606-title": "es: Unclear selfie",
+      "606-button": "es: Retry uploading",
+      "606-description": "es: It seems like the photo of your face was not clear, please try again.",
+      "614-title": "es: Document not fully visible",
+      "614-button": "es: Retry uploading",
+      "614-description": "es: The document you have sent is not fully inside the picture.",
+      "615-title": "es: Back side not fully visible",
+      "615-button": "es: Retry uploading",
+      "615-description": "es: The back side of the document you have sent is not fully inside the picture."
+    },
+    "loading": {
+      "review-hint": "es: Taking longer than usual"
+    },
+    "decline": {
+      "title": "es: Failed to verify",
+      "button": "es: Close",
+      "description": "es: It seems like there was an issue verifying your documents."
+    },
+    "timeout": {
+      "title": "es: Something went wrong",
+      "button": "es: Close",
+      "description": "es: It seems like there was an issue verifiying your documents."
+    },
+    "document-photo-back-start": {
+      "title": "es: ID back side",
+      "description": "es: Please take a picture of the back side of your ID",
+      "button": "es: Take photo",
+      "voter_id-title": "es: Voter ID back side",
+      "voter_id-description": "es: Please take a picture of the back side of your Voter ID",
+      "drivers_license-title": "es: Drivers license back side",
+      "drivers_license-description": "es: Please take a picture of the back side of your Drivers \nlicense"
+    },
+    "check-document-photo-back": {
+      "title": "es: Review picture",
+      "description": "es: Make sure the information is seen clearly, with no blur \nor glare."
+    },
+    "navigation-buttons": {
+      "next": "es: Looks good",
+      "back": "es: Take again"
+    },
+    "selfie-start": {
+      "title": "es: Selfie",
+      "button": "es: Take a selfie",
+      "description": "es: Make sure your face is clear and is fully inside the \nframe."
+    },
+    "selfie": {
+      "title": "es: Selfie",
+      "description": "es: Place your face inside the frame and take a picture. \nMake sure it is clearly visible."
+    },
+    "check-selfie": {
+      "title": "es: Review picture",
+      "description": "es: Make sure your face is clearly visible and fits inside \nthe frame."
+    },
+    "final": {
+      "title": "es: Success",
+      "description": "es: Your identity has been successfully verified.",
+      "button": "es: Next"
+    },
+    "loader": {
+      "text-one": "es: We're verifying your documents",
+      "text-two": "es: This may take a few seconds",
+      "text-three": "es: Taking more than usual"
+    },
+    "general": {
+      "online": "es: You are online!",
+      "offline": "es: You are offline, please check your connection",
+      "errorDocuments": "es: Error sending documents",
+      "errorDocumentVerification": "es: Error document verification"
+    }
+  },
+  "sw": {
+    "welcome": {
+      "title": "Thibitisha utambulisho wako",
+      "button": "Chagua aina ya hati",
+      "description": "Tunahitaji maelezo kidogo ili kutusaidia kuthibitisha \nutambulisho wako.",
+      "tip": "Uthibitishaji huchukua sekunde chache."
+    },
+    "document-selection": {
+      "title": "Pakia Kitambulisho",
+      "description": "Chagua aina ya hati ambayo ungependa \nkutambulika nayo",
+      "tip": "Chagua aina ya hati"
+    },
+    "document-options": {
+      "passport-title": "Pasipoti",
+      "passport-description": "Hati yako rasmi ya kusafiria.",
+      "id_card-title": "Kitambulisho",
+      "id_card-description": "Kitambulisho binafsi kilichotolewa na serikali.",
+      "drivers_license-title": "Leseni ya Udereva",
+      "drivers_license-description": "Leseni ya udereva iliotolewa na serikali",
+      "voter_id-title": "Kitambulisho cha Mpiga Kura",
+      "voter_id-description": "Kitambulisho cha mpiga kura kilichotolewa na serikali"
+    },
+    "document-start": {
+      "title": "Hati",
+      "button": "Piga picha",
+      "description": "Tafadhali piga picha ya hati yako. Hakikisha hati inaonekana kikamilifu ndani ya picha.",
+      "operating_license": {
+        "title": "Leseni ya Uendeshaji",
+        "button": "Piga picha",
+        "description": "Tafadhali piga picha leseni ya uendeshaji ya biashara yako. Hakikisha hati inaonekana kikamilifu ndani ya picha."
+      },
+      "business_registration": {
+        "title": "Usajili wa Biashara",
+        "button": "Piga picha",
+        "description": "Tafadhali piga picha ya hati ya usajili wa biashara yako. Hakikisha hati inaonekana kikamilifu ndani ya picha."
+      },
+      "proof_of_business_tax_id": {
+        "title": "Hati ya Utambulisho wa Mlipa Kodi",
+        "button": "Piga picha",
+        "description": "Tafadhali piga picha hati ya utambulisho wa mlipa kodi ya biashara yako. Hakikisha hati inaonekana kikamilifu ndani ya picha."
+      },
+      "bank_statement": {
+        "title": "Taarifa ya/Barua kutoka Benki",
+        "button": "Piga picha",
+        "description": "Tafadhali piga picha taarifa ya benki au barua kutoka benki. Hakikisha nyaraka inaonekana kikamilifu ndani ya picha."
+      }
+    },
+    "document-photo": {
+      "title": "Pakia Nyaraka",
+      "description": "Weka nyaraka yako ndani ya fremu kisha piga picha. Hakikisha kuwa haijakatwa na haina mwako wowote.",
+      "id_card": {
+        "title": "Pakia Kitambulisho",
+        "description": "Weka kitambulisho chako ndani ya fremu kisha piga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "passport": {
+        "title": "Pasipoti",
+        "description": "Weka pasipoti yako ndani ya fremu kisha piga \npicha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "voter_id": {
+        "title": "Kitambulisho cha Mpiga Kura \nupande wa mbele",
+        "description": "Weka kitambulisho chako cha mpiga kura ndani ya fremu kisha piga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "drivers_license": {
+        "title": "Leseni ya Udereva",
+        "description": "Weka leseni yako ya udereva ndani ya fremu kisha piga \npicha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "proof_of_business_tax_id": {
+        "title": "Hati ya Utambulisho wa Mlipa Kodi ya Biashara",
+        "description": "Hati ya utambulisho wa mlipa kodi ya biashara ndani ya fremu kisha piga picha. Hakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "bank_statement": {
+        "title": "Taarifa ya/Barua kutoka Benki",
+        "description": "Weka taarifa ya benki ndani ya fremu kisha piga picha. Hakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "business_registration": {
+        "title": "Usajili wa Biashara",
+        "description": "Weka hati ya usajili wa biashara ndani ya fremu kisha piga picha. Hakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "operating_license": {
+        "title": "Leseni ya Uendeshaji",
+        "description": "Weka hati ya leseni ya uendeshaji ndani ya fremu kisha piga picha. Hakikisha kuwa haijakatwa na haina mwako wowote."
+      }
+    },
+    "document-photo-back": {
+      "id_card": {
+        "title": "Kitambulisho upande wa nyuma",
+        "description": "Place the upande wa nyuma wa kitambulisho chako ndani ya fremu kisha \npiga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "voter_id": {
+        "title": "Kitambulisho cha Mpiga Kura upande wa nyuma",
+        "description": "Weka upande wa nyuma wa kitambulisho chako cha mpiga kura ndani ya fremu kisha \npiga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      },
+      "drivers_license": {
+        "title": "Leseni ya udereva upande wa nyuma",
+        "description": "Weka upande wa nyuma wa leseni yako ya udereva ndani \nya fremu kisha piga picha. \nHakikisha kuwa haijakatwa na haina mwako wowote."
+      }
+    },
+    "check-document": {
+      "title": "Kagua picha",
+      "description": "Hakikisha taarifa zinaonekana vizuri, bila ukungu \nau mwako."
+    },
+    "document-photo-back-start": {
+      "title": "Kitambulisho upande wa nyuma",
+      "description": "Tafadhali piga picha upande wa nyuma wa kitambulisho chako",
+      "button": "Piga picha",
+      "voter_id": {
+        "description": "Tafadhali piga picha upande wa nyuma wa kitambulisho chako cha mpiga kura",
+        "title": "Kitambulisho cha mpiga kura upande wa nyuma"
+      },
+      "drivers_license": {
+        "title": "Leseni ya udereva upande wa nyuma",
+        "description": "Tafadhali piga picha upande wa nyuma wa leseni yako ya \nudereva"
+      }
+    },
+    "check-document-photo-back": {
+      "title": "Kagua picha",
+      "description": "Hakikisha taarifa zinaonekana vizuri, bila ukungu \nau mwako."
+    },
+    "navigation-buttons": {
+      "next": "Iko vizuri",
+      "back": "Piga tena"
+    },
+    "selfie-start": {
+      "title": "Selfie",
+      "button": "Piga selfie",
+      "description": "Hakikisha uso wako unaonekana vizuri na uko ndani kabisa ya \nfremu."
+    },
+    "selfie": {
+      "title": "Selfie",
+      "description": "Weka uso wako ndani ya fremu kisha piga picha. \nHakikisha inaonekana vizuri."
+    },
+    "check-selfie": {
+      "title": "Kagua picha",
+      "description": "Hakikisha uso wako unaonekana vizuri na uko ndani kabisa ya \nfremu."
+    },
+    "final": {
+      "title": "Imefanikiwa",
+      "description": "Utambulisho wako umefanikiwa kuthibitishwa.",
+      "button": "Endelea"
+    },
+    "loader": {
+      "text-one": "Tunathibitisha nyaraka zako",
+      "text-two": "Hii inaweza kuchukua sekunde chache",
+      "text-three": "Inachukua muda mrefu kuliko kawaida"
+    },
+    "resubmission": {
+      "201-title": "Picha zinakosekana",
+      "201-button": "Jaribu kupakia tena",
+      "201-description": "Inaonakana hukututumia picha zote tunazohitaji ili kukuthibitisha. Tafadhali jaribu kupakia tena hizo picha.",
+      "204-title": "Picha hazikuweza kuthibitishwa",
+      "204-button": "Jaribu kupakia tena",
+      "204-description": "Picha ya hati uliotutumia ilikua katika ubora mbaya. Tafadhali jaribu kupakia tena hizo picha",
+      "205-title": "Picha hazikuweza kuthibitishwa",
+      "205-button": "Jaribu kupakia tena",
+      "205-description": "Hati uliotutumia inaonakana kuharibika. Tafadhali jaribu kupakia tena kwa kutumia hati nyingine.",
+      "206-title": "Hati haikubaliki",
+      "206-button": "Chagua hati nyingine",
+      "206-description": "Hati uliotutumia haikubaliki. Tafadhali piga picha ya hati halali.",
+      "207-title": "Hati imeisha muda wake",
+      "207-button": "Jaribu kupakia tena",
+      "207-description": "Hati uliotuma inaonekana imeisha muda wake. Tafadhali piga picha ya hati halali.",
+      "606-title": "Selfie sio safi",
+      "606-button": "Jaribu kupakia tena",
+      "606-description": "Inaonekana picha ya sura yako haikua safi, tafadhali jaribu tena.",
+      "614-title": "Hati haionekani kikamilifu",
+      "614-button": "Jaribu kupakia tena",
+      "614-description": "Hati uliotuma haiko ndani ya picha kikamilifu.",
+      "615-title": "Upande wa nyuma hauonekani kikamilifu",
+      "615-button": "Jaribu kupakia tena",
+      "615-description": "Upande wa nyuma wa hati uliotuma hauko ndani ya picha kikamilifu."
+    },
+    "loading": {
+      "review-hint": "Inachukua muda mrefu kuliko kawaida"
+    },
+    "decline": {
+      "title": "Uthibitisho umeshindikana",
+      "button": "Funga",
+      "description": "Inaonekana kulikuwa na tatizo katika kuthibitisha hati zako."
+    },
+    "error": {
+      "title": "Uthibitisho umeshindikana",
+      "button": "Funga"
+    },
+    "timeout": {
+      "title": "Hitilafu imetokea",
+      "button": "Funga",
+      "description": "Inaonekana kulikuwa na tatizo katika kuthibitisha hati zako."
+    },
+    "general": {
+      "online": "Mtandao unapatikana!",
+      "offline": "Mtandao haupatikani, tafadhali angalia mtandao wako",
+      "errorDocuments": "Hitilafu katika kutuma hati",
+      "errorDocumentVerification": "Hitilafu katika uthibitishaji wa hati",
+      "errorCameraAccess": "Imeshindikana kufikia kamera ya kifaa chako. Ili kuendelea, nenda kwenye mipangilio ya aplikesheni na uruhusu matumizi kamera."
+    }
+  },
+  "fr": {}
+}

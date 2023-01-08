@@ -32,6 +32,7 @@ export const beforeEach =
     })();
 
     await page.goto('/');
+    await page.waitForTimeout(500);
     await page.evaluate(onEvaluate);
   };
 

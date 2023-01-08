@@ -1,16 +1,16 @@
 <script lang="ts">
-  import merge from 'lodash.merge';
-  import { configuration, ICSSProperties } from '../../contexts/configuration';
-  import { makesLocalStyles } from '../../utils/css-utils';
+  import merge from 'deepmerge';
+  import { configuration } from '../../contexts/configuration';
+  import { ICSSProperties, makesLocalStyles } from '../../services/css-manager';
 
   export let size: 'small' | 'medium' = 'medium';
   export let fullPage = true;
 
   const loader = {
-    background: $configuration.general.colors.primary,
+    background: $configuration.general?.colors?.primary as string,
   };
 
-  const styleProps = merge(loader, $configuration.loader) as ICSSProperties;
+  const styleProps = merge(loader, $configuration.components?.loader || {}) as ICSSProperties;
 
   const style = makesLocalStyles(styleProps);
 </script>
@@ -37,7 +37,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: white;
+    background: 'transparent';
   }
 
   .loader-wrapper {

@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src",
+    // Otherwise causes an ESLint error
+    "craco.config.cjs",
+    "commitlint.config.cjs"
+  ]
+}

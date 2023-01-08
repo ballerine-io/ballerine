@@ -25,21 +25,19 @@
   "scripts": {
     "branchlint": "branchlint -u -c --prefix \"$(git config --global user.name)\"",
     "format": "nx run-many --target=format",
-    "lint": "nx run-many --target=lint",
-    "lint:fix": "nx run-many --target=lint:fix",
+    "lint": "nx run-many --target=lint --projects=@ballerine/web-sdk",
     "test": "nx run-many --target=test",
     "test:e2e": "nx run-many --target=test:e2e",
-    "dev": "nx run-many --target=dev --projects=@ballerine/web-sdk",
+    "dev": "nx run-many --target=dev --projects=@ballerine/web-sdk,@ballerine/backoffice",
     "start": "nx run-many --target=start --projects=@ballerine/web-sdk",
-    "build": "nx run-many --target=build",
+    "build": "nx run-many --target=build --projects=@ballerine/web-sdk",
     "web-sdk:dev": "nx run @ballerine/web-sdk:dev",
     "web-sdk:start": "nx run @ballerine/web-sdk:start",
     "web-sdk:build": "nx run @ballerine/web-sdk:build",
     "web-sdk:example": "nx run @ballerine/web-sdk:example",
     "web-sdk:lint": "nx run @ballerine/web-sdk:lint",
-    "web-sdk:lint:fix": "nx run @ballerine/web-sdk:lint:fix",
     "web-sdk:format": "nx run @ballerine/web-sdk:format",
-    "backoffice:dev": "echo \"Error: no test specified\" && exit 1",
+    "backoffice:dev": "nx run @ballerine/backoffice:dev",
     "workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
     "web-ui:dev": "echo \"Error: no test specified\" && exit 1",
     "commit": "git add . && git-cz",
@@ -63,9 +61,8 @@
     "nx": "15.0.2",
     "prettier": "^2.7.1"
   },
-  "pnpm": {
-    "overrides": {
-      "vite": "2.9.15"
-    }
+
+  "dependencies": {
+    "deepmerge": "^4.2.2"
   }
 }

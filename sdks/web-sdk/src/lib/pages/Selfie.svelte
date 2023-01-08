@@ -1,30 +1,45 @@
 <script lang="ts">
-  import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
+  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
-  import { configuration, Steps } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { configuration } from '../contexts/configuration';
   import { onDestroy, onMount } from 'svelte';
-  import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
+  import {
+    CameraButton,
+    IconButton,
+    IconCloseButton,
+    Loader,
+    Overlay,
+    Paragraph,
+    VideoContainer,
+  } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { currentStepId, DocumentType } from '../contexts/app-state';
+  import { currentStepId, EDocumentType } from '../contexts/app-state';
   import Title from '../atoms/Title/Title.svelte';
-  import { selfieUri } from '../contexts/app-state/stores';
+  import { appState, selfieUri } from '../contexts/app-state/stores';
   import { isMobile } from '../utils/is-mobile';
-  import { selfieStep, settings } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
-  import { layout } from '../default-configuration/theme';
+  import { createToggle } from '../hooks/createToggle/createToggle';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import {
+    EActionNames,
+    EVerificationStatuses,
+    sendButtonClickEvent,
+  } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
   export let stepId;
 
-  const step = merge(selfieStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, stepId);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+  const style = getLayoutStyles($configuration, step);
+
+  const [isDisabled, , toggleOnIsDisabled, toggleOffIsDisabled] = createToggle(true);
 
   const facingMode = isMobile() ? FACING_MODES.USER : FACING_MODES.ENVIRONMENT;
+  let stream: MediaStream;
 
   onMount(() => {
     if (!video) return;
@@ -34,8 +49,10 @@
         width: 1920,
         height: 1080,
       })
-      .then(stream => {
-        console.log('stream', stream);
+      .then(cameraStream => {
+        console.log('stream', cameraStream);
+        stream = cameraStream;
+        toggleOffIsDisabled();
       })
       .catch(error => {
         console.log('error', error);
@@ -47,13 +64,17 @@
   });
 
   const handleTakePhoto = () => {
-    if (!cameraPhoto) return;
+    if (!cameraPhoto || $isDisabled) return;
+
     const dataUri = cameraPhoto.getDataUri(
-      $configuration.settings?.selfieCameraSettings || settings.cameraSettings,
+      $configuration.settings?.selfieCameraSettings as CaptureConfigOption,
     );
     $selfieUri = dataUri;
     goToNextStep(currentStepId, $configuration, $currentStepId);
+    toggleOnIsDisabled();
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -64,27 +85,51 @@
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
+      />
+    {/if}
     {#if element.type === Elements.VideoContainer}
       <VideoContainer configuration={element.props} isSelfie>
         <!-- svelte-ignore a11y-media-has-caption -->
         <video bind:this={video} autoplay playsinline />
       </VideoContainer>
     {/if}
-    {#if element.type === Elements.Title}
-      <Title configuration={element.props}>
-        <T key="title" namespace={stepNamespace} />
-      </Title>
-    {/if}
-    {#if element.type === Elements.Paragraph}
-      <Paragraph configuration={element.props}>
-        <T key="description" namespace={stepNamespace} />
-      </Paragraph>
+    {#if element.type === Elements.Loader && stream === undefined}
+      <Loader />
     {/if}
   {/each}
-  <Overlay type={DocumentType.SELFIE} />
+  <div class="header">
+    {#each step.elements as element}
+      {#if element.type === Elements.Title}
+        <Title configuration={element.props}>
+          <T key={'title'} namespace={stepNamespace} />
+        </Title>
+      {/if}
+      {#if element.type === Elements.Paragraph}
+        <Paragraph configuration={element.props}>
+          <T key={'description'} namespace={stepNamespace} />
+        </Paragraph>
+      {/if}
+    {/each}
+  </div>
+  <Overlay type={EDocumentType.SELFIE} />
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} />
+      <CameraButton
+        on:click={handleTakePhoto}
+        configuration={element.props}
+        isDisabled={$isDisabled}
+      />
     {/if}
   {/each}
 </div>
@@ -94,6 +139,14 @@
     height: 100%;
     position: var(--position);
     background: var(--background);
+    padding: var(--padding);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .header {
     text-align: center;
     display: flex;
     flex-direction: column;

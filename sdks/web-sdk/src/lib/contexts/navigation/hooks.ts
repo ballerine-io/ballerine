@@ -1,22 +1,37 @@
 import { IAppConfiguration, IStepConfiguration } from '../configuration';
 import { steps } from './constants';
-import { getFlowOrders } from '../flows/hooks';
+import { getFlowName, getFlowOrders } from '../flows/hooks';
 import { Writable } from '../../../../node_modules/svelte/types/runtime/store/index';
-import { debug } from 'svelte/internal';
+import { verifyDocumentsAndCloseFlow } from '../../utils/api-utils';
+import { sendFlowCompleteEvent } from '../../utils/event-service';
+import { sendFlowErrorEvent } from '../../utils/event-service/utils';
 
 const filterOutByType = (flowIds: string[], configuration: IAppConfiguration, type?: string) => {
   if (!type) return flowIds;
+  const flowName: string = getFlowName();
   return flowIds.filter(id => {
-    const stepConfiguration = configuration.steps[id];
+    const flowSteps = configuration.flows[flowName].steps as IStepConfiguration[];
+    const stepConfiguration = flowSteps.find(s => s.id === id) as IStepConfiguration;
     const step = steps.find(s => s.name === stepConfiguration.name);
     return step?.type !== type;
   });
 };
 
-export const addCloseToURLParams = () => {
-  const url = new URL(window.location.href);
-  url.searchParams.set('close', 'true');
-  history.pushState('', '', url.search);
+export const getNextStepId = (
+  globalConfiguration: IAppConfiguration,
+  currentStepId: string,
+  skipType?: string,
+) => {
+  const stepsOrder = getFlowOrders(globalConfiguration) as string[];
+  const filteredFlows = filterOutByType(stepsOrder, globalConfiguration, skipType);
+  const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
+  if (currentFlowIndex === filteredFlows.length - 1) {
+    // end of the flow
+    void verifyDocumentsAndCloseFlow(globalConfiguration).catch(err => sendFlowErrorEvent(err as Error));
+    sendFlowCompleteEvent();
+    return;
+  }
+  return filteredFlows[currentFlowIndex + 1];
 };
 
 export const goToNextStep = (
@@ -25,13 +40,8 @@ export const goToNextStep = (
   currentStepId: string,
   skipType?: string,
 ) => {
-  const stepsOrder = getFlowOrders(globalConfiguration) as string[];
-  const filteredFlows = filterOutByType(stepsOrder, globalConfiguration, skipType);
-  const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
-  if (currentFlowIndex === filteredFlows.length) {
-    throw Error('Error moving next step, this is the last step');
-  }
-  currentStepIdStore.set(filteredFlows[currentFlowIndex + 1]);
+  const nextStepId = getNextStepId(globalConfiguration, currentStepId, skipType);
+  if (nextStepId) currentStepIdStore.set(nextStepId);
 };
 
 export const goToPrevStep = (

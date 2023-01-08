@@ -1,8 +1,8 @@
 <script lang="ts">
   import { toast } from '@zerodevx/svelte-toast';
-  import { FlyingText, Loader } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { Elements } from '../contexts/configuration/types';
+  import { FlyingText, Image, Loader } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import {
     currentParams,
     currentStepId,
@@ -13,25 +13,27 @@
     selfieUri,
   } from '../contexts/app-state';
   import { sendVerificationUpdateEvent } from '../utils/event-service';
-
-  import { ISendDocumentsResponse } from '../utils/event-service/types';
-  import { onDestroy, onMount } from 'svelte';
+  import { EVerificationStatuses, ISendDocumentsResponse } from '../utils/event-service/types';
+  import { getContext, onDestroy, onMount } from 'svelte';
   import { t } from '../contexts/translation/hooks';
   import { flowUploadLoader } from '../services/analytics';
   import { getFlowConfig } from '../contexts/flows/hooks';
-  import merge from 'lodash.merge';
-  import { layout, loadingStep } from '../default-configuration/theme';
   import { generateParams, getVerificationStatus, verifyDocuments } from '../services/http';
   import { DecisionStatus } from '../contexts/app-state/types';
+  import { preloadStepById } from '../services/preload-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { broofa } from '../utils/api-utils';
+  import { sendFlowErrorEvent } from '../utils/event-service/utils';
+
   flowUploadLoader();
 
   const WAITING_TIME = 1000 * 60 * 3; // 3 minutes
 
   export let stepId;
-
-  const step = merge(loadingStep, $configuration.steps[stepId]);
+  const flowName: string = getContext('flowName');
+  const step = getStepConfiguration($configuration, stepId);
+  const style = getLayoutStyles($configuration, step);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   let timeout: number;
   let veryficationTimeout: number;
@@ -39,22 +41,15 @@
   let review = false;
   let showText = true;
 
-  const broofa = () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = (Math.random() * 16) | 0,
-        v = c == 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-  };
-
   const endUserId = $configuration.endUserInfo.id || broofa();
   const checkStatus = async (data: ISendDocumentsResponse) => {
     try {
       const response = await getVerificationStatus(endUserId);
-      if (response.status === 'pending') {
+      if (response.status === EVerificationStatuses.PENDING) {
         veryficationTimeout = setTimeout(() => checkStatus(data), 2000);
         return;
       }
+
       const params = generateParams(response);
       sendVerificationUpdateEvent(response, response.idvResult === DecisionStatus.APPROVED);
 
@@ -64,14 +59,17 @@
         response.idvResult === DecisionStatus.REVIEW
       ) {
         $currentParams = params;
+        await preloadStepById($configuration, configuration, 'decline', flowName);
         $currentStepId = 'decline';
       }
       if (response.idvResult === DecisionStatus.RESUBMISSION_REQUESTED) {
         $currentParams = params;
+        await preloadStepById($configuration, configuration, 'resubmission', flowName);
         $currentStepId = 'resubmission';
       }
       if (response.idvResult === DecisionStatus.APPROVED) {
         $currentParams = params;
+        await preloadStepById($configuration, configuration, 'final', flowName);
         $currentStepId = 'final';
       }
     } catch (error) {
@@ -88,7 +86,11 @@
       toast.push(t('general', 'errorDocuments'));
       console.error('Error sending documents', error);
       $currentParams = { message: error } as ISelectedParams;
-      $currentStepId = 'error';
+      await preloadStepById($configuration, configuration, 'error', flowName);
+      //$currentStepId = 'error';
+
+      sendFlowErrorEvent(error);
+
       return;
     }
 
@@ -99,6 +101,7 @@
       return;
     }
     showText = false;
+    await preloadStepById($configuration, configuration, 'final', flowName);
     $currentStepId = 'final';
   };
 
@@ -109,9 +112,10 @@
       selfie: $selfieUri,
     };
     makeRequest(data);
-    timeout = setTimeout(() => {
+    timeout = setTimeout(async () => {
       showText = false;
-      $currentStepId = 'decline';
+      await preloadStepById($configuration, configuration, 'decline', flowName);
+      //$currentStepId = 'decline';
     }, WAITING_TIME);
   });
 
@@ -144,12 +148,18 @@
       </div>
     {/if}
   {/if}
+  {#each step.elements as element}
+    {#if element.type === Elements.Image}
+      <Image configuration={element.props} />
+    {/if}
+  {/each}
   <Loader />
 </div>
 
 <style>
   .container {
     padding: var(--padding);
+    color: var(--color);
     position: relative;
     background: var(--background);
     text-align: center;

@@ -1,20 +1,18 @@
 <script lang="ts">
-  import merge from 'lodash.merge';
   import {
     configuration as globalConfiguration,
     IAttributes,
-    ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { buttonWithIcon } from '../../default-configuration/theme';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { ICSSProperties } from '../../services/css-manager';
+  import { getComponentStyles } from '../../ui-packs';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;
   const attributes = configuration.attributes as IAttributes;
 
-  const style = makeStylesFromConfiguration(
-    merge(buttonWithIcon, $globalConfiguration.buttonWithIcon),
+  const style = getComponentStyles(
+    $globalConfiguration.components?.buttonWithIcon || {},
     styleProps,
   );
 </script>

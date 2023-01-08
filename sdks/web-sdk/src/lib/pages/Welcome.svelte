@@ -1,36 +1,56 @@
 <script lang="ts">
-  import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
-  import { goToNextStep, addCloseToURLParams } from '../contexts/navigation/hooks';
+  import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import List from '../molecules/List/List.svelte';
   import { T } from '../contexts/translation';
-  import { flowStart } from '../services/analytics';
   import { sendButtonClickEvent } from '../utils/event-service/utils';
-  import { appState, currentStepId } from '../contexts/app-state';
-  import merge from 'lodash.merge';
-  import { layout, welcomeStep } from '../default-configuration/theme';
+  import { appState } from '../contexts/app-state';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { EActionNames, EVerificationStatuses } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
-  const step = merge(welcomeStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, stepId);
+  const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, step);
+
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
+
+  preloadNextStepByCurrent($configuration, configuration, stepId);
 </script>
 
 <div class="container" {style}>
   {#each step.elements as element}
-    {#if element.type === Elements.IconButton}
+    {#if element.type === Elements.IconButton && flow.firstScreenBackButton}
       <div>
         <IconButton
           configuration={element.props}
           on:click={() => {
-            sendButtonClickEvent('close', { status: 'document_collection' }, $appState, true);
-            addCloseToURLParams();
+            sendButtonClickEvent(
+              EActionNames.CLOSE,
+              { status: EVerificationStatuses.DATA_COLLECTION },
+              $appState,
+              true,
+            );
           }}
         />
       </div>
+    {/if}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
+      />
     {/if}
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />
@@ -42,22 +62,16 @@
     {/if}
     {#if element.type === Elements.Paragraph}
       <Paragraph configuration={element.props}>
-        <T key={element.props.context || ''} namespace={stepNamespace} />
+        <T key={element.props.context || 'description'} namespace={stepNamespace} />
       </Paragraph>
     {/if}
     {#if element.type === Elements.List}
       <List configuration={element.props} />
     {/if}
     {#if element.type === Elements.Button}
-      <Button
-        on:click={() => {
-          flowStart();
-          goToNextStep(currentStepId, $configuration, $currentStepId);
-        }}
-        configuration={element.props}
-      >
+      <NextStepButton configuration={element.props}>
         <T key="button" namespace={stepNamespace} />
-      </Button>
+      </NextStepButton>
     {/if}
   {/each}
 </div>

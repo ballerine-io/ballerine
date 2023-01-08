@@ -1,18 +1,32 @@
 <script lang="ts">
-  import CameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
+  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
   import { T } from '../contexts/translation';
-  import { configuration, Steps } from '../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
+  import { configuration } from '../contexts/configuration';
   import { onDestroy, onMount } from 'svelte';
-  import { CameraButton, IconButton, Overlay, Paragraph, VideoContainer } from '../atoms';
+  import {
+    CameraButton,
+    IconButton,
+    IconCloseButton,
+    Loader,
+    Overlay,
+    Paragraph,
+    VideoContainer,
+  } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
-  import { DocumentType, IDocument } from '../contexts/app-state';
+  import { EDocumentType, IDocument, appState } from '../contexts/app-state';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
   import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { documentOptions, documentPhotoStep, settings } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
-  import { layout } from '../default-configuration/theme';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import {
+    EActionNames,
+    EVerificationStatuses,
+    sendButtonClickEvent,
+  } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { createToggle } from '../hooks/createToggle/createToggle';
+  import { getDocumentType } from '../utils/documents-utils';
+  import { IDocumentOptions } from '../organisms/DocumentOptions';
 
   export let stepId;
 
@@ -20,12 +34,20 @@
   let container: HTMLDivElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
 
-  const step = merge(documentPhotoStep, $configuration.steps[stepId]);
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
-  const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions);
-  const documentType =
-    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
-  const stepNamespace = `${step.namespace}.${documentType}`;
+  const step = getStepConfiguration($configuration, stepId);
+  const style = getLayoutStyles($configuration, step);
+
+  const [isDisabled, , toggleOnIsDisabled, toggleOffIsDisabled] = createToggle(true);
+
+  const documentOptionsConfiguration = $configuration.components
+    ?.documentOptions as IDocumentOptions;
+
+  const documentType = getDocumentType(step, $selectedDocumentInfo);
+
+  const documentKind = $selectedDocumentInfo ? $selectedDocumentInfo.kind : undefined;
+
+  let stream: MediaStream;
+  const stepNamespace = `${step.namespace}.${documentKind || documentType}`;
 
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
@@ -39,8 +61,10 @@
         width: 1920,
         height: 1080,
       })
-      .then(stream => {
-        console.log('stream', stream);
+      .then(cameraStream => {
+        console.log('stream', cameraStream);
+        stream = cameraStream;
+        toggleOffIsDisabled();
       })
       .catch(error => {
         console.log('error', error);
@@ -51,7 +75,7 @@
     cameraPhoto?.stopCamera();
   });
 
-  const clearDocs = (type: DocumentType): IDocument[] => {
+  const clearDocs = (type: EDocumentType): IDocument[] => {
     const { options } = documentOptionsConfiguration;
     const isFromOptions = Object.keys(options).find(key => key === type);
     if (isFromOptions) {
@@ -60,7 +84,7 @@
     return $documents.filter(d => type !== d.type);
   };
 
-  const addDocument = (type: DocumentType, base64: string, document: IDocument): IDocument[] => {
+  const addDocument = (type: EDocumentType, base64: string, document: IDocument): IDocument[] => {
     const clearedDocuments = clearDocs(type);
     return [
       ...clearedDocuments,
@@ -72,17 +96,26 @@
   };
 
   const handleTakePhoto = () => {
-    if (!cameraPhoto) return;
+    if (!cameraPhoto || $isDisabled) return;
+
+    toggleOnIsDisabled();
     const base64 = cameraPhoto.getDataUri(
-      $configuration.settings?.cameraSettings || settings.cameraSettings,
+      $configuration.settings?.cameraSettings as CaptureConfigOption,
     );
     if (documentType) {
-      const document = { type: documentType, pages: [], metadata: {} };
+      const document = {
+        type: documentType,
+        pages: [],
+        metadata: {},
+        kind: $selectedDocumentInfo?.kind,
+      };
       $documents = addDocument(document.type, base64, document);
       return goToNextStep(currentStepId, $configuration, $currentStepId);
     }
     return goToPrevStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style} bind:this={container}>
@@ -93,11 +126,27 @@
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
+    {#if element.type === Elements.IconCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
+      />
+    {/if}
     {#if element.type === Elements.VideoContainer}
       <VideoContainer configuration={element.props}>
         <!-- svelte-ignore a11y-media-has-caption -->
         <video bind:this={video} autoplay playsinline />
       </VideoContainer>
+    {/if}
+    {#if element.type === Elements.Loader && stream === undefined}
+      <Loader />
     {/if}
   {/each}
   <div class="header">
@@ -119,7 +168,11 @@
   {/if}
   {#each step.elements as element}
     {#if element.type === Elements.CameraButton}
-      <CameraButton on:click={handleTakePhoto} configuration={element.props} />
+      <CameraButton
+        on:click={handleTakePhoto}
+        configuration={element.props}
+        isDisabled={$isDisabled}
+      />
     {/if}
   {/each}
 </div>
@@ -129,12 +182,13 @@
     height: 100%;
     position: var(--position);
     background: var(--background);
+    padding: var(--padding);
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
   }
+
   .header {
     text-align: center;
     display: flex;

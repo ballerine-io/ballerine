@@ -1,26 +1,28 @@
 <script lang="ts">
   import { getOverlayDocumentType } from './utils';
-  import { DocumentType } from '../../contexts/app-state';
-  import { configuration as globalConfiguration } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
-  import merge from 'lodash.merge';
-  import { overlay } from '../../default-configuration/theme';
+  import { EDocumentType } from '../../contexts/app-state';
 
-  export let type: DocumentType;
+  export let type: EDocumentType;
 
   const overlayType = getOverlayDocumentType(type);
-
-  const style = makeStylesFromConfiguration(merge(overlay, $globalConfiguration.overlay));
 </script>
 
-<div class="overlay {overlayType}" />
+<div class="overlay-container">
+  <div class="overlay {overlayType}" />
+</div>
 
 <style>
+  .overlay-container {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   .overlay {
     z-index: 1;
     position: relative;
     margin: 10px 0px 0px 0px;
-    max-width: 80%;
     max-height: 100%;
     -webkit-box-shadow: 0px 0px 0px 1000px rgba(0, 0, 0, 0.7);
     -moz-box-shadow: 0px 0px 0px 1000px rgba(0, 0, 0, 0.7);
@@ -35,13 +37,18 @@
   .overlay.passport {
     border-radius: 12px;
     aspect-ratio: 3/4;
+    width: 90%;
+    max-height: 80%;
   }
   .overlay.a4 {
     border-radius: 12px;
     aspect-ratio: 3/4;
+    max-width: 80%;
   }
   .overlay.selfie {
     border-radius: 100%;
     aspect-ratio: 3/4;
+    max-height: 80%;
+    width: 80%;
   }
 </style>

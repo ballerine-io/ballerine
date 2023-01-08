@@ -1,22 +1,29 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { ICameraEvent, nativeCameraHandler, updateDocument } from '../utils/photo-utils';
-  import { IDocument, IDocumentInfo, currentStepId } from '../contexts/app-state';
+  import { IDocument, IDocumentInfo, currentStepId, appState } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import merge from 'lodash.merge';
-  import { documentPhotoBackStartStep, layout } from '../default-configuration/theme';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
-  const step = merge(documentPhotoBackStartStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, stepId);
+  const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, step);
+
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   let documentInfo: IDocumentInfo | undefined = undefined;
   let document: IDocument | undefined;
@@ -34,10 +41,12 @@
       throw Error("document context wasn't provided");
     }
     if (!document) return;
-    const newDocumentsState = updateDocument(document.type, image, $documents);
+    const newDocumentsState = updateDocument(document, image, $documents);
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -46,6 +55,19 @@
       <IconButton
         configuration={element.props}
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
       />
     {/if}
     {#if element.type === Elements.Image}

@@ -2,48 +2,73 @@
   import { configuration, IStepConfiguration } from '../../contexts/configuration';
   import DocumentOption from '../../molecules/DocumentOption/DocumentOption.svelte';
   import { goToNextStep } from '../../contexts/navigation';
-  import type { DocumentType, IDocument, IDocumentInfo } from '../../contexts/app-state';
-  import {
-    currentStepId,
-    documents,
-    selectedDocumentInfo,
-  } from '../../contexts/app-state/stores';
+  import type {
+    EDocumentKind,
+    EDocumentType,
+    IDocument,
+    IDocumentInfo,
+  } from '../../contexts/app-state';
+  import { currentStepId, documents, selectedDocumentInfo } from '../../contexts/app-state/stores';
   import { addDocument } from '../../utils/photo-utils';
-  import { t } from '../../contexts/translation/hooks';
   import { isNativeCamera } from '../../contexts/flows/hooks';
   import { IDocumentOption } from '../../molecules/DocumentOption';
-  import merge from 'lodash.merge';
-  import { documentOptions } from '../../default-configuration/theme';
+  import merge from 'deepmerge';
   import { checkIsCameraAvailable } from '../../services/camera-manager';
+  import { uiPack } from '../../ui-packs';
+  import { IDocumentOptions } from './types';
 
   export let step: IStepConfiguration;
-  const ducumentOptions: IDocumentOption[] = [];
 
-  const documentOptionsConfiguration = merge(documentOptions, $configuration.documentOptions);
+  const documentOptions: IDocumentOption[] = [];
 
-  Object.keys(documentOptionsConfiguration.options).forEach((key: string) => {
-    const type = key as DocumentType;
-    const option = documentOptionsConfiguration.options[type] as IDocumentOption;
-    ducumentOptions.push(option);
-  });
+  const documentOptionsConfiguration = $configuration.components
+    ?.documentOptions as IDocumentOptions;
+
+  if (step.documentOptions) {
+    step.documentOptions.forEach(option => {
+      if (documentOptionsConfiguration.options[option.type]) {
+        const configurationOption = documentOptionsConfiguration.options[
+          option.type
+        ] as IDocumentOption;
+        documentOptions.push({
+          ...configurationOption,
+          document: {
+            ...configurationOption.document,
+            kind: option.kind,
+          },
+        });
+      }
+    });
+  } else {
+    Object.keys(documentOptionsConfiguration.options).forEach((key: string) => {
+      const type = key as EDocumentType;
+      const option = documentOptionsConfiguration.options[type] as IDocumentOption;
+      documentOptions.push(option);
+    });
+  }
 
   const handleSelectOption = async ({ detail }: { detail: string }) => {
     if (isNativeCamera($configuration)) return;
-    const type = detail as DocumentType;
-    const option = documentOptionsConfiguration.options[type];
+    const kind = detail as EDocumentKind;
+    const option = documentOptions.find(o => o.document.kind === kind) as IDocumentOption;
     $selectedDocumentInfo = option?.document as IDocumentInfo;
     const isCameraAvailable = await checkIsCameraAvailable();
     if (!isCameraAvailable) return;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
-  const handleTakePhoto = async ({ detail }: { detail: { image: string; type: DocumentType } }) => {
+  const handleTakePhoto = async ({
+    detail,
+  }: {
+    detail: { image: string; type: EDocumentType };
+  }) => {
     const option = documentOptionsConfiguration.options[detail.type];
     const document: IDocument = { type: detail.type, metadata: {}, pages: [] };
     const newDocumentsState: IDocument[] = addDocument(
       document.type,
       detail.image,
       $configuration,
+      $uiPack,
       $documents,
       document,
     );
@@ -54,7 +79,7 @@
 </script>
 
 <div class="document-options">
-  {#each ducumentOptions as documentOption}
+  {#each documentOptions.sort((o1, o2) => o1.document.orderIndex - o2.document.orderIndex) as documentOption}
     <DocumentOption
       on:selectOption={handleSelectOption}
       on:photoTake={handleTakePhoto}

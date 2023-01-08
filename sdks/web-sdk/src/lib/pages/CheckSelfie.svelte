@@ -1,22 +1,28 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Title, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { Title, IconButton, IconCloseButton, Image } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { goToPrevStep } from '../contexts/navigation';
   import Paragraph from '../atoms/Paragraph/Paragraph.svelte';
   import NavigationButtons from '../molecules/NavigationButtons/NavigationButtons.svelte';
   import Photo from '../atoms/Photo/Photo.svelte';
-  import { selfieUri, currentStepId } from '../contexts/app-state/stores';
-  import merge from 'lodash.merge';
-  import { checkSelfieStep, layout } from '../default-configuration/theme';
+  import { selfieUri, currentStepId, appState } from '../contexts/app-state';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
-  const step = merge(checkSelfieStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, stepId);
+  const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, step);
+
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 </script>
 
 <div class="container" {style}>
@@ -30,6 +36,19 @@
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
       />
     {/if}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
+      />
+    {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>
         <T key="title" namespace={stepNamespace} />
@@ -40,8 +59,11 @@
         <T key="description" namespace={stepNamespace} />
       </Paragraph>
     {/if}
+    {#if element.type === Elements.Image}
+      <Image configuration={element.props} />
+    {/if}
   {/each}
-  <NavigationButtons {step} />
+  <NavigationButtons />
 </div>
 
 <style>

@@ -21,7 +21,7 @@
   "types": "dist/index.d.ts",
   "name": "@ballerine/web-sdk",
   "private": false,
-  "version": "1.1.35",
+  "version": "1.3.0",
   "type": "module",
   "files": [
     "dist"
@@ -44,13 +44,13 @@
     "test:e2e": "playwright test",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "format": "prettier --write \"./**/*.{cjs,js,svelte,html,ts,mts}\"",
-    "lint": "eslint \"./**/*.{cjs,js,ts,mts,svelte}\"",
-    "lint:fix": "yarn lint --fix",
+    "lint": "eslint \"./**/*.{cjs,js,ts,mts,svelte}\" --fix",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "build:examples": "npm run build && for i in ./examples/sdk ./examples/standalone; do cp -R ./dist/ballerine-sdk.umd.js $i; done",
+    "build:examples": "npm run build && for i in ./examples/sdk ./examples/standalone ./examples/standalone-future; do cp -R ./dist/ballerine-sdk.umd.js $i; done",
     "example:sdk": "npm run build:examples && npx http-server ./examples/sdk -p 8081",
     "example:standalone": "npm run build:examples && npx http-server ./examples/standalone -p 9090",
+    "example:standalone-future": "npm run build:examples && npx http-server ./examples/standalone-future -p 9090",
     "deploy:cdn:cf": "vite build && aws s3 cp ./dist/ballerine-sdk.umd.js s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.js && aws s3 cp ./dist/ballerine-sdk.umd.js.map s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.js.map",
     "publish:patch": "vite build && npm version patch && npm publish && npm run deploy:cdn:cf"
   },
@@ -63,7 +63,6 @@
     "@tsconfig/svelte": "^2.0.1",
     "@types/jslib-html5-camera-photo": "^3.1.2",
     "@types/lodash.keyby": "^4.6.7",
-    "@types/lodash.merge": "^4.6.7",
     "@types/node": "^18.11.9",
     "@types/testing-library__jest-dom": "^5.14.5",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
@@ -77,9 +76,12 @@
     "postcss": "^8.4.18",
     "prettier": "^2.7.1",
     "prettier-plugin-svelte": "^2.8.0",
+    "rollup-plugin-visualizer": "^5.8.3",
     "svelte": "^3.39.0",
     "svelte-check": "^2.2.7",
     "svelte-preprocess": "^4.9.8",
+    "typedoc": "^0.23.23",
+    "typedoc-plugin-markdown": "^3.14.0",
     "typescript": "^4.5.4",
     "vite": "2.9.15",
     "vite-plugin-dts": "^1.6.6",
@@ -90,8 +92,6 @@
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "dotenv": "^16.0.3",
-    "jslib-html5-camera-photo": "^3.3.3",
-    "lodash.keyby": "^4.6.0",
-    "lodash.merge": "^4.6.2"
+    "jslib-html5-camera-photo": "^3.3.3"
   }
 }

@@ -7,6 +7,7 @@
   import Routes from './Routes.svelte';
   import { t } from './lib/contexts/translation/hooks';
   import { setFlowName } from './lib/contexts/flows';
+  import { uiPack } from './lib/ui-packs';
 
   subscribe();
   initConnectionCheck(t);
@@ -17,30 +18,39 @@
   export let flowName;
   setFlowName($configuration.flows, flowName);
 
-  // Omri - query params task:
   $currentLanguage =
     ($configuration.endUserInfo.language as Languages) || $configuration.defaultLanguage;
 
   const style = `
-    --font-family: ${$configuration.general.fonts.name};
-    --primary-color: ${$configuration.general.colors.primary};
+    --general-fonts-name: ${$configuration.general?.fonts?.name || $uiPack.general.fonts.name};
+    --general-colors-primary: ${
+      $configuration.general?.colors?.primary || $uiPack.general.colors.primary
+    };
+    --general-colors-secondary: ${
+      $configuration.general?.colors?.secondary || $uiPack.general.colors.secondary
+    };
   `;
 </script>
 
 <svelte:head>
-  {#if $configuration.general.fonts.link}
-    <link href={$configuration.general.fonts.link} rel="stylesheet" />
+  {#if $configuration.general?.fonts?.link || $uiPack.general.fonts.link}
+    <link
+      href={$configuration.general?.fonts?.link || $uiPack.general.fonts.link}
+      rel="stylesheet"
+    />
   {/if}
 </svelte:head>
 
-<main {style}>
+<main {style} id="blrn-app">
   <!-- <button on:click={handle}>Change</button> -->
   <Routes />
   <SvelteToast
     options={{
       theme: {
-        '--toastBackground': $configuration.general.colors.primary,
-        '--toastBarBackground': $configuration.general.colors.primary,
+        '--toastBackground':
+          $configuration.general?.colors?.primary || $uiPack.general.colors.primary,
+        '--toastBarBackground':
+          $configuration.general?.colors?.primary || $uiPack.general.colors.primary,
       },
     }}
   />
@@ -68,6 +78,6 @@
   }
 
   :global(p, div, body, button) {
-    font-family: var(--font-family);
+    font-family: var(--general-fonts-name);
   }
 </style>

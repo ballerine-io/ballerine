@@ -1,4 +1,4 @@
-import { toast } from "@zerodevx/svelte-toast";
+import { toast } from '@zerodevx/svelte-toast';
 import { t } from '../../contexts/translation/hooks';
 
 export const checkIsCameraAvailable = async (): Promise<boolean> => {
@@ -9,7 +9,8 @@ export const checkIsCameraAvailable = async (): Promise<boolean> => {
     }
     return true;
   } catch (error) {
+    console.error(error);
     toast.push(t('general', 'errorCameraAccess'));
     return false;
   }
-}
+};

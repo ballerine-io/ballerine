@@ -1,8 +1,8 @@
-import { IAppConfiguration } from '../contexts/configuration';
-import { DocumentType, IDocument, IDocumentPage } from '../contexts/app-state';
+import { IAppConfiguration, IAppConfigurationUI } from '../contexts/configuration';
+import { EDocumentType, IDocument, IDocumentPage } from '../contexts/app-state';
 import Compressor from 'compressorjs';
-import { documentOptions } from '../default-configuration/theme';
-import merge from 'lodash.merge';
+import merge from 'deepmerge';
+import { IDocumentOptions } from '../organisms/DocumentOptions';
 
 export type FileEventTarget = EventTarget & { files: FileList };
 export type ICameraEvent = Event & { currentTarget: EventTarget & HTMLInputElement };
@@ -27,7 +27,7 @@ export const nativeCameraHandler = (e: ICameraEvent): Promise<string> => {
         reader.readAsDataURL(result);
         reader.onload = e => {
           const image = e.target?.result;
-          resolve(image);
+          resolve(image as string);
         };
       },
       error(err) {
@@ -38,11 +38,12 @@ export const nativeCameraHandler = (e: ICameraEvent): Promise<string> => {
 };
 
 export const clearDocs = (
-  type: DocumentType,
+  type: EDocumentType,
   configuration: IAppConfiguration,
+  uiPack: IAppConfigurationUI,
   documents: IDocument[],
 ): IDocument[] => {
-  const documentOptionsConfiguration = merge(documentOptions, configuration.documentOptions);
+  const documentOptionsConfiguration = configuration.components?.documentOptions as IDocumentOptions;
   const { options } = documentOptionsConfiguration;
   const isFromOptions = Object.keys(options).find(t => t === type);
   if (isFromOptions) {
@@ -52,13 +53,14 @@ export const clearDocs = (
 };
 
 export const addDocument = (
-  type: DocumentType,
+  type: EDocumentType,
   base64: string,
   configuration: IAppConfiguration,
+  uiPack: IAppConfigurationUI,
   documents: IDocument[],
   document: IDocument,
 ): IDocument[] => {
-  const clearedDocuments = clearDocs(type, configuration, documents);
+  const clearedDocuments = clearDocs(type, configuration, uiPack, documents);
   return [
     ...clearedDocuments,
     {
@@ -86,12 +88,12 @@ const getUpdatedPages = (base64: string, doc: IDocument): IDocumentPage[] => {
 };
 
 export const updateDocument = (
-  type: DocumentType,
+  document: IDocument,
   base64: string,
   documents: IDocument[],
 ): IDocument[] => {
   return documents.map(doc => {
-    if (doc.type === type) {
+    if ((document.kind && document.kind === doc.kind) || doc.type === document.type) {
       const newPagesState = getUpdatedPages(base64, doc);
       return { ...doc, pages: newPagesState };
     }

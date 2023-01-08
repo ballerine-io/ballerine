@@ -1,21 +1,33 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
-  import { isNativeCamera } from '../contexts/flows/hooks';
-  import { selectedDocumentInfo, selfieUri, currentStepId } from '../contexts/app-state/stores';
-  import merge from 'lodash.merge';
-  import { layout, selfieStartStep } from '../default-configuration/theme';
+  import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import {
+    selectedDocumentInfo,
+    selfieUri,
+    currentStepId,
+    appState,
+  } from '../contexts/app-state/stores';
+  import {
+    EActionNames,
+    EVerificationStatuses,
+    sendButtonClickEvent,
+  } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { createToggle } from '../hooks/createToggle/createToggle';
 
   export let stepId;
 
-  const step = merge(selfieStartStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, stepId);
+  const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, step);
+
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   let skipBackSide = false;
 
@@ -25,11 +37,15 @@
     }
   }
 
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
   const handler = async (e: ICameraEvent) => {
-    if (!e.target) return;
+    if (!e.target || $isDisabled) return;
     $selfieUri = await nativeCameraHandler(e);
     goToNextStep(currentStepId, $configuration, $currentStepId);
+    toggleOnIsDisabled();
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -44,6 +60,19 @@
             $currentStepId,
             skipBackSide ? 'back-side' : undefined,
           )}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
       />
     {/if}
     {#if element.type === Elements.Image}
@@ -70,12 +99,9 @@
             on:change={handler}
           />
         {/if}
-        <Button
-          on:click={() => goToNextStep(currentStepId, $configuration, $currentStepId)}
-          configuration={element.props}
-        >
+        <NextStepButton configuration={element.props} disabled={$isDisabled}>
           <T key="button" namespace={stepNamespace} />
-        </Button>
+        </NextStepButton>
       </div>
     {/if}
   {/each}

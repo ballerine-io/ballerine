@@ -3,17 +3,19 @@
   import Passport from './Passport.svelte';
   import License from './License.svelte';
   import PassportTwo from './PassportTwo.svelte';
-  import { makesLocalStyles } from '../../utils/css-utils';
+  import Voter from './Voter.svelte';
+  import { ICSSProperties, makesLocalStyles } from '../../services/css-manager';
 
   import type { SvelteComponent } from 'svelte';
   import type { Icons } from '../../contexts/configuration/types';
-  import type { ICSSProperties, IElementProps } from '../../contexts/configuration';
+  import type { IElementProps } from '../../contexts/configuration';
 
   let icons: Record<Icons, typeof SvelteComponent> = {
     Card,
     Passport,
     License,
     PassportTwo,
+    Voter,
   };
 
   export let name: Icons = 'Card';

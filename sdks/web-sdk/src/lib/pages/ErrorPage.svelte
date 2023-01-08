@@ -1,30 +1,34 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
   import { onDestroy } from 'svelte';
-  import { Image, Button, Title } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
-  import { currentParams } from '../contexts/app-state';
+  import { Image, Button, Title, IconCloseButton } from '../atoms';
+  import { configuration } from '../contexts/configuration';
+  import { appState, currentParams } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
-  import { sendFlowCompleteEvent } from '../utils/event-service';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    sendFlowCompleteEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
   import { flowError } from '../services/analytics';
-  import { addCloseToURLParams } from '../contexts/navigation/hooks';
-  import merge from 'lodash.merge';
-  import { errorStep, layout } from '../default-configuration/theme';
   import { DecisionStatus } from '../contexts/app-state/types';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
-
-  const step = merge(errorStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, stepId);
+  const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, step);
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
-
   const message = $currentParams ? $currentParams.message : '';
 
   const handleClose = () => {
-    sendFlowCompleteEvent({ status: 'error', idvResult: DecisionStatus.DECLINED });
-    addCloseToURLParams();
+    sendFlowCompleteEvent({
+      status: EVerificationStatuses.ERROR,
+      idvResult: DecisionStatus.DECLINED,
+    });
   };
 
   flowError();
@@ -38,6 +42,19 @@
   {#each step.elements as element}
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />
+    {/if}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
+      />
     {/if}
     {#if element.type === Elements.Title}
       <Title configuration={element.props}>

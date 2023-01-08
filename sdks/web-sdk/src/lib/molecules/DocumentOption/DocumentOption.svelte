@@ -2,32 +2,33 @@
   import { createEventDispatcher } from 'svelte';
   import { Container } from '../../atoms';
   import Paragraph from '../../atoms/Paragraph/Paragraph.svelte';
-  import {
-    ICSSProperties,
-    IAttributes,
-    configuration as globalConfiguration,
-  } from '../../contexts/configuration';
+  import { configuration as globalConfiguration, IAttributes } from '../../contexts/configuration';
+  import { ICSSProperties } from '../../services/css-manager';
   import { IDocumentInfo } from '../../contexts/app-state';
   import { T } from '../../contexts/translation';
   import { IDocumentOptions } from '../../organisms/DocumentOptions';
-  import { makesLocalStyles } from '../../utils/css-utils';
+  import { makesLocalStyles } from '../../services/css-manager';
   import Icon from '../../atoms/Icons/Icon.svelte';
   import { ICameraEvent, nativeCameraHandler } from '../../utils/photo-utils';
   import { isNativeCamera } from '../../contexts/flows/hooks';
+  import { createToggle } from '../../hooks/createToggle/createToggle';
 
   export let configuration: IDocumentOptions;
   export let active: boolean;
   export let attributes: IAttributes;
   export let document: IDocumentInfo;
 
+  const [isDisabled, , toggleOnIsDisabled] = createToggle();
   let hover = false;
 
   const setHover = (status: boolean) => (hover = status);
 
   const dispatch = createEventDispatcher();
-
   const handleSelect = () => {
-    dispatch('selectOption', document.type);
+    if ($isDisabled) return;
+
+    dispatch('selectOption', document.kind);
+    toggleOnIsDisabled();
   };
 
   const handler = async (e: ICameraEvent) => {
@@ -42,6 +43,7 @@
 <div
   {style}
   class="document-option"
+  class:disabled={$isDisabled}
   class:active
   on:click={handleSelect}
   on:mouseover={() => setHover(true)}
@@ -68,11 +70,11 @@
   </Container>
   <div class="text-container">
     <Paragraph configuration={configuration.titleProps} active={hover || active}>
-      <T key={`${document.type}-title`} namespace="document-options" />
+      <T key={`${document.kind}-title`} namespace="document-options" />
     </Paragraph>
     {#if configuration.descriptionProps}
       <Paragraph configuration={configuration.descriptionProps} active={hover || active}>
-        <T key={`${document.type}-description`} namespace="document-options" />
+        <T key={`${document.kind}-description`} namespace="document-options" />
       </Paragraph>
     {/if}
   </div>
@@ -88,6 +90,7 @@
     border: var(--border);
     display: var(--display);
     text-align: var(--text-align);
+    align-items: var(--align-items);
     background: var(--background);
     transition: all 0.1s ease-in;
     user-select: none;
@@ -113,5 +116,10 @@
     left: 0px;
     z-index: 3;
     opacity: 0;
+  }
+
+  .disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 </style>

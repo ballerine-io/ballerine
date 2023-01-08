@@ -1,30 +1,35 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, Paragraph, IconButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
-  import { Elements, IStepConfiguration } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
-  import { IDocument, currentStepId, DocumentType } from '../contexts/app-state';
-  import { isNativeCamera } from '../contexts/flows/hooks';
+  import { Elements } from '../contexts/configuration/types';
+  import { IDocument, currentStepId } from '../contexts/app-state';
+  import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
   import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
-  import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { documentStartStep, layout } from '../default-configuration/theme';
-  import merge from 'lodash.merge';
+  import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
   import { checkIsCameraAvailable } from '../services/camera-manager';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getDocumentType } from '../utils/documents-utils';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
 
   export let stepId;
 
-  const step = merge(documentStartStep, $configuration.steps[stepId]) as IStepConfiguration;
+  const step = getStepConfiguration($configuration, stepId);
+  const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, step);
 
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
-
-  const documentType =
-    ($configuration.steps[$currentStepId].type as DocumentType) || $selectedDocumentInfo.type;
+  const documentType = getDocumentType(step, $selectedDocumentInfo);
 
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
   }
+
   const stepNamespace = `${step.namespace}.${documentType}`;
 
   const handleGoToNextStep = async () => {
@@ -44,12 +49,15 @@
       document.type,
       image,
       $configuration,
+      $uiPack,
       $documents,
       document,
     );
     $documents = newDocumentsState;
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -58,6 +66,19 @@
       <IconButton
         configuration={element.props}
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
       />
     {/if}
     {#if element.type === Elements.Image}

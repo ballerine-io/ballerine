@@ -1,11 +1,13 @@
 import { FlowsEventsConfig } from '../../../types/BallerineSDK';
+import { IStepConfiguration } from '../configuration';
 
 export interface IFlow {
-  name?: string;
-  stepsOrder?: string[];
+  steps?: RecursivePartial<IStepConfiguration>[];
   userType?: string;
-  nativeCamera?: boolean;
+  mobileNativeCamera?: boolean;
   syncFlow?: boolean;
   useFinalQueryParams?: boolean;
+  firstScreenBackButton?: boolean;
+  showCloseButton?: boolean;
   callbacks?: FlowsEventsConfig;
 }

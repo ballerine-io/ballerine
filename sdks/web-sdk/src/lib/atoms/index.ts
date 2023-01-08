@@ -1,4 +1,5 @@
 export { Button } from './Button';
+export { NextStepButton } from './NextStepButton';
 export { Title } from './Title';
 export { Image } from './Image';
 export { Paragraph } from './Paragraph';
@@ -13,3 +14,4 @@ export { ListItem } from './ListItem';
 export { Loader } from './Loader';
 export { FlyingText } from './FlyingText';
 export { Overlay } from './Overlay';
+export { IconCloseButton } from './IconCloseButton';

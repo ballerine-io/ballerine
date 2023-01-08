@@ -1,21 +1,28 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Title, IconButton, Photo, Paragraph } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
+  import { Title, IconButton, Photo, Paragraph, IconCloseButton, Image } from '../atoms';
+  import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { makeStylesFromConfiguration } from '../utils/css-utils';
   import { goToPrevStep } from '../contexts/navigation';
   import { getDocImage, IDocumentInfo } from '../contexts/app-state';
   import { NavigationButtons } from '../molecules';
-  import { documents, selectedDocumentInfo, currentStepId } from '../contexts/app-state/stores';
-  import merge from 'lodash.merge';
-  import { checkDocumentPhotoBackStep, layout } from '../default-configuration/theme';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { documents, selectedDocumentInfo, currentStepId, appState } from '../contexts/app-state';
+  import {
+    EActionNames,
+    sendButtonClickEvent,
+    EVerificationStatuses,
+  } from '../utils/event-service';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 
-  const step = merge(checkDocumentPhotoBackStep, $configuration.steps[stepId]);
+  const step = getStepConfiguration($configuration, stepId);
+  const flow = getFlowConfig($configuration);
+  const style = getLayoutStyles($configuration, step);
+
   const stepNamespace = step.namespace!;
-  const style = makeStylesFromConfiguration(merge(layout, $configuration.layout), step.style);
 
   let image: string;
   let documentInfo: IDocumentInfo | undefined = undefined;
@@ -29,6 +36,8 @@
       image = getDocImage(documentInfo.type, $documents, 'back');
     }
   }
+
+  preloadNextStepByCurrent($configuration, configuration, $currentStepId);
 </script>
 
 <div class="container" {style}>
@@ -37,6 +46,19 @@
       <IconButton
         configuration={element.props}
         on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+      />
+    {/if}
+    {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
+      <IconCloseButton
+        configuration={element.props}
+        on:click={() => {
+          sendButtonClickEvent(
+            EActionNames.CLOSE,
+            { status: EVerificationStatuses.DATA_COLLECTION },
+            $appState,
+            true,
+          );
+        }}
       />
     {/if}
     {#if element.type === Elements.Title}
@@ -52,8 +74,11 @@
     {#if element.type === Elements.Photo}
       <Photo configuration={element.props} src={image} />
     {/if}
+    {#if element.type === Elements.Image}
+      <Image configuration={element.props} />
+    {/if}
   {/each}
-  <NavigationButtons {step} />
+  <NavigationButtons />
 </div>
 
 <style>

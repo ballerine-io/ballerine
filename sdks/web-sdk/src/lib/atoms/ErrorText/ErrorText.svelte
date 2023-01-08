@@ -1,21 +1,16 @@
 <script lang="ts">
-  import merge from 'lodash.merge';
   import {
     configuration as globalConfiguration,
-    ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { errorText } from '../../default-configuration/theme';
-  import { makeStylesFromConfiguration } from '../../utils/css-utils';
+  import { ICSSProperties } from '../../services/css-manager';
+  import { getComponentStyles, uiPack } from '../../ui-packs';
 
   export let configuration: IElementProps;
 
   const styleProps = configuration.style as ICSSProperties;
 
-  const style = makeStylesFromConfiguration(
-    merge(errorText, $globalConfiguration.errorText),
-    styleProps,
-  );
+  const style = getComponentStyles($globalConfiguration.components?.errorText || {}, styleProps);
 </script>
 
 <div {style}>

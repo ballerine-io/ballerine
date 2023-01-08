@@ -1,5 +1,53 @@
 # web-sdk
 
+## 1.3.0
+
+### Minor Changes
+
+- Now resetting the Svelte stores as the first step of the init method
+
+## 1.2.3
+
+### Patch Changes
+
+- a24a4cc: Init now handles multiple calls by resetting the config as a first step
+
+## 1.2.2
+
+### Patch Changes
+
+- Bug fixes
+
+## 1.2.1
+
+### Patch Changes
+
+- Adding advanced ui configuration capabilities
+
+## 1.2.0
+
+### Minor Changes
+
+- UI packs capabilities, new ui packs (future)
+
+## 1.1.38
+
+### Patch Changes
+
+- UI-Packs improvments
+
+## 1.1.37
+
+### Patch Changes
+
+- Fixed svg issue oin iOS
+
+## 1.1.36
+
+### Patch Changes
+
+- Enhanced customization, performance improvements & bug fixes
+
 ## 1.1.35
 
 ### Patch Changes

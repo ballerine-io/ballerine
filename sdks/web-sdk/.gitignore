@@ -21,6 +21,8 @@ dist-ssr
 *.sw?
 examples/**
 !examples/standalone
+!examples/standalone-future
 !examples/sdk
 !examples/**/index.html
 !examples/**/README.md
+!examples/**/*.svg
