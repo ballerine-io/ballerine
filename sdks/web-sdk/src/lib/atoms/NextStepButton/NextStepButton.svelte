@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { goToNextStep } from '../../contexts/navigation';
+  import { getContext } from 'svelte';
   import type { IElementProps } from '../../contexts/configuration';
   import { configuration as globalConfiguration } from '../../contexts/configuration';
-  import { currentStepId } from '../../contexts/app-state';
   import { makeStylesFromConfiguration } from '../../services/css-manager';
   import { Loader } from './Loader';
 
@@ -11,6 +10,8 @@
   export let isLoading = false;
   export let configuration: IElementProps;
   export let skipType: string;
+
+  const context = getContext('machine');
 
   const background =
     $globalConfiguration.components?.button?.background ||
@@ -29,8 +30,8 @@
   let disabled: boolean;
   const onClick = () => {
     if (disabled) return;
-
-    goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType);
+    context.send('NEXT');
+    //goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType);
     isDisabled = true;
   };
 

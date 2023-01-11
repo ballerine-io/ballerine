@@ -184,6 +184,7 @@ importers:
       '@types/testing-library__jest-dom': ^5.14.5
       '@typescript-eslint/eslint-plugin': ^5.41.0
       '@typescript-eslint/parser': ^5.41.0
+      '@xstate/svelte': ^2.0.1
       '@zerodevx/svelte-toast': ^0.8.0
       compressorjs: ^1.1.1
       dotenv: ^16.0.3
@@ -208,11 +209,14 @@ importers:
       vite-plugin-dts: ^1.6.6
       vite-plugin-html: ^3.2.0
       vitest: ^0.24.5
+      xstate: ^4.35.2
     dependencies:
+      '@xstate/svelte': 2.0.1_4lotnruzpn42p5vc7eb2fsduby
       '@zerodevx/svelte-toast': 0.8.2
       compressorjs: 1.1.1
       dotenv: 16.0.3
       jslib-html5-camera-photo: 3.3.4
+      xstate: 4.35.2
     devDependencies:
       '@babel/core': 7.20.5
       '@playwright/test': 1.29.0
@@ -4907,6 +4911,22 @@ packages:
     resolution: {integrity: sha512-uRjjusqpoqfmRkTaNuLJ2VohVr67Q5YwDATW3VU7PfzTj6IRaihGrYI7zckGZjxQPBIp63nfvJbM+Yu5ICh0Bg==}
     engines: {node: '>=10.0.0'}
     dev: true
+
+  /@xstate/svelte/2.0.1_4lotnruzpn42p5vc7eb2fsduby:
+    resolution: {integrity: sha512-A4QSCt4EpbyzbPIPGCRLoRn50VUq6gXcmJPIwgBaCTsTRsPsp8KSvltDqS2msBKEDr4FHWXEXOC4QVGDWFL5dg==}
+    peerDependencies:
+      '@xstate/fsm': ^2.0.0
+      svelte: ^3.24.1
+      xstate: ^4.35.0
+    peerDependenciesMeta:
+      '@xstate/fsm':
+        optional: true
+      xstate:
+        optional: true
+    dependencies:
+      svelte: 3.55.0
+      xstate: 4.35.2
+    dev: false
 
   /@xtuc/ieee754/1.2.0:
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -16561,7 +16581,6 @@ packages:
   /svelte/3.55.0:
     resolution: {integrity: sha512-uGu2FVMlOuey4JoKHKrpZFkoYyj0VLjJdz47zX5+gVK5odxHM40RVhar9/iK2YFRVxvfg9FkhfVlR0sjeIrOiA==}
     engines: {node: '>= 8'}
-    dev: true
 
   /svg-parser/2.0.4:
     resolution: {integrity: sha512-e4hG1hRwoOdRb37cIMSgzNsxyzKfayW6VOflrwvR+/bzrkyxY/31WkbgnQpgtrNp1SdpJvpUAGTa/ZoiPNDuRQ==}
@@ -18382,6 +18401,10 @@ packages:
 
   /xmlchars/2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
+
+  /xstate/4.35.2:
+    resolution: {integrity: sha512-5X7EyJv5OHHtGQwN7DsmCAbSnDs3Mxl1cXQ4PVaLwi+7p/RRapERnd1dFyHjYin+KQoLLfuXpl1dPBThgyIGNg==}
+    dev: false
 
   /xtend/4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}

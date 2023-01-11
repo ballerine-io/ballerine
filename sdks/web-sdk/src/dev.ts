@@ -110,6 +110,10 @@ console.log(ballerineInitConfig);
 
 void flows.init(ballerineInitConfig).then(() => {
   void flows.mount({
+    flowName: 'my-kyb-flow',
+    useModal: true,
+  });
+  void flows.mount({
     flowName: 'my-kyc-flow',
     useModal: true,
   });

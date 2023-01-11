@@ -16,10 +16,13 @@
   import { checkIsCameraAvailable } from '../../services/camera-manager';
   import { uiPack } from '../../ui-packs';
   import { IDocumentOptions } from './types';
+  import { getContext } from 'svelte';
 
   export let step: IStepConfiguration;
 
   const documentOptions: IDocumentOption[] = [];
+
+  const context = getContext('machine');
 
   const documentOptionsConfiguration = $configuration.components
     ?.documentOptions as IDocumentOptions;
@@ -50,11 +53,12 @@
   const handleSelectOption = async ({ detail }: { detail: string }) => {
     if (isNativeCamera($configuration)) return;
     const kind = detail as EDocumentKind;
-    const option = documentOptions.find(o => o.document.kind === kind) as IDocumentOption;
-    $selectedDocumentInfo = option?.document as IDocumentInfo;
-    const isCameraAvailable = await checkIsCameraAvailable();
-    if (!isCameraAvailable) return;
-    goToNextStep(currentStepId, $configuration, $currentStepId);
+    context.send(kind);
+    // const option = documentOptions.find(o => o.document.kind === kind) as IDocumentOption;
+    // $selectedDocumentInfo = option?.document as IDocumentInfo;
+    // const isCameraAvailable = await checkIsCameraAvailable();
+    // if (!isCameraAvailable) return;
+    // goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
   const handleTakePhoto = async ({
