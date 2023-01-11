@@ -1,5 +1,5 @@
-import { FlowsGeneralTheme } from "../../types/BallerineSDK";
-import { IConfigurationComponents, TSteps } from "../contexts/configuration";
+import { FlowsGeneralTheme } from '../../types/BallerineSDK';
+import { IConfigurationComponents, TSteps } from '../contexts/configuration';
 
 export interface IUIPackTheme {
   general: FlowsGeneralTheme;
@@ -9,6 +9,6 @@ export interface IUIPackTheme {
 
 export enum EUIPackTypes {
   default = 'default',
-  future = 'future'
+  future = 'future',
 }
 export type TUIPacks = Record<EUIPackTypes, IUIPackTheme>;

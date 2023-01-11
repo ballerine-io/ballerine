@@ -75,22 +75,21 @@ export const preloadNextStepByCurrent = async (
   const steps = globalConfiguration.flows[flowName].steps as IStepConfiguration[];
   const step = steps.find(s => s.id === nextStepId) as IStepConfiguration;
   const updatedStep = await preloadStepImages(step);
-  const updatedSteps = steps.map(s => s.id === nextStepId ? updatedStep : s);
+  const updatedSteps = steps.map(s => (s.id === nextStepId ? updatedStep : s));
   const updatedConfiguration: IAppConfiguration = {
     ...globalConfiguration,
     flows: {
       ...globalConfiguration.flows,
       [flowName]: {
         ...globalConfiguration.flows[flowName],
-        steps: updatedSteps
-      }
-    }
+        steps: updatedSteps,
+      },
+    },
   };
   configuration.set(updatedConfiguration);
   if (!preloadedSteps[flowName]) preloadedSteps[flowName] = {};
   preloadedSteps[flowName][nextStepId] = true;
   isPreloadingInProgress = false;
-
 };
 
 export const preloadStepById = async (
@@ -102,16 +101,16 @@ export const preloadStepById = async (
   const steps = globalConfiguration.flows[flowName].steps as IStepConfiguration[];
   const step = steps.find(s => s.id === stepId) as IStepConfiguration;
   const updatedStep = await preloadStepImages(step);
-  const updatedSteps = steps.map(step => step.id === updatedStep.id ? updatedStep : step);
+  const updatedSteps = steps.map(step => (step.id === updatedStep.id ? updatedStep : step));
   const updatedConfiguration: IAppConfiguration = {
     ...globalConfiguration,
     flows: {
       ...globalConfiguration.flows,
       [flowName]: {
         ...globalConfiguration.flows[flowName],
-        steps: updatedSteps
-      }
-    }
+        steps: updatedSteps,
+      },
+    },
   };
   configuration.set(updatedConfiguration);
 };

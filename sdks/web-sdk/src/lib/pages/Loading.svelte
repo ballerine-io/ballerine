@@ -21,7 +21,7 @@
   import { generateParams, getVerificationStatus, verifyDocuments } from '../services/http';
   import { DecisionStatus } from '../contexts/app-state/types';
   import { preloadStepById } from '../services/preload-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { broofa } from '../utils/api-utils';
   import { sendFlowErrorEvent } from '../utils/event-service/utils';
 

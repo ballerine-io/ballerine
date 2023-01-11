@@ -13,8 +13,7 @@ export interface Props {
   currentPageMatch: string;
 }
 
-const { type, defaultActiveTab, sidebarSections, currentPageMatch } =
-  Astro.props as Props;
+const { type, defaultActiveTab, sidebarSections, currentPageMatch } = Astro.props as Props;
 const lang = getLanguageFromURL(Astro.url.pathname);
 ---
 
@@ -22,40 +21,32 @@ const lang = getLanguageFromURL(Astro.url.pathname);
   sidebarSections.map(({ sections, group }) => (
     <li class:list={[`nav-group`, type, defaultActiveTab === type && `active`]}>
       <details open>
-        <summary class='nav-group-title'>
+        <summary class="nav-group-title">
           <h2>
             {group}
             <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 1 16 16'
-              width='16'
-              height='16'
-              aria-hidden='true'
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 1 16 16"
+              width="16"
+              height="16"
+              aria-hidden="true"
             >
               <path
-                fill-rule='evenodd'
-                d='M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z'
+                fill-rule="evenodd"
+                d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"
               />
             </svg>
           </h2>
         </summary>
         <ul>
           {sections.map(({ text, link, external }) => (
-            <li class='nav-link'>
+            <li class="nav-link">
               <a
                 target={external ? `_blank` : undefined}
-                href={
-                  external
-                    ? link
-                    : `${Astro.site?.pathname}${lang}/${type}/${link}`
-                }
-                aria-current={`${
-                  currentPageMatch.endsWith(link) ? `page` : `false`
-                }`}
+                href={external ? link : `${Astro.site?.pathname}${lang}/${type}/${link}`}
+                aria-current={`${currentPageMatch.endsWith(link) ? `page` : `false`}`}
                 data-current-parent={`${
-                  removeSubpageSegment(currentPageMatch).endsWith(
-                    removeSubpageSegment(link),
-                  )
+                  removeSubpageSegment(currentPageMatch).endsWith(removeSubpageSegment(link))
                     ? `true`
                     : `false`
                 }`}

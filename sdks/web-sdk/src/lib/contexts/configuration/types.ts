@@ -2,7 +2,12 @@ import { INavigationButtons } from '../../molecules/NavigationButtons';
 import { IDocumentOptions } from '../../organisms/DocumentOptions';
 import type { CaptureConfigOption } from 'jslib-html5-camera-photo';
 import { IFlow } from '../flows';
-import { EndUserInfo, FlowsBackendConfig, FlowsEventsConfig, FlowsGeneralTheme } from '../../../types/BallerineSDK';
+import {
+  EndUserInfo,
+  FlowsBackendConfig,
+  FlowsEventsConfig,
+  FlowsGeneralTheme,
+} from '../../../types/BallerineSDK';
 import { EDocumentType, EDocumentKind } from '../app-state';
 import { ICSSProperties } from '../../services/css-manager';
 
@@ -44,7 +49,7 @@ export enum Elements {
   VideoContainer = 'video-container',
   List = 'list',
   ErrorText = 'error-text',
-  Loader = 'loader'
+  Loader = 'loader',
 }
 
 export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo' | 'Voter';
@@ -101,7 +106,7 @@ export interface IStepConfiguration {
   id: string;
   namespace?: string;
   cameraConfig?: CaptureConfigOption;
-  documentOptions?: { type: EDocumentType, kind: EDocumentKind }[];
+  documentOptions?: { type: EDocumentType; kind: EDocumentKind }[];
 }
 
 export interface IOverlayStyles {

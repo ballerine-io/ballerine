@@ -71,20 +71,17 @@ const additionalContributors = unique.length - recentContributors.length; // lis
 ---
 
 <!-- Thanks to @5t3ph for https://smolcss.dev/#smol-avatar-list! -->
-<div class='contributors'>
-  <ul
-    class='avatar-list'
-    style={`--avatar-count: ${recentContributors.length}`}
-  >
+<div class="contributors">
+  <ul class="avatar-list" style={`--avatar-count: ${recentContributors.length}`}>
     {
-      recentContributors.map((item) => (
+      recentContributors.map(item => (
         <li>
           <a href={`https://github.com/${item.login}`}>
             <img
               alt={`Contributor ${item.login}`}
               title={`Contributor ${item.login}`}
-              width='64'
-              height='64'
+              width="64"
+              height="64"
               src={`https://avatars.githubusercontent.com/u/${item.id}`}
             />
           </a>
@@ -95,9 +92,7 @@ const additionalContributors = unique.length - recentContributors.length; // lis
   {
     additionalContributors > 0 && (
       <span>
-        <a
-          href={commitsURL}
-        >{`and ${additionalContributors} additional contributor${
+        <a href={commitsURL}>{`and ${additionalContributors} additional contributor${
           additionalContributors > 1 ? `s` : ``
         }.`}</a>
       </span>
@@ -116,10 +111,7 @@ const additionalContributors = unique.length - recentContributors.length; // lis
     /* Default to displaying most of the avatar to
   enable easier access on touch devices, ensuring
   the WCAG touch target size is met or exceeded */
-    grid-template-columns: repeat(
-      var(--avatar-count),
-      max(44px, calc(var(--avatar-size) / 1.15))
-    );
+    grid-template-columns: repeat(var(--avatar-count), max(44px, calc(var(--avatar-size) / 1.15)));
     /* `padding` matches added visual dimensions of
   the `box-shadow` to help create a more accurate
   computed component size */
@@ -131,10 +123,7 @@ const additionalContributors = unique.length - recentContributors.length; // lis
     .avatar-list {
       /* We create 1 extra cell to enable the computed 
     width to match the final visual width */
-      grid-template-columns: repeat(
-        calc(var(--avatar-count) + 1),
-        calc(var(--avatar-size) / 1.75)
-      );
+      grid-template-columns: repeat(calc(var(--avatar-count) + 1), calc(var(--avatar-size) / 1.75));
     }
   }
 
