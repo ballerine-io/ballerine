@@ -4,13 +4,13 @@ import {
   setAuthorizationHeaderJwt,
   setFlowCallbacks,
   appInit,
-  mergeTranslationsOverrides
+  mergeTranslationsOverrides,
 } from './lib/services/configuration-manager';
 import { getConfigFromQueryParams } from './lib/utils/get-config-from-query-params';
 import { configuration } from './lib/contexts/configuration';
 import { configuration as defaultConfiguration } from './lib/configuration/configuration';
 import { resetAppState } from './lib/contexts/app-state/utils';
-
+//
 export const flows: BallerineSDKFlows = {
   init: config => {
     return new Promise((resolve, reject) => {

@@ -2,12 +2,11 @@
   import { ListItem, Title } from '../../atoms';
   import {
     configuration as globalConfiguration,
-    ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
   import { getFlowName } from '../../contexts/flows';
   import { currentLanguage, T, TranslationType } from '../../contexts/translation';
-  import { makeStylesFromConfiguration } from '../../services/css-manager';
+  import { ICSSProperties, makeStylesFromConfiguration } from '../../services/css-manager';
   import { getListLength } from './utils';
   import { uiPack } from '../../ui-packs';
 

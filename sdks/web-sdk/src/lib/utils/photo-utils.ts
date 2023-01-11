@@ -43,7 +43,8 @@ export const clearDocs = (
   uiPack: IAppConfigurationUI,
   documents: IDocument[],
 ): IDocument[] => {
-  const documentOptionsConfiguration = configuration.components?.documentOptions as IDocumentOptions;
+  const documentOptionsConfiguration = configuration.components
+    ?.documentOptions as IDocumentOptions;
   const { options } = documentOptionsConfiguration;
   const isFromOptions = Object.keys(options).find(t => t === type);
   if (isFromOptions) {

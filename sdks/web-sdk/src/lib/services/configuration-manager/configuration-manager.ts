@@ -1,13 +1,22 @@
-import { FlowsEventsConfig, FlowsInitOptions, FlowsTranslations } from "../../../types/BallerineSDK";
-import { TranslationType } from "../../contexts/translation";
+import {
+  FlowsEventsConfig,
+  FlowsInitOptions,
+  FlowsTranslations,
+} from '../../../types/BallerineSDK';
+import { TranslationType } from '../../contexts/translation';
 import translation from '../../configuration/translation.json';
 import { isUrl, mergeConfigurationWithUiPack, mergeTranslations } from '../merge-service';
-import { configuration as configurationStore, IAppConfiguration, IStepConfiguration, Steps } from "../../contexts/configuration";
-import deepmerge from "deepmerge";
-import { get } from "svelte/store";
-import { uiPack as uiPackStore, EUIPackTypes, packs, IUIPackTheme } from "../../ui-packs";
-import { preloadStepImages } from "../preload-service/utils";
-import { IFlow } from "../../contexts/flows";
+import {
+  configuration as configurationStore,
+  IAppConfiguration,
+  IStepConfiguration,
+  Steps,
+} from '../../contexts/configuration';
+import deepmerge from 'deepmerge';
+import { get } from 'svelte/store';
+import { uiPack as uiPackStore, EUIPackTypes, packs, IUIPackTheme } from '../../ui-packs';
+import { preloadStepImages } from '../preload-service/utils';
+import { IFlow } from '../../contexts/flows';
 
 export let texts: TranslationType = translation;
 
@@ -16,7 +25,7 @@ export const appInit = async (overrides: FlowsInitOptions) => {
   configuration = await populateConfigurationByUiPack(configuration);
   configuration = await preloadFlowBasicSteps(configuration);
   configurationStore.update(() => configuration);
-}
+};
 
 /**
  * @description Merges default configuration and overrides provided by the user
@@ -34,17 +43,19 @@ export const mergeConfigOverrides = (overrides: FlowsInitOptions): IAppConfigura
     return mergedConfiguration;
   });
   return mergedConfiguration;
-}
+};
 
 /**
  * @description Extends provided by user configuration with selected ui pack
  * @param configuration provided user configuration
  */
-export const populateConfigurationByUiPack = async (configuration: IAppConfiguration): Promise<IAppConfiguration> => {
+export const populateConfigurationByUiPack = async (
+  configuration: IAppConfiguration,
+): Promise<IAppConfiguration> => {
   const packType = configuration.uiPack;
   if (isUrl(packType)) {
     const response = await fetch(packType as string);
-    const uiPack = await response.json() as IUIPackTheme;
+    const uiPack = (await response.json()) as IUIPackTheme;
     uiPackStore.set(uiPack);
     return mergeConfigurationWithUiPack(configuration, uiPack);
   }
@@ -55,7 +66,7 @@ export const populateConfigurationByUiPack = async (configuration: IAppConfigura
     return mergeConfigurationWithUiPack(configuration, packs.default);
   }
   return mergeConfigurationWithUiPack(configuration, packs[packType as EUIPackTypes]);
-}
+};
 
 /**
  * @description Sets flow callbacks from the configuration to the selected flow config
@@ -71,12 +82,12 @@ export const setFlowCallbacks = (flowName: string, callbacks?: FlowsEventsConfig
         ...configuration.flows,
         [flowName]: {
           ...configuration.flows[flowName],
-          callbacks
-        }
-      }
-    }
-  })
-}
+          callbacks,
+        },
+      },
+    };
+  });
+};
 
 /**
  * @description Merges the default translations with the translations provided by the user
@@ -92,20 +103,22 @@ export const mergeTranslationsOverrides = async (translations?: FlowsTranslation
  * @description Preload basic steps in the flow in case they exist
  * @param configuration merged general configuration
  */
-export const preloadFlowBasicSteps = async (configuration: IAppConfiguration): Promise<IAppConfiguration> => {
+export const preloadFlowBasicSteps = async (
+  configuration: IAppConfiguration,
+): Promise<IAppConfiguration> => {
   let flows: { [key: string]: IFlow } = {};
   for (const flowName of Object.keys(configuration.flows)) {
     const preloadedFlow = await preloadBasicSteps(configuration.flows[flowName]);
     flows = {
       ...flows,
-      [flowName]: preloadedFlow
-    }
+      [flowName]: preloadedFlow,
+    };
   }
   return {
     ...configuration,
-    flows
-  }
-}
+    flows,
+  };
+};
 
 /**
  * @description Preload basic steps in specific flow
@@ -118,19 +131,23 @@ const preloadBasicSteps = async (flow: IFlow): Promise<IFlow> => {
   const welcomeStep = steps.find(s => s.name === Steps.Welcome);
   if (welcomeStep) {
     const updatedWelcomeStep = await preloadStepImages(welcomeStep);
-    preloadedSteps = preloadedSteps.map(s => s.name === welcomeStep.name ? updatedWelcomeStep : s);
+    preloadedSteps = preloadedSteps.map(s =>
+      s.name === welcomeStep.name ? updatedWelcomeStep : s,
+    );
   }
   // Loading step preload
   const loadingStep = steps.find(s => s.name === Steps.Loading);
   if (loadingStep) {
     const updatedLoadingStep = await preloadStepImages(loadingStep);
-    preloadedSteps = preloadedSteps.map(s => s.name === loadingStep.name ? updatedLoadingStep : s);
+    preloadedSteps = preloadedSteps.map(s =>
+      s.name === loadingStep.name ? updatedLoadingStep : s,
+    );
   }
   return {
     ...flow,
-    steps: preloadedSteps
-  }
-}
+    steps: preloadedSteps,
+  };
+};
 
 /**
  * @description If {@link configuration.backendConfig.auth.method} is set to 'jwt' sets {@link configuration.backendConfig.auth.authorizationHeader} to \`Bearer ${jwt}\`

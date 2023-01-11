@@ -4,8 +4,8 @@
     IAttributes,
     IElementProps,
   } from '../../contexts/configuration';
-  import { ICSSProperties } from '../../services/css-manager';
   import { getComponentStyles } from '../../ui-packs';
+  import { ICSSProperties } from '../../services/css-manager';
 
   export let configuration: IElementProps;
   const styleProps = configuration.style as ICSSProperties;

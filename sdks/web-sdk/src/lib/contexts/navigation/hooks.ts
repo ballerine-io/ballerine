@@ -8,6 +8,7 @@ import { sendFlowErrorEvent } from '../../utils/event-service/utils';
 
 const filterOutByType = (flowIds: string[], configuration: IAppConfiguration, type?: string) => {
   if (!type) return flowIds;
+
   const flowName: string = getFlowName();
   return flowIds.filter(id => {
     const flowSteps = configuration.flows[flowName].steps as IStepConfiguration[];
@@ -27,7 +28,9 @@ export const getNextStepId = (
   const currentFlowIndex = filteredFlows.findIndex(i => i === currentStepId);
   if (currentFlowIndex === filteredFlows.length - 1) {
     // end of the flow
-    void verifyDocumentsAndCloseFlow(globalConfiguration).catch(err => sendFlowErrorEvent(err as Error));
+    void verifyDocumentsAndCloseFlow(globalConfiguration).catch((err: Error) =>
+      sendFlowErrorEvent(err),
+    );
     sendFlowCompleteEvent();
     return;
   }

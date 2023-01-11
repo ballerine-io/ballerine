@@ -74,7 +74,7 @@ h1 {
 }
 
 h2 {
-  font-size: 1.80rem;
+  font-size: 1.8rem;
 }
 
 h3 {
@@ -313,8 +313,7 @@ h2.heading {
 
 .header-link {
   font-size: 1em;
-  transition: border-inline-start-color 100ms ease-out,
-    background-color 200ms ease-out;
+  transition: border-inline-start-color 100ms ease-out, background-color 200ms ease-out;
   border-left: 4px solid var(--theme-divider);
 }
 

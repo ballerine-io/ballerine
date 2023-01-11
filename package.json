@@ -28,6 +28,7 @@
     "lint": "nx run-many --target=lint --projects=@ballerine/web-sdk",
     "test": "nx run-many --target=test",
     "test:e2e": "nx run-many --target=test:e2e",
+    "playwright:install": "nx run-many --target=playwright:install",
     "dev": "nx run-many --target=dev --projects=@ballerine/web-sdk,@ballerine/backoffice",
     "start": "nx run-many --target=start --projects=@ballerine/web-sdk",
     "build": "nx run-many --target=build --projects=@ballerine/web-sdk",
@@ -61,7 +62,6 @@
     "nx": "15.0.2",
     "prettier": "^2.7.1"
   },
-
   "dependencies": {
     "deepmerge": "^4.2.2"
   }

@@ -1,18 +1,18 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, IconCloseButton } from '../atoms';
-  import { configuration, Steps } from '../contexts/configuration';
-  import { currentStepId, currentParams, appState } from '../contexts/app-state';
+  import { Button, IconCloseButton, Image, Title } from '../atoms';
+  import { configuration } from '../contexts/configuration';
+  import { appState, currentParams, currentStepId } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
   import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
   import { flowResubmission } from '../services/analytics';
   import { onDestroy } from 'svelte';
   import {
     EActionNames,
-    sendButtonClickEvent,
     EVerificationStatuses,
+    sendButtonClickEvent,
   } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
   import { isDocumentSelectionStepExists } from '../utils/documents-utils';
 

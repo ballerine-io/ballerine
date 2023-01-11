@@ -8,9 +8,7 @@ interface ItemOffsets {
   topOffset: number;
 }
 
-const TableOfContents: Component<{ headings: MarkdownHeading[] }> = ({
-  headings = [],
-}) => {
+const TableOfContents: Component<{ headings: MarkdownHeading[] }> = ({ headings = [] }) => {
   // eslint-disable-next-line no-undef-init, prefer-const
   let toc: HTMLUListElement | undefined = undefined;
   const onThisPageID = `on-this-page-heading`;
@@ -19,7 +17,7 @@ const TableOfContents: Component<{ headings: MarkdownHeading[] }> = ({
   createEffect(() => {
     const getItemOffsets = () => {
       const titles = document.querySelectorAll(`article :is(h1, h2, h3, h4)`);
-      _itemOffsets = Array.from(titles).map((title) => ({
+      _itemOffsets = Array.from(titles).map(title => ({
         id: title.id,
         topOffset: title.getBoundingClientRect().top + window.scrollY,
       }));
@@ -36,7 +34,7 @@ const TableOfContents: Component<{ headings: MarkdownHeading[] }> = ({
   createEffect(() => {
     if (!toc) return;
 
-    const setCurrent: IntersectionObserverCallback = (entries) => {
+    const setCurrent: IntersectionObserverCallback = entries => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
           const { id } = entry.target;
@@ -54,21 +52,16 @@ const TableOfContents: Component<{ headings: MarkdownHeading[] }> = ({
       threshold: 1,
     };
 
-    const headingsObserver = new IntersectionObserver(
-      setCurrent,
-      observerOptions,
-    );
+    const headingsObserver = new IntersectionObserver(setCurrent, observerOptions);
 
     // Observe all the headings in the main page content.
-    document
-      .querySelectorAll(`article :is(h1,h2,h3)`)
-      .forEach((h) => headingsObserver.observe(h));
+    document.querySelectorAll(`article :is(h1,h2,h3)`).forEach(h => headingsObserver.observe(h));
 
     // Stop observing when the component is unmounted.
     return () => headingsObserver.disconnect();
   });
 
-  const onLinkClick: JSX.EventHandler<HTMLAnchorElement, MouseEvent> = (e) => {
+  const onLinkClick: JSX.EventHandler<HTMLAnchorElement, MouseEvent> = e => {
     const href = e.target.getAttribute(`href`);
 
     if (!href) return;
@@ -78,13 +71,13 @@ const TableOfContents: Component<{ headings: MarkdownHeading[] }> = ({
 
   return (
     <>
-      <h2 id={onThisPageID} class='heading'>
+      <h2 id={onThisPageID} class="heading">
         On this page
       </h2>
       <ul ref={toc}>
         {headings
           .filter(({ depth }) => depth > 1 && depth < 4)
-          .map((heading) => (
+          .map(heading => (
             <li
               class={`header-link depth-${heading.depth} ${
                 currentID() === heading.slug ? `current-header-link` : ``

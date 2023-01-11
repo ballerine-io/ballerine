@@ -1,2 +1,2 @@
-export type { ICSSProperties } from "./types";
-export { makeStylesFromConfiguration, makesLocalStyles } from "./utils";
+export type { ICSSProperties } from './types';
+export { makeStylesFromConfiguration, makesLocalStyles } from './utils';

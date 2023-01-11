@@ -1,6 +1,12 @@
-import { documents, IDocument, IStoreData, selectedDocumentInfo, selfieUri } from "../contexts/app-state";
-import { IAppConfiguration } from "../contexts/configuration";
-import { verifyDocuments } from "../services/http";
+import {
+  documents,
+  IDocument,
+  IStoreData,
+  selectedDocumentInfo,
+  selfieUri,
+} from '../contexts/app-state';
+import { IAppConfiguration } from '../contexts/configuration';
+import { verifyDocuments } from '../services/http';
 
 export const broofa = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -33,4 +39,4 @@ export const verifyDocumentsAndCloseFlow = (configuration: IAppConfiguration) =>
     selfie: _selfie,
   };
   return verifyDocuments(data, endUserId, configuration);
-}
+};

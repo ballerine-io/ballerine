@@ -9,8 +9,7 @@ import * as docSearchReact from '@docsearch/react';
 
 /** FIXME: This is still kinda nasty, but DocSearch is not ESM ready. */
 const DocSearchModal =
-  docSearchReact.DocSearchModal ||
-  (docSearchReact as any).default.DocSearchModal;
+  docSearchReact.DocSearchModal || (docSearchReact as any).default.DocSearchModal;
 const useDocSearchKeyboardEvents =
   docSearchReact.useDocSearchKeyboardEvents ||
   (docSearchReact as any).default.useDocSearchKeyboardEvents;
@@ -29,7 +28,7 @@ export default function Search() {
   }, [setIsOpen]);
 
   const onInput = useCallback(
-    (e) => {
+    e => {
       setIsOpen(true);
       setInitialQuery(e.key);
     },
@@ -46,30 +45,25 @@ export default function Search() {
 
   return (
     <>
-      <button
-        type='button'
-        ref={searchButtonRef}
-        onClick={onOpen}
-        className='search-input'
-      >
-        <svg width='24' height='24' fill='none'>
+      <button type="button" ref={searchButtonRef} onClick={onOpen} className="search-input">
+        <svg width="24" height="24" fill="none">
           <path
-            d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-            stroke='currentColor'
-            strokeWidth='2'
-            strokeLinecap='round'
-            strokeLinejoin='round'
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
 
         <span>Search</span>
 
-        <span className='search-hint'>
-          <span className='sr-only'>Press </span>
+        <span className="search-hint">
+          <span className="sr-only">Press </span>
 
           <kbd>/</kbd>
 
-          <span className='sr-only'> to search</span>
+          <span className="sr-only"> to search</span>
         </span>
       </button>
 
@@ -82,8 +76,8 @@ export default function Search() {
             indexName={ALGOLIA.indexName}
             appId={ALGOLIA.appId}
             apiKey={ALGOLIA.apiKey}
-            transformItems={(items) => {
-              return items.map((item) => {
+            transformItems={items => {
+              return items.map(item => {
                 // We transform the absolute URL into a relative URL to
                 // work better on localhost, preview URLS.
                 const a = document.createElement(`a`);

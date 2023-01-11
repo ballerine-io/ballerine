@@ -17,22 +17,18 @@ const lang = getLanguageFromURL(currentPage);
 
 <header>
   <SkipToContent />
-  <nav class='nav-wrapper' title='Top Navigation'>
-    <div class='menu-toggle'>
+  <nav class="nav-wrapper" title="Top Navigation">
+    <div class="menu-toggle">
       <SidebarToggle client:idle />
     </div>
-    <div class='logo flex'>
-      <a href='/'>
+    <div class="logo flex">
+      <a href="/">
         <Logo size={40} />
         <h1>{CONFIG.SITE.title ?? `Documentation`}</h1>
       </a>
     </div>
-    <div style='flex-grow: 1;'></div>
-    {
-      KNOWN_LANGUAGE_CODES.length > 1 && (
-        <LanguageSelect lang={lang} client:idle />
-      )
-    }
+    <div style="flex-grow: 1;"></div>
+    {KNOWN_LANGUAGE_CODES.length > 1 && <LanguageSelect lang={lang} client:idle />}
     <!-- Algolia -->
     <!-- <div class="search-item"> -->
     <!-- <Search client:idle /> -->

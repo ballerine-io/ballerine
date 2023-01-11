@@ -37,7 +37,6 @@ jobs:
 
       - name: Test
         uses: ./.github/actions/test-action
-
   build:
     runs-on: ubuntu-latest
 
