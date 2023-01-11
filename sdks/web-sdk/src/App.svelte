@@ -1,5 +1,6 @@
 <script lang="ts">
   import { SvelteToast } from '@zerodevx/svelte-toast';
+  import { useMachine } from '@xstate/svelte';
   import { initConnectionCheck } from './lib/utils/check-connection';
   import { configuration } from './lib/contexts/configuration';
   import { currentLanguage, Languages } from './lib/contexts/translation';
@@ -8,6 +9,8 @@
   import { t } from './lib/contexts/translation/hooks';
   import { setFlowName } from './lib/contexts/flows';
   import { uiPack } from './lib/ui-packs';
+  import { flowMachine } from './lib/services/xstate-manager';
+  import { setContext } from 'svelte';
 
   subscribe();
   initConnectionCheck(t);
@@ -17,6 +20,9 @@
   // const flowName = urlParams.get("b_fid");
   export let flowName;
   setFlowName($configuration.flows, flowName);
+
+  const context = useMachine(flowMachine);
+  setContext('machine', context);
 
   $currentLanguage =
     ($configuration.endUserInfo.language as Languages) || $configuration.defaultLanguage;

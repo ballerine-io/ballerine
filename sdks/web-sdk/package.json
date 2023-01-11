@@ -89,9 +89,11 @@
     "vitest": "^0.24.5"
   },
   "dependencies": {
+    "@xstate/svelte": "^2.0.1",
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "dotenv": "^16.0.3",
-    "jslib-html5-camera-photo": "^3.3.3"
+    "jslib-html5-camera-photo": "^3.3.3",
+    "xstate": "^4.35.2"
   }
 }

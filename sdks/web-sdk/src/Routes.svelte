@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { useMachine } from '@xstate/svelte';
+  import { context } from './lib/services/xstate-manager';
   import { fly } from 'svelte/transition';
   import { steps } from './lib/contexts/navigation';
   import { configuration, IStepConfiguration } from './lib/contexts/configuration';
@@ -36,6 +38,14 @@
       }
     }
   };
+
+  const context = getContext('machine');
+
+  context.state.subscribe(newState => {
+    console.log(newState);
+    step = steps.find(s => s.name === newState.value);
+    stepId = newState.value;
+  });
 
   $: {
     routeInit($currentStepId, $currentStepIdx);

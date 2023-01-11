@@ -40,6 +40,7 @@ export const goToNextStep = (
   currentStepId: string,
   skipType?: string,
 ) => {
+  const { state, send } = useMachine(flowMachine);
   const nextStepId = getNextStepId(globalConfiguration, currentStepId, skipType);
   if (nextStepId) currentStepIdStore.set(nextStepId);
 };
