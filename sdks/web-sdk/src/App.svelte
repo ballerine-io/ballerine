@@ -8,6 +8,7 @@
   import { t } from './lib/contexts/translation/hooks';
   import { setFlowName } from './lib/contexts/flows';
   import { uiPack } from './lib/ui-packs';
+  import MetricsPixel from './lib/atoms/MetricsPixel/MetricsPixel.svelte';
 
   subscribe();
   initConnectionCheck(t);
@@ -54,6 +55,7 @@
       },
     }}
   />
+  <MetricsPixel/>
 </main>
 
 <style>

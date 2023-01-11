@@ -48,4 +48,7 @@ export const configuration: IAppConfiguration = {
       useFinalQueryParams: true,
     },
   },
+  metricsConfig: {
+    enabled: true
+  }
 };
