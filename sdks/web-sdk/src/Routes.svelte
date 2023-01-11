@@ -5,17 +5,23 @@
   import { sendNavigationUpdateEvent } from './lib/utils/event-service';
   import { visitedPage } from './lib/services/analytics';
   import { currentStepId, currentStepIdx, currentParams } from './lib/contexts/app-state';
-  import { getContext } from 'svelte';
+  import { getFlowName } from './lib/contexts/flows';
 
-  const flowName = getContext('flowName') as string;
-  const flow = $configuration.flows[flowName];
-  const flowSteps = flow.steps as RecursivePartial<IStepConfiguration>[];
+  const getFlowSteps = () => {
+    const flowName = getFlowName();
+    const flow = $configuration.flows[flowName];
+    return flow.steps as RecursivePartial<IStepConfiguration>[];
+  };
+  const flowSteps = getFlowSteps();
   const configurationStepIds = flowSteps.map(s => s.id) as string[];
   let stepId = configurationStepIds[0];
   const flowStep = flowSteps.find(s => s.id === stepId) as IStepConfiguration;
+
   let step = steps.find(s => s.name === flowStep.name);
 
   const routeInit = (currentStepId: string, currentStepIdx: number) => {
+    const flowSteps = getFlowSteps();
+    const configurationStepIds = flowSteps.map(s => s.id) as string[];
     const configurationStepId = configurationStepIds.find((id: string) => id === currentStepId);
     if (configurationStepId === stepId) return;
     if (!configurationStepId) {

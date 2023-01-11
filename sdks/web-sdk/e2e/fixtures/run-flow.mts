@@ -52,9 +52,11 @@ export class RunFlow {
   async kyb() {
     if (!this.isKyb) return;
 
-    const title = this.page.getByRole('heading', {
-      name: /business\sregistration/i,
-    }).first();
+    const title = this.page
+      .getByRole('heading', {
+        name: /business\sregistration/i,
+      })
+      .first();
 
     await expect(title).toBeVisible();
 

@@ -2,10 +2,9 @@
   import { Writable } from 'svelte/store';
   import {
     configuration as globalConfiguration,
-    ICSSProperties,
     IElementProps,
   } from '../../contexts/configuration';
-  import { makeStylesFromConfiguration } from '../../services/css-manager';
+  import { ICSSProperties, makeStylesFromConfiguration } from '../../services/css-manager';
   import { IInputAttributes } from './types';
   import { t } from '../../contexts/translation/hooks';
   import merge from 'deepmerge';

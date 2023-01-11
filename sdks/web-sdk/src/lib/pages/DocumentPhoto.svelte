@@ -13,10 +13,10 @@
     VideoContainer,
   } from '../atoms';
   import { Elements } from '../contexts/configuration/types';
-  import { EDocumentType, IDocument, appState } from '../contexts/app-state';
+  import { appState, EDocumentType, IDocument } from '../contexts/app-state';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
-  import { documents, currentStepId, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { currentStepId, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import {
     EActionNames,
