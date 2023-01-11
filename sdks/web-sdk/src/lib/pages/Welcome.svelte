@@ -12,7 +12,6 @@
   import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
-
   const step = getStepConfiguration($configuration, stepId);
   const flow = getFlowConfig($configuration);
   const style = getLayoutStyles($configuration, step);

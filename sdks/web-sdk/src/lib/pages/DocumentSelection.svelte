@@ -14,12 +14,15 @@
   } from '../utils/event-service';
   import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
+  import { getContext } from 'svelte';
 
   export let stepId;
 
   const step = getStepConfiguration($configuration, stepId);
   const flow = getFlowConfig($configuration);
   const style = getLayoutStyles($configuration, step);
+
+  const context = getContext('machine');
 
   const stepNamespace = step.namespace!;
 
@@ -29,10 +32,7 @@
 <div class="container" {style}>
   {#each step.elements as element}
     {#if element.type === Elements.IconButton}
-      <IconButton
-        configuration={element.props}
-        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
-      />
+      <IconButton configuration={element.props} on:click={() => context.send('PREV')} />
     {/if}
     {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
       <IconCloseButton
