@@ -1,6 +1,6 @@
-import { EDocumentType, IDocumentInfo } from '../contexts/app-state';
-import { IAppConfiguration, IStepConfiguration, Steps } from '../contexts/configuration';
-import { getFlowName } from '../contexts/flows';
+import { EDocumentType, IDocumentInfo } from "../contexts/app-state";
+import { IAppConfiguration, IStepConfiguration, Steps } from "../contexts/configuration";
+import { getFlowName } from "../contexts/flows";
 
 export const getDocumentType = (step: IStepConfiguration, selectedDocumentInfo?: IDocumentInfo) => {
   return (step.type as EDocumentType) || selectedDocumentInfo?.type;
