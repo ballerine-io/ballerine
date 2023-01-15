@@ -27,8 +27,6 @@
 
 <!-- Bagdes - END -->
 
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fballerine-io%2Fballerine%2Ftree%2Fmain%2Fexamples%2Fweb-sdk%2Fsdk-react) [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https%3A%2F%2Fgithub.com%2Fballerine-io%2Fballerine)
-
 </div>
 
 
@@ -161,6 +159,9 @@ The SDK UI is embeddable inside existing apps or deployed as a web app.
 
 **Playground:**
 <a href="https://jsfiddle.net/ballerine/7d0g53xn" target="_blank">jsfiddle</a>
+
+**Deploy**:<br/>
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fballerine-io%2Fballerine%2Ftree%2Fmain%2Fexamples%2Fweb-sdk%2Fsdk-react)
 
 **Getting started:**
 [Click here](#getting-started-with-sdks-flows)
