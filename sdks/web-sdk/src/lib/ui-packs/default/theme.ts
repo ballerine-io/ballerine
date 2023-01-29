@@ -1,7 +1,7 @@
 import { IMAGE_TYPES } from 'jslib-html5-camera-photo';
-import { EDocumentType } from '../../contexts/app-state';
-import { DocumentVariant, EDocumentKind } from '../../contexts/app-state/types';
-import { Elements, IElement, Steps, TSteps } from '../../contexts/configuration';
+import { DocumentType } from '../../contexts/app-state';
+import { DocumentKind, DocumentVariant } from '../../contexts/app-state/types';
+import { Elements, IElement, Steps, TStepsConfigurations } from '../../contexts/configuration';
 import { IUIPackTheme } from '../types';
 
 const backIconButton: IElement = {
@@ -53,7 +53,7 @@ const backWhiteIconButton: IElement = {
   },
 };
 
-const stepsTheme: TSteps = [
+const stepsTheme: TStepsConfigurations = [
   {
     name: Steps.Welcome,
     id: Steps.Welcome,
@@ -825,10 +825,10 @@ export const uiTheme: IUIPackTheme = {
     },
     documentOptions: {
       options: {
-        [EDocumentType.ID_CARD]: {
+        [DocumentType.ID_CARD]: {
           document: {
-            type: EDocumentType.ID_CARD,
-            kind: EDocumentKind.ID_CARD,
+            type: DocumentType.ID_CARD,
+            kind: DocumentKind.ID_CARD,
             backSide: true,
             variant: DocumentVariant.REGULAR,
             orderIndex: 10,
@@ -839,10 +839,10 @@ export const uiTheme: IUIPackTheme = {
             height: 40,
           },
         },
-        [EDocumentType.DRIVERS_LICENSE]: {
+        [DocumentType.DRIVERS_LICENSE]: {
           document: {
-            type: EDocumentType.DRIVERS_LICENSE,
-            kind: EDocumentKind.DRIVERS_LICENSE,
+            type: DocumentType.DRIVERS_LICENSE,
+            kind: DocumentKind.DRIVERS_LICENSE,
             backSide: true,
             variant: DocumentVariant.REGULAR,
             orderIndex: 20,
@@ -853,10 +853,10 @@ export const uiTheme: IUIPackTheme = {
             height: 40,
           },
         },
-        [EDocumentType.PASSPORT]: {
+        [DocumentType.PASSPORT]: {
           document: {
-            type: EDocumentType.PASSPORT,
-            kind: EDocumentKind.PASSPORT,
+            type: DocumentType.PASSPORT,
+            kind: DocumentKind.PASSPORT,
             backSide: false,
             variant: DocumentVariant.REGULAR,
             orderIndex: 30,
@@ -867,10 +867,10 @@ export const uiTheme: IUIPackTheme = {
             height: 40,
           },
         },
-        [EDocumentType.VOTER_ID]: {
+        [DocumentType.VOTER_ID]: {
           document: {
-            type: EDocumentType.VOTER_ID,
-            kind: EDocumentKind.VOTER_ID,
+            type: DocumentType.VOTER_ID,
+            kind: DocumentKind.VOTER_ID,
             backSide: true,
             variant: DocumentVariant.REGULAR,
             orderIndex: 40,

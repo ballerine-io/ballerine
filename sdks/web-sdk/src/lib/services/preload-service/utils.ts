@@ -71,7 +71,7 @@ export const preloadNextStepByCurrent = async (
   if (!nextStepId || (preloadedSteps[flowName] && preloadedSteps[flowName][nextStepId])) {
     isPreloadingInProgress = false;
     return;
-  };
+  }
   const steps = globalConfiguration.flows[flowName].steps as IStepConfiguration[];
   const step = steps.find(s => s.id === nextStepId) as IStepConfiguration;
   const updatedStep = await preloadStepImages(step);

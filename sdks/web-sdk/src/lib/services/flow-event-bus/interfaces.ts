@@ -1,11 +1,12 @@
-import { EEventTypes, IDocumentVerificationResponse } from '../../utils/event-service';
-import { EFlowEvent } from './enums';
+import { IDocumentVerificationResponse } from '../../utils/event-service';
+import { FlowEvent, TFlowEvent } from './enums';
 import { AnyRecord } from '../../../types';
 import { TFlowEventBusPayload } from './types';
+import { TEventTypes } from '../../utils/event-service/types';
 
 export interface IEventOptions {
   eventName: string;
-  eventType: EEventTypes;
+  eventType: TEventTypes;
 }
 
 export interface IFlowCompletePayload extends IEventOptions {
@@ -29,7 +30,7 @@ export interface IFlowNavigationUpdatePayload extends IEventOptions {
 }
 
 export interface IFlowEventBusParams<
-  TType extends EFlowEvent,
+  TType extends TFlowEvent,
   TPayload extends TFlowEventBusPayload,
 > {
   type: TType;
@@ -38,14 +39,20 @@ export interface IFlowEventBusParams<
 
 // Overloading is required in order for the payload's type to be inferred correctly within flowEventBus's switch/case clause.
 export interface IFlowEventBus {
-  ({ type, payload }: IFlowEventBusParams<EFlowEvent.FLOW_COMPLETE, IFlowCompletePayload>): void;
+  ({
+    type,
+    payload,
+  }: IFlowEventBusParams<typeof FlowEvent.FLOW_COMPLETE, IFlowCompletePayload>): void;
 
-  ({ type, payload }: IFlowEventBusParams<EFlowEvent.FLOW_EXIT, IFlowExitPayload>): void;
+  ({ type, payload }: IFlowEventBusParams<typeof FlowEvent.FLOW_EXIT, IFlowExitPayload>): void;
 
-  ({ type, payload }: IFlowEventBusParams<EFlowEvent.FLOW_ERROR, IFlowErrorPayload>): void;
+  ({ type, payload }: IFlowEventBusParams<typeof FlowEvent.FLOW_ERROR, IFlowErrorPayload>): void;
 
   ({
     type,
     payload,
-  }: IFlowEventBusParams<EFlowEvent.FLOW_NAVIGATION_UPDATE, IFlowNavigationUpdatePayload>): void;
+  }: IFlowEventBusParams<
+    typeof FlowEvent.FLOW_NAVIGATION_UPDATE,
+    IFlowNavigationUpdatePayload
+  >): void;
 }

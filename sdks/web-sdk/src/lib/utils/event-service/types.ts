@@ -1,32 +1,38 @@
-import { DecisionStatus } from '../../contexts/app-state/types';
+import { ObjectValues, TDecisionStatus } from '../../contexts/app-state/types';
 
-export enum EEventTypes {
-  SYNC_FLOW_COMPLETE = 'sync_flow_complete',
-  ASYNC_FLOW_COMPLETE = 'async_flow_complete',
-  VERIFICATION_UPDATE = 'verification_update',
-  NAVIGATION_UPDATE = 'navigation_update',
-  BUTTON_CLICK = 'button_click',
-  FLOW_ERROR = 'flow_error',
-}
+export const EventTypes = {
+  SYNC_FLOW_COMPLETE: 'sync_flow_complete',
+  ASYNC_FLOW_COMPLETE: 'async_flow_complete',
+  VERIFICATION_UPDATE: 'verification_update',
+  NAVIGATION_UPDATE: 'navigation_update',
+  BUTTON_CLICK: 'button_click',
+  FLOW_ERROR: 'flow_error',
+} as const;
 
-export enum EActionNames {
-  CLOSE = 'close',
-}
+export type TEventTypes = ObjectValues<typeof EventTypes>;
 
-export enum EVerificationStatuses {
-  COMPLETED = 'completed',
-  PENDING = 'pending',
-  ERROR = 'error',
-  DATA_COLLECTION = 'data_collection',
-}
+export const ActionNames = {
+  CLOSE: 'close',
+};
+
+export type TActionNames = ObjectValues<typeof ActionNames>;
+
+export const VerificationStatuses = {
+  COMPLETED: 'completed',
+  PENDING: 'pending',
+  ERROR: 'error',
+  DATA_COLLECTION: 'data_collection',
+} as const;
+
+export type TVerificationStatuses = ObjectValues<typeof VerificationStatuses>;
 
 export interface ISendDocumentsResponse {
   status: 'success' | 'fail';
 }
 
 export interface IDocumentVerificationResponse {
-  status: EVerificationStatuses;
-  idvResult?: DecisionStatus;
+  status: TVerificationStatuses;
+  idvResult?: TDecisionStatus;
   code?: number;
   reasonCode?: number;
 }

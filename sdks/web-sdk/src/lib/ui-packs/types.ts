@@ -1,14 +1,20 @@
 import { FlowsGeneralTheme } from '../../types/BallerineSDK';
-import { IConfigurationComponents, TSteps } from '../contexts/configuration';
+import { IConfigurationComponents, TStepsConfigurations } from '../contexts/configuration';
+import { ObjectValues } from '../contexts/app-state/types';
 
 export interface IUIPackTheme {
   general: FlowsGeneralTheme;
   components: IConfigurationComponents;
-  steps: TSteps;
+  steps: TStepsConfigurations;
 }
 
-export enum EUIPackTypes {
-  default = 'default',
-  future = 'future',
-}
-export type TUIPacks = Record<EUIPackTypes, IUIPackTheme>;
+export const UIPackType = {
+  default: 'default',
+  future: 'future',
+} as const;
+
+export const UIPackTypes = [UIPackType.default, UIPackType.future];
+
+export type TUIPackType = ObjectValues<typeof UIPackType>;
+
+export type TUIPacks = Record<TUIPackType, IUIPackTheme>;

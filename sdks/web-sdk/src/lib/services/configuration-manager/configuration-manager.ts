@@ -14,9 +14,10 @@ import {
 } from '../../contexts/configuration';
 import deepmerge from 'deepmerge';
 import { get } from 'svelte/store';
-import { uiPack as uiPackStore, EUIPackTypes, packs, IUIPackTheme } from '../../ui-packs';
+import { IUIPackTheme, packs, uiPack as uiPackStore } from '../../ui-packs';
 import { preloadStepImages } from '../preload-service/utils';
 import { IFlow } from '../../contexts/flows';
+import { TUIPackType, UIPackTypes } from '../../ui-packs/types';
 
 export let texts: TranslationType = translation;
 
@@ -62,10 +63,11 @@ export const populateConfigurationByUiPack = async (
   if (!packType) {
     return mergeConfigurationWithUiPack(configuration, packs.default);
   }
-  if (!Object.values(EUIPackTypes).includes(packType as EUIPackTypes)) {
+  if (!UIPackTypes.includes(packType as TUIPackType)) {
     return mergeConfigurationWithUiPack(configuration, packs.default);
   }
-  return mergeConfigurationWithUiPack(configuration, packs[packType as EUIPackTypes]);
+
+  return mergeConfigurationWithUiPack(configuration, packs[packType as TUIPackType]);
 };
 
 /**

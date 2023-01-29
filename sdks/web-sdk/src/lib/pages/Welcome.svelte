@@ -7,7 +7,7 @@
   import { sendButtonClickEvent } from '../utils/event-service/utils';
   import { appState } from '../contexts/app-state';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { EActionNames, EVerificationStatuses } from '../utils/event-service';
+  import { ActionNames, VerificationStatuses } from '../utils/event-service';
   import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
 
@@ -30,8 +30,8 @@
           configuration={element.props}
           on:click={() => {
             sendButtonClickEvent(
-              EActionNames.CLOSE,
-              { status: EVerificationStatuses.DATA_COLLECTION },
+              ActionNames.CLOSE,
+              { status: VerificationStatuses.DATA_COLLECTION },
               $appState,
               true,
             );
@@ -44,8 +44,8 @@
         configuration={element.props}
         on:click={() => {
           sendButtonClickEvent(
-            EActionNames.CLOSE,
-            { status: EVerificationStatuses.DATA_COLLECTION },
+            ActionNames.CLOSE,
+            { status: VerificationStatuses.DATA_COLLECTION },
             $appState,
             true,
           );

@@ -8,49 +8,53 @@ import {
   FlowsEventsConfig,
   FlowsGeneralTheme,
 } from '../../../types/BallerineSDK';
-import { EDocumentType, EDocumentKind } from '../app-state';
 import { ICSSProperties } from '../../services/css-manager';
+import { ObjectValues, TDocumentKind, TDocumentType } from '../app-state/types';
 
-export enum Steps {
-  Welcome = 'welcome',
-  DocumentSelection = 'document-selection',
-  DocumentStart = 'document-start',
-  DocumentPhoto = 'document-photo',
-  CheckDocument = 'check-document',
-  DocumentPhotoBackStart = 'document-photo-back-start',
-  DocumentPhotoBack = 'document-photo-back',
-  CheckDocumentPhotoBack = 'check-document-photo-back',
-  SelfieStart = 'selfie-start',
-  Selfie = 'selfie',
-  CheckSelfie = 'check-selfie',
-  A4DocumentStart = 'a4-document-start',
-  A4DocumentPhoto = 'a4-document-photo',
-  CheckA4Document = 'check-a4-document',
-  Registration = 'registration',
-  Final = 'final',
-  Loading = 'loading',
-  Resubmission = 'resubmission',
-  Decline = 'decline',
-  Error = 'error',
-}
+export const Steps = {
+  Welcome: 'welcome',
+  DocumentSelection: 'document-selection',
+  DocumentStart: 'document-start',
+  DocumentPhoto: 'document-photo',
+  CheckDocument: 'check-document',
+  DocumentPhotoBackStart: 'document-photo-back-start',
+  DocumentPhotoBack: 'document-photo-back',
+  CheckDocumentPhotoBack: 'check-document-photo-back',
+  SelfieStart: 'selfie-start',
+  Selfie: 'selfie',
+  CheckSelfie: 'check-selfie',
+  A4DocumentStart: 'a4-document-start',
+  A4DocumentPhoto: 'a4-document-photo',
+  CheckA4Document: 'check-a4-document',
+  Registration: 'registration',
+  Final: 'final',
+  Loading: 'loading',
+  Resubmission: 'resubmission',
+  Decline: 'decline',
+  Error: 'error',
+} as const;
 
-export enum Elements {
-  Image = 'image',
-  Photo = 'photo',
-  Title = 'title',
-  Paragraph = 'paragraph',
-  Button = 'button',
-  Input = 'input',
-  Container = 'container',
-  DocumentOption = 'document-option',
-  IconButton = 'icon-button',
-  IconCloseButton = 'icon-close-button',
-  CameraButton = 'camera-button',
-  VideoContainer = 'video-container',
-  List = 'list',
-  ErrorText = 'error-text',
-  Loader = 'loader',
-}
+export type TSteps = ObjectValues<typeof Steps>;
+
+export const Elements = {
+  Image: 'image',
+  Photo: 'photo',
+  Title: 'title',
+  Paragraph: 'paragraph',
+  Button: 'button',
+  Input: 'input',
+  Container: 'container',
+  DocumentOption: 'document-option',
+  IconButton: 'icon-button',
+  IconCloseButton: 'icon-close-button',
+  CameraButton: 'camera-button',
+  VideoContainer: 'video-container',
+  List: 'list',
+  ErrorText: 'error-text',
+  Loader: 'loader',
+} as const;
+
+export type TElements = ObjectValues<typeof Elements>;
 
 export type Icons = 'Card' | 'Passport' | 'License' | 'PassportTwo' | 'Voter';
 
@@ -90,23 +94,23 @@ export interface IElementProps {
 export interface IElement {
   id: string;
   props: IElementProps;
-  type: Elements;
+  type: TElements;
   disabled?: boolean;
   orderIndex: number;
   elements?: IElement[];
 }
 
 export interface IStepConfiguration {
-  name: Steps;
+  name: TSteps;
   style?: ICSSProperties;
   overlayStyle?: ICSSProperties;
   elements: IElement[];
   form?: IFormProps;
-  type?: EDocumentType;
+  type?: TDocumentType;
   id: string;
   namespace?: string;
   cameraConfig?: CaptureConfigOption;
-  documentOptions?: { type: EDocumentType; kind: EDocumentKind }[];
+  documentOptions?: { type: TDocumentType; kind: TDocumentKind }[];
 }
 
 export interface IOverlayStyles {
@@ -116,7 +120,7 @@ export interface IOverlayStyles {
   selfie?: ICSSProperties;
 }
 
-export type TSteps = IStepConfiguration[];
+export type TStepsConfigurations = IStepConfiguration[];
 export interface IConfigurationComponents {
   container?: ICSSProperties;
   button?: ICSSProperties;

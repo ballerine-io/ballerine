@@ -8,7 +8,7 @@ export type {
   IButton,
   IElement,
   IFormProps,
-  TSteps,
+  TStepsConfigurations,
 } from './types';
 export { Steps, Elements } from './types';
 export { configuration } from './store';
