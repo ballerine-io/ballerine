@@ -9,7 +9,6 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
-    using: 'node18'
 
     steps:
       - name: Checkout
@@ -20,7 +19,6 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    using: 'node18'
 
     steps:
       - name: Checkout
@@ -32,7 +30,6 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    using: 'node18'
 
     steps:
       - name: Checkout
@@ -42,7 +39,6 @@ jobs:
         uses: ./.github/actions/test-action
   build:
     runs-on: ubuntu-latest
-    using: 'node18'
 
     steps:
       - name: Checkout
