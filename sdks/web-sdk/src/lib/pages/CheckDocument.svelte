@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { T } from "../contexts/translation";
-  import { IconButton, IconCloseButton, Image, Paragraph, Photo, Title } from "../atoms";
-  import { configuration } from "../contexts/configuration";
-  import { Elements } from "../contexts/configuration/types";
-  import { goToPrevStep } from "../contexts/navigation";
-  import { appState, getDocImage } from "../contexts/app-state";
-  import { NavigationButtons } from "../molecules";
-  import { currentStepId, documents, selectedDocumentInfo } from "../contexts/app-state/stores";
-  import { preloadNextStepByCurrent } from "../services/preload-service";
-  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from "../utils/event-service";
-  import { getLayoutStyles, getStepConfiguration } from "../ui-packs";
-  import { getFlowConfig } from "../contexts/flows/hooks";
-  import { getDocumentType } from "../utils/documents-utils";
+  import { T } from '../contexts/translation';
+  import { IconButton, IconCloseButton, Image, Paragraph, Photo, Title } from '../atoms';
+  import { configuration } from '../contexts/configuration';
+  import { Elements } from '../contexts/configuration/types';
+  import { goToPrevStep } from '../contexts/navigation';
+  import { appState, getDocImage } from '../contexts/app-state';
+  import { NavigationButtons } from '../molecules';
+  import { currentStepId, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
+  import { getDocumentType } from '../utils/documents-utils';
 
   export let stepId;
 

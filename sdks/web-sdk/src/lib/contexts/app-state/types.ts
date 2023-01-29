@@ -1,5 +1,5 @@
 import { SvelteComponent } from 'svelte';
-import { Steps } from '../configuration/types';
+import { TSteps } from '../configuration/types';
 
 export const DocumentType = {
   PASSPORT: 'passport', // CARD
@@ -68,7 +68,7 @@ export interface IStoreData {
 }
 
 export interface IStep {
-  name: Steps;
+  name: TSteps;
   id: string;
   component: typeof SvelteComponent;
 }

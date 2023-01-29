@@ -4,7 +4,7 @@
     IElementProps,
   } from '../../contexts/configuration';
   import { ICSSProperties } from '../../services/css-manager';
-  import { getComponentStyles, uiPack } from '../../ui-packs';
+  import { getComponentStyles } from '../../ui-packs';
 
   export let configuration: IElementProps;
 

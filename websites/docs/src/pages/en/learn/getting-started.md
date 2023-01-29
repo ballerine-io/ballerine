@@ -76,7 +76,7 @@ await ballerineFlows
 ballerineFlows.mount('my-kyc-flow', 'flow-host-element', {
   // 4. Listen to the flow completed event (see events)
   callbacks: {
-    onFlowComplete: (data) => {
+    onFlowComplete: data => {
       console.log('Flow completed', data);
     },
   },
@@ -185,7 +185,7 @@ ballerineFlows.mount('my-kyc-flow', 'flow-host-element', {
           BallerineSDK.flows.mount('my-kyc-flow', 'kyc-host', {
             // 4. Listen to the flow completed event (see events)
             callbacks: {
-              onFlowComplete: (data) => {
+              onFlowComplete: data => {
                 console.log('Flow completed', data);
               },
             },

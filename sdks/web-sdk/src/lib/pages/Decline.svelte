@@ -1,21 +1,21 @@
 <script lang="ts">
-  import { onDestroy } from "svelte";
-  import { T } from "../contexts/translation";
-  import { Button, IconCloseButton, Image, Title } from "../atoms";
-  import { configuration } from "../contexts/configuration";
-  import { Elements } from "../contexts/configuration/types";
-  import ErrorText from "../atoms/ErrorText/ErrorText.svelte";
+  import { onDestroy } from 'svelte';
+  import { T } from '../contexts/translation';
+  import { Button, IconCloseButton, Image, Title } from '../atoms';
+  import { configuration } from '../contexts/configuration';
+  import { Elements } from '../contexts/configuration/types';
+  import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
   import {
     ActionNames,
     sendButtonClickEvent,
     sendFlowCompleteEvent,
-    VerificationStatuses
-  } from "../utils/event-service";
-  import { flowDeclined } from "../services/analytics";
-  import { appState, currentParams } from "../contexts/app-state";
-  import { DecisionStatus } from "../contexts/app-state/types";
-  import { getLayoutStyles, getStepConfiguration, uiPack } from "../ui-packs";
-  import { getFlowConfig } from "../contexts/flows/hooks";
+    VerificationStatuses,
+  } from '../utils/event-service';
+  import { flowDeclined } from '../services/analytics';
+  import { appState, currentParams } from '../contexts/app-state';
+  import { DecisionStatus } from '../contexts/app-state/types';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 

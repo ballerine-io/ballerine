@@ -12,7 +12,7 @@
 </br>
 
   <!-- Bagdes - Start -->
- 
+
 
    <a href="https://github.com/ballerine-io/ballerine/stargazers"><img src="https://img.shields.io/github/stars/ballerine-io/ballerine?logo=GitHub&style=flat-square"></a>
       <a href="https://simple-kyc-demo.ballerine.app/"><img src="https://img.shields.io/website?color=%233F77FF&down_color=%233F77FF&down_message=Off&label=SDK%20Flow%20Demo&logo=Svelte&logoColor=%23FFFFFF&style=flat-square&up_color=%233F77FF&up_message=Live&url=https%3A%2F%2Fsimple-kyc-demo.ballerine.app%2F"></a>
@@ -47,7 +47,7 @@ Ballerine helps any company verify its customers’ identity while providing an 
 </a>
 </p>
 
- 
+
 [See Detailed Roadmap](#roadmap)
 
 Join our mailing list so you know whenever we release something (like liveliness or the rule engine).
@@ -57,7 +57,7 @@ Join our mailing list so you know whenever we release something (like liveliness
 </a>
 
 ____
-	
+
 ### Why Open Source KYC/KYB & Risk stack?
 
 The goal is to allow any company to manage user identity and risk in a way that suits them and their unique changing needs.
@@ -107,7 +107,7 @@ If you currently don't have a commercial agreement with KYC vendors, you can use
 
 
 ### Description
-Give your operating team Ballerine’s case management dashboard so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company. 
+Give your operating team Ballerine’s case management dashboard so they can approve or reject users, initiate workflows for document re-upload or escalate cases to others in the company.
 
 * A case management dashboard to approve, reject or classify users manually.
 * Create workflows operators can trigger from the interface.
@@ -160,6 +160,9 @@ The SDK UI is embeddable inside existing apps or deployed as a web app.
 **Playground:**
 <a href="https://jsfiddle.net/ballerine/7d0g53xn" target="_blank">jsfiddle</a>
 
+**Deploy**:<br/>
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fballerine-io%2Fballerine%2Ftree%2Fmain%2Fexamples%2Fweb-sdk%2Fsdk-react)
+
 **Getting started:**
 [Click here](#getting-started-with-sdks-flows)
 
@@ -177,7 +180,7 @@ The SDK UI is embeddable inside existing apps or deployed as a web app.
 ___
 
 <details><summary>Some examples of what you can do with it</summary>
-	
+
 -  Create a custom flow you can use with any identity verification vendor.
 -  Create a custom flow that your customers can receive in an SMS.
 -  Create different types of flows for different types of customers.
@@ -201,7 +204,7 @@ Customize your identity and risk workflows in code or with a low-code platform n
 
 <br/>
 
-> *Our rule engine is still in development. Join our mailing list in the button below to get an update once it's out.*	
+> *Our rule engine is still in development. Join our mailing list in the button below to get an update once it's out.*
 > <a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
 > <br/>
 > <br/>
@@ -285,7 +288,7 @@ ballerineFlows.mount('my-kyc-flow', 'flow-host-element', {});
 ballerineFlows.on('finish', doSomethingFn)
 ```
 [example folder]()
-	
+
 #### Standalone/Iframe Flows
 Code example:
 ```html
@@ -311,7 +314,7 @@ Code example:
 	}
 	BallerineSDK.flows.init(initConfig).then(() => {
 		BallerineSDK.flows.mount('my-kyc-flow', 'flow-host-element', {});
-	});	
+	});
 }
 </script>
 ```
@@ -321,7 +324,7 @@ Code example:
 All of the native functionalities happen inside Ballerine's native SDKs (Android & iOS Cameras, Sim checks, Fraud checks) while the representation layer is still a web app (inside a native webview).
 
 This way we can enjoy both worlds:
-* Web UI: Flexible UI that can be changed instantly from the server (no app deployments or store submissions). 
+* Web UI: Flexible UI that can be changed instantly from the server (no app deployments or store submissions).
 * Native APIs: Native camera, deep behavioral analysis, ekyc and more...
 
 See Android and iOS repositories for guidance:
@@ -354,7 +357,7 @@ BallerineSDK.flows.mount('my-flow', elementId, [CONFIG]);
 // or
 BallerineSDK.flows.openModal('my-flow', [CONFIG]);
  ```
-	
+
 | Config Parameter | Type | Description|
 | - | - | - |
 | `callbacks` | [FlowsCallbacksConfig](#flowscallbacksconfig) |An object contaning callback methods (see below)|
@@ -434,13 +437,13 @@ Click below to tell us what we should work on next by creating feature requests 
 * [ ] SDKs *(WIP)*
 	- [x] ~~Open sourcing Web SDK~~
 		- [x] ~~UI Customization~~
-		- [x] ~~Flow Customization~~		 
+		- [x] ~~Flow Customization~~
 		- [x] ~~Document collection~~
 		- [x] ~~Selfie~~
 		- [x] ~~KYC/B Templates~~
 		- [x] ~~Vendor/Backend Agnostic~~
-        - [ ] Web liveliness step 
-	- [x] Open-sourcing Android SDK 
+        - [ ] Web liveliness step
+	- [x] Open-sourcing Android SDK
 		- [x] ~~Webview Integration~~
 		- [x] ~~Native Camera Option~~
 		- [ ] Native liveliness *(WIP)*
@@ -448,14 +451,14 @@ Click below to tell us what we should work on next by creating feature requests 
 		- [x] ~~Webview Integration~~
 		- [x] ~~Native Camera Option~~
 * [ ] Backoffice
-	- [ ] Open Sourcing Case Management 
+	- [ ] Open Sourcing Case Management
 		- [x] User Approval Queues
-		- [ ] Operator Collaborations 
+		- [ ] Operator Collaborations
 		- [x] Backend Agnostic
 		- [x] Vendor Agnostic
-		- [ ] Transaction Approval Queues 
+		- [ ] Transaction Approval Queues
 * [ ] Dashboard
-	- [ ] Data pipelines (Orchestrator) *(WIP)* 
+	- [ ] Data pipelines (Orchestrator) *(WIP)*
 		- [ ] Plugin System
 		- Integrations
 			- [x] Veriff
@@ -473,7 +476,7 @@ Click below to tell us what we should work on next by creating feature requests 
 	- [x] ~~Open sourcing Web SDK~~
 		- [ ] Behavior data for fraud detection *(WIP)*
 		- [ ] Risk-Based KYC/Step-up KYC Templates *(WIP)*
-	- [x] Open-sourcing Android SDK 
+	- [x] Open-sourcing Android SDK
 		- [ ] Behavior data for fraud detection *(WIP)*
 	- [ ] Open sourcing  iOS SDK *(WIP)*
 		- [x] ~~Webview Integration~~

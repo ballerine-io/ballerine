@@ -5,7 +5,7 @@ declare global {
   interface Window {
     BallerineSDK: {
       flows: {
-        openModal: (flow: string, config: Record<PropertyKey, any>) => void;
+        mount: (config: { flowName: string; useModal: boolean }) => void;
       };
     };
   }
@@ -19,12 +19,18 @@ export const beforeEach =
       switch (flow) {
         case Flow.MY_KYB_FLOW:
           return () => {
-            window.BallerineSDK.flows.openModal('my-kyb-flow', {});
+            window.BallerineSDK.flows.mount({
+              flowName: 'my-kyb-flow',
+              useModal: true,
+            });
           };
 
         case Flow.MY_KYC_FLOW:
           return () => {
-            window.BallerineSDK.flows.openModal('my-kyc-flow', {});
+            window.BallerineSDK.flows.mount({
+              flowName: 'my-kyc-flow',
+              useModal: true,
+            });
           };
         default:
           throw new Error(`Unknown flow: ${JSON.stringify(flow)}`);

@@ -1,21 +1,21 @@
 <script lang="ts">
-  import { T } from "../contexts/translation";
-  import { onDestroy } from "svelte";
-  import { Button, IconCloseButton, Image, Title } from "../atoms";
-  import { configuration } from "../contexts/configuration";
-  import { appState, currentParams } from "../contexts/app-state";
-  import { Elements } from "../contexts/configuration/types";
-  import ErrorText from "../atoms/ErrorText/ErrorText.svelte";
+  import { T } from '../contexts/translation';
+  import { onDestroy } from 'svelte';
+  import { Button, IconCloseButton, Image, Title } from '../atoms';
+  import { configuration } from '../contexts/configuration';
+  import { appState, currentParams } from '../contexts/app-state';
+  import { Elements } from '../contexts/configuration/types';
+  import ErrorText from '../atoms/ErrorText/ErrorText.svelte';
   import {
     ActionNames,
     sendButtonClickEvent,
     sendFlowCompleteEvent,
-    VerificationStatuses
-  } from "../utils/event-service";
-  import { flowError } from "../services/analytics";
-  import { DecisionStatus } from "../contexts/app-state/types";
-  import { getLayoutStyles, getStepConfiguration } from "../ui-packs";
-  import { getFlowConfig } from "../contexts/flows/hooks";
+    VerificationStatuses,
+  } from '../utils/event-service';
+  import { flowError } from '../services/analytics';
+  import { DecisionStatus } from '../contexts/app-state/types';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
   const step = getStepConfiguration($configuration, stepId);

@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { configuration, IStepConfiguration } from "../../contexts/configuration";
-  import DocumentOption from "../../molecules/DocumentOption/DocumentOption.svelte";
-  import { goToNextStep } from "../../contexts/navigation";
-  import type { IDocument, IDocumentInfo } from "../../contexts/app-state";
-  import { currentStepId, documents, selectedDocumentInfo } from "../../contexts/app-state/stores";
-  import { addDocument } from "../../utils/photo-utils";
-  import { isNativeCamera } from "../../contexts/flows/hooks";
-  import { IDocumentOption } from "../../molecules/DocumentOption";
-  import { checkIsCameraAvailable } from "../../services/camera-manager";
-  import { uiPack } from "../../ui-packs";
-  import { IDocumentOptions } from "./types";
-  import { TDocumentKind, TDocumentType } from "../../contexts/app-state/types";
+  import { configuration, IStepConfiguration } from '../../contexts/configuration';
+  import DocumentOption from '../../molecules/DocumentOption/DocumentOption.svelte';
+  import { goToNextStep } from '../../contexts/navigation';
+  import type { IDocument, IDocumentInfo } from '../../contexts/app-state';
+  import { currentStepId, documents, selectedDocumentInfo } from '../../contexts/app-state/stores';
+  import { addDocument } from '../../utils/photo-utils';
+  import { isNativeCamera } from '../../contexts/flows/hooks';
+  import { IDocumentOption } from '../../molecules/DocumentOption';
+  import { checkIsCameraAvailable } from '../../services/camera-manager';
+  import { uiPack } from '../../ui-packs';
+  import { IDocumentOptions } from './types';
+  import { TDocumentKind, TDocumentType } from '../../contexts/app-state/types';
 
   export let step: IStepConfiguration;
 

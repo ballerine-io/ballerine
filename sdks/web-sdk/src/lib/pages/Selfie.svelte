@@ -1,8 +1,8 @@
 <script lang="ts">
-  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from "jslib-html5-camera-photo";
-  import { T } from "../contexts/translation";
-  import { configuration } from "../contexts/configuration";
-  import { onDestroy, onMount } from "svelte";
+  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
+  import { T } from '../contexts/translation';
+  import { configuration } from '../contexts/configuration';
+  import { onDestroy, onMount } from 'svelte';
   import {
     CameraButton,
     IconButton,
@@ -10,18 +10,18 @@
     Loader,
     Overlay,
     Paragraph,
-    VideoContainer
-  } from "../atoms";
-  import { Elements } from "../contexts/configuration/types";
-  import { goToNextStep, goToPrevStep } from "../contexts/navigation";
-  import { currentStepId, DocumentType } from "../contexts/app-state";
-  import Title from "../atoms/Title/Title.svelte";
-  import { appState, selfieUri } from "../contexts/app-state/stores";
-  import { isMobile } from "../utils/is-mobile";
-  import { createToggle } from "../hooks/createToggle/createToggle";
-  import { preloadNextStepByCurrent } from "../services/preload-service";
-  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from "../utils/event-service";
-  import { getLayoutStyles, getStepConfiguration } from "../ui-packs";
+    VideoContainer,
+  } from '../atoms';
+  import { Elements } from '../contexts/configuration/types';
+  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
+  import { currentStepId, DocumentType } from '../contexts/app-state';
+  import Title from '../atoms/Title/Title.svelte';
+  import { appState, selfieUri } from '../contexts/app-state/stores';
+  import { isMobile } from '../utils/is-mobile';
+  import { createToggle } from '../hooks/createToggle/createToggle';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;

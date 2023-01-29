@@ -1,8 +1,8 @@
 <script lang="ts">
-  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from "jslib-html5-camera-photo";
-  import { T } from "../contexts/translation";
-  import { configuration } from "../contexts/configuration";
-  import { onDestroy, onMount } from "svelte";
+  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
+  import { T } from '../contexts/translation';
+  import { configuration } from '../contexts/configuration';
+  import { onDestroy, onMount } from 'svelte';
   import {
     CameraButton,
     IconButton,
@@ -10,20 +10,20 @@
     Loader,
     Overlay,
     Paragraph,
-    VideoContainer
-  } from "../atoms";
-  import { Elements } from "../contexts/configuration/types";
-  import { appState, IDocument } from "../contexts/app-state";
-  import { goToNextStep, goToPrevStep } from "../contexts/navigation";
-  import Title from "../atoms/Title/Title.svelte";
-  import { currentStepId, documents, selectedDocumentInfo } from "../contexts/app-state/stores";
-  import { preloadNextStepByCurrent } from "../services/preload-service";
-  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from "../utils/event-service";
-  import { getLayoutStyles, getStepConfiguration } from "../ui-packs";
-  import { createToggle } from "../hooks/createToggle/createToggle";
-  import { getDocumentType } from "../utils/documents-utils";
-  import { IDocumentOptions } from "../organisms/DocumentOptions";
-  import { TDocumentType } from "../contexts/app-state/types";
+    VideoContainer,
+  } from '../atoms';
+  import { Elements } from '../contexts/configuration/types';
+  import { appState, IDocument } from '../contexts/app-state';
+  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
+  import Title from '../atoms/Title/Title.svelte';
+  import { currentStepId, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { createToggle } from '../hooks/createToggle/createToggle';
+  import { getDocumentType } from '../utils/documents-utils';
+  import { IDocumentOptions } from '../organisms/DocumentOptions';
+  import { TDocumentType } from '../contexts/app-state/types';
 
   export let stepId;
 

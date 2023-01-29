@@ -1,21 +1,21 @@
 <script lang="ts">
-  import { T } from "../contexts/translation";
-  import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from "../atoms";
-  import { configuration } from "../contexts/configuration";
-  import { goToNextStep, goToPrevStep } from "../contexts/navigation/hooks";
-  import { Elements } from "../contexts/configuration/types";
-  import { ICameraEvent, nativeCameraHandler } from "../utils/photo-utils";
-  import { getFlowConfig, isNativeCamera } from "../contexts/flows/hooks";
-  import { preloadNextStepByCurrent } from "../services/preload-service";
+  import { T } from '../contexts/translation';
+  import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
+  import { configuration } from '../contexts/configuration';
+  import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
+  import { Elements } from '../contexts/configuration/types';
+  import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
+  import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
   import {
     appState,
     currentStepId,
     selectedDocumentInfo,
-    selfieUri
-  } from "../contexts/app-state/stores";
-  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from "../utils/event-service";
-  import { getLayoutStyles, getStepConfiguration } from "../ui-packs";
-  import { createToggle } from "../hooks/createToggle/createToggle";
+    selfieUri,
+  } from '../contexts/app-state/stores';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { createToggle } from '../hooks/createToggle/createToggle';
 
   export let stepId;
 

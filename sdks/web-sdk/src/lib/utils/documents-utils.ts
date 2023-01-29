@@ -1,6 +1,6 @@
-import { getContext } from 'svelte';
 import { IDocumentInfo } from '../contexts/app-state';
 import { IAppConfiguration, IStepConfiguration, Steps } from '../contexts/configuration';
+import { getFlowName } from '../contexts/flows';
 import { TDocumentType } from '../contexts/app-state/types';
 
 export const getDocumentType = (step: IStepConfiguration, selectedDocumentInfo?: IDocumentInfo) => {
@@ -8,7 +8,8 @@ export const getDocumentType = (step: IStepConfiguration, selectedDocumentInfo?:
 };
 
 export const isDocumentSelectionStepExists = (configuration: IAppConfiguration) => {
-  const flowName: string = getContext('flowName');
+  const flowName: string = getFlowName();
+
   const steps = configuration.flows[flowName].steps as IStepConfiguration[];
   return !!steps.find(s => s.name === Steps.DocumentSelection);
 };

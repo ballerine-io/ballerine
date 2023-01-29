@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { T } from "../contexts/translation";
-  import { Button, IconButton, IconCloseButton, Image, Paragraph, Title } from "../atoms";
-  import { configuration } from "../contexts/configuration";
-  import { goToNextStep, goToPrevStep } from "../contexts/navigation";
-  import { Elements } from "../contexts/configuration/types";
-  import { ICameraEvent, nativeCameraHandler, updateDocument } from "../utils/photo-utils";
-  import { appState, currentStepId, IDocument, IDocumentInfo } from "../contexts/app-state";
-  import { isNativeCamera } from "../contexts/flows";
-  import { documents, selectedDocumentInfo } from "../contexts/app-state/stores";
-  import { preloadNextStepByCurrent } from "../services/preload-service";
-  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from "../utils/event-service";
-  import { getLayoutStyles, getStepConfiguration } from "../ui-packs";
-  import { getFlowConfig } from "../contexts/flows/hooks";
+  import { T } from '../contexts/translation';
+  import { Button, IconButton, IconCloseButton, Image, Paragraph, Title } from '../atoms';
+  import { configuration } from '../contexts/configuration';
+  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
+  import { Elements } from '../contexts/configuration/types';
+  import { ICameraEvent, nativeCameraHandler, updateDocument } from '../utils/photo-utils';
+  import { appState, currentStepId, IDocument, IDocumentInfo } from '../contexts/app-state';
+  import { isNativeCamera } from '../contexts/flows';
+  import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getFlowConfig } from '../contexts/flows/hooks';
 
   export let stepId;
 

@@ -1,7 +1,12 @@
 import deepmerge from 'deepmerge';
 import merge from 'deepmerge';
 import { FlowsGeneralTheme, FlowsTranslations } from '../../../types/BallerineSDK';
-import { IAppConfiguration, IConfigurationComponents, IElement, IStepConfiguration } from '../../contexts/configuration';
+import {
+  IAppConfiguration,
+  IConfigurationComponents,
+  IElement,
+  IStepConfiguration,
+} from '../../contexts/configuration';
 import { IFlow } from '../../contexts/flows';
 import { TranslationType } from '../../contexts/translation';
 import { IUIPackTheme } from '../../ui-packs/types';
@@ -20,21 +25,27 @@ export const mergeStepConfig = (
 
 export const isUrl = (url?: string) => {
   if (!url) return false;
-  const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-  '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-  '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-  '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-  '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-  '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  const pattern = new RegExp(
+    '^(https?:\\/\\/)?' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$',
+    'i',
+  ); // fragment locator
   return !!pattern.test(url);
-}
+};
 
 /**
  * @description Merges the default translations with the
  * @param original default app translations
  * @param overridesTranslationConfiguration translation configuration provided by the user
  */
-export const mergeTranslations = async (original: TranslationType, overridesTranslationConfiguration: FlowsTranslations): Promise<TranslationType> => {
+export const mergeTranslations = async (
+  original: TranslationType,
+  overridesTranslationConfiguration: FlowsTranslations,
+): Promise<TranslationType> => {
   // When overrides provided by the user in the configuration
   if (overridesTranslationConfiguration.overrides) {
     return deepmerge(original, overridesTranslationConfiguration.overrides);
@@ -57,14 +68,17 @@ export const mergeTranslations = async (original: TranslationType, overridesTran
  * @param configuration provided user configuration
  * @param uiTheme selected default ui theme
  */
-export const mergeConfigurationWithUiPack = (configuration: IAppConfiguration, uiTheme: IUIPackTheme): IAppConfiguration => {
+export const mergeConfigurationWithUiPack = (
+  configuration: IAppConfiguration,
+  uiTheme: IUIPackTheme,
+): IAppConfiguration => {
   let flows: { [key: string]: IFlow } = {};
-  Object.keys(configuration.flows).map((flowName) => {
+  Object.keys(configuration.flows).map(flowName => {
     const flow = mergeConfigurationFlowsWithUiPack(flowName, configuration, uiTheme);
     flows = {
       ...flows,
-      [flowName]: flow
-    }
+      [flowName]: flow,
+    };
   });
 
   const mergedConfiguration = deepmerge(uiTheme, configuration);
@@ -74,8 +88,8 @@ export const mergeConfigurationWithUiPack = (configuration: IAppConfiguration, u
     components: mergeComponents(uiTheme.components, configuration.components),
     general: mergeGeneral(uiTheme.general, configuration.general),
     flows,
-  }
-}
+  };
+};
 
 /**
  * @description Merges particular flow with uiPack
@@ -83,7 +97,11 @@ export const mergeConfigurationWithUiPack = (configuration: IAppConfiguration, u
  * @param configuration provided user configuration
  * @param uiTheme selected default ui theme
  */
-const mergeConfigurationFlowsWithUiPack = (flowName: string, configuration: IAppConfiguration, uiTheme: IUIPackTheme): IFlow => {
+const mergeConfigurationFlowsWithUiPack = (
+  flowName: string,
+  configuration: IAppConfiguration,
+  uiTheme: IUIPackTheme,
+): IFlow => {
   const flowSteps = configuration.flows[flowName].steps;
   let steps: IStepConfiguration[] = uiTheme.steps;
   if (flowSteps) {
@@ -95,18 +113,21 @@ const mergeConfigurationFlowsWithUiPack = (flowName: string, configuration: IApp
       const mergedStep = deepmerge(themeStep, flowStep);
       return {
         ...mergedStep,
-        id:  mergedStep.type ? `${mergedStep.id}-${mergedStep.type}` : mergedStep.id,
+        id: mergedStep.type ? `${mergedStep.id}-${mergedStep.type}` : mergedStep.id,
         namespace: mergedStep.namespace ? mergedStep.namespace : mergedStep.id,
-        elements: mergeStepElements(themeStep.elements, flowStep.elements as RecursivePartial<IElement>[] | undefined)
-      }
+        elements: mergeStepElements(
+          themeStep.elements,
+          flowStep.elements as RecursivePartial<IElement>[] | undefined,
+        ),
+      };
     }) as IStepConfiguration[];
   }
 
   return {
     ...configuration.flows[flowName],
-    steps
-  }
-}
+    steps,
+  };
+};
 
 /**
  * @description Merges components configuration with ui theme configuration
@@ -115,11 +136,11 @@ const mergeConfigurationFlowsWithUiPack = (flowName: string, configuration: IApp
  */
 const mergeComponents = (
   uiThemeComponents: IConfigurationComponents,
-  configurationComponents?: IConfigurationComponents
+  configurationComponents?: IConfigurationComponents,
 ): IConfigurationComponents => {
   if (!configurationComponents) return uiThemeComponents;
   return deepmerge(uiThemeComponents, configurationComponents);
-}
+};
 
 /**
  * @description Merges general configuration with ui theme configuration
@@ -128,18 +149,21 @@ const mergeComponents = (
  */
 const mergeGeneral = (
   uiThemeGeneral: FlowsGeneralTheme,
-  configurationGeneral?: FlowsGeneralTheme
+  configurationGeneral?: FlowsGeneralTheme,
 ): FlowsGeneralTheme => {
   if (!configurationGeneral) return uiThemeGeneral;
   return deepmerge(uiThemeGeneral, configurationGeneral);
-}
+};
 
 /**
  * @description Merges ui theme configuration with provided by user configuration
  * @param uiThemeElements theme elements configuration
  * @param configurationElements elements configuration provided by user
  */
-const mergeStepElements = (uiThemeElements: IElement[], configurationElements?: RecursivePartial<IElement>[]) => {
+const mergeStepElements = (
+  uiThemeElements: IElement[],
+  configurationElements?: RecursivePartial<IElement>[],
+) => {
   if (!configurationElements) return uiThemeElements;
   // Elements update
   let elements = uiThemeElements.map(uiThemeElement => {
@@ -152,6 +176,8 @@ const mergeStepElements = (uiThemeElements: IElement[], configurationElements?: 
   // Elements delete
   elements = elements.filter(e => !e.disabled);
   // Elements add
-  const newElements = configurationElements.filter(element => !uiThemeElements.some(e => e.id === element.id));
+  const newElements = configurationElements.filter(
+    element => !uiThemeElements.some(e => e.id === element.id),
+  );
   return [...elements, ...newElements].sort((e1, e2) => e1.orderIndex - e2.orderIndex);
-}
+};

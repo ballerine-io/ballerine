@@ -7,7 +7,7 @@
     <meta name="description" content="Simple webpage for testing the SDK" />
 
     <title>Ballerine SDK test</title>
-    <script async type="module" crossorigin src="/ballerine-sdk.umd.js"></script>
+    <script async type="module" crossorigin src="/ballerine-sdk.umd.cjs"></script>
     <script>
       const onStartFlowClick = async () => {
         ballerineInitConfig = {
@@ -28,9 +28,10 @@
                     name: 'document-selection',
                     id: 'document-selection',
                     documentOptions: [
-                      { type: "id_card", kind: "id_card" },
-                      { type: "drivers_license", kind: "drivers_license" },
-                      { type: "passport", kind: "passport" },
+                      { type: 'id_card', kind: 'id_card' },
+                      { type: 'drivers_license', kind: 'drivers_license' },
+                      { type: 'passport', kind: 'passport' },
+                      { type: 'voter_id', kind: 'voter_id' },
                     ],
                   },
                   {
@@ -115,9 +116,10 @@
                     name: 'document-selection',
                     id: 'document-selection',
                     documentOptions: [
-                      { type: "id_card", kind: "id_card" },
-                      { type: "drivers_license", kind: "drivers_license" },
-                      { type: "passport", kind: "passport" },
+                      { type: 'id_card', kind: 'id_card' },
+                      { type: 'drivers_license', kind: 'drivers_license' },
+                      { type: 'passport', kind: 'passport' },
+                      { type: 'voter_id', kind: 'voter_id' },
                     ],
                   },
                   {
@@ -159,7 +161,19 @@
         };
         await BallerineSDK.flows.init(ballerineInitConfig);
         const elementId = 'kyc-flow-1';
-        await BallerineSDK.flows.mount({ flowName: 'my-kyc-flow', elementId });
+
+        await BallerineSDK.flows.mount({
+          flowName: 'my-kyc-flow',
+          elementId,
+          callbacks: {
+            onFlowNavigationUpdate(payload) {
+              console.log('onFlowNavigation', payload);
+            },
+            onFlowComplete(payload) {
+              console.log('onFlowComplete', payload);
+            },
+          },
+        });
       };
     </script>
   </head>

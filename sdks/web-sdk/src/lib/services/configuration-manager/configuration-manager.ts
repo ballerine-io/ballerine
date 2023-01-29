@@ -66,6 +66,7 @@ export const populateConfigurationByUiPack = async (
   if (!UIPackTypes.includes(packType as TUIPackType)) {
     return mergeConfigurationWithUiPack(configuration, packs.default);
   }
+
   return mergeConfigurationWithUiPack(configuration, packs[packType as TUIPackType]);
 };
 
