@@ -1,16 +1,16 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
+  import { Button, IconButton, IconCloseButton, Image, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { appState, currentParams } from '../contexts/app-state';
   import { Elements } from '../contexts/configuration/types';
   import { flowApproved } from '../services/analytics';
   import {
-    EActionNames,
+    ActionNames,
     sendButtonClickEvent,
     sendFlowCompleteEvent,
-    EVerificationStatuses,
+    VerificationStatuses,
   } from '../utils/event-service';
   import { DecisionStatus } from '../contexts/app-state/types';
   import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
@@ -28,7 +28,7 @@
 
   const handleClose = () => {
     sendFlowCompleteEvent({
-      status: EVerificationStatuses.COMPLETED,
+      status: VerificationStatuses.COMPLETED,
       idvResult: DecisionStatus.APPROVED,
     });
   };
@@ -48,8 +48,8 @@
         configuration={element.props}
         on:click={() => {
           sendButtonClickEvent(
-            EActionNames.CLOSE,
-            { status: EVerificationStatuses.DATA_COLLECTION },
+            ActionNames.CLOSE,
+            { status: VerificationStatuses.DATA_COLLECTION },
             $appState,
             true,
           );

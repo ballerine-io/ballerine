@@ -1,19 +1,15 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
-  import { Image, Button, Title, Paragraph, IconButton, IconCloseButton } from '../atoms';
+  import { Button, IconButton, IconCloseButton, Image, Paragraph, Title } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation';
   import { Elements } from '../contexts/configuration/types';
   import { ICameraEvent, nativeCameraHandler, updateDocument } from '../utils/photo-utils';
-  import { IDocument, IDocumentInfo, currentStepId, appState } from '../contexts/app-state';
+  import { appState, currentStepId, IDocument, IDocumentInfo } from '../contexts/app-state';
   import { isNativeCamera } from '../contexts/flows';
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { preloadNextStepByCurrent } from '../services/preload-service';
-  import {
-    EActionNames,
-    sendButtonClickEvent,
-    EVerificationStatuses,
-  } from '../utils/event-service';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
   import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
 
@@ -62,8 +58,8 @@
         configuration={element.props}
         on:click={() => {
           sendButtonClickEvent(
-            EActionNames.CLOSE,
-            { status: EVerificationStatuses.DATA_COLLECTION },
+            ActionNames.CLOSE,
+            { status: VerificationStatuses.DATA_COLLECTION },
             $appState,
             true,
           );

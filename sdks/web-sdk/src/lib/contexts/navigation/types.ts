@@ -1,7 +1,7 @@
-import { Steps } from '../configuration/types';
+import { TSteps } from '../configuration/types';
 
 export interface IStep {
-  name: Steps;
+  name: TSteps;
   component: _SvelteComponent;
   type?: string;
 }

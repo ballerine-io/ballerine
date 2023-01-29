@@ -8,16 +8,12 @@
   import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import {
+    appState,
+    currentStepId,
     selectedDocumentInfo,
     selfieUri,
-    currentStepId,
-    appState,
   } from '../contexts/app-state/stores';
-  import {
-    EActionNames,
-    EVerificationStatuses,
-    sendButtonClickEvent,
-  } from '../utils/event-service';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
   import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { createToggle } from '../hooks/createToggle/createToggle';
 
@@ -67,8 +63,8 @@
         configuration={element.props}
         on:click={() => {
           sendButtonClickEvent(
-            EActionNames.CLOSE,
-            { status: EVerificationStatuses.DATA_COLLECTION },
+            ActionNames.CLOSE,
+            { status: VerificationStatuses.DATA_COLLECTION },
             $appState,
             true,
           );

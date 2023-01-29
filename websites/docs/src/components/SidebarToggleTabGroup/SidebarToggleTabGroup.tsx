@@ -1,16 +1,16 @@
 import { createSignal } from 'solid-js';
-import { ETab } from '../../types';
+import { Tabs, TTab } from '../../types';
 import './TabGroup.css';
 
 export interface Props {
-  defaultActiveTab: ETab;
-  labels: Record<ETab, string>;
+  defaultActiveTab: TTab;
+  labels: Record<TTab, string>;
 }
 
 const SidebarToggleTabGroup = ({ defaultActiveTab, labels }: Props) => {
   const [activeTab, setActiveTab] = createSignal(defaultActiveTab);
 
-  const toggleType = (type: ETab) => {
+  const toggleType = (type: TTab) => {
     // Remove active class from all nav groups
     const activeNavGroups = document.querySelectorAll(`li.nav-group`);
 
@@ -26,7 +26,7 @@ const SidebarToggleTabGroup = ({ defaultActiveTab, labels }: Props) => {
   };
   return (
     <div class="TabGroup">
-      {([ETab.LEARN, ETab.API] as const).map(type => (
+      {Tabs.map(type => (
         <button class={activeTab() === type ? `active` : ``} onClick={() => toggleType(type)}>
           {labels[type]}
         </button>

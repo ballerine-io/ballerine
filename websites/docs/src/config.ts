@@ -1,4 +1,4 @@
-import type { ETab } from './types';
+import type { TTab } from './types';
 
 export const SITE = {
   title: `Ballerine Documentation`,
@@ -53,7 +53,7 @@ export const ALGOLIA = {
 export type Sidebar = Record<
   typeof KNOWN_LANGUAGE_CODES[number],
   Record<
-    ETab,
+    TTab,
     Array<{
       group: string;
       sections: Array<{ text: string; link: string; external?: boolean }>;
