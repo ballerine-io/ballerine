@@ -1,13 +1,14 @@
 <script lang="ts">
-  import { SvelteToast } from '@zerodevx/svelte-toast';
-  import { initConnectionCheck } from './lib/utils/check-connection';
-  import { configuration } from './lib/contexts/configuration';
-  import { currentLanguage, Languages } from './lib/contexts/translation';
-  import { subscribe } from './lib/utils/event-service';
+  import {SvelteToast} from '@zerodevx/svelte-toast';
+  import {initConnectionCheck} from './lib/utils/check-connection';
+  import {configuration} from './lib/contexts/configuration';
+  import {currentLanguage, Languages} from './lib/contexts/translation';
+  import {subscribe} from './lib/utils/event-service';
   import Routes from './Routes.svelte';
-  import { t } from './lib/contexts/translation/hooks';
-  import { setFlowName } from './lib/contexts/flows';
-  import { uiPack } from './lib/ui-packs';
+  import {t} from './lib/contexts/translation/hooks';
+  import {setFlowName} from './lib/contexts/flows';
+  import {uiPack} from './lib/ui-packs';
+  import {initWorkflowContext} from "./workflow-sdk/context";
 
   subscribe();
   initConnectionCheck(t);
@@ -30,6 +31,15 @@
       $configuration.general?.colors?.secondary || $uiPack.general.colors.secondary
     };
   `;
+
+  const remote = {
+    states: ['welcome', 'collect_doc', 'review_doc'],
+    context: {
+      documents: [],
+    },
+  };
+
+  initWorkflowContext(remote);
 </script>
 
 <svelte:head>

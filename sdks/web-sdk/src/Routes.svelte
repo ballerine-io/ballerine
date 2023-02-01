@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { fly } from 'svelte/transition';
-  import { steps } from './lib/contexts/navigation';
-  import { configuration, IStepConfiguration } from './lib/contexts/configuration';
-  import { sendNavigationUpdateEvent } from './lib/utils/event-service';
-  import { visitedPage } from './lib/services/analytics';
-  import { currentStepId, currentStepIdx, currentParams } from './lib/contexts/app-state';
-  import { getFlowName } from './lib/contexts/flows';
+  import {fly} from 'svelte/transition';
+  import {steps} from './lib/contexts/navigation';
+  import {configuration, IStepConfiguration} from './lib/contexts/configuration';
+  import {sendNavigationUpdateEvent} from './lib/utils/event-service';
+  import {visitedPage} from './lib/services/analytics';
+  import {currentParams, currentStepId, currentStepIdx} from './lib/contexts/app-state';
+  import {getFlowName} from './lib/contexts/flows';
+  import {getWorkflowContext} from "./workflow-sdk/context";
 
   const getFlowSteps = () => {
     const flowName = getFlowName();
@@ -46,6 +47,12 @@
   $: {
     routeInit($currentStepId, $currentStepIdx);
   }
+
+  const workflow = getWorkflowContext();
+
+  workflow.subscribe('ui-step', ({state, payload}) => {
+    console.log({state});
+  });
 </script>
 
 {#if step}
