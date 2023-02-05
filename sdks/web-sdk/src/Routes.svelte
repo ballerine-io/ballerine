@@ -65,6 +65,10 @@
     console.log('verify');
   });
 
+  workflowService.subscribe('*', ({event}) => {
+    console.log(event);
+  });
+
   $: {
     routeInit($currentStepId, $currentStepIdx);
   }
