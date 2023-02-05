@@ -1,11 +1,11 @@
 <script lang="ts">
-  import {goToNextStep} from '../../contexts/navigation';
   import type {IElementProps} from '../../contexts/configuration';
   import {configuration as globalConfiguration} from '../../contexts/configuration';
-  import {currentStepId} from '../../contexts/app-state';
   import {makeStylesFromConfiguration} from '../../services/css-manager';
   import {Loader} from './Loader';
   import {getWorkflowContext} from "../../../workflow-sdk/context.js";
+  import {currentStepId} from "../../contexts/app-state";
+  import {goToNextStep} from "../../contexts/navigation";
 
   // TODO: Use the createToggle hook, and make sure an exported prop is not being mutated.
   export let isDisabled = false;
@@ -21,7 +21,7 @@
     ...configuration?.style,
     background,
   };
-  const workflow = getWorkflowContext();
+  const workflowService = getWorkflowContext();
   const style = makeStylesFromConfiguration(
     $globalConfiguration.components?.button || {},
     styleProps,
@@ -31,11 +31,12 @@
   const onClick = () => {
     if (disabled) return;
 
-    goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType);
-    workflow.sendEvent({
+    workflowService.sendEvent({
       type: 'ui-step',
     });
-    
+
+    goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType);
+
     isDisabled = true;
   };
 

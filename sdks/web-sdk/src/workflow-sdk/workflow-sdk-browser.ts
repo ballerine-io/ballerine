@@ -6,7 +6,11 @@ import { IWorkflowEventCallbackParams } from './interfaces';
 export const createWorkflowBrowser = (workflow: AnyRecord) => {
   const subscribers: TSubscribers = [];
   const notify = ({ event, payload, state }: TNotifyParams) =>
-    subscribers.filter(sub => sub.event === event).forEach(sub => sub.cb({ payload, state }));
+    subscribers.forEach(sub => {
+      if (sub.event !== event) return;
+
+      sub.cb({ payload, state });
+    });
   const workflowService = createWorkflowCore(workflow);
 
   const subscribe: WorkflowEventListener = (event, cb) => {
@@ -20,6 +24,8 @@ export const createWorkflowBrowser = (workflow: AnyRecord) => {
   });
 
   return {
+    getSnapshot: workflowService.getSnapshot,
+    setContext: workflowService.setContext,
     sendEvent,
     subscribe,
   };
