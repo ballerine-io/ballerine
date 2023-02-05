@@ -10,4 +10,8 @@ export interface IWorkflowEventCallbackParams {
 export interface WorkflowService {
   sendEvent: WorkflowSendEvent;
   subscribe: WorkflowEventListener;
+  getSnapshot: () => {
+    context: AnyRecord;
+  };
+  setContext: (next: AnyRecord) => void;
 }
