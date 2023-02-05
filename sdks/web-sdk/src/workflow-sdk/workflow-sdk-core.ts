@@ -6,11 +6,22 @@ export const createWorkflowCore = ({ states, context }) => {
       subscribers.push(callback);
     },
     sendEvent: ({ type, payload }) => {
+      const [[key, value], ...nextStates] = Object.entries(states);
+      const state = {
+        [key]: value,
+      };
+
+      states = nextStates.reduce((acc, [key, value]) => {
+        acc[key] = value;
+
+        return acc;
+      }, {});
+
       return subscribers.forEach(cb =>
         cb({
           type,
           payload,
-          state: states.pop(),
+          state,
         }),
       );
     },

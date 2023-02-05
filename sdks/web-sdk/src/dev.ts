@@ -4,6 +4,53 @@ import { DocumentKind, DocumentType } from './lib/contexts/app-state';
 import { FlowsInitOptions } from './types/BallerineSDK';
 
 const ballerineInitConfig: FlowsInitOptions = {
+  workflowConfig: {
+    flows: {
+      ['my-kyc-flow']: {
+        context: {
+          documents: [],
+        },
+        states: {
+          welcome: {
+            type: 'ui-step',
+          },
+          'document-selection': {
+            type: 'ui-step',
+          },
+          'document-photo': {
+            type: 'ui-step',
+          },
+          'check-document': {
+            type: 'ui-step',
+          },
+          'document-photo-back-start': {
+            type: 'ui-step',
+          },
+          'document-photo-back': {
+            type: 'ui-step',
+          },
+          'check-document-photo-back': {
+            type: 'ui-step',
+          },
+          'selfie-start': {
+            type: 'ui-step',
+          },
+          selfie: {
+            type: 'ui-step',
+          },
+          'check-selfie': {
+            type: 'ui-step',
+          },
+          loading: {
+            type: 'ui-step',
+          },
+          final: {
+            type: 'ui-step',
+          },
+        },
+      },
+    },
+  },
   endUserInfo: { id: 'test-id' },
   translations: {
     overrides: {},

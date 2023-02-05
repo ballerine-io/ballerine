@@ -1,16 +1,17 @@
 <script lang="ts">
-  import { configuration, IStepConfiguration } from '../../contexts/configuration';
+  import {configuration, IStepConfiguration} from '../../contexts/configuration';
   import DocumentOption from '../../molecules/DocumentOption/DocumentOption.svelte';
-  import { goToNextStep } from '../../contexts/navigation';
-  import type { IDocument, IDocumentInfo } from '../../contexts/app-state';
-  import { currentStepId, documents, selectedDocumentInfo } from '../../contexts/app-state/stores';
-  import { addDocument } from '../../utils/photo-utils';
-  import { isNativeCamera } from '../../contexts/flows/hooks';
-  import { IDocumentOption } from '../../molecules/DocumentOption';
-  import { checkIsCameraAvailable } from '../../services/camera-manager';
-  import { uiPack } from '../../ui-packs';
-  import { IDocumentOptions } from './types';
-  import { TDocumentKind, TDocumentType } from '../../contexts/app-state/types';
+  import {goToNextStep} from '../../contexts/navigation';
+  import type {IDocument, IDocumentInfo} from '../../contexts/app-state';
+  import {currentStepId, documents, selectedDocumentInfo} from '../../contexts/app-state/stores';
+  import {addDocument} from '../../utils/photo-utils';
+  import {isNativeCamera} from '../../contexts/flows/hooks';
+  import {IDocumentOption} from '../../molecules/DocumentOption';
+  import {uiPack} from '../../ui-packs';
+  import {IDocumentOptions} from './types';
+  import {TDocumentKind, TDocumentType} from '../../contexts/app-state/types';
+  import {getWorkflowContext} from "../../../workflow-sdk/context";
+  import {checkIsCameraAvailable} from "../../services/camera-manager";
 
   export let step: IStepConfiguration;
 
@@ -42,6 +43,8 @@
     });
   }
 
+  const workflowService = getWorkflowContext();
+
   const handleSelectOption = async ({ detail }: { detail: string }) => {
     if (isNativeCamera($configuration)) return;
     const kind = detail as TDocumentKind;
@@ -49,6 +52,11 @@
     $selectedDocumentInfo = option?.document as IDocumentInfo;
     const isCameraAvailable = await checkIsCameraAvailable();
     if (!isCameraAvailable) return;
+
+    workflowService.sendEvent({
+      type: 'ui-step',
+    })
+
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
@@ -69,6 +77,14 @@
     );
     $selectedDocumentInfo = option?.document as IDocumentInfo;
     $documents = newDocumentsState;
+
+    workflowService.sendEvent({
+      type: 'collect-document',
+      payload:  {
+        documents: $documents,
+      },
+    });
+
     goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 </script>

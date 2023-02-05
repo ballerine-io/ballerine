@@ -1,8 +1,8 @@
 <script lang="ts">
-  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
-  import { T } from '../contexts/translation';
-  import { configuration } from '../contexts/configuration';
-  import { onDestroy, onMount } from 'svelte';
+  import CameraPhoto, {CaptureConfigOption, FACING_MODES} from 'jslib-html5-camera-photo';
+  import {T} from '../contexts/translation';
+  import {configuration} from '../contexts/configuration';
+  import {onDestroy, onMount} from 'svelte';
   import {
     CameraButton,
     IconButton,
@@ -12,18 +12,19 @@
     Paragraph,
     VideoContainer,
   } from '../atoms';
-  import { Elements } from '../contexts/configuration/types';
-  import { appState, IDocument } from '../contexts/app-state';
-  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
+  import {Elements} from '../contexts/configuration/types';
+  import {appState, IDocument} from '../contexts/app-state';
+  import {goToNextStep, goToPrevStep} from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
-  import { currentStepId, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
-  import { createToggle } from '../hooks/createToggle/createToggle';
-  import { getDocumentType } from '../utils/documents-utils';
-  import { IDocumentOptions } from '../organisms/DocumentOptions';
-  import { TDocumentType } from '../contexts/app-state/types';
+  import {currentStepId, documents, selectedDocumentInfo} from '../contexts/app-state/stores';
+  import {preloadNextStepByCurrent} from '../services/preload-service';
+  import {ActionNames, sendButtonClickEvent, VerificationStatuses} from '../utils/event-service';
+  import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
+  import {createToggle} from '../hooks/createToggle/createToggle';
+  import {getDocumentType} from '../utils/documents-utils';
+  import {IDocumentOptions} from '../organisms/DocumentOptions';
+  import {TDocumentType} from '../contexts/app-state/types';
+  import {getWorkflowContext} from "../../workflow-sdk/context";
 
   export let stepId;
 
@@ -80,7 +81,7 @@
     }
     return $documents.filter(d => type !== d.type);
   };
-
+  const workflowService = getWorkflowContext();
   const addDocument = (type: TDocumentType, base64: string, document: IDocument): IDocument[] => {
     const clearedDocuments = clearDocs(type);
     return [
@@ -107,6 +108,14 @@
         kind: $selectedDocumentInfo?.kind,
       };
       $documents = addDocument(document.type, base64, document);
+
+      workflowService.sendEvent({
+        type: 'collect-document',
+        payload:  {
+          documents: $documents,
+        },
+      });
+
       return goToNextStep(currentStepId, $configuration, $currentStepId);
     }
     return goToPrevStep(currentStepId, $configuration, $currentStepId);

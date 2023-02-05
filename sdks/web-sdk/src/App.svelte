@@ -32,14 +32,7 @@
     };
   `;
 
-  const remote = {
-    states: ['welcome', 'collect_doc', 'review_doc'],
-    context: {
-      documents: [],
-    },
-  };
-
-  initWorkflowContext(remote);
+  initWorkflowContext($configuration.workflowConfig.flows[flowName]);
 </script>
 
 <svelte:head>

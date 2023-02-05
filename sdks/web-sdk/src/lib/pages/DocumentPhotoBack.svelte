@@ -1,8 +1,8 @@
 <script lang="ts">
-  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
-  import { T } from '../contexts/translation';
-  import { configuration } from '../contexts/configuration';
-  import { onDestroy, onMount } from 'svelte';
+  import CameraPhoto, {CaptureConfigOption, FACING_MODES} from 'jslib-html5-camera-photo';
+  import {T} from '../contexts/translation';
+  import {configuration} from '../contexts/configuration';
+  import {onDestroy, onMount} from 'svelte';
   import {
     CameraButton,
     IconButton,
@@ -12,15 +12,16 @@
     Title,
     VideoContainer,
   } from '../atoms';
-  import { Elements } from '../contexts/configuration/types';
-  import { goToNextStep, goToPrevStep } from '../contexts/navigation';
-  import { currentStepId } from '../contexts/app-state';
-  import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { updateDocument } from '../utils/photo-utils';
-  import { createToggle } from '../hooks/createToggle/createToggle';
-  import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
-  import { getDocumentType } from '../utils/documents-utils';
+  import {Elements} from '../contexts/configuration/types';
+  import {goToNextStep, goToPrevStep} from '../contexts/navigation';
+  import {currentStepId} from '../contexts/app-state';
+  import {documents, selectedDocumentInfo} from '../contexts/app-state/stores';
+  import {updateDocument} from '../utils/photo-utils';
+  import {createToggle} from '../hooks/createToggle/createToggle';
+  import {preloadNextStepByCurrent} from '../services/preload-service';
+  import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
+  import {getDocumentType} from '../utils/documents-utils';
+  import {getWorkflowContext} from "../../workflow-sdk/context";
 
   export let stepId;
 
@@ -29,7 +30,7 @@
 
   const step = getStepConfiguration($configuration, stepId);
   const style = getLayoutStyles($configuration, step);
-
+  const workflowService = getWorkflowContext();
   const [isDisabled, , toggleOnIsDisabled, toggleOffIsDisabled] = createToggle(true);
 
   const documentType = getDocumentType(step, $selectedDocumentInfo);
@@ -74,6 +75,14 @@
     );
     const newDocumentsState = updateDocument(document, base64, $documents);
     $documents = newDocumentsState;
+
+    workflowService.sendEvent({
+      type: 'collect-document',
+      payload:  {
+        documents: $documents,
+      },
+    });
+
     goToNextStep(currentStepId, $configuration, $currentStepId);
     toggleOnIsDisabled();
   };

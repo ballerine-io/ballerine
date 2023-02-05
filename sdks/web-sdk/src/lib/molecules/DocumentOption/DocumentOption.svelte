@@ -1,17 +1,16 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { Container } from '../../atoms';
+  import {createEventDispatcher} from 'svelte';
+  import {Container} from '../../atoms';
   import Paragraph from '../../atoms/Paragraph/Paragraph.svelte';
-  import { configuration as globalConfiguration, IAttributes } from '../../contexts/configuration';
-  import { ICSSProperties } from '../../services/css-manager';
-  import { IDocumentInfo } from '../../contexts/app-state';
-  import { T } from '../../contexts/translation';
-  import { IDocumentOptions } from '../../organisms/DocumentOptions';
-  import { makesLocalStyles } from '../../services/css-manager';
+  import {configuration as globalConfiguration, IAttributes} from '../../contexts/configuration';
+  import {ICSSProperties, makesLocalStyles} from '../../services/css-manager';
+  import {IDocumentInfo} from '../../contexts/app-state';
+  import {T} from '../../contexts/translation';
+  import {IDocumentOptions} from '../../organisms/DocumentOptions';
   import Icon from '../../atoms/Icons/Icon.svelte';
-  import { ICameraEvent, nativeCameraHandler } from '../../utils/photo-utils';
-  import { isNativeCamera } from '../../contexts/flows/hooks';
-  import { createToggle } from '../../hooks/createToggle/createToggle';
+  import {ICameraEvent, nativeCameraHandler} from '../../utils/photo-utils';
+  import {isNativeCamera} from '../../contexts/flows/hooks';
+  import {createToggle} from '../../hooks/createToggle/createToggle';
 
   export let configuration: IDocumentOptions;
   export let active: boolean;
@@ -22,7 +21,6 @@
   let hover = false;
 
   const setHover = (status: boolean) => (hover = status);
-
   const dispatch = createEventDispatcher();
   const handleSelect = () => {
     if ($isDisabled) return;

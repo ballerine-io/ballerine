@@ -44,15 +44,30 @@
     }
   };
 
+  const workflowService = getWorkflowContext();
+
+  workflowService.subscribe('ui-step', ({state, payload}) => {
+    // stepId = Object.keys(state)[0];
+    // step = steps.find(s => s.name === stepId);
+  });
+
+  workflowService.subscribe('collect-document', ({payload}) => {
+
+      workflowService.setContext({
+        ...workflowService.getSnapshot().context,
+        ...(payload?.documents ? {documents: payload?.documents} : {}),
+        ...(payload?.selfie ? {selfie: payload?.selfie} : {}),
+      });
+
+  });
+
+  workflowService.subscribe('verify', () => {
+    console.log('verify');
+  });
+
   $: {
     routeInit($currentStepId, $currentStepIdx);
   }
-
-  const workflow = getWorkflowContext();
-
-  workflow.subscribe('ui-step', ({state, payload}) => {
-    console.log({state});
-  });
 </script>
 
 {#if step}
@@ -62,7 +77,7 @@
       in:fly={{ x: -50, duration: 250, delay: 300 }}
       out:fly={{ x: -50, duration: 250 }}
     >
-      <svelte:component this={step.component} {stepId} />
+      <svelte:component this={step.component} {stepId}/>
     </div>
   {/key}
 {/if}
