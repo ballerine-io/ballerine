@@ -7,9 +7,9 @@ export const createWorkflowBrowser = (workflow: AnyRecord) => {
   const subscribers: TSubscribers = [];
   const notify = ({ event, payload, state }: TNotifyParams) =>
     subscribers.forEach(sub => {
-      if (sub.event !== event) return;
+      if (sub.event !== '*' && sub.event !== event) return;
 
-      sub.cb({ payload, state });
+      sub.cb({ payload, state, event: sub.event === '*' ? event : undefined });
     });
   const workflowService = createWorkflowCore(workflow);
 
