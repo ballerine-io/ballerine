@@ -43,8 +43,8 @@ export const createWorkflowCore = ({ states = {}, context = {} }) => {
     getSnapshot: () => ({
       context,
     }),
-    setContext: next => {
-      context = next;
+    setContext: (merge: (prev: typeof context) => typeof context) => {
+      context = merge(context);
     },
   };
 };
