@@ -1,21 +1,21 @@
 import { Steps } from '../configuration';
 import {
-  Welcome,
+  CheckDocument,
+  CheckDocumentPhotoBack,
+  CheckSelfie,
+  Decline,
+  DocumentPhoto,
+  DocumentPhotoBack,
+  DocumentPhotoBackStart,
   DocumentSelection,
   DocumentStart,
-  DocumentPhoto,
-  CheckDocument,
-  DocumentPhotoBack,
-  CheckDocumentPhotoBack,
-  SelfieStart,
-  Selfie,
-  CheckSelfie,
+  ErrorPage,
   Final,
-  DocumentPhotoBackStart,
   Loading,
   Resubmission,
-  Decline,
-  ErrorPage,
+  Selfie,
+  SelfieStart,
+  Welcome,
 } from '../../pages';
 
 export const steps = [

@@ -12,4 +12,6 @@ export const initWorkflowContext = (workflow: AnyRecord) => {
   const workflowService = createWorkflowBrowser(workflow);
 
   setWorkflowContext(workflowService);
+
+  return workflowService;
 };

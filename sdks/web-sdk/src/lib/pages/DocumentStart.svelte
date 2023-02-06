@@ -1,18 +1,19 @@
 <script lang="ts">
-  import { T } from '../contexts/translation';
-  import { Button, IconButton, IconCloseButton, Image, Paragraph, Title } from '../atoms';
-  import { configuration } from '../contexts/configuration';
-  import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
-  import { Elements } from '../contexts/configuration/types';
-  import { currentStepId, IDocument } from '../contexts/app-state';
-  import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
-  import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
-  import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
-  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
-  import { checkIsCameraAvailable } from '../services/camera-manager';
-  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
-  import { getDocumentType } from '../utils/documents-utils';
-  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import {T} from '../contexts/translation';
+  import {Button, IconButton, IconCloseButton, Image, Paragraph, Title} from '../atoms';
+  import {configuration} from '../contexts/configuration';
+  import {goToPrevStep} from '../contexts/navigation/hooks';
+  import {Elements} from '../contexts/configuration/types';
+  import {currentStepId, IDocument} from '../contexts/app-state';
+  import {getFlowConfig, isNativeCamera} from '../contexts/flows/hooks';
+  import {addDocument, ICameraEvent, nativeCameraHandler} from '../utils/photo-utils';
+  import {appState, documents, selectedDocumentInfo} from '../contexts/app-state/stores';
+  import {ActionNames, sendButtonClickEvent, VerificationStatuses} from '../utils/event-service';
+  import {checkIsCameraAvailable} from '../services/camera-manager';
+  import {getLayoutStyles, getStepConfiguration, uiPack} from '../ui-packs';
+  import {getDocumentType} from '../utils/documents-utils';
+  import {getWorkflowContext} from "../../workflow-sdk/context";
+  import {preloadNextStepByCurrent} from "../services/preload-service";
 
   export let stepId;
 
@@ -25,13 +26,18 @@
   $: {
     if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
   }
-
+  const workflowService = getWorkflowContext();
   const stepNamespace = `${step.namespace}.${documentType}`;
 
   const handleGoToNextStep = async () => {
     const isCameraAvailable = await checkIsCameraAvailable();
     if (!isCameraAvailable) return;
-    goToNextStep(currentStepId, $configuration, $currentStepId);
+
+    workflowService.sendEvent({
+      type: 'ui-step',
+    });
+
+    // goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
   const handler = async (e: ICameraEvent) => {
@@ -50,7 +56,19 @@
       document,
     );
     $documents = newDocumentsState;
-    goToNextStep(currentStepId, $configuration, $currentStepId);
+
+    workflowService.sendEvent({
+      type: 'collect-document',
+      payload: {
+        documents: $documents,
+      }
+    });
+
+    workflowService.sendEvent({
+      type: 'ui-step',
+    });
+
+    // goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
   preloadNextStepByCurrent($configuration, configuration, $currentStepId);

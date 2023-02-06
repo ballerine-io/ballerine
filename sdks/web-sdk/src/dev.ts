@@ -9,42 +9,43 @@ const ballerineInitConfig: FlowsInitOptions = {
       ['my-kyc-flow']: {
         context: {
           documents: [],
+          selfie: undefined,
         },
         states: {
-          welcome: {
+          [Steps.Welcome]: {
             type: 'ui-step',
           },
-          'document-selection': {
+          [Steps.DocumentSelection]: {
             type: 'ui-step',
           },
-          'document-photo': {
+          [Steps.DocumentPhoto]: {
             type: 'ui-step',
           },
-          'check-document': {
+          [Steps.CheckDocument]: {
             type: 'ui-step',
           },
-          'document-photo-back-start': {
+          [Steps.DocumentPhotoBackStart]: {
             type: 'ui-step',
           },
-          'document-photo-back': {
+          [Steps.DocumentPhotoBack]: {
             type: 'ui-step',
           },
-          'check-document-photo-back': {
+          [Steps.CheckDocumentPhotoBack]: {
             type: 'ui-step',
           },
-          'selfie-start': {
+          [Steps.SelfieStart]: {
             type: 'ui-step',
           },
-          selfie: {
+          [Steps.Selfie]: {
             type: 'ui-step',
           },
-          'check-selfie': {
+          [Steps.CheckSelfie]: {
             type: 'ui-step',
           },
-          loading: {
+          [Steps.Loading]: {
             type: 'ui-step',
           },
-          final: {
+          [Steps.Final]: {
             type: 'ui-step',
           },
         },
