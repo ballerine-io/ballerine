@@ -1,4 +1,4 @@
-export const createWorkflowCore = ({ states, context }) => {
+export const createWorkflowCore = ({ states = {}, context = {} }) => {
   const subscribers = [];
 
   return {
@@ -6,12 +6,27 @@ export const createWorkflowCore = ({ states, context }) => {
       subscribers.push(callback);
     },
     sendEvent: ({ type, payload }) => {
-      const [[key, value], ...nextStates] = Object.entries(states);
-      const state = {
-        [key]: value,
-      };
+      const entries = Object.entries(states);
+      let next = [];
 
-      states = nextStates.reduce((acc, [key, value]) => {
+      if (entries.length === 1) {
+        next = entries[0];
+      }
+
+      if (entries.length > 1) {
+        next = entries[1];
+      }
+
+      const [key, value] = next;
+      const nextStates = entries.slice(1);
+      const state =
+        key && value
+          ? {
+              [key]: value,
+            }
+          : undefined;
+
+      states = nextStates?.reduce((acc, [key, value]) => {
         acc[key] = value;
 
         return acc;

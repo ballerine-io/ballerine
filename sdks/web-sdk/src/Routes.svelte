@@ -1,12 +1,12 @@
 <script lang="ts">
   import {fly} from 'svelte/transition';
-  import {steps} from './lib/contexts/navigation';
+  import {goToNextStep, steps} from './lib/contexts/navigation';
   import {configuration, IStepConfiguration} from './lib/contexts/configuration';
   import {sendNavigationUpdateEvent} from './lib/utils/event-service';
   import {visitedPage} from './lib/services/analytics';
   import {currentParams, currentStepId, currentStepIdx} from './lib/contexts/app-state';
   import {getFlowName} from './lib/contexts/flows';
-  import {getWorkflowContext} from "./workflow-sdk/context";
+  import {initWorkflowContext} from "./workflow-sdk/context";
 
   const getFlowSteps = () => {
     const flowName = getFlowName();
@@ -44,29 +44,21 @@
     }
   };
 
-  const workflowService = getWorkflowContext();
+  const flowName = getFlowName();
+  const workflowService = initWorkflowContext($configuration.workflowConfig.flows[flowName]);
 
-  workflowService.subscribe('ui-step', ({state, payload}) => {
-    // stepId = Object.keys(state)[0];
-    // step = steps.find(s => s.name === stepId);
+  workflowService.subscribe('ui-step', ({payload}) => {
+    goToNextStep(currentStepId, $configuration, $currentStepId, payload?.skipType);
   });
 
   workflowService.subscribe('collect-document', ({payload}) => {
 
-      workflowService.setContext({
-        ...workflowService.getSnapshot().context,
-        ...(payload?.documents ? {documents: payload?.documents} : {}),
-        ...(payload?.selfie ? {selfie: payload?.selfie} : {}),
-      });
+    workflowService.setContext({
+      ...workflowService.getSnapshot().context,
+      ...(payload?.documents ? {documents: payload?.documents} : {}),
+      ...(payload?.selfie ? {selfie: payload?.selfie} : {}),
+    });
 
-  });
-
-  workflowService.subscribe('verify', () => {
-    console.log('verify');
-  });
-
-  workflowService.subscribe('*', ({event}) => {
-    console.log(event);
   });
 
   $: {

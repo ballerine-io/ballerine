@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
-  import { configuration } from '../contexts/configuration';
-  import { Elements } from '../contexts/configuration/types';
+  import {IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title} from '../atoms';
+  import {configuration} from '../contexts/configuration';
+  import {Elements} from '../contexts/configuration/types';
   import List from '../molecules/List/List.svelte';
-  import { T } from '../contexts/translation';
-  import { sendButtonClickEvent } from '../utils/event-service/utils';
-  import { appState } from '../contexts/app-state';
-  import { preloadNextStepByCurrent } from '../services/preload-service';
-  import { ActionNames, VerificationStatuses } from '../utils/event-service';
-  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
-  import { getFlowConfig } from '../contexts/flows/hooks';
+  import {T} from '../contexts/translation';
+  import {sendButtonClickEvent} from '../utils/event-service/utils';
+  import {appState} from '../contexts/app-state';
+  import {ActionNames, VerificationStatuses} from '../utils/event-service';
+  import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
+  import {getFlowConfig} from '../contexts/flows/hooks';
+  import {preloadNextStepByCurrent} from "../services/preload-service";
 
   export let stepId;
 

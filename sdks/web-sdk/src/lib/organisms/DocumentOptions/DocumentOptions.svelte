@@ -1,9 +1,8 @@
 <script lang="ts">
   import {configuration, IStepConfiguration} from '../../contexts/configuration';
   import DocumentOption from '../../molecules/DocumentOption/DocumentOption.svelte';
-  import {goToNextStep} from '../../contexts/navigation';
   import type {IDocument, IDocumentInfo} from '../../contexts/app-state';
-  import {currentStepId, documents, selectedDocumentInfo} from '../../contexts/app-state/stores';
+  import {documents, selectedDocumentInfo} from '../../contexts/app-state/stores';
   import {addDocument} from '../../utils/photo-utils';
   import {isNativeCamera} from '../../contexts/flows/hooks';
   import {IDocumentOption} from '../../molecules/DocumentOption';
@@ -57,7 +56,7 @@
       type: 'ui-step',
     })
 
-    goToNextStep(currentStepId, $configuration, $currentStepId);
+    // goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 
   const handleTakePhoto = async ({
@@ -85,7 +84,11 @@
       },
     });
 
-    goToNextStep(currentStepId, $configuration, $currentStepId);
+    workflowService.sendEvent({
+      type: 'ui-step',
+    });
+
+    // goToNextStep(currentStepId, $configuration, $currentStepId);
   };
 </script>
 

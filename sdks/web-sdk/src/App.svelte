@@ -8,7 +8,6 @@
   import {t} from './lib/contexts/translation/hooks';
   import {setFlowName} from './lib/contexts/flows';
   import {uiPack} from './lib/ui-packs';
-  import {initWorkflowContext} from "./workflow-sdk/context";
 
   subscribe();
   initConnectionCheck(t);
@@ -32,7 +31,6 @@
     };
   `;
 
-  initWorkflowContext($configuration.workflowConfig.flows[flowName]);
 </script>
 
 <svelte:head>

@@ -14,10 +14,9 @@
   } from '../atoms';
   import {Elements} from '../contexts/configuration/types';
   import {appState, IDocument} from '../contexts/app-state';
-  import {goToNextStep, goToPrevStep} from '../contexts/navigation';
+  import {goToPrevStep} from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
   import {currentStepId, documents, selectedDocumentInfo} from '../contexts/app-state/stores';
-  import {preloadNextStepByCurrent} from '../services/preload-service';
   import {ActionNames, sendButtonClickEvent, VerificationStatuses} from '../utils/event-service';
   import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
   import {createToggle} from '../hooks/createToggle/createToggle';
@@ -25,6 +24,7 @@
   import {IDocumentOptions} from '../organisms/DocumentOptions';
   import {TDocumentType} from '../contexts/app-state/types';
   import {getWorkflowContext} from "../../workflow-sdk/context";
+  import {preloadNextStepByCurrent} from "../services/preload-service";
 
   export let stepId;
 
@@ -116,7 +116,12 @@
         },
       });
 
-      return goToNextStep(currentStepId, $configuration, $currentStepId);
+      workflowService.sendEvent({
+        type: 'ui-step',
+      });
+
+      // return goToNextStep(currentStepId, $configuration, $currentStepId);
+      return;
     }
     return goToPrevStep(currentStepId, $configuration, $currentStepId);
   };

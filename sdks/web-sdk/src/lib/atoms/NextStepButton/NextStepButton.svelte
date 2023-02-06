@@ -4,8 +4,6 @@
   import {makeStylesFromConfiguration} from '../../services/css-manager';
   import {Loader} from './Loader';
   import {getWorkflowContext} from "../../../workflow-sdk/context.js";
-  import {currentStepId} from "../../contexts/app-state";
-  import {goToNextStep} from "../../contexts/navigation";
 
   // TODO: Use the createToggle hook, and make sure an exported prop is not being mutated.
   export let isDisabled = false;
@@ -33,9 +31,12 @@
 
     workflowService.sendEvent({
       type: 'ui-step',
+      payload: {
+        skipType,
+      }
     });
 
-    goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType);
+    // goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType);
 
     isDisabled = true;
   };

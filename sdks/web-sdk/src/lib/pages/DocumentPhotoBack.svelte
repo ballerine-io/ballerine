@@ -13,15 +13,15 @@
     VideoContainer,
   } from '../atoms';
   import {Elements} from '../contexts/configuration/types';
-  import {goToNextStep, goToPrevStep} from '../contexts/navigation';
+  import {goToPrevStep} from '../contexts/navigation';
   import {currentStepId} from '../contexts/app-state';
   import {documents, selectedDocumentInfo} from '../contexts/app-state/stores';
   import {updateDocument} from '../utils/photo-utils';
   import {createToggle} from '../hooks/createToggle/createToggle';
-  import {preloadNextStepByCurrent} from '../services/preload-service';
   import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
   import {getDocumentType} from '../utils/documents-utils';
   import {getWorkflowContext} from "../../workflow-sdk/context";
+  import {preloadNextStepByCurrent} from "../services/preload-service";
 
   export let stepId;
 
@@ -83,7 +83,11 @@
       },
     });
 
-    goToNextStep(currentStepId, $configuration, $currentStepId);
+    workflowService.sendEvent({
+      type: 'ui-step',
+    });
+
+    // goToNextStep(currentStepId, $configuration, $currentStepId);
     toggleOnIsDisabled();
   };
 
