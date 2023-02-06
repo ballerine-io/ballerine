@@ -53,12 +53,12 @@
 
   workflowService.subscribe('collect-document', ({payload}) => {
 
-    workflowService.setContext({
-      ...workflowService.getSnapshot().context,
+    workflowService.setContext((prev) => ({
+      ...prev,
       ...(payload?.documents ? {documents: payload?.documents} : {}),
       ...(payload?.selfie ? {selfie: payload?.selfie} : {}),
-    });
-
+    }));
+    
   });
 
   $: {
