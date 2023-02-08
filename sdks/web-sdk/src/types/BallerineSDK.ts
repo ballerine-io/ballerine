@@ -10,8 +10,7 @@ import {
   IFlowExitPayload,
   IFlowNavigationUpdatePayload,
 } from '../lib/services/flow-event-bus/interfaces';
-import { WorkflowEvent } from '../workflow-sdk/types';
-import { AnyRecord } from '../types';
+import { WorkflowOptions } from '@ballerine/workflow-sdk-core';
 
 export interface FlowsGeneralTheme {
   progress?: boolean;
@@ -106,14 +105,7 @@ export interface FlowsBackendConfig {
 
 export interface WorkflowConfig {
   flows: {
-    [key: string]: {
-      context: AnyRecord;
-      states: {
-        [key: string]: {
-          type: WorkflowEvent;
-        };
-      };
-    };
+    [key: string]: WorkflowOptions;
   };
 }
 

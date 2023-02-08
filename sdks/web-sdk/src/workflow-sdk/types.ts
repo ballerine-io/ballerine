@@ -1,40 +1,37 @@
-import { AnyRecord, RenameProperty } from '../types';
-import { IWorkflowEventCallbackParams } from './interfaces';
+import { WorkflowEvent } from '@ballerine/workflow-sdk-core';
+import { AnyRecord, ComputeDeep } from '../types';
 
-export type WorkflowEvent =
+export type BrowserWorkflowEvent =
   | 'ui-step'
   | 'life-cycle-step'
   | 'remote-step'
   | 'local-step'
   | '*'
   | string;
-export type WorkflowEventCallback = (event: Omit<IWorkflowEventCallbackParams, 'type'>) => void;
 
-export type WorkflowWildcardEventCallback = (
-  event: RenameProperty<IWorkflowEventCallbackParams, 'type', 'event'>,
-) => void;
+export type WorkflowEventWithBrowserType = ComputeDeep<
+  Omit<WorkflowEvent, 'type'> & {
+    type: BrowserWorkflowEvent;
+  }
+>;
 
-export type WorkflowEventListener = <TEvent extends WorkflowEvent>(
-  event: TEvent,
-  cb: TEvent extends '*' ? WorkflowWildcardEventCallback : WorkflowEventCallback,
-) => void;
+export type WorkflowEventCallback = (event: Omit<WorkflowEvent, 'type'>) => void;
 
-export type WorkflowSendEvent = (event: Omit<IWorkflowEventCallbackParams, 'state'>) => void;
+export type WorkflowWildcardEventCallback = (event: WorkflowEventWithBrowserType) => void;
 
 export type TSubscriber = {
-  event: WorkflowEvent;
-  cb: (
+  event: BrowserWorkflowEvent;
+  cb(
     event:
       | {
           payload?: AnyRecord;
-          state: AnyRecord;
+          state: string;
         }
       | {
+          type: BrowserWorkflowEvent;
           payload?: AnyRecord;
-          state: AnyRecord;
-          event: WorkflowEvent;
+          state: string;
         },
-  ) => void;
+  ): void;
 };
 export type TSubscribers = Array<TSubscriber>;
-export type TNotifyParams = RenameProperty<IWorkflowEventCallbackParams, 'type', 'event'>;

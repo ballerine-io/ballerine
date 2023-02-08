@@ -5,3 +5,8 @@ export type RenameProperty<TObj, TOld extends keyof TObj, TNew extends PropertyK
 > & {
   [TKey in TNew]: TObj[TOld];
 };
+export type ComputeDeep<TIntersection> = {
+  [TKey in keyof TIntersection]: TIntersection[TKey] extends Record<PropertyKey, any>
+    ? ComputeDeep<TIntersection[TKey]>
+    : TIntersection[TKey];
+} & {};

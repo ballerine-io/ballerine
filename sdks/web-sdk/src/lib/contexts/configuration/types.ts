@@ -7,6 +7,7 @@ import {
   FlowsBackendConfig,
   FlowsEventsConfig,
   FlowsGeneralTheme,
+  WorkflowConfig,
 } from '../../../types/BallerineSDK';
 import { ICSSProperties } from '../../services/css-manager';
 import { ObjectValues, TDocumentKind, TDocumentType } from '../app-state/types';
@@ -162,6 +163,7 @@ export interface IAppConfigurationUI {
 }
 
 export interface IAppConfiguration extends Partial<IAppConfigurationUI> {
+  workflowConfig?: WorkflowConfig;
   isDevelopment: boolean;
   backendConfig: FlowsBackendConfig;
   endUserInfo: Omit<EndUserInfo, 'dateOfBirth' | 'endUserMetadata'> & {
