@@ -45,21 +45,28 @@
   };
 
   const flowName = getFlowName();
-  const workflowService = initWorkflowContext($configuration.workflowConfig.flows[flowName]);
+  const workflow = $configuration.workflowConfig?.flows?.[flowName];
 
-  workflowService.subscribe('ui-step', ({payload}) => {
-    goToNextStep(currentStepId, $configuration, $currentStepId, payload?.skipType);
-  });
+  if (workflow) {
 
-  workflowService.subscribe('collect-document', ({payload}) => {
+    const workflowService = initWorkflowContext(workflow);
 
-    workflowService.setContext((prev) => ({
-      ...prev,
-      ...(payload?.documents ? {documents: payload?.documents} : {}),
-      ...(payload?.selfie ? {selfie: payload?.selfie} : {}),
-    }));
-    
-  });
+    workflowService.subscribe('ui-step', (event) => {
+
+      goToNextStep(currentStepId, $configuration, $currentStepId);
+    });
+
+    workflowService.subscribe('collect-document', (data) => {
+
+      // workflowService.setContext((prev) => ({
+      //   ...prev,
+      //   ...(data?.documents ? {documents: data?.documents} : {}),
+      //   ...(data?.selfie ? {selfie: data?.selfie} : {}),
+      // }));
+      //
+    });
+
+  }
 
   $: {
     routeInit($currentStepId, $currentStepIdx);

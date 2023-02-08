@@ -56,6 +56,7 @@
     "publish:patch": "vite build && npm version patch && npm publish && npm run deploy:cdn:cf"
   },
   "devDependencies": {
+    "@ballerine/workflow-sdk-core": "file:./core.tgz",
     "@babel/core": "^7.18.5",
     "@playwright/test": "^1.27.1",
     "@sveltejs/vite-plugin-svelte": "1.0.8",
@@ -93,6 +94,7 @@
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "dotenv": "^16.0.3",
-    "jslib-html5-camera-photo": "^3.3.3"
+    "jslib-html5-camera-photo": "^3.3.3",
+    "xstate": "^4.35.4"
   }
 }

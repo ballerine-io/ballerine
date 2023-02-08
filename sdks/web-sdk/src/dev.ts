@@ -7,46 +7,105 @@ const ballerineInitConfig: FlowsInitOptions = {
   workflowConfig: {
     flows: {
       ['my-kyc-flow']: {
-        context: {
-          documents: [],
-          selfie: undefined,
-        },
-        states: {
-          [Steps.Welcome]: {
-            type: 'ui-step',
+        WorkflowDefType: 'statechart-json',
+        WorkflowDef: {
+          preserveActionOrder: true, // Ensures that assign actions are called in order
+          id: 'kyc',
+          initial: 'welcome',
+
+          context: {
+            documentsToCollects: [{ docType: 'passport' }],
+            sendingConfirmationCodeTries: 0,
+            email: '',
+            confirmationCode: '',
+            introCompleted: false,
           },
-          [Steps.DocumentSelection]: {
-            type: 'ui-step',
-          },
-          [Steps.DocumentPhoto]: {
-            type: 'ui-step',
-          },
-          [Steps.CheckDocument]: {
-            type: 'ui-step',
-          },
-          [Steps.DocumentPhotoBackStart]: {
-            type: 'ui-step',
-          },
-          [Steps.DocumentPhotoBack]: {
-            type: 'ui-step',
-          },
-          [Steps.CheckDocumentPhotoBack]: {
-            type: 'ui-step',
-          },
-          [Steps.SelfieStart]: {
-            type: 'ui-step',
-          },
-          [Steps.Selfie]: {
-            type: 'ui-step',
-          },
-          [Steps.CheckSelfie]: {
-            type: 'ui-step',
-          },
-          [Steps.Loading]: {
-            type: 'ui-step',
-          },
-          [Steps.Final]: {
-            type: 'ui-step',
+
+          states: {
+            [Steps.Welcome]: {
+              on: {
+                'ui-step': {
+                  target: Steps.DocumentSelection,
+                },
+              },
+            },
+            [Steps.DocumentSelection]: {
+              on: {
+                'ui-step': {
+                  target: Steps.DocumentPhoto,
+                },
+              },
+            },
+            [Steps.DocumentPhoto]: {
+              on: {
+                'ui-step': {
+                  target: Steps.CheckDocument,
+                },
+              },
+            },
+            [Steps.CheckDocument]: {
+              on: {
+                'ui-step': {
+                  target: Steps.DocumentPhotoBackStart,
+                },
+              },
+            },
+            [Steps.DocumentPhotoBackStart]: {
+              on: {
+                'ui-step': {
+                  target: Steps.DocumentPhotoBack,
+                },
+              },
+            },
+            [Steps.DocumentPhotoBack]: {
+              on: {
+                'ui-step': {
+                  target: Steps.CheckDocumentPhotoBack,
+                },
+              },
+            },
+            [Steps.CheckDocumentPhotoBack]: {
+              on: {
+                'ui-step': {
+                  target: Steps.SelfieStart,
+                },
+              },
+            },
+            [Steps.SelfieStart]: {
+              on: {
+                'ui-step': {
+                  target: Steps.Selfie,
+                },
+              },
+            },
+            [Steps.Selfie]: {
+              on: {
+                'ui-step': {
+                  target: Steps.CheckSelfie,
+                },
+              },
+            },
+            [Steps.CheckSelfie]: {
+              on: {
+                'ui-step': {
+                  target: Steps.Loading,
+                },
+              },
+            },
+            [Steps.Loading]: {
+              on: {
+                'ui-step': {
+                  target: Steps.Final,
+                },
+              },
+            },
+            [Steps.Final]: {
+              on: {
+                'ui-step': {
+                  target: Steps.Welcome,
+                },
+              },
+            },
           },
         },
       },

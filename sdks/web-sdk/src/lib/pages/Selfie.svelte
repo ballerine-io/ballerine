@@ -73,7 +73,7 @@
       payload: {
         selfie: dataUri,
       }
-    })
+    });
 
     workflowService.sendEvent({
       type: 'ui-step',

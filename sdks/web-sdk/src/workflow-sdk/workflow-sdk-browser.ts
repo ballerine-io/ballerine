@@ -1,32 +1,61 @@
-import { createWorkflowCore } from './workflow-sdk-core';
-import { AnyRecord } from '../types';
-import { TNotifyParams, TSubscribers, WorkflowEventListener, WorkflowSendEvent } from './types';
-import { IWorkflowEventCallbackParams } from './interfaces';
+import {
+  BrowserWorkflowEvent,
+  TSubscribers,
+  WorkflowEventCallback,
+  WorkflowEventWithBrowserType,
+  WorkflowWildcardEventCallback,
+} from './types';
+import {
+  createWorkflow,
+  WorkflowEventWithoutState,
+  WorkflowOptions,
+} from '@ballerine/workflow-sdk-core';
+import { createMachine } from 'xstate';
 
-export const createWorkflowBrowser = (workflow: AnyRecord) => {
-  const subscribers: TSubscribers = [];
-  const notify = ({ event, payload, state }: TNotifyParams) =>
-    subscribers.forEach(sub => {
-      if (sub.event !== '*' && sub.event !== event) return;
+export class WorkflowBrowserSDK {
+  #__subscribers: TSubscribers = [];
+  #__service;
 
-      sub.cb({ payload, state, event: sub.event === '*' ? event : undefined });
+  constructor({ WorkflowDef, ...machine }: WorkflowOptions) {
+    const service = createMachine(WorkflowDef);
+
+    this.#__service = createWorkflow({
+      ...machine,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      WorkflowDef: service,
     });
-  const workflowService = createWorkflowCore(workflow);
 
-  const subscribe: WorkflowEventListener = (event, cb) => {
-    subscribers.push({ event, cb });
-  };
-  const sendEvent: WorkflowSendEvent = ({ type, payload }) =>
-    workflowService.sendEvent({ type, payload });
+    this.#__service.subscribe(event => {
+      this.#__notify(event);
+    });
+  }
 
-  workflowService.subscribe(({ type, payload, state }: IWorkflowEventCallbackParams) => {
-    notify({ event: type, payload, state: state });
-  });
+  #__notify({ type, payload, state }: WorkflowEventWithBrowserType) {
+    this.#__subscribers.forEach(sub => {
+      if (sub.event !== '*' && sub.event !== type) return;
 
-  return {
-    getSnapshot: workflowService.getSnapshot,
-    setContext: workflowService.setContext,
-    sendEvent,
-    subscribe,
-  };
-};
+      sub.cb({ type: sub.event === '*' ? type : undefined, payload, state });
+    });
+  }
+
+  subscribe<TEvent extends BrowserWorkflowEvent>(
+    event: TEvent,
+    cb: TEvent extends '*' ? WorkflowWildcardEventCallback : WorkflowEventCallback,
+  ) {
+    this.#__subscribers.push({ event, cb });
+  }
+
+  sendEvent(event: WorkflowEventWithoutState) {
+    this.#__service.sendEvent(event);
+  }
+
+  getSnapshot() {
+    return this.#__service.getSnapshot();
+  }
+}
+
+type CreateWorkflowBrowser = (workflow: WorkflowOptions) => WorkflowBrowserSDK;
+
+export const createWorkflowBrowser: CreateWorkflowBrowser = workflow =>
+  new WorkflowBrowserSDK(workflow);
