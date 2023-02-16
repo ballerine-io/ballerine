@@ -24,7 +24,7 @@ export const SelectedImage = forwardRef<HTMLImageElement, ISelectedImageProps>(
     const isPlaceholder = isLoading || !selectedImage || isError;
 
     useEffect(() => {
-      if (!isError) return;
+      if (!isError || !selectedImage) return;
 
       setIsError(false);
     }, [isLoading, selectedImage]);
