@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useState } from 'react';
+import {forwardRef, useCallback, useEffect, useState} from 'react';
 import { ISelectedImageProps } from './interfaces';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { BallerineImage } from 'components/atoms/BallerineImage';
@@ -23,12 +23,11 @@ export const SelectedImage = forwardRef<HTMLImageElement, ISelectedImageProps>(
     }, []);
     const isPlaceholder = isLoading || !selectedImage || isError;
 
-    useConsole({
-      isPlaceholder,
-      isLoading,
-      selectedImage,
-      isError,
-    })
+    useEffect(() => {
+      if (!isError) return;
+
+      setIsError(false);
+    }, [isLoading, selectedImage]);
 
     return (
       <BallerineImage
