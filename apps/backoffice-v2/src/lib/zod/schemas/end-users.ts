@@ -5,7 +5,7 @@ export const EndUsersListSchema = z.object({
   endUsers: z
     .array(
       z.object({
-        id: z.string().uuid(),
+        id: z.string(),
         avatarUrl: z.string().default(''),
         createdAt: z.string().default(''),
         firstName: z.string().nullable().default(''),
