@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply overflow-hidden;
+  }
+
+  .tooltip::before {
+    @apply bg-base-100 text-base-content shadow !important;
+  }
+}
+
+@layer utilities {
+  .ring-ballerine {
+    @apply outline-none ring-2 ring-primary;
+  }
+
+  .d-full {
+    @apply h-full w-full;
+  }
+  .d-screen {
+    @apply h-screen w-screen;
+  }
+}
