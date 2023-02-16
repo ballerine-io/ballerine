@@ -41,14 +41,15 @@ export const auth = {
     return handleZodError(error, data);
   },
   getSession: async () => {
-    const [data, error] = await apiClient({
-      endpoint: endpoints.auth.getSession.endpoint(),
-      method: endpoints.auth.getSession.method,
-      schema: z.object({
-        session: z.boolean(),
-      }),
-    });
+    return { session: true };
+    // const [data, error] = await apiClient({
+    //   endpoint: endpoints.auth.getSession.endpoint(),
+    //   method: endpoints.auth.getSession.method,
+    //   schema: z.object({
+    //     session: z.boolean(),
+    //   }),
+    // });
 
-    return handleZodError(error, data);
+    // return handleZodError(error, data);
   },
 };
