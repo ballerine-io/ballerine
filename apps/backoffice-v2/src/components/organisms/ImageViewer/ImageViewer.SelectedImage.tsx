@@ -3,6 +3,7 @@ import { ISelectedImageProps } from './interfaces';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { BallerineImage } from 'components/atoms/BallerineImage';
 import { ctw } from '../../../utils/ctw/ctw';
+import {useConsole} from "hooks/useConsole/useConsole";
 
 /**
  * @description To be used by {@link ImageViewer}. Uses {@link BallerineImage} to display the currently selected image with default styling.
@@ -21,6 +22,13 @@ export const SelectedImage = forwardRef<HTMLImageElement, ISelectedImageProps>(
       setIsError(true);
     }, []);
     const isPlaceholder = isLoading || !selectedImage || isError;
+
+    useConsole({
+      isPlaceholder,
+      isLoading,
+      selectedImage,
+      isError,
+    })
 
     return (
       <BallerineImage
