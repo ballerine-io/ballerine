@@ -1,4 +1,4 @@
-import { forwardRef, ReactEventHandler, useCallback, useState } from 'react';
+import {forwardRef, ReactEventHandler, useCallback, useEffect, useState} from 'react';
 import { IBallerineImageProps } from './interfaces';
 import { isInstanceOfFunction } from '../../../utils/is-instance-of-function/is-instance-of-function';
 import { PhotoSvg } from 'components/atoms/icons';
@@ -40,6 +40,12 @@ export const BallerineImage = forwardRef<
       },
       [onError],
     );
+
+    useEffect(() => {
+      if (!error || !src) return;
+
+      setError(false);
+    }, [src]);
 
     if (isLoading || isPlaceholder) {
       return (
