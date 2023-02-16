@@ -10,6 +10,7 @@ import {
 } from '../../../types/BallerineSDK';
 import { ICSSProperties } from '../../services/css-manager';
 import { ObjectValues, TDocumentKind, TDocumentType } from '../app-state/types';
+import { MetricsConfig} from '../../../types/BallerineSDK'
 
 export const Steps = {
   Welcome: 'welcome',
@@ -169,6 +170,7 @@ export interface IAppConfiguration extends Partial<IAppConfigurationUI> {
   };
   flows: { [key: string]: IFlow };
   defaultLanguage: 'en' | 'es';
+  metricsConfig: MetricsConfig;
 }
 
 export interface ConfigSettings {
