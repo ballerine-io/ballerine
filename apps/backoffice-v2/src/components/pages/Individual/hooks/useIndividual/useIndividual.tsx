@@ -43,10 +43,10 @@ export const useIndividual = () => {
     avatarUrl,
   };
   const faceAUrl = images?.find(({ caption }) =>
-    /selfie/i.test(caption),
+    /face/i.test(caption),
   )?.imageUrl;
   const faceBUrl = images?.find(({ caption }) =>
-    /id\sdocument\s\(face\)/i.test(caption),
+    /id\scardfront/i.test(caption),
   )?.imageUrl;
   const whitelist = [
     'personalInfo',
