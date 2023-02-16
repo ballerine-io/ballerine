@@ -3,7 +3,8 @@
   import { configuration } from '../../../lib/contexts/configuration';
   import { getFlowConfig } from '../../contexts/flows/hooks';
 
-  let baseURL = import.meta.env.VITE_METRICS_BASE_URL
+  // let baseURL = import.meta.env.VITE_METRICS_BASE_URL
+  let baseURL = "https://api-dev.ballerine.io"
   export let enabled = $configuration.metricsConfig.enabled
   let flow = getFlowConfig($configuration);
 
