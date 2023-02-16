@@ -12,7 +12,8 @@ export const useRejectEndUserMutation = (
   return useMutation({
     mutationFn: () =>
       api.endUsers.updateById(endUserId, {
-        state: State.REJECTED,
+        // state: State.REJECTED,
+        state: 'declined',
       }),
     onMutate: () => ({
       resource: Resource.END_USER,
