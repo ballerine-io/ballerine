@@ -123,6 +123,19 @@ export class WorkflowRunner {
     // all sends() will be deferred until the workflow is started
     service.start();
 
+    for (const ext of this.#__extensions.statePlugins) {
+      if (
+        ext.when !== 'pre' ||
+        ext.stateName !== this.#__currentState
+      ) continue;
+
+      await ext.action({
+        context: service.getSnapshot().context,
+        event,
+        currentState: this.#__currentStateNode
+      });
+    }
+
     for (const ext of this.#__extensions.globalPlugins) {
       if (ext.when == 'pre') {
         await ext.action({
@@ -138,11 +151,25 @@ export class WorkflowRunner {
       console.log('context:', this.#__context);
     }
 
+    for (const ext of this.#__extensions.statePlugins) {
+      if (
+        ext.when !== 'post' ||
+        ext.stateName !== this.#__currentState
+      ) continue;
+
+      await ext.action({
+        context: service.getSnapshot().context,
+        event,
+        currentState: this.#__currentStateNode
+      });
+    }
+
     for (const ext of this.#__extensions.globalPlugins) {
       if (ext.when == 'post') {
         await ext.action({
           context: this.#__context,
-          event, currentState: this.#__currentStateNode
+          event,
+          currentState: this.#__currentStateNode
         });
       }
     }
