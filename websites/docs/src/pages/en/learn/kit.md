@@ -1,5 +1,5 @@
 
-<div align="center">
+<div>
 
 <a href="https://ballerine.io" title="Ballerine - Open-source Infrastructure for Identity and Risk management.">
     <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/git-header.png" alt="Ballerine's website">
@@ -7,7 +7,7 @@
 
 # Onboarding building blocks (community-driven kit)
 
-Use the community driven KYC/KYB process and back-office building blocks to form flows and start onboaring clients.
+Use the community driven KYC/KYB process and back-office building blocks to form flows and start onboarding clients.
 
 What's included:
 -  KYC/KYB flows and UI in Mobile & web SDK
@@ -65,7 +65,7 @@ Give your operating team a case management dashboard so they can approve or reje
 
 
 
-## UI Flows SDK 
+## UI Flows SDK
 
 
 With Ballerine's Web & Mobile SDK Flows you can generate custom-made, branded flows to collect KYC/KYB documents and user information.
@@ -92,7 +92,7 @@ The SDK UI is embeddable inside existing apps or deployed as a web app.
 * Pre-made KYC/KYB **Templates and UI Packs**.
 * **Customizable UI** and flow to fit your desired experience and brand.
 * **Embeddable**, use different vendors in the backend.
-* Edges cases and **long-tail devices covered and tested**.
+* Edge cases and **long-tail devices covered and tested**.
 * Lightweight and performant, built with Svelte (**less than 50kb gzipped**).
 
 
