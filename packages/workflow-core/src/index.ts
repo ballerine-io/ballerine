@@ -1,4 +1,3 @@
-//
 import { MachineConfig } from 'xstate';
 import { WorkflowRunner } from './lib/statecharts';
 
@@ -48,7 +47,7 @@ export interface WorkflowExtensions {
 }
 
 export interface WorkflowOptions {
-  WorkflowDefType: 'statechart-json' | 'bpmn-json';
+  workflowDefinitionType: 'statechart-json' | 'bpmn-json';
   workflowDefinition: MachineConfig<any, any, any>;
   context?: WorkflowContext;
   extensions?: WorkflowExtensions;
