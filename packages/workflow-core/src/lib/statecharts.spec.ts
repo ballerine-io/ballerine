@@ -42,14 +42,14 @@ test('Basic workflow sanity test', async () => {
           // import: '@ballerine/plugins/core/validate@0.2.34',
           // import: '@ballerine/plugins/browser/validate@0.2.34',
           // import: '@ballerine/plugins/node/validate@0.2.34',
-          action: (context: any, event: any, currentState: any) => {
+          action: ({context, event, currentState}) => {
             console.log('global pre action');
             return Promise.resolve();
           },
         },
         {
           when: 'post',
-          action: (context: any, event: any, currentState: any) => {
+          action: ({context, event, currentState}) => {
             console.log('global post action');
             return Promise.resolve();
           },

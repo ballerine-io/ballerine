@@ -19,7 +19,11 @@ export interface WorkflowContext {
 
 interface WorkflowPlugin {
   when: 'pre' | 'post';
-  action: (context: any, event: any, currentState: any) => Promise<void>;
+  action: (options: {
+    context: any;
+    event: any;
+    currentState: any;
+  }) => Promise<void>;
 }
 
 interface StatePlugin extends WorkflowPlugin {
