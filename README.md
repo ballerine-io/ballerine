@@ -8,7 +8,7 @@
     <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/git-header-black.png" alt="Ballerine's website">
 </a>
 
-## Open-Source Rules & Workflow Engine for User Identity and Risk Decisioning 
+## Open-Source Rules & Workflow Engine for User Identity and Risk Decisioning
 
 </br>
   <!-- Nav header - Start -->
@@ -22,7 +22,7 @@
 
 <!-- Nav header - END -->
 
-<!-- Bagdes - Start -->
+<!-- Badges - Start -->
 
 
 
@@ -37,10 +37,10 @@
 
 
 </p>
-<!-- Bagdes - END -->
+<!-- Badges - END -->
 
 
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fballerine-io%2Fballerine%2Ftree%2Fmain%2Fexamples%2Fweb-sdk%2Fsdk-react) [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https%3A%2F%2Fgithub.com%2Fballerine-io%2Fballerine)
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fballerine-io%2Fballerine%2Ftree%2Fmain%2Fexamples%2Fweb-sdk%2Fsdk-react)
 
 </div>
 
@@ -63,7 +63,7 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 
 * :video_game:  **Frontend headless SDK** - :white_check_mark:  public beta
    1. Control the journey of your users in real-time, based on their updating attributes.
-     1. Onboarding building blocks (community-driven kit) -  [Go to directory](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md)
+     1. Onboarding building blocks (community-driven kit) - [Go to directory](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md)
         * KYC/KYB/doc collection flows and UI via Mobile & web SDK
         * Case management dashboard for users approval
     </br>
@@ -89,10 +89,10 @@ Our goal is to enable companies to manage user identity and risk according to th
 With Ballerine's workflow engine you can create the decisioning processes right for you.
 
 *  **Flexible** - limitless building capabilities using code to address any use case.
-*  **Future proof** - Adaptable to future needs using custom code, creating new features, and integrating external systems.
-*  **Short to Implement** - Enables developers to easily integrate it into their existing tech stack independently.
-*  **Secure** - Adhere to your security & privacy protocols through on-prem deployment, self-hosting, and data ownership.
-*  **Community** - Use what others have built, contribute yourself, and leverage community maintenance.
+*  **Future proof** - adaptable to future needs using custom code, creating new features, and integrating external systems.
+*  **Short to Implement** - enables developers to easily integrate it into their existing tech stack independently.
+*  **Secure** - adhere to your security & privacy protocols through on-prem deployment, self-hosting, and data ownership.
+*  **Community** - use what others have built, contribute yourself, and leverage community maintenance.
 
 
 <details>
@@ -100,11 +100,11 @@ With Ballerine's workflow engine you can create the decisioning processes right 
 <summary>Examples of what you can do with it:</summary>
 
 
-- Dynamic experience - Build journeys that change mid-flow based on the current undestanding of the user's risk.
-- Data ownership - Run the process self-hosted on prem to keep sensitive data in-house
-- Global Orchestration  - Change/add vendors easily to support users from multiple countries.
-- Cost reduction - Leverage ownership of vendor relationships to maintain control over costs and communication.
--  And more.
+- Dynamic experience - build journeys that change mid-flow based on the current understanding of the user's risk.
+- Data ownership - run the process self-hosted on prem to keep sensitive data in-house
+- Global Orchestration  - change/add vendors easily to support users from multiple countries.
+- Cost reduction - leverage ownership of vendor relationships to maintain control over costs and communication.
+- And more.
 
 </details>
 
@@ -118,7 +118,7 @@ Define and automate complex decisioning processes for your unique business needs
 
 * Trigger actions to enrich data and uncover risk, and streamline your team's decision-making process.
 * Visualize complex flows to provide observability of how things work to the rest of the company.
-* improve compliance, reduce fraud, and increase conversion.
+* Improve compliance, reduce fraud, and increase conversion.
 
 <br/>
 
@@ -139,11 +139,11 @@ Coming soon
 
 # Onboarding building blocks (community-driven kit)
 
-Use the community driven KYC/KYB process and back-office building blocks to form flows and start onboaring clients.
+Use the community driven KYC/KYB process and back-office building blocks to form flows and start onboarding clients.
 
 What's included:
--  KYC/KYB flows and UI in Mobile & web SDK
--   Case management dashboard for users approval
+- KYC/KYB flows and UI in Mobile & web SDK
+- Case management dashboard for users approval
 
 To get started go to [Onboarding building blocks](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md) directory.
 
@@ -170,11 +170,11 @@ Case management dashboard
 
 
 Examples of what you can do with it:
--  Use different vendors for different audiences - all modules are 100% vendor agnostic.
--  Create your own low-cost KYC with AWS Rekognition, Google vision, and other ML tools.
--  Collect documents in a KYB flow.
--  Implement and modify a case management for user approval/rejection.
--  And more.
+- Use different vendors for different audiences - all modules are 100% vendor agnostic.
+- Create your own low-cost KYC with AWS Rekognition, Google vision, and other ML tools.
+- Collect documents in a KYB flow.
+- Implement and modify a case management for user approval/rejection.
+- And more.
 
 -----
 
