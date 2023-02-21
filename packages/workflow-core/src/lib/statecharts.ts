@@ -126,7 +126,7 @@ export class WorkflowRunner {
     for (const ext of this.#__extensions.statePlugins) {
       if (
         ext.when !== 'pre' ||
-        ext.stateName !== this.#__currentState
+        !ext.stateNames?.includes(this.#__currentState)
       ) continue;
 
       await ext.action({
@@ -154,7 +154,7 @@ export class WorkflowRunner {
     for (const ext of this.#__extensions.statePlugins) {
       if (
         ext.when !== 'post' ||
-        ext.stateName !== this.#__currentState
+        !ext.stateNames?.includes(this.#__currentState)
       ) continue;
 
       await ext.action({

@@ -35,7 +35,27 @@ test('Basic workflow sanity test', async () => {
     workflowDefinition: simpleWorkflow,
     context: {},
     extensions: {
-      statePlugins: [],
+      statePlugins: [
+        {
+          stateNames: ['active'],
+          when: 'pre',
+          // import: '@ballerine/plugins/core/validate@0.2.34',
+          // import: '@ballerine/plugins/browser/validate@0.2.34',
+          // import: '@ballerine/plugins/node/validate@0.2.34',
+          action: ({context, event, currentState}) => {
+            console.log('state pre action');
+            return Promise.resolve();
+          },
+        },
+        {
+          stateNames: ['inactive'],
+          when: 'post',
+          action: ({context, event, currentState}) => {
+            console.log('state post action');
+            return Promise.resolve();
+          },
+        },
+      ],
       globalPlugins: [
         {
           when: 'pre',

@@ -27,7 +27,7 @@ interface WorkflowPlugin {
 }
 
 interface StatePlugin extends WorkflowPlugin {
-  stateName: string;
+  stateNames: Array<string>;
 }
 
 interface GlobalPlugin extends WorkflowPlugin {
