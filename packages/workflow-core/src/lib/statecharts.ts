@@ -7,6 +7,12 @@ import {
   WorkflowExtensions,
 } from '..';
 
+export class HttpError extends Error {
+  constructor(public status: number, public message: string, public cause?: unknown) {
+    super(message, {cause});
+  }
+}
+
 interface WorkflowRunnerArgs {
   workflowDefinition: MachineConfig<any, any, any>;
   context: any;
@@ -129,11 +135,21 @@ export class WorkflowRunner {
         !ext.stateNames?.includes(this.#__currentState)
       ) continue;
 
-      await ext.action({
-        context: service.getSnapshot().context,
-        event,
-        currentState: this.#__currentStateNode
-      });
+      try {
+
+        await ext.action({
+          context: service.getSnapshot().context,
+          event,
+          currentState: this.#__currentStateNode
+        });
+      } catch (err) {
+
+        this.#__callback?.({
+          type: err instanceof HttpError ? 'HTTP_ERROR' :  'ERROR',
+          state: this.#__currentState,
+          error: err as Error,
+        });
+      }
     }
 
     for (const ext of this.#__extensions.globalPlugins) {

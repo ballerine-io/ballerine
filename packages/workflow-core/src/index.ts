@@ -38,6 +38,7 @@ export interface WorkflowEvent {
   type: string;
   state: string;
   payload?: Record<PropertyKey, any>;
+  error?: unknown;
 }
 
 export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
