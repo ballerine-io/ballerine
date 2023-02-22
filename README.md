@@ -77,7 +77,7 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 
 Join our mailing list so you know whenever we release new products and features.
 
-<a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
+<a href="https://www.ballerine.com/mailing-list" title="Ballerine - Request Access">
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
 </a>
 
@@ -183,7 +183,7 @@ Examples of what you can do with it:
 
 Leave us your email on our mailing list and we'll let you know whenever we release a feature or improvement.
 
-<a href="https://www.ballerine.io/mailing-list" title="Ballerine - Request Access">
+<a href="https://www.ballerine.com/mailing-list" title="Ballerine - Request Access">
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
 </a>
 </br>
@@ -202,4 +202,4 @@ Or join our community channels:
 ___
 
 <i>As you can see, most apps and packages are still private beta. We are working on migrating them to this monorepo.</i>\
-<i>If you already want to start using them or want to get involved - reach out to us at [oss@ballerine.io](mailto:oss@ballerine.io).</i>
+<i>If you already want to start using them or want to get involved - reach out to us at [oss@ballerine.com](mailto:oss@ballerine.com).</i>
