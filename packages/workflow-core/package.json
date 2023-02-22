@@ -19,7 +19,7 @@
   "keywords": [],
   "scripts": {
     "clean": "rimraf ./build",
-    "build": "rollup --config rollup.config.js",
+    "build": "pnpm clean && rollup --config rollup.config.js",
     "test": "vitest run"
   },
   "engines": {
