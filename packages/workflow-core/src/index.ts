@@ -1,4 +1,4 @@
-import { MachineConfig } from 'xstate';
+import {MachineConfig, MachineOptions} from 'xstate';
 import { WorkflowRunner } from './lib/statecharts';
 
 export * from './lib/statecharts';
@@ -66,6 +66,7 @@ export interface WorkflowExtensions {
 export interface WorkflowOptions {
   workflowDefinitionType: 'statechart-json' | 'bpmn-json';
   workflowDefinition: MachineConfig<any, any, any>;
+  workflowActions?: MachineOptions<any, any>['actions'];
   context?: WorkflowContext;
   extensions?: WorkflowExtensions;
 }
@@ -74,10 +75,12 @@ type TCreateWorkflow = (options: WorkflowOptions) => Workflow;
 
 export const createWorkflow: TCreateWorkflow = ({
   workflowDefinition,
+  workflowActions,
   extensions,
 }) =>
   new WorkflowRunner({
     workflowDefinition,
+    workflowActions,
     context: {},
     extensions,
   });

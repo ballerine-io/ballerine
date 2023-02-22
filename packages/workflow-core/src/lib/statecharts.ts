@@ -1,4 +1,5 @@
 import {
+  ActionFunction,
   createMachine,
   interpret,
   MachineConfig,
@@ -15,6 +16,7 @@ import {
 
 interface WorkflowRunnerArgs {
   workflowDefinition: MachineConfig<any, any, any>;
+  workflowActions?: MachineOptions<any, any>['actions'];
   context: any;
   state?: string;
   extensions?: WorkflowExtensions;
@@ -39,11 +41,18 @@ export class WorkflowRunner {
   }
 
   constructor(
-    {workflowDefinition, context = {}, state, extensions}: WorkflowRunnerArgs,
+    {
+      workflowDefinition,
+      workflowActions,
+      context = {},
+      state,
+      extensions
+    }: WorkflowRunnerArgs,
     debugMode = true
   ) {
     this.#__workflow = this.#__extendedWorkflow({
       workflow: workflowDefinition,
+      workflowActions,
       extensions
     });
 
@@ -62,38 +71,62 @@ export class WorkflowRunner {
 
   #__extendedWorkflow({
                         workflow,
+                        workflowActions,
                         extensions = {
                           statePlugins: [],
                           globalPlugins: [],
                         }
                       }: {
     workflow: any;
+    workflowActions?: WorkflowRunnerArgs['workflowActions'];
     extensions?: WorkflowExtensions;
   }) {
     const extended = workflow;
     const onEnter = ['ping'];
     const onExit = ['pong'];
+    const stateActions: Record<string, ActionFunction<any, any>> = {};
 
     for (const state in extended.states) {
 
-      extended.states[state].entry = [
-        ...new Set([
+      extended.states[state].entry = Array.from(
+        new Set([
           ...(workflow.states[state].entry ?? []),
           ...onEnter
         ])
-      ];
+      );
 
-      extended.states[state].exit = [
-        ...new Set([
+      extended.states[state].exit = Array.from(
+        new Set([
           ...(workflow.states[state].exit ?? []),
           ...onExit
         ])
-      ];
+      );
 
 
     }
 
+    for (const statePlugin of extensions.statePlugins) {
+
+      for (const stateName of statePlugin.stateNames) {
+
+        // E.g { state: { entry: [...,plugin.name] } }
+        extended.states[stateName][statePlugin.when] = Array.from(
+          new Set(
+            [
+              ...extended.states[stateName][statePlugin.when],
+              statePlugin.name
+            ]
+          ));
+
+        // { actions: { persist: action } }
+        stateActions[statePlugin.name] = statePlugin.action;
+      }
+
+    }
+
     const actions: MachineOptions<any, any>['actions'] = {
+      ...workflowActions,
+      ...stateActions,
       ping: (...rest: any[]) => {
         console.log('Global state entry handler');
       },

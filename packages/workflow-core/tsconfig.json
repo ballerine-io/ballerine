@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "downlevelIteration": true,
     "outDir": "./build/types",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "target": "ESNext",

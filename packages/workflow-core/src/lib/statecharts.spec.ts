@@ -37,6 +37,7 @@ test('Basic workflow sanity test', async () => {
     extensions: {
       statePlugins: [
         {
+          name: 'activeAction',
           stateNames: ['active'],
           when: 'exit',
           // import: '@ballerine/plugins/core/validate@0.2.34',
@@ -48,6 +49,7 @@ test('Basic workflow sanity test', async () => {
           },
         },
         {
+          name: 'inactiveAction',
           stateNames: ['inactive'],
           when: 'exit',
           action: ({context, event, currentState}) => {
