@@ -19,11 +19,15 @@ export interface WorkflowContext {
 
 interface WorkflowPlugin {
   when: 'pre' | 'post';
-  action: (context: any, event: any, currentState: any) => Promise<void>;
+  action: (options: {
+    context: any;
+    event: any;
+    currentState: any;
+  }) => Promise<void>;
 }
 
 interface StatePlugin extends WorkflowPlugin {
-  stateName: string;
+  stateNames: Array<string>;
 }
 
 interface GlobalPlugin extends WorkflowPlugin {
@@ -47,7 +51,7 @@ export interface WorkflowExtensions {
 }
 
 export interface WorkflowOptions {
-  WorkflowDefType: 'statechart-json' | 'bpmn-json';
+  workflowDefinitionType: 'statechart-json' | 'bpmn-json';
   workflowDefinition: MachineConfig<any, any, any>;
   context?: WorkflowContext;
   extensions?: WorkflowExtensions;

@@ -1,4 +1,4 @@
-import { createMachine, interpret, MachineConfig, StateMachine } from 'xstate';
+import {createMachine, interpret, MachineConfig, StateMachine} from 'xstate';
 import * as jsonLogic from 'json-logic-js';
 
 import {
@@ -33,7 +33,7 @@ export class WorkflowRunner {
   }
 
   constructor(
-    { workflowDefinition, context = {}, state, extensions }: WorkflowRunnerArgs,
+    {workflowDefinition, context = {}, state, extensions}: WorkflowRunnerArgs,
     debugMode = true
   ) {
     this.#__workflow = this.#__extendedWorkflow(workflowDefinition);
@@ -47,7 +47,7 @@ export class WorkflowRunner {
     this.#__currentState = state ? state : workflowDefinition.initial;
 
     // global and state specific extensions
-    this.#__extensions = extensions || { globalPlugins: [], statePlugins: [] };
+    this.#__extensions = extensions || {globalPlugins: [], statePlugins: []};
     this.#__debugMode = debugMode;
   }
 
@@ -76,8 +76,8 @@ export class WorkflowRunner {
       },
     };
     const guards = {
-      'json-rule': (ctx: any, { payload }: any, { cond }: any) => {
-        const data = { ...ctx, ...payload };
+      'json-rule': (ctx: any, {payload}: any, {cond}: any) => {
+        const data = {...ctx, ...payload};
         return jsonLogic.apply(
           cond.name, // Rule
           data // Data
@@ -86,8 +86,8 @@ export class WorkflowRunner {
     };
 
     return createMachine(
-      { predictableActionArguments: false, ...extended },
-      { actions, guards }
+      {predictableActionArguments: false, ...extended},
+      {actions, guards}
     );
   }
 
@@ -123,13 +123,26 @@ export class WorkflowRunner {
     // all sends() will be deferred until the workflow is started
     service.start();
 
+    for (const ext of this.#__extensions.statePlugins) {
+      if (
+        ext.when !== 'pre' ||
+        !ext.stateNames?.includes(this.#__currentState)
+      ) continue;
+
+      await ext.action({
+        context: service.getSnapshot().context,
+        event,
+        currentState: this.#__currentStateNode
+      });
+    }
+
     for (const ext of this.#__extensions.globalPlugins) {
       if (ext.when == 'pre') {
-        await ext.action(
-          service.getSnapshot().context,
+        await ext.action({
+          context: service.getSnapshot().context,
           event,
-          this.#__currentStateNode
-        );
+          currentState: this.#__currentStateNode
+        });
       }
     }
     service.send(event);
@@ -138,9 +151,26 @@ export class WorkflowRunner {
       console.log('context:', this.#__context);
     }
 
+    for (const ext of this.#__extensions.statePlugins) {
+      if (
+        ext.when !== 'post' ||
+        !ext.stateNames?.includes(this.#__currentState)
+      ) continue;
+
+      await ext.action({
+        context: service.getSnapshot().context,
+        event,
+        currentState: this.#__currentStateNode
+      });
+    }
+
     for (const ext of this.#__extensions.globalPlugins) {
       if (ext.when == 'post') {
-        await ext.action(this.#__context, event, this.#__currentStateNode);
+        await ext.action({
+          context: this.#__context,
+          event,
+          currentState: this.#__currentStateNode
+        });
       }
     }
   }
