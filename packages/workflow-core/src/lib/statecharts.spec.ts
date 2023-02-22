@@ -38,7 +38,7 @@ test('Basic workflow sanity test', async () => {
       statePlugins: [
         {
           stateNames: ['active'],
-          when: 'pre',
+          when: 'exit',
           // import: '@ballerine/plugins/core/validate@0.2.34',
           // import: '@ballerine/plugins/browser/validate@0.2.34',
           // import: '@ballerine/plugins/node/validate@0.2.34',
@@ -49,7 +49,7 @@ test('Basic workflow sanity test', async () => {
         },
         {
           stateNames: ['inactive'],
-          when: 'post',
+          when: 'exit',
           action: ({context, event, currentState}) => {
             console.log('state post action');
             return Promise.resolve();

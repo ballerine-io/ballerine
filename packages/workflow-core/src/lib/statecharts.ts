@@ -1,4 +1,10 @@
-import {createMachine, interpret, MachineConfig, StateMachine} from 'xstate';
+import {
+  createMachine,
+  interpret,
+  MachineConfig,
+  MachineOptions,
+  StateMachine
+} from 'xstate';
 import * as jsonLogic from 'json-logic-js';
 
 import {
@@ -36,7 +42,10 @@ export class WorkflowRunner {
     {workflowDefinition, context = {}, state, extensions}: WorkflowRunnerArgs,
     debugMode = true
   ) {
-    this.#__workflow = this.#__extendedWorkflow(workflowDefinition);
+    this.#__workflow = this.#__extendedWorkflow({
+      workflow: workflowDefinition,
+      extensions
+    });
 
     // use initial context or provided context
     this.#__context = Object.keys(context).length
@@ -51,23 +60,40 @@ export class WorkflowRunner {
     this.#__debugMode = debugMode;
   }
 
-  #__extendedWorkflow(workflow: any) {
+  #__extendedWorkflow({
+                        workflow,
+                        extensions = {
+                          statePlugins: [],
+                          globalPlugins: [],
+                        }
+                      }: {
+    workflow: any;
+    extensions?: WorkflowExtensions;
+  }) {
     const extended = workflow;
     const onEnter = ['ping'];
     const onExit = ['pong'];
 
     for (const state in extended.states) {
-      extended.states[state].entry = onEnter.concat(
-        workflow.states[state].entry || [],
-        onEnter
-      );
-      extended.states[state].exit = onExit.concat(
-        workflow.states[state].exit || [],
-        onExit
-      );
+
+      extended.states[state].entry = [
+        ...new Set([
+          ...(workflow.states[state].entry ?? []),
+          ...onEnter
+        ])
+      ];
+
+      extended.states[state].exit = [
+        ...new Set([
+          ...(workflow.states[state].exit ?? []),
+          ...onExit
+        ])
+      ];
+
+
     }
 
-    const actions = {
+    const actions: MachineOptions<any, any>['actions'] = {
       ping: (...rest: any[]) => {
         console.log('Global state entry handler');
       },
@@ -75,8 +101,9 @@ export class WorkflowRunner {
         console.log('Global state exit handler');
       },
     };
-    const guards = {
-      'json-rule': (ctx: any, {payload}: any, {cond}: any) => {
+
+    const guards: MachineOptions<any, any>['guards'] = {
+      'json-rule': (ctx, {payload}, {cond}) => {
         const data = {...ctx, ...payload};
         return jsonLogic.apply(
           cond.name, // Rule

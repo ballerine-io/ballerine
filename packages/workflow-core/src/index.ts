@@ -26,7 +26,20 @@ interface WorkflowPlugin {
   }) => Promise<void>;
 }
 
-interface StatePlugin extends WorkflowPlugin {
+interface StatePlugin extends Omit<WorkflowPlugin, 'when'> {
+  /**
+   * The actions key to inject an action function into.
+   * E.g. { actions: { [plugin.name]: plugin.action  } }
+   */
+  name: string;
+  /**
+   * entry - fire an action when transitioning into a specified state
+   * exit  - fire an action when transitioning out of a specified state
+   */
+  when: 'entry' | 'exit';
+  /**
+   * States already defined in the statechart
+   */
   stateNames: Array<string>;
 }
 
