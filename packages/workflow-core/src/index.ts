@@ -3,11 +3,7 @@ import { WorkflowRunner } from './lib/statecharts';
 
 export * from './lib/statecharts';
 
-interface Workflow {
-  subscribe: (callback: (event: WorkflowEvent) => void) => void;
-  sendEvent: (event: Omit<WorkflowEvent, 'state'>) => void;
-  getSnapshot: () => Record<PropertyKey, any>;
-}
+type Workflow = InstanceType<typeof WorkflowRunner>;
 
 export interface WorkflowContext {
   id: string;
@@ -85,3 +81,4 @@ export const createWorkflow: TCreateWorkflow = ({
     context: {},
     extensions,
   });
+export {HttpError} from "./lib/errors";

@@ -8,17 +8,13 @@ import {
 } from 'xstate';
 import * as jsonLogic from 'json-logic-js';
 
-import {
-  WorkflowEvent,
-  WorkflowEventWithoutState,
-  WorkflowExtensions,
-} from '..';
+import {WorkflowEvent, WorkflowEventWithoutState, WorkflowExtensions,} from '..';
+import {HttpError} from "./errors";
 
-export class HttpError extends Error {
-  constructor(public status: number, public message: string, public cause?: unknown) {
-    super(message, {cause});
-  }
-}
+export const Error = {
+  ERROR: "ERROR",
+  HTTP_ERROR: "HTTP_ERROR",
+} as const;
 
 interface WorkflowRunnerArgs {
   workflowDefinition: MachineConfig<any, any, any>;
@@ -124,8 +120,18 @@ export class WorkflowRunner {
             ]
           ));
 
+        // workflow-core
         // { actions: { persist: action } }
         stateActions[statePlugin.name] = async (context, event) => {
+
+          this.#__callback?.({
+            type: 'STATE_ACTION_STATUS',
+            state: this.#__currentState,
+            payload: {
+              status: 'PENDING',
+            }
+          });
+
           try {
             await statePlugin.action({
               context,
@@ -133,11 +139,34 @@ export class WorkflowRunner {
               currentState: this.#__currentState,
             })
           } catch (err) {
+
+            let type;
+
+            switch(true) {
+              case err instanceof HttpError:
+                type = Error.HTTP_ERROR;
+                break;
+              default:
+                type = Error.ERROR;
+                break;
+            }
+
             this.#__callback?.({
-              type: err instanceof HttpError ? 'HTTP_ERROR' : 'ERROR',
+              type,
               state: this.#__currentState,
-              error: err as Error,
+              error: err,
             });
+
+          } finally {
+
+            this.#__callback?.({
+              type: 'STATE_ACTION_STATUS',
+              state: this.#__currentState,
+              payload: {
+                status: 'IDLE',
+              }
+            });
+
           }
         };
       }
