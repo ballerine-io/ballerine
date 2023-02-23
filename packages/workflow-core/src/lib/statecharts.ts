@@ -1,4 +1,11 @@
-import {createMachine, interpret, MachineConfig, StateMachine} from 'xstate';
+import {
+  ActionFunction,
+  createMachine,
+  interpret,
+  MachineConfig,
+  MachineOptions,
+  StateMachine
+} from 'xstate';
 import * as jsonLogic from 'json-logic-js';
 
 import {
@@ -9,6 +16,7 @@ import {
 
 interface WorkflowRunnerArgs {
   workflowDefinition: MachineConfig<any, any, any>;
+  workflowActions?: MachineOptions<any, any>['actions'];
   context: any;
   state?: string;
   extensions?: WorkflowExtensions;
@@ -33,10 +41,20 @@ export class WorkflowRunner {
   }
 
   constructor(
-    {workflowDefinition, context = {}, state, extensions}: WorkflowRunnerArgs,
+    {
+      workflowDefinition,
+      workflowActions,
+      context = {},
+      state,
+      extensions
+    }: WorkflowRunnerArgs,
     debugMode = true
   ) {
-    this.#__workflow = this.#__extendedWorkflow(workflowDefinition);
+    this.#__workflow = this.#__extendedWorkflow({
+      workflow: workflowDefinition,
+      workflowActions,
+      extensions
+    });
 
     // use initial context or provided context
     this.#__context = Object.keys(context).length
@@ -51,23 +69,64 @@ export class WorkflowRunner {
     this.#__debugMode = debugMode;
   }
 
-  #__extendedWorkflow(workflow: any) {
+  #__extendedWorkflow({
+                        workflow,
+                        workflowActions,
+                        extensions = {
+                          statePlugins: [],
+                          globalPlugins: [],
+                        }
+                      }: {
+    workflow: any;
+    workflowActions?: WorkflowRunnerArgs['workflowActions'];
+    extensions?: WorkflowExtensions;
+  }) {
     const extended = workflow;
     const onEnter = ['ping'];
     const onExit = ['pong'];
+    const stateActions: Record<string, ActionFunction<any, any>> = {};
 
     for (const state in extended.states) {
-      extended.states[state].entry = onEnter.concat(
-        workflow.states[state].entry || [],
-        onEnter
+
+      extended.states[state].entry = Array.from(
+        new Set([
+          ...(workflow.states[state].entry ?? []),
+          ...onEnter
+        ])
       );
-      extended.states[state].exit = onExit.concat(
-        workflow.states[state].exit || [],
-        onExit
+
+      extended.states[state].exit = Array.from(
+        new Set([
+          ...(workflow.states[state].exit ?? []),
+          ...onExit
+        ])
       );
+
+
     }
 
-    const actions = {
+    for (const statePlugin of extensions.statePlugins) {
+
+      for (const stateName of statePlugin.stateNames) {
+
+        // E.g { state: { entry: [...,plugin.name] } }
+        extended.states[stateName][statePlugin.when] = Array.from(
+          new Set(
+            [
+              ...extended.states[stateName][statePlugin.when],
+              statePlugin.name
+            ]
+          ));
+
+        // { actions: { persist: action } }
+        stateActions[statePlugin.name] = statePlugin.action;
+      }
+
+    }
+
+    const actions: MachineOptions<any, any>['actions'] = {
+      ...workflowActions,
+      ...stateActions,
       ping: (...rest: any[]) => {
         console.log('Global state entry handler');
       },
@@ -75,8 +134,9 @@ export class WorkflowRunner {
         console.log('Global state exit handler');
       },
     };
-    const guards = {
-      'json-rule': (ctx: any, {payload}: any, {cond}: any) => {
+
+    const guards: MachineOptions<any, any>['guards'] = {
+      'json-rule': (ctx, {payload}, {cond}) => {
         const data = {...ctx, ...payload};
         return jsonLogic.apply(
           cond.name, // Rule
@@ -123,19 +183,6 @@ export class WorkflowRunner {
     // all sends() will be deferred until the workflow is started
     service.start();
 
-    for (const ext of this.#__extensions.statePlugins) {
-      if (
-        ext.when !== 'pre' ||
-        !ext.stateNames?.includes(this.#__currentState)
-      ) continue;
-
-      await ext.action({
-        context: service.getSnapshot().context,
-        event,
-        currentState: this.#__currentStateNode
-      });
-    }
-
     for (const ext of this.#__extensions.globalPlugins) {
       if (ext.when == 'pre') {
         await ext.action({
@@ -149,19 +196,6 @@ export class WorkflowRunner {
     this.#__context = service.getSnapshot().context;
     if (this.#__debugMode) {
       console.log('context:', this.#__context);
-    }
-
-    for (const ext of this.#__extensions.statePlugins) {
-      if (
-        ext.when !== 'post' ||
-        !ext.stateNames?.includes(this.#__currentState)
-      ) continue;
-
-      await ext.action({
-        context: service.getSnapshot().context,
-        event,
-        currentState: this.#__currentStateNode
-      });
     }
 
     for (const ext of this.#__extensions.globalPlugins) {

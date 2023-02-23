@@ -1,4 +1,4 @@
-import { MachineConfig } from 'xstate';
+import {MachineConfig, MachineOptions} from 'xstate';
 import { WorkflowRunner } from './lib/statecharts';
 
 export * from './lib/statecharts';
@@ -26,7 +26,20 @@ interface WorkflowPlugin {
   }) => Promise<void>;
 }
 
-interface StatePlugin extends WorkflowPlugin {
+interface StatePlugin extends Omit<WorkflowPlugin, 'when'> {
+  /**
+   * The actions key to inject an action function into.
+   * E.g. { actions: { [plugin.name]: plugin.action  } }
+   */
+  name: string;
+  /**
+   * entry - fire an action when transitioning into a specified state
+   * exit  - fire an action when transitioning out of a specified state
+   */
+  when: 'entry' | 'exit';
+  /**
+   * States already defined in the statechart
+   */
   stateNames: Array<string>;
 }
 
@@ -53,6 +66,7 @@ export interface WorkflowExtensions {
 export interface WorkflowOptions {
   workflowDefinitionType: 'statechart-json' | 'bpmn-json';
   workflowDefinition: MachineConfig<any, any, any>;
+  workflowActions?: MachineOptions<any, any>['actions'];
   context?: WorkflowContext;
   extensions?: WorkflowExtensions;
 }
@@ -61,10 +75,12 @@ type TCreateWorkflow = (options: WorkflowOptions) => Workflow;
 
 export const createWorkflow: TCreateWorkflow = ({
   workflowDefinition,
+  workflowActions,
   extensions,
 }) =>
   new WorkflowRunner({
     workflowDefinition,
+    workflowActions,
     context: {},
     extensions,
   });
