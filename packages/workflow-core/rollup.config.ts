@@ -100,7 +100,7 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
       banner,
       preserveModules: true,
     },
-    plugins: [babelPlugin, nodeResolve({ extensions: ['.ts'] }), dts()],
+    plugins: [babelPlugin, nodeResolve({ extensions: ['.ts'] })],
   };
 }
 
@@ -117,7 +117,7 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
       exports: 'named',
       banner,
     },
-    plugins: [babelPlugin, commonjs(), nodeResolve({ extensions: ['.ts'] }),dts()],
+    plugins: [babelPlugin, commonjs(), nodeResolve({ extensions: ['.ts'] })],
   };
 }
 
@@ -144,7 +144,6 @@ function umdDev({
       commonjs(),
       nodeResolve({ extensions: ['.ts'] }),
       umdDevPlugin('development'),
-      dts()
     ],
   };
 }

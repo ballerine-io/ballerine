@@ -18,8 +18,10 @@
   "license": "Apache-2.0",
   "keywords": [],
   "scripts": {
-    "bundle": "rollup --config rollup.config.js",
-    "build:main": "tsc -p tsconf.dev.json",
+    "clean": "rimraf ./build",
+    "build": "pnpm clean && rollup --config rollup.config.js",
+    "watch": "tsc -w",
+    "dev": "concurrently --kill-others \"pnpm build -w\" \"pnpm watch\"",
     "test": "vitest run"
   },
   "engines": {
@@ -45,6 +47,7 @@
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
     "@vitest/coverage-istanbul": "^0.28.4",
+    "concurrently": "^7.6.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^6.11.0",
@@ -55,6 +58,7 @@
     "plugin-babel": "link:@types/@rollup/plugin-babel",
     "plugin-terser": "link:@types/@rollup/plugin-terser",
     "prettier": "^2.1.1",
+    "rimraf": "^4.1.2",
     "rollup": "2.70.2",
     "rollup-plugin-dts": "4.2.2",
     "rollup-plugin-size": "0.2.2",

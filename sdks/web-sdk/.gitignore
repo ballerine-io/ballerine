@@ -26,3 +26,4 @@ examples/**
 !examples/**/index.html
 !examples/**/README.md
 !examples/**/*.svg
+vite.config.ts.timestamp-*.mjs
