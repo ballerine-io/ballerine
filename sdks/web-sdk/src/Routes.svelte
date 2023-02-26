@@ -3,7 +3,7 @@
   import { currentParams, currentStepId, currentStepIdx } from './lib/contexts/app-state';
   import { configuration, IStepConfiguration } from './lib/contexts/configuration';
   import { getFlowName } from './lib/contexts/flows';
-  import { goToNextStep, goToPrevStep, steps } from './lib/contexts/navigation';
+  import { steps } from './lib/contexts/navigation';
   import { visitedPage } from './lib/services/analytics';
   import { sendNavigationUpdateEvent } from './lib/utils/event-service';
   import { initWorkflowContext } from './workflow-sdk/context';
@@ -56,13 +56,15 @@
     snapshot = workflowService.getSnapshot();
 
     workflowService.subscribe('USER_NEXT_STEP', ({ state, payload }) => {
-      currentStep = state;
-      goToNextStep(currentStepId, $configuration, $currentStepId, payload?.skipType);
+      currentStepId.set(state);
+      currentStepIdx.set(flowSteps.findIndex(s => s.name === state));
+      step = steps.find(s => s.name === state);
     });
 
     workflowService.subscribe('USER_PREV_STEP', ({ state, payload }) => {
-      currentStep = state;
-      goToPrevStep(currentStepId, $configuration, $currentStepId, payload?.skipType);
+      currentStepId.set(state);
+      currentStepIdx.set(flowSteps.findIndex(s => s.name === state));
+      step = steps.find(s => s.name === state);
     });
 
     workflowService.subscribe('ERROR', payload => {
@@ -79,9 +81,9 @@
     });
   }
 
-  $: {
-    routeInit($currentStepId, $currentStepIdx);
-  }
+  // $: {
+  // routeInit($currentStepId, $currentStepIdx);
+  // }
 </script>
 
 {#if step}
