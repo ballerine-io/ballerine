@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "importsNotUsedAsValues": "remove",
+    "moduleResolution": "node",
     "strict": true,
     "sourceMap": true,
     "declaration": true,

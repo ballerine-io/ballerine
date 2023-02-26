@@ -1,19 +1,19 @@
 <script lang="ts">
-  import {T} from '../contexts/translation';
-  import {Button, IconButton, IconCloseButton, Image, Paragraph, Title} from '../atoms';
-  import {configuration} from '../contexts/configuration';
-  import {goToPrevStep} from '../contexts/navigation/hooks';
-  import {Elements} from '../contexts/configuration/types';
-  import {currentStepId, IDocument} from '../contexts/app-state';
-  import {getFlowConfig, isNativeCamera} from '../contexts/flows/hooks';
-  import {addDocument, ICameraEvent, nativeCameraHandler} from '../utils/photo-utils';
-  import {appState, documents, selectedDocumentInfo} from '../contexts/app-state/stores';
-  import {ActionNames, sendButtonClickEvent, VerificationStatuses} from '../utils/event-service';
-  import {checkIsCameraAvailable} from '../services/camera-manager';
-  import {getLayoutStyles, getStepConfiguration, uiPack} from '../ui-packs';
-  import {getDocumentType} from '../utils/documents-utils';
-  import {getWorkflowContext} from "../../workflow-sdk/context";
-  import {preloadNextStepByCurrent} from "../services/preload-service";
+  import { getWorkflowContext } from '../../workflow-sdk/context';
+  import { Button, IconButton, IconCloseButton, Image, Paragraph, Title } from '../atoms';
+  import { currentStepId, IDocument } from '../contexts/app-state';
+  import { appState, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { configuration } from '../contexts/configuration';
+  import { Elements } from '../contexts/configuration/types';
+  import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
+  import { goToPrevStep } from '../contexts/navigation/hooks';
+  import { T } from '../contexts/translation';
+  import { checkIsCameraAvailable } from '../services/camera-manager';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { getLayoutStyles, getStepConfiguration, uiPack } from '../ui-packs';
+  import { getDocumentType } from '../utils/documents-utils';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
+  import { addDocument, ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
 
   export let stepId;
 
@@ -34,7 +34,7 @@
     if (!isCameraAvailable) return;
 
     workflowService.sendEvent({
-      type: 'ui-step',
+      type: 'USER_NEXT_STEP',
     });
 
     // goToNextStep(currentStepId, $configuration, $currentStepId);
@@ -58,14 +58,10 @@
     $documents = newDocumentsState;
 
     workflowService.sendEvent({
-      type: 'collect-document',
+      type: 'USER_NEXT_STEP',
       payload: {
         documents: $documents,
-      }
-    });
-
-    workflowService.sendEvent({
-      type: 'ui-step',
+      },
     });
 
     // goToNextStep(currentStepId, $configuration, $currentStepId);

@@ -1,109 +1,82 @@
+import { DocumentKind, DocumentType } from './lib/contexts/app-state';
 import { Steps } from './lib/contexts/configuration';
 import { flows } from './main';
-import { DocumentKind, DocumentType } from './lib/contexts/app-state';
 import { FlowsInitOptions } from './types/BallerineSDK';
 
 const ballerineInitConfig: FlowsInitOptions = {
   workflowConfig: {
     flows: {
       ['my-kyc-flow']: {
-        WorkflowDefType: 'statechart-json',
-        WorkflowDef: {
-          preserveActionOrder: true, // Ensures that assign actions are called in order
+        workflowDefinitionType: 'statechart-json',
+        workflowDefinition: {
+          predictableActionArguments: true, // Ensures that assign actions are called in order
           id: 'kyc',
-          initial: 'welcome',
+          initial: Steps.Welcome,
 
           context: {
-            documentsToCollects: [{ docType: 'passport' }],
-            sendingConfirmationCodeTries: 0,
-            email: '',
-            confirmationCode: '',
-            introCompleted: false,
+            documents: [],
+            selfie: undefined,
           },
 
           states: {
             [Steps.Welcome]: {
               on: {
-                'ui-step': {
-                  target: Steps.DocumentSelection,
-                },
+                USER_NEXT_STEP: Steps.DocumentSelection,
               },
             },
             [Steps.DocumentSelection]: {
               on: {
-                'ui-step': {
-                  target: Steps.DocumentPhoto,
-                },
+                USER_NEXT_STEP: Steps.DocumentPhoto,
               },
             },
             [Steps.DocumentPhoto]: {
               on: {
-                'ui-step': {
-                  target: Steps.CheckDocument,
-                },
+                USER_NEXT_STEP: Steps.CheckDocument,
               },
             },
             [Steps.CheckDocument]: {
               on: {
-                'ui-step': {
-                  target: Steps.DocumentPhotoBackStart,
-                },
+                USER_NEXT_STEP: Steps.DocumentPhotoBackStart,
               },
             },
             [Steps.DocumentPhotoBackStart]: {
               on: {
-                'ui-step': {
-                  target: Steps.DocumentPhotoBack,
-                },
+                USER_NEXT_STEP: Steps.DocumentPhotoBack,
               },
             },
             [Steps.DocumentPhotoBack]: {
               on: {
-                'ui-step': {
-                  target: Steps.CheckDocumentPhotoBack,
-                },
+                USER_NEXT_STEP: Steps.CheckDocumentPhotoBack,
               },
             },
             [Steps.CheckDocumentPhotoBack]: {
               on: {
-                'ui-step': {
-                  target: Steps.SelfieStart,
-                },
+                USER_NEXT_STEP: Steps.SelfieStart,
               },
             },
             [Steps.SelfieStart]: {
               on: {
-                'ui-step': {
-                  target: Steps.Selfie,
-                },
+                USER_NEXT_STEP: Steps.Selfie,
               },
             },
             [Steps.Selfie]: {
               on: {
-                'ui-step': {
-                  target: Steps.CheckSelfie,
-                },
+                USER_NEXT_STEP: Steps.CheckSelfie,
               },
             },
             [Steps.CheckSelfie]: {
               on: {
-                'ui-step': {
-                  target: Steps.Loading,
-                },
+                USER_NEXT_STEP: Steps.Loading,
               },
             },
             [Steps.Loading]: {
               on: {
-                'ui-step': {
-                  target: Steps.Final,
-                },
+                USER_NEXT_STEP: Steps.Final,
               },
             },
             [Steps.Final]: {
               on: {
-                'ui-step': {
-                  target: Steps.Welcome,
-                },
+                USER_NEXT_STEP: Steps.Welcome,
               },
             },
           },
@@ -213,8 +186,8 @@ const ballerineInitConfig: FlowsInitOptions = {
     },
   },
   metricsConfig: {
-    enabled: true
-  }
+    enabled: true,
+  },
 };
 console.log(ballerineInitConfig);
 

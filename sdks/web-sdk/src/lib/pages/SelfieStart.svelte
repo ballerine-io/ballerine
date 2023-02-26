@@ -1,22 +1,22 @@
 <script lang="ts">
-  import {T} from '../contexts/translation';
-  import {IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title} from '../atoms';
-  import {configuration} from '../contexts/configuration';
-  import {goToPrevStep} from '../contexts/navigation/hooks';
-  import {Elements} from '../contexts/configuration/types';
-  import {ICameraEvent, nativeCameraHandler} from '../utils/photo-utils';
-  import {getFlowConfig, isNativeCamera} from '../contexts/flows/hooks';
+  import { getWorkflowContext } from '../../workflow-sdk/context';
+  import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
   import {
     appState,
     currentStepId,
     selectedDocumentInfo,
     selfieUri,
   } from '../contexts/app-state/stores';
-  import {ActionNames, sendButtonClickEvent, VerificationStatuses} from '../utils/event-service';
-  import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
-  import {createToggle} from '../hooks/createToggle/createToggle';
-  import {getWorkflowContext} from "../../workflow-sdk/context";
-  import {preloadNextStepByCurrent} from "../services/preload-service";
+  import { configuration } from '../contexts/configuration';
+  import { Elements } from '../contexts/configuration/types';
+  import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
+  import { goToPrevStep } from '../contexts/navigation/hooks';
+  import { T } from '../contexts/translation';
+  import { createToggle } from '../hooks/createToggle/createToggle';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
+  import { ICameraEvent, nativeCameraHandler } from '../utils/photo-utils';
 
   export let stepId;
 
@@ -41,7 +41,7 @@
     $selfieUri = await nativeCameraHandler(e);
 
     workflowService.sendEvent({
-      type: 'ui-step',
+      type: 'USER_NEXT_STEP',
     });
 
     // goToNextStep(currentStepId, $configuration, $currentStepId);

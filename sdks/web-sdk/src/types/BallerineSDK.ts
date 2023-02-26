@@ -1,3 +1,4 @@
+import { WorkflowOptions } from '@ballerine/workflow-core';
 import { IStepConfiguration } from '../lib/contexts/configuration';
 import { ConfigSettings } from '../lib/contexts/configuration/types';
 import { TranslationType } from '../lib/contexts/translation';
@@ -10,7 +11,6 @@ import {
   IFlowExitPayload,
   IFlowNavigationUpdatePayload,
 } from '../lib/services/flow-event-bus/interfaces';
-import { WorkflowOptions } from '@ballerine/workflow-sdk-core';
 
 export interface FlowsGeneralTheme {
   progress?: boolean;

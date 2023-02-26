@@ -1,8 +1,7 @@
 <script lang="ts">
-  import CameraPhoto, {CaptureConfigOption, FACING_MODES} from 'jslib-html5-camera-photo';
-  import {T} from '../contexts/translation';
-  import {configuration} from '../contexts/configuration';
-  import {onDestroy, onMount} from 'svelte';
+  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
+  import { onDestroy, onMount } from 'svelte';
+  import { getWorkflowContext } from '../../workflow-sdk/context';
   import {
     CameraButton,
     IconButton,
@@ -12,17 +11,18 @@
     Paragraph,
     VideoContainer,
   } from '../atoms';
-  import {Elements} from '../contexts/configuration/types';
-  import {goToPrevStep} from '../contexts/navigation';
-  import {currentStepId, DocumentType} from '../contexts/app-state';
   import Title from '../atoms/Title/Title.svelte';
-  import {appState, selfieUri} from '../contexts/app-state/stores';
-  import {isMobile} from '../utils/is-mobile';
-  import {createToggle} from '../hooks/createToggle/createToggle';
-  import {ActionNames, sendButtonClickEvent, VerificationStatuses} from '../utils/event-service';
-  import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
-  import {getWorkflowContext} from "../../workflow-sdk/context";
-  import {preloadNextStepByCurrent} from "../services/preload-service";
+  import { currentStepId, DocumentType } from '../contexts/app-state';
+  import { appState, selfieUri } from '../contexts/app-state/stores';
+  import { configuration } from '../contexts/configuration';
+  import { Elements } from '../contexts/configuration/types';
+  import { goToPrevStep } from '../contexts/navigation';
+  import { T } from '../contexts/translation';
+  import { createToggle } from '../hooks/createToggle/createToggle';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
+  import { isMobile } from '../utils/is-mobile';
 
   let video: HTMLVideoElement;
   let cameraPhoto: CameraPhoto | undefined = undefined;
@@ -69,14 +69,10 @@
     $selfieUri = dataUri;
 
     workflowService.sendEvent({
-      type: 'collect-document',
+      type: 'USER_NEXT_STEP',
       payload: {
         selfie: dataUri,
-      }
-    });
-
-    workflowService.sendEvent({
-      type: 'ui-step',
+      },
     });
 
     // goToNextStep(currentStepId, $configuration, $currentStepId);
