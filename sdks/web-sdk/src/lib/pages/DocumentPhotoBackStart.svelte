@@ -1,18 +1,18 @@
 <script lang="ts">
-  import {T} from '../contexts/translation';
-  import {Button, IconButton, IconCloseButton, Image, Paragraph, Title} from '../atoms';
-  import {configuration} from '../contexts/configuration';
-  import {goToPrevStep} from '../contexts/navigation';
-  import {Elements} from '../contexts/configuration/types';
-  import {ICameraEvent, nativeCameraHandler, updateDocument} from '../utils/photo-utils';
-  import {appState, currentStepId, IDocument, IDocumentInfo} from '../contexts/app-state';
-  import {isNativeCamera} from '../contexts/flows';
-  import {documents, selectedDocumentInfo} from '../contexts/app-state/stores';
-  import {ActionNames, sendButtonClickEvent, VerificationStatuses} from '../utils/event-service';
-  import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
-  import {getFlowConfig} from '../contexts/flows/hooks';
-  import {getWorkflowContext} from "../../workflow-sdk/context";
-  import {preloadNextStepByCurrent} from "../services/preload-service";
+  import { getWorkflowContext } from '../../workflow-sdk/context';
+  import { Button, IconButton, IconCloseButton, Image, Paragraph, Title } from '../atoms';
+  import { appState, currentStepId, IDocument, IDocumentInfo } from '../contexts/app-state';
+  import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { configuration } from '../contexts/configuration';
+  import { Elements } from '../contexts/configuration/types';
+  import { isNativeCamera } from '../contexts/flows';
+  import { getFlowConfig } from '../contexts/flows/hooks';
+  import { goToPrevStep } from '../contexts/navigation';
+  import { T } from '../contexts/translation';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
+  import { ICameraEvent, nativeCameraHandler, updateDocument } from '../utils/photo-utils';
 
   export let stepId;
 
@@ -42,14 +42,10 @@
     $documents = newDocumentsState;
 
     workflowService.sendEvent({
-      type: 'collect-document',
+      type: 'USER_NEXT_STEP',
       payload: {
         documents: $documents,
-      }
-    })
-
-    workflowService.sendEvent({
-      type: 'ui-step',
+      },
     });
 
     // goToNextStep(currentStepId, $configuration, $currentStepId);
@@ -104,9 +100,10 @@
           />
         {/if}
         <Button
-          on:click={() => workflowService.sendEvent({
-            type: 'ui-step',
-          })}
+          on:click={() =>
+            workflowService.sendEvent({
+              type: 'USER_NEXT_STEP',
+            })}
           configuration={element.props}
         >
           <T key="button" namespace={stepNamespace} />

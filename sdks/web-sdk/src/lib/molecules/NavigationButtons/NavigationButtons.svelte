@@ -1,13 +1,13 @@
 <script lang="ts">
-  import {Button, ButtonWithIcon, IconButton, NextStepButton} from '../../atoms';
-  import {configuration as globalConfiguration} from '../../contexts/configuration';
-  import {goToPrevStep} from '../../contexts/navigation';
-  import {T} from '../../contexts/translation';
-  import {ICSSProperties, makesLocalStyles} from '../../services/css-manager';
-  import {currentStepId} from '../../contexts/app-state';
-  import {getWorkflowContext} from "../../../workflow-sdk/context";
+  import { getWorkflowContext } from '../../../workflow-sdk/context';
+  import { Button, ButtonWithIcon, IconButton, NextStepButton } from '../../atoms';
+  import { currentStepId } from '../../contexts/app-state';
+  import { configuration as globalConfiguration } from '../../contexts/configuration';
+  import { goToPrevStep } from '../../contexts/navigation';
+  import { T } from '../../contexts/translation';
+  import { ICSSProperties, makesLocalStyles } from '../../services/css-manager';
 
-  const {navigationButtons: userConfiguration} = $globalConfiguration.components;
+  const { navigationButtons: userConfiguration } = $globalConfiguration.components;
 
   const configuration = userConfiguration;
 
@@ -26,7 +26,7 @@
       configuration={configuration.backButton.props}
       on:click={() => goToPrevStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >
-      <T key="back" namespace="navigation-buttons"/>
+      <T key="back" namespace="navigation-buttons" />
     </Button>
   {:else if configuration.backButton.type === 'iconButton'}
     <IconButton
@@ -38,34 +38,36 @@
       configuration={configuration.backButton.props}
       on:click={() => goToPrevStep(currentStepId, $globalConfiguration, $currentStepId, skipType)}
     >
-      <T key="back" namespace="navigation-buttons"/>
+      <T key="back" namespace="navigation-buttons" />
     </ButtonWithIcon>
   {/if}
   {#if configuration.nextButton.type === 'button'}
     <NextStepButton configuration={configuration.nextButton.props} {skipType}>
-      <T key="next" namespace="navigation-buttons"/>
+      <T key="next" namespace="navigation-buttons" />
     </NextStepButton>
   {:else if configuration.nextButton.type === 'iconButton'}
     <IconButton
       configuration={configuration.nextButton.props}
-      on:click={() => workflowService.sendEvent({
-      type: 'ui-step',
-      payload: {
-        skipType
-      }
-      })}
+      on:click={() =>
+        workflowService.sendEvent({
+          type: 'USER_NEXT_STEP',
+          payload: {
+            skipType,
+          },
+        })}
     />
   {:else}
     <ButtonWithIcon
       configuration={configuration.nextButton.props}
-      on:click={() => workflowService.sendEvent({
-      type: 'ui-step',
-      payload: {
-        skipType
-      }
-      })}
+      on:click={() =>
+        workflowService.sendEvent({
+          type: 'USER_NEXT_STEP',
+          payload: {
+            skipType,
+          },
+        })}
     >
-      <T key="next" namespace="navigation-buttons"/>
+      <T key="next" namespace="navigation-buttons" />
     </ButtonWithIcon>
   {/if}
 </div>

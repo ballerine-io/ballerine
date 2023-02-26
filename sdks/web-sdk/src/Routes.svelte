@@ -1,12 +1,12 @@
 <script lang="ts">
-  import {fly} from 'svelte/transition';
-  import {goToNextStep, steps} from './lib/contexts/navigation';
-  import {configuration, IStepConfiguration} from './lib/contexts/configuration';
-  import {sendNavigationUpdateEvent} from './lib/utils/event-service';
-  import {visitedPage} from './lib/services/analytics';
-  import {currentParams, currentStepId, currentStepIdx} from './lib/contexts/app-state';
-  import {getFlowName} from './lib/contexts/flows';
-  import {initWorkflowContext} from "./workflow-sdk/context";
+  import { fly } from 'svelte/transition';
+  import { currentParams, currentStepId, currentStepIdx } from './lib/contexts/app-state';
+  import { configuration, IStepConfiguration } from './lib/contexts/configuration';
+  import { getFlowName } from './lib/contexts/flows';
+  import { goToNextStep, goToPrevStep, steps } from './lib/contexts/navigation';
+  import { visitedPage } from './lib/services/analytics';
+  import { sendNavigationUpdateEvent } from './lib/utils/event-service';
+  import { initWorkflowContext } from './workflow-sdk/context';
 
   const getFlowSteps = () => {
     const flowName = getFlowName();
@@ -46,26 +46,37 @@
 
   const flowName = getFlowName();
   const workflow = $configuration.workflowConfig?.flows?.[flowName];
+  let snapshot;
+  let currentStep: string = snapshot?.initial ?? workflow?.initial;
+  let stateActionStatus: 'IDLE' | 'PENDING' | undefined;
+  let error: string | undefined;
 
   if (workflow) {
-
     const workflowService = initWorkflowContext(workflow);
+    snapshot = workflowService.getSnapshot();
 
-    workflowService.subscribe('ui-step', (event) => {
-
-      goToNextStep(currentStepId, $configuration, $currentStepId);
+    workflowService.subscribe('USER_NEXT_STEP', ({ state, payload }) => {
+      currentStep = state;
+      goToNextStep(currentStepId, $configuration, $currentStepId, payload?.skipType);
     });
 
-    workflowService.subscribe('collect-document', (data) => {
-
-      // workflowService.setContext((prev) => ({
-      //   ...prev,
-      //   ...(data?.documents ? {documents: data?.documents} : {}),
-      //   ...(data?.selfie ? {selfie: data?.selfie} : {}),
-      // }));
-      //
+    workflowService.subscribe('USER_PREV_STEP', ({ state, payload }) => {
+      currentStep = state;
+      goToPrevStep(currentStepId, $configuration, $currentStepId, payload?.skipType);
     });
 
+    workflowService.subscribe('ERROR', payload => {
+      // error = (payload.error as Error).message;
+    });
+
+    workflowService.subscribe('HTTP_ERROR', payload => {
+      error = payload.error.message;
+    });
+
+    workflowService.subscribe('STATE_ACTION_STATUS', ({ payload }) => {
+      stateActionStatus = payload?.status;
+      error = undefined;
+    });
   }
 
   $: {
@@ -80,7 +91,7 @@
       in:fly={{ x: -50, duration: 250, delay: 300 }}
       out:fly={{ x: -50, duration: 250 }}
     >
-      <svelte:component this={step.component} {stepId}/>
+      <svelte:component this={step.component} {stepId} />
     </div>
   {/key}
 {/if}

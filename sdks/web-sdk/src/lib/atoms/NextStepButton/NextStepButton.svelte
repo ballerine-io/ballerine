@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type {IElementProps} from '../../contexts/configuration';
-  import {configuration as globalConfiguration} from '../../contexts/configuration';
-  import {makeStylesFromConfiguration} from '../../services/css-manager';
-  import {Loader} from './Loader';
-  import {getWorkflowContext} from "../../../workflow-sdk/context.js";
+  import { getWorkflowContext } from '../../../workflow-sdk/context.js';
+  import type { IElementProps } from '../../contexts/configuration';
+  import { configuration as globalConfiguration } from '../../contexts/configuration';
+  import { makeStylesFromConfiguration } from '../../services/css-manager';
+  import { Loader } from './Loader';
 
   // TODO: Use the createToggle hook, and make sure an exported prop is not being mutated.
   export let isDisabled = false;
@@ -30,10 +30,10 @@
     if (disabled) return;
 
     workflowService.sendEvent({
-      type: 'ui-step',
+      type: 'USER_NEXT_STEP',
       payload: {
         skipType,
-      }
+      },
     });
 
     // goToNextStep(currentStepId, $globalConfiguration, $currentStepId, skipType);

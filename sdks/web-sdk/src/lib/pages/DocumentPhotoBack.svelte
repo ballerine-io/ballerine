@@ -1,8 +1,7 @@
 <script lang="ts">
-  import CameraPhoto, {CaptureConfigOption, FACING_MODES} from 'jslib-html5-camera-photo';
-  import {T} from '../contexts/translation';
-  import {configuration} from '../contexts/configuration';
-  import {onDestroy, onMount} from 'svelte';
+  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
+  import { onDestroy, onMount } from 'svelte';
+  import { getWorkflowContext } from '../../workflow-sdk/context';
   import {
     CameraButton,
     IconButton,
@@ -12,16 +11,17 @@
     Title,
     VideoContainer,
   } from '../atoms';
-  import {Elements} from '../contexts/configuration/types';
-  import {goToPrevStep} from '../contexts/navigation';
-  import {currentStepId} from '../contexts/app-state';
-  import {documents, selectedDocumentInfo} from '../contexts/app-state/stores';
-  import {updateDocument} from '../utils/photo-utils';
-  import {createToggle} from '../hooks/createToggle/createToggle';
-  import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
-  import {getDocumentType} from '../utils/documents-utils';
-  import {getWorkflowContext} from "../../workflow-sdk/context";
-  import {preloadNextStepByCurrent} from "../services/preload-service";
+  import { currentStepId } from '../contexts/app-state';
+  import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { configuration } from '../contexts/configuration';
+  import { Elements } from '../contexts/configuration/types';
+  import { goToPrevStep } from '../contexts/navigation';
+  import { T } from '../contexts/translation';
+  import { createToggle } from '../hooks/createToggle/createToggle';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getDocumentType } from '../utils/documents-utils';
+  import { updateDocument } from '../utils/photo-utils';
 
   export let stepId;
 
@@ -77,14 +77,10 @@
     $documents = newDocumentsState;
 
     workflowService.sendEvent({
-      type: 'collect-document',
-      payload:  {
+      type: 'USER_NEXT_STEP',
+      payload: {
         documents: $documents,
       },
-    });
-
-    workflowService.sendEvent({
-      type: 'ui-step',
     });
 
     // goToNextStep(currentStepId, $configuration, $currentStepId);

@@ -1,14 +1,16 @@
-import { createWorkflowBrowser, WorkflowBrowserSDK } from './workflow-sdk-browser';
+import type { WorkflowBrowserSDK, WorkflowOptionsBrowser } from '@ballerine/workflow-browser-sdk';
+import { createWorkflow } from '@ballerine/workflow-browser-sdk';
 import { getContext, setContext } from 'svelte';
-import { WorkflowOptions } from '@ballerine/workflow-sdk-core';
 
-export const setWorkflowContext = (workflowService: WorkflowBrowserSDK) =>
-  setContext('workflow', workflowService);
+export const setWorkflowContext = (service: InstanceType<typeof WorkflowBrowserSDK>) => {
+  setContext('workflow', service);
+};
 
-export const getWorkflowContext = () => getContext<WorkflowBrowserSDK>('workflow');
+export const getWorkflowContext = () =>
+  getContext<InstanceType<typeof WorkflowBrowserSDK>>('workflow');
 
-export const initWorkflowContext = (workflow: WorkflowOptions) => {
-  const workflowService = createWorkflowBrowser(workflow);
+export const initWorkflowContext = (options: WorkflowOptionsBrowser) => {
+  const workflowService = createWorkflow(options);
 
   setWorkflowContext(workflowService);
 

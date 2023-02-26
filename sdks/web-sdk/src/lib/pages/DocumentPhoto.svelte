@@ -1,8 +1,7 @@
 <script lang="ts">
-  import CameraPhoto, {CaptureConfigOption, FACING_MODES} from 'jslib-html5-camera-photo';
-  import {T} from '../contexts/translation';
-  import {configuration} from '../contexts/configuration';
-  import {onDestroy, onMount} from 'svelte';
+  import CameraPhoto, { CaptureConfigOption, FACING_MODES } from 'jslib-html5-camera-photo';
+  import { onDestroy, onMount } from 'svelte';
+  import { getWorkflowContext } from '../../workflow-sdk/context';
   import {
     CameraButton,
     IconButton,
@@ -12,19 +11,20 @@
     Paragraph,
     VideoContainer,
   } from '../atoms';
-  import {Elements} from '../contexts/configuration/types';
-  import {appState, IDocument} from '../contexts/app-state';
-  import {goToPrevStep} from '../contexts/navigation';
   import Title from '../atoms/Title/Title.svelte';
-  import {currentStepId, documents, selectedDocumentInfo} from '../contexts/app-state/stores';
-  import {ActionNames, sendButtonClickEvent, VerificationStatuses} from '../utils/event-service';
-  import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
-  import {createToggle} from '../hooks/createToggle/createToggle';
-  import {getDocumentType} from '../utils/documents-utils';
-  import {IDocumentOptions} from '../organisms/DocumentOptions';
-  import {TDocumentType} from '../contexts/app-state/types';
-  import {getWorkflowContext} from "../../workflow-sdk/context";
-  import {preloadNextStepByCurrent} from "../services/preload-service";
+  import { appState, IDocument } from '../contexts/app-state';
+  import { currentStepId, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { TDocumentType } from '../contexts/app-state/types';
+  import { configuration } from '../contexts/configuration';
+  import { Elements } from '../contexts/configuration/types';
+  import { goToPrevStep } from '../contexts/navigation';
+  import { T } from '../contexts/translation';
+  import { createToggle } from '../hooks/createToggle/createToggle';
+  import { IDocumentOptions } from '../organisms/DocumentOptions';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getDocumentType } from '../utils/documents-utils';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
 
   export let stepId;
 
@@ -110,14 +110,10 @@
       $documents = addDocument(document.type, base64, document);
 
       workflowService.sendEvent({
-        type: 'collect-document',
-        payload:  {
+        type: 'USER_NEXT_STEP',
+        payload: {
           documents: $documents,
         },
-      });
-
-      workflowService.sendEvent({
-        type: 'ui-step',
       });
 
       // return goToNextStep(currentStepId, $configuration, $currentStepId);

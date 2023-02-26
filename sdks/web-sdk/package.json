@@ -56,7 +56,6 @@
     "publish:patch": "vite build && npm version patch && npm publish && npm run deploy:cdn:cf"
   },
   "devDependencies": {
-    "@ballerine/workflow-sdk-core": "file:./core.tgz",
     "@babel/core": "^7.18.5",
     "@playwright/test": "^1.27.1",
     "@sveltejs/vite-plugin-svelte": "1.0.8",
@@ -91,6 +90,7 @@
     "vitest": "^0.24.5"
   },
   "dependencies": {
+    "@ballerine/workflow-core": "workspace:*",
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "dotenv": "^16.0.3",

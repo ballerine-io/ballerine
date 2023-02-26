@@ -1,16 +1,16 @@
 <script lang="ts">
-  import {configuration, IStepConfiguration} from '../../contexts/configuration';
+  import { getWorkflowContext } from '../../../workflow-sdk/context';
+  import type { IDocument, IDocumentInfo } from '../../contexts/app-state';
+  import { documents, selectedDocumentInfo } from '../../contexts/app-state/stores';
+  import { TDocumentKind, TDocumentType } from '../../contexts/app-state/types';
+  import { configuration, IStepConfiguration } from '../../contexts/configuration';
+  import { isNativeCamera } from '../../contexts/flows/hooks';
+  import { IDocumentOption } from '../../molecules/DocumentOption';
   import DocumentOption from '../../molecules/DocumentOption/DocumentOption.svelte';
-  import type {IDocument, IDocumentInfo} from '../../contexts/app-state';
-  import {documents, selectedDocumentInfo} from '../../contexts/app-state/stores';
-  import {addDocument} from '../../utils/photo-utils';
-  import {isNativeCamera} from '../../contexts/flows/hooks';
-  import {IDocumentOption} from '../../molecules/DocumentOption';
-  import {uiPack} from '../../ui-packs';
-  import {IDocumentOptions} from './types';
-  import {TDocumentKind, TDocumentType} from '../../contexts/app-state/types';
-  import {getWorkflowContext} from "../../../workflow-sdk/context";
-  import {checkIsCameraAvailable} from "../../services/camera-manager";
+  import { checkIsCameraAvailable } from '../../services/camera-manager';
+  import { uiPack } from '../../ui-packs';
+  import { addDocument } from '../../utils/photo-utils';
+  import { IDocumentOptions } from './types';
 
   export let step: IStepConfiguration;
 
@@ -53,8 +53,8 @@
     if (!isCameraAvailable) return;
 
     workflowService.sendEvent({
-      type: 'ui-step',
-    })
+      type: 'USER_NEXT_STEP',
+    });
 
     // goToNextStep(currentStepId, $configuration, $currentStepId);
   };
@@ -78,14 +78,10 @@
     $documents = newDocumentsState;
 
     workflowService.sendEvent({
-      type: 'collect-document',
-      payload:  {
+      type: 'USER_NEXT_STEP',
+      payload: {
         documents: $documents,
       },
-    });
-
-    workflowService.sendEvent({
-      type: 'ui-step',
     });
 
     // goToNextStep(currentStepId, $configuration, $currentStepId);
