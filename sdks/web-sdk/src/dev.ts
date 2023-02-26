@@ -26,56 +26,67 @@ const ballerineInitConfig: FlowsInitOptions = {
             },
             [Steps.DocumentSelection]: {
               on: {
+                USER_PREV_STEP: Steps.Welcome,
                 USER_NEXT_STEP: Steps.DocumentPhoto,
               },
             },
             [Steps.DocumentPhoto]: {
               on: {
+                USER_PREV_STEP: Steps.DocumentSelection,
                 USER_NEXT_STEP: Steps.CheckDocument,
               },
             },
             [Steps.CheckDocument]: {
               on: {
+                USER_PREV_STEP: Steps.DocumentPhoto,
                 USER_NEXT_STEP: Steps.DocumentPhotoBackStart,
               },
             },
             [Steps.DocumentPhotoBackStart]: {
               on: {
+                USER_PREV_STEP: Steps.CheckDocument,
                 USER_NEXT_STEP: Steps.DocumentPhotoBack,
               },
             },
             [Steps.DocumentPhotoBack]: {
               on: {
+                USER_PREV_STEP: Steps.DocumentPhotoBackStart,
                 USER_NEXT_STEP: Steps.CheckDocumentPhotoBack,
               },
             },
             [Steps.CheckDocumentPhotoBack]: {
               on: {
+                USER_PREV_STEP: Steps.DocumentPhotoBack,
                 USER_NEXT_STEP: Steps.SelfieStart,
               },
             },
             [Steps.SelfieStart]: {
               on: {
+                USER_PREV_STEP: Steps.CheckDocumentPhotoBack,
                 USER_NEXT_STEP: Steps.Selfie,
               },
             },
             [Steps.Selfie]: {
               on: {
+                USER_PREV_STEP: Steps.SelfieStart,
                 USER_NEXT_STEP: Steps.CheckSelfie,
               },
             },
             [Steps.CheckSelfie]: {
               on: {
+                USER_PREV_STEP: Steps.Selfie,
                 USER_NEXT_STEP: Steps.Loading,
               },
             },
             [Steps.Loading]: {
               on: {
+                USER_PREV_STEP: Steps.CheckSelfie,
                 USER_NEXT_STEP: Steps.Final,
               },
             },
             [Steps.Final]: {
               on: {
+                USER_PREV_STEP: Steps.Loading,
                 USER_NEXT_STEP: Steps.Welcome,
               },
             },

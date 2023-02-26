@@ -10,7 +10,6 @@
   import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
   import { getFlowConfig, isNativeCamera } from '../contexts/flows/hooks';
-  import { goToPrevStep } from '../contexts/navigation/hooks';
   import { T } from '../contexts/translation';
   import { createToggle } from '../hooks/createToggle/createToggle';
   import { preloadNextStepByCurrent } from '../services/preload-service';
@@ -57,12 +56,12 @@
       <IconButton
         configuration={element.props}
         on:click={() =>
-          goToPrevStep(
-            currentStepId,
-            $configuration,
-            $currentStepId,
-            skipBackSide ? 'back-side' : undefined,
-          )}
+          workflowService.sendEvent({
+            type: 'USER_PREV_STEP',
+            payload: {
+              skipType: skipBackSide ? 'back-side' : undefined,
+            },
+          })}
       />
     {/if}
     {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
