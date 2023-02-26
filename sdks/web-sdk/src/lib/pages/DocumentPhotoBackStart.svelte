@@ -7,7 +7,6 @@
   import { Elements } from '../contexts/configuration/types';
   import { isNativeCamera } from '../contexts/flows';
   import { getFlowConfig } from '../contexts/flows/hooks';
-  import { goToPrevStep } from '../contexts/navigation';
   import { T } from '../contexts/translation';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
@@ -27,9 +26,9 @@
 
   $: {
     documentInfo = step.documentInfo || $selectedDocumentInfo;
-    if (!documentInfo) goToPrevStep(currentStepId, $configuration, $currentStepId);
+    if (!documentInfo) workflowService.sendEvent({ type: 'USER_PREV_STEP' });
     document = $documents.find(d => d.type === documentInfo?.type);
-    if (!document) goToPrevStep(currentStepId, $configuration, $currentStepId);
+    if (!document) workflowService.sendEvent({ type: 'USER_PREV_STEP' });
   }
 
   const handler = async (e: ICameraEvent) => {
@@ -59,7 +58,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+        on:click={() => workflowService.sendEvent({ type: 'USER_PREV_STEP' })}
       />
     {/if}
     {#if element.type === Elements.IconCloseButton && flow.showCloseButton}

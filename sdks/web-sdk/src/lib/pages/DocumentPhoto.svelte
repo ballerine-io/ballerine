@@ -17,7 +17,6 @@
   import { TDocumentType } from '../contexts/app-state/types';
   import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { goToPrevStep } from '../contexts/navigation';
   import { T } from '../contexts/translation';
   import { createToggle } from '../hooks/createToggle/createToggle';
   import { IDocumentOptions } from '../organisms/DocumentOptions';
@@ -48,7 +47,7 @@
   const stepNamespace = `${step.namespace}.${documentKind || documentType}`;
 
   $: {
-    if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
+    if (!documentType) workflowService.sendEvent({ type: 'USER_PREV_STEP' });
   }
 
   onMount(() => {
@@ -119,7 +118,7 @@
       // return goToNextStep(currentStepId, $configuration, $currentStepId);
       return;
     }
-    return goToPrevStep(currentStepId, $configuration, $currentStepId);
+    return workflowService.sendEvent({ type: 'USER_PREV_STEP' });
   };
 
   preloadNextStepByCurrent($configuration, configuration, $currentStepId);
@@ -130,7 +129,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+        on:click={() => workflowService.sendEvent({ type: 'USER_PREV_STEP' })}
       />
     {/if}
     {#if element.type === Elements.IconCloseButton}

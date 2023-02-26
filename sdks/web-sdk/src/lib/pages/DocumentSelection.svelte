@@ -1,21 +1,21 @@
 <script lang="ts">
-  import {T} from '../contexts/translation';
-  import {IconButton, IconCloseButton, Image, Paragraph, Title} from '../atoms';
-  import {configuration, Elements} from '../contexts/configuration';
-  import {DocumentOptions} from '../organisms';
-  import {goToPrevStep} from '../contexts/navigation';
-  import {appState, currentStepId} from '../contexts/app-state';
-  import {ActionNames, sendButtonClickEvent, VerificationStatuses} from '../utils/event-service';
-  import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
-  import {getFlowConfig} from '../contexts/flows/hooks';
-  import {preloadNextStepByCurrent} from "../services/preload-service";
+  import { getWorkflowContext } from '../../workflow-sdk/context';
+  import { IconButton, IconCloseButton, Image, Paragraph, Title } from '../atoms';
+  import { appState } from '../contexts/app-state';
+  import { configuration, Elements } from '../contexts/configuration';
+  import { getFlowConfig } from '../contexts/flows/hooks';
+  import { T } from '../contexts/translation';
+  import { DocumentOptions } from '../organisms';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
 
   export let stepId;
 
   const step = getStepConfiguration($configuration, stepId);
   const flow = getFlowConfig($configuration);
   const style = getLayoutStyles($configuration, step);
-
+  const workflowService = getWorkflowContext();
   const stepNamespace = step.namespace!;
 
   preloadNextStepByCurrent($configuration, configuration, stepId);
@@ -26,7 +26,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+        on:click={() => workflowService.sendEvent({ type: 'USER_PREV_STEP' })}
       />
     {/if}
     {#if element.type === Elements.IconCloseButton && flow.showCloseButton}

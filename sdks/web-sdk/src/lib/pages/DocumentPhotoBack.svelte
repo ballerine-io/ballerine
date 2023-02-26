@@ -15,7 +15,6 @@
   import { documents, selectedDocumentInfo } from '../contexts/app-state/stores';
   import { configuration } from '../contexts/configuration';
   import { Elements } from '../contexts/configuration/types';
-  import { goToPrevStep } from '../contexts/navigation';
   import { T } from '../contexts/translation';
   import { createToggle } from '../hooks/createToggle/createToggle';
   import { preloadNextStepByCurrent } from '../services/preload-service';
@@ -40,7 +39,7 @@
   let stream: MediaStream;
   const stepNamespace = `${step.namespace}.${documentKind || documentType}`;
   $: {
-    if (!documentType) goToPrevStep(currentStepId, $configuration, $currentStepId);
+    if (!documentType) workflowService.sendEvent({ type: 'USER_PREV_STEP' });
   }
 
   onMount(() => {
@@ -95,7 +94,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+        on:click={() => workflowService.sendEvent({ type: 'USER_PREV_STEP' })}
       />
     {/if}
     {#if element.type === Elements.VideoContainer}

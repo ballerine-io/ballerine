@@ -1,24 +1,24 @@
 <script lang="ts">
-  import {T} from '../contexts/translation';
-  import {IconButton, IconCloseButton, Image, Paragraph, Photo, Title} from '../atoms';
-  import {configuration} from '../contexts/configuration';
-  import {Elements} from '../contexts/configuration/types';
-  import {goToPrevStep} from '../contexts/navigation';
-  import {appState, getDocImage} from '../contexts/app-state';
-  import {NavigationButtons} from '../molecules';
-  import {currentStepId, documents, selectedDocumentInfo} from '../contexts/app-state/stores';
-  import {ActionNames, sendButtonClickEvent, VerificationStatuses} from '../utils/event-service';
-  import {getLayoutStyles, getStepConfiguration} from '../ui-packs';
-  import {getFlowConfig} from '../contexts/flows/hooks';
-  import {getDocumentType} from '../utils/documents-utils';
-  import {preloadNextStepByCurrent} from "../services/preload-service";
+  import { getWorkflowContext } from '../../workflow-sdk/context';
+  import { IconButton, IconCloseButton, Image, Paragraph, Photo, Title } from '../atoms';
+  import { appState, getDocImage } from '../contexts/app-state';
+  import { currentStepId, documents, selectedDocumentInfo } from '../contexts/app-state/stores';
+  import { configuration } from '../contexts/configuration';
+  import { Elements } from '../contexts/configuration/types';
+  import { getFlowConfig } from '../contexts/flows/hooks';
+  import { T } from '../contexts/translation';
+  import { NavigationButtons } from '../molecules';
+  import { preloadNextStepByCurrent } from '../services/preload-service';
+  import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
+  import { getDocumentType } from '../utils/documents-utils';
+  import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
 
   export let stepId;
 
   const step = getStepConfiguration($configuration, stepId);
   const flow = getFlowConfig($configuration);
   const style = getLayoutStyles($configuration, step);
-
+  const workflowService = getWorkflowContext();
   const stepNamespace = step.namespace!;
   const documentType = getDocumentType(step, $selectedDocumentInfo);
 
@@ -27,7 +27,7 @@
 
   $: {
     if (!documentType) {
-      goToPrevStep(currentStepId, $configuration, $currentStepId);
+      workflowService.sendEvent({ type: 'USER_PREV_STEP' });
     }
     if (documentType) {
       image = getDocImage(documentType, $documents);
@@ -49,7 +49,7 @@
     {#if element.type === Elements.IconButton}
       <IconButton
         configuration={element.props}
-        on:click={() => goToPrevStep(currentStepId, $configuration, $currentStepId)}
+        on:click={() => workflowService.sendEvent({ type: 'USER_PREV_STEP' })}
       />
     {/if}
     {#if element.type === Elements.IconCloseButton && flow.showCloseButton}
