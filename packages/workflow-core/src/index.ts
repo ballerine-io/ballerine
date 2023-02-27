@@ -1,5 +1,5 @@
 // Type only exports - does not bundle otherwise.
-export { createWorkflow, HttpError } from './lib';
+export { createWorkflow, Error, HttpError } from './lib';
 export type {
   StatePlugin,
   WorkflowEvent,

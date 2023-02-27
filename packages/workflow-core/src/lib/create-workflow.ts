@@ -1,11 +1,11 @@
-import {TCreateWorkflow} from "./types";
-import {WorkflowRunner} from "./workflow-runner";
+import { TCreateWorkflow } from './types';
+import { WorkflowRunner } from './workflow-runner';
 
 export const createWorkflow: TCreateWorkflow = ({
-                                                  workflowDefinition,
-                                                  workflowActions,
-                                                  extensions,
-                                                }) =>
+  workflowDefinition,
+  workflowActions,
+  extensions,
+}) =>
   new WorkflowRunner({
     workflowDefinition,
     workflowActions,
