@@ -1,12 +1,14 @@
 import * as jsonLogic from 'json-logic-js';
-import {createMachine, interpret} from 'xstate';
-import type {ActionFunction, MachineOptions, StateMachine, } from 'xstate';
+import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
+import { createMachine, interpret } from 'xstate';
+import { HttpError } from './errors';
 import type {
   WorkflowEvent,
   WorkflowEventWithoutState,
   WorkflowExtensions,
-  WorkflowRunnerArgs
-} from "./types";
+  WorkflowRunnerArgs,
+} from './types';
+import { Error } from './types';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -27,42 +29,34 @@ export class WorkflowRunner {
   }
 
   constructor(
-    {
-      workflowDefinition,
-      workflowActions,
-      context = {},
-      state,
-      extensions
-    }: WorkflowRunnerArgs,
-    debugMode = true
+    { workflowDefinition, workflowActions, context = {}, state, extensions }: WorkflowRunnerArgs,
+    debugMode = true,
   ) {
     this.#__workflow = this.#__extendedWorkflow({
       workflow: workflowDefinition,
       workflowActions,
-      extensions
+      extensions,
     });
 
     // use initial context or provided context
-    this.#__context = Object.keys(context).length
-      ? context
-      : workflowDefinition.context || {};
+    this.#__context = Object.keys(context).length ? context : workflowDefinition.context || {};
 
-    //use initial state or provided state
+    // use initial state or provided state
     this.#__currentState = state ? state : workflowDefinition.initial;
 
     // global and state specific extensions
-    this.#__extensions = extensions || {globalPlugins: [], statePlugins: []};
+    this.#__extensions = extensions || { globalPlugins: [], statePlugins: [] };
     this.#__debugMode = debugMode;
   }
 
   #__extendedWorkflow({
-                        workflow,
-                        workflowActions,
-                        extensions = {
-                          statePlugins: [],
-                          globalPlugins: [],
-                        }
-                      }: {
+    workflow,
+    workflowActions,
+    extensions = {
+      statePlugins: [],
+      globalPlugins: [],
+    },
+  }: {
     workflow: any;
     workflowActions?: WorkflowRunnerArgs['workflowActions'];
     extensions?: WorkflowExtensions;
@@ -73,41 +67,79 @@ export class WorkflowRunner {
     const stateActions: Record<string, ActionFunction<any, any>> = {};
 
     for (const state in extended.states) {
-
       extended.states[state].entry = Array.from(
-        new Set([
-          ...(workflow.states[state].entry ?? []),
-          ...onEnter
-        ])
+        new Set([...(workflow.states[state].entry ?? []), ...onEnter]),
       );
 
       extended.states[state].exit = Array.from(
-        new Set([
-          ...(workflow.states[state].exit ?? []),
-          ...onExit
-        ])
+        new Set([...(workflow.states[state].exit ?? []), ...onExit]),
       );
-
-
     }
 
     for (const statePlugin of extensions.statePlugins) {
-
       for (const stateName of statePlugin.stateNames) {
-
         // E.g { state: { entry: [...,plugin.name] } }
         extended.states[stateName][statePlugin.when] = Array.from(
-          new Set(
-            [
-              ...extended.states[stateName][statePlugin.when],
-              statePlugin.name
-            ]
-          ));
+          new Set([...extended.states[stateName][statePlugin.when], statePlugin.name]),
+        );
+
+        // workflow-core
+        // { actions: { persist: action } }
+        stateActions[statePlugin.name] = async (context, event) => {
+          this.#__callback?.({
+            type: 'STATE_ACTION_STATUS',
+            state: this.#__currentState,
+            payload: {
+              status: 'PENDING',
+            },
+          });
+
+          try {
+            await statePlugin.action({
+              context,
+              event,
+              currentState: this.#__currentState,
+            });
+          } catch (err) {
+            let type;
+
+            switch (true) {
+              case err instanceof HttpError:
+                type = Error.HTTP_ERROR;
+                break;
+              default:
+                type = Error.ERROR;
+                break;
+            }
+
+            this.#__callback?.({
+              type,
+              state: this.#__currentState,
+              error: err,
+            });
+          } finally {
+            this.#__callback?.({
+              type: 'STATE_ACTION_STATUS',
+              state: this.#__currentState,
+              payload: {
+                status: 'IDLE',
+              },
+            });
+          }
+        };
+      }
+    }
+
+    for (const statePlugin of extensions.statePlugins) {
+      for (const stateName of statePlugin.stateNames) {
+        // E.g { state: { entry: [...,plugin.name] } }
+        extended.states[stateName][statePlugin.when] = Array.from(
+          new Set([...extended.states[stateName][statePlugin.when], statePlugin.name]),
+        );
 
         // { actions: { persist: action } }
         stateActions[statePlugin.name] = statePlugin.action;
       }
-
     }
 
     const actions: MachineOptions<any, any>['actions'] = {
@@ -122,19 +154,16 @@ export class WorkflowRunner {
     };
 
     const guards: MachineOptions<any, any>['guards'] = {
-      'json-rule': (ctx, {payload}, {cond}) => {
-        const data = {...ctx, ...payload};
+      'json-rule': (ctx, { payload }, { cond }) => {
+        const data = { ...ctx, ...payload };
         return jsonLogic.apply(
           cond.name, // Rule
-          data // Data
+          data, // Data
         );
       },
     };
 
-    return createMachine(
-      {predictableActionArguments: false, ...extended},
-      {actions, guards}
-    );
+    return createMachine({ predictableActionArguments: false, ...extended }, { actions, guards });
   }
 
   async sendEvent(event: WorkflowEventWithoutState) {
@@ -143,7 +172,7 @@ export class WorkflowRunner {
 
     const service = interpret(workflow)
       .start(this.#__currentState)
-      .onTransition((state) => {
+      .onTransition(state => {
         if (state.changed) {
           console.log('Transitioned into', state.value);
 
@@ -174,7 +203,7 @@ export class WorkflowRunner {
         await ext.action({
           context: service.getSnapshot().context,
           event,
-          currentState: this.#__currentStateNode
+          currentState: this.#__currentStateNode,
         });
       }
     }
@@ -189,7 +218,7 @@ export class WorkflowRunner {
         await ext.action({
           context: this.#__context,
           event,
-          currentState: this.#__currentStateNode
+          currentState: this.#__currentStateNode,
         });
       }
     }

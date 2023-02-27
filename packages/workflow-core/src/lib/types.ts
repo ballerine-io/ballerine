@@ -1,4 +1,4 @@
-import type {MachineConfig, MachineOptions} from "xstate";
+import type { MachineConfig, MachineOptions } from 'xstate';
 
 export interface Workflow {
   subscribe: (callback: (event: WorkflowEvent) => void) => void;
@@ -16,11 +16,7 @@ export interface WorkflowContext {
 
 export interface WorkflowPlugin {
   when: 'pre' | 'post';
-  action: (options: {
-    context: any;
-    event: any;
-    currentState: any;
-  }) => Promise<void>;
+  action: (options: { context: any; event: any; currentState: any }) => Promise<void>;
 }
 
 export interface StatePlugin extends Omit<WorkflowPlugin, 'when'> {
@@ -48,6 +44,7 @@ export interface WorkflowEvent {
   type: string;
   state: string;
   payload?: Record<PropertyKey, any>;
+  error?: unknown;
 }
 
 export interface WorkflowExtensions {
@@ -79,3 +76,7 @@ export type GlobalPlugins = GlobalPlugin[];
 
 export type TCreateWorkflow = (options: WorkflowOptions) => Workflow;
 
+export const Error = {
+  ERROR: 'ERROR',
+  HTTP_ERROR: 'HTTP_ERROR',
+} as const;
