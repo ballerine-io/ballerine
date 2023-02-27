@@ -1,26 +1,12 @@
-import {
-  ActionFunction,
-  createMachine,
-  interpret,
-  MachineConfig,
-  MachineOptions,
-  StateMachine
-} from 'xstate';
 import * as jsonLogic from 'json-logic-js';
-
-import {
+import {createMachine, interpret} from 'xstate';
+import type {ActionFunction, MachineOptions, StateMachine, } from 'xstate';
+import type {
   WorkflowEvent,
   WorkflowEventWithoutState,
   WorkflowExtensions,
-} from '..';
-
-interface WorkflowRunnerArgs {
-  workflowDefinition: MachineConfig<any, any, any>;
-  workflowActions?: MachineOptions<any, any>['actions'];
-  context: any;
-  state?: string;
-  extensions?: WorkflowExtensions;
-}
+  WorkflowRunnerArgs
+} from "./types";
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];

@@ -1,6 +1,6 @@
-import { MachineConfig } from 'xstate';
+import type { MachineConfig } from 'xstate';
 import { expect, test } from 'vitest';
-import { WorkflowRunner } from './statecharts';
+import { WorkflowRunner } from './workflow-runner';
 
 test('Basic machine sanity test', () => {
   const simpleMachine: MachineConfig<any, any, any> = {
