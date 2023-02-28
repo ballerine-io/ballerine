@@ -1,13 +1,5 @@
-import {
-  createWorkflow,
-  WorkflowEventWithoutState
-} from '@ballerine/workflow-core';
-import type {
-  BaseActionObject,
-  EventObject,
-  StateNodeConfig,
-  StatesConfig
-} from 'xstate';
+import { createWorkflow, WorkflowEventWithoutState } from '@ballerine/workflow-core';
+import type { BaseActionObject, EventObject, StateNodeConfig, StatesConfig } from 'xstate';
 import { assign } from 'xstate';
 import { backendOptions } from './backend-options';
 import { Action, Error, Errors, Event } from './enums';
@@ -22,8 +14,9 @@ import type {
   TWorkflowEvent,
   TWorkflowHttpErrorEvent,
   WorkflowEventWithBrowserType,
-  WorkflowOptionsBrowser
+  WorkflowOptionsBrowser,
 } from './types';
+//
 
 export class WorkflowBrowserSDK {
   #__subscribers: TSubscribers = [];
@@ -51,9 +44,7 @@ export class WorkflowBrowserSDK {
     };
 
     // Actions defined within the machine's `states` object.
-    const states = this.#__injectUserStepActionsToStates(
-      options?.workflowDefinition?.states ?? {},
-    );
+    const states = this.#__injectUserStepActionsToStates(options?.workflowDefinition?.states ?? {});
     // const states = this.#__injectSubmitActorToStates(states);
 
     // Actions defined within `createMachine`'s second argument (config object).
@@ -109,28 +100,26 @@ export class WorkflowBrowserSDK {
         states,
       },
       workflowActions: {
-        [Action.USER_NEXT_STEP]: assign<
-          Record<PropertyKey, any>,
-          IUserStepEvent
-        >((context, event) => {
-          context = {
-            ...context,
-            ...event.payload,
-          };
+        [Action.USER_NEXT_STEP]: assign<Record<PropertyKey, any>, IUserStepEvent>(
+          (context, event) => {
+            context = {
+              ...context,
+              ...event.payload,
+            };
 
-          return context;
-        }),
-        [Action.USER_PREV_STEP]: assign<
-          Record<PropertyKey, any>,
-          IUserStepEvent
-        >((context, event) => {
-          context = {
-            ...context,
-            ...event.payload,
-          };
+            return context;
+          },
+        ),
+        [Action.USER_PREV_STEP]: assign<Record<PropertyKey, any>, IUserStepEvent>(
+          (context, event) => {
+            context = {
+              ...context,
+              ...event.payload,
+            };
 
-          return context;
-        }),
+            return context;
+          },
+        ),
       },
     });
 
@@ -148,20 +137,14 @@ export class WorkflowBrowserSDK {
     this.#__subscribers.forEach(sub => {
       if (
         sub.event !== Event.WILD_CARD &&
-        !(
-          sub.event === Event.ERROR &&
-          Errors.includes(type as ObjectValues<typeof Error>)
-        ) &&
+        !(sub.event === Event.ERROR && Errors.includes(type as ObjectValues<typeof Error>)) &&
         sub.event !== type
       ) {
         return;
       }
 
       sub.cb({
-        type:
-          sub.event === Event.WILD_CARD || sub.event === Event.ERROR
-            ? type
-            : undefined,
+        type: sub.event === Event.WILD_CARD || sub.event === Event.ERROR ? type : undefined,
         payload,
         state,
         // error,
@@ -196,9 +179,7 @@ export class WorkflowBrowserSDK {
    * @param states
    * @private
    */
-  #__injectUserStepActionsToStates(
-    states: StatesConfig<any, any, any, BaseActionObject>,
-  ) {
+  #__injectUserStepActionsToStates(states: StatesConfig<any, any, any, BaseActionObject>) {
     /**
      * Make sure to not override existing actions.
      * Actions may be a string, an array of strings or undefined.
@@ -208,16 +189,10 @@ export class WorkflowBrowserSDK {
     const getActions = (
       // Actions is expected to be serializable.
       actions: string | Array<string> | undefined,
-      action:
-        | typeof Action.USER_NEXT_STEP
-        | typeof Action.USER_PREV_STEP
-        | string,
+      action: typeof Action.USER_NEXT_STEP | typeof Action.USER_PREV_STEP | string,
     ) => {
       // Don't modify unrelated user defined actions.
-      if (
-        action !== Action.USER_NEXT_STEP &&
-        action !== Action.USER_PREV_STEP
-      ) {
+      if (action !== Action.USER_NEXT_STEP && action !== Action.USER_PREV_STEP) {
         return actions;
       }
 
@@ -242,38 +217,32 @@ export class WorkflowBrowserSDK {
      */
     const reduceStateOnProp = ([outerKey, outerValue]: [
       string,
-      (
-        | StateNodeConfig<unknown, any, EventObject>
-        | StatesConfig<unknown, any, EventObject>
-      ),
+      StateNodeConfig<unknown, any, EventObject> | StatesConfig<unknown, any, EventObject>,
     ]) => {
-      const on = Object.entries(outerValue?.on ?? {})?.reduce(
-        (state, [event, target]) => {
-          const nextTarget = target?.[event] ?? target?.target;
-          const eventProps =
-            typeof target === 'string'
-              ? { target }
-              : // i.e. the value of { USER_NEXT_STEP: [TARGET] }
-                {
-                  // { target: ..., actions: ... } etc.
-                  ...target,
-                  ...(nextTarget ? { target: nextTarget } : {}),
-                };
-          // Inject actions and honor user defined actions.
-          const actions = getActions(eventProps?.actions, event);
+      const on = Object.entries(outerValue?.on ?? {})?.reduce((state, [event, target]) => {
+        const nextTarget = target?.[event] ?? target?.target;
+        const eventProps =
+          typeof target === 'string'
+            ? { target }
+            : // i.e. the value of { USER_NEXT_STEP: [TARGET] }
+              {
+                // { target: ..., actions: ... } etc.
+                ...target,
+                ...(nextTarget ? { target: nextTarget } : {}),
+              };
+        // Inject actions and honor user defined actions.
+        const actions = getActions(eventProps?.actions, event);
 
-          // Construct the new `on` object.
-          state[event] = {
-            // Ensure if there are props which are not target or actions,
-            // they don't get overridden.
-            ...eventProps,
-            ...(!eventProps?.invoke ? { actions } : {}),
-          };
+        // Construct the new `on` object.
+        state[event] = {
+          // Ensure if there are props which are not target or actions,
+          // they don't get overridden.
+          ...eventProps,
+          ...(!eventProps?.invoke ? { actions } : {}),
+        };
 
-          return state;
-        },
-        {} as Record<string, IOnProps>,
-      );
+        return state;
+      }, {} as Record<string, IOnProps>);
 
       // i.e. { WELCOME: { ..., on: { ... }, ... } }
       const injected = {
