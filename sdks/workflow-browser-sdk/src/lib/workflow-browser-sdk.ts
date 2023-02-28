@@ -1,14 +1,15 @@
 import {
   createWorkflow,
-  Error,
+  Error as ErrorEnum,
   Errors,
   HttpError,
+  StatePlugin,
   WorkflowEventWithoutState,
 } from '@ballerine/workflow-core';
 import type { BaseActionObject, EventObject, StateNodeConfig, StatesConfig } from 'xstate';
 import { assign } from 'xstate';
 import { backendOptions } from './backend-options';
-import { Action, Event } from './enums';
+import { Action, Event, Persistence } from './enums';
 import type {
   BackendOptions,
   BrowserWorkflowEvent,
@@ -22,6 +23,7 @@ import type {
   WorkflowEventWithBrowserType,
   WorkflowOptionsBrowser,
 } from './types';
+import { uniqueArray } from './utils';
 //
 export class WorkflowBrowserSDK {
   #__subscribers: TSubscribers = [];
@@ -50,55 +52,16 @@ export class WorkflowBrowserSDK {
 
     // Actions defined within the machine's `states` object.
     const states = this.#__injectUserStepActionsToStates(options?.workflowDefinition?.states ?? {});
-    const finalStates = Object.keys(states).filter(state => states?.[state]?.type === 'final');
-    const stateNames = Array.from(
-      new Set([...(options?.persistStates ?? []), ...(options?.submitStates ?? finalStates)]),
-    );
+    const statePlugins = this.#__handlePersistStatePlugins({
+      states,
+      persistStates: options?.persistStates,
+      submitStates: options?.submitStates,
+    });
 
     this.#__service = createWorkflow({
       ...options,
       extensions: {
-        statePlugins: [
-          {
-            stateNames,
-            name: 'persist',
-            when: 'entry',
-            action: async ({ context }) => {
-              const { baseUrl, endpoints, headers } = this.#__backendOptions;
-              const { endpoint, method } = endpoints?.persist ?? {};
-              const url = baseUrl ? new URL(endpoint, baseUrl) : endpoint;
-
-              try {
-                await new Promise(resolve => setTimeout(resolve, 2000));
-
-                const res = await fetch(url, {
-                  method,
-                  body: JSON.stringify(context),
-                  headers: {
-                    'Content-Type': 'application/json',
-                    ...headers,
-                  },
-                });
-
-                if (!res.ok) {
-                  throw res;
-                }
-              } catch (err) {
-                if (!(err instanceof Response)) {
-                  throw err;
-                }
-
-                throw new HttpError(
-                  err.status,
-                  `Response error: ${err.statusText} (${err.status})`,
-                  {
-                    cause: err,
-                  },
-                );
-              }
-            },
-          },
-        ],
+        statePlugins,
         globalPlugins: [],
       },
       workflowDefinition: {
@@ -134,11 +97,102 @@ export class WorkflowBrowserSDK {
     });
   }
 
+  /**
+   * @description Handles state plugins based on their persistence type, and transforms the output `statePlugins` into the format workflow-core expects.
+   * If no `submitStates` are provided, falls back to states with type `final`.
+   */
+  #__handlePersistStatePlugins({
+    states,
+    persistStates,
+    submitStates,
+  }: {
+    states: WorkflowOptionsBrowser['workflowDefinition']['states'];
+    persistStates: WorkflowOptionsBrowser['persistStates'];
+    submitStates: WorkflowOptionsBrowser['submitStates'];
+  }) {
+    const statePlugins: Array<StatePlugin> = [];
+    const finalStates = Object.keys(states).filter(state => states?.[state]?.type === 'final');
+    const backendStateNames = uniqueArray([
+      ...(persistStates
+        ?.filter(state => state.persistence === Persistence.BACKEND)
+        ?.map(state => state.state) ?? []),
+      ...(submitStates?.map(({ state }) => state) ?? finalStates),
+    ]);
+    const localStorageStateNames = uniqueArray(
+      persistStates
+        ?.filter(state => state.persistence === Persistence.LOCAL_STORAGE)
+        ?.map(({ state }) => state) ?? [],
+    );
+
+    if (backendStateNames?.length) {
+      // TODO: New plugins should be created via some factory function.
+      statePlugins.push({
+        stateNames: backendStateNames,
+        name: 'persistBackend',
+        when: 'entry',
+        action: async ({ context }) => {
+          const { baseUrl, endpoints, headers } = this.#__backendOptions;
+          const { endpoint, method } = endpoints?.persist ?? {};
+          const url = baseUrl ? new URL(endpoint, baseUrl) : endpoint;
+
+          try {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const res = await fetch(url, {
+              method,
+              body: JSON.stringify(context),
+              headers: {
+                'Content-Type': 'application/json',
+                ...headers,
+              },
+            });
+
+            if (!res.ok) {
+              throw res;
+            }
+          } catch (err) {
+            if (!(err instanceof Response)) {
+              throw err;
+            }
+
+            throw new HttpError(err.status, `Response error: ${err.statusText} (${err.status})`, {
+              cause: err,
+            });
+          }
+        },
+      });
+    }
+
+    if (localStorageStateNames?.length) {
+      statePlugins.push({
+        stateNames: localStorageStateNames,
+        name: 'persistLocalStorage',
+        when: 'entry',
+        action: async ({ context }) =>
+          new Promise(resolve => {
+            try {
+              // localStorage key could be configurable or stored as a constant.
+              localStorage.setItem('workflow-context', JSON.stringify(context));
+
+              resolve();
+            } catch (err) {
+              // TODO: Create a custom error type.
+              throw new Error(`Failed to persist state to localStorage`, {
+                cause: err,
+              });
+            }
+          }),
+      });
+    }
+
+    return statePlugins;
+  }
+
   #__notify({ type, payload, state, error }: WorkflowEventWithBrowserType) {
     this.#__subscribers.forEach(sub => {
       if (
         sub.event !== Event.WILD_CARD &&
-        !(sub.event === Event.ERROR && Errors.includes(type as ObjectValues<typeof Error>)) &&
+        !(sub.event === Event.ERROR && Errors.includes(type as ObjectValues<typeof ErrorEnum>)) &&
         sub.event !== type
       ) {
         return;
@@ -157,9 +211,9 @@ export class WorkflowBrowserSDK {
     event: TEvent,
     cb: TEvent extends typeof Event.WILD_CARD
       ? (event: WorkflowEventWithBrowserType) => void
-      : TEvent extends typeof Error.ERROR
+      : TEvent extends typeof ErrorEnum.ERROR
       ? (event: TWorkflowErrorEvent) => void
-      : TEvent extends typeof Error.HTTP_ERROR
+      : TEvent extends typeof ErrorEnum.HTTP_ERROR
       ? (event: TWorkflowHttpErrorEvent) => void
       : (event: TWorkflowEvent) => void,
   ) {

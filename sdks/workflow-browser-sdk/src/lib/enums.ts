@@ -11,3 +11,8 @@ export const Action = {
   USER_PREV_STEP: 'USER_PREV_STEP',
   ERROR: 'ERROR',
 } as const;
+
+export const Persistence = {
+  LOCAL_STORAGE: 'LOCAL_STORAGE',
+  BACKEND: 'BACKEND',
+} as const;

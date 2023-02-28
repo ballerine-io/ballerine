@@ -1,6 +1,6 @@
 import type { Error, HttpError, WorkflowEvent, WorkflowOptions } from '@ballerine/workflow-core';
 import type { BaseActionObject } from 'xstate';
-import type { Event } from './enums';
+import type { Event, Persistence } from './enums';
 import type { WorkflowBrowserSDK } from './workflow-browser-sdk';
 
 export type Serializable =
@@ -23,6 +23,11 @@ export type DeepPartial<TValue> = {
     ? Array<DeepPartial<U>>
     : TValue[TKey];
 };
+
+export interface IPersistState {
+  state: string;
+  persistence: ObjectValues<typeof Persistence>;
+}
 
 export interface BackendEndpoint {
   endpoint: URL | string;
@@ -53,11 +58,10 @@ export interface BackendOptions {
   } & HeadersInit;
 }
 
-export interface WorkflowOptionsBrowser
-  extends Omit<WorkflowOptions, 'workflowActions' | 'workflowActors'> {
+export interface WorkflowOptionsBrowser extends Omit<WorkflowOptions, 'workflowActions'> {
   backend?: DeepPartial<BackendOptions>;
-  persistStates?: Array<string>;
-  submitStates?: Array<string>;
+  persistStates?: Array<IPersistState>;
+  submitStates?: Array<Omit<IPersistState, 'persistence'>>;
 }
 
 export type BrowserWorkflowEvent =
