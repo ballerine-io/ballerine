@@ -26,7 +26,7 @@ export type DeepPartial<TValue> = {
 
 export interface BackendEndpoint {
   endpoint: URL | string;
-  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | "GET";
+  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
 }
 
 export interface BackendOptions {
@@ -57,6 +57,7 @@ export interface WorkflowOptionsBrowser
   extends Omit<WorkflowOptions, 'workflowActions' | 'workflowActors'> {
   backend?: DeepPartial<BackendOptions>;
   persistStates?: Array<string>;
+  submitStates?: Array<string>;
 }
 
 export type BrowserWorkflowEvent =
@@ -68,10 +69,7 @@ export type BrowserWorkflowEvent =
   | typeof Event.WILD_CARD
   | string;
 
-export type WorkflowEventWithBrowserType = Omit<
-  WorkflowEvent,
-  'type' | 'error'
-> & {
+export type WorkflowEventWithBrowserType = Omit<WorkflowEvent, 'type' | 'error'> & {
   //   error?: InstanceType<typeof HttpError> | unknown;
   type: BrowserWorkflowEvent;
 };

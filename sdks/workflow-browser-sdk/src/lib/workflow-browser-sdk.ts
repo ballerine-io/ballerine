@@ -44,21 +44,22 @@ export class WorkflowBrowserSDK {
 
     // Actions defined within the machine's `states` object.
     const states = this.#__injectUserStepActionsToStates(options?.workflowDefinition?.states ?? {});
-    // const states = this.#__injectSubmitActorToStates(states);
-
-    // Actions defined within `createMachine`'s second argument (config object).
+    const finalStates = Object.keys(states).filter(state => states?.[state]?.type === 'final');
+    const stateNames = Array.from(
+      new Set([...(options?.persistStates ?? []), ...(options?.submitStates ?? finalStates)]),
+    );
 
     this.#__service = createWorkflow({
       ...options,
       extensions: {
         statePlugins: [
           {
-            stateNames: options?.persistStates ?? [],
+            stateNames,
             name: 'persist',
             when: 'entry',
             action: async ({ context }) => {
               const { baseUrl, endpoints, headers } = this.#__backendOptions;
-              const { endpoint, method } = endpoints?.persist;
+              const { endpoint, method } = endpoints?.persist ?? {};
               const url = baseUrl ? new URL(endpoint, baseUrl) : endpoint;
 
               try {
