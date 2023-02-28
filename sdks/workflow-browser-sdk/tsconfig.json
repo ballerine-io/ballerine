@@ -18,6 +18,11 @@
     "baseUrl": ".",
     "pretty": true
   },
-  "files": ["src/index.ts", "src/lib/plugins/types.ts"],
+  "files": [
+    "src/index.ts",
+    "src/lib/plugins/types.ts",
+    "src/lib/merge-step-actions.ts",
+    "./src/lib/reduceStateOnProp.ts"
+  ],
   "include": ["src"]
 }
