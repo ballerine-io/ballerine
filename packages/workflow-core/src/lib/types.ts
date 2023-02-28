@@ -80,3 +80,5 @@ export const Error = {
   ERROR: 'ERROR',
   HTTP_ERROR: 'HTTP_ERROR',
 } as const;
+
+export const Errors = [Error.ERROR, Error.HTTP_ERROR] as const;

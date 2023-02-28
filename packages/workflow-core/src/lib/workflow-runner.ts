@@ -130,18 +130,6 @@ export class WorkflowRunner {
       }
     }
 
-    for (const statePlugin of extensions.statePlugins) {
-      for (const stateName of statePlugin.stateNames) {
-        // E.g { state: { entry: [...,plugin.name] } }
-        extended.states[stateName][statePlugin.when] = Array.from(
-          new Set([...extended.states[stateName][statePlugin.when], statePlugin.name]),
-        );
-
-        // { actions: { persist: action } }
-        stateActions[statePlugin.name] = statePlugin.action;
-      }
-    }
-
     const actions: MachineOptions<any, any>['actions'] = {
       ...workflowActions,
       ...stateActions,
