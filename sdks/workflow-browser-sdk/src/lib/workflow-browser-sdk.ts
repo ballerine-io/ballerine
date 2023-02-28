@@ -3,6 +3,7 @@ import type { BaseActionObject, EventObject, StateNodeConfig, StatesConfig } fro
 import { assign } from 'xstate';
 import { backendOptions } from './backend-options';
 import { Action, Error, Errors, Event } from './enums';
+import { PersistPlugin } from './plugins/persist-plugin';
 import type {
   BackendOptions,
   BrowserWorkflowEvent,
@@ -21,7 +22,7 @@ import type {
 export class WorkflowBrowserSDK {
   #__subscribers: TSubscribers = [];
   #__service: ReturnType<typeof createWorkflow>;
-  #__backendOptions: BackendOptions;
+  #__backendOptions!: BackendOptions;
 
   constructor({ backend, ...options }: WorkflowOptionsBrowser) {
     this.#__mergeBackendOptions(backend);
@@ -36,45 +37,15 @@ export class WorkflowBrowserSDK {
       ...options,
       extensions: {
         statePlugins: [
-          {
+          new PersistPlugin({
             stateNames: options?.persistStates ?? [],
-            name: 'persist',
-            when: 'entry',
-            action: async ({ context }) => {
-              const { baseUrl, endpoints, headers } = this.#__backendOptions;
-              const { endpoint, method } = endpoints?.persist;
-              const url = baseUrl ? new URL(endpoint, baseUrl) : endpoint;
-
-              try {
-                await new Promise(resolve => setTimeout(resolve, 2000));
-
-                const res = await fetch(url, {
-                  method,
-                  body: JSON.stringify(context),
-                  headers: {
-                    'Content-Type': 'application/json',
-                    ...headers,
-                  },
-                });
-
-                if (!res.ok) {
-                  throw res;
-                }
-              } catch (err) {
-                if (!(err instanceof Response)) {
-                  throw err;
-                }
-
-                // throw new HttpError(
-                //   err.status,
-                //   `Response error: ${err.statusText} (${err.status})`,
-                //   {
-                // cause: err,
-                //   },
-                // );
-              }
+            fetchOptions: {
+              baseUrl: this.#__backendOptions.baseUrl,
+              endpoint: this.#__backendOptions.endpoints.persist.endpoint,
+              method: this.#__backendOptions.endpoints.persist.method,
+              headers: this.#__backendOptions.headers,
             },
-          },
+          }),
         ],
         globalPlugins: [],
       },
