@@ -1,6 +1,6 @@
-import type { WorkflowEvent, WorkflowOptions } from '@ballerine/workflow-core';
+import type { Error, HttpError, WorkflowEvent, WorkflowOptions } from '@ballerine/workflow-core';
 import type { BaseActionObject } from 'xstate';
-import type { Error, Event } from './enums';
+import type { Event } from './enums';
 import type { WorkflowBrowserSDK } from './workflow-browser-sdk';
 
 export type Serializable =
@@ -70,7 +70,7 @@ export type BrowserWorkflowEvent =
   | string;
 
 export type WorkflowEventWithBrowserType = Omit<WorkflowEvent, 'type' | 'error'> & {
-  //   error?: InstanceType<typeof HttpError> | unknown;
+  error?: InstanceType<typeof HttpError> | unknown;
   type: BrowserWorkflowEvent;
 };
 
@@ -82,7 +82,7 @@ export type TSubscriber = {
           type: BrowserWorkflowEvent;
           payload?: AnyRecord;
           state: string;
-          //   error?: InstanceType<typeof HttpError> | unknown;
+          error?: InstanceType<typeof HttpError> | unknown;
         }
       | {
           type: BrowserWorkflowEvent;
@@ -91,12 +91,12 @@ export type TSubscriber = {
       | {
           type: typeof Error.ERROR;
           state: string;
-          //   error: InstanceType<typeof HttpError> | unknown;
+          error: InstanceType<typeof HttpError> | unknown;
         }
       | {
           type: typeof Error.HTTP_ERROR;
           state: string;
-          //   error: InstanceType<typeof HttpError>;
+          error: InstanceType<typeof HttpError>;
         }
       | {
           type: BrowserWorkflowEvent;
@@ -129,9 +129,9 @@ export type TWorkflowEvent = Omit<WorkflowEvent, 'type' | 'error'>;
 
 export type TWorkflowErrorEvent = TWorkflowEvent & {
   type: typeof Error.ERROR | typeof Error.HTTP_ERROR;
-  //   error: InstanceType<typeof HttpError> | unknown;
+  error: InstanceType<typeof HttpError> | unknown;
 };
 
 export type TWorkflowHttpErrorEvent = TWorkflowEvent & {
-  //   error: InstanceType<typeof HttpError>;
+  error: InstanceType<typeof HttpError>;
 };

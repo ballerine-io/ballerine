@@ -1,8 +1,14 @@
-import { createWorkflow, WorkflowEventWithoutState } from '@ballerine/workflow-core';
+import {
+  createWorkflow,
+  Error,
+  Errors,
+  HttpError,
+  WorkflowEventWithoutState,
+} from '@ballerine/workflow-core';
 import type { BaseActionObject, EventObject, StateNodeConfig, StatesConfig } from 'xstate';
 import { assign } from 'xstate';
 import { backendOptions } from './backend-options';
-import { Action, Error, Errors, Event } from './enums';
+import { Action, Event } from './enums';
 import type {
   BackendOptions,
   BrowserWorkflowEvent,
@@ -82,13 +88,13 @@ export class WorkflowBrowserSDK {
                   throw err;
                 }
 
-                // throw new HttpError(
-                //   err.status,
-                //   `Response error: ${err.statusText} (${err.status})`,
-                //   {
-                // cause: err,
-                //   },
-                // );
+                throw new HttpError(
+                  err.status,
+                  `Response error: ${err.statusText} (${err.status})`,
+                  {
+                    cause: err,
+                  },
+                );
               }
             },
           },
@@ -128,12 +134,7 @@ export class WorkflowBrowserSDK {
     });
   }
 
-  #__notify({
-    type,
-    payload,
-    state,
-  }: //  error
-  WorkflowEventWithBrowserType) {
+  #__notify({ type, payload, state, error }: WorkflowEventWithBrowserType) {
     this.#__subscribers.forEach(sub => {
       if (
         sub.event !== Event.WILD_CARD &&
@@ -147,7 +148,7 @@ export class WorkflowBrowserSDK {
         type: sub.event === Event.WILD_CARD || sub.event === Event.ERROR ? type : undefined,
         payload,
         state,
-        // error,
+        error,
       });
     });
   }
