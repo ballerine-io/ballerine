@@ -6,6 +6,7 @@ import { Action, Error, Errors, Event } from './enums';
 import type {
   BackendOptions,
   BrowserWorkflowEvent,
+  DeepPartial,
   IOnProps,
   IUserStepEvent,
   ObjectValues,
@@ -16,7 +17,6 @@ import type {
   WorkflowEventWithBrowserType,
   WorkflowOptionsBrowser,
 } from './types';
-//
 
 export class WorkflowBrowserSDK {
   #__subscribers: TSubscribers = [];
@@ -24,24 +24,7 @@ export class WorkflowBrowserSDK {
   #__backendOptions: BackendOptions;
 
   constructor({ backend, ...options }: WorkflowOptionsBrowser) {
-    this.#__backendOptions = {
-      ...backendOptions,
-      ...backend,
-      endpoints: {
-        persist: {
-          ...backendOptions.endpoints.persist,
-          ...backend?.endpoints?.persist,
-        },
-        submit: {
-          ...backendOptions.endpoints.submit,
-          ...backend?.endpoints?.submit,
-        },
-      },
-      headers: {
-        ...backendOptions.headers,
-        ...backend?.headers,
-      },
-    };
+    this.#__mergeBackendOptions(backend);
 
     // Actions defined within the machine's `states` object.
     const states = this.#__injectUserStepActionsToStates(options?.workflowDefinition?.states ?? {});
@@ -126,6 +109,31 @@ export class WorkflowBrowserSDK {
     this.#__service.subscribe(event => {
       this.#__notify(event);
     });
+  }
+
+  /**
+   * Merges partial user defined backend options received from {@link WorkflowBrowserSDK}'s constructor with the default options from {@link backendOptions}.
+   * @param overrides
+   */
+  #__mergeBackendOptions(overrides: DeepPartial<BackendOptions> | undefined) {
+    this.#__backendOptions = {
+      ...backendOptions,
+      ...overrides,
+      endpoints: {
+        persist: {
+          ...backendOptions.endpoints.persist,
+          ...overrides?.endpoints?.persist,
+        },
+        submit: {
+          ...backendOptions.endpoints.submit,
+          ...overrides?.endpoints?.submit,
+        },
+      },
+      headers: {
+        ...backendOptions.headers,
+        ...overrides?.headers,
+      },
+    };
   }
 
   #__notify({

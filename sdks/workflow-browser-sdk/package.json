@@ -3,8 +3,8 @@
   "author": "Ballerine",
   "version": "0.0.0",
   "description": "workflow-browser-sdk",
-  "module": "./build/esm/workflow-browser-sdk/src/index.js",
-  "main": "./build/cjs/workflow-browser-sdk/src/index.js",
+  "module": "./build/esm/index.js",
+  "main": "./build/cjs/index.js",
   "browser": "./build/umd/index.production.js",
   "types": "./build/types/index.d.ts",
   "files": [
