@@ -139,3 +139,10 @@ export type TWorkflowErrorEvent = TWorkflowEvent & {
 export type TWorkflowHttpErrorEvent = TWorkflowEvent & {
   error: InstanceType<typeof HttpError>;
 };
+
+export type TWorkflowStateActionStatusEvent = TWorkflowEvent & {
+  payload: {
+    status: 'PENDING' | 'ERROR' | 'SUCCESS';
+  };
+  error?: InstanceType<typeof HttpError> | unknown;
+};

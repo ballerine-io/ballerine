@@ -20,6 +20,7 @@ import type {
   TWorkflowErrorEvent,
   TWorkflowEvent,
   TWorkflowHttpErrorEvent,
+  TWorkflowStateActionStatusEvent,
   WorkflowEventWithBrowserType,
   WorkflowOptionsBrowser,
 } from './types';
@@ -111,7 +112,9 @@ export class WorkflowBrowserSDK {
     submitStates: WorkflowOptionsBrowser['submitStates'];
   }) {
     const statePlugins: Array<StatePlugin> = [];
-    const finalStates = Object.keys(states).filter(state => states?.[state]?.type === 'final');
+    const finalStates = Object.keys(states ?? {}).filter(
+      state => states?.[state]?.type === 'final',
+    );
     const backendStateNames = uniqueArray([
       ...(persistStates
         ?.filter(state => state.persistence === Persistence.BACKEND)
@@ -140,7 +143,7 @@ export class WorkflowBrowserSDK {
 
             const res = await fetch(url, {
               method,
-              body: JSON.stringify(context),
+              body: method !== 'GET' ? JSON.stringify(context) : undefined,
               headers: {
                 'Content-Type': 'application/json',
                 ...headers,
@@ -199,10 +202,10 @@ export class WorkflowBrowserSDK {
       }
 
       sub.cb({
-        type: sub.event === Event.WILD_CARD || sub.event === Event.ERROR ? type : undefined,
+        ...(sub.event === Event.WILD_CARD || sub.event === Event.ERROR ? { type } : {}),
         payload,
         state,
-        error,
+        ...(error ? { error } : {}),
       });
     });
   }
@@ -211,6 +214,8 @@ export class WorkflowBrowserSDK {
     event: TEvent,
     cb: TEvent extends typeof Event.WILD_CARD
       ? (event: WorkflowEventWithBrowserType) => void
+      : TEvent extends typeof Event.STATE_ACTION_STATUS
+      ? (event: TWorkflowStateActionStatusEvent) => void
       : TEvent extends typeof ErrorEnum.ERROR
       ? (event: TWorkflowErrorEvent) => void
       : TEvent extends typeof ErrorEnum.HTTP_ERROR

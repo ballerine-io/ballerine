@@ -111,6 +111,14 @@ export class WorkflowRunner {
               event,
               currentState: this.#__currentState,
             });
+
+            this.#__callback?.({
+              type: 'STATE_ACTION_STATUS',
+              state: this.#__currentState,
+              payload: {
+                status: 'SUCCESS',
+              },
+            });
           } catch (err) {
             let type: ObjectValues<typeof ErrorEnum> = ErrorEnum.ERROR;
 
@@ -119,17 +127,18 @@ export class WorkflowRunner {
             }
 
             this.#__callback?.({
-              type,
-              state: this.#__currentState,
-              error: err,
-            });
-          } finally {
-            this.#__callback?.({
               type: 'STATE_ACTION_STATUS',
               state: this.#__currentState,
               payload: {
-                status: 'IDLE',
+                status: 'ERROR',
               },
+              error: err,
+            });
+
+            this.#__callback?.({
+              type,
+              state: this.#__currentState,
+              error: err,
             });
           }
         };
