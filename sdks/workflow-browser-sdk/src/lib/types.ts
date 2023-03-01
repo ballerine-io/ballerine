@@ -121,7 +121,7 @@ export interface IOnProps {
 }
 
 export type CreateWorkflow = (
-  options: Omit<WorkflowOptionsBrowser, 'workflowActions' | 'workflowActors'>,
+  options: Omit<WorkflowOptionsBrowser, 'workflowActions'>,
 ) => InstanceType<typeof WorkflowBrowserSDK>;
 
 export type TWorkflowEvent = Omit<WorkflowEvent, 'type' | 'error'>;
