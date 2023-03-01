@@ -1,7 +1,7 @@
-import { createWorkflow, WorkflowEventWithoutState } from '@ballerine/workflow-core';
+import { createWorkflow, Error, Errors, WorkflowEventWithoutState } from '@ballerine/workflow-core';
 import type { BaseActionObject, StatesConfig } from 'xstate';
 import { assign } from 'xstate';
-import { Action, Error, Errors, Event } from '../enums';
+import { Action, Event } from '../enums';
 import { PersistPlugin } from '../plugins/persist-plugin';
 import type {
   BackendOptions,
@@ -126,7 +126,7 @@ export class WorkflowBrowserSDK {
         type: sub.event === Event.WILD_CARD || sub.event === Event.ERROR ? type : undefined,
         payload,
         state,
-        // error,
+        error,
       });
     });
   }

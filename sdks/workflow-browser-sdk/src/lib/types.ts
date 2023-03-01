@@ -69,11 +69,7 @@ export type BrowserWorkflowEvent =
   | string;
 
 export type WorkflowEventWithBrowserType = Omit<WorkflowEvent, 'type' | 'error'> & {
-<<<<<<< HEAD
-  //   error?: InstanceType<typeof HttpError> | unknown;
-=======
   error?: InstanceType<typeof HttpError> | unknown;
->>>>>>> main
   type: BrowserWorkflowEvent;
 };
 
