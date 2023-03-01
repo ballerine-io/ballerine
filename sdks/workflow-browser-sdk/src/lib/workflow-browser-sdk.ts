@@ -115,12 +115,14 @@ export class WorkflowBrowserSDK {
     const finalStates = Object.keys(states ?? {}).filter(
       state => states?.[state]?.type === 'final',
     );
-    const backendStateNames = uniqueArray([
-      ...(persistStates
+    const backendStateNames = uniqueArray(
+      persistStates
         ?.filter(state => state.persistence === Persistence.BACKEND)
-        ?.map(state => state.state) ?? []),
-      ...(submitStates?.map(({ state }) => state) ?? finalStates),
-    ]);
+        ?.map(state => state.state) ?? [],
+    );
+    const submitStateNames = uniqueArray(
+      submitStates?.map(({ state }) => state) ?? finalStates ?? [],
+    );
     const localStorageStateNames = uniqueArray(
       persistStates
         ?.filter(state => state.persistence === Persistence.LOCAL_STORAGE)
@@ -132,6 +134,44 @@ export class WorkflowBrowserSDK {
       statePlugins.push({
         stateNames: backendStateNames,
         name: 'SYNC_BACKEND',
+        when: 'entry',
+        action: async ({ context }) => {
+          const { baseUrl, endpoints, headers } = this.#__backendOptions;
+          const { endpoint, method } = endpoints?.persist ?? {};
+          const url = baseUrl ? new URL(endpoint, baseUrl) : endpoint;
+
+          try {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const res = await fetch(url, {
+              method,
+              body: method !== 'GET' ? JSON.stringify(context) : undefined,
+              headers: {
+                'Content-Type': 'application/json',
+                ...headers,
+              },
+            });
+
+            if (!res.ok) {
+              throw res;
+            }
+          } catch (err) {
+            if (!(err instanceof Response)) {
+              throw err;
+            }
+
+            throw new HttpError(err.status, `Response error: ${err.statusText} (${err.status})`, {
+              cause: err,
+            });
+          }
+        },
+      });
+    }
+
+    if (submitStateNames?.length) {
+      statePlugins.push({
+        stateNames: submitStateNames,
+        name: 'SUBMIT_BACKEND',
         when: 'entry',
         action: async ({ context }) => {
           const { baseUrl, endpoints, headers } = this.#__backendOptions;
