@@ -61,12 +61,12 @@ export interface WorkflowOptionsBrowser extends Omit<WorkflowOptions, 'workflowA
 }
 
 export type BrowserWorkflowEvent =
+  | typeof Event.WILD_CARD
   | typeof Event.USER_NEXT_STEP
   | typeof Event.USER_PREV_STEP
   | typeof Event.STATE_ACTION_STATUS
   | typeof Error.ERROR
   | typeof Error.HTTP_ERROR
-  | typeof Event.WILD_CARD
   | string;
 
 export type WorkflowEventWithBrowserType = Omit<WorkflowEvent, 'type' | 'error'> & {
