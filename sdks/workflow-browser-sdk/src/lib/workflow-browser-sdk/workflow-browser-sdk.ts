@@ -107,12 +107,7 @@ export class WorkflowBrowserSDK {
     };
   }
 
-  #__notify({
-    type,
-    payload,
-    state,
-  }: //  error
-  WorkflowEventWithBrowserType) {
+  #__notify({ type, payload, state, error }: WorkflowEventWithBrowserType) {
     this.#__subscribers.forEach(sub => {
       if (
         sub.event !== Event.WILD_CARD &&

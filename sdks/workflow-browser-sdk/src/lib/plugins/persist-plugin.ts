@@ -1,3 +1,4 @@
+import { HttpError } from '@ballerine/workflow-core';
 import { StatePlugin } from './state-plugin';
 import { IFetchOptions, TPersistPluginParams } from './types';
 
@@ -38,13 +39,9 @@ export class PersistPlugin extends StatePlugin {
         throw err;
       }
 
-      // throw new HttpError(
-      //   err.status,
-      //   `Response error: ${err.statusText} (${err.status})`,
-      //   {
-      // cause: err,
-      //   },
-      // );
+      throw new HttpError(err.status, `Response error: ${err.statusText} (${err.status})`, {
+        cause: err,
+      });
     }
   }
 }
