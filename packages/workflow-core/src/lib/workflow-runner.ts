@@ -94,6 +94,11 @@ export class WorkflowRunner {
 
         if (stateActions[statePlugin.name]) continue;
 
+        const action =
+          extended.states[stateName].type === 'final'
+            ? statePlugin.name.replace('SYNC', 'SUBMIT')
+            : statePlugin.name;
+
         // workflow-core
         // { actions: { persist: action } }
         stateActions[statePlugin.name] = async (context, event) => {
@@ -102,6 +107,7 @@ export class WorkflowRunner {
             state: this.#__currentState,
             payload: {
               status: 'PENDING',
+              action,
             },
           });
 
@@ -117,6 +123,7 @@ export class WorkflowRunner {
               state: this.#__currentState,
               payload: {
                 status: 'SUCCESS',
+                action,
               },
             });
           } catch (err) {
@@ -131,6 +138,7 @@ export class WorkflowRunner {
               state: this.#__currentState,
               payload: {
                 status: 'ERROR',
+                action,
               },
               error: err,
             });

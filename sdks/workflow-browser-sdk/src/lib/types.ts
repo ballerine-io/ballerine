@@ -78,6 +78,14 @@ export type WorkflowEventWithBrowserType = Omit<WorkflowEvent, 'type' | 'error'>
   type: BrowserWorkflowEvent;
 };
 
+export type TWorkflowStateActionStatusEvent = TWorkflowEvent & {
+  payload: {
+    status: 'PENDING' | 'ERROR' | 'SUCCESS';
+    action: `SYNC_${typeof Persistence.LOCAL_STORAGE | typeof Persistence.BACKEND}`;
+  };
+  error?: InstanceType<typeof HttpError> | unknown;
+};
+
 export type TSubscriber = {
   event: BrowserWorkflowEvent;
   cb(
@@ -138,11 +146,4 @@ export type TWorkflowErrorEvent = TWorkflowEvent & {
 
 export type TWorkflowHttpErrorEvent = TWorkflowEvent & {
   error: InstanceType<typeof HttpError>;
-};
-
-export type TWorkflowStateActionStatusEvent = TWorkflowEvent & {
-  payload: {
-    status: 'PENDING' | 'ERROR' | 'SUCCESS';
-  };
-  error?: InstanceType<typeof HttpError> | unknown;
 };

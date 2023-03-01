@@ -131,7 +131,7 @@ export class WorkflowBrowserSDK {
       // TODO: New plugins should be created via some factory function.
       statePlugins.push({
         stateNames: backendStateNames,
-        name: 'persistBackend',
+        name: 'SYNC_BACKEND',
         when: 'entry',
         action: async ({ context }) => {
           const { baseUrl, endpoints, headers } = this.#__backendOptions;
@@ -169,7 +169,7 @@ export class WorkflowBrowserSDK {
     if (localStorageStateNames?.length) {
       statePlugins.push({
         stateNames: localStorageStateNames,
-        name: 'persistLocalStorage',
+        name: 'SYNC_LOCAL_STORAGE',
         when: 'entry',
         action: async ({ context }) =>
           new Promise(resolve => {
@@ -191,21 +191,34 @@ export class WorkflowBrowserSDK {
     return statePlugins;
   }
 
-  #__notify({ type, payload, state, error }: WorkflowEventWithBrowserType) {
+  #__notify(event: WorkflowEventWithBrowserType) {
     this.#__subscribers.forEach(sub => {
       if (
         sub.event !== Event.WILD_CARD &&
-        !(sub.event === Event.ERROR && Errors.includes(type as ObjectValues<typeof ErrorEnum>)) &&
-        sub.event !== type
+        !(
+          sub.event === Event.ERROR && Errors.includes(event.type as ObjectValues<typeof ErrorEnum>)
+        ) &&
+        sub.event !== event.type
       ) {
         return;
       }
 
+      const { action, ...payload } = event.payload ?? {};
+      let eventType: string | undefined;
+
+      if (
+        sub.event === Event.WILD_CARD ||
+        sub.event === Event.ERROR ||
+        sub.event === Event.STATE_ACTION_STATUS
+      ) {
+        eventType = sub.event === Event.STATE_ACTION_STATUS ? (action as string) : event.type;
+      }
+
       sub.cb({
-        ...(sub.event === Event.WILD_CARD || sub.event === Event.ERROR ? { type } : {}),
+        ...(eventType ? { type: eventType } : {}),
         payload,
-        state,
-        ...(error ? { error } : {}),
+        state: event.state,
+        ...(event.error ? { error: event.error } : {}),
       });
     });
   }
