@@ -44,11 +44,7 @@ export interface BackendOptions {
    */
   endpoints: {
     /**
-     * @default '/workflows/submit'
-     */
-    submit: BackendEndpoint;
-    /**
-     * @default '/workflows/persist'
+     * @default PUT '/workflows/:workflowId'
      */
     persist: BackendEndpoint;
   };
@@ -134,7 +130,7 @@ export interface IOnProps {
 }
 
 export type CreateWorkflow = (
-  options: Omit<WorkflowOptionsBrowser, 'workflowActions' | 'workflowActors'>,
+  options: ConstructorParameters<typeof WorkflowBrowserSDK>[0],
 ) => InstanceType<typeof WorkflowBrowserSDK>;
 
 export type TWorkflowEvent = Omit<WorkflowEvent, 'type' | 'error'>;
