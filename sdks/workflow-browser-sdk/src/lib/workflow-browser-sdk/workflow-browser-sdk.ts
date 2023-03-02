@@ -87,7 +87,7 @@ export class WorkflowBrowserSDK {
     submitStates: WorkflowOptionsBrowser['submitStates'];
   }) {
     const statePlugins: Array<StatePlugin> = [];
-    const finalStates = Object.keys(states ?? {}).filter(
+    const finalStates = Object.keys(states ?? {})?.filter(
       state => states?.[state]?.type === 'final',
     );
 
@@ -96,7 +96,9 @@ export class WorkflowBrowserSDK {
         ?.filter(state => state.persistence === Persistence.BACKEND)
         ?.map(state => state.state) ?? [],
     );
-    const submitStateNames = uniqueArray(submitStates?.map(({ state }) => state) ?? finalStates);
+    const submitStateNames = uniqueArray(
+      !submitStates?.length ? finalStates : submitStates?.map(({ state }) => state),
+    );
     const localStorageStateNames = uniqueArray(
       persistStates
         ?.filter(state => state.persistence === Persistence.LOCAL_STORAGE)

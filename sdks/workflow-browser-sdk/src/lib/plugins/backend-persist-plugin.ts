@@ -1,4 +1,5 @@
 import { HttpError } from '@ballerine/workflow-core';
+import { sleep } from '../utils';
 import { StatePlugin } from './state-plugin';
 import { IFetchOptions, TBackendPersistPluginParams } from './types';
 
@@ -22,7 +23,7 @@ export class BackendPersistPlugin extends StatePlugin {
 
     try {
       // Temporary - allows observing loading state
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await sleep(Math.round(Math.random() * 300));
 
       const res = await fetch(url, {
         method,
