@@ -129,8 +129,10 @@ export interface IOnProps {
   actions?: BaseActionObject[];
 }
 
+export type WorkflowBrowserSDKParams = ConstructorParameters<typeof WorkflowBrowserSDK>[0];
+
 export type CreateWorkflow = (
-  options: ConstructorParameters<typeof WorkflowBrowserSDK>[0],
+  options: WorkflowBrowserSDKParams,
 ) => InstanceType<typeof WorkflowBrowserSDK>;
 
 export type TWorkflowEvent = Omit<WorkflowEvent, 'type' | 'error'>;

@@ -7,9 +7,11 @@ import {
 } from '@ballerine/workflow-core';
 import type { BaseActionObject, StatesConfig } from 'xstate';
 import { assign } from 'xstate';
-import { Action, Event, Persistence } from '../enums';
-import { BackendPersistPlugin } from '../plugins/backend-persist-plugin';
-import { LocalStoragePersistPlugin } from '../plugins/local-storage-persist-plugin';
+import { backendOptions } from './backend-options';
+import { Action, Event, Persistence } from './enums';
+import { injectActionsToStateOnProp } from './inject-actions-to-state-on-prop';
+import { BackendPersistPlugin } from './plugins/backend-persist-plugin';
+import { LocalStoragePersistPlugin } from './plugins/local-storage-persist-plugin';
 import type {
   BackendOptions,
   BrowserWorkflowEvent,
@@ -23,10 +25,8 @@ import type {
   TWorkflowStateActionStatusEvent,
   WorkflowEventWithBrowserType,
   WorkflowOptionsBrowser,
-} from '../types';
-import { uniqueArray } from '../utils';
-import { backendOptions } from './backend-options';
-import { injectActionsToStateOnProp } from './inject-actions-to-state-on-prop';
+} from './types';
+import { uniqueArray } from './utils';
 
 export class WorkflowBrowserSDK {
   #__subscribers: TSubscribers = [];
@@ -63,8 +63,8 @@ export class WorkflowBrowserSDK {
         states,
       },
       workflowActions: {
-        [Action.USER_NEXT_STEP]: assignContext,
         [Action.USER_PREV_STEP]: assignContext,
+        [Action.USER_NEXT_STEP]: assignContext,
       },
     });
 

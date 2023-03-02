@@ -1,4 +1,4 @@
-import type { BackendOptions } from '../types';
+import type { BackendOptions } from './types';
 
 export const backendOptions = {
   baseUrl: 'https://api-dev.ballerine.io',

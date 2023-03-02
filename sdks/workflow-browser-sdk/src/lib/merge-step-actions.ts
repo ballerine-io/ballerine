@@ -1,4 +1,4 @@
-import { Action } from '../enums';
+import { Action } from './enums';
 
 /**
  * Makes sure to not override existing actions.

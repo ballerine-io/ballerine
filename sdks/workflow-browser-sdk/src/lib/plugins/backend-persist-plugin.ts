@@ -1,5 +1,4 @@
 import { HttpError } from '@ballerine/workflow-core';
-import { sleep } from '../utils';
 import { StatePlugin } from './state-plugin';
 import { IFetchOptions, TBackendPersistPluginParams } from './types';
 
@@ -19,12 +18,10 @@ export class BackendPersistPlugin extends StatePlugin {
 
   async action({ context }: { context: any; event: any; currentState: any }): Promise<void> {
     const { baseUrl, endpoint, method, headers } = this.#__fetchOptions;
-    const url = baseUrl ? new URL(endpoint, baseUrl) : endpoint;
+    // TODO: Find a way to mock global.URL
+    const url = `${(baseUrl as string) || ''}${endpoint as string}`;
 
     try {
-      // Temporary - allows observing loading state
-      await sleep(Math.round(Math.random() * 300));
-
       const res = await fetch(url, {
         method,
         body: method !== 'GET' ? JSON.stringify(context) : undefined,

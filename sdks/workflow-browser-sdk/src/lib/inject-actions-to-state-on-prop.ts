@@ -1,6 +1,6 @@
 import { EventObject, StateNodeConfig, StatesConfig } from 'xstate';
-import { IOnProps } from '../types';
 import { mergeStepActions } from './merge-step-actions';
+import { IOnProps } from './types';
 
 /**
  * Traverses multiple levels of the state machine's `states` object,
