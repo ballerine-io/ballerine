@@ -3,6 +3,7 @@
   "version": "0.8.1",
   "private": true,
   "dependencies": {
+    "@ballerine/common": "workspace:*",
     "@mantine/core": "^5.7.2",
     "@mantine/hooks": "^5.7.2",
     "@mantine/rte": "^5.4.1",

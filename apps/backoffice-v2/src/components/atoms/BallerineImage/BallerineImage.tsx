@@ -1,8 +1,8 @@
-import {forwardRef, ReactEventHandler, useCallback, useEffect, useState} from 'react';
-import { IBallerineImageProps } from './interfaces';
-import { isInstanceOfFunction } from '../../../utils/is-instance-of-function/is-instance-of-function';
+import { isFunction } from '@ballerine/common';
 import { PhotoSvg } from 'components/atoms/icons';
+import { forwardRef, ReactEventHandler, useCallback, useEffect, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
+import { IBallerineImageProps } from './interfaces';
 
 /**
  * @description An img element with default styling, and a Skeleton placeholder.
@@ -10,23 +10,8 @@ import { ctw } from '../../../utils/ctw/ctw';
  * @param props
  * @constructor
  */
-export const BallerineImage = forwardRef<
-  HTMLImageElement,
-  IBallerineImageProps
->(
-  (
-    {
-      withPlaceholder,
-      placeholder,
-      alt,
-      src,
-      className,
-      isLoading,
-      onError,
-      ...rest
-    },
-    ref,
-  ) => {
+export const BallerineImage = forwardRef<HTMLImageElement, IBallerineImageProps>(
+  ({ withPlaceholder, placeholder, alt, src, className, isLoading, onError, ...rest }, ref) => {
     const [error, setError] = useState(false);
     const isError = !src || error;
     const isPlaceholder = withPlaceholder && isError;
@@ -34,7 +19,7 @@ export const BallerineImage = forwardRef<
       e => {
         setError(true);
 
-        if (!isInstanceOfFunction(onError)) return;
+        if (!isFunction(onError)) return;
 
         onError(e);
       },
@@ -52,8 +37,7 @@ export const BallerineImage = forwardRef<
         <div
           className={ctw(
             {
-              'animate-pulse bg-gray-200 theme-dark:bg-neutral-focus':
-                isLoading,
+              'animate-pulse bg-gray-200 theme-dark:bg-neutral-focus': isLoading,
               'bg-neutral': !isLoading && isPlaceholder,
             },
             'rounded-md',

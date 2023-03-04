@@ -1,18 +1,18 @@
-import { FunctionComponent, useCallback, useState } from 'react';
+import { isNullish } from '@ballerine/common';
 import { WarningAlert } from 'components/atoms/WarningAlert';
-import { isValidDate } from '../../../utils/is-valid-date';
-import { formatDate } from '../../../utils/format-date';
 import { DataField } from 'components/molecules/DataField/DataField';
-import { State } from '../../../enums';
-import { IInfoProps } from 'components/organisms/Subject/interfaces';
 import { DetailsGrid } from 'components/molecules/DetailsGrid/DetailsGrid';
-import { toStartCase } from '../../../utils/to-start-case/to-start-case';
+import { Modal } from 'components/organisms/Modal/Modal';
+import { IInfoProps } from 'components/organisms/Subject/interfaces';
+import { useToggle } from 'hooks/useToggle/useToggle';
+import { FunctionComponent, useCallback, useState } from 'react';
+import { State } from '../../../enums';
 import { camelCaseToSpace } from '../../../utils/camel-case-to-space/camel-case-to-space';
-import { isNullish } from '../../../utils/is-nullish/is-nullish';
 import { createArrayOfNumbers } from '../../../utils/create-array-of-numbers/create-array-of-numbers';
 import { ctw } from '../../../utils/ctw/ctw';
-import { Modal } from 'components/organisms/Modal/Modal';
-import { useToggle } from 'hooks/useToggle/useToggle';
+import { formatDate } from '../../../utils/format-date';
+import { isValidDate } from '../../../utils/is-valid-date';
+import { toStartCase } from '../../../utils/to-start-case/to-start-case';
 
 export const useInfo = ({
   whitelist = [],
@@ -86,11 +86,7 @@ export const useInfo = ({
  *
  * @constructor
  */
-export const Info: FunctionComponent<IInfoProps> = ({
-  info,
-  whitelist,
-  isLoading,
-}) => {
+export const Info: FunctionComponent<IInfoProps> = ({ info, whitelist, isLoading }) => {
   const {
     sections,
     skeletons,
@@ -135,10 +131,7 @@ export const Info: FunctionComponent<IInfoProps> = ({
                   >
                     <div className={`flex w-full justify-between`}>
                       OCR & Given details mismatch
-                      <button
-                        className={`link-hover link rounded-md p-1`}
-                        onClick={onOcrMismatch}
-                      >
+                      <button className={`link-hover link rounded-md p-1`} onClick={onOcrMismatch}>
                         Resolve
                       </button>
                     </div>
@@ -147,9 +140,7 @@ export const Info: FunctionComponent<IInfoProps> = ({
               }
             >
               {({ title, text, index }) => {
-                const value = isValidDate(text)
-                  ? formatDate(new Date(text))
-                  : text;
+                const value = isValidDate(text) ? formatDate(new Date(text)) : text;
                 const isCheckResults = /check\sresults/i.test(section?.title);
                 const isEmail = /email/i.test(title);
 
@@ -203,8 +194,7 @@ export const Info: FunctionComponent<IInfoProps> = ({
                       className: ctw({
                         capitalize: !isEmail,
                         'normal-case': isEmail,
-                        'text-success':
-                          isCheckResults && text === State.APPROVED,
+                        'text-success': isCheckResults && text === State.APPROVED,
                         'text-error': isCheckResults && text === State.REJECTED,
                       }),
                     }}

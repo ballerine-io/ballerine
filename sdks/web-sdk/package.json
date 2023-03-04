@@ -90,6 +90,7 @@
     "vitest": "^0.24.5"
   },
   "dependencies": {
+    "@ballerine/common": "workspace:*",
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "dotenv": "^16.0.3",

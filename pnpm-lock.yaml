@@ -35,6 +35,7 @@ importers:
 
   apps/backoffice:
     specifiers:
+      '@ballerine/common': workspace:^0.0.1
       '@branchlint/cli': ^1.0.3
       '@branchlint/default-config': ^1.0.1
       '@commitlint/cli': ^17.2.0
@@ -102,6 +103,7 @@ importers:
       web-vitals: ^1.1.1
       webpack: ^5.75.0
     dependencies:
+      '@ballerine/common': link:../../packages/common
       '@mantine/core': 5.10.5_zrh3qbywp4klzxzvocxisz6a5a
       '@mantine/hooks': 5.10.5_react@18.2.0
       '@mantine/rte': 5.10.5_7l7cohgiq6l4ncfy2pvlz3brzy
@@ -172,6 +174,7 @@ importers:
 
   apps/backoffice-v2:
     specifiers:
+      '@ballerine/common': workspace:^0.0.1
       '@branchlint/cli': ^1.0.4
       '@branchlint/default-config': ^1.0.2
       '@commitlint/cli': ^17.0.3
@@ -238,6 +241,7 @@ importers:
       vite: ^4.0.4
       zod: ^3.20.0
     dependencies:
+      '@ballerine/common': link:../../packages/common
       '@formkit/auto-animate': 1.0.0-beta.5
       '@lukemorales/query-key-factory': 1.1.0_flemyxx7ziq76j236nqrbfbnve
       '@radix-ui/react-checkbox': 1.0.2_biqbaboplfbrettd7655fr4n2y
@@ -417,6 +421,7 @@ importers:
   sdks/web-sdk:
     specifiers:
       '@babel/core': ^7.18.5
+      '@ballerine/common': workspace:^0.0.1
       '@playwright/test': ^1.27.1
       '@sveltejs/vite-plugin-svelte': 1.0.8
       '@testing-library/jest-dom': ^5.16.5
@@ -453,6 +458,7 @@ importers:
       vite-plugin-html: ^3.2.0
       vitest: ^0.24.5
     dependencies:
+      '@ballerine/common': link:../../packages/common
       '@zerodevx/svelte-toast': 0.8.2
       compressorjs: 1.2.0
       dotenv: 16.0.3
@@ -574,6 +580,7 @@ importers:
       '@astrojs/mdx': ^0.12.0
       '@astrojs/react': ^1.2.2
       '@astrojs/solid-js': ^1.2.3
+      '@ballerine/common': workspace:^0.0.1
       '@docsearch/css': ^3.1.0
       '@docsearch/react': ^3.1.0
       '@types/html-escaper': ^3.0.0
@@ -596,7 +603,8 @@ importers:
       '@algolia/client-search': 4.14.3
       '@astrojs/mdx': 0.12.2_rollup@3.17.3
       '@astrojs/react': 1.2.2_egblcddniveghoxfrykmpuhdwi
-      '@astrojs/solid-js': 1.2.3_mqgpg3g2j3u6ilvmn52vbwwxvm
+      '@astrojs/solid-js': 1.2.3_z4xbo4gwagklxmbut264f55tm4
+      '@ballerine/common': link:../../packages/common
       '@docsearch/css': 3.3.3
       '@docsearch/react': 3.3.3_n7ey7ew7eww2sgelnazbq6t24q
       '@types/node': 18.14.2
@@ -872,7 +880,7 @@ packages:
       - supports-color
     dev: false
 
-  /@astrojs/solid-js/1.2.3_mqgpg3g2j3u6ilvmn52vbwwxvm:
+  /@astrojs/solid-js/1.2.3_z4xbo4gwagklxmbut264f55tm4:
     resolution: {integrity: sha512-YyWQVcIeUMGKTnK3myXmBrG6dfYL5qiQNn8fv50jV0nPgahLeSUTIVxtt5WtqmbFr5kGTwDyk63TZoUvCUWJXA==}
     engines: {node: ^14.18.0 || >=16.12.0}
     peerDependencies:
@@ -880,10 +888,9 @@ packages:
     dependencies:
       babel-preset-solid: 1.6.10_@babel+core@7.21.0
       solid-js: 1.6.11
-      vitefu: 0.2.4_vite@3.2.5
+      vitefu: 0.2.4
     transitivePeerDependencies:
       - '@babel/core'
-      - vite
     dev: false
 
   /@astrojs/telemetry/1.0.1:
@@ -17492,7 +17499,7 @@ packages:
     dependencies:
       lilconfig: 2.0.6
       postcss: 8.4.21
-      ts-node: 10.9.1_ellgaeuoqnti3hful2ny2iugba
+      ts-node: 10.9.1_prfxyxghnskheluimpb6dvby4q
       yaml: 1.10.2
 
   /postcss-load-config/3.1.4_postcss@8.4.21:
@@ -20867,6 +20874,7 @@ packages:
       typescript: 4.9.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+    dev: true
 
   /ts-node/10.9.1_prfxyxghnskheluimpb6dvby4q:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
@@ -21726,6 +21734,15 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
+
+  /vitefu/0.2.4:
+    resolution: {integrity: sha512-fanAXjSaf9xXtOOeno8wZXIhgia+CZury481LsDaV++lSvcU2R9Ch2bPh3PYFyoHW+w9LqAeYRISVQjUIew14g==}
+    peerDependencies:
+      vite: ^3.0.0 || ^4.0.0
+    peerDependenciesMeta:
+      vite:
+        optional: true
+    dev: false
 
   /vitefu/0.2.4_vite@3.2.5:
     resolution: {integrity: sha512-fanAXjSaf9xXtOOeno8wZXIhgia+CZury481LsDaV++lSvcU2R9Ch2bPh3PYFyoHW+w9LqAeYRISVQjUIew14g==}
