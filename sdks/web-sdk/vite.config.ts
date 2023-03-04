@@ -14,7 +14,6 @@ export default ({ mode }: { mode: UserConfig['mode'] }) => {
       reportCompressedSize: true,
       chunkSizeWarningLimit: 300,
       rollupOptions: {
-        external: ['@ballerine/common'],
         output: {
           format: 'umd',
           inlineDynamicImports: true,

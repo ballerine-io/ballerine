@@ -12,9 +12,6 @@ export default ({ mode }: { mode: UserConfig['mode'] }) => {
       host: '127.0.0.1',
     },
     build: {
-      rollupOptions: {
-        external: ['@ballerine/common'],
-      },
       reportCompressedSize: true,
       chunkSizeWarningLimit: 300,
     },
