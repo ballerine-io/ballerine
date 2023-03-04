@@ -13,6 +13,14 @@ let context: {
 };
 let state: string;
 
+// Headers returned from mock service worker are lowercased
+const lowerCaseObjKeys = (obj: Record<PropertyKey, unknown>) =>
+  Object.entries(obj).reduce((acc, [key, value]) => {
+    acc[key.toLowerCase()] = value;
+
+    return acc;
+  }, {} as Record<PropertyKey, unknown>);
+
 const updateValues = () => {
   context = workflowService.getSnapshot().context as typeof context;
   documents = context.documents;
@@ -122,10 +130,13 @@ describe('smoke', () => {
 
     await sleep(300);
 
+    const lowerCaseDefaultHeaders = lowerCaseObjKeys(backendOptions.headers);
+
     expect(response).toMatchObject({
       baseUrl: backendOptions.baseUrl,
       method: backendOptions.endpoints.persist.method,
       endpoint: backendOptions.endpoints.persist.endpoint,
+      headers: lowerCaseDefaultHeaders,
     });
 
     // Uses user defined backend config
@@ -134,7 +145,12 @@ describe('smoke', () => {
       baseUrl: 'http://localhost:3000',
       method: 'POST',
       endpoint: '/test',
+      headers: {
+        'X-Response-Time': '1000',
+        Authorization: 'Api-Key test',
+      },
     } as const;
+    const lowerCaseUserDefinedHeaders = lowerCaseObjKeys(userDefined.headers);
 
     workflowService = new WorkflowBrowserSDK({
       ...shortWorkflow,
@@ -146,9 +162,7 @@ describe('smoke', () => {
             endpoint: userDefined.endpoint,
           },
         },
-        headers: {
-          Authorization: 'Bearer test',
-        },
+        headers: userDefined.headers,
       },
     });
 
@@ -156,6 +170,12 @@ describe('smoke', () => {
 
     await sleep(300);
 
-    expect(response).toMatchObject(userDefined);
+    expect(response).toMatchObject({
+      ...userDefined,
+      headers: {
+        ...lowerCaseDefaultHeaders,
+        ...lowerCaseUserDefinedHeaders,
+      },
+    });
   });
 });

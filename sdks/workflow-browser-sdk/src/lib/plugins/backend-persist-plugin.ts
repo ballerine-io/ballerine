@@ -25,10 +25,7 @@ export class BackendPersistPlugin extends StatePlugin {
       const res = await fetch(url, {
         method,
         body: method !== 'GET' ? JSON.stringify(context) : undefined,
-        headers: {
-          'Content-Type': 'application/json',
-          ...headers,
-        },
+        headers,
       });
 
       if (!res.ok) {

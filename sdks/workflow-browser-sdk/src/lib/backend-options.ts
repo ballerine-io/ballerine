@@ -9,6 +9,7 @@ export const backendOptions = {
     },
   },
   headers: {
+    'Content-Type': 'application/json',
     Authorization: 'Bearer 123',
     credentials: 'include',
   },

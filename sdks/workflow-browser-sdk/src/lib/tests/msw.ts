@@ -28,7 +28,7 @@ const handler: ResponseResolver<
     method: req.method,
     baseUrl: req.url.origin,
     endpoint: req.url.pathname,
-    // TODO: Test headers
+    headers: Object.fromEntries(req.headers.entries()),
   };
 
   return res(ctx.status(200), ctx.json({}));
