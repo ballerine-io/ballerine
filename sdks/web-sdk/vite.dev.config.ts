@@ -13,7 +13,7 @@ export default ({ mode }: { mode: UserConfig['mode'] }) => {
     },
     build: {
       rollupOptions: {
-        preserveSymlinks: true,
+        external: ['@ballerine/common'],
       },
       reportCompressedSize: true,
       chunkSizeWarningLimit: 300,
