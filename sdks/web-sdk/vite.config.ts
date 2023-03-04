@@ -9,14 +9,12 @@ export default ({ mode }: { mode: UserConfig['mode'] }) => {
   console.log('building with vite...', mode);
   const env = loadEnv(mode, process.cwd(), '');
   return defineConfig({
-    resolve: {
-      preserveSymlinks: true,
-    },
     build: {
       sourcemap: true,
       reportCompressedSize: true,
       chunkSizeWarningLimit: 300,
       rollupOptions: {
+        preserveSymlinks: true,
         output: {
           format: 'umd',
           inlineDynamicImports: true,

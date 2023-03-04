@@ -7,14 +7,14 @@ export default ({ mode }: { mode: UserConfig['mode'] }) => {
   console.log('VITE', mode);
   const env = loadEnv(mode, process.cwd(), '');
   return defineConfig({
-    resolve: {
-      preserveSymlinks: true,
-    },
     server: {
       port: 3000,
       host: '127.0.0.1',
     },
     build: {
+      rollupOptions: {
+        preserveSymlinks: true,
+      },
       reportCompressedSize: true,
       chunkSizeWarningLimit: 300,
     },
