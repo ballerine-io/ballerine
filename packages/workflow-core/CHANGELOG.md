@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.4.6
+
+### Patch Changes
+
+- 700d492: added missing changeset - fixed monorepo infra
+
 ## 0.4.5
 
 ### Patch Changes
