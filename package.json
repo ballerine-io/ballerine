@@ -31,7 +31,7 @@
     "playwright:install": "nx run-many --target=playwright:install",
     "dev": "nx run-many --target=dev --projects=@ballerine/web-sdk,@ballerine/backoffice-v2",
     "start": "nx run-many --target=start --projects=@ballerine/web-sdk",
-    "build": "nx run-many --target=build --projects=@ballerine/web-sdk",
+    "build": "nx run-many --target=build --projects=@ballerine/web-sdk,@ballerine/workflow-core,@ballerine/workflow-browser-sdk",
     "web-sdk:dev": "nx run @ballerine/web-sdk:dev",
     "web-sdk:start": "nx run @ballerine/web-sdk:start",
     "workflow-browser-sdk:build": "nx run @ballerine/workflow-browser-sdk:build",
