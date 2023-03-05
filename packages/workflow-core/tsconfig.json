@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./build/types",
+    "outDir": "./dist/types",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "target": "ESNext",
     "module": "CommonJS",

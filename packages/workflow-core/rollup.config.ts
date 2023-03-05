@@ -96,7 +96,7 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
     output: {
       format: 'esm',
       sourcemap: true,
-      dir: `${packageDir}/build/esm`,
+      dir: `${packageDir}/dist/esm`,
       banner,
       preserveModules: true,
     },
@@ -112,7 +112,7 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
     output: {
       format: 'cjs',
       sourcemap: true,
-      dir: `${packageDir}/build/cjs`,
+      dir: `${packageDir}/dist/cjs`,
       preserveModules: true,
       exports: 'named',
       banner,
@@ -135,7 +135,7 @@ function umdDev({
     output: {
       format: 'umd',
       sourcemap: true,
-      file: `${packageDir}/build/umd/index.development.js`,
+      file: `${packageDir}/dist/umd/index.development.js`,
       name: jsName,
       banner,
     },
@@ -162,7 +162,7 @@ function umdProd({
     output: {
       format: 'umd',
       sourcemap: true,
-      file: `${packageDir}/build/umd/index.production.js`,
+      file: `${packageDir}/dist/umd/index.production.js`,
       name: jsName,
       banner,
     },
@@ -174,7 +174,7 @@ function umdProd({
       terser(),
       size({}),
       visualizer({
-        filename: `${packageDir}/build/stats-html.html`,
+        filename: `${packageDir}/dist/stats-html.html`,
         gzipSize: true,
       }),
     ],
@@ -193,7 +193,7 @@ function types({
     input,
     output: {
       format: 'es',
-      file: `${packageDir}/build/types/index.d.ts`,
+      file: `${packageDir}/dist/types/index.d.ts`,
       banner,
     },
     plugins: [dts()],
