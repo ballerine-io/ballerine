@@ -1,5 +1,7 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
 
+export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
+
 export interface Workflow {
   subscribe: (callback: (event: WorkflowEvent) => void) => void;
   sendEvent: (event: Omit<WorkflowEvent, 'state'>) => void;

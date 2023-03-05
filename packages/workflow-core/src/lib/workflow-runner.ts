@@ -3,12 +3,14 @@ import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
+  ObjectValues,
   WorkflowEvent,
   WorkflowEventWithoutState,
   WorkflowExtensions,
   WorkflowRunnerArgs,
 } from './types';
-import { Error } from './types';
+import { Error as ErrorEnum } from './types';
+import { uniqueArray } from './utils';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -67,21 +69,30 @@ export class WorkflowRunner {
     const stateActions: Record<string, ActionFunction<any, any>> = {};
 
     for (const state in extended.states) {
-      extended.states[state].entry = Array.from(
-        new Set([...(workflow.states[state].entry ?? []), ...onEnter]),
-      );
+      extended.states[state].entry = uniqueArray([
+        ...(workflow.states[state].entry ?? []),
+        ...onEnter,
+      ]);
 
-      extended.states[state].exit = Array.from(
-        new Set([...(workflow.states[state].exit ?? []), ...onExit]),
-      );
+      extended.states[state].exit = uniqueArray([
+        ...(workflow.states[state].exit ?? []),
+        ...onExit,
+      ]);
     }
 
     for (const statePlugin of extensions.statePlugins) {
       for (const stateName of statePlugin.stateNames) {
+        if (!extended.states[stateName]) {
+          throw new Error(`${stateName} is not defined within the workflow definition's states`);
+        }
+
         // E.g { state: { entry: [...,plugin.name] } }
-        extended.states[stateName][statePlugin.when] = Array.from(
-          new Set([...extended.states[stateName][statePlugin.when], statePlugin.name]),
-        );
+        extended.states[stateName][statePlugin.when] = uniqueArray([
+          ...(extended.states[stateName][statePlugin.when] ?? []),
+          statePlugin.name,
+        ]);
+
+        if (stateActions[statePlugin.name]) continue;
 
         // workflow-core
         // { actions: { persist: action } }
@@ -91,6 +102,7 @@ export class WorkflowRunner {
             state: this.#__currentState,
             payload: {
               status: 'PENDING',
+              action: statePlugin.name,
             },
           });
 
@@ -100,30 +112,36 @@ export class WorkflowRunner {
               event,
               currentState: this.#__currentState,
             });
-          } catch (err) {
-            let type;
 
-            switch (true) {
-              case err instanceof HttpError:
-                type = Error.HTTP_ERROR;
-                break;
-              default:
-                type = Error.ERROR;
-                break;
+            this.#__callback?.({
+              type: 'STATE_ACTION_STATUS',
+              state: this.#__currentState,
+              payload: {
+                status: 'SUCCESS',
+                action: statePlugin.name,
+              },
+            });
+          } catch (err) {
+            let type: ObjectValues<typeof ErrorEnum> = ErrorEnum.ERROR;
+
+            if (err instanceof HttpError) {
+              type = ErrorEnum.HTTP_ERROR;
             }
+
+            this.#__callback?.({
+              type: 'STATE_ACTION_STATUS',
+              state: this.#__currentState,
+              payload: {
+                status: 'ERROR',
+                action: statePlugin.name,
+              },
+              error: err,
+            });
 
             this.#__callback?.({
               type,
               state: this.#__currentState,
               error: err,
-            });
-          } finally {
-            this.#__callback?.({
-              type: 'STATE_ACTION_STATUS',
-              state: this.#__currentState,
-              payload: {
-                status: 'IDLE',
-              },
             });
           }
         };

@@ -1,4 +1,4 @@
-const { parserOptions, ...config } = require('../../packages/config/eslintrc.base.cjs');
+const { parserOptions, ...config } = require('../config/eslintrc.base.cjs');
 
 module.exports = {
   ...config,

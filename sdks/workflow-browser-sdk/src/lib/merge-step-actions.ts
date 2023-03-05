@@ -1,4 +1,4 @@
-import { Action } from '../enums';
+import { Action } from './enums';
 
 /**
  * Makes sure to not override existing actions.
@@ -22,7 +22,7 @@ export const mergeStepActions = (state, [event, target]) => {
   let actions = eventProps?.actions;
 
   if (event === Action.USER_NEXT_STEP || event === Action.USER_PREV_STEP) {
-    actions = [...(Array.isArray(actions) ? actions : [actions]), event];
+    actions = actions ? [...(Array.isArray(actions) ? actions : [actions]), event] : [event];
   }
 
   // Construct the new `on` object.
