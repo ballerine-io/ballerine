@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.4.5
+
+### Patch Changes
+
+- build -> dist
+
 ## 0.4.4
 
 ### Patch Changes
