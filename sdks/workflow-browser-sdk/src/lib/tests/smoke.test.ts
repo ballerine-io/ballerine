@@ -5,12 +5,14 @@ import { WorkflowBrowserSDK } from '../workflow-browser-sdk';
 import { response } from './msw';
 import { shortWorkflow, workflowOptions } from './workflow-options';
 
-let workflowService: WorkflowBrowserSDK;
-let documents: Array<string> = [];
-let context: {
+interface IContext {
   documents: Array<string>;
   email: string;
-};
+}
+
+let workflowService: WorkflowBrowserSDK;
+let documents: Array<string> = [];
+let context: IContext;
 let state: string;
 
 // Headers returned from mock service worker are lowercased
@@ -135,7 +137,10 @@ describe('smoke', () => {
     expect(response).toMatchObject({
       baseUrl: backendOptions.baseUrl,
       method: backendOptions.endpoints.persist.method,
-      endpoint: backendOptions.endpoints.persist.endpoint,
+      endpoint: backendOptions.endpoints.persist.endpoint.replace(
+        ':workflowId',
+        shortWorkflow.workflowDefinition.id ?? '',
+      ),
       headers: lowerCaseDefaultHeaders,
     });
 

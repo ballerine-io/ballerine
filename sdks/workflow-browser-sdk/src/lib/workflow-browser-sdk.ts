@@ -42,6 +42,7 @@ export class WorkflowBrowserSDK {
       states,
       persistStates: options?.persistStates,
       submitStates: options?.submitStates,
+      workflowId: options?.workflowDefinition.id ?? '',
     });
     const assignContext = assign<Record<PropertyKey, any>, IUserStepEvent>((context, event) => {
       context = {
@@ -81,10 +82,12 @@ export class WorkflowBrowserSDK {
     states,
     persistStates,
     submitStates,
+    workflowId,
   }: {
     states: WorkflowOptionsBrowser['workflowDefinition']['states'];
     persistStates: WorkflowOptionsBrowser['persistStates'];
     submitStates: WorkflowOptionsBrowser['submitStates'];
+    workflowId: string;
   }) {
     const statePlugins: Array<StatePlugin> = [];
     const finalStates = Object.keys(states ?? {})?.filter(
@@ -112,7 +115,9 @@ export class WorkflowBrowserSDK {
       when: 'entry',
       fetchOptions: {
         baseUrl: this.#__backendOptions.baseUrl,
-        endpoint: this.#__backendOptions.endpoints.persist.endpoint,
+        endpoint: this.#__backendOptions.endpoints.persist.endpoint
+          .toString()
+          .replace(':workflowId', workflowId),
         method: this.#__backendOptions.endpoints.persist.method,
         headers: this.#__backendOptions.headers,
       },
