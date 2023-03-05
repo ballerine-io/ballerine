@@ -3,13 +3,12 @@
   "author": "Ballerine",
   "version": "0.0.2",
   "description": "workflow-browser-sdk",
-  "module": "./build/esm/index.js",
-  "main": "./build/cjs/index.js",
-  "browser": "./build/umd/index.production.js",
-  "types": "./build/types/index.d.ts",
+  "module": "./dist/esm/index.js",
+  "main": "./dist/cjs/index.js",
+  "browser": "./dist/umd/index.production.js",
+  "types": "./dist/types/index.d.ts",
   "files": [
-    "./build/**",
-    "./src"
+    "./dist/**"
   ],
   "repository": {
     "type": "git",
@@ -18,11 +17,12 @@
   "license": "Apache-2.0",
   "keywords": [],
   "scripts": {
-    "clean": "rimraf ./build",
+    "clean": "rimraf ./dist",
     "build": "pnpm clean && rollup --config rollup.config.js",
     "watch": "tsc -w",
     "dev": "concurrently --kill-others \"pnpm build -w\" \"pnpm watch\"",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "engines": {
     "node": ">=12"
@@ -47,6 +47,7 @@
     "@typescript-eslint/parser": "^5.48.1",
     "@vitest/coverage-istanbul": "^0.28.4",
     "concurrently": "^7.6.0",
+    "cross-fetch": "^3.1.5",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^6.11.0",
@@ -54,6 +55,8 @@
     "eslint-plugin-functional": "^3.0.2",
     "eslint-plugin-import": "^2.22.0",
     "fs-extra": "^11.1.0",
+    "jsdom": "^20.0.2",
+    "msw": "^1.1.0",
     "plugin-babel": "link:@types/@rollup/plugin-babel",
     "plugin-terser": "link:@types/@rollup/plugin-terser",
     "prettier": "^2.1.1",

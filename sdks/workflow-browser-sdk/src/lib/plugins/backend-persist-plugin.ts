@@ -1,34 +1,31 @@
 import { HttpError } from '@ballerine/workflow-core';
 import { StatePlugin } from './state-plugin';
-import { IFetchOptions, TPersistPluginParams } from './types';
+import { IFetchOptions, TBackendPersistPluginParams } from './types';
 
-export class PersistPlugin extends StatePlugin {
+export class BackendPersistPlugin extends StatePlugin {
   stateNames: Array<string>;
-  name = 'persist';
-  when: 'entry' | 'exit' = 'entry';
+  name = 'SYNC_BACKEND';
+  when: 'entry' | 'exit';
   #__fetchOptions: IFetchOptions;
 
-  constructor({ stateNames, fetchOptions }: TPersistPluginParams) {
+  constructor({ stateNames, when, fetchOptions }: TBackendPersistPluginParams) {
     super();
 
     this.stateNames = stateNames;
+    this.when = when;
     this.#__fetchOptions = fetchOptions;
   }
 
   async action({ context }: { context: any; event: any; currentState: any }): Promise<void> {
     const { baseUrl, endpoint, method, headers } = this.#__fetchOptions;
-    const url = baseUrl ? new URL(endpoint, baseUrl) : endpoint;
+    // TODO: Find a way to mock global.URL
+    const url = `${(baseUrl as string) || ''}${endpoint as string}`;
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
       const res = await fetch(url, {
         method,
-        body: JSON.stringify(context),
-        headers: {
-          'Content-Type': 'application/json',
-          ...headers,
-        },
+        body: method !== 'GET' ? JSON.stringify({ context }) : undefined,
+        headers,
       });
 
       if (!res.ok) {
@@ -39,7 +36,7 @@ export class PersistPlugin extends StatePlugin {
         throw err;
       }
 
-      throw new HttpError(err.status, `Response error: ${err.statusText} (${err.status})`, {
+      throw new HttpError(err.status, `Response error - ${err.statusText} (${err.status})`, {
         cause: err,
       });
     }

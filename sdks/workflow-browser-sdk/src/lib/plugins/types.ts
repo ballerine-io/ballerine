@@ -1,4 +1,4 @@
-import { StatePlugin as TStatePlugin } from '@ballerine/workflow-core';
+import { StatePlugin as IStatePlugin } from '@ballerine/workflow-core';
 
 export interface IFetchOptions {
   baseUrl: URL | string;
@@ -7,6 +7,8 @@ export interface IFetchOptions {
   headers?: HeadersInit;
 }
 
-export type TPersistPluginParams = Pick<TStatePlugin, 'stateNames'> & {
+export type TStatePluginParams = Omit<IStatePlugin, 'name' | 'action'>;
+
+export type TBackendPersistPluginParams = TStatePluginParams & {
   fetchOptions: IFetchOptions;
 };
