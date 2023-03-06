@@ -43,7 +43,7 @@
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
