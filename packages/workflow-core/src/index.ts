@@ -6,4 +6,7 @@ export type {
   WorkflowEventWithoutState,
   WorkflowOptions,
   WorkflowRunnerArgs,
+  GlobalPlugin,
+  PluginAction,
+  WorkflowContext
 } from './lib';

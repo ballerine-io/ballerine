@@ -31,7 +31,7 @@ export class WorkflowRunner {
   }
 
   constructor(
-    { workflowDefinition, workflowActions, context = {}, state, extensions }: WorkflowRunnerArgs,
+    { workflowDefinition, workflowActions, workflowContext, extensions }: WorkflowRunnerArgs,
     debugMode = true,
   ) {
     this.#__workflow = this.#__extendedWorkflow({
@@ -40,11 +40,13 @@ export class WorkflowRunner {
       extensions,
     });
 
+    
+
     // use initial context or provided context
-    this.#__context = Object.keys(context).length ? context : workflowDefinition.context || {};
+    this.#__context = Object.keys(workflowContext?.machineContext || {} ).length ? workflowContext.machineContext : workflowDefinition.context || {};
 
     // use initial state or provided state
-    this.#__currentState = state ? state : workflowDefinition.initial;
+    this.#__currentState = workflowContext?.state ? workflowContext.state : workflowDefinition.initial;
 
     // global and state specific extensions
     this.#__extensions = extensions || { globalPlugins: [], statePlugins: [] };
@@ -108,9 +110,10 @@ export class WorkflowRunner {
 
           try {
             await statePlugin.action({
+              workflowId: "",
               context,
               event,
-              currentState: this.#__currentState,
+              state: this.#__currentState,
             });
 
             this.#__callback?.({
@@ -206,10 +209,14 @@ export class WorkflowRunner {
 
     for (const ext of this.#__extensions.globalPlugins) {
       if (ext.when == 'pre') {
+        const snapshot = service.getSnapshot();
+        // NOTE: decide later what to do with workflow id, how is it generated
+        // where is it stored, etc.
         await ext.action({
-          context: service.getSnapshot().context,
+          workflowId: snapshot.machine?.id || "",
+          context: snapshot.context,
           event,
-          currentState: this.#__currentStateNode,
+          state: this.#__currentStateNode,
         });
       }
     }
@@ -221,10 +228,13 @@ export class WorkflowRunner {
 
     for (const ext of this.#__extensions.globalPlugins) {
       if (ext.when == 'post') {
+        const snapshot = service.getSnapshot();
+
         await ext.action({
+          workflowId: snapshot.machine?.id || "",
           context: this.#__context,
           event,
-          currentState: this.#__currentStateNode,
+          state: this.#__currentStateNode,
         });
       }
     }

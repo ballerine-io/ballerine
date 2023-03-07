@@ -8,17 +8,13 @@ export interface Workflow {
   getSnapshot: () => Record<PropertyKey, any>;
 }
 
-export interface WorkflowContext {
-  id: string;
-  state: any;
-  localContextData: any;
-  sessionData: any;
-  lockKey: string;
-}
+
+
+export type PluginAction = { workflowId: string, context: any; event: any; state: any }
 
 export interface WorkflowPlugin {
   when: 'pre' | 'post';
-  action: (options: { context: any; event: any; currentState: any }) => Promise<void>;
+  action: (options: PluginAction) => Promise<void>;
 }
 
 export interface StatePlugin extends Omit<WorkflowPlugin, 'when'> {
@@ -54,19 +50,27 @@ export interface WorkflowExtensions {
   globalPlugins: GlobalPlugins;
 }
 
+
+export interface WorkflowContext {
+  id?: string;
+  state?: any;
+  machineContext?: any;
+  sessionData?: any;
+  lockKey?: string;
+}
+
 export interface WorkflowOptions {
   workflowDefinitionType: 'statechart-json' | 'bpmn-json';
   workflowDefinition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
-  context?: WorkflowContext;
+  workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
 }
 
 export interface WorkflowRunnerArgs {
   workflowDefinition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
-  context: any;
-  state?: string;
+  workflowContext?: WorkflowContext
   extensions?: WorkflowExtensions;
 }
 
