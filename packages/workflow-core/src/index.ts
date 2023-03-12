@@ -6,4 +6,7 @@ export type {
   WorkflowEventWithoutState,
   WorkflowOptions,
   WorkflowRunnerArgs,
+  PluginAction,
+  WorkflowContext,
+  ExtensionRunOrder
 } from './lib';

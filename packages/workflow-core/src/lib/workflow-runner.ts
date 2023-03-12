@@ -31,7 +31,7 @@ export class WorkflowRunner {
   }
 
   constructor(
-    { workflowDefinition, workflowActions, context = {}, state, extensions }: WorkflowRunnerArgs,
+    { workflowDefinition, workflowActions, workflowContext, extensions }: WorkflowRunnerArgs,
     debugMode = true,
   ) {
     this.#__workflow = this.#__extendedWorkflow({
@@ -40,14 +40,16 @@ export class WorkflowRunner {
       extensions,
     });
 
+
+
     // use initial context or provided context
-    this.#__context = Object.keys(context).length ? context : workflowDefinition.context || {};
+    this.#__context = workflowContext && Object.keys(workflowContext.machineContext).length ? workflowContext.machineContext : workflowDefinition.context || {};
 
     // use initial state or provided state
-    this.#__currentState = state ? state : workflowDefinition.initial;
+    this.#__currentState = workflowContext?.state ? workflowContext.state : workflowDefinition.initial;
 
     // global and state specific extensions
-    this.#__extensions = extensions || { globalPlugins: [], statePlugins: [] };
+    this.#__extensions = extensions || { statePlugins: [] };
     this.#__debugMode = debugMode;
   }
 
@@ -56,7 +58,6 @@ export class WorkflowRunner {
     workflowActions,
     extensions = {
       statePlugins: [],
-      globalPlugins: [],
     },
   }: {
     workflow: any;
@@ -64,8 +65,8 @@ export class WorkflowRunner {
     extensions?: WorkflowExtensions;
   }) {
     const extended = workflow;
-    const onEnter = ['ping'];
-    const onExit = ['pong'];
+    const onEnter: string[] = [];
+    const onExit: string[] = [];
     const stateActions: Record<string, ActionFunction<any, any>> = {};
 
     for (const state in extended.states) {
@@ -92,8 +93,10 @@ export class WorkflowRunner {
           statePlugin.name,
         ]);
 
-        if (stateActions[statePlugin.name]) continue;
-
+        // Blocking plugins are not injected as actions
+        if (statePlugin.isBlocking || stateActions[statePlugin.name]) {
+          continue;
+        }
         // workflow-core
         // { actions: { persist: action } }
         stateActions[statePlugin.name] = async (context, event) => {
@@ -108,9 +111,10 @@ export class WorkflowRunner {
 
           try {
             await statePlugin.action({
+              workflowId: "",
               context,
               event,
-              currentState: this.#__currentState,
+              state: this.#__currentState,
             });
 
             this.#__callback?.({
@@ -150,13 +154,7 @@ export class WorkflowRunner {
 
     const actions: MachineOptions<any, any>['actions'] = {
       ...workflowActions,
-      ...stateActions,
-      ping: (...rest: any[]) => {
-        console.log('Global state entry handler');
-      },
-      pong: (...rest: any[]) => {
-        console.log('Global state exit handler');
-      },
+      ...stateActions
     };
 
     const guards: MachineOptions<any, any>['guards'] = {
@@ -204,14 +202,19 @@ export class WorkflowRunner {
     // all sends() will be deferred until the workflow is started
     service.start();
 
-    for (const ext of this.#__extensions.globalPlugins) {
-      if (ext.when == 'pre') {
-        await ext.action({
-          context: service.getSnapshot().context,
-          event,
-          currentState: this.#__currentStateNode,
-        });
+    for (const ext of this.#__extensions.statePlugins) {
+      if (!ext.isBlocking || ext.when !== 'pre') {
+        // Non blocking plugins are executed as actions
+        continue
       }
+
+      const snapshot = service.getSnapshot();
+      await ext.action({
+        workflowId: snapshot.machine?.id || "",
+        context: snapshot.context,
+        event,
+        state: this.#__currentStateNode,
+      });
     }
     service.send(event);
     this.#__context = service.getSnapshot().context;
@@ -219,14 +222,21 @@ export class WorkflowRunner {
       console.log('context:', this.#__context);
     }
 
-    for (const ext of this.#__extensions.globalPlugins) {
-      if (ext.when == 'post') {
-        await ext.action({
-          context: this.#__context,
-          event,
-          currentState: this.#__currentStateNode,
-        });
+    for (const ext of this.#__extensions.statePlugins) {
+      if (!ext.isBlocking || ext.when !== 'post') {
+        // Non blocking plugins are executed as actions
+        continue
       }
+
+      const snapshot = service.getSnapshot();
+
+      await ext.action({
+        workflowId: snapshot.machine?.id || "",
+        context: this.#__context,
+        event,
+        state: this.#__currentStateNode,
+      });
+
     }
   }
 

@@ -8,4 +8,7 @@ export {
   WorkflowEventWithoutState,
   WorkflowOptions,
   WorkflowRunnerArgs,
+  PluginAction,
+  ExtensionRunOrder,
+  WorkflowContext
 } from './types';

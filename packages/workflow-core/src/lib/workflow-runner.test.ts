@@ -2,7 +2,11 @@ import type { MachineConfig } from 'xstate';
 import { expect, test } from 'vitest';
 import { WorkflowRunner } from './workflow-runner';
 
-test('Basic machine sanity test', () => {
+
+test('restore workflow test', () => {
+
+  const userId = '123456';
+
   const simpleMachine: MachineConfig<any, any, any> = {
     id: 'toggle',
     initial: 'inactive',
@@ -11,77 +15,22 @@ test('Basic machine sanity test', () => {
       active: { on: { TOGGLE: 'inactive' } },
     },
   };
+
   const service = new WorkflowRunner({
     workflowDefinition: simpleMachine,
-    context: {},
-  });
-  expect(service.state).toBe('inactive');
-  service.sendEvent({ type: 'TOGGLE' }); // from welcome to intro
-  expect(service.state).toBe('active');
-  service.sendEvent({ type: 'TOGGLE' }); // from intro to take picture
-  expect(service.state).toBe('inactive');
-});
-
-test('Basic workflow sanity test', async () => {
-  const simpleWorkflow: MachineConfig<any, any, any> = {
-    id: 'toggle',
-    initial: 'inactive',
-    states: {
-      inactive: { on: { TOGGLE: 'active' } },
-      active: { on: { TOGGLE: 'inactive' } },
+    workflowContext: {
+      machineContext: {
+        entityId: userId
+      }
     },
-  };
-  const service = new WorkflowRunner({
-    workflowDefinition: simpleWorkflow,
-    context: {},
     extensions: {
-      statePlugins: [
-        {
-          name: 'activeAction',
-          stateNames: ['active'],
-          when: 'exit',
-          // import: '@ballerine/plugins/core/validate@0.2.34',
-          // import: '@ballerine/plugins/browser/validate@0.2.34',
-          // import: '@ballerine/plugins/node/validate@0.2.34',
-          action: ({context, event, currentState}) => {
-            console.log('state pre action');
-            return Promise.resolve();
-          },
-        },
-        {
-          name: 'inactiveAction',
-          stateNames: ['inactive'],
-          when: 'exit',
-          action: ({context, event, currentState}) => {
-            console.log('state post action');
-            return Promise.resolve();
-          },
-        },
-      ],
-      globalPlugins: [
-        {
-          when: 'pre',
-          // import: '@ballerine/plugins/core/validate@0.2.34',
-          // import: '@ballerine/plugins/browser/validate@0.2.34',
-          // import: '@ballerine/plugins/node/validate@0.2.34',
-          action: ({context, event, currentState}) => {
-            console.log('global pre action');
-            return Promise.resolve();
-          },
-        },
-        {
-          when: 'post',
-          action: ({context, event, currentState}) => {
-            console.log('global post action');
-            return Promise.resolve();
-          },
-        },
-      ],
-    },
+      statePlugins: [],
+    }
   });
+
   expect(service.state).toBe('inactive');
-  await service.sendEvent({ type: 'TOGGLE' }); // from welcome to intro
+  service.sendEvent({ type: 'TOGGLE' });
   expect(service.state).toBe('active');
-  await service.sendEvent({ type: 'TOGGLE' }); // from intro to take picture
+  service.sendEvent({ type: 'TOGGLE' });
   expect(service.state).toBe('inactive');
 });
