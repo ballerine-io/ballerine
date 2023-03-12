@@ -305,7 +305,7 @@ importers:
       typescript: 4.9.5
       vite: 4.1.4_@types+node@18.14.2
 
-  packages/rule-engine:
+  packages/rules-engine:
     specifiers:
       '@babel/core': 7.17.9
       '@babel/preset-env': 7.16.11
@@ -616,7 +616,7 @@ importers:
       '@babel/core': 7.17.9
       '@babel/preset-env': 7.16.11
       '@babel/preset-typescript': 7.16.7
-      '@ballerine/workflow-core': ^0.4.6
+      '@ballerine/workflow-core': ^0.4.7
       '@rollup/plugin-babel': 5.3.1
       '@rollup/plugin-commonjs': ^24.0.1
       '@rollup/plugin-node-resolve': 13.2.1
