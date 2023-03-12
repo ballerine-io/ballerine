@@ -1,12 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../../api/api';
 import { endUsers } from '../../end-users';
-import { Action, Resource, State } from '../../../../enums';
+import { Action, Resource } from '../../../../enums';
 
-export const useRejectEndUserMutation = (
-  endUserId: string,
-  onSelectNextEndUser,
-) => {
+export const useRejectEndUserMutation = (endUserId: string, onSelectNextEndUser) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -20,8 +17,10 @@ export const useRejectEndUserMutation = (
       action: Action.REJECT,
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries(endUsers.list().queryKey);
-      queryClient.invalidateQueries(endUsers.byId(endUserId).queryKey);
+      queryClient.invalidateQueries({ queryKey: endUsers.list().queryKey });
+      queryClient.invalidateQueries({
+        queryKey: endUsers.byId(endUserId).queryKey,
+      });
 
       onSelectNextEndUser();
     },

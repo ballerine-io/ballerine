@@ -1,5 +1,5 @@
 import { Method } from '../enums';
-import { IEndpoint } from './interfaces';
+import { IEndpoint, IEndUserIdAndWorkflowId } from './interfaces';
 
 /**
  * @description The API's endpoints. The endpoints are appended into the API's base url ({@link env.VITE_API_URL}) by {@link apiClient}.
@@ -39,6 +39,27 @@ export const endpoints = {
     updateById: {
       endpoint: (endUserId: string) => `end-users/${endUserId}`,
       method: Method.PATCH,
+    },
+  },
+  workflows: {
+    list: {
+      endpoint: (endUserId: string) => `workflows?endUserId=${endUserId}`,
+      method: Method.GET,
+    },
+    byId: {
+      endpoint: ({ endUserId, workflowId }: IEndUserIdAndWorkflowId) =>
+        `workflows/${workflowId}?endUserId=${endUserId}`,
+      method: Method.GET,
+    },
+    updateById: {
+      endpoint: ({ endUserId, workflowId }: IEndUserIdAndWorkflowId) =>
+        `workflows/${workflowId}?endUserId=${endUserId}`,
+      method: Method.PUT,
+    },
+    event: {
+      endpoint: ({ endUserId, workflowId }: IEndUserIdAndWorkflowId) =>
+        `workflows/${workflowId}/event?endUserId=${endUserId}`,
+      method: Method.POST,
     },
   },
 } as const satisfies IEndpoint;

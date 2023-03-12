@@ -3,10 +3,7 @@ import { api } from '../../../../api/api';
 import { endUsers } from '../../end-users';
 import { Action, Resource, State } from '../../../../enums';
 
-export const useApproveEndUserMutation = (
-  endUserId: string,
-  onSelectNextEndUser: VoidFunction,
-) => {
+export const useApproveEndUserMutation = (endUserId: string, onSelectNextEndUser: VoidFunction) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -19,8 +16,12 @@ export const useApproveEndUserMutation = (
       action: Action.APPROVE,
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries(endUsers.list().queryKey);
-      queryClient.invalidateQueries(endUsers.byId(endUserId).queryKey);
+      queryClient.invalidateQueries({
+        queryKey: endUsers.list().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: endUsers.byId(endUserId).queryKey,
+      });
 
       onSelectNextEndUser();
     },

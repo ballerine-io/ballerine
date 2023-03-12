@@ -1,5 +1,8 @@
 import { useParams } from '@tanstack/react-router';
 import { useEndUserQuery } from '../../../../../lib/react-query/queries/useEndUserQuery/useEndUserQuery';
+import { createWorkflow } from '@ballerine/workflow-browser-sdk';
+import { useWorkflowQuery } from '../../../../../lib/react-query/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowsQuery } from '../../../../../lib/react-query/queries/useWorkflowsQuery/useWorkflowsQuery';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -42,24 +45,18 @@ export const useIndividual = () => {
     fullName,
     avatarUrl,
   };
-  const faceAUrl = images?.find(({ caption }) =>
-    /face/i.test(caption),
-  )?.imageUrl;
-  const faceBUrl = images?.find(({ caption }) =>
-    /id\scardfront/i.test(caption),
-  )?.imageUrl;
-  const whitelist = [
-    'personalInfo',
-    'passportInfo',
-    'checkResults',
-    'addressInfo',
-  ];
+  const faceAUrl = images?.find(({ caption }) => /face/i.test(caption))?.imageUrl;
+  const faceBUrl = images?.find(({ caption }) => /id\scardfront/i.test(caption))?.imageUrl;
+  const whitelist = ['personalInfo', 'passportInfo', 'checkResults', 'addressInfo'];
   const info = {
     personalInfo,
     passportInfo,
     checkResults,
     addressInfo,
   };
+  const { data: workflows } = useWorkflowsQuery({ endUserId });
+  const { data: workflow } = useWorkflowQuery({ endUserId, workflowId: workflows?.[0]?.id });
+  const workflowService = workflow ? createWorkflow(workflow) : {};
 
   return {
     selectedEndUser,

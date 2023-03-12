@@ -43,3 +43,8 @@ export interface IEndpoint {
         };
   };
 }
+
+export interface IEndUserIdAndWorkflowId {
+  endUserId: string;
+  workflowId: string;
+}
