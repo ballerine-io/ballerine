@@ -24,7 +24,7 @@ export const createNodeWorkflow: TCreateNodeWorkflow = ({WorkflowDefType, workfl
       workflowDefinitionType: WorkflowDefType,
       workflowDefinition: workflowDefinition,
       workflowContext: context,
-      extensions: { globalPlugins: extensions, statePlugins: []}
+      extensions: {statePlugins: extensions}
     })
   }
 }

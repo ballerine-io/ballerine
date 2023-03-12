@@ -9,6 +9,6 @@ export {
   WorkflowOptions,
   WorkflowRunnerArgs,
   PluginAction,
-  GlobalPlugin,
+  ExtensionRunOrder,
   WorkflowContext
 } from './types';

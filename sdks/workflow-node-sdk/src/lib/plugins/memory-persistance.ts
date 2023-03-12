@@ -24,8 +24,8 @@ export class MemoryPersistancePlugin extends NodePlugin {
 
   constructor({ name, stateNames, when , store}: TPersistPluginParams) {
     super(name, when, stateNames);
-
-    this.#__store = store
+    this.isBlocking = true;
+    this.#__store = store;
   }
 
   action({workflowId, context, event, state}: PluginAction): Promise<void> {
@@ -36,9 +36,6 @@ export class MemoryPersistancePlugin extends NodePlugin {
         state: state.value
       };
 
-      console.log('Saving into memory!')
-      console.log('Saving into memory!')
-      console.log('Saving into memory!')
       console.log('Saving into memory!')
 
       this.#__store.put(workflowId, context.entityId, data)

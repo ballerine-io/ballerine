@@ -12,30 +12,28 @@ export interface Workflow {
 
 export type PluginAction = { workflowId: string, context: any; event: any; state: any }
 
+export type ExtensionRunOrder = 'pre' | 'post';
+
 export interface WorkflowPlugin {
-  when: 'pre' | 'post';
+  when: ExtensionRunOrder;
   action: (options: PluginAction) => Promise<void>;
 }
 
-export interface StatePlugin extends Omit<WorkflowPlugin, 'when'> {
+export interface StatePlugin extends WorkflowPlugin {
   /**
    * The actions key to inject an action function into.
    * E.g. { actions: { [plugin.name]: plugin.action  } }
    */
   name: string;
+
   /**
-   * entry - fire an action when transitioning into a specified state
-   * exit  - fire an action when transitioning out of a specified state
+   * Should the plugin be executed in a blocking manner or async
    */
-  when: 'entry' | 'exit';
+  isBlocking: boolean;
   /**
    * States already defined in the statechart
    */
   stateNames: Array<string>;
-}
-
-export interface GlobalPlugin extends WorkflowPlugin {
-  stateName: string;
 }
 
 export interface WorkflowEvent {
@@ -47,7 +45,6 @@ export interface WorkflowEvent {
 
 export interface WorkflowExtensions {
   statePlugins: StatePlugins;
-  globalPlugins: GlobalPlugins;
 }
 
 
@@ -78,8 +75,6 @@ export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
 
 export type StatePlugins = StatePlugin[];
 
-export type GlobalPlugins = GlobalPlugin[];
-
 export type TCreateWorkflow = (options: WorkflowOptions) => Workflow;
 
 export const Error = {
@@ -88,3 +83,5 @@ export const Error = {
 } as const;
 
 export const Errors = [Error.ERROR, Error.HTTP_ERROR] as const;
+
+

@@ -36,7 +36,7 @@ test('Server Workflow persistance MemoryStore', (t) => {
 
   const userId = '123456';
   const memoryStore = new MemoryStore();
-  const memoryPersistancePlugin = new MemoryPersistancePlugin({ name: 'in-memory-persistance', stateNames: [], when: 'post', store: memoryStore });
+  const memoryPersistancePlugin = new MemoryPersistancePlugin({ name: 'in-memory-persistance', stateNames: [], when: 'post', store: memoryStore});
 
   simpleMachine.context = { ...simpleMachine.context || {}, entityId: userId };
 
@@ -49,6 +49,8 @@ test('Server Workflow persistance MemoryStore', (t) => {
     workflowDefinition: simpleMachine,
     extensions: [memoryPersistancePlugin]
   });
+
+
   expect(workflow.runner.getSnapshot().value).toBe('inactive');
   workflow.runner.sendEvent({ type: 'TOGGLE' });
   expect(workflow.runner.getSnapshot().value).toBe('active');
