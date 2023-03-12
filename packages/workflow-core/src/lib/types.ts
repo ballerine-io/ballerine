@@ -8,9 +8,7 @@ export interface Workflow {
   getSnapshot: () => Record<PropertyKey, any>;
 }
 
-
-
-export type PluginAction = { workflowId: string, context: any; event: any; state: any }
+export type PluginAction = { workflowId: string; context: any; event: any; state: any };
 
 export type ExtensionRunOrder = 'pre' | 'post';
 
@@ -47,7 +45,6 @@ export interface WorkflowExtensions {
   statePlugins: StatePlugins;
 }
 
-
 export interface WorkflowContext {
   id?: string;
   state?: any;
@@ -67,7 +64,7 @@ export interface WorkflowOptions {
 export interface WorkflowRunnerArgs {
   workflowDefinition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
-  workflowContext?: WorkflowContext
+  workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
 }
 
@@ -83,5 +80,3 @@ export const Error = {
 } as const;
 
 export const Errors = [Error.ERROR, Error.HTTP_ERROR] as const;
-
-

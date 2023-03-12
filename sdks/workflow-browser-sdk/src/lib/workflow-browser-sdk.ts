@@ -57,7 +57,6 @@ export class WorkflowBrowserSDK {
       ...options,
       extensions: {
         statePlugins,
-        globalPlugins: [],
       },
       workflowDefinition: {
         ...options?.workflowDefinition,
@@ -112,7 +111,7 @@ export class WorkflowBrowserSDK {
       ConstructorParameters<typeof BackendPersistPlugin>[0],
       'when' | 'fetchOptions'
     > = {
-      when: 'entry',
+      when: 'pre',
       fetchOptions: {
         baseUrl: this.#__backendOptions.baseUrl,
         endpoint: this.#__backendOptions.endpoints.persist.endpoint
