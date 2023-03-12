@@ -5,8 +5,9 @@ import { IFetchOptions, TBackendPersistPluginParams } from './types';
 export class BackendPersistPlugin extends StatePlugin {
   stateNames: Array<string>;
   name = 'SYNC_BACKEND';
-  when: 'entry' | 'exit';
+  when: 'pre' | 'post';
   #__fetchOptions: IFetchOptions;
+  
 
   constructor({ stateNames, when, fetchOptions }: TBackendPersistPluginParams) {
     super();

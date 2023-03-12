@@ -19,7 +19,7 @@ test('Simple Server Workflow', (t) => {
   console.log('Running create Server Workflow');
 
 
-  const workflow = initNodeWorkflow({ WorkflowDefType: 'bpmn-json', workflowDefinition: simpleMachine, extensions: [] });
+  const workflow = initNodeWorkflow({ WorkflowDefType: 'statechart-json', workflowDefinition: simpleMachine, extensions: [] });
   const runner = workflow.runner;
   expect(runner.getSnapshot().value).toBe('inactive');
   runner.sendEvent({ type: 'TOGGLE' })
@@ -45,7 +45,7 @@ test('Server Workflow persistance MemoryStore', (t) => {
   // that saves 'post' transition the memory state of the running workflow
 
   const workflow = initNodeWorkflow({
-    WorkflowDefType: 'bpmn-json',
+    WorkflowDefType: 'statechart-json',
     workflowDefinition: simpleMachine,
     extensions: [memoryPersistancePlugin]
   });
@@ -69,7 +69,7 @@ test('Server Workflow persistance MemoryStore', (t) => {
 
   console.log(workflowData);
   const restoredWorkflow = initNodeWorkflow({
-    WorkflowDefType: 'bpmn-json',
+    WorkflowDefType: 'statechart-json',
     workflowDefinition: simpleMachine,
     context: {machineContext: workflowData!.context, state: workflowData!.state},
     extensions: [memoryPersistancePlugin]

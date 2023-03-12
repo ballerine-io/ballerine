@@ -3,13 +3,12 @@
   "author": "Ballerine",
   "version": "0.0.1",
   "description": "workflow-node-sdk",
-  "module": "./build/esm/index.js",
-  "main": "./build/cjs/index.js",
-  "browser": "./build/umd/index.production.js",
-  "types": "./build/types/index.d.ts",
+  "module": "./dist/esm/index.js",
+  "main": "./dist/cjs/index.js",
+  "browser": "./dist/umd/index.production.js",
+  "types": "./dist/types/index.d.ts",
   "files": [
-    "build/**",
-    "src"
+    "dist"
   ],
   "repository": "",
   "license": "Apache-2.0",
