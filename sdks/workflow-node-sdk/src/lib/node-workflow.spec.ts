@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { createNodeWorkflow, NodeWorkflow } from './nodeWorkflow';
+import { createNodeWorkflow, NodeWorkflow } from './node-workflow';
 import { initNodeWorkflow } from 'src';
 import { MemoryStore } from './adapters/memory-store';
 import { MemoryPersistancePlugin } from './plugins/memory-persistance';

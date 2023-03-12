@@ -1,4 +1,4 @@
-import { createNodeWorkflow, NodeWorkflowOptions, NodeWorkflow } from "./lib/nodeWorkflow";
+import { createNodeWorkflow, NodeWorkflowOptions, NodeWorkflow } from "./lib/node-workflow";
 
 type TInitNodeWorkflow = (options: NodeWorkflowOptions) => NodeWorkflow;
 
