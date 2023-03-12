@@ -172,6 +172,7 @@ importers:
 
   apps/backoffice-v2:
     specifiers:
+      '@ballerine/workflow-browser-sdk': ^0.0.4
       '@branchlint/cli': ^1.0.4
       '@branchlint/default-config': ^1.0.2
       '@commitlint/cli': ^17.0.3
@@ -238,6 +239,7 @@ importers:
       vite: ^4.0.4
       zod: ^3.20.0
     dependencies:
+      '@ballerine/workflow-browser-sdk': 0.0.4
       '@formkit/auto-animate': 1.0.0-beta.5
       '@lukemorales/query-key-factory': 1.1.0_flemyxx7ziq76j236nqrbfbnve
       '@radix-ui/react-checkbox': 1.0.2_biqbaboplfbrettd7655fr4n2y
@@ -3118,6 +3120,22 @@ packages:
       '@babel/helper-string-parser': 7.19.4
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
+
+  /@ballerine/workflow-browser-sdk/0.0.4:
+    resolution: {integrity: sha512-TJX3+RYVpU+pQMhRzMzOflqX0bL85lkS9weJSNRe4yNgewrvTahQfjW4rcac2V4YstkaNF6szZNZKuk+ufQVxg==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@ballerine/workflow-core': 0.4.6
+      xstate: 4.37.0
+    dev: false
+
+  /@ballerine/workflow-core/0.4.6:
+    resolution: {integrity: sha512-bJmbjFyGLfMXZIRLHl8y7y8oeu/HKvdfZTVclm/2cEYbG7qRIMXxM9RFmkdysDAOyg1qRPI/AbUwfyU6swEgNQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      json-logic-js: 2.0.2
+      xstate: 4.37.0
+    dev: false
 
   /@bcoe/v8-coverage/0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
