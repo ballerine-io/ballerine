@@ -65,8 +65,5 @@
     "husky": "^8.0.1",
     "nx": "15.0.2",
     "prettier": "^2.7.1"
-  },
-  "dependencies": {
-    "deepmerge": "^4.2.2"
   }
 }

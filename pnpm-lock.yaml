@@ -12,13 +12,10 @@ importers:
       '@commitlint/config-conventional': ^17.1.0
       commitizen: ^4.2.5
       cz-conventional-changelog: ^3.3.0
-      deepmerge: ^4.2.2
       editorconfig: ^1.0.1
       husky: ^8.0.1
       nx: 15.0.2
       prettier: ^2.7.1
-    dependencies:
-      deepmerge: 4.3.0
     devDependencies:
       '@branchlint/cli': 1.0.4
       '@branchlint/default-config': 1.0.2
@@ -504,6 +501,7 @@ importers:
       '@typescript-eslint/parser': ^5.41.0
       '@zerodevx/svelte-toast': ^0.8.0
       compressorjs: ^1.1.1
+      deepmerge: ^4.3.0
       dotenv: ^16.0.3
       editorconfig: ^1.0.1
       eslint: 8.22.0
@@ -530,6 +528,7 @@ importers:
       '@ballerine/common': link:../../packages/common
       '@zerodevx/svelte-toast': 0.8.2
       compressorjs: 1.2.1
+      deepmerge: 4.3.0
       dotenv: 16.0.3
       jslib-html5-camera-photo: 3.3.4
     devDependencies:

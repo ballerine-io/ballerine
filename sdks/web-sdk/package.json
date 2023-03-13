@@ -93,6 +93,7 @@
     "@ballerine/common": "workspace:*",
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
+    "deepmerge": "^4.3.0",
     "dotenv": "^16.0.3",
     "jslib-html5-camera-photo": "^3.3.3"
   }
