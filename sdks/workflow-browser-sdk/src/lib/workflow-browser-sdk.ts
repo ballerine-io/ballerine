@@ -144,7 +144,7 @@ export class WorkflowBrowserSDK {
 
     if (localStorageStateNames?.length) {
       statePlugins.push(
-        new LocalStoragePersistPlugin({ when: 'entry', stateNames: localStorageStateNames }),
+        new LocalStoragePersistPlugin({ when: 'pre', stateNames: localStorageStateNames }),
       );
     }
 

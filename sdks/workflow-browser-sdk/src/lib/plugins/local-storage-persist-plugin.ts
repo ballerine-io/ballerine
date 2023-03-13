@@ -4,7 +4,8 @@ import { TStatePluginParams } from './types';
 export class LocalStoragePersistPlugin extends StatePlugin {
   stateNames: Array<string>;
   name = 'SYNC_LOCAL_STORAGE';
-  when: 'entry' | 'exit';
+  when: 'pre' | 'post';
+  isBlocking = false;
 
   constructor({ stateNames, when }: TStatePluginParams) {
     super();
@@ -13,7 +14,7 @@ export class LocalStoragePersistPlugin extends StatePlugin {
     this.when = when;
   }
 
-  async action({ context }: { context: any; event: any; currentState: any }): Promise<void> {
+  async action({ context }: { context: any; event: any; state: any }): Promise<void> {
     return new Promise<void>(resolve => {
       try {
         // localStorage key could be configurable or stored as a constant.

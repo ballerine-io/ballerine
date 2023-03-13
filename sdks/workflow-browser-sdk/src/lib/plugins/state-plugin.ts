@@ -13,6 +13,10 @@ export abstract class StatePlugin {
    * Allows execution of the same plugin for more than one state.
    */
   abstract stateNames: TStatePlugin['stateNames'];
+  /**
+   * With isBlocking `true` plugins are executed pre/post the `service.send` call depending on {@link StatePlugin.when} instead of being injected as an action.
+   */
+  abstract isBlocking: TStatePlugin['isBlocking'];
 
   /**
    * An async function that is executed when the plugin is triggered.
