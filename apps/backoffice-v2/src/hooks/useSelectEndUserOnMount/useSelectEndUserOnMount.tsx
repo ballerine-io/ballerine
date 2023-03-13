@@ -23,9 +23,7 @@ export const useSelectEndUserOnMount = () => {
   // Otherwise open to a race condition where
   // the current end user id no longer exists
   // in the in-memory mock data.
-  const shouldReturn = env.VITE_MOCK_SERVER
-    ? endUserId && userExists
-    : endUserId;
+  const shouldReturn = env.VITE_MOCK_SERVER ? endUserId && userExists : endUserId;
   const deps = env.VITE_MOCK_SERVER ? [shouldReturn] : [];
 
   useEffect(() => {

@@ -21,8 +21,7 @@ import { FaceMatch } from 'components/organisms/Subject/Subject.FaceMatch';
  * @param props
  * @constructor
  */
-export const Subject: FunctionComponent<PropsWithChildren> &
-  ISubjectChildren = ({ children }) => {
+export const Subject: FunctionComponent<PropsWithChildren> & ISubjectChildren = ({ children }) => {
   return <div className={`flex h-full flex-col`}>{children}</div>;
 };
 

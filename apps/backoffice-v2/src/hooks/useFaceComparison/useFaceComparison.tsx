@@ -15,17 +15,14 @@ export const useFaceComparison = () => {
   const [faceALoaded, , toggleOnFaceALoaded] = useToggle();
   const [faceBLoaded, , toggleOnFaceBLoaded] = useToggle();
   const imagesLoaded = faceALoaded && faceBLoaded;
-  const [isComparing, , toggleOnIsComparing, toggleOffIsComparing] =
-    useToggle();
+  const [isComparing, , toggleOnIsComparing, toggleOffIsComparing] = useToggle();
   const onCompareFaces = useCallback(async () => {
     try {
       if (!faceARef.current || !faceBRef.current) return;
 
       toggleOnIsComparing();
 
-      await loadFaceRecognitionModel(
-        'https://justadudewhohacks.github.io/face-api.js/models',
-      );
+      await loadFaceRecognitionModel('https://justadudewhohacks.github.io/face-api.js/models');
 
       const [faceAResult, faceBResult] = await Promise.all([
         computeFaceDescriptor(faceARef.current),
@@ -33,10 +30,7 @@ export const useFaceComparison = () => {
       ]);
 
       // Both elements can be Float32Array | Float32Array[] when faceapi.euclideanDistance expects Float32Array | number[].
-      if (
-        isTwoDimensionalArray(faceAResult) ||
-        isTwoDimensionalArray(faceBResult)
-      ) {
+      if (isTwoDimensionalArray(faceAResult) || isTwoDimensionalArray(faceBResult)) {
         throw new Error('Two dimensional arrays are not supported.');
       }
 

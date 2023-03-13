@@ -2,14 +2,7 @@ import { IFetcher } from './interfaces';
 import { handlePromise } from '../handle-promise/handle-promise';
 import { isZodError } from '../is-zod-error/is-zod-error';
 
-export const fetcher: IFetcher = async ({
-  url,
-  method,
-  body,
-  options,
-  timeout = 5000,
-  schema,
-}) => {
+export const fetcher: IFetcher = async ({ url, method, body, options, timeout = 5000, schema }) => {
   const controller = new AbortController();
   const { signal } = controller;
   const timeoutRef = setTimeout(() => {
@@ -51,15 +44,11 @@ export const fetcher: IFetcher = async ({
     throw jsonError;
   }
 
-  const [validatedData, validationError] = await handlePromise(
-    schema.parseAsync(data),
-  );
+  const [validatedData, validationError] = await handlePromise(schema.parseAsync(data));
 
   if (validationError) {
     const messages = isZodError(validationError)
-      ? validationError.errors.map(
-          ({ path, message }) => `${path.join('.')} (${message}),\n`,
-        )
+      ? validationError.errors.map(({ path, message }) => `${path.join('.')} (${message}),\n`)
       : [validationError];
 
     console.error('❌ Validation error:\n', ...messages);

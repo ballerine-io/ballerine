@@ -40,9 +40,7 @@ export const EndUserByIdSchema = z.object({
       dateOfBirth: z.string().default(''),
       placeOfBirth: z.string().default(''),
       assignedTo: z.string().default(''),
-      sex: z
-        .union([z.literal('male'), z.literal('female'), z.literal('other')])
-        .default('other'),
+      sex: z.union([z.literal('male'), z.literal('female'), z.literal('other')]).default('other'),
       passport: z
         .object({
           type: z.string().default(''),

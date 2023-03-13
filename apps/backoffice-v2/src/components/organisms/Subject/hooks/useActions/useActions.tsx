@@ -5,36 +5,32 @@ import { useEndUserQuery } from '../../../../../lib/react-query/queries/useEndUs
 import { useDebounce } from 'hooks/useDebounce/useDebounce';
 import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
 import { useSelectNextEndUser } from 'hooks/useSelectNextEndUser/useSelectNextEndUser';
+import { createInitials } from '../../../../../utils/create-initials/create-initials';
+import { IUseActions } from './interfaces';
+import { State } from '../../../../../enums';
 
-export const useActions = (endUserId: string) => {
+export const useActions = ({ endUserId, endUserState, fullName }: IUseActions) => {
   const onSelectNextEndUser = useSelectNextEndUser();
   const { mutate: mutateApproveEndUser, isLoading: isLoadingApproveEndUser } =
     useApproveEndUserMutation(endUserId, onSelectNextEndUser);
   const { mutate: mutateRejectEndUser, isLoading: isLoadingRejectEndUser } =
     useRejectEndUserMutation(endUserId, onSelectNextEndUser);
   const { isLoading: isLoadingEndUser } = useEndUserQuery(endUserId);
-  const isLoading =
-    isLoadingApproveEndUser || isLoadingRejectEndUser || isLoadingEndUser;
+  const isLoading = isLoadingApproveEndUser || isLoadingRejectEndUser || isLoadingEndUser;
+  // Create initials from the first character of the first name, middle name, and last name.
+  const initials = createInitials(fullName);
+  // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
+  const isReady = [State.APPROVED, State.REJECTED, State.MANUAL_REVIEW].some(
+    state => state === endUserState,
+  );
 
   // Only display the button spinners if the request is longer than 300ms
-  const debouncedIsLoadingRejectEndUser = useDebounce(
-    isLoadingRejectEndUser,
-    300,
-  );
-  const debouncedIsLoadingApproveEndUser = useDebounce(
-    isLoadingApproveEndUser,
-    300,
-  );
+  const debouncedIsLoadingRejectEndUser = useDebounce(isLoadingRejectEndUser, 300);
+  const debouncedIsLoadingApproveEndUser = useDebounce(isLoadingApproveEndUser, 300);
 
   // Avoid passing the onClick event to mutate
-  const onMutateApproveEndUser = useCallback(
-    () => mutateApproveEndUser(),
-    [mutateApproveEndUser],
-  );
-  const onMutateRejectEndUser = useCallback(
-    () => mutateRejectEndUser(),
-    [mutateRejectEndUser],
-  );
+  const onMutateApproveEndUser = useCallback(() => mutateApproveEndUser(), [mutateApproveEndUser]);
+  const onMutateRejectEndUser = useCallback(() => mutateRejectEndUser(), [mutateRejectEndUser]);
 
   useDocumentListener('keydown', event => {
     if (!event.ctrlKey || document.activeElement !== document.body) return;
@@ -65,5 +61,7 @@ export const useActions = (endUserId: string) => {
     debouncedIsLoadingApproveEndUser,
     isLoading,
     isLoadingEndUser,
+    initials,
+    isReady,
   };
 };

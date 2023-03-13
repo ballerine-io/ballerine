@@ -1,8 +1,4 @@
-import {
-  ComponentProps,
-  ComponentPropsWithoutRef,
-  ComponentPropsWithRef,
-} from 'react';
+import { ComponentProps, ComponentPropsWithoutRef, ComponentPropsWithRef } from 'react';
 import { Item } from './ImageViewer.Item';
 import { SelectedImage } from './ImageViewer.SelectedImage';
 import { List } from './ImageViewer.List';

@@ -28,10 +28,7 @@ export const WarningAlert: FunctionComponent<IWarningAlertProps> = ({
       })}
       {...rest}
     >
-      <WarningSvg
-        className={ctw(`h-6 w-6 shrink-0 stroke-current`, iconClassName)}
-        {...restIcon}
-      />
+      <WarningSvg className={ctw(`h-6 w-6 shrink-0 stroke-current`, iconClassName)} {...restIcon} />
       {children}
     </div>
   );

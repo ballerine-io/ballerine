@@ -24,11 +24,7 @@ export const queryClient = new QueryClient({
         return;
       }
 
-      if (
-        !isErrorWithMessage(error) ||
-        error.message === 'undefined' ||
-        error.message === 'null'
-      )
+      if (!isErrorWithMessage(error) || error.message === 'undefined' || error.message === 'null')
         return;
 
       toast.error(error.message);
@@ -52,8 +48,7 @@ export const queryClient = new QueryClient({
       toast.success(message);
     },
     onError: (error, variables, context) => {
-      if (!isObject<IGlobalToastContext>(context) || !isErrorWithMessage(error))
-        return;
+      if (!isObject<IGlobalToastContext>(context) || !isErrorWithMessage(error)) return;
 
       const message =
         context?.resource && context?.action

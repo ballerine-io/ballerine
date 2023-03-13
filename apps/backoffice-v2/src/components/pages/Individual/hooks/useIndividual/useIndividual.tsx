@@ -21,6 +21,7 @@ export const useIndividual = () => {
     passport: passportInfo,
     address: addressInfo,
     checkResults,
+    state,
   } = data ?? {};
   const personalInfo = {
     firstName,
@@ -44,6 +45,7 @@ export const useIndividual = () => {
     id: endUserId,
     fullName,
     avatarUrl,
+    state,
   };
   const faceAUrl = images?.find(({ caption }) => /face/i.test(caption))?.imageUrl;
   const faceBUrl = images?.find(({ caption }) => /id\scardfront/i.test(caption))?.imageUrl;

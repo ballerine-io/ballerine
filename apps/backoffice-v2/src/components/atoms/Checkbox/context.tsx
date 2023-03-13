@@ -29,9 +29,7 @@ export const Provider: FunctionComponentWithChildren<IProviderProps> = ({
   const handleChange = useCallback(
     (value: unknown) => {
       const isChecked = checked.some(item => item === value);
-      const nextState = isChecked
-        ? checked.filter(item => item !== value)
-        : [...checked, value];
+      const nextState = isChecked ? checked.filter(item => item !== value) : [...checked, value];
 
       setChecked(nextState);
       onChange(nextState);

@@ -17,11 +17,8 @@ export const useIndividuals = () => {
   const matches = useMatches();
   const lastMatchId = matches.at(-1)?.route?.id;
   const isIndividuals =
-    lastMatchId === individualsRoute.id ||
-    lastMatchId === individualsIndexRoute.id;
-  const routeId: TRouteId = isIndividuals
-    ? individualsRoute.id
-    : individualRoute.id;
+    lastMatchId === individualsRoute.id || lastMatchId === individualsIndexRoute.id;
+  const routeId: TRouteId = isIndividuals ? individualsRoute.id : individualRoute.id;
   const { data: subjects, isLoading } = useEndUsersQuery();
   const { searched, onSearch, search } = useSearch({
     routeId,

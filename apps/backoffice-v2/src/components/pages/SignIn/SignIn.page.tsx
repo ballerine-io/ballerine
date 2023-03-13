@@ -38,9 +38,7 @@ export const SignIn = () => {
       >
         <form className={`card-body`} onSubmit={onSubmit}>
           <fieldset>
-            <legend className={`card-title mb-8 block text-center text-4xl`}>
-              Sign In
-            </legend>
+            <legend className={`card-title mb-8 block text-center text-4xl`}>Sign In</legend>
             <button
               className={`btn-outline btn btn-block mb-2 gap-2`}
               type={`button`}
@@ -53,10 +51,7 @@ export const SignIn = () => {
                 className="mt-1 h-6 w-6"
               >
                 <clipPath id="p.0">
-                  <path
-                    d="m0 0l20.0 0l0 20.0l-20.0 0l0 -20.0z"
-                    clipRule="nonzero"
-                  />
+                  <path d="m0 0l20.0 0l0 20.0l-20.0 0l0 -20.0z" clipRule="nonzero" />
                 </clipPath>
                 <g clipPath="url(#p.0)">
                   <path
@@ -114,9 +109,9 @@ export const SignIn = () => {
               <span
                 className={`label-text-alt invisible pt-2 text-error peer-focus:peer-invalid:visible`}
               >
-                Password must be at least 8 character(s), at most 255
-                character(s), contain at least one uppercase letter, one
-                lowercase letter, one number, and one special character(s).
+                Password must be at least 8 character(s), at most 255 character(s), contain at least
+                one uppercase letter, one lowercase letter, one number, and one special
+                character(s).
               </span>
             </div>
           </fieldset>

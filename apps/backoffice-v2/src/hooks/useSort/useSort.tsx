@@ -1,10 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { AnyArray, TKeyofArrayElement, TRouteId } from '../../types';
 import { sort } from 'hooks/useSort/sort';
-import {
-  useNavigate,
-  useSearch as useTanStackSearch,
-} from '@tanstack/react-router';
+import { useNavigate, useSearch as useTanStackSearch } from '@tanstack/react-router';
 
 /**
  * @description A hook to easily sort an array of objects by key, and change sort direction or the sort by key.
@@ -24,17 +21,15 @@ export const useSort = <TArray extends AnyArray, TId extends TRouteId>({
     sortBy: TKeyofArrayElement<TArray>;
   };
 }) => {
-  const {
-    sortBy = initialState?.sortBy,
-    sortDir = initialState?.sortDir ?? 'asc',
-  } = useTanStackSearch({
-    from: routeId,
-    strict: false,
-    track: searchParams => ({
-      sortBy: 'sortBy' in searchParams ? searchParams?.sortBy : undefined,
-      sortDir: 'sortDir' in searchParams ? searchParams?.sortDir : undefined,
-    }),
-  });
+  const { sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' } =
+    useTanStackSearch({
+      from: routeId,
+      strict: false,
+      track: searchParams => ({
+        sortBy: 'sortBy' in searchParams ? searchParams?.sortBy : undefined,
+        sortDir: 'sortDir' in searchParams ? searchParams?.sortDir : undefined,
+      }),
+    });
   const navigate = useNavigate({ from: routeId });
   // Sort
   const sorted = useMemo(

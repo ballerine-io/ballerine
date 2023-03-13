@@ -35,20 +35,10 @@ export const Individuals = () => {
           <SubjectsList.List>
             {isLoading
               ? skeletons.map(index => (
-                  <SubjectsList.SkeletonItem
-                    key={`subjects-list-skeleton-${index}`}
-                  />
+                  <SubjectsList.SkeletonItem key={`subjects-list-skeleton-${index}`} />
                 ))
               : subjects?.map(
-                  ({
-                    id,
-                    firstName,
-                    lastName,
-                    createdAt,
-                    assignedTo,
-                    avatarUrl,
-                    state,
-                  }) => (
+                  ({ id, firstName, lastName, createdAt, assignedTo, avatarUrl, state }) => (
                     <SubjectsList.Item
                       key={id}
                       id={id}
@@ -63,18 +53,13 @@ export const Individuals = () => {
           </SubjectsList.List>
         </MotionScrollArea>
         <div className={`divider my-0 px-4`}></div>
-        <Pagination
-          onPaginate={onPaginate}
-          page={page}
-          pages={pages}
-          totalPages={totalPages}
-        />
+        <Pagination onPaginate={onPaginate} page={page} pages={pages} totalPages={totalPages} />
       </SubjectsList>
       {/* Display skeleton individual when loading the end users list */}
       {isLoading && (
         <Subject>
           {/* Reject and approve header */}
-          <Subject.Actions id={''} fullName={''} avatarUrl={''} />
+          <Subject.Actions id={''} fullName={''} avatarUrl={''} state={''} />
 
           <Subject.Content>
             <div>

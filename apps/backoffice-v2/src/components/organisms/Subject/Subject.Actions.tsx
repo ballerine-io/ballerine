@@ -3,7 +3,6 @@ import { Avatar } from 'components/atoms/Avatar';
 import { IActionsProps } from 'components/organisms/Subject/interfaces';
 import { EllipsisButton } from 'components/atoms/EllipsisButton/EllipsisButton';
 import { useActions } from 'components/organisms/Subject/hooks/useActions/useActions';
-import { createInitials } from '../../../utils/create-initials/create-initials';
 import { motion } from 'framer-motion';
 import * as HoverCard from '@radix-ui/react-hover-card';
 import { ctw } from '../../../utils/ctw/ctw';
@@ -21,11 +20,7 @@ import { ctw } from '../../../utils/ctw/ctw';
  *
  * @constructor
  */
-export const Actions: FunctionComponent<IActionsProps> = ({
-  id,
-  fullName,
-  avatarUrl,
-}) => {
+export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, state, avatarUrl }) => {
   const {
     onMutateApproveEndUser,
     onMutateRejectEndUser,
@@ -33,9 +28,9 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     debouncedIsLoadingRejectEndUser,
     isLoading,
     isLoadingEndUser,
-  } = useActions(id);
-  // Create initials from the first character of the first name, middle name, and last name.
-  const initials = createInitials(fullName);
+    initials,
+    isReady,
+  } = useActions({ endUserId: id, endUserState: state, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4`}>
@@ -80,7 +75,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                     loading: debouncedIsLoadingRejectEndUser,
                   },
                 )}
-                disabled={isLoading}
+                disabled={isLoading || !isReady}
                 onClick={onMutateRejectEndUser}
               >
                 Reject
@@ -107,7 +102,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                     loading: debouncedIsLoadingApproveEndUser,
                   },
                 )}
-                disabled={isLoading}
+                disabled={isLoading || !isReady}
                 onClick={onMutateApproveEndUser}
               >
                 Approve

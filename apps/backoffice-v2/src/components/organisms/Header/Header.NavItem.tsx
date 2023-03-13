@@ -11,11 +11,7 @@ import { FunctionComponentWithChildren } from '../../../types';
  *
  * @constructor
  */
-export const NavItem: FunctionComponentWithChildren<INavItemProps> = ({
-  children,
-  icon,
-  href,
-}) => {
+export const NavItem: FunctionComponentWithChildren<INavItemProps> = ({ children, icon, href }) => {
   return (
     <li>
       <Link

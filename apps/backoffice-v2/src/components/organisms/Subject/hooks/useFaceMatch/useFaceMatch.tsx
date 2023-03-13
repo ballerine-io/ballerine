@@ -4,14 +4,8 @@ import { useParams } from '@tanstack/react-router';
 
 export const useFaceMatch = (isLoading?: boolean) => {
   const { endUserId } = useParams();
-  const {
-    faceARef,
-    faceBRef,
-    onCompareFaces,
-    imagesLoaded,
-    isComparing,
-    faceSimilarity,
-  } = useFaceComparison();
+  const { faceARef, faceBRef, onCompareFaces, imagesLoaded, isComparing, faceSimilarity } =
+    useFaceComparison();
   const imageQuality = 80;
   const imageQualityThreshold = 80;
   const faceSimilarityThreshold = 80;
