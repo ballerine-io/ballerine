@@ -37,7 +37,9 @@ describe('injections', () => {
     machine = workflowService.getSnapshot().machine;
 
     // Submit plugin falls back to states with type: 'final'
-    expect(machine.states.last.onEntry[1]).toMatchObject({
+    expect(
+      machine.states.last.onEntry?.find(({ type }) => type === 'SUBMIT_BACKEND'),
+    ).toMatchObject({
       type: 'SUBMIT_BACKEND',
       exec: undefined,
     });
@@ -46,13 +48,17 @@ describe('injections', () => {
     workflowService = new WorkflowBrowserSDK(workflowOptions);
     machine = workflowService.getSnapshot().machine;
 
-    expect(machine.states.fourth.onEntry[1]).toMatchObject({
+    expect(
+      machine.states.fourth.onEntry?.find(({ type }) => type === 'SUBMIT_BACKEND'),
+    ).toMatchObject({
       type: 'SUBMIT_BACKEND',
       exec: undefined,
     });
 
     // Injects user defined persistStates
-    expect(machine.states.third.onEntry[1]).toMatchObject({
+    expect(
+      machine.states.third.onEntry?.find(({ type }) => type === 'SYNC_LOCAL_STORAGE'),
+    ).toMatchObject({
       type: 'SYNC_LOCAL_STORAGE',
       exec: undefined,
     });

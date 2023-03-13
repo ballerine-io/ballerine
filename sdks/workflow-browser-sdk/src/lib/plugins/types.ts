@@ -7,7 +7,7 @@ export interface IFetchOptions {
   headers?: HeadersInit;
 }
 
-export type TStatePluginParams = Omit<IStatePlugin, 'name' | 'action'>;
+export type TStatePluginParams = Omit<IStatePlugin, 'name' | 'action' | 'isBlocking'>;
 
 export type TBackendPersistPluginParams = TStatePluginParams & {
   fetchOptions: IFetchOptions;
