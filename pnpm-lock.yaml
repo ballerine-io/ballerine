@@ -339,11 +339,79 @@ importers:
       vite: 4.1.4_@types+node@18.14.2
       vitest: 0.28.5
 
+  packages/rules-engine:
+    specifiers:
+      '@babel/core': 7.17.9
+      '@babel/preset-env': 7.16.11
+      '@babel/preset-typescript': 7.16.7
+      '@rollup/plugin-babel': 5.3.1
+      '@rollup/plugin-commonjs': ^24.0.1
+      '@rollup/plugin-node-resolve': 13.2.1
+      '@rollup/plugin-replace': 4.0.0
+      '@types/babel__core': ^7.20.0
+      '@types/fs-extra': ^11.0.1
+      '@types/json-logic-js': ^2.0.1
+      '@typescript-eslint/eslint-plugin': ^5.48.1
+      '@typescript-eslint/parser': ^5.48.1
+      '@vitest/coverage-istanbul': ^0.28.4
+      concurrently: ^7.6.0
+      cz-conventional-changelog: ^3.3.0
+      eslint: ^8.32.0
+      eslint-config-prettier: ^6.11.0
+      eslint-plugin-eslint-comments: ^3.2.0
+      eslint-plugin-functional: ^3.0.2
+      eslint-plugin-import: ^2.22.0
+      json-logic-js: ^2.0.2
+      prettier: ^2.1.1
+      rollup: 2.70.2
+      rollup-plugin-dts: 4.2.2
+      rollup-plugin-size: 0.2.2
+      rollup-plugin-terser: 7.0.2
+      rollup-plugin-visualizer: 5.6.0
+      typescript: 4.9.5
+      vite: ^4.1.1
+      vitest: ^0.28.4
+      xstate: ^4.35.2
+    dependencies:
+      json-logic-js: 2.0.2
+      xstate: 4.37.0
+    devDependencies:
+      '@babel/core': 7.17.9
+      '@babel/preset-env': 7.16.11_@babel+core@7.17.9
+      '@babel/preset-typescript': 7.16.7_@babel+core@7.17.9
+      '@rollup/plugin-babel': 5.3.1_e3h47fdnam7ua3vn7lnlydaaku
+      '@rollup/plugin-commonjs': 24.0.1_rollup@2.70.2
+      '@rollup/plugin-node-resolve': 13.2.1_rollup@2.70.2
+      '@rollup/plugin-replace': 4.0.0_rollup@2.70.2
+      '@types/babel__core': 7.20.0
+      '@types/fs-extra': 11.0.1
+      '@types/json-logic-js': 2.0.1
+      '@typescript-eslint/eslint-plugin': 5.53.0_cjo54hduev4bqhpjw5znwiokqu
+      '@typescript-eslint/parser': 5.53.0_ycpbpc6yetojsgtrx3mwntkhsu
+      '@vitest/coverage-istanbul': 0.28.5
+      concurrently: 7.6.0
+      cz-conventional-changelog: 3.3.0
+      eslint: 8.35.0
+      eslint-config-prettier: 6.15.0_eslint@8.35.0
+      eslint-plugin-eslint-comments: 3.2.0_eslint@8.35.0
+      eslint-plugin-functional: 3.7.2_ycpbpc6yetojsgtrx3mwntkhsu
+      eslint-plugin-import: 2.27.5_nhka4er4oejxhxq3ecgtwxvdji
+      prettier: 2.8.4
+      rollup: 2.70.2
+      rollup-plugin-dts: 4.2.2_tbafrabsxhd6ssdsq5pxu7uflu
+      rollup-plugin-size: 0.2.2
+      rollup-plugin-terser: 7.0.2_rollup@2.70.2
+      rollup-plugin-visualizer: 5.6.0_rollup@2.70.2
+      typescript: 4.9.5
+      vite: 4.1.4_@types+node@18.14.2
+      vitest: 0.28.5
+
   packages/workflow-core:
     specifiers:
       '@babel/core': 7.17.9
       '@babel/preset-env': 7.16.11
       '@babel/preset-typescript': 7.16.7
+      '@ballerine/common': workspace:^0.0.1
       '@rollup/plugin-babel': 5.3.1
       '@rollup/plugin-commonjs': ^24.0.1
       '@rollup/plugin-node-resolve': 13.2.1
@@ -379,6 +447,7 @@ importers:
       vitest: ^0.28.4
       xstate: ^4.35.2
     dependencies:
+      '@ballerine/common': link:../common
       json-logic-js: 2.0.2
       xstate: 4.37.0
     devDependencies:
@@ -502,6 +571,7 @@ importers:
       '@babel/core': 7.17.9
       '@babel/preset-env': 7.16.11
       '@babel/preset-typescript': 7.16.7
+      '@ballerine/common': workspace:^0.0.1
       '@ballerine/workflow-core': workspace:*
       '@rollup/plugin-babel': 5.3.1
       '@rollup/plugin-commonjs': ^24.0.1
@@ -515,6 +585,7 @@ importers:
       '@typescript-eslint/parser': ^5.48.1
       '@vitest/coverage-istanbul': ^0.28.4
       concurrently: ^7.6.0
+      cross-fetch: ^3.1.5
       cz-conventional-changelog: ^3.3.0
       eslint: ^8.32.0
       eslint-config-prettier: ^6.11.0
@@ -522,6 +593,8 @@ importers:
       eslint-plugin-functional: ^3.0.2
       eslint-plugin-import: ^2.22.0
       fs-extra: ^11.1.0
+      jsdom: ^20.0.2
+      msw: ^1.1.0
       plugin-babel: link:@types/@rollup/plugin-babel
       plugin-terser: link:@types/@rollup/plugin-terser
       prettier: ^2.1.1
@@ -536,6 +609,7 @@ importers:
       vitest: ^0.28.4
       xstate: ^4.37.0
     dependencies:
+      '@ballerine/common': link:../../packages/common
       '@ballerine/workflow-core': link:../../packages/workflow-core
       xstate: 4.37.0
     devDependencies:
@@ -552,8 +626,9 @@ importers:
       '@types/node': 18.14.2
       '@typescript-eslint/eslint-plugin': 5.53.0_cjo54hduev4bqhpjw5znwiokqu
       '@typescript-eslint/parser': 5.53.0_ycpbpc6yetojsgtrx3mwntkhsu
-      '@vitest/coverage-istanbul': 0.28.5
+      '@vitest/coverage-istanbul': 0.28.5_jsdom@20.0.3
       concurrently: 7.6.0
+      cross-fetch: 3.1.5
       cz-conventional-changelog: 3.3.0
       eslint: 8.35.0
       eslint-config-prettier: 6.15.0_eslint@8.35.0
@@ -561,6 +636,8 @@ importers:
       eslint-plugin-functional: 3.7.2_ycpbpc6yetojsgtrx3mwntkhsu
       eslint-plugin-import: 2.27.5_nhka4er4oejxhxq3ecgtwxvdji
       fs-extra: 11.1.0
+      jsdom: 20.0.3
+      msw: 1.1.0_typescript@4.9.5
       plugin-babel: link:@types/@rollup/plugin-babel
       plugin-terser: link:@types/@rollup/plugin-terser
       prettier: 2.8.4
@@ -570,6 +647,75 @@ importers:
       rollup-plugin-size: 0.2.2
       rollup-plugin-visualizer: 5.6.0_rollup@2.70.2
       ts-node: 10.9.1_ellgaeuoqnti3hful2ny2iugba
+      typescript: 4.9.5
+      vite: 4.1.4_@types+node@18.14.2
+      vitest: 0.28.5_jsdom@20.0.3
+
+  sdks/workflow-node-sdk:
+    specifiers:
+      '@babel/core': 7.17.9
+      '@babel/preset-env': 7.16.11
+      '@babel/preset-typescript': 7.16.7
+      '@ballerine/workflow-core': ^0.4.7
+      '@rollup/plugin-babel': 5.3.1
+      '@rollup/plugin-commonjs': ^24.0.1
+      '@rollup/plugin-node-resolve': 13.2.1
+      '@rollup/plugin-replace': 4.0.0
+      '@types/babel__core': ^7.20.0
+      '@types/fs-extra': ^11.0.1
+      '@types/json-logic-js': ^2.0.1
+      '@typescript-eslint/eslint-plugin': ^5.48.1
+      '@typescript-eslint/parser': ^5.48.1
+      '@vitest/coverage-istanbul': ^0.28.4
+      concurrently: ^7.6.0
+      cz-conventional-changelog: ^3.3.0
+      eslint: ^8.32.0
+      eslint-config-prettier: ^6.11.0
+      eslint-plugin-eslint-comments: ^3.2.0
+      eslint-plugin-functional: ^3.0.2
+      eslint-plugin-import: ^2.22.0
+      json-logic-js: ^2.0.2
+      prettier: ^2.1.1
+      rollup: 2.70.2
+      rollup-plugin-dts: 4.2.2
+      rollup-plugin-size: 0.2.2
+      rollup-plugin-terser: 7.0.2
+      rollup-plugin-visualizer: 5.6.0
+      typescript: 4.9.5
+      vite: ^4.1.1
+      vitest: ^0.28.5
+      xstate: ^4.36.0
+    dependencies:
+      '@ballerine/workflow-core': link:../../packages/workflow-core
+      json-logic-js: 2.0.2
+      xstate: 4.37.0
+    devDependencies:
+      '@babel/core': 7.17.9
+      '@babel/preset-env': 7.16.11_@babel+core@7.17.9
+      '@babel/preset-typescript': 7.16.7_@babel+core@7.17.9
+      '@rollup/plugin-babel': 5.3.1_e3h47fdnam7ua3vn7lnlydaaku
+      '@rollup/plugin-commonjs': 24.0.1_rollup@2.70.2
+      '@rollup/plugin-node-resolve': 13.2.1_rollup@2.70.2
+      '@rollup/plugin-replace': 4.0.0_rollup@2.70.2
+      '@types/babel__core': 7.20.0
+      '@types/fs-extra': 11.0.1
+      '@types/json-logic-js': 2.0.1
+      '@typescript-eslint/eslint-plugin': 5.53.0_cjo54hduev4bqhpjw5znwiokqu
+      '@typescript-eslint/parser': 5.53.0_ycpbpc6yetojsgtrx3mwntkhsu
+      '@vitest/coverage-istanbul': 0.28.5
+      concurrently: 7.6.0
+      cz-conventional-changelog: 3.3.0
+      eslint: 8.35.0
+      eslint-config-prettier: 6.15.0_eslint@8.35.0
+      eslint-plugin-eslint-comments: 3.2.0_eslint@8.35.0
+      eslint-plugin-functional: 3.7.2_ycpbpc6yetojsgtrx3mwntkhsu
+      eslint-plugin-import: 2.27.5_nhka4er4oejxhxq3ecgtwxvdji
+      prettier: 2.8.4
+      rollup: 2.70.2
+      rollup-plugin-dts: 4.2.2_tbafrabsxhd6ssdsq5pxu7uflu
+      rollup-plugin-size: 0.2.2
+      rollup-plugin-terser: 7.0.2_rollup@2.70.2
+      rollup-plugin-visualizer: 5.6.0_rollup@2.70.2
       typescript: 4.9.5
       vite: 4.1.4_@types+node@18.14.2
       vitest: 0.28.5
@@ -4417,7 +4563,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       chalk: 4.1.2
       jest-message-util: 27.5.1
       jest-util: 27.5.1
@@ -4448,7 +4594,7 @@ packages:
       '@jest/test-result': 27.5.1
       '@jest/transform': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       emittery: 0.8.1
@@ -4527,7 +4673,7 @@ packages:
     dependencies:
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       jest-mock: 27.5.1
 
   /@jest/environment/28.1.3:
@@ -4562,7 +4708,7 @@ packages:
     dependencies:
       '@jest/types': 27.5.1
       '@sinonjs/fake-timers': 8.1.0
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       jest-message-util: 27.5.1
       jest-mock: 27.5.1
       jest-util: 27.5.1
@@ -4612,7 +4758,7 @@ packages:
       '@jest/test-result': 27.5.1
       '@jest/transform': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       chalk: 4.1.2
       collect-v8-coverage: 1.0.1
       exit: 0.1.2
@@ -4786,7 +4932,7 @@ packages:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.4
       '@types/istanbul-reports': 3.0.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       '@types/yargs': 15.0.15
       chalk: 4.1.2
 
@@ -4796,7 +4942,7 @@ packages:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.4
       '@types/istanbul-reports': 3.0.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       '@types/yargs': 16.0.5
       chalk: 4.1.2
 
@@ -6704,12 +6850,12 @@ packages:
     resolution: {integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==}
     dependencies:
       '@types/connect': 3.4.35
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
 
   /@types/bonjour/3.5.10:
     resolution: {integrity: sha512-p7ienRMiS41Nu2/igbJxxLDWrSZ0WxM8UQgCeO9KhoVF7cOVFkrKsiDr1EsJIla8vV3oEEjGcz11jc5yimhzZw==}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
 
   /@types/chai-subset/1.3.3:
     resolution: {integrity: sha512-frBecisrNGz+F4T6bcc+NLeolfiojh5FxW2klu669+8BARtyQv2C/GkNW6FUodVe4BroGMP/wER/YDGc7rEllw==}
@@ -6725,12 +6871,12 @@ packages:
     resolution: {integrity: sha512-h8QJa8xSb1WD4fpKBDcATDNGXghFj6/3GRWG6dhmRcu0RX1Ubasur2Uvx5aeEwlf0MwblEC2bMzzMQntxnw/Cw==}
     dependencies:
       '@types/express-serve-static-core': 4.17.33
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
 
   /@types/connect/3.4.35:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
 
   /@types/cookie/0.4.1:
     resolution: {integrity: sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==}
@@ -6744,12 +6890,12 @@ packages:
     resolution: {integrity: sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA==}
     dependencies:
       '@types/eslint': 8.21.1
-      '@types/estree': 0.0.51
+      '@types/estree': 1.0.0
 
   /@types/eslint/8.21.1:
     resolution: {integrity: sha512-rc9K8ZpVjNcLs8Fp0dkozd5Pt2Apk1glO4Vgz8ix1u6yFByxfqo5Yavpy65o+93TAe24jr7v+eSBtFLvOQtCRQ==}
     dependencies:
-      '@types/estree': 0.0.51
+      '@types/estree': 1.0.0
       '@types/json-schema': 7.0.11
 
   /@types/estree-jsx/0.0.1:
@@ -6776,7 +6922,7 @@ packages:
   /@types/express-serve-static-core/4.17.33:
     resolution: {integrity: sha512-TPBqmR/HRYI3eC2E5hmiivIzv+bidAfXofM+sbonAGvyDhySGw9/PQZFt2BLOrjUUR++4eJVpx6KnLQK1Fk9tA==}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
 
@@ -6815,7 +6961,7 @@ packages:
   /@types/http-proxy/1.17.10:
     resolution: {integrity: sha512-Qs5aULi+zV1bwKAg5z1PWnDXWmsn+LxIvUGv6E2+OOMYhclZMO+OXd9pYVf2gLykf2I7IV2u7oTHwChPNsvJ7g==}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
 
   /@types/is-ci/3.0.0:
     resolution: {integrity: sha512-Q0Op0hdWbYd1iahB+IFNQcWXFq4O0Q5MwQP7uN0souuQ4rPg1vEYcnIOfr1gY+M+6rc8FGoRaBO1mOOvL29sEQ==}
@@ -7038,7 +7184,7 @@ packages:
     resolution: {integrity: sha512-NUo5XNiAdULrJENtJXZZ3fHtfMolzZwczzBbnAeBbqBwG+LaG6YaJtuwzwGSQZ2wsCrxjEhNNjAkKigy3n8teQ==}
     dependencies:
       '@types/mime': 3.0.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
 
   /@types/set-cookie-parser/2.4.2:
     resolution: {integrity: sha512-fBZgytwhYAUkj/jC/FAV4RQ5EerRup1YQsXQCh8rZfiHkc4UahC192oH0smGwsXol3cL3A5oETuAHeQHmhXM4w==}
@@ -7048,7 +7194,7 @@ packages:
   /@types/sockjs/0.3.33:
     resolution: {integrity: sha512-f0KEEe05NvUnat+boPTZ0dgaLZ4SfSouXUgv5noUiefG2ajgKjmETo9ZJyuqsl7dfl2aHlLJUiki6B4ZYldiiw==}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
 
   /@types/stack-utils/2.0.1:
     resolution: {integrity: sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==}
@@ -7080,7 +7226,7 @@ packages:
   /@types/webpack/5.28.0:
     resolution: {integrity: sha512-8cP0CzcxUiFuA9xGJkfeVpqmWTk9nx6CWwamRGCj95ph1SmlRRk9KlCZ6avhCbZd4L68LvYT6l1kpdEnQXrF8w==}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       tapable: 2.2.1
       webpack: 5.75.0
     transitivePeerDependencies:
@@ -7092,7 +7238,7 @@ packages:
   /@types/ws/8.5.4:
     resolution: {integrity: sha512-zdQDHKUgcX/zBc4GrwsE/7dVdAD8JR4EuiAXiiUhhfyIJXXb2+PrGshFyeXWQPMmmZ2XxgaqclgpIC7eTXc1mg==}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
 
   /@types/yargs-parser/21.0.0:
     resolution: {integrity: sha512-iO9ZQHkZxHn4mSakYV0vFHAVDyEOIJQrV2uZ06HxEPcx+mt8swXoZHIbaaJ2crJYFfErySgktuTZ3BeLz+XmFA==}
@@ -7417,6 +7563,30 @@ packages:
       istanbul-reports: 3.1.5
       test-exclude: 6.0.0
       vitest: 0.28.5
+    transitivePeerDependencies:
+      - '@edge-runtime/vm'
+      - '@vitest/browser'
+      - '@vitest/ui'
+      - happy-dom
+      - jsdom
+      - less
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    dev: true
+
+  /@vitest/coverage-istanbul/0.28.5_jsdom@20.0.3:
+    resolution: {integrity: sha512-na1pkr3AVrdFflzuBXsBh1MvBfhSMrv4nfd4N8rm0HEJlvlbQc+GiqNwtwzfO8TPsXxcjNphSIMp5wvCy+0xrQ==}
+    dependencies:
+      istanbul-lib-coverage: 3.2.0
+      istanbul-lib-instrument: 5.2.1
+      istanbul-lib-report: 3.0.0
+      istanbul-lib-source-maps: 4.0.1
+      istanbul-reports: 3.1.5
+      test-exclude: 6.0.0
+      vitest: 0.28.5_jsdom@20.0.3
     transitivePeerDependencies:
       - '@edge-runtime/vm'
       - '@vitest/browser'
@@ -9642,7 +9812,6 @@ packages:
       node-fetch: 2.6.7
     transitivePeerDependencies:
       - encoding
-    dev: false
 
   /cross-spawn/5.1.0:
     resolution: {integrity: sha512-pTgQJ5KC0d2hcY8eyL1IzlBPYjTkyH72XRZPnLyKus2mBfNjQs3klqbJU2VILqZryAZUt9JOb3h/mWMy23/f5A==}
@@ -12369,7 +12538,7 @@ packages:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.0.5
+      minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: true
@@ -13782,7 +13951,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       chalk: 4.1.2
       co: 4.6.0
       dedent: 0.7.0
@@ -14034,7 +14203,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       jest-mock: 27.5.1
       jest-util: 27.5.1
       jsdom: 16.7.0
@@ -14070,7 +14239,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       jest-mock: 27.5.1
       jest-util: 27.5.1
 
@@ -14105,7 +14274,7 @@ packages:
     dependencies:
       '@jest/types': 27.5.1
       '@types/graceful-fs': 4.1.6
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       anymatch: 3.1.3
       fb-watchman: 2.0.2
       graceful-fs: 4.2.10
@@ -14145,7 +14314,7 @@ packages:
       '@jest/source-map': 27.5.1
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       chalk: 4.1.2
       co: 4.6.0
       expect: 27.5.1
@@ -14227,7 +14396,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
 
   /jest-mock/28.1.3:
     resolution: {integrity: sha512-o3J2jr6dMMWYVH4Lh/NKmDXdosrsJgi4AviS8oXLujcjpCMBb1FMsblDnOXKZKfSiHLxYub1eS0IHuRXsio9eA==}
@@ -14327,7 +14496,7 @@ packages:
       '@jest/test-result': 27.5.1
       '@jest/transform': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       chalk: 4.1.2
       emittery: 0.8.1
       graceful-fs: 4.2.10
@@ -14441,7 +14610,7 @@ packages:
     resolution: {integrity: sha512-jZCyo6iIxO1aqUxpuBlwTDMkzOAJS4a3eYz3YzgxxVQFwLeSA7Jfq5cbqCY+JLvTDrWirgusI/0KwxKMgrdf7w==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       graceful-fs: 4.2.10
 
   /jest-snapshot/27.5.1:
@@ -14509,7 +14678,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       chalk: 4.1.2
       ci-info: 3.8.0
       graceful-fs: 4.2.10
@@ -14570,7 +14739,7 @@ packages:
     dependencies:
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       jest-util: 27.5.1
@@ -14593,7 +14762,7 @@ packages:
     resolution: {integrity: sha512-KWYVV1c4i+jbMpaBC+U++4Va0cp8OisU185o73T1vo99hqi7w8tSJfUXYswwqqrjzwxa6KpRK54WhPvwf5w6PQ==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       merge-stream: 2.0.0
       supports-color: 7.2.0
 
@@ -14601,7 +14770,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -14609,7 +14778,7 @@ packages:
     resolution: {integrity: sha512-CqRA220YV/6jCo8VWvAt1KKx6eek1VIHMPeLEbpcfSfkEeWyBNppynM/o6q+Wmw+sOhos2ml34wZbSX3G13//g==}
     engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 18.14.2
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -16425,7 +16594,6 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
-    dev: false
 
   /multicast-dns/7.2.5:
     resolution: {integrity: sha512-2eznPJP8z2BFLX50tf0LuODrpINqP1RVIm/CObbTcBRITQgmC/TjcREF1NeTBzIcR5XO/ukWo+YHOjBbFwIupg==}
@@ -16536,7 +16704,6 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
-    dev: false
 
   /node-fetch/2.6.9:
     resolution: {integrity: sha512-DJm/CJkZkRjKKj4Zi4BsKVZh3ValV5IR5s7LVZnW+6YMh0W1BfNA8XSs6DLMGYlId5F3KnA70uu2qepcR08Qqg==}
@@ -19221,6 +19388,19 @@ packages:
       - supports-color
     dev: true
 
+  /rollup-plugin-terser/7.0.2_rollup@2.70.2:
+    resolution: {integrity: sha512-w3iIaU4OxcF52UUXiZNsNeuXIMDvFrr+ZXK6bFZ0Q60qyVfq4uLptoS4bbq3paG3x216eQllFZX7zt6TIImguQ==}
+    deprecated: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-terser
+    peerDependencies:
+      rollup: ^2.0.0
+    dependencies:
+      '@babel/code-frame': 7.18.6
+      jest-worker: 26.6.2
+      rollup: 2.70.2
+      serialize-javascript: 4.0.0
+      terser: 5.16.5
+    dev: true
+
   /rollup-plugin-terser/7.0.2_rollup@2.79.1:
     resolution: {integrity: sha512-w3iIaU4OxcF52UUXiZNsNeuXIMDvFrr+ZXK6bFZ0Q60qyVfq4uLptoS4bbq3paG3x216eQllFZX7zt6TIImguQ==}
     deprecated: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-terser
@@ -20027,7 +20207,6 @@ packages:
 
   /strict-event-emitter/0.4.6:
     resolution: {integrity: sha512-12KWeb+wixJohmnwNFerbyiBrAlq5qJLwIt38etRtKtmmHyDSoGlIqFE9wx+4IwG0aDjI7GV8tc8ZccjWZZtTg==}
-    dev: false
 
   /strict-uri-encode/2.0.0:
     resolution: {integrity: sha512-QwiXZgpRcKkhTj2Scnn++4PKtWsH0kpzZ62L2R6c/LUVYv7hVnZqcg2+sMuT6R7Jusu1vviK/MFsu6kNJfWlEQ==}
@@ -21823,6 +22002,62 @@ packages:
       cac: 6.7.14
       chai: 4.3.7
       debug: 4.3.4
+      local-pkg: 0.4.3
+      pathe: 1.1.0
+      picocolors: 1.0.0
+      source-map: 0.6.1
+      std-env: 3.3.2
+      strip-literal: 1.0.1
+      tinybench: 2.3.1
+      tinypool: 0.3.1
+      tinyspy: 1.1.1
+      vite: 4.1.4_@types+node@18.14.2
+      vite-node: 0.28.5_@types+node@18.14.2
+      why-is-node-running: 2.2.2
+    transitivePeerDependencies:
+      - less
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    dev: true
+
+  /vitest/0.28.5_jsdom@20.0.3:
+    resolution: {integrity: sha512-pyCQ+wcAOX7mKMcBNkzDwEHRGqQvHUl0XnoHR+3Pb1hytAHISgSxv9h0gUiSiYtISXUU3rMrKiKzFYDrI6ZIHA==}
+    engines: {node: '>=v14.16.0'}
+    hasBin: true
+    peerDependencies:
+      '@edge-runtime/vm': '*'
+      '@vitest/browser': '*'
+      '@vitest/ui': '*'
+      happy-dom: '*'
+      jsdom: '*'
+    peerDependenciesMeta:
+      '@edge-runtime/vm':
+        optional: true
+      '@vitest/browser':
+        optional: true
+      '@vitest/ui':
+        optional: true
+      happy-dom:
+        optional: true
+      jsdom:
+        optional: true
+    dependencies:
+      '@types/chai': 4.3.4
+      '@types/chai-subset': 1.3.3
+      '@types/node': 18.14.2
+      '@vitest/expect': 0.28.5
+      '@vitest/runner': 0.28.5
+      '@vitest/spy': 0.28.5
+      '@vitest/utils': 0.28.5
+      acorn: 8.8.2
+      acorn-walk: 8.2.0
+      cac: 6.7.14
+      chai: 4.3.7
+      debug: 4.3.4
+      jsdom: 20.0.3
       local-pkg: 0.4.3
       pathe: 1.1.0
       picocolors: 1.0.0

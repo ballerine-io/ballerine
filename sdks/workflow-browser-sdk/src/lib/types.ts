@@ -1,6 +1,6 @@
 import type { Error, HttpError, WorkflowEvent, WorkflowOptions } from '@ballerine/workflow-core';
 import type { BaseActionObject } from 'xstate';
-import type { Event } from './enums';
+import type { Event, Persistence } from './enums';
 import type { WorkflowBrowserSDK } from './workflow-browser-sdk';
 
 export type Serializable =
@@ -24,6 +24,11 @@ export type DeepPartial<TValue> = {
     : TValue[TKey];
 };
 
+export interface IPersistState {
+  state: string;
+  persistence: ObjectValues<typeof Persistence>;
+}
+
 export interface BackendEndpoint {
   endpoint: URL | string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
@@ -39,11 +44,7 @@ export interface BackendOptions {
    */
   endpoints: {
     /**
-     * @default '/workflows/submit'
-     */
-    submit: BackendEndpoint;
-    /**
-     * @default '/workflows/persist'
+     * @default PUT '/workflows/:workflowId'
      */
     persist: BackendEndpoint;
   };
@@ -53,24 +54,32 @@ export interface BackendOptions {
   } & HeadersInit;
 }
 
-export interface WorkflowOptionsBrowser
-  extends Omit<WorkflowOptions, 'workflowActions' | 'workflowActors'> {
+export interface WorkflowOptionsBrowser extends Omit<WorkflowOptions, 'workflowActions'> {
   backend?: DeepPartial<BackendOptions>;
-  persistStates?: Array<string>;
+  persistStates?: Array<IPersistState>;
+  submitStates?: Array<Omit<IPersistState, 'persistence'>>;
 }
 
 export type BrowserWorkflowEvent =
+  | typeof Event.WILD_CARD
   | typeof Event.USER_NEXT_STEP
   | typeof Event.USER_PREV_STEP
   | typeof Event.STATE_ACTION_STATUS
   | typeof Error.ERROR
   | typeof Error.HTTP_ERROR
-  | typeof Event.WILD_CARD
   | string;
 
 export type WorkflowEventWithBrowserType = Omit<WorkflowEvent, 'type' | 'error'> & {
   error?: InstanceType<typeof HttpError> | unknown;
   type: BrowserWorkflowEvent;
+};
+
+export type TWorkflowStateActionStatusEvent = TWorkflowEvent & {
+  payload: {
+    status: 'PENDING' | 'ERROR' | 'SUCCESS';
+    action: `SYNC_${typeof Persistence.LOCAL_STORAGE | typeof Persistence.BACKEND}`;
+  };
+  error?: InstanceType<typeof HttpError> | unknown;
 };
 
 export type TSubscriber = {
@@ -120,8 +129,10 @@ export interface IOnProps {
   actions?: BaseActionObject[];
 }
 
+export type WorkflowBrowserSDKParams = ConstructorParameters<typeof WorkflowBrowserSDK>[0];
+
 export type CreateWorkflow = (
-  options: Omit<WorkflowOptionsBrowser, 'workflowActions'>,
+  options: WorkflowBrowserSDKParams,
 ) => InstanceType<typeof WorkflowBrowserSDK>;
 
 export type TWorkflowEvent = Omit<WorkflowEvent, 'type' | 'error'>;

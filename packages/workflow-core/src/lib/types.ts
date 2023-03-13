@@ -1,43 +1,37 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
 
+export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
+
 export interface Workflow {
   subscribe: (callback: (event: WorkflowEvent) => void) => void;
   sendEvent: (event: Omit<WorkflowEvent, 'state'>) => void;
   getSnapshot: () => Record<PropertyKey, any>;
 }
 
-export interface WorkflowContext {
-  id: string;
-  state: any;
-  localContextData: any;
-  sessionData: any;
-  lockKey: string;
-}
+export type PluginAction = { workflowId: string; context: any; event: any; state: any };
+
+export type ExtensionRunOrder = 'pre' | 'post';
 
 export interface WorkflowPlugin {
-  when: 'pre' | 'post';
-  action: (options: { context: any; event: any; currentState: any }) => Promise<void>;
+  when: ExtensionRunOrder;
+  action: (options: PluginAction) => Promise<void>;
 }
 
-export interface StatePlugin extends Omit<WorkflowPlugin, 'when'> {
+export interface StatePlugin extends WorkflowPlugin {
   /**
    * The actions key to inject an action function into.
    * E.g. { actions: { [plugin.name]: plugin.action  } }
    */
   name: string;
+
   /**
-   * entry - fire an action when transitioning into a specified state
-   * exit  - fire an action when transitioning out of a specified state
+   * Should the plugin be executed in a blocking manner or async
    */
-  when: 'entry' | 'exit';
+  isBlocking: boolean;
   /**
    * States already defined in the statechart
    */
   stateNames: Array<string>;
-}
-
-export interface GlobalPlugin extends WorkflowPlugin {
-  stateName: string;
 }
 
 export interface WorkflowEvent {
@@ -49,30 +43,34 @@ export interface WorkflowEvent {
 
 export interface WorkflowExtensions {
   statePlugins: StatePlugins;
-  globalPlugins: GlobalPlugins;
+}
+
+export interface WorkflowContext {
+  id?: string;
+  state?: any;
+  machineContext?: any;
+  sessionData?: any;
+  lockKey?: string;
 }
 
 export interface WorkflowOptions {
   workflowDefinitionType: 'statechart-json' | 'bpmn-json';
   workflowDefinition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
-  context?: WorkflowContext;
+  workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
 }
 
 export interface WorkflowRunnerArgs {
   workflowDefinition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
-  context: any;
-  state?: string;
+  workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
 }
 
 export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
 
 export type StatePlugins = StatePlugin[];
-
-export type GlobalPlugins = GlobalPlugin[];
 
 export type TCreateWorkflow = (options: WorkflowOptions) => Workflow;
 

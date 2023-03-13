@@ -1,14 +1,16 @@
+import { uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
+  ObjectValues,
   WorkflowEvent,
   WorkflowEventWithoutState,
   WorkflowExtensions,
   WorkflowRunnerArgs,
 } from './types';
-import { Error } from './types';
+import { Error as ErrorEnum } from './types';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -29,7 +31,7 @@ export class WorkflowRunner {
   }
 
   constructor(
-    { workflowDefinition, workflowActions, context = {}, state, extensions }: WorkflowRunnerArgs,
+    { workflowDefinition, workflowActions, workflowContext, extensions }: WorkflowRunnerArgs,
     debugMode = true,
   ) {
     this.#__workflow = this.#__extendedWorkflow({
@@ -39,13 +41,18 @@ export class WorkflowRunner {
     });
 
     // use initial context or provided context
-    this.#__context = Object.keys(context).length ? context : workflowDefinition.context || {};
+    this.#__context =
+      workflowContext && Object.keys(workflowContext.machineContext).length
+        ? workflowContext.machineContext
+        : workflowDefinition.context || {};
 
     // use initial state or provided state
-    this.#__currentState = state ? state : workflowDefinition.initial;
+    this.#__currentState = workflowContext?.state
+      ? workflowContext.state
+      : workflowDefinition.initial;
 
     // global and state specific extensions
-    this.#__extensions = extensions || { globalPlugins: [], statePlugins: [] };
+    this.#__extensions = extensions || { statePlugins: [] };
     this.#__debugMode = debugMode;
   }
 
@@ -54,7 +61,6 @@ export class WorkflowRunner {
     workflowActions,
     extensions = {
       statePlugins: [],
-      globalPlugins: [],
     },
   }: {
     workflow: any;
@@ -62,27 +68,38 @@ export class WorkflowRunner {
     extensions?: WorkflowExtensions;
   }) {
     const extended = workflow;
-    const onEnter = ['ping'];
-    const onExit = ['pong'];
+    const onEnter: string[] = [];
+    const onExit: string[] = [];
     const stateActions: Record<string, ActionFunction<any, any>> = {};
 
     for (const state in extended.states) {
-      extended.states[state].entry = Array.from(
-        new Set([...(workflow.states[state].entry ?? []), ...onEnter]),
-      );
+      extended.states[state].entry = uniqueArray([
+        ...(workflow.states[state].entry ?? []),
+        ...onEnter,
+      ]);
 
-      extended.states[state].exit = Array.from(
-        new Set([...(workflow.states[state].exit ?? []), ...onExit]),
-      );
+      extended.states[state].exit = uniqueArray([
+        ...(workflow.states[state].exit ?? []),
+        ...onExit,
+      ]);
     }
 
     for (const statePlugin of extensions.statePlugins) {
       for (const stateName of statePlugin.stateNames) {
-        // E.g { state: { entry: [...,plugin.name] } }
-        extended.states[stateName][statePlugin.when] = Array.from(
-          new Set([...extended.states[stateName][statePlugin.when], statePlugin.name]),
-        );
+        if (!extended.states[stateName]) {
+          throw new Error(`${stateName} is not defined within the workflow definition's states`);
+        }
 
+        // E.g { state: { entry: [...,plugin.name] } }
+        extended.states[stateName][statePlugin.when] = uniqueArray([
+          ...(extended.states[stateName][statePlugin.when] ?? []),
+          statePlugin.name,
+        ]);
+
+        // Blocking plugins are not injected as actions
+        if (statePlugin.isBlocking || stateActions[statePlugin.name]) {
+          continue;
+        }
         // workflow-core
         // { actions: { persist: action } }
         stateActions[statePlugin.name] = async (context, event) => {
@@ -91,39 +108,47 @@ export class WorkflowRunner {
             state: this.#__currentState,
             payload: {
               status: 'PENDING',
+              action: statePlugin.name,
             },
           });
 
           try {
             await statePlugin.action({
+              workflowId: '',
               context,
               event,
-              currentState: this.#__currentState,
+              state: this.#__currentState,
+            });
+
+            this.#__callback?.({
+              type: 'STATE_ACTION_STATUS',
+              state: this.#__currentState,
+              payload: {
+                status: 'SUCCESS',
+                action: statePlugin.name,
+              },
             });
           } catch (err) {
-            let type;
+            let type: ObjectValues<typeof ErrorEnum> = ErrorEnum.ERROR;
 
-            switch (true) {
-              case err instanceof HttpError:
-                type = Error.HTTP_ERROR;
-                break;
-              default:
-                type = Error.ERROR;
-                break;
+            if (err instanceof HttpError) {
+              type = ErrorEnum.HTTP_ERROR;
             }
+
+            this.#__callback?.({
+              type: 'STATE_ACTION_STATUS',
+              state: this.#__currentState,
+              payload: {
+                status: 'ERROR',
+                action: statePlugin.name,
+              },
+              error: err,
+            });
 
             this.#__callback?.({
               type,
               state: this.#__currentState,
               error: err,
-            });
-          } finally {
-            this.#__callback?.({
-              type: 'STATE_ACTION_STATUS',
-              state: this.#__currentState,
-              payload: {
-                status: 'IDLE',
-              },
             });
           }
         };
@@ -133,12 +158,6 @@ export class WorkflowRunner {
     const actions: MachineOptions<any, any>['actions'] = {
       ...workflowActions,
       ...stateActions,
-      ping: (...rest: any[]) => {
-        console.log('Global state entry handler');
-      },
-      pong: (...rest: any[]) => {
-        console.log('Global state exit handler');
-      },
     };
 
     const guards: MachineOptions<any, any>['guards'] = {
@@ -186,14 +205,19 @@ export class WorkflowRunner {
     // all sends() will be deferred until the workflow is started
     service.start();
 
-    for (const ext of this.#__extensions.globalPlugins) {
-      if (ext.when == 'pre') {
-        await ext.action({
-          context: service.getSnapshot().context,
-          event,
-          currentState: this.#__currentStateNode,
-        });
+    for (const ext of this.#__extensions.statePlugins) {
+      if (!ext.isBlocking || ext.when !== 'pre') {
+        // Non blocking plugins are executed as actions
+        continue;
       }
+
+      const snapshot = service.getSnapshot();
+      await ext.action({
+        workflowId: snapshot.machine?.id || '',
+        context: snapshot.context,
+        event,
+        state: this.#__currentStateNode,
+      });
     }
     service.send(event);
     this.#__context = service.getSnapshot().context;
@@ -201,14 +225,20 @@ export class WorkflowRunner {
       console.log('context:', this.#__context);
     }
 
-    for (const ext of this.#__extensions.globalPlugins) {
-      if (ext.when == 'post') {
-        await ext.action({
-          context: this.#__context,
-          event,
-          currentState: this.#__currentStateNode,
-        });
+    for (const ext of this.#__extensions.statePlugins) {
+      if (!ext.isBlocking || ext.when !== 'post') {
+        // Non blocking plugins are executed as actions
+        continue;
       }
+
+      const snapshot = service.getSnapshot();
+
+      await ext.action({
+        workflowId: snapshot.machine?.id || '',
+        context: this.#__context,
+        event,
+        state: this.#__currentStateNode,
+      });
     }
   }
 
