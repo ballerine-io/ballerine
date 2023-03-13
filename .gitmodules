@@ -4,9 +4,6 @@
 [submodule "apps/ballerine-workflow-builder"]
 	path = apps/workflow-builder
 	url = git@github.com:ballerine-io/ballerine-workflow-builder.git
-[submodule "packages/ballerine-core"]
-	path = packages/common
-	url = git@github.com:ballerine-io/ballerine-core.git
 [submodule "packages/ballerine-cli"]
 	path = packages/cli
 	url = git@github.com:ballerine-io/ballerine-cli.git
