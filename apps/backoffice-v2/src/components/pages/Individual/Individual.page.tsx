@@ -2,8 +2,16 @@ import { Subject } from 'components/organisms/Subject/Subject';
 import { useIndividual } from 'components/pages/Individual/hooks/useIndividual/useIndividual';
 
 export const Individual = () => {
-  const { selectedEndUser, faceAUrl, faceBUrl, info, images, isLoading, whitelist } =
-    useIndividual();
+  const {
+    selectedEndUser,
+    faceAUrl,
+    faceBUrl,
+    info,
+    images,
+    isLoading,
+    whitelist,
+    availableActions,
+  } = useIndividual();
 
   // Selected end user
   return (
@@ -13,7 +21,7 @@ export const Individual = () => {
         id={selectedEndUser.id}
         fullName={selectedEndUser.fullName}
         avatarUrl={selectedEndUser.avatarUrl}
-        state={selectedEndUser.state}
+        availableActions={availableActions}
       />
 
       <Subject.Content key={selectedEndUser.id}>

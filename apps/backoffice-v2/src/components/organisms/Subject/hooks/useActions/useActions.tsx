@@ -7,9 +7,9 @@ import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListen
 import { useSelectNextEndUser } from 'hooks/useSelectNextEndUser/useSelectNextEndUser';
 import { createInitials } from '../../../../../utils/create-initials/create-initials';
 import { IUseActions } from './interfaces';
-import { State } from '../../../../../enums';
+import { Action } from '../../../../../enums';
 
-export const useActions = ({ endUserId, endUserState, fullName }: IUseActions) => {
+export const useActions = ({ endUserId, availableActions, fullName }: IUseActions) => {
   const onSelectNextEndUser = useSelectNextEndUser();
   const { mutate: mutateApproveEndUser, isLoading: isLoadingApproveEndUser } =
     useApproveEndUserMutation(endUserId, onSelectNextEndUser);
@@ -20,9 +20,8 @@ export const useActions = ({ endUserId, endUserState, fullName }: IUseActions) =
   // Create initials from the first character of the first name, middle name, and last name.
   const initials = createInitials(fullName);
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
-  const isReady = [State.APPROVED, State.REJECTED, State.MANUAL_REVIEW].some(
-    state => state === endUserState,
-  );
+  const canReject = availableActions.includes(Action.REJECT);
+  const canApprove = availableActions.includes(Action.APPROVE);
 
   // Only display the button spinners if the request is longer than 300ms
   const debouncedIsLoadingRejectEndUser = useDebounce(isLoadingRejectEndUser, 300);
@@ -62,6 +61,7 @@ export const useActions = ({ endUserId, endUserState, fullName }: IUseActions) =
     isLoading,
     isLoadingEndUser,
     initials,
-    isReady,
+    canReject,
+    canApprove,
   };
 };

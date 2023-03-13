@@ -1,7 +1,5 @@
-import { TState } from 'src/types';
-
 export interface IUseActions {
   endUserId: string;
-  endUserState: TState;
+  availableActions: Array<string>;
   fullName: string;
 }

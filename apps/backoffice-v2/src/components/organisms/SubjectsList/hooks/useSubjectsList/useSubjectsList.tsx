@@ -28,10 +28,6 @@ export const useSubjectsList = () => {
       value: 'state',
       options: [
         {
-          label: 'Manual Review',
-          value: 'manualReview',
-        },
-        {
           label: 'Rejected',
           value: 'rejected',
         },
@@ -40,8 +36,8 @@ export const useSubjectsList = () => {
           value: 'approved',
         },
         {
-          label: 'Pending',
-          value: 'pending',
+          label: 'Processing',
+          value: 'processing',
         },
         {
           label: 'New',

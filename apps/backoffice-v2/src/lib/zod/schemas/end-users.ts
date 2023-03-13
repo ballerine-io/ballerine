@@ -14,7 +14,7 @@ export const EndUsersListSchema = z.object({
         fullName: z.string().default(''),
         email: z.string().nullable().default(''),
         phone: z.string().nullable().default(''),
-        state: z.enum(States).default(State.PENDING),
+        state: z.enum(States).default(State.PROCESSING),
         assignedTo: z.string().default(''),
         endUserType: z.string().nullable().default(''),
       }),
@@ -36,7 +36,7 @@ export const EndUserByIdSchema = z.object({
       endUserType: z.string().nullable().default('individual'),
       email: z.string().nullable().default(''),
       phone: z.string().nullable().default(''),
-      state: z.enum(States).default(State.PENDING),
+      state: z.enum(States).default(State.PROCESSING),
       dateOfBirth: z.string().default(''),
       placeOfBirth: z.string().default(''),
       assignedTo: z.string().default(''),
@@ -51,11 +51,11 @@ export const EndUserByIdSchema = z.object({
         })
         .optional(),
       checkResults: z.object({
-        finalResult: z.enum(States).default(State.PENDING),
+        finalResult: z.enum(States).default(State.PROCESSING),
         scannedBy: z.string().default(''),
-        amlCheck: z.enum(States).default(State.PENDING),
-        idCheck: z.enum(States).default(State.PENDING),
-        selfieCheck: z.enum(States).default(State.PENDING),
+        amlCheck: z.enum(States).default(State.PROCESSING),
+        idCheck: z.enum(States).default(State.PROCESSING),
+        selfieCheck: z.enum(States).default(State.PROCESSING),
       }),
       address: z
         .object({
@@ -78,6 +78,7 @@ export const EndUserByIdSchema = z.object({
           }),
         )
         .default([]),
+      activeWorkflows: z.array(z.any()).default([]),
     })
     .default({}),
 });

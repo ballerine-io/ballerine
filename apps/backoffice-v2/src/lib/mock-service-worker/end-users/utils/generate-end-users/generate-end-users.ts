@@ -8,17 +8,14 @@ export const generateEndUsers = (length: number) => {
   return Array.from({ length }, _ => {
     const generateState = ({
       withNew = false,
-      withManualReview = false,
     }: {
       withNew?: boolean;
-      withManualReview?: boolean;
     } = {}) =>
       faker.helpers.arrayElement([
         'approved',
         'rejected',
-        'pending',
+        'processing',
         ...(withNew ? ['new'] : []),
-        ...(withManualReview ? ['manualReview'] : []),
       ]);
     // Should display a placeholder for now.
     const avatarUrl = undefined;
@@ -55,7 +52,6 @@ export const generateEndUsers = (length: number) => {
     const amlCheck = generateState();
     const state = generateState({
       withNew: true,
-      withManualReview: true,
     });
     const checkResults = {
       finalResult: state,
@@ -139,6 +135,41 @@ export const generateEndUsers = (length: number) => {
       checkResults,
       address,
       documents,
+      activeWorkflows: [
+        {
+          id: 'clf5452ji000044wnul6bf8yr',
+          version: '1.0.0',
+          name: 'on-boarding',
+          state: 'WELCOME',
+          context: {
+            documents: [],
+          },
+          workflowDefinitionType: 'statechart-json',
+          workflowDefinition: {
+            id: 'on-boarding',
+            initial: 'WELCOME',
+            states: {
+              WELCOME: {
+                on: {
+                  APPROVE: 'APPROVE',
+                  REJECT: 'REJECT',
+                  RECOLLECT: 'RECOLLECT',
+                },
+                tags: ['backoffice'],
+              },
+              APPROVE: {
+                type: 'final',
+              },
+              REJECT: {
+                type: 'final',
+              },
+              RECOLLECT: {
+                type: 'final',
+              },
+            },
+          },
+        },
+      ],
     };
   });
 };

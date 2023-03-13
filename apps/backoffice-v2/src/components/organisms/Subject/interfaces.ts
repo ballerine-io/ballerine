@@ -23,7 +23,7 @@ export interface IInfoProps {
 export interface IActionsProps {
   id: string;
   fullName: string;
-  state: TState;
+  availableActions: Array<string>;
   avatarUrl: string;
 }
 

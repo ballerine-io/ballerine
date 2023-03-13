@@ -1,8 +1,6 @@
+import { createWorkflow } from '@ballerine/workflow-browser-sdk';
 import { useParams } from '@tanstack/react-router';
 import { useEndUserQuery } from '../../../../../lib/react-query/queries/useEndUserQuery/useEndUserQuery';
-import { createWorkflow } from '@ballerine/workflow-browser-sdk';
-import { useWorkflowQuery } from '../../../../../lib/react-query/queries/useWorkflowQuery/useWorkflowQuery';
-import { useWorkflowsQuery } from '../../../../../lib/react-query/queries/useWorkflowsQuery/useWorkflowsQuery';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -21,7 +19,7 @@ export const useIndividual = () => {
     passport: passportInfo,
     address: addressInfo,
     checkResults,
-    state,
+    activeWorkflows,
   } = data ?? {};
   const personalInfo = {
     firstName,
@@ -45,7 +43,6 @@ export const useIndividual = () => {
     id: endUserId,
     fullName,
     avatarUrl,
-    state,
   };
   const faceAUrl = images?.find(({ caption }) => /face/i.test(caption))?.imageUrl;
   const faceBUrl = images?.find(({ caption }) => /id\scardfront/i.test(caption))?.imageUrl;
@@ -56,9 +53,13 @@ export const useIndividual = () => {
     checkResults,
     addressInfo,
   };
-  const { data: workflows } = useWorkflowsQuery({ endUserId });
-  const { data: workflow } = useWorkflowQuery({ endUserId, workflowId: workflows?.[0]?.id });
-  const workflowService = workflow ? createWorkflow(workflow) : {};
+  // Get the first workflow of a type.
+  const activeWorkflow = activeWorkflows?.find(({ name }) => name === 'on-boarding');
+  const workflowService = activeWorkflow ? createWorkflow(activeWorkflow) : {};
+  const snapshot = workflowService?.getSnapshot?.();
+  const isBackofficeState = snapshot?.hasTag?.('backoffice');
+  // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT']
+  const availableActions = !isBackofficeState ? [] : snapshot?.nextEvents ?? [];
 
   return {
     selectedEndUser,
@@ -68,5 +69,6 @@ export const useIndividual = () => {
     images,
     isLoading,
     whitelist,
+    availableActions,
   };
 };
