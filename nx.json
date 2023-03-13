@@ -3,7 +3,7 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build"]
+        "cacheableOperations": ["build", "test"]
       }
     }
   },
@@ -16,6 +16,9 @@
           "projects": "dependencies"
         }
       ]
+    },
+    "test": {
+      "dependsOn": [{ "projects": "self", "target": "build" }]
     }
   },
   "defaultBase": "main"

@@ -1,5 +1,21 @@
 # @ballerine/workflow-browser-sdk
 
+## 0.0.5
+
+### Patch Changes
+
+- update packages
+- Updated dependencies
+  - @ballerine/workflow-core@0.4.7
+
+## 0.0.4
+
+### Patch Changes
+
+- 700d492: added missing changeset - fixed monorepo infra
+- Updated dependencies [700d492]
+  - @ballerine/workflow-core@0.4.6
+
 ## 0.0.3
 
 ### Patch Changes
