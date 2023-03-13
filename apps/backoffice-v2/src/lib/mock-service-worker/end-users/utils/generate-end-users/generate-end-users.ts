@@ -6,12 +6,19 @@ export const assignedTo = faker.image.avatar();
 
 export const generateEndUsers = (length: number) => {
   return Array.from({ length }, _ => {
-    const generateState = (withNew = false) =>
+    const generateState = ({
+      withNew = false,
+      withManualReview = false,
+    }: {
+      withNew?: boolean;
+      withManualReview?: boolean;
+    } = {}) =>
       faker.helpers.arrayElement([
         'approved',
         'rejected',
         'pending',
         ...(withNew ? ['new'] : []),
+        ...(withManualReview ? ['manualReview'] : []),
       ]);
     // Should display a placeholder for now.
     const avatarUrl = undefined;
@@ -46,7 +53,10 @@ export const generateEndUsers = (length: number) => {
     };
 
     const amlCheck = generateState();
-    const state = generateState(true);
+    const state = generateState({
+      withNew: true,
+      withManualReview: true,
+    });
     const checkResults = {
       finalResult: state,
       amlCheck,

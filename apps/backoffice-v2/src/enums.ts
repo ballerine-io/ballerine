@@ -7,6 +7,7 @@ export const Method = {
 } as const;
 
 export const State = {
+  MANUAL_REVIEW: 'manualReview',
   APPROVED: 'approved',
   REJECTED: 'rejected',
   PENDING: 'pending',
@@ -14,6 +15,7 @@ export const State = {
 } as const;
 
 export const States = [
+  State.MANUAL_REVIEW,
   State.APPROVED,
   State.REJECTED,
   State.PENDING,

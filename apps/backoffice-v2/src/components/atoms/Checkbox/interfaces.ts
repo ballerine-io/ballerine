@@ -14,6 +14,7 @@ export interface IGroupProps {
   onChange: (values: Array<unknown>) => void;
   values?: Array<unknown>;
   titleProps?: ComponentProps<'h4'>;
+  innerContainerProps?: ComponentProps<'div'>;
 }
 
 export interface ICheckboxProps

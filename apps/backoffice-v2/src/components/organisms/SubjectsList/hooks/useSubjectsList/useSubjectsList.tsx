@@ -28,6 +28,10 @@ export const useSubjectsList = () => {
       value: 'state',
       options: [
         {
+          label: 'Manual Review',
+          value: 'manualReview',
+        },
+        {
           label: 'Rejected',
           value: 'rejected',
         },

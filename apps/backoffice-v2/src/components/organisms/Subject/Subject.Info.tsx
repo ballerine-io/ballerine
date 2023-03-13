@@ -86,11 +86,7 @@ export const useInfo = ({
  *
  * @constructor
  */
-export const Info: FunctionComponent<IInfoProps> = ({
-  info,
-  whitelist,
-  isLoading,
-}) => {
+export const Info: FunctionComponent<IInfoProps> = ({ info, whitelist, isLoading }) => {
   const {
     sections,
     skeletons,
@@ -135,10 +131,7 @@ export const Info: FunctionComponent<IInfoProps> = ({
                   >
                     <div className={`flex w-full justify-between`}>
                       OCR & Given details mismatch
-                      <button
-                        className={`link-hover link rounded-md p-1`}
-                        onClick={onOcrMismatch}
-                      >
+                      <button className={`link-hover link rounded-md p-1`} onClick={onOcrMismatch}>
                         Resolve
                       </button>
                     </div>
@@ -147,9 +140,7 @@ export const Info: FunctionComponent<IInfoProps> = ({
               }
             >
               {({ title, text, index }) => {
-                const value = isValidDate(text)
-                  ? formatDate(new Date(text))
-                  : text;
+                const value = isValidDate(text) ? formatDate(new Date(text)) : text;
                 const isCheckResults = /check\sresults/i.test(section?.title);
                 const isEmail = /email/i.test(title);
 
@@ -198,13 +189,13 @@ export const Info: FunctionComponent<IInfoProps> = ({
                 return (
                   <DataField
                     title={title}
-                    text={value}
+                    // camelCase to Title Case
+                    text={value.replace(/([a-z])([A-Z])/g, '$1 $2')}
                     textProps={{
                       className: ctw({
                         capitalize: !isEmail,
                         'normal-case': isEmail,
-                        'text-success':
-                          isCheckResults && text === State.APPROVED,
+                        'text-success': isCheckResults && text === State.APPROVED,
                         'text-error': isCheckResults && text === State.REJECTED,
                       }),
                     }}
