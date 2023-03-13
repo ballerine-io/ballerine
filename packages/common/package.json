@@ -1,0 +1,49 @@
+{
+  "private": false,
+  "name": "@ballerine/common",
+  "author": "Ballerine",
+  "version": "0.0.1",
+  "description": "common",
+  "module": "./dist/esm/index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist/**",
+    "./src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ballerine-io/ballerine/packages/common"
+  },
+  "license": "Apache-2.0",
+  "keywords": [],
+  "scripts": {
+    "format": "prettier --write .",
+    "lint": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "clean:dist": "rimraf ./dist",
+    "clean:modules": "rimraf ./node_modules && rimraf ./pnpm-lock.yaml",
+    "clean": "pnpm clean:dist && pnpm clean:modules",
+    "build": "tsup",
+    "watch": "pnpm build --watch",
+    "test": "vitest run"
+  },
+  "engines": {
+    "node": ">=12"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.48.1",
+    "@typescript-eslint/parser": "^5.48.1",
+    "@vitest/coverage-istanbul": "^0.28.4",
+    "eslint": "^8.32.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "prettier": "^2.1.1",
+    "rimraf": "^4.1.2",
+    "tsup": "^6.6.3",
+    "typescript": "4.9.5",
+    "vite": "^4.1.1",
+    "vitest": "^0.28.4"
+  }
+}
