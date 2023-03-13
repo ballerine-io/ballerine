@@ -40,13 +40,16 @@ export class WorkflowRunner {
       extensions,
     });
 
-
-
     // use initial context or provided context
-    this.#__context = workflowContext && Object.keys(workflowContext.machineContext).length ? workflowContext.machineContext : workflowDefinition.context || {};
+    this.#__context =
+      workflowContext && Object.keys(workflowContext.machineContext).length
+        ? workflowContext.machineContext
+        : workflowDefinition.context || {};
 
     // use initial state or provided state
-    this.#__currentState = workflowContext?.state ? workflowContext.state : workflowDefinition.initial;
+    this.#__currentState = workflowContext?.state
+      ? workflowContext.state
+      : workflowDefinition.initial;
 
     // global and state specific extensions
     this.#__extensions = extensions || { statePlugins: [] };
@@ -82,14 +85,16 @@ export class WorkflowRunner {
     }
 
     for (const statePlugin of extensions.statePlugins) {
+      const when = statePlugin.when === 'pre' ? 'entry' : 'exit';
+
       for (const stateName of statePlugin.stateNames) {
         if (!extended.states[stateName]) {
           throw new Error(`${stateName} is not defined within the workflow definition's states`);
         }
 
         // E.g { state: { entry: [...,plugin.name] } }
-        extended.states[stateName][statePlugin.when] = uniqueArray([
-          ...(extended.states[stateName][statePlugin.when] ?? []),
+        extended.states[stateName][when] = uniqueArray([
+          ...(extended.states[stateName][when] ?? []),
           statePlugin.name,
         ]);
 
@@ -111,7 +116,7 @@ export class WorkflowRunner {
 
           try {
             await statePlugin.action({
-              workflowId: "",
+              workflowId: '',
               context,
               event,
               state: this.#__currentState,
@@ -154,7 +159,7 @@ export class WorkflowRunner {
 
     const actions: MachineOptions<any, any>['actions'] = {
       ...workflowActions,
-      ...stateActions
+      ...stateActions,
     };
 
     const guards: MachineOptions<any, any>['guards'] = {
@@ -205,12 +210,12 @@ export class WorkflowRunner {
     for (const ext of this.#__extensions.statePlugins) {
       if (!ext.isBlocking || ext.when !== 'pre') {
         // Non blocking plugins are executed as actions
-        continue
+        continue;
       }
 
       const snapshot = service.getSnapshot();
       await ext.action({
-        workflowId: snapshot.machine?.id || "",
+        workflowId: snapshot.machine?.id || '',
         context: snapshot.context,
         event,
         state: this.#__currentStateNode,
@@ -225,18 +230,17 @@ export class WorkflowRunner {
     for (const ext of this.#__extensions.statePlugins) {
       if (!ext.isBlocking || ext.when !== 'post') {
         // Non blocking plugins are executed as actions
-        continue
+        continue;
       }
 
       const snapshot = service.getSnapshot();
 
       await ext.action({
-        workflowId: snapshot.machine?.id || "",
+        workflowId: snapshot.machine?.id || '',
         context: this.#__context,
         event,
         state: this.#__currentStateNode,
       });
-
     }
   }
 
