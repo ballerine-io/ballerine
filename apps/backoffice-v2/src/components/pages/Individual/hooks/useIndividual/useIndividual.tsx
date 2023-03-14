@@ -63,6 +63,7 @@ export const useIndividual = () => {
 
   return {
     selectedEndUser,
+    workflowId: activeWorkflow?.id,
     faceAUrl,
     faceBUrl,
     info,

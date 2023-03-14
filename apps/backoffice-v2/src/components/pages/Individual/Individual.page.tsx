@@ -4,6 +4,7 @@ import { useIndividual } from 'components/pages/Individual/hooks/useIndividual/u
 export const Individual = () => {
   const {
     selectedEndUser,
+    workflowId,
     faceAUrl,
     faceBUrl,
     info,
@@ -19,6 +20,7 @@ export const Individual = () => {
       {/* Reject and approve header */}
       <Subject.Actions
         id={selectedEndUser.id}
+        workflowId={workflowId}
         fullName={selectedEndUser.fullName}
         avatarUrl={selectedEndUser.avatarUrl}
         availableActions={availableActions}

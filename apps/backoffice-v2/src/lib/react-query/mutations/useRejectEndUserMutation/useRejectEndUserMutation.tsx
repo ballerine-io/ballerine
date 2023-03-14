@@ -3,14 +3,25 @@ import { api } from '../../../../api/api';
 import { endUsers } from '../../end-users';
 import { Action, Resource } from '../../../../enums';
 
-export const useRejectEndUserMutation = (endUserId: string, onSelectNextEndUser) => {
+export const useRejectEndUserMutation = ({
+  endUserId,
+  workflowId,
+  onSelectNextEndUser,
+}: {
+  endUserId: string;
+  workflowId: string;
+  onSelectNextEndUser: VoidFunction;
+}) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () =>
-      api.endUsers.updateById(endUserId, {
-        // state: State.REJECTED,
-        state: 'declined',
+      api.workflows.event({
+        endUserId,
+        workflowId,
+        body: {
+          name: 'REJECT',
+        },
       }),
     onMutate: () => ({
       resource: Resource.END_USER,

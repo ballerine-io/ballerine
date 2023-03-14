@@ -1,15 +1,27 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../../api/api';
 import { endUsers } from '../../end-users';
-import { Action, Resource, State } from '../../../../enums';
+import { Action, Resource } from '../../../../enums';
 
-export const useApproveEndUserMutation = (endUserId: string, onSelectNextEndUser: VoidFunction) => {
+export const useApproveEndUserMutation = ({
+  endUserId,
+  workflowId,
+  onSelectNextEndUser,
+}: {
+  endUserId: string;
+  workflowId: string;
+  onSelectNextEndUser: VoidFunction;
+}) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () =>
-      api.endUsers.updateById(endUserId, {
-        state: State.APPROVED,
+      api.workflows.event({
+        endUserId,
+        workflowId,
+        body: {
+          name: 'APPROVE',
+        },
       }),
     onMutate: () => ({
       resource: Resource.END_USER,

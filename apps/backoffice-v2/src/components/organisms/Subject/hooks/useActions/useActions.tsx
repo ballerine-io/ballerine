@@ -9,12 +9,12 @@ import { createInitials } from '../../../../../utils/create-initials/create-init
 import { IUseActions } from './interfaces';
 import { Action } from '../../../../../enums';
 
-export const useActions = ({ endUserId, availableActions, fullName }: IUseActions) => {
+export const useActions = ({ endUserId, workflowId, availableActions, fullName }: IUseActions) => {
   const onSelectNextEndUser = useSelectNextEndUser();
   const { mutate: mutateApproveEndUser, isLoading: isLoadingApproveEndUser } =
-    useApproveEndUserMutation(endUserId, onSelectNextEndUser);
+    useApproveEndUserMutation({ endUserId, workflowId, onSelectNextEndUser });
   const { mutate: mutateRejectEndUser, isLoading: isLoadingRejectEndUser } =
-    useRejectEndUserMutation(endUserId, onSelectNextEndUser);
+    useRejectEndUserMutation({ endUserId, workflowId, onSelectNextEndUser });
   const { isLoading: isLoadingEndUser } = useEndUserQuery(endUserId);
   const isLoading = isLoadingApproveEndUser || isLoadingRejectEndUser || isLoadingEndUser;
   // Create initials from the first character of the first name, middle name, and last name.

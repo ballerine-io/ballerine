@@ -54,8 +54,8 @@ export const workflows = {
     body: Record<PropertyKey, unknown>;
   }) => {
     const [data, error] = await apiClient({
-      endpoint: endpoints.workflows.updateById.endpoint({ endUserId, workflowId }),
-      method: endpoints.workflows.updateById.method,
+      endpoint: endpoints.workflows.event.endpoint({ endUserId, workflowId }),
+      method: endpoints.workflows.event.method,
       body,
       schema: z.any(),
     });

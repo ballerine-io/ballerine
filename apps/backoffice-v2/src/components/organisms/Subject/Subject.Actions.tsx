@@ -22,6 +22,7 @@ import { ctw } from '../../../utils/ctw/ctw';
  */
 export const Actions: FunctionComponent<IActionsProps> = ({
   id,
+  workflowId,
   fullName,
   availableActions,
   avatarUrl,
@@ -36,7 +37,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     initials,
     canApprove,
     canReject,
-  } = useActions({ endUserId: id, availableActions, fullName });
+  } = useActions({ endUserId: id, workflowId, availableActions, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4`}>

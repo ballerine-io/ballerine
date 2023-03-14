@@ -532,6 +532,75 @@ importers:
       vite: 4.1.4_@types+node@18.14.2
       vitest: 0.28.5_jsdom@20.0.3
 
+  sdks/workflow-node-sdk:
+    specifiers:
+      '@babel/core': 7.17.9
+      '@babel/preset-env': 7.16.11
+      '@babel/preset-typescript': 7.16.7
+      '@ballerine/workflow-core': ^0.4.7
+      '@rollup/plugin-babel': 5.3.1
+      '@rollup/plugin-commonjs': ^24.0.1
+      '@rollup/plugin-node-resolve': 13.2.1
+      '@rollup/plugin-replace': 4.0.0
+      '@types/babel__core': ^7.20.0
+      '@types/fs-extra': ^11.0.1
+      '@types/json-logic-js': ^2.0.1
+      '@typescript-eslint/eslint-plugin': ^5.48.1
+      '@typescript-eslint/parser': ^5.48.1
+      '@vitest/coverage-istanbul': ^0.28.4
+      concurrently: ^7.6.0
+      cz-conventional-changelog: ^3.3.0
+      eslint: ^8.32.0
+      eslint-config-prettier: ^6.11.0
+      eslint-plugin-eslint-comments: ^3.2.0
+      eslint-plugin-functional: ^3.0.2
+      eslint-plugin-import: ^2.22.0
+      json-logic-js: ^2.0.2
+      prettier: ^2.1.1
+      rollup: 2.70.2
+      rollup-plugin-dts: 4.2.2
+      rollup-plugin-size: 0.2.2
+      rollup-plugin-terser: 7.0.2
+      rollup-plugin-visualizer: 5.6.0
+      typescript: 4.9.5
+      vite: ^4.1.1
+      vitest: ^0.28.5
+      xstate: ^4.36.0
+    dependencies:
+      '@ballerine/workflow-core': link:../../packages/workflow-core
+      json-logic-js: 2.0.2
+      xstate: 4.37.0
+    devDependencies:
+      '@babel/core': 7.17.9
+      '@babel/preset-env': 7.16.11_@babel+core@7.17.9
+      '@babel/preset-typescript': 7.16.7_@babel+core@7.17.9
+      '@rollup/plugin-babel': 5.3.1_e3h47fdnam7ua3vn7lnlydaaku
+      '@rollup/plugin-commonjs': 24.0.1_rollup@2.70.2
+      '@rollup/plugin-node-resolve': 13.2.1_rollup@2.70.2
+      '@rollup/plugin-replace': 4.0.0_rollup@2.70.2
+      '@types/babel__core': 7.20.0
+      '@types/fs-extra': 11.0.1
+      '@types/json-logic-js': 2.0.1
+      '@typescript-eslint/eslint-plugin': 5.53.0_cjo54hduev4bqhpjw5znwiokqu
+      '@typescript-eslint/parser': 5.53.0_ycpbpc6yetojsgtrx3mwntkhsu
+      '@vitest/coverage-istanbul': 0.28.5
+      concurrently: 7.6.0
+      cz-conventional-changelog: 3.3.0
+      eslint: 8.35.0
+      eslint-config-prettier: 6.15.0_eslint@8.35.0
+      eslint-plugin-eslint-comments: 3.2.0_eslint@8.35.0
+      eslint-plugin-functional: 3.7.2_ycpbpc6yetojsgtrx3mwntkhsu
+      eslint-plugin-import: 2.27.5_nhka4er4oejxhxq3ecgtwxvdji
+      prettier: 2.8.4
+      rollup: 2.70.2
+      rollup-plugin-dts: 4.2.2_tbafrabsxhd6ssdsq5pxu7uflu
+      rollup-plugin-size: 0.2.2
+      rollup-plugin-terser: 7.0.2_rollup@2.70.2
+      rollup-plugin-visualizer: 5.6.0_rollup@2.70.2
+      typescript: 4.9.5
+      vite: 4.1.4_@types+node@18.14.2
+      vitest: 0.28.5
+
   websites/docs:
     specifiers:
       '@algolia/client-search': ^4.13.1
@@ -18902,6 +18971,19 @@ packages:
       size-plugin-core: 0.0.7
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /rollup-plugin-terser/7.0.2_rollup@2.70.2:
+    resolution: {integrity: sha512-w3iIaU4OxcF52UUXiZNsNeuXIMDvFrr+ZXK6bFZ0Q60qyVfq4uLptoS4bbq3paG3x216eQllFZX7zt6TIImguQ==}
+    deprecated: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-terser
+    peerDependencies:
+      rollup: ^2.0.0
+    dependencies:
+      '@babel/code-frame': 7.18.6
+      jest-worker: 26.6.2
+      rollup: 2.70.2
+      serialize-javascript: 4.0.0
+      terser: 5.16.5
     dev: true
 
   /rollup-plugin-terser/7.0.2_rollup@2.79.1:
