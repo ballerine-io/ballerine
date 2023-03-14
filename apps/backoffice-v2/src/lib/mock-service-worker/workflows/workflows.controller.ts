@@ -86,6 +86,7 @@ export const workflowsController = [
     }
 
     // Why do we need to wrap createWorkflow in initNodeWorkflow?
+    // Alias createWorkflow to createWorkflowCore instead of using createWorkflowNode.
     const workflowService = initNodeWorkflow(workflow);
 
     // Why do we expose the runner as a property instead of `workflowService.sendEvent` directly?
@@ -95,6 +96,7 @@ export const workflowsController = [
     const state = snapshot.value;
 
     endUsers.updateById(endUserId, {
+      state: state === 'APPROVE' ? 'approved' : 'rejected',
       activeWorkflows: endUser?.activeWorkflows?.map(workflow => {
         if (workflow.id !== id) return workflow;
 
