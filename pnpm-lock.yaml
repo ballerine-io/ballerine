@@ -357,6 +357,7 @@ importers:
       eslint-plugin-eslint-comments: ^3.2.0
       eslint-plugin-functional: ^3.0.2
       eslint-plugin-import: ^2.22.0
+      fs-extra: ^11.1.0
       json-logic-js: ^2.0.2
       prettier: ^2.1.1
       rollup: 2.70.2
@@ -393,6 +394,7 @@ importers:
       eslint-plugin-eslint-comments: 3.2.0_eslint@8.35.0
       eslint-plugin-functional: 3.7.2_ycpbpc6yetojsgtrx3mwntkhsu
       eslint-plugin-import: 2.27.5_nhka4er4oejxhxq3ecgtwxvdji
+      fs-extra: 11.1.0
       prettier: 2.8.4
       rollup: 2.70.2
       rollup-plugin-dts: 4.2.2_tbafrabsxhd6ssdsq5pxu7uflu
@@ -666,6 +668,7 @@ importers:
       eslint-plugin-eslint-comments: ^3.2.0
       eslint-plugin-functional: ^3.0.2
       eslint-plugin-import: ^2.22.0
+      fs-extra: ^11.1.0
       json-logic-js: ^2.0.2
       prettier: ^2.1.1
       rollup: 2.70.2
@@ -703,6 +706,7 @@ importers:
       eslint-plugin-eslint-comments: 3.2.0_eslint@8.35.0
       eslint-plugin-functional: 3.7.2_ycpbpc6yetojsgtrx3mwntkhsu
       eslint-plugin-import: 2.27.5_nhka4er4oejxhxq3ecgtwxvdji
+      fs-extra: 11.1.0
       prettier: 2.8.4
       rollup: 2.70.2
       rollup-plugin-dts: 4.2.2_tbafrabsxhd6ssdsq5pxu7uflu
