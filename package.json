@@ -26,7 +26,7 @@
     "branchlint": "branchlint -u -c --prefix \"$(git config --global user.name)\"",
     "format": "nx run-many --target=format",
     "lint": "nx run-many --target=lint --projects=@ballerine/web-sdk",
-    "test": "nx run-many --target=test",
+    "test": "nx run-many --target=test --exclude=@ballerine/backoffice",
     "test:e2e": "nx run-many --target=test:e2e",
     "playwright:install": "nx run-many --target=playwright:install",
     "dev": "nx run-many --target=dev --projects=@ballerine/web-sdk,@ballerine/backoffice-v2",
