@@ -27,7 +27,7 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/common": "workspace:*",
+    "@ballerine/common": "0.0.1",
     "json-logic-js": "^2.0.2",
     "xstate": "^4.35.2"
   },

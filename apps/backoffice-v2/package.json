@@ -47,7 +47,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ballerine/common": "workspace:*",
+    "@ballerine/common": "0.0.1",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-checkbox": "^1.0.1",

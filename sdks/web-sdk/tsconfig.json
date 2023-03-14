@@ -16,7 +16,7 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "types": ["vitest/globals", "@testing-library/jest-dom", "@ballerine/common"],
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
     "downlevelIteration": true
   },
   "include": ["src/**/*", "src/node_modules/**/*"],
