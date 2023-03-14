@@ -141,9 +141,14 @@ export const generateEndUsers = (length: number) => {
           version: '1.0.0',
           name: 'on-boarding',
           state: 'WELCOME',
-          context: {
-            documents: [],
+          workflowContext: {
+            // FIXME: Add ?? {} to Object.keys call in workflow-core.
+            machineContext: {
+              documents: [],
+            },
           },
+          // FIXME: Breaks workflow-node-sdk if omitted.
+          extensions: [],
           workflowDefinitionType: 'statechart-json',
           workflowDefinition: {
             id: 'on-boarding',

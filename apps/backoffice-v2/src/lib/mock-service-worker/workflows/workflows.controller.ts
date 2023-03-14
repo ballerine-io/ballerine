@@ -1,12 +1,15 @@
 import { rest } from 'msw';
 import { env } from '../../../env/env';
 import { workflows } from './workflows.data';
+// TODO: Make index.ts only re-export the public API
+import { initNodeWorkflow } from '@ballerine/workflow-node-sdk';
+import { endUsers } from '../end-users/end-users.data';
 
-const workflowCore = {
-  sendEvent({ type }) {
-    return;
-  },
-};
+// const workflowCore = {
+//   sendEvent({ type }) {
+//     return;
+//   },
+// };
 
 export const workflowsController = [
   // List
@@ -74,19 +77,37 @@ export const workflowsController = [
       return res(ctx.status(400));
     }
 
-    const workflow = workflows.findById(id);
+    const endUserId = req.url.searchParams.get('endUserId');
+    const endUser = endUsers.findById(endUserId);
+    const workflow = endUser?.activeWorkflows?.find(workflow => workflow.id === id);
 
     if (!workflow) {
       return res(ctx.status(404));
     }
 
-    workflowCore.sendEvent({ type: body?.name });
+    // Why do we need to wrap createWorkflow in initNodeWorkflow?
+    const workflowService = initNodeWorkflow(workflow);
 
-    // const state = workflowCore.getSnapShot().state.value;
+    // Why do we expose the runner as a property instead of `workflowService.sendEvent` directly?
+    workflowService.runner.sendEvent({ type: body?.name });
 
-    // workflows.updateById(id, {
-    //   state,
-    // });
+    const snapshot = workflowService.runner.getSnapshot();
+    const state = snapshot.value;
+
+    endUsers.updateById(endUserId, {
+      activeWorkflows: endUser?.activeWorkflows?.map(workflow => {
+        if (workflow.id !== id) return workflow;
+
+        return {
+          ...workflow,
+          state,
+          workflowDefinition: {
+            ...workflow.workflowDefinition,
+            initial: state,
+          },
+        };
+      }),
+    });
 
     return res(
       ctx.json({

@@ -173,6 +173,7 @@ importers:
   apps/backoffice-v2:
     specifiers:
       '@ballerine/workflow-browser-sdk': workspace:*
+      '@ballerine/workflow-node-sdk': workspace:*
       '@faker-js/faker': ^7.6.0
       '@formkit/auto-animate': 1.0.0-beta.5
       '@lukemorales/query-key-factory': ^1.0.3
@@ -233,6 +234,7 @@ importers:
       zod: ^3.20.0
     dependencies:
       '@ballerine/workflow-browser-sdk': link:../../sdks/workflow-browser-sdk
+      '@ballerine/workflow-node-sdk': link:../../sdks/workflow-node-sdk
       '@formkit/auto-animate': 1.0.0-beta.5
       '@lukemorales/query-key-factory': 1.1.0_flemyxx7ziq76j236nqrbfbnve
       '@radix-ui/react-checkbox': 1.0.2_biqbaboplfbrettd7655fr4n2y
