@@ -27,7 +27,11 @@ export const workflowsController = [
       return res(ctx.status(400));
     }
 
-    const workflow = workflows.findById(id);
+    const type = req.url.searchParams.get('type');
+    const name = req.url.searchParams.get('name');
+    const workflow = workflows
+      .findAll()
+      .find(workflow => workflow.name === name && workflow.state.type === type);
 
     if (!workflow) {
       return res(ctx.status(404));

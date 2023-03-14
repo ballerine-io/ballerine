@@ -78,7 +78,6 @@ export const EndUserByIdSchema = z.object({
           }),
         )
         .default([]),
-      activeWorkflows: z.array(z.any()).default([]),
     })
     .default({}),
 });

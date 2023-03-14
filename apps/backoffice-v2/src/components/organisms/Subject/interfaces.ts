@@ -22,9 +22,7 @@ export interface IInfoProps {
 
 export interface IActionsProps {
   id: string;
-  workflowId: string;
   fullName: string;
-  availableActions: Array<string>;
   avatarUrl: string;
 }
 

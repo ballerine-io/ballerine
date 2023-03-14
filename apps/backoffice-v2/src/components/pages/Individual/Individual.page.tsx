@@ -2,17 +2,8 @@ import { Subject } from 'components/organisms/Subject/Subject';
 import { useIndividual } from 'components/pages/Individual/hooks/useIndividual/useIndividual';
 
 export const Individual = () => {
-  const {
-    selectedEndUser,
-    workflowId,
-    faceAUrl,
-    faceBUrl,
-    info,
-    images,
-    isLoading,
-    whitelist,
-    availableActions,
-  } = useIndividual();
+  const { selectedEndUser, faceAUrl, faceBUrl, info, images, isLoading, whitelist } =
+    useIndividual();
 
   // Selected end user
   return (
@@ -20,10 +11,8 @@ export const Individual = () => {
       {/* Reject and approve header */}
       <Subject.Actions
         id={selectedEndUser.id}
-        workflowId={workflowId}
         fullName={selectedEndUser.fullName}
         avatarUrl={selectedEndUser.avatarUrl}
-        availableActions={availableActions}
       />
 
       <Subject.Content key={selectedEndUser.id}>

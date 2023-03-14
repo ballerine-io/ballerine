@@ -20,13 +20,7 @@ import { ctw } from '../../../utils/ctw/ctw';
  *
  * @constructor
  */
-export const Actions: FunctionComponent<IActionsProps> = ({
-  id,
-  workflowId,
-  fullName,
-  availableActions,
-  avatarUrl,
-}) => {
+export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatarUrl }) => {
   const {
     onMutateApproveEndUser,
     onMutateRejectEndUser,
@@ -37,7 +31,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     initials,
     canApprove,
     canReject,
-  } = useActions({ endUserId: id, workflowId, availableActions, fullName });
+  } = useActions({ endUserId: id, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4`}>

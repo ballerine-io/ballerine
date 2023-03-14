@@ -47,8 +47,8 @@ export const endpoints = {
       method: Method.GET,
     },
     byId: {
-      endpoint: ({ endUserId, workflowId }: IEndUserIdAndWorkflowId) =>
-        `workflows/${workflowId}?endUserId=${endUserId}`,
+      endpoint: ({ endUserId }: IEndUserIdAndWorkflowId) =>
+        `workflows/${1234}?endUserId=${endUserId}&name=on-boarding&type=backoffice`,
       method: Method.GET,
     },
     updateById: {

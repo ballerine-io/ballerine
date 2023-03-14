@@ -135,46 +135,6 @@ export const generateEndUsers = (length: number) => {
       checkResults,
       address,
       documents,
-      activeWorkflows: [
-        {
-          id: 'clf5452ji000044wnul6bf8yr',
-          version: '1.0.0',
-          name: 'on-boarding',
-          state: 'WELCOME',
-          workflowContext: {
-            // FIXME: Add ?? {} to Object.keys call in workflow-core.
-            machineContext: {
-              documents: [],
-            },
-          },
-          // FIXME: Breaks workflow-node-sdk if omitted.
-          extensions: [],
-          workflowDefinitionType: 'statechart-json',
-          workflowDefinition: {
-            id: 'on-boarding',
-            initial: 'WELCOME',
-            states: {
-              WELCOME: {
-                on: {
-                  APPROVE: 'APPROVE',
-                  REJECT: 'REJECT',
-                  RECOLLECT: 'RECOLLECT',
-                },
-                tags: ['backoffice'],
-              },
-              APPROVE: {
-                type: 'final',
-              },
-              REJECT: {
-                type: 'final',
-              },
-              RECOLLECT: {
-                type: 'final',
-              },
-            },
-          },
-        },
-      ],
     };
   });
 };

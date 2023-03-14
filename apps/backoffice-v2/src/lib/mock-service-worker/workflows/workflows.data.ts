@@ -2,69 +2,39 @@ export const workflows = {
   __data: [
     {
       id: 'clf5452ji000044wnul6bf8yr',
-      state: 'WELCOME',
-      name: 'kyc',
-      context: {
-        documents: [],
+      version: '1.0.0',
+      name: 'on-boarding',
+      type: 'backoffice',
+      state: {
+        value: 'WELCOME',
+        type: 'backoffice',
       },
-      backend: {
-        baseUrl: 'http://localhost:3000/api',
-        endpoints: {
-          persist: {
-            endpoint: '/workflows/:workflowId',
-            method: 'PUT',
-          },
-        },
-        headers: {
-          Authorization:
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGV5MG4zd2UwMDAwNDRjcXppYTl0N2RoIiwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTY3ODE3OTM4MywiZXhwIjoxNjc4MzUyMTgzfQ.U85Y-WI09b3h-RYmJyX9ulS4yGyFY7BxZENNKqGbvzI',
+      transitions: ['APPROVE', 'REJECT', 'RECOLLECT'],
+      workflowContext: {
+        machineContext: {
+          documents: [],
         },
       },
-      persistStates: [
-        {
-          state: 'DOCUMENT_SELECTION',
-          persistence: 'BACKEND',
-        },
-        {
-          state: 'FINAL',
-          persistence: 'BACKEND',
-        },
-      ],
-      submitStates: [
-        {
-          state: 'DOCUMENT_PHOTO',
-        },
-      ],
+      extensions: [],
       workflowDefinitionType: 'statechart-json',
       workflowDefinition: {
-        id: 'kyc',
-        predictableActionArguments: true,
+        id: 'on-boarding',
         initial: 'WELCOME',
-        schema: {
-          events: {},
-          context: {
-            documents: [],
-          },
-        },
         states: {
           WELCOME: {
             on: {
-              USER_NEXT_STEP: 'DOCUMENT_SELECTION',
+              APPROVE: 'APPROVE',
+              REJECT: 'REJECT',
+              RECOLLECT: 'RECOLLECT',
             },
           },
-          DOCUMENT_SELECTION: {
-            on: {
-              USER_PREV_STEP: 'WELCOME',
-              USER_NEXT_STEP: 'DOCUMENT_PHOTO',
-            },
+          APPROVE: {
+            type: 'final',
           },
-          DOCUMENT_PHOTO: {
-            on: {
-              USER_PREV_STEP: 'DOCUMENT_SELECTION',
-              USER_NEXT_STEP: 'FINAL',
-            },
+          REJECT: {
+            type: 'final',
           },
-          FINAL: {
+          RECOLLECT: {
             type: 'final',
           },
         },

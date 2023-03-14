@@ -1,10 +1,9 @@
-import { createWorkflow } from '@ballerine/workflow-browser-sdk';
 import { useParams } from '@tanstack/react-router';
 import { useEndUserQuery } from '../../../../../lib/react-query/queries/useEndUserQuery/useEndUserQuery';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
-  const { data, isLoading } = useEndUserQuery(endUserId);
+  const { data, isLoading } = useEndUserQuery({ endUserId });
   const {
     firstName,
     middleName,
@@ -19,7 +18,6 @@ export const useIndividual = () => {
     passport: passportInfo,
     address: addressInfo,
     checkResults,
-    activeWorkflows,
   } = data ?? {};
   const personalInfo = {
     firstName,
@@ -53,23 +51,14 @@ export const useIndividual = () => {
     checkResults,
     addressInfo,
   };
-  // Get the first workflow of a type.
-  const activeWorkflow = activeWorkflows?.find(({ name }) => name === 'on-boarding');
-  const workflowService = activeWorkflow ? createWorkflow(activeWorkflow) : {};
-  const snapshot = workflowService?.getSnapshot?.();
-  const isBackofficeState = snapshot?.hasTag?.('backoffice');
-  // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT']
-  const availableActions = !isBackofficeState ? [] : snapshot?.nextEvents ?? [];
 
   return {
     selectedEndUser,
-    workflowId: activeWorkflow?.id,
     faceAUrl,
     faceBUrl,
     info,
     images,
     isLoading,
     whitelist,
-    availableActions,
   };
 };
