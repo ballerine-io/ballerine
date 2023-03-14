@@ -85,14 +85,16 @@ export class WorkflowRunner {
     }
 
     for (const statePlugin of extensions.statePlugins) {
+      const when = statePlugin.when === 'pre' ? 'entry' : 'exit';
+
       for (const stateName of statePlugin.stateNames) {
         if (!extended.states[stateName]) {
           throw new Error(`${stateName} is not defined within the workflow definition's states`);
         }
 
         // E.g { state: { entry: [...,plugin.name] } }
-        extended.states[stateName][statePlugin.when] = uniqueArray([
-          ...(extended.states[stateName][statePlugin.when] ?? []),
+        extended.states[stateName][when] = uniqueArray([
+          ...(extended.states[stateName][when] ?? []),
           statePlugin.name,
         ]);
 
