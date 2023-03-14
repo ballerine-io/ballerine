@@ -1,9 +1,9 @@
 {
   "name": "@ballerine/backoffice",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "private": true,
   "dependencies": {
-    "@ballerine/common": "0.0.1",
+    "@ballerine/common": "0.0.2",
     "@mantine/core": "^5.7.2",
     "@mantine/hooks": "^5.7.2",
     "@mantine/rte": "^5.4.1",
