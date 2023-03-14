@@ -1,8 +1,8 @@
+import { sleep } from '@ballerine/common';
 import { rest } from 'msw';
-import { sleep } from '../../utils/sleep/sleep';
-import { data } from './users.data';
-import { DEFAULT_RESPONSE_TIME } from '../constants';
 import { isValidState } from '../../utils/is-valid-state/is-valid-state';
+import { DEFAULT_RESPONSE_TIME } from '../constants';
+import { data } from './users.data';
 
 // Get all users
 const getUsers = rest.get('/users', async (req, res, ctx) => {

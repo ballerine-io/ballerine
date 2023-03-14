@@ -1,6 +1,6 @@
+import { sleep, uniqueArray } from '@ballerine/common';
 import { HttpError } from '@ballerine/workflow-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { sleep, uniqueArray } from '../utils';
 import { WorkflowBrowserSDK } from '../workflow-browser-sdk';
 import { errorWorkflow, workflowOptions } from './workflow-options';
 

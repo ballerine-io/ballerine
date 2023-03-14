@@ -1,6 +1,6 @@
-import { FunctionComponent } from 'react';
+import { isNullish } from '@ballerine/common';
 import { IDataFieldProps } from 'components/molecules/DataField/interfaces';
-import { isNullish } from '../../../utils/is-nullish/is-nullish';
+import { FunctionComponent } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
 
 /**

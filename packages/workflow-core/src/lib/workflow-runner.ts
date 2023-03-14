@@ -1,3 +1,4 @@
+import { uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { createMachine, interpret } from 'xstate';
@@ -10,7 +11,6 @@ import type {
   WorkflowRunnerArgs,
 } from './types';
 import { Error as ErrorEnum } from './types';
-import { uniqueArray } from './utils';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
