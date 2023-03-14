@@ -293,6 +293,77 @@ importers:
       typescript: 4.9.5
       vite: 4.1.4_@types+node@18.14.2
 
+  packages/rules-engine:
+    specifiers:
+      '@babel/core': 7.17.9
+      '@babel/preset-env': 7.16.11
+      '@babel/preset-typescript': 7.16.7
+      '@rollup/plugin-babel': 5.3.1
+      '@rollup/plugin-commonjs': ^24.0.1
+      '@rollup/plugin-node-resolve': 13.2.1
+      '@rollup/plugin-replace': 4.0.0
+      '@types/babel__core': ^7.20.0
+      '@types/fs-extra': ^11.0.1
+      '@types/json-logic-js': ^2.0.1
+      '@typescript-eslint/eslint-plugin': ^5.48.1
+      '@typescript-eslint/parser': ^5.48.1
+      '@vitest/coverage-istanbul': ^0.28.4
+      concurrently: ^7.6.0
+      cz-conventional-changelog: ^3.3.0
+      eslint: ^8.32.0
+      eslint-config-prettier: ^6.11.0
+      eslint-plugin-eslint-comments: ^3.2.0
+      eslint-plugin-functional: ^3.0.2
+      eslint-plugin-import: ^2.22.0
+      fs-extra: ^11.1.0
+      json-logic-js: ^2.0.2
+      prettier: ^2.1.1
+      rollup: 2.70.2
+      rollup-plugin-dts: 4.2.2
+      rollup-plugin-size: 0.2.2
+      rollup-plugin-terser: 7.0.2
+      rollup-plugin-visualizer: 5.6.0
+      ts-node: ^10.9.1
+      typescript: 4.9.5
+      vite: ^4.1.1
+      vitest: ^0.28.4
+      xstate: ^4.35.2
+    dependencies:
+      json-logic-js: 2.0.2
+      xstate: 4.37.0
+    devDependencies:
+      '@babel/core': 7.17.9
+      '@babel/preset-env': 7.16.11_@babel+core@7.17.9
+      '@babel/preset-typescript': 7.16.7_@babel+core@7.17.9
+      '@rollup/plugin-babel': 5.3.1_e3h47fdnam7ua3vn7lnlydaaku
+      '@rollup/plugin-commonjs': 24.0.1_rollup@2.70.2
+      '@rollup/plugin-node-resolve': 13.2.1_rollup@2.70.2
+      '@rollup/plugin-replace': 4.0.0_rollup@2.70.2
+      '@types/babel__core': 7.20.0
+      '@types/fs-extra': 11.0.1
+      '@types/json-logic-js': 2.0.1
+      '@typescript-eslint/eslint-plugin': 5.53.0_cjo54hduev4bqhpjw5znwiokqu
+      '@typescript-eslint/parser': 5.53.0_ycpbpc6yetojsgtrx3mwntkhsu
+      '@vitest/coverage-istanbul': 0.28.5
+      concurrently: 7.6.0
+      cz-conventional-changelog: 3.3.0
+      eslint: 8.35.0
+      eslint-config-prettier: 6.15.0_eslint@8.35.0
+      eslint-plugin-eslint-comments: 3.2.0_eslint@8.35.0
+      eslint-plugin-functional: 3.7.2_ycpbpc6yetojsgtrx3mwntkhsu
+      eslint-plugin-import: 2.27.5_nhka4er4oejxhxq3ecgtwxvdji
+      fs-extra: 11.1.0
+      prettier: 2.8.4
+      rollup: 2.70.2
+      rollup-plugin-dts: 4.2.2_tbafrabsxhd6ssdsq5pxu7uflu
+      rollup-plugin-size: 0.2.2
+      rollup-plugin-terser: 7.0.2_rollup@2.70.2
+      rollup-plugin-visualizer: 5.6.0_rollup@2.70.2
+      ts-node: 10.9.1_ellgaeuoqnti3hful2ny2iugba
+      typescript: 4.9.5
+      vite: 4.1.4_@types+node@18.14.2
+      vitest: 0.28.5
+
   packages/workflow-core:
     specifiers:
       '@babel/core': 7.17.9
@@ -555,6 +626,7 @@ importers:
       eslint-plugin-eslint-comments: ^3.2.0
       eslint-plugin-functional: ^3.0.2
       eslint-plugin-import: ^2.22.0
+      fs-extra: ^11.1.0
       json-logic-js: ^2.0.2
       prettier: ^2.1.1
       rollup: 2.70.2
@@ -562,6 +634,7 @@ importers:
       rollup-plugin-size: 0.2.2
       rollup-plugin-terser: 7.0.2
       rollup-plugin-visualizer: 5.6.0
+      ts-node: ^10.9.1
       typescript: 4.9.5
       vite: ^4.1.1
       vitest: ^0.28.5
@@ -591,12 +664,14 @@ importers:
       eslint-plugin-eslint-comments: 3.2.0_eslint@8.35.0
       eslint-plugin-functional: 3.7.2_ycpbpc6yetojsgtrx3mwntkhsu
       eslint-plugin-import: 2.27.5_nhka4er4oejxhxq3ecgtwxvdji
+      fs-extra: 11.1.0
       prettier: 2.8.4
       rollup: 2.70.2
       rollup-plugin-dts: 4.2.2_tbafrabsxhd6ssdsq5pxu7uflu
       rollup-plugin-size: 0.2.2
       rollup-plugin-terser: 7.0.2_rollup@2.70.2
       rollup-plugin-visualizer: 5.6.0_rollup@2.70.2
+      ts-node: 10.9.1_ellgaeuoqnti3hful2ny2iugba
       typescript: 4.9.5
       vite: 4.1.4_@types+node@18.14.2
       vitest: 0.28.5
@@ -17253,7 +17328,7 @@ packages:
     dependencies:
       lilconfig: 2.0.6
       postcss: 8.4.21
-      ts-node: 10.9.1_ellgaeuoqnti3hful2ny2iugba
+      ts-node: 10.9.1_prfxyxghnskheluimpb6dvby4q
       yaml: 1.10.2
 
   /postcss-load-config/3.1.4_postcss@8.4.21:
@@ -20642,6 +20717,7 @@ packages:
       typescript: 4.9.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+    dev: true
 
   /ts-node/10.9.1_prfxyxghnskheluimpb6dvby4q:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
