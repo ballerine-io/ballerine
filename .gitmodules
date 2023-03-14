@@ -1,12 +1,6 @@
 [submodule "apps/ballerine-backend"]
 	path = services/backend
 	url = git@github.com:ballerine-io/ballerine-backend.git
-[submodule "apps/ballerine-workflow-builder"]
-	path = apps/workflow-builder
-	url = git@github.com:ballerine-io/ballerine-workflow-builder.git
-[submodule "packages/ballerine-cli"]
-	path = packages/cli
-	url = git@github.com:ballerine-io/ballerine-cli.git
 [submodule "sdks/ballerine-ios-sdk"]
 	path = sdks/ios-sdk
 	url = git@github.com:ballerine-io/ballerine-ios-sdk.git
