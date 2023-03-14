@@ -1,9 +1,8 @@
+import { isErrorWithMessage, isObject } from '@ballerine/common';
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
 import { t } from 'i18next';
+import toast from 'react-hot-toast';
 import { IGlobalToastContext } from '../../interfaces';
-import { isObject } from '../../utils/is-object/is-object';
-import { isErrorWithMessage } from '../../utils/is-error-with-message/is-error-with-message';
 import { isZodError } from '../../utils/is-zod-error/is-zod-error';
 
 // TODO: Add i18n plurals
@@ -24,11 +23,7 @@ export const queryClient = new QueryClient({
         return;
       }
 
-      if (
-        !isErrorWithMessage(error) ||
-        error.message === 'undefined' ||
-        error.message === 'null'
-      )
+      if (!isErrorWithMessage(error) || error.message === 'undefined' || error.message === 'null')
         return;
 
       toast.error(error.message);
@@ -52,8 +47,7 @@ export const queryClient = new QueryClient({
       toast.success(message);
     },
     onError: (error, variables, context) => {
-      if (!isObject<IGlobalToastContext>(context) || !isErrorWithMessage(error))
-        return;
+      if (!isObject<IGlobalToastContext>(context) || !isErrorWithMessage(error)) return;
 
       const message =
         context?.resource && context?.action

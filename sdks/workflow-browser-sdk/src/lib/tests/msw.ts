@@ -1,7 +1,6 @@
+import { sleep } from '@ballerine/common';
 import { DefaultBodyType, PathParams, ResponseResolver, rest, RestContext, RestRequest } from 'msw';
 import { setupServer } from 'msw/node';
-import { sleep } from '../utils';
-
 export let response:
   | {
       method: string;

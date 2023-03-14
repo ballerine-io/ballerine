@@ -28,7 +28,8 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/workflow-core": "workspace:*",
+    "@ballerine/common": "^0.0.1",
+    "@ballerine/workflow-core": "^0.4.7",
     "xstate": "^4.37.0"
   },
   "devDependencies": {

@@ -1,3 +1,4 @@
+import { uniqueArray } from '@ballerine/common';
 import {
   createWorkflow,
   Error as ErrorEnum,
@@ -26,7 +27,6 @@ import type {
   WorkflowEventWithBrowserType,
   WorkflowOptionsBrowser,
 } from './types';
-import { uniqueArray } from './utils';
 
 export class WorkflowBrowserSDK {
   #__subscribers: TSubscribers = [];
