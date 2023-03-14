@@ -1,7 +1,6 @@
 import { rest } from 'msw';
 import { env } from '../../../env/env';
 import { workflows } from './workflows.data';
-// TODO: Make index.ts only re-export the public API
 import { initNodeWorkflow } from '@ballerine/workflow-node-sdk';
 import { endUsers } from '../end-users/end-users.data';
 
@@ -85,11 +84,8 @@ export const workflowsController = [
       return res(ctx.status(404));
     }
 
-    // Why do we need to wrap createWorkflow in initNodeWorkflow?
-    // Alias createWorkflow to createWorkflowCore instead of using createWorkflowNode.
     const workflowService = initNodeWorkflow(workflow);
 
-    // Why do we expose the runner as a property instead of `workflowService.sendEvent` directly?
     workflowService.runner.sendEvent({ type: body?.name });
 
     const snapshot = workflowService.runner.getSnapshot();
