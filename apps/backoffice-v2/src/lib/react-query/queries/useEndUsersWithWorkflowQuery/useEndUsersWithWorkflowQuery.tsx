@@ -1,11 +1,10 @@
-import { useEndUserQuery } from '../useEndUserQuery/useEndUserQuery';
+import { useEndUsersQuery } from '../useEndUsersQuery/useEndUsersQuery';
 import { useWorkflowsQuery } from '../useWorkflowsQuery/useWorkflowsQuery';
 
 export const useEndUsersWithWorkflowQuery = (endUserId: string) => {
   const { data: activeWorkflows } = useWorkflowsQuery({ endUserId });
 
-  return useEndUserQuery({
-    endUserId,
+  return useEndUsersQuery({
     select: endUsers =>
       endUsers.map(endUser => ({
         ...endUser,

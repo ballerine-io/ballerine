@@ -12,18 +12,18 @@ import { Action } from '../../../../../enums';
 export const useActions = ({ endUserId, fullName }: IUseActions) => {
   const onSelectNextEndUser = useSelectNextEndUser();
   const { isLoading: isLoadingEndUser, data: endUser } = useEndUserWithWorkflowQuery({ endUserId });
-  const { activeWorkflow } = endUser ?? {};
+  const { workflow } = endUser ?? {};
   const { mutate: mutateApproveEndUser, isLoading: isLoadingApproveEndUser } =
-    useApproveEndUserMutation({ endUserId, workflowId: activeWorkflow?.id, onSelectNextEndUser });
+    useApproveEndUserMutation({ endUserId, workflowId: workflow?.id, onSelectNextEndUser });
   const { mutate: mutateRejectEndUser, isLoading: isLoadingRejectEndUser } =
-    useRejectEndUserMutation({ endUserId, workflowId: activeWorkflow?.id, onSelectNextEndUser });
+    useRejectEndUserMutation({ endUserId, workflowId: workflow?.id, onSelectNextEndUser });
   const isLoading = isLoadingApproveEndUser || isLoadingRejectEndUser || isLoadingEndUser;
   // Create initials from the first character of the first name, middle name, and last name.
   const initials = createInitials(fullName);
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
-  const canReject = activeWorkflow?.transitions.includes(Action.REJECT);
-  const canApprove = activeWorkflow?.transitions.includes(Action.APPROVE);
+  const canReject = workflow?.nextEvents.includes(Action.REJECT);
+  const canApprove = workflow?.nextEvents.includes(Action.APPROVE);
 
   // Only display the button spinners if the request is longer than 300ms
   const debouncedIsLoadingRejectEndUser = useDebounce(isLoadingRejectEndUser, 300);

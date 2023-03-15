@@ -20,26 +20,28 @@ export const workflowsController = [
     );
   }),
   // Get by ID
-  rest.get(`${env.VITE_API_URL}/workflows/:id`, (req, res, ctx) => {
+  rest.get(`${env.VITE_API_URL}/workflows/:id`, async (req, res, ctx) => {
     const id = req.params.id;
 
     if (typeof id !== 'string' || !id.length) {
       return res(ctx.status(400));
     }
 
-    const type = req.url.searchParams.get('type');
-    const name = req.url.searchParams.get('name');
-    const workflow = workflows
-      .findAll()
-      .find(workflow => workflow.name === name && workflow.state.type === type);
+    const response = await fetch(`http://localhost:3000/api/internal/workflows/${id}`);
+    const data = await response.json();
+    // const type = req.url.searchParams.get('type');
+    // const name = req.url.searchParams.get('name');
+    // const workflow = workflows
+    // .findAll()
+    // .find(workflow => workflow.name === name && workflow.state.type === type);
 
-    if (!workflow) {
-      return res(ctx.status(404));
-    }
+    // if (!workflow) {
+    // return res(ctx.status(404));
+    // }
 
     return res(
       ctx.json({
-        workflow,
+        workflow: data,
       }),
     );
   }),
