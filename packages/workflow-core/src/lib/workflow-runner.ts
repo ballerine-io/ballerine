@@ -42,7 +42,7 @@ export class WorkflowRunner {
 
     // use initial context or provided context
     this.#__context =
-      workflowContext && Object.keys(workflowContext.machineContext).length
+      workflowContext && Object.keys(workflowContext.machineContext ?? {})?.length
         ? workflowContext.machineContext
         : workflowDefinition.context || {};
 

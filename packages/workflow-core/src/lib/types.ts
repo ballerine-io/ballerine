@@ -55,14 +55,14 @@ export interface WorkflowContext {
 
 export interface WorkflowOptions {
   workflowDefinitionType: 'statechart-json' | 'bpmn-json';
-  workflowDefinition: MachineConfig<any, any, any>;
+  definition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
 }
 
 export interface WorkflowRunnerArgs {
-  workflowDefinition: MachineConfig<any, any, any>;
+  definition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
