@@ -1,8 +1,8 @@
 import { useEndUserQuery } from '../useEndUserQuery/useEndUserQuery';
 import { useWorkflowQuery } from '../useWorkflowQuery/useWorkflowQuery';
 
-export const useEndUserWithWorkflowQuery = (endUserId: string) => {
-  const { data: activeWorkflow } = useWorkflowQuery({ endUserId });
+export const useEndUsersWithWorkflowQuery = (endUserId: string) => {
+  const { data: activeWorkflow } = useWorkflowsQuery({ endUserId });
 
   return useEndUserQuery({
     endUserId,

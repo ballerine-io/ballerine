@@ -43,11 +43,11 @@ export const endpoints = {
   },
   workflows: {
     list: {
-      endpoint: (endUserId: string) => `workflows?endUserId=${endUserId}`,
+      endpoint: (endUserId?: string) => `workflows${endUserId ? `?endUserId=${endUserId}` : ''}}`,
       method: Method.GET,
     },
     byId: {
-      endpoint: ({ endUserId }: IEndUserIdAndWorkflowId) =>
+      endpoint: ({ endUserId }: { endUserId: string }) =>
         `workflows/${1234}?endUserId=${endUserId}&name=on-boarding&type=backoffice`,
       method: Method.GET,
     },

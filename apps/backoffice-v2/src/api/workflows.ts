@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { IEndUserIdAndWorkflowId } from './interfaces';
 
 export const workflows = {
-  list: async (endUserId: string) => {
+  list: async (endUserId?: string) => {
     const [data, error] = await apiClient({
       endpoint: endpoints.workflows.list.endpoint(endUserId),
       method: endpoints.workflows.list.method,
@@ -19,7 +19,7 @@ export const workflows = {
 
     return handleZodError(error, workflows);
   },
-  byId: async ({ endUserId }: IEndUserIdAndWorkflowId) => {
+  byId: async ({ endUserId }: { endUserId: string }) => {
     const [data, error] = await apiClient({
       endpoint: endpoints.workflows.byId.endpoint({ endUserId }),
       method: endpoints.workflows.byId.method,
