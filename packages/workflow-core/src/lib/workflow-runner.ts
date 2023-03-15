@@ -34,10 +34,15 @@ export class WorkflowRunner {
     { definition, workflowActions, workflowContext, extensions }: WorkflowRunnerArgs,
     debugMode = true,
   ) {
+    // global and state specific extensions
+    this.#__extensions = extensions ?? {
+      statePlugins: [],
+    };
+    this.#__debugMode = debugMode;
+
     this.#__workflow = this.#__extendedWorkflow({
       definition,
       workflowActions,
-      extensions,
     });
 
     // use initial context or provided context
@@ -48,22 +53,14 @@ export class WorkflowRunner {
 
     // use initial state or provided state
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
-
-    // global and state specific extensions
-    this.#__extensions = extensions || { statePlugins: [] };
-    this.#__debugMode = debugMode;
   }
 
   #__extendedWorkflow({
     definition,
     workflowActions,
-    extensions = {
-      statePlugins: [],
-    },
   }: {
     definition: any;
     workflowActions?: WorkflowRunnerArgs['workflowActions'];
-    extensions?: WorkflowExtensions;
   }) {
     const onEnter: string[] = [];
     const onExit: string[] = [];
@@ -81,7 +78,7 @@ export class WorkflowRunner {
       ]);
     }
 
-    for (const statePlugin of extensions.statePlugins) {
+    for (const statePlugin of this.#__extensions.statePlugins) {
       const when = statePlugin.when === 'pre' ? 'entry' : 'exit';
 
       for (const stateName of statePlugin.stateNames) {
