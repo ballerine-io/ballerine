@@ -31,11 +31,11 @@ export class WorkflowRunner {
   }
 
   constructor(
-    { workflowDefinition, workflowActions, workflowContext, extensions }: WorkflowRunnerArgs,
+    { definition, workflowActions, workflowContext, extensions }: WorkflowRunnerArgs,
     debugMode = true,
   ) {
     this.#__workflow = this.#__extendedWorkflow({
-      workflow: workflowDefinition,
+      definition,
       workflowActions,
       extensions,
     });
@@ -44,12 +44,10 @@ export class WorkflowRunner {
     this.#__context =
       workflowContext && Object.keys(workflowContext.machineContext ?? {})?.length
         ? workflowContext.machineContext
-        : workflowDefinition.context || {};
+        : definition.context || {};
 
     // use initial state or provided state
-    this.#__currentState = workflowContext?.state
-      ? workflowContext.state
-      : workflowDefinition.initial;
+    this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
 
     // global and state specific extensions
     this.#__extensions = extensions || { statePlugins: [] };
@@ -57,29 +55,28 @@ export class WorkflowRunner {
   }
 
   #__extendedWorkflow({
-    workflow,
+    definition,
     workflowActions,
     extensions = {
       statePlugins: [],
     },
   }: {
-    workflow: any;
+    definition: any;
     workflowActions?: WorkflowRunnerArgs['workflowActions'];
     extensions?: WorkflowExtensions;
   }) {
-    const extended = workflow;
     const onEnter: string[] = [];
     const onExit: string[] = [];
     const stateActions: Record<string, ActionFunction<any, any>> = {};
 
-    for (const state in extended.states) {
-      extended.states[state].entry = uniqueArray([
-        ...(workflow.states[state].entry ?? []),
+    for (const state in definition.states) {
+      definition.states[state].entry = uniqueArray([
+        ...(definition.states[state].entry ?? []),
         ...onEnter,
       ]);
 
-      extended.states[state].exit = uniqueArray([
-        ...(workflow.states[state].exit ?? []),
+      definition.states[state].exit = uniqueArray([
+        ...(definition.states[state].exit ?? []),
         ...onExit,
       ]);
     }
@@ -88,13 +85,13 @@ export class WorkflowRunner {
       const when = statePlugin.when === 'pre' ? 'entry' : 'exit';
 
       for (const stateName of statePlugin.stateNames) {
-        if (!extended.states[stateName]) {
+        if (!definition.states[stateName]) {
           throw new Error(`${stateName} is not defined within the workflow definition's states`);
         }
 
         // E.g { state: { entry: [...,plugin.name] } }
-        extended.states[stateName][when] = uniqueArray([
-          ...(extended.states[stateName][when] ?? []),
+        definition.states[stateName][when] = uniqueArray([
+          ...(definition.states[stateName][when] ?? []),
           statePlugin.name,
         ]);
 
@@ -172,7 +169,7 @@ export class WorkflowRunner {
       },
     };
 
-    return createMachine({ predictableActionArguments: false, ...extended }, { actions, guards });
+    return createMachine({ predictableActionArguments: false, ...definition }, { actions, guards });
   }
 
   async sendEvent(event: WorkflowEventWithoutState) {
