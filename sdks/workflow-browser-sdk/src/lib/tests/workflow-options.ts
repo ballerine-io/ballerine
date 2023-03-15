@@ -3,7 +3,7 @@ import { WorkflowBrowserSDKParams } from '../types';
 // Specifies six states to have enough steps for USER_NEXT_STEP and USER_PREV_STEP tests.
 export const workflowOptions: WorkflowBrowserSDKParams = {
   workflowDefinitionType: 'statechart-json',
-  workflowDefinition: {
+  definition: {
     id: 'test',
     initial: 'first',
     context: {
@@ -64,7 +64,7 @@ export const errorWorkflow: WorkflowBrowserSDKParams = {
     baseUrl: 'http://bad-url.fail',
   },
   workflowDefinitionType: 'statechart-json',
-  workflowDefinition: {
+  definition: {
     id: 'test',
     initial: 'first',
     states: {
@@ -97,7 +97,7 @@ export const errorWorkflow: WorkflowBrowserSDKParams = {
 
 export const shortWorkflow: WorkflowBrowserSDKParams = {
   workflowDefinitionType: 'statechart-json',
-  workflowDefinition: {
+  definition: {
     id: 'test',
     initial: 'first',
     states: {
