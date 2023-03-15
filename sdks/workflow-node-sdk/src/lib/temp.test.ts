@@ -38,7 +38,6 @@ test('temp', () => {
       predictableActionArguments: true,
     },
     supportedPlatforms: null,
-    extensions: null,
     backend: null,
     persistStates: [
       {
