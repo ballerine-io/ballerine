@@ -18,7 +18,7 @@ test('Simple Server Workflow', t => {
 
   const workflow = createWorkflow({
     workflowDefinitionType: 'statechart-json',
-    workflowDefinition: simpleMachine,
+    definition: simpleMachine,
   });
   const runner = workflow;
   expect(runner.getSnapshot().value).toBe('inactive');
@@ -49,7 +49,7 @@ test('Server Workflow persistance MemoryStore', t => {
 
   const workflow = createWorkflow({
     workflowDefinitionType: 'statechart-json',
-    workflowDefinition: simpleMachine,
+    definition: simpleMachine,
     extensions: {
       statePlugins: [memoryPersistancePlugin],
     },
@@ -73,7 +73,7 @@ test('Server Workflow persistance MemoryStore', t => {
   console.log(workflowData);
   const restoredWorkflow = createWorkflow({
     workflowDefinitionType: 'statechart-json',
-    workflowDefinition: simpleMachine,
+    definition: simpleMachine,
     workflowContext: { machineContext: workflowData!.context, state: workflowData!.state },
     extensions: {
       statePlugins: [memoryPersistancePlugin],
