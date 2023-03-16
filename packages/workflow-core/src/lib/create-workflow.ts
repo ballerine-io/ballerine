@@ -2,13 +2,13 @@ import { TCreateWorkflow } from './types';
 import { WorkflowRunner } from './workflow-runner';
 
 export const createWorkflow: TCreateWorkflow = ({
-  workflowDefinition,
+  definition,
   workflowActions,
   workflowContext,
-  extensions
+  extensions,
 }) =>
   new WorkflowRunner({
-    workflowDefinition,
+    definition,
     workflowActions,
     workflowContext,
     extensions,

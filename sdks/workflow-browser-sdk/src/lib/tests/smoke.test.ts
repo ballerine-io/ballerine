@@ -139,7 +139,7 @@ describe('smoke', () => {
       method: backendOptions.endpoints.persist.method,
       endpoint: backendOptions.endpoints.persist.endpoint.replace(
         ':workflowId',
-        shortWorkflow.workflowDefinition.id ?? '',
+        shortWorkflow.definition.id ?? '',
       ),
       headers: lowerCaseDefaultHeaders,
     });

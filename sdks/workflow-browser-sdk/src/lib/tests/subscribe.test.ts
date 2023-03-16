@@ -130,8 +130,8 @@ describe('subscribe', () => {
 
   it('should subscribe to user defined events', () => {
     workflowService = new WorkflowBrowserSDK({
-      workflowDefinitionType: 'statechart-json',
-      workflowDefinition: {
+      definitionType: 'statechart-json',
+      definition: {
         id: 'test',
         initial: 'first',
         states: {
