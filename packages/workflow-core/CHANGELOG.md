@@ -1,5 +1,13 @@
 # @ballerine/workflow-core
 
+## 0.4.8
+
+### Patch Changes
+
+- f0eafe7: added a common package
+- Updated dependencies [f0eafe7]
+  - @ballerine/common@0.0.2
+
 ## 0.4.7
 
 ### Patch Changes

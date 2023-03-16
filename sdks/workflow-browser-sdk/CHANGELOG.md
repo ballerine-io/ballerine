@@ -1,5 +1,14 @@
 # @ballerine/workflow-browser-sdk
 
+## 0.0.6
+
+### Patch Changes
+
+- f0eafe7: added a common package
+- Updated dependencies [f0eafe7]
+  - @ballerine/workflow-core@0.4.8
+  - @ballerine/common@0.0.2
+
 ## 0.0.5
 
 ### Patch Changes
