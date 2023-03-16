@@ -2,9 +2,7 @@ import type { MachineConfig } from 'xstate';
 import { expect, test } from 'vitest';
 import { WorkflowRunner } from './workflow-runner';
 
-
 test('restore workflow test', () => {
-
   const userId = '123456';
 
   const simpleMachine: MachineConfig<any, any, any> = {
@@ -17,15 +15,15 @@ test('restore workflow test', () => {
   };
 
   const service = new WorkflowRunner({
-    workflowDefinition: simpleMachine,
+    definition: simpleMachine,
     workflowContext: {
       machineContext: {
-        entityId: userId
-      }
+        entityId: userId,
+      },
     },
     extensions: {
       statePlugins: [],
-    }
+    },
   });
 
   expect(service.state).toBe('inactive');

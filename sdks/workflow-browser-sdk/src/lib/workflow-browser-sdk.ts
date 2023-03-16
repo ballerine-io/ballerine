@@ -37,12 +37,12 @@ export class WorkflowBrowserSDK {
     this.#__mergeBackendOptions(backend);
 
     // Actions defined within the machine's `states` object.
-    const states = this.#__injectUserStepActionsToStates(options?.workflowDefinition?.states ?? {});
+    const states = this.#__injectUserStepActionsToStates(options?.definition?.states ?? {});
     const statePlugins = this.#__handlePersistStatePlugins({
       states,
       persistStates: options?.persistStates,
       submitStates: options?.submitStates,
-      workflowId: options?.workflowDefinition.id ?? '',
+      workflowId: options?.definition.id ?? '',
     });
     const assignContext = assign<Record<PropertyKey, any>, IUserStepEvent>((context, event) => {
       context = {
@@ -58,8 +58,8 @@ export class WorkflowBrowserSDK {
       extensions: {
         statePlugins,
       },
-      workflowDefinition: {
-        ...options?.workflowDefinition,
+      definition: {
+        ...options?.definition,
         states,
       },
       workflowActions: {
@@ -83,7 +83,7 @@ export class WorkflowBrowserSDK {
     submitStates,
     workflowId,
   }: {
-    states: WorkflowOptionsBrowser['workflowDefinition']['states'];
+    states: WorkflowOptionsBrowser['definition']['states'];
     persistStates: WorkflowOptionsBrowser['persistStates'];
     submitStates: WorkflowOptionsBrowser['submitStates'];
     workflowId: string;
