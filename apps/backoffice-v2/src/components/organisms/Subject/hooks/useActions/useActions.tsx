@@ -11,7 +11,7 @@ import { Action } from '../../../../../enums';
 
 export const useActions = ({ endUserId, fullName }: IUseActions) => {
   const onSelectNextEndUser = useSelectNextEndUser();
-  const { isLoading: isLoadingEndUser, data: endUser } = useEndUserWithWorkflowQuery({ endUserId });
+  const { isLoading: isLoadingEndUser, data: endUser } = useEndUserWithWorkflowQuery(endUserId);
   const { workflow } = endUser ?? {};
   const { mutate: mutateApproveEndUser, isLoading: isLoadingApproveEndUser } =
     useApproveEndUserMutation({ endUserId, workflowId: workflow?.id, onSelectNextEndUser });

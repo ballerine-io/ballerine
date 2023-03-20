@@ -12,7 +12,6 @@ import { individualsRoute } from 'components/pages/Individuals/Individuals.route
 import { individualsIndexRoute } from 'components/pages/Individuals/IndividualsIndex.route';
 import { individualRoute } from 'components/pages/Individual/Individual.route';
 import { useEndUsersWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUsersWithWorkflowQuery/useEndUsersWithWorkflowQuery';
-import { useConsole } from 'hooks/useConsole/useConsole';
 
 export const useIndividuals = () => {
   const matches = useMatches();
@@ -66,7 +65,6 @@ export const useIndividuals = () => {
   const skeletons = createArrayOfNumbers(3);
 
   useSelectEndUserOnMount();
-  useConsole({ subjects });
 
   return {
     onPaginate,

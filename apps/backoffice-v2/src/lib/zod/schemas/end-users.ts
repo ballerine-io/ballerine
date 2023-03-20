@@ -44,13 +44,15 @@ export const EndUserByIdSchema = ObjectWithIdSchema.extend({
       expires: z.string().default(''),
     })
     .optional(),
-  checkResults: z.object({
-    finalResult: z.enum(States).default(State.PROCESSING),
-    scannedBy: z.string().default(''),
-    amlCheck: z.enum(States).default(State.PROCESSING),
-    idCheck: z.enum(States).default(State.PROCESSING),
-    selfieCheck: z.enum(States).default(State.PROCESSING),
-  }),
+  checkResults: z
+    .object({
+      finalResult: z.enum(States).default(State.PROCESSING),
+      scannedBy: z.string().default(''),
+      amlCheck: z.enum(States).default(State.PROCESSING),
+      idCheck: z.enum(States).default(State.PROCESSING),
+      selfieCheck: z.enum(States).default(State.PROCESSING),
+    })
+    .default({}),
   address: z
     .object({
       city: z.string().default(''),

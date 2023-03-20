@@ -1,9 +1,9 @@
 import { useParams } from '@tanstack/react-router';
-import { useEndUserQuery } from '../../../../../lib/react-query/queries/useEndUserQuery/useEndUserQuery';
+import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
-  const { data, isLoading } = useEndUserQuery({ endUserId });
+  const { data, isLoading } = useEndUserWithWorkflowQuery(endUserId);
   const {
     firstName,
     middleName,

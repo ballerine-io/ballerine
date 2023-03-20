@@ -84,7 +84,7 @@ export const workflowsController = [
 
     const endUserId = req.url.searchParams.get('endUserId');
     const endUser = endUsers.findById(endUserId);
-    const workflow = endUser?.activeWorkflows?.find(workflow => workflow.id === id);
+    const workflow = endUser?.workflows?.find(workflow => workflow.id === id);
 
     if (!workflow) {
       return res(ctx.status(404));
@@ -99,7 +99,7 @@ export const workflowsController = [
 
     endUsers.updateById(endUserId, {
       state: state === 'APPROVE' ? 'approved' : 'rejected',
-      activeWorkflows: endUser?.activeWorkflows?.map(workflow => {
+      workflows: endUser?.workflows?.map(workflow => {
         if (workflow.id !== id) return workflow;
 
         return {
