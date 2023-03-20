@@ -5,7 +5,7 @@ import { ObjectWithIdSchema } from '../utils/object-with-id';
 export const EndUsersListSchema = z
   .array(
     ObjectWithIdSchema.extend({
-      avatarUrl: z.string().default(''),
+      avatarUrl: z.string().nullable().default(''),
       createdAt: z.string().default(''),
       firstName: z.string().nullable().default(''),
       middleName: z.string().default(''),
@@ -16,12 +16,17 @@ export const EndUsersListSchema = z
       state: z.enum(States).default(State.PROCESSING),
       assignedTo: z.string().default(''),
       endUserType: z.string().nullable().default(''),
-    }),
+    }).transform(({ firstName, lastName, ...rest }) => ({
+      ...rest,
+      firstName,
+      lastName,
+      fullName: `${firstName} ${lastName}`,
+    })),
   )
   .default([]);
 
 export const EndUserByIdSchema = ObjectWithIdSchema.extend({
-  avatarUrl: z.string().default(''),
+  avatarUrl: z.string().nullable().default(''),
   createdAt: z.string().default(''),
   firstName: z.string().nullable().default(''),
   middleName: z.string().default(''),
@@ -74,4 +79,11 @@ export const EndUserByIdSchema = ObjectWithIdSchema.extend({
       }),
     )
     .default([]),
-}).default({});
+})
+  .transform(({ firstName, lastName, ...rest }) => ({
+    ...rest,
+    firstName,
+    lastName,
+    fullName: `${firstName} ${lastName}`,
+  }))
+  .default({});

@@ -59,7 +59,7 @@ export const Individuals = () => {
       {isLoading && (
         <Subject>
           {/* Reject and approve header */}
-          <Subject.Actions id={''} workflowId={''} fullName={''} avatarUrl={''} state={''} />
+          <Subject.Actions id={''} fullName={''} avatarUrl={''} />
 
           <Subject.Content>
             <div>

@@ -11,15 +11,15 @@ export const useWorkflowQuery = ({ workflowId }: { workflowId: string }) => {
       const { definition, definitionType, ...rest } = workflowDefinition;
       const workflow = {
         ...rest,
-        workflowDefinitionType: definitionType,
-        workflowDefinition: {
+        definitionType,
+        definition: {
           ...definition,
-          initial: workflowRuntimeData.currentState?.state ?? definition.initial,
+          initial: workflowRuntimeData?.state ?? definition.initial,
           context: workflowRuntimeData.context,
         },
         workflowContext: {
           machineContext: workflowRuntimeData.context,
-          state: workflowRuntimeData.currentState?.state ?? definition.initial,
+          state: workflowRuntimeData?.state ?? definition.initial,
         },
       };
       const workflowService = createWorkflow(workflow);
@@ -27,6 +27,7 @@ export const useWorkflowQuery = ({ workflowId }: { workflowId: string }) => {
 
       return {
         ...workflow,
+        runtimeDataId: workflowRuntimeData?.id,
         nextEvents: snapshot.nextEvents,
       };
     },

@@ -19,7 +19,7 @@ export const useApproveEndUserMutation = ({
       api.workflows.event({
         workflowId,
         body: {
-          name: 'APPROVE',
+          name: 'approve',
         },
       }),
     onMutate: () => ({

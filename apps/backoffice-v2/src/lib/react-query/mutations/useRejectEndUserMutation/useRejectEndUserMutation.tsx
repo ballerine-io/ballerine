@@ -5,9 +5,11 @@ import { Action, Resource } from '../../../../enums';
 
 export const useRejectEndUserMutation = ({
   workflowId,
+  endUserId,
   onSelectNextEndUser,
 }: {
   workflowId: string;
+  endUserId: string;
   onSelectNextEndUser: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
@@ -17,7 +19,7 @@ export const useRejectEndUserMutation = ({
       api.workflows.event({
         workflowId,
         body: {
-          name: 'REJECT',
+          name: 'reject',
         },
       }),
     onMutate: () => ({

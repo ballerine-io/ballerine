@@ -14,16 +14,24 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
   const { isLoading: isLoadingEndUser, data: endUser } = useEndUserWithWorkflowQuery(endUserId);
   const { workflow } = endUser ?? {};
   const { mutate: mutateApproveEndUser, isLoading: isLoadingApproveEndUser } =
-    useApproveEndUserMutation({ endUserId, workflowId: workflow?.id, onSelectNextEndUser });
+    useApproveEndUserMutation({
+      endUserId,
+      workflowId: workflow?.runtimeDataId,
+      onSelectNextEndUser,
+    });
   const { mutate: mutateRejectEndUser, isLoading: isLoadingRejectEndUser } =
-    useRejectEndUserMutation({ endUserId, workflowId: workflow?.id, onSelectNextEndUser });
+    useRejectEndUserMutation({
+      endUserId,
+      workflowId: workflow?.runtimeDataId,
+      onSelectNextEndUser,
+    });
   const isLoading = isLoadingApproveEndUser || isLoadingRejectEndUser || isLoadingEndUser;
   // Create initials from the first character of the first name, middle name, and last name.
   const initials = createInitials(fullName);
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
-  const canReject = workflow?.nextEvents.includes(Action.REJECT);
-  const canApprove = workflow?.nextEvents.includes(Action.APPROVE);
+  const canReject = workflow?.nextEvents.includes(Action.REJECT.toLowerCase());
+  const canApprove = workflow?.nextEvents.includes(Action.APPROVE.toLowerCase());
 
   // Only display the button spinners if the request is longer than 300ms
   const debouncedIsLoadingRejectEndUser = useDebounce(isLoadingRejectEndUser, 300);

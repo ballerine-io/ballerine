@@ -172,7 +172,7 @@ importers:
 
   apps/backoffice-v2:
     specifiers:
-      '@ballerine/workflow-browser-sdk': workspace:*
+      '@ballerine/workflow-browser-sdk': '*'
       '@ballerine/workflow-node-sdk': workspace:*
       '@faker-js/faker': ^7.6.0
       '@formkit/auto-animate': 1.0.0-beta.5
@@ -233,7 +233,7 @@ importers:
       vite: ^4.0.4
       zod: ^3.20.0
     dependencies:
-      '@ballerine/workflow-browser-sdk': link:../../sdks/workflow-browser-sdk
+      '@ballerine/workflow-browser-sdk': 0.4.2
       '@ballerine/workflow-node-sdk': link:../../sdks/workflow-node-sdk
       '@formkit/auto-animate': 1.0.0-beta.5
       '@lukemorales/query-key-factory': 1.1.0_flemyxx7ziq76j236nqrbfbnve
@@ -3222,6 +3222,29 @@ packages:
       '@babel/helper-string-parser': 7.19.4
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
+
+  /@ballerine/common/0.4.2:
+    resolution: {integrity: sha512-XOfJmPs5TM8IDncrQzZgbQvrHxfB6Cr/TiE4qWCWLk13TVOZVk1LkHULtGmrlQB7RsZaYmyUJ1Bc+R+gxyiAsg==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /@ballerine/workflow-browser-sdk/0.4.2:
+    resolution: {integrity: sha512-iDmWB8aor3WyMR0bKnubNdGeXHb8WEEcAQRkx6A53xEyzXOr5tYBdHaPTFckVtowJaQqEzZg7y7xEOUxhbWcbQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@ballerine/common': 0.4.2
+      '@ballerine/workflow-core': 0.4.8
+      xstate: 4.37.0
+    dev: false
+
+  /@ballerine/workflow-core/0.4.8:
+    resolution: {integrity: sha512-AQP0DoyTitQR8f1peRFJZoPoUHwMLPaMm5lstjhz1ehsrN/dqG5Df7Ut3XdWEpDNYkAdA8aWjRK8WYOCA/xPjg==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@ballerine/common': 0.4.2
+      json-logic-js: 2.0.2
+      xstate: 4.37.0
+    dev: false
 
   /@bcoe/v8-coverage/0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}

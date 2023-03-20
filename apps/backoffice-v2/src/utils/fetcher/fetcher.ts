@@ -36,7 +36,10 @@ export const fetcher: IFetcher = async ({ url, method, body, options, timeout = 
     throw new Error(message);
   }
 
-  const [data, jsonError] = await handlePromise(res.json());
+  const [data, jsonError] =
+    res.headers.get('content-length') > '0'
+      ? await handlePromise(res.json())
+      : [undefined, undefined];
 
   if (jsonError) {
     console.error(jsonError);

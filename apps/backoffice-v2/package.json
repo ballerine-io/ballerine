@@ -44,7 +44,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ballerine/workflow-browser-sdk": "workspace:*",
+    "@ballerine/workflow-browser-sdk": "*",
     "@ballerine/workflow-node-sdk": "workspace:*",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@lukemorales/query-key-factory": "^1.0.3",
