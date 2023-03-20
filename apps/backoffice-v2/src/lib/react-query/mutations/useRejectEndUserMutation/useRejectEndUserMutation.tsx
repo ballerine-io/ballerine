@@ -4,11 +4,9 @@ import { endUsers } from '../../end-users';
 import { Action, Resource } from '../../../../enums';
 
 export const useRejectEndUserMutation = ({
-  endUserId,
   workflowId,
   onSelectNextEndUser,
 }: {
-  endUserId: string;
   workflowId: string;
   onSelectNextEndUser: VoidFunction;
 }) => {
@@ -17,7 +15,6 @@ export const useRejectEndUserMutation = ({
   return useMutation({
     mutationFn: () =>
       api.workflows.event({
-        endUserId,
         workflowId,
         body: {
           name: 'REJECT',

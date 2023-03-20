@@ -6,7 +6,7 @@ import { apiClient } from './api-client';
 // } from '../lib/zod/schemas/workflows';
 import { handleZodError } from '../utils/handle-zod-error/handle-zod-error';
 import { z } from 'zod';
-import { IEndUserIdAndWorkflowId } from './interfaces';
+import { IWorkflowId } from './interfaces';
 
 export const workflows = {
   list: async () => {
@@ -18,7 +18,7 @@ export const workflows = {
 
     return handleZodError(error, workflows);
   },
-  byId: async ({ workflowId }: { workflowId: string }) => {
+  byId: async ({ workflowId }: IWorkflowId) => {
     const [workflow, error] = await apiClient({
       endpoint: endpoints.workflows.byId.endpoint({ workflowId }),
       method: endpoints.workflows.byId.method,
@@ -28,14 +28,13 @@ export const workflows = {
     return handleZodError(error, workflow);
   },
   updateById: async ({
-    endUserId,
     workflowId,
     body,
-  }: IEndUserIdAndWorkflowId & {
+  }: IWorkflowId & {
     body: Record<PropertyKey, unknown>;
   }) => {
     const [workflow, error] = await apiClient({
-      endpoint: endpoints.workflows.updateById.endpoint({ endUserId, workflowId }),
+      endpoint: endpoints.workflows.updateById.endpoint({ workflowId }),
       method: endpoints.workflows.updateById.method,
       body,
       schema: z.any(),
@@ -44,14 +43,13 @@ export const workflows = {
     return handleZodError(error, workflow);
   },
   event: async ({
-    endUserId,
     workflowId,
     body,
-  }: IEndUserIdAndWorkflowId & {
+  }: IWorkflowId & {
     body: Record<PropertyKey, unknown>;
   }) => {
     const [workflow, error] = await apiClient({
-      endpoint: endpoints.workflows.event.endpoint({ endUserId, workflowId }),
+      endpoint: endpoints.workflows.event.endpoint({ workflowId }),
       method: endpoints.workflows.event.method,
       body,
       schema: z.any(),

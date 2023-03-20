@@ -17,7 +17,6 @@ export const useApproveEndUserMutation = ({
   return useMutation({
     mutationFn: () =>
       api.workflows.event({
-        endUserId,
         workflowId,
         body: {
           name: 'APPROVE',

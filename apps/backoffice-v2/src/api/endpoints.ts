@@ -1,5 +1,5 @@
 import { Method } from '../enums';
-import { IEndpoint, IEndUserIdAndWorkflowId } from './interfaces';
+import { IEndpoint, IWorkflowId } from './interfaces';
 
 /**
  * @description The API's endpoints. The endpoints are appended into the API's base url ({@link env.VITE_API_URL}) by {@link apiClient}.
@@ -36,6 +36,7 @@ export const endpoints = {
       endpoint: (endUserId: string) => `end-users/${endUserId}`,
       method: Method.GET,
     },
+    // Unused
     updateById: {
       endpoint: (endUserId: string) => `end-users/${endUserId}`,
       method: Method.PATCH,
@@ -47,17 +48,15 @@ export const endpoints = {
       method: Method.GET,
     },
     byId: {
-      endpoint: ({ workflowId }: { workflowId: string }) => `workflows/${workflowId}`,
+      endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}`,
       method: Method.GET,
     },
     updateById: {
-      endpoint: ({ endUserId, workflowId }: IEndUserIdAndWorkflowId) =>
-        `workflows/${workflowId}?endUserId=${endUserId}`,
+      endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}`,
       method: Method.PUT,
     },
     event: {
-      endpoint: ({ endUserId, workflowId }: IEndUserIdAndWorkflowId) =>
-        `workflows/${workflowId}/event?endUserId=${endUserId}`,
+      endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}/event`,
       method: Method.POST,
     },
   },
