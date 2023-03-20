@@ -43,12 +43,11 @@ export const endpoints = {
   },
   workflows: {
     list: {
-      endpoint: () => `workflows`,
+      endpoint: () => `workflows/active-states`,
       method: Method.GET,
     },
     byId: {
-      endpoint: ({ endUserId }: { endUserId: string }) =>
-        `workflows/${'clf9p4aj5000044abx2c4okj5'}?endUserId=${endUserId}&name=on-boarding&type=backoffice`,
+      endpoint: ({ workflowId }: { workflowId: string }) => `workflows/${workflowId}`,
       method: Method.GET,
     },
     updateById: {

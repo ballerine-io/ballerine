@@ -12,10 +12,10 @@ export const generateEndUsers = (length: number) => {
       withNew?: boolean;
     } = {}) =>
       faker.helpers.arrayElement([
-        'approved',
-        'rejected',
-        'processing',
-        ...(withNew ? ['new'] : []),
+        'APPROVED',
+        'REJECTED',
+        'PROCESSING',
+        ...(withNew ? ['NEW'] : []),
       ]);
     // Should display a placeholder for now.
     const avatarUrl = undefined;

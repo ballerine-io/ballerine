@@ -12,7 +12,7 @@ export const individualRoute = new Route({
     const { endUserId } = params;
     const endUserById = endUsers.byId(endUserId);
     // TODO: Add workflowId to params/searchParams
-    // const workflowById = workflows.byId({ endUserId, workflowId });
+    // const workflowById = workflows.byId({ workflowId });
 
     if (!queryClient.getQueryData(endUserById.queryKey)) {
       await queryClient.prefetchQuery(endUserById.queryKey, endUserById.queryFn);

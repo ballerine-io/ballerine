@@ -6,8 +6,8 @@ export const workflows = createQueryKeys('workflows', {
     queryKey: [{}],
     queryFn: () => api.workflows.list(),
   }),
-  byId: ({ endUserId }: { endUserId: string }) => ({
-    queryKey: [endUserId],
-    queryFn: () => api.workflows.byId({ endUserId }),
+  byId: ({ workflowId }: { workflowId: string }) => ({
+    queryKey: [workflowId],
+    queryFn: () => api.workflows.byId({ workflowId }),
   }),
 });

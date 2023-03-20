@@ -1,8 +1,8 @@
 import { Outlet } from '@tanstack/react-router';
-import React from 'react';
 import { Providers } from 'components/templates/Providers/Providers';
 import { Toaster } from 'react-hot-toast';
 import { Layout } from 'components/templates/Layout/Layout';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 export const Root = () => {
   return (
@@ -18,7 +18,7 @@ export const Root = () => {
         <Outlet />
       </Layout>
       {/** Excluded in production by default */}
-      {/*<ReactQueryDevtools />*/}
+      <ReactQueryDevtools />
       {/*<TanStackRouterDevtools initialIsOpen={false} />*/}
     </Providers>
   );

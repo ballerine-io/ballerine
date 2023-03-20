@@ -9,23 +9,21 @@ import { z } from 'zod';
 import { IEndUserIdAndWorkflowId } from './interfaces';
 
 export const workflows = {
-  list: async (endUserId?: string) => {
-    const [data, error] = await apiClient({
-      endpoint: endpoints.workflows.list.endpoint(endUserId),
+  list: async () => {
+    const [workflows, error] = await apiClient({
+      endpoint: endpoints.workflows.list.endpoint(),
       method: endpoints.workflows.list.method,
       schema: z.any(),
     });
-    const { workflows } = data ?? {};
 
     return handleZodError(error, workflows);
   },
   byId: async ({ endUserId }: { endUserId: string }) => {
-    const [data, error] = await apiClient({
+    const [workflow, error] = await apiClient({
       endpoint: endpoints.workflows.byId.endpoint({ endUserId }),
       method: endpoints.workflows.byId.method,
       schema: z.any(),
     });
-    const { workflow } = data ?? {};
 
     return handleZodError(error, workflow);
   },
@@ -36,13 +34,12 @@ export const workflows = {
   }: IEndUserIdAndWorkflowId & {
     body: Record<PropertyKey, unknown>;
   }) => {
-    const [data, error] = await apiClient({
+    const [workflow, error] = await apiClient({
       endpoint: endpoints.workflows.updateById.endpoint({ endUserId, workflowId }),
       method: endpoints.workflows.updateById.method,
       body,
       schema: z.any(),
     });
-    const { workflow } = data ?? {};
 
     return handleZodError(error, workflow);
   },
@@ -53,13 +50,12 @@ export const workflows = {
   }: IEndUserIdAndWorkflowId & {
     body: Record<PropertyKey, unknown>;
   }) => {
-    const [data, error] = await apiClient({
+    const [workflow, error] = await apiClient({
       endpoint: endpoints.workflows.event.endpoint({ endUserId, workflowId }),
       method: endpoints.workflows.event.method,
       body,
       schema: z.any(),
     });
-    const { workflow } = data ?? {};
 
     return handleZodError(error, workflow);
   },

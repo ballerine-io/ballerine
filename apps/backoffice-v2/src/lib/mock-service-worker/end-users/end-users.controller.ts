@@ -39,7 +39,7 @@ export const endUsersController = [
     if (
       typeof id !== 'string' ||
       !id.length ||
-      (body?.state !== 'approved' && body?.state !== 'rejected')
+      (body?.state !== 'APPROVED' && body?.state !== 'REJECTED')
     ) {
       return res(ctx.status(400));
     }
