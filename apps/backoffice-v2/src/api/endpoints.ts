@@ -44,7 +44,7 @@ export const endpoints = {
   },
   workflows: {
     list: {
-      endpoint: () => `workflows/active-states`,
+      endpoint: () => `workflows`,
       method: Method.GET,
     },
     byId: {
