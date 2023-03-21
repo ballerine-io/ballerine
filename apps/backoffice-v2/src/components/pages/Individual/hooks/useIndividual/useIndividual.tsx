@@ -1,5 +1,7 @@
 import { useParams } from '@tanstack/react-router';
+import { useConsole } from 'hooks/useConsole/useConsole';
 import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
+import { underscoreToSpace } from '../../../../../utils/underscore-to-space/underscore-to-space';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -44,13 +46,18 @@ export const useIndividual = () => {
   };
   const faceAUrl = images?.find(({ caption }) => /face/i.test(caption))?.imageUrl;
   const faceBUrl = images?.find(({ caption }) => /id\scardfront/i.test(caption))?.imageUrl;
-  const whitelist = ['personalInfo', 'passportInfo', 'checkResults', 'addressInfo'];
+  const whitelist = ['workflow', 'personalInfo', 'passportInfo', 'checkResults', 'addressInfo'];
   const info = {
     personalInfo,
     passportInfo,
     checkResults,
     addressInfo,
+    workflow: {
+      name: underscoreToSpace(data?.workflow?.name),
+      state: underscoreToSpace(data?.workflow?.workflowContext?.state),
+    },
   };
+  useConsole(data?.workflow);
 
   return {
     selectedEndUser,
