@@ -1,6 +1,6 @@
+import { sleep } from '@ballerine/common';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { backendOptions } from '../backend-options';
-import { sleep } from '../utils';
 import { WorkflowBrowserSDK } from '../workflow-browser-sdk';
 import { response } from './msw';
 import { shortWorkflow, workflowOptions } from './workflow-options';
@@ -139,7 +139,7 @@ describe('smoke', () => {
       method: backendOptions.endpoints.persist.method,
       endpoint: backendOptions.endpoints.persist.endpoint.replace(
         ':workflowId',
-        shortWorkflow.workflowDefinition.id ?? '',
+        shortWorkflow.definition.id ?? '',
       ),
       headers: lowerCaseDefaultHeaders,
     });

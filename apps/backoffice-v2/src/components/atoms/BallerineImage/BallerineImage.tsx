@@ -1,6 +1,6 @@
 import { forwardRef, ReactEventHandler, useCallback, useEffect, useState } from 'react';
 import { IBallerineImageProps } from './interfaces';
-import { isInstanceOfFunction } from '../../../utils/is-instance-of-function/is-instance-of-function';
+import { isFunction } from '@ballerine/common';
 import { PhotoSvg } from 'components/atoms/icons';
 import { ctw } from '../../../utils/ctw/ctw';
 
@@ -19,7 +19,7 @@ export const BallerineImage = forwardRef<HTMLImageElement, IBallerineImageProps>
       e => {
         setError(true);
 
-        if (!isInstanceOfFunction(onError)) return;
+        if (!isFunction(onError)) return;
 
         onError(e);
       },

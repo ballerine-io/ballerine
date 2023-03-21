@@ -1,6 +1,6 @@
+import { sleep, uniqueArray } from '@ballerine/common';
 import { HttpError } from '@ballerine/workflow-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { sleep, uniqueArray } from '../utils';
 import { WorkflowBrowserSDK } from '../workflow-browser-sdk';
 import { errorWorkflow, workflowOptions } from './workflow-options';
 
@@ -130,8 +130,8 @@ describe('subscribe', () => {
 
   it('should subscribe to user defined events', () => {
     workflowService = new WorkflowBrowserSDK({
-      workflowDefinitionType: 'statechart-json',
-      workflowDefinition: {
+      definitionType: 'statechart-json',
+      definition: {
         id: 'test',
         initial: 'first',
         states: {
