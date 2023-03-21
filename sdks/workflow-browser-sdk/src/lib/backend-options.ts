@@ -5,7 +5,7 @@ export const backendOptions = {
   endpoints: {
     persist: {
       endpoint: '/workflows/:workflowId',
-      method: 'PUT',
+      method: 'PATCH',
     },
   },
   headers: {
