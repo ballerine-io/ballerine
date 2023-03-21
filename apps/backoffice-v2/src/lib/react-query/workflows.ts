@@ -1,4 +1,5 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
+import { IWorkflowId } from '../../api/interfaces';
 import { api } from '../../api/api';
 
 export const workflows = createQueryKeys('workflows', {
@@ -6,7 +7,7 @@ export const workflows = createQueryKeys('workflows', {
     queryKey: [{}],
     queryFn: () => api.workflows.list(),
   }),
-  byId: ({ workflowId }: { workflowId: string }) => ({
+  byId: ({ workflowId }: IWorkflowId) => ({
     queryKey: [workflowId],
     queryFn: () => api.workflows.byId({ workflowId }),
   }),

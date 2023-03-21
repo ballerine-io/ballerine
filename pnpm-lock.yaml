@@ -172,7 +172,8 @@ importers:
 
   apps/backoffice-v2:
     specifiers:
-      '@ballerine/workflow-browser-sdk': '*'
+      '@ballerine/common': ^0.4.2
+      '@ballerine/workflow-browser-sdk': ^0.4.2
       '@ballerine/workflow-node-sdk': workspace:*
       '@faker-js/faker': ^7.6.0
       '@formkit/auto-animate': 1.0.0-beta.5
@@ -233,6 +234,7 @@ importers:
       vite: ^4.0.4
       zod: ^3.20.0
     dependencies:
+      '@ballerine/common': 0.4.2
       '@ballerine/workflow-browser-sdk': 0.4.2
       '@ballerine/workflow-node-sdk': link:../../sdks/workflow-node-sdk
       '@formkit/auto-animate': 1.0.0-beta.5

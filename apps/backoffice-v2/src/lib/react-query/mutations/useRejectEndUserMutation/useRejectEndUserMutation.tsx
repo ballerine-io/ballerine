@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../../api/api';
 import { endUsers } from '../../end-users';
 import { Action, Resource } from '../../../../enums';
+import { sleep } from '@ballerine/common';
 
 export const useRejectEndUserMutation = ({
   workflowId,
@@ -26,7 +27,8 @@ export const useRejectEndUserMutation = ({
       resource: Resource.END_USER,
       action: Action.REJECT,
     }),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await sleep(3000);
       queryClient.invalidateQueries({ queryKey: endUsers.list().queryKey });
       queryClient.invalidateQueries({
         queryKey: endUsers.byId(endUserId).queryKey,

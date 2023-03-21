@@ -1,7 +1,7 @@
 import { rest } from 'msw';
 import { env } from '../../../env/env';
 import { workflows } from './workflows.data';
-import { initNodeWorkflow } from '@ballerine/workflow-node-sdk';
+import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { endUsers } from '../end-users/end-users.data';
 
 // const workflowCore = {
@@ -90,7 +90,7 @@ export const workflowsController = [
       return res(ctx.status(404));
     }
 
-    const workflowService = initNodeWorkflow(workflow);
+    const workflowService = createWorkflow(workflow);
 
     workflowService.runner.sendEvent({ type: body?.name });
 
