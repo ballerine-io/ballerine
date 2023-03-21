@@ -179,17 +179,14 @@ export class WorkflowRunner {
         if (state.changed) {
           console.log('Transitioned into', state.value);
 
-          if (state.configuration?.[0]?.['type'] == 'final') {
+          if (state.done) {
             console.log('Reached final state');
           }
 
           if (this.#__callback) {
-            // TODO: clean it up
-            const name = state.configuration?.[0]?.['key'] ?? '';
-
             this.#__callback({
               ...event,
-              state: name,
+              state: state.value as string,
             });
           }
         }
