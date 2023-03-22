@@ -6,15 +6,16 @@ export class BackendPersistPlugin extends StatePlugin {
   stateNames: Array<string>;
   name = 'SYNC_BACKEND';
   when: 'pre' | 'post';
-  isBlocking = false;
+  isBlocking;
   #__fetchOptions: IFetchOptions;
 
-  constructor({ stateNames, when, fetchOptions }: TBackendPersistPluginParams) {
+  constructor({ stateNames, when, fetchOptions, isBlocking }: TBackendPersistPluginParams) {
     super();
 
     this.stateNames = stateNames;
     this.when = when;
     this.#__fetchOptions = fetchOptions;
+    this.isBlocking = isBlocking ?? false;
   }
 
   async action({ context, state }: { context: any; event: any; state: any }): Promise<void> {
