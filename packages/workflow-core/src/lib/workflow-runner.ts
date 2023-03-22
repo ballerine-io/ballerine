@@ -5,6 +5,7 @@ import { createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
   ObjectValues,
+  StatePlugin,
   WorkflowEvent,
   WorkflowEventWithoutState,
   WorkflowExtensions,
@@ -54,6 +55,68 @@ export class WorkflowRunner {
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
   }
 
+  #__handleAction({
+    type,
+    plugin,
+    workflowId = '',
+  }: {
+    // Will be a union.
+    type: 'STATE_ACTION_STATUS';
+    plugin: Pick<StatePlugin, 'name' | 'action'>;
+    workflowId?: string;
+  }) {
+    return async (context: Record<string, unknown>, event: Record<PropertyKey, unknown>) => {
+      this.#__callback?.({
+        type,
+        state: this.#__currentState,
+        payload: {
+          status: 'PENDING',
+          action: plugin.name,
+        },
+      });
+
+      try {
+        await plugin.action({
+          workflowId,
+          context,
+          event,
+          state: this.#__currentState,
+        });
+
+        this.#__callback?.({
+          type,
+          state: this.#__currentState,
+          payload: {
+            status: 'SUCCESS',
+            action: plugin.name,
+          },
+        });
+      } catch (err) {
+        let errorType: ObjectValues<typeof ErrorEnum> = ErrorEnum.ERROR;
+
+        if (err instanceof HttpError) {
+          errorType = ErrorEnum.HTTP_ERROR;
+        }
+
+        this.#__callback?.({
+          type,
+          state: this.#__currentState,
+          payload: {
+            status: 'ERROR',
+            action: plugin.name,
+          },
+          error: err,
+        });
+
+        this.#__callback?.({
+          type: errorType,
+          state: this.#__currentState,
+          error: err,
+        });
+      }
+    };
+  }
+
   #__extendedWorkflow({
     definition,
     workflowActions,
@@ -71,56 +134,10 @@ export class WorkflowRunner {
 
     for (const statePlugin of nonBlockingPlugins) {
       const when = statePlugin.when === 'pre' ? 'entry' : 'exit';
-      const handledAction = async (context: Record<string, unknown>, event: Record<PropertyKey, unknown>) => {
-        this.#__callback?.({
-          type: 'STATE_ACTION_STATUS',
-          state: this.#__currentState,
-          payload: {
-            status: 'PENDING',
-            action: statePlugin.name,
-          },
-        });
-
-        try {
-          await statePlugin.action({
-            workflowId: '',
-            context,
-            event,
-            state: this.#__currentState,
-          });
-
-          this.#__callback?.({
-            type: 'STATE_ACTION_STATUS',
-            state: this.#__currentState,
-            payload: {
-              status: 'SUCCESS',
-              action: statePlugin.name,
-            },
-          });
-        } catch (err) {
-          let type: ObjectValues<typeof ErrorEnum> = ErrorEnum.ERROR;
-
-          if (err instanceof HttpError) {
-            type = ErrorEnum.HTTP_ERROR;
-          }
-
-          this.#__callback?.({
-            type: 'STATE_ACTION_STATUS',
-            state: this.#__currentState,
-            payload: {
-              status: 'ERROR',
-              action: statePlugin.name,
-            },
-            error: err,
-          });
-
-          this.#__callback?.({
-            type,
-            state: this.#__currentState,
-            error: err,
-          });
-        }
-      };
+      const handledAction = this.#__handleAction({
+        type: 'STATE_ACTION_STATUS',
+        plugin: statePlugin,
+      });
 
       for (const stateName of statePlugin.stateNames) {
         if (!definition.states[stateName]) {
@@ -196,12 +213,11 @@ export class WorkflowRunner {
     const snapshot = service.getSnapshot();
 
     for (const prePlugin of prePlugins) {
-      await prePlugin.action({
-        workflowId: snapshot.machine?.id ?? '',
-        context: snapshot.context,
-        event,
-        state: this.#__currentState,
-      });
+      await this.#__handleAction({
+        type: 'STATE_ACTION_STATUS',
+        plugin: prePlugin,
+        workflowId: snapshot.machine?.id,
+      })(snapshot.context, event);
     }
 
     service.send(event);
@@ -221,12 +237,11 @@ export class WorkflowRunner {
     );
 
     for (const postPlugin of postPlugins) {
-      await postPlugin.action({
-        workflowId: snapshot.machine?.id ?? '',
-        context: this.#__context,
-        event,
-        state: this.#__currentState,
-      });
+      await this.#__handleAction({
+        type: 'STATE_ACTION_STATUS',
+        plugin: postPlugin,
+        workflowId: snapshot.machine?.id,
+      })(this.#__context, event);
     }
   }
 
