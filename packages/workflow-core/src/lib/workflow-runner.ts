@@ -15,7 +15,6 @@ import { Error as ErrorEnum } from './types';
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
   #__workflow: StateMachine<any, any, any>;
-  #__currentStateNode: any;
   #__currentState: string | undefined | symbol | number | any;
   #__context: any;
   #__callback: ((event: WorkflowEvent) => void) | null = null;
@@ -191,7 +190,6 @@ export class WorkflowRunner {
           }
         }
 
-        this.#__currentStateNode = state;
         this.#__currentState = state.value;
       });
 
@@ -209,7 +207,7 @@ export class WorkflowRunner {
         workflowId: snapshot.machine?.id || '',
         context: snapshot.context,
         event,
-        state: this.#__currentStateNode,
+        state: this.#__currentState,
       });
     }
     service.send(event);
@@ -230,7 +228,7 @@ export class WorkflowRunner {
         workflowId: snapshot.machine?.id || '',
         context: this.#__context,
         event,
-        state: this.#__currentStateNode,
+        state: this.#__currentState,
       });
     }
   }
