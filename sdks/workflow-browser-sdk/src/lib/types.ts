@@ -47,6 +47,10 @@ export interface BackendOptions {
      * @default PUT '/workflows/:workflowId'
      */
     persist: BackendEndpoint;
+    /**
+     * @default POST '/storage'
+     */
+    uploadFile: BackendEndpoint;
   };
   headers?: {
     Authorization?: string;
@@ -145,3 +149,8 @@ export type TWorkflowErrorEvent = TWorkflowEvent & {
 export type TWorkflowHttpErrorEvent = TWorkflowEvent & {
   error: InstanceType<typeof HttpError>;
 };
+
+export interface IFileToUpload {
+  type: string;
+  file: File;
+}
