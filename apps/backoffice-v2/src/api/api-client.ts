@@ -12,13 +12,7 @@ import { handlePromise } from '../utils/handle-promise/handle-promise';
  * @param schema - A zod schema to validate the response against.
  * @param rest - Allows overriding any of the defaults set by the API client.
  */
-export const apiClient: IApiClient = async ({
-  endpoint,
-  method,
-  options,
-  schema,
-  ...rest
-}) =>
+export const apiClient: IApiClient = async ({ endpoint, method, options, schema, ...rest }) =>
   handlePromise(
     fetcher({
       url: `${env.VITE_API_URL}/${endpoint}`,

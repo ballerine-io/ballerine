@@ -8,9 +8,10 @@ import { SecondaryButton } from 'components/atoms/SecondaryButton/SecondaryButto
  * @param props
  * @constructor
  */
-export const MagnifyingGlassButton: FunctionComponent<
-  IMagnifyingGlassButtonProps
-> = ({ className, ...rest }) => {
+export const MagnifyingGlassButton: FunctionComponent<IMagnifyingGlassButtonProps> = ({
+  className,
+  ...rest
+}) => {
   return (
     <SecondaryButton className={className} {...rest}>
       <MagnifyingGlassSvg />

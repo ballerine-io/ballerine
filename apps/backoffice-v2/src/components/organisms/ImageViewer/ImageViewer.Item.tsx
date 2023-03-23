@@ -49,13 +49,13 @@ export const Item: FunctionComponent<IItemProps> = ({
             src={src}
             className={ctw(
               `
+            group-hover:outline
             group-hover:outline-2
             group-hover:outline-primary
-            group-hover:outline
             group-focus:shadow
+            group-focus:outline
             group-focus:outline-2
-            group-focus:outline-primary
-            group-focus:outline`,
+            group-focus:outline-primary`,
               imageClassName,
             )}
             alt={alt}

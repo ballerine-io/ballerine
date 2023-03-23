@@ -5,9 +5,7 @@ import { ctw } from '../../../utils/ctw/ctw';
 export const SkeletonItem: FunctionComponent = () => {
   return (
     <li className={`flex justify-center`}>
-      <PrimaryButton
-        className={ctw(`group flex-col hover:bg-transparent active:!ring-0`)}
-      >
+      <PrimaryButton className={ctw(`group flex-col hover:bg-transparent active:!ring-0`)}>
         <div
           className={`mb-1
             h-[4.15rem]

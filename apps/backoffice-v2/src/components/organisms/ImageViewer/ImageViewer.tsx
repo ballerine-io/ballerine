@@ -24,13 +24,13 @@ import { ctw } from '../../../utils/ctw/ctw';
  * @param props
  * @constructor
  */
-export const ImageViewer: FunctionComponent<IImageViewerProps> &
-  IImageViewerChildren = ({ children, className, ...rest }) => {
+export const ImageViewer: FunctionComponent<IImageViewerProps> & IImageViewerChildren = ({
+  children,
+  className,
+  ...rest
+}) => {
   return (
-    <div
-      className={ctw(`flex flex-col items-center gap-y-8`, className)}
-      {...rest}
-    >
+    <div className={ctw(`flex flex-col items-center gap-y-8`, className)} {...rest}>
       <Provider>{children}</Provider>
     </div>
   );

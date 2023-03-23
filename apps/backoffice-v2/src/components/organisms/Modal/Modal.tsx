@@ -38,10 +38,7 @@ export const Modal: FunctionComponent<IModalProps> = ({
               'modal-open': isOpen,
             })}
           >
-            <Dialog.Content
-              className={ctw(`modal-box w-full max-w-7xl`, className)}
-              {...props}
-            >
+            <Dialog.Content className={ctw(`modal-box w-full max-w-7xl`, className)} {...props}>
               <div className={`flex justify-end`}>
                 <Dialog.Close
                   className={`btn-ghost btn-sm btn-square  btn mb-4 focus:outline-primary`}
@@ -60,9 +57,7 @@ export const Modal: FunctionComponent<IModalProps> = ({
               </Dialog.Title>
 
               {/* Prevents CLS of the close button when the overflow of the content changes. */}
-              <MotionScrollArea className={`h-[768px] rounded-md`}>
-                {children}
-              </MotionScrollArea>
+              <MotionScrollArea className={`h-[768px] rounded-md`}>{children}</MotionScrollArea>
             </Dialog.Content>
           </div>
         </Dialog.Overlay>

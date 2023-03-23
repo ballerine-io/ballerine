@@ -5,10 +5,7 @@ export const useDocumentListener = <TKey extends keyof DocumentEventMap>(
   cb: (event: DocumentEventMap[TKey]) => void,
 ) => {
   const ref = useRef(cb);
-  const handler = useCallback(
-    (event: DocumentEventMap[TKey]) => ref.current?.(event),
-    [],
-  );
+  const handler = useCallback((event: DocumentEventMap[TKey]) => ref.current?.(event), []);
 
   useLayoutEffect(() => {
     ref.current = cb;

@@ -6,18 +6,19 @@ export class BackendPersistPlugin extends StatePlugin {
   stateNames: Array<string>;
   name = 'SYNC_BACKEND';
   when: 'pre' | 'post';
-  isBlocking = false;
+  isBlocking;
   #__fetchOptions: IFetchOptions;
 
-  constructor({ stateNames, when, fetchOptions }: TBackendPersistPluginParams) {
+  constructor({ stateNames, when, fetchOptions, isBlocking }: TBackendPersistPluginParams) {
     super();
 
     this.stateNames = stateNames;
     this.when = when;
     this.#__fetchOptions = fetchOptions;
+    this.isBlocking = isBlocking ?? false;
   }
 
-  async action({ context }: { context: any; event: any; state: any }): Promise<void> {
+  async action({ context, state }: { context: any; event: any; state: any }): Promise<void> {
     const { baseUrl, endpoint, method, headers } = this.#__fetchOptions;
     // TODO: Find a way to mock global.URL
     const url = `${(baseUrl as string) || ''}${endpoint as string}`;
@@ -25,7 +26,7 @@ export class BackendPersistPlugin extends StatePlugin {
     try {
       const res = await fetch(url, {
         method,
-        body: method !== 'GET' ? JSON.stringify({ context }) : undefined,
+        body: method !== 'GET' ? JSON.stringify({ context, state }) : undefined,
         headers,
       });
 

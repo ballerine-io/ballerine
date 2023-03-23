@@ -15,17 +15,15 @@ export const useFirstEndUserIdQuery = <TId extends TRouteId>({
   };
   routeId: TId;
 }) => {
-  const {
-    sortBy = initialState?.sortBy,
-    sortDir = initialState?.sortDir ?? 'asc',
-  } = useTanStackSearch({
-    from: routeId,
-    strict: false,
-    track: searchParams => ({
-      sortBy: 'sortBy' in searchParams ? searchParams?.sortBy : undefined,
-      sortDir: 'sortDir' in searchParams ? searchParams?.sortDir : undefined,
-    }),
-  });
+  const { sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' } =
+    useTanStackSearch({
+      from: routeId,
+      strict: false,
+      track: searchParams => ({
+        sortBy: 'sortBy' in searchParams ? searchParams?.sortBy : undefined,
+        sortDir: 'sortDir' in searchParams ? searchParams?.sortDir : undefined,
+      }),
+    });
   const selectFirstEndUserId = useCallback(
     (data: TEndUsers) =>
       sort({

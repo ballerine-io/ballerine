@@ -36,14 +36,7 @@ export const useAuthRedirects = ({
       params: undefined,
       search: undefined,
     });
-  }, [
-    isLoading,
-    isAuthenticated,
-    navigate,
-    pathname,
-    redirectAuthenticatedTo,
-    protectedRoutes,
-  ]);
+  }, [isLoading, isAuthenticated, navigate, pathname, redirectAuthenticatedTo, protectedRoutes]);
 
   useEffect(() => {
     const shouldRedirect = [
@@ -63,11 +56,5 @@ export const useAuthRedirects = ({
       params: undefined,
       search: undefined,
     });
-  }, [
-    isLoading,
-    isAuthenticated,
-    navigate,
-    pathname,
-    redirectUnauthenticatedTo,
-  ]);
+  }, [isLoading, isAuthenticated, navigate, pathname, redirectUnauthenticatedTo]);
 };

@@ -10,8 +10,10 @@ export const Group: FunctionComponentWithChildren<IGroupProps> = ({
   values = [],
   onChange,
   titleProps = {},
+  innerContainerProps = {},
 }) => {
   const { className, ...restTitle } = titleProps;
+  const { className: innerContainerClassName, ...restInnerContainer } = innerContainerProps;
 
   return (
     <Provider values={values} onChange={onChange}>
@@ -20,9 +22,14 @@ export const Group: FunctionComponentWithChildren<IGroupProps> = ({
           {label}
         </h4>
         <div
-          className={ctw(`flex gap-2`, {
-            'flex-col': vertical,
-          })}
+          className={ctw(
+            `flex gap-2`,
+            {
+              'flex-col': vertical,
+            },
+            innerContainerClassName,
+          )}
+          {...restInnerContainer}
         >
           {children}
         </div>

@@ -8,9 +8,7 @@ import { createArrayOfNumbers } from '../../../../../utils/create-array-of-numbe
  *
  * @returns \{ dataFields \} - dataFields being an array of { title, text } objects and 'Start case' title.
  */
-export const useDetailsGrid = <TRecord extends Record<PropertyKey, string>>(
-  data: TRecord,
-) => {
+export const useDetailsGrid = <TRecord extends Record<PropertyKey, string>>(data: TRecord) => {
   const dataFields = Object.entries(data).map(([key, value]) => ({
     title: toStartCase(camelCaseToSpace(key)),
     text: value,

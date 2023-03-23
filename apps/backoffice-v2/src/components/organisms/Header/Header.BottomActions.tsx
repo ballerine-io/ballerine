@@ -16,8 +16,7 @@ export const BottomActions = () => {
   const onThemeChange = useCallback(
     (next: `dark` | `light`) => () => {
       localStorage.setItem(`theme`, next);
-      document.documentElement.dataset.theme =
-        next === `dark` ? `night` : `winter`;
+      document.documentElement.dataset.theme = next === `dark` ? `night` : `winter`;
       setTheme(next);
     },
     [],
@@ -76,9 +75,7 @@ export const BottomActions = () => {
       >
         <LogOutSvg /> Log out
       </button>
-      <span
-        className={`label-text-alt self-end`}
-      >{`v${packageJson.version}`}</span>
+      <span className={`label-text-alt self-end`}>{`v${packageJson.version}`}</span>
     </div>
   );
 };

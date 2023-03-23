@@ -31,8 +31,7 @@ import { SkeletonItem } from 'components/organisms/SubjectsList/SubjectsList.Ske
  * @param props
  * @constructor
  */
-export const SubjectsList: FunctionComponent<ISubjectsListProps> &
-  ISubjectsListChildren = ({
+export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsListChildren = ({
   children,
   onSearch,
   onFilter,
@@ -59,7 +58,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> &
       {...props}
     >
       <div className={`border-neutral/10 p-4 theme-dark:border-neutral/60`}>
-        <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary focus-within:outline theme-dark:border-neutral/60">
+        <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60">
           <div className="input-group">
             <div className={`btn btn-ghost btn-square pointer-events-none`}>
               <MagnifyingGlassSvg className={`!d-5`} />
@@ -86,7 +85,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> &
               Filter
             </button>
             <div
-              className={`dropdown-content space-y-2 rounded-md border  border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
+              className={`dropdown-content space-y-2 rounded-md  border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
             >
               {filterByOptions.map(({ label, value, options }) => (
                 <Checkbox.Group
@@ -96,6 +95,9 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> &
                   onChange={onFilter(value as keyof TEndUser)}
                   titleProps={{
                     className: `text-base-content`,
+                  }}
+                  innerContainerProps={{
+                    className: `w-96 flex-wrap`,
                   }}
                 >
                   {options.map(({ label, value }) => (
@@ -115,7 +117,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> &
             </div>
           </div>
           <div
-            className={`form-control rounded-md border border-neutral/10 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary focus-within:outline theme-dark:border-neutral/60`}
+            className={`form-control rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60`}
           >
             <div className={`input-group flex items-center`}>
               <button

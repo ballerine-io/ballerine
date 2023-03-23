@@ -23,8 +23,7 @@
     "css-modules",
     "eslint",
     "prettier",
-    "husky",
-    "commit-lint"
+    "husky"
   ],
   "browserslist": [
     ">0.2%",
@@ -36,10 +35,8 @@
     "yarn": ">=1.22.5"
   },
   "scripts": {
-    "branchlint": "branchlint -u -c",
     "format": "prettier --write .",
     "lint": "eslint . --fix",
-    "commit": "git add . && git-cz",
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
@@ -47,7 +44,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ballerine/common": "0.0.1",
+    "@ballerine/common": "^0.4.2",
+    "@ballerine/workflow-browser-sdk": "^0.4.2",
+    "@ballerine/workflow-node-sdk": "workspace:*",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-checkbox": "^1.0.1",
@@ -77,11 +76,6 @@
     "zod": "^3.20.0"
   },
   "devDependencies": {
-    "@branchlint/cli": "^1.0.4",
-    "@branchlint/default-config": "^1.0.2",
-    "@commitlint/cli": "^17.0.3",
-    "@commitlint/config-conventional": "^17.0.3",
-    "@commitlint/cz-commitlint": "^17.3.0",
     "@faker-js/faker": "^7.6.0",
     "@tanstack/react-query-devtools": "4.22.0",
     "@tanstack/react-router-devtools": "0.0.1-beta.61",
@@ -96,8 +90,6 @@
     "@typescript-eslint/parser": "^5.30.0",
     "@vitejs/plugin-react-swc": "^3.0.1",
     "autoprefixer": "^10.4.7",
-    "commitizen": "^4.2.6",
-    "cz-conventional-changelog": "^3.3.0",
     "daisyui": "^2.46.1",
     "eslint": "8.22.0",
     "eslint-config-prettier": "^8.5.0",

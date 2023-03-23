@@ -31,7 +31,7 @@ export const DetailsGrid = <TRecord extends AnyRecord>({
     <>
       <details open className={`group`}>
         <summary
-          className={`mb-6 inline-flex cursor-pointer  list-none items-center gap-x-3 rounded-md p-1 pl-0 text-2xl font-bold focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline`}
+          className={`mb-6 inline-flex cursor-pointer  list-none items-center gap-x-3 rounded-md p-1 pl-0 text-2xl font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary`}
         >
           <span
             className={ctw({
@@ -71,9 +71,7 @@ export const DetailsGrid = <TRecord extends AnyRecord>({
             </>
           ) : (
             dataFields?.map(({ title, text }, index) => (
-              <Fragment key={`${title}-${text}`}>
-                {children({ title, text, index })}
-              </Fragment>
+              <Fragment key={`${title}-${text}`}>{children({ title, text, index })}</Fragment>
             ))
           )}
           {!!footer && footer}

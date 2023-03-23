@@ -29,19 +29,19 @@ export const useSubjectsList = () => {
       options: [
         {
           label: 'Rejected',
-          value: 'rejected',
+          value: 'REJECTED',
         },
         {
           label: 'Approved',
-          value: 'approved',
+          value: 'APPROVED',
         },
         {
-          label: 'Pending',
-          value: 'pending',
+          label: 'Processing',
+          value: 'PROCESSING',
         },
         {
           label: 'New',
-          value: 'new',
+          value: 'NEW',
         },
       ],
     },

@@ -8,9 +8,11 @@ import { ctw } from '../../../utils/ctw/ctw';
  * @param props
  * @constructor
  */
-export const SecondaryButton: FunctionComponentWithChildren<
-  TSecondaryButtonProps
-> = ({ children, className, ...rest }) => {
+export const SecondaryButton: FunctionComponentWithChildren<TSecondaryButtonProps> = ({
+  children,
+  className,
+  ...rest
+}) => {
   return (
     <PrimaryButton
       className={ctw(

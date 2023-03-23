@@ -23,9 +23,7 @@ export type DivComponent = ComponentProps<'div'>;
 
 export type ButtonComponent = ComponentProps<'button'>;
 
-export type FunctionComponentWithChildren<P = AnyRecord> = FunctionComponent<
-  PropsWithChildren<P>
->;
+export type FunctionComponentWithChildren<P = AnyRecord> = FunctionComponent<PropsWithChildren<P>>;
 
 export type TObjectValues<TObject extends AnyRecord> = TObject[keyof TObject];
 

@@ -17,10 +17,7 @@ export const useToggle = (
 ] => {
   const [isToggled, setIsToggled] = useState(initialState);
   const toggle = useCallback(
-    (next?: boolean) =>
-      setIsToggled(prevState =>
-        typeof next === `boolean` ? next : !prevState,
-      ),
+    (next?: boolean) => setIsToggled(prevState => (typeof next === `boolean` ? next : !prevState)),
     [],
   );
   const toggleOn = useCallback(() => toggle(true), [toggle]);

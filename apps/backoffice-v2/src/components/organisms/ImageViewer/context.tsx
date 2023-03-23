@@ -1,11 +1,5 @@
 import { TImageViewerState } from './types';
-import {
-  createContext,
-  FunctionComponent,
-  PropsWithChildren,
-  useCallback,
-  useState,
-} from 'react';
+import { createContext, FunctionComponent, PropsWithChildren, useCallback, useState } from 'react';
 import { useToggle } from 'hooks/useToggle/useToggle';
 
 /**
@@ -18,16 +12,10 @@ export const Context = createContext<TImageViewerState>(undefined);
  * @param children
  * @constructor
  */
-export const Provider: FunctionComponent<PropsWithChildren> = ({
-  children,
-}) => {
+export const Provider: FunctionComponent<PropsWithChildren> = ({ children }) => {
   const [selectedImage, setSelectedImage] = useState('');
-  const onSelectImage = useCallback(
-    (src: string) => () => setSelectedImage(src),
-    [],
-  );
-  const [isZoomModalOpen, toggleIsZoomModalOpen, toggleOnIsZoomModalOpen] =
-    useToggle();
+  const onSelectImage = useCallback((src: string) => () => setSelectedImage(src), []);
+  const [isZoomModalOpen, toggleIsZoomModalOpen, toggleOnIsZoomModalOpen] = useToggle();
 
   const value: TImageViewerState = {
     selectedImage,

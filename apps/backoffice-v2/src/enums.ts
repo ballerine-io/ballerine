@@ -7,18 +7,13 @@ export const Method = {
 } as const;
 
 export const State = {
-  APPROVED: 'approved',
-  REJECTED: 'rejected',
-  PENDING: 'pending',
-  NEW: 'new',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  PROCESSING: 'PROCESSING',
+  NEW: 'NEW',
 } as const;
 
-export const States = [
-  State.APPROVED,
-  State.REJECTED,
-  State.PENDING,
-  State.NEW,
-] as const;
+export const States = [State.APPROVED, State.REJECTED, State.PROCESSING, State.NEW] as const;
 
 export const Action = {
   REJECT: 'REJECT',

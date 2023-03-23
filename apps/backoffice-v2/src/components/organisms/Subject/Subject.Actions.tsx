@@ -3,7 +3,6 @@ import { Avatar } from 'components/atoms/Avatar';
 import { IActionsProps } from 'components/organisms/Subject/interfaces';
 import { EllipsisButton } from 'components/atoms/EllipsisButton/EllipsisButton';
 import { useActions } from 'components/organisms/Subject/hooks/useActions/useActions';
-import { createInitials } from '../../../utils/create-initials/create-initials';
 import { motion } from 'framer-motion';
 import * as HoverCard from '@radix-ui/react-hover-card';
 import { ctw } from '../../../utils/ctw/ctw';
@@ -21,11 +20,7 @@ import { ctw } from '../../../utils/ctw/ctw';
  *
  * @constructor
  */
-export const Actions: FunctionComponent<IActionsProps> = ({
-  id,
-  fullName,
-  avatarUrl,
-}) => {
+export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatarUrl }) => {
   const {
     onMutateApproveEndUser,
     onMutateRejectEndUser,
@@ -33,9 +28,10 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     debouncedIsLoadingRejectEndUser,
     isLoading,
     isLoadingEndUser,
-  } = useActions(id);
-  // Create initials from the first character of the first name, middle name, and last name.
-  const initials = createInitials(fullName);
+    initials,
+    canApprove,
+    canReject,
+  } = useActions({ endUserId: id, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4`}>
@@ -75,12 +71,12 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             <HoverCard.Trigger asChild>
               <button
                 className={ctw(
-                  `btn btn-error justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
+                  `btn-error btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
                   {
                     loading: debouncedIsLoadingRejectEndUser,
                   },
                 )}
-                disabled={isLoading}
+                disabled={isLoading || !canReject}
                 onClick={onMutateRejectEndUser}
               >
                 Reject
@@ -102,12 +98,12 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             <HoverCard.Trigger asChild>
               <button
                 className={ctw(
-                  `btn btn-success justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
+                  `btn-success btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
                   {
                     loading: debouncedIsLoadingApproveEndUser,
                   },
                 )}
-                disabled={isLoading}
+                disabled={isLoading || !canApprove}
                 onClick={onMutateApproveEndUser}
               >
                 Approve
@@ -125,7 +121,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-          <div className="dropdown-hover dropdown dropdown-bottom dropdown-end">
+          <div className="dropdown-hover dropdown-bottom dropdown-end dropdown">
             <EllipsisButton tabIndex={0} />
             <ul
               className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}

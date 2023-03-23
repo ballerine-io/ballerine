@@ -5,12 +5,7 @@ import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListen
 
 export const useCrop = () => {
   const [crop, setCrop] = useState<Crop>();
-  const [
-    isCropping,
-    toggleIsCropping,
-    toggleOnIsCropping,
-    toggleOffIsCropping,
-  ] = useToggle();
+  const [isCropping, toggleIsCropping, toggleOnIsCropping, toggleOffIsCropping] = useToggle();
   const onCrop = useCallback((crop: Crop | undefined) => {
     setCrop(crop);
   }, []);

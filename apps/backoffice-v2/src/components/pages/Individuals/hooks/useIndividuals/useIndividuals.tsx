@@ -1,5 +1,4 @@
 import { useMatches } from '@tanstack/react-router';
-import { useEndUsersQuery } from '../../../../../lib/react-query/queries/useEndUsersQuery/useEndUsersQuery';
 import { useSort } from 'hooks/useSort/useSort';
 import { useSearch } from 'hooks/useSearch/useSearch';
 import { useFilter } from 'hooks/useFilter/useFilter';
@@ -12,17 +11,15 @@ import { useSelectEndUserOnMount } from 'hooks/useSelectEndUserOnMount/useSelect
 import { individualsRoute } from 'components/pages/Individuals/Individuals.route';
 import { individualsIndexRoute } from 'components/pages/Individuals/IndividualsIndex.route';
 import { individualRoute } from 'components/pages/Individual/Individual.route';
+import { useEndUsersWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUsersWithWorkflowQuery/useEndUsersWithWorkflowQuery';
 
 export const useIndividuals = () => {
   const matches = useMatches();
   const lastMatchId = matches.at(-1)?.route?.id;
   const isIndividuals =
-    lastMatchId === individualsRoute.id ||
-    lastMatchId === individualsIndexRoute.id;
-  const routeId: TRouteId = isIndividuals
-    ? individualsRoute.id
-    : individualRoute.id;
-  const { data: subjects, isLoading } = useEndUsersQuery();
+    lastMatchId === individualsRoute.id || lastMatchId === individualsIndexRoute.id;
+  const routeId: TRouteId = isIndividuals ? individualsRoute.id : individualRoute.id;
+  const { data: subjects, isLoading } = useEndUsersWithWorkflowQuery();
   const { searched, onSearch, search } = useSearch({
     routeId,
     data: subjects,

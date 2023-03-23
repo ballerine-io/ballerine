@@ -73,17 +73,11 @@ export const FaceMatch: FunctionComponent<IFaceMatchProps> = ({
             text: isComparing || isLoading,
           }}
           title={`Image Quality`}
-          text={
-            faceSimilarity && imageQuality >= imageQualityThreshold
-              ? `OK`
-              : `INVALID`
-          }
+          text={faceSimilarity && imageQuality >= imageQualityThreshold ? `OK` : `INVALID`}
           textProps={{
             className: ctw({
-              'text-error':
-                !faceSimilarity || imageQuality < imageQualityThreshold,
-              'text-success':
-                faceSimilarity && imageQuality >= imageQualityThreshold,
+              'text-error': !faceSimilarity || imageQuality < imageQualityThreshold,
+              'text-success': faceSimilarity && imageQuality >= imageQualityThreshold,
             }),
           }}
         />

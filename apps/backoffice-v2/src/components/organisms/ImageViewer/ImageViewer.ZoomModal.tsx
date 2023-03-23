@@ -21,8 +21,7 @@ export const ZoomModal: FunctionComponent<IZoomModalProps> = ({
   ...rest
 }) => {
   const { className: imageClassName, ...restImage } = imageProps;
-  const { selectedImage, isZoomModalOpen, toggleIsZoomModalOpen } =
-    useImageViewerContext();
+  const { selectedImage, isZoomModalOpen, toggleIsZoomModalOpen } = useImageViewerContext();
 
   return (
     <Modal
