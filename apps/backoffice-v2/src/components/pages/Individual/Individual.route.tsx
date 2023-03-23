@@ -11,11 +11,16 @@ export const individualRoute = new Route({
   onLoad: async ({ params }) => {
     const { endUserId } = params;
     const endUserById = endUsers.byId(endUserId);
-    const data = queryClient.getQueryData(endUserById.queryKey);
+    // TODO: Add workflowId to params/searchParams
+    // const workflowById = workflows.byId({ workflowId });
 
-    if (data) return {};
+    if (!queryClient.getQueryData(endUserById.queryKey)) {
+      await queryClient.prefetchQuery(endUserById.queryKey, endUserById.queryFn);
+    }
 
-    await queryClient.prefetchQuery(endUserById.queryKey, endUserById.queryFn);
+    // if (!queryClient.getQueryData(workflowById.queryKey)) {
+    //   await queryClient.prefetchQuery(workflowById.queryKey, workflowById.queryFn);
+    // }
 
     return {};
   },

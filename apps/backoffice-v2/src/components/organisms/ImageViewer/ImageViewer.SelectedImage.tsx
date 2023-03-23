@@ -1,9 +1,9 @@
-import {forwardRef, useCallback, useEffect, useState} from 'react';
+import { forwardRef, useCallback, useEffect, useState } from 'react';
 import { ISelectedImageProps } from './interfaces';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { BallerineImage } from 'components/atoms/BallerineImage';
 import { ctw } from '../../../utils/ctw/ctw';
-import {useConsole} from "hooks/useConsole/useConsole";
+import { useConsole } from 'hooks/useConsole/useConsole';
 
 /**
  * @description To be used by {@link ImageViewer}. Uses {@link BallerineImage} to display the currently selected image with default styling.

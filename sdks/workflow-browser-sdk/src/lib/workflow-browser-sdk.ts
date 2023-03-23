@@ -98,9 +98,10 @@ export class WorkflowBrowserSDK {
         ?.filter(state => state.persistence === Persistence.BACKEND)
         ?.map(state => state.state) ?? [],
     );
-    const submitStateNames = uniqueArray(
-      !submitStates?.length ? finalStates : submitStates?.map(({ state }) => state),
-    );
+    const submitStateNames = uniqueArray([
+      ...finalStates,
+      ...(submitStates?.map(({ state }) => state) ?? []),
+    ]);
     const localStorageStateNames = uniqueArray(
       persistStates
         ?.filter(state => state.persistence === Persistence.LOCAL_STORAGE)
@@ -109,9 +110,8 @@ export class WorkflowBrowserSDK {
 
     const sharedOptions: Pick<
       ConstructorParameters<typeof BackendPersistPlugin>[0],
-      'when' | 'fetchOptions'
+      'fetchOptions'
     > = {
-      when: 'pre',
       fetchOptions: {
         baseUrl: this.#__backendOptions.baseUrl,
         endpoint: this.#__backendOptions.endpoints.persist.endpoint
@@ -126,6 +126,7 @@ export class WorkflowBrowserSDK {
       statePlugins.push(
         new BackendPersistPlugin({
           ...sharedOptions,
+          when: 'pre',
           stateNames: backendStateNames,
         }),
       );
@@ -134,6 +135,8 @@ export class WorkflowBrowserSDK {
     if (submitStateNames?.length) {
       const submitHttpPlugin = new BackendPersistPlugin({
         ...sharedOptions,
+        when: 'post',
+        isBlocking: true,
         stateNames: submitStateNames,
       });
 

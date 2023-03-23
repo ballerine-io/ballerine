@@ -5,9 +5,7 @@ import { AuthProvider } from '../../../context/AuthProvider/AuthProvider';
 import { env } from '../../../env/env';
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-export const Providers: FunctionComponent<PropsWithChildren> = ({
-  children,
-}) => {
+export const Providers: FunctionComponent<PropsWithChildren> = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider

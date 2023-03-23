@@ -1,8 +1,8 @@
+import { forwardRef, ReactEventHandler, useCallback, useEffect, useState } from 'react';
+import { IBallerineImageProps } from './interfaces';
 import { isFunction } from '@ballerine/common';
 import { PhotoSvg } from 'components/atoms/icons';
-import { forwardRef, ReactEventHandler, useCallback, useEffect, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
-import { IBallerineImageProps } from './interfaces';
 
 /**
  * @description An img element with default styling, and a Skeleton placeholder.

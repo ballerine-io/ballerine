@@ -4,10 +4,7 @@ import { useZoomButton } from 'components/organisms/ImageViewer/hooks/useZoomBut
 import { ctw } from '../../../utils/ctw/ctw';
 import { MagnifyingGlassSvg } from 'components/atoms/icons';
 
-export const ZoomButton: FunctionComponent<ButtonComponent> = ({
-  className,
-  ...props
-}) => {
+export const ZoomButton: FunctionComponent<ButtonComponent> = ({ className, ...props }) => {
   const { onToggleOnIsZoomModalOpen } = useZoomButton();
 
   return (

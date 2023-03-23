@@ -11,18 +11,19 @@ export const individualsRoute = new Route({
   validateSearch: z.object({
     sortBy: z
       .enum(['firstName', 'lastName', 'email', 'phone', 'createdAt', 'state'])
-      .optional(),
-    sortDir: z.enum(['asc', 'desc']).optional(),
-    pageSize: z.number().int().optional(),
-    page: z.number().int().optional(),
+      .optional()
+      .catch('createdAt'),
+    sortDir: z.enum(['asc', 'desc']).optional().catch('desc'),
+    pageSize: z.number().int().optional().catch(10),
+    page: z.number().int().optional().catch(1),
     filter: z
       .object({
-        state: z.array(z.enum(States)).optional(),
-        endUserType: z.array(z.string()).optional(),
+        state: z.array(z.enum(States)).optional().catch([]),
+        endUserType: z.array(z.string()).optional().catch([]),
       })
       .optional(),
-    search: z.string().optional(),
-  }),
+    search: z.string().optional().catch(''),
+  }).parse,
   preSearchFilters: [
     search => ({
       sortBy: 'createdAt' as const,
@@ -43,10 +44,7 @@ export const individualsRoute = new Route({
 
     if (data) return {};
 
-    await queryClient.prefetchQuery(
-      endUsersList.queryKey,
-      endUsersList.queryFn,
-    );
+    await queryClient.prefetchQuery(endUsersList.queryKey, endUsersList.queryFn);
 
     return {};
   },

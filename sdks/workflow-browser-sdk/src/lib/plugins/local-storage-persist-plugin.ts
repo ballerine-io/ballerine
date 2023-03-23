@@ -14,11 +14,11 @@ export class LocalStoragePersistPlugin extends StatePlugin {
     this.when = when;
   }
 
-  async action({ context }: { context: any; event: any; state: any }): Promise<void> {
+  async action({ context, state }: { context: any; event: any; state: any }): Promise<void> {
     return new Promise<void>(resolve => {
       try {
         // localStorage key could be configurable or stored as a constant.
-        localStorage.setItem('workflow-context', JSON.stringify(context));
+        localStorage.setItem('workflow-context', JSON.stringify({context, state}));
 
         resolve();
       } catch (err) {

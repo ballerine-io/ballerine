@@ -9,11 +9,7 @@ import { ctw } from '../../../utils/ctw/ctw';
  * @param props.children - Expects {@link ImageViewer.Item} components.
  * @constructor
  */
-export const List: FunctionComponent<TListProps> = ({
-  children,
-  className,
-  ...rest
-}) => {
+export const List: FunctionComponent<TListProps> = ({ children, className, ...rest }) => {
   return (
     <ul className={ctw(`grid grid-cols-3 gap-2`, className)} {...rest}>
       {children}

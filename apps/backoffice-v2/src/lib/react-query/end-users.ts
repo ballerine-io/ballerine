@@ -9,6 +9,5 @@ export const endUsers = createQueryKeys('end-users', {
   byId: (endUserId: string) => ({
     queryKey: [endUserId],
     queryFn: () => api.endUsers.byId(endUserId),
-    enabled: !!endUserId,
   }),
 });

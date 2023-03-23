@@ -12,8 +12,5 @@ export const useSelectNextEndUser = () => {
   });
   const onSelectNextUser = useSelectEndUser();
 
-  return useCallback(
-    () => onSelectNextUser(nextId)(),
-    [onSelectNextUser, nextId],
-  );
+  return useCallback(() => onSelectNextUser(nextId)(), [onSelectNextUser, nextId]);
 };

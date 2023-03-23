@@ -9,15 +9,9 @@ import { ctw } from '../../../utils/ctw/ctw';
  * @param props
  * @constructor
  */
-export const EllipsisButton: FunctionComponent<ButtonComponent> = ({
-  className,
-  ...props
-}) => {
+export const EllipsisButton: FunctionComponent<ButtonComponent> = ({ className, ...props }) => {
   return (
-    <button
-      className={ctw(`btn-square btn focus:outline-primary`, className)}
-      {...props}
-    >
+    <button className={ctw(`btn-square btn focus:outline-primary`, className)} {...props}>
       <EllipsisSvg />
     </button>
   );

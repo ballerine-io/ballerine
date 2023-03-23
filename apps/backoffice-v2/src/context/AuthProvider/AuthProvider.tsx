@@ -33,19 +33,10 @@ export const _AuthProvider: FunctionComponentWithChildren<{
       signInOptions,
       signOutOptions,
     }),
-    [
-      redirectAuthenticatedTo,
-      redirectUnauthenticatedTo,
-      signInOptions,
-      signOutOptions,
-    ],
+    [redirectAuthenticatedTo, redirectUnauthenticatedTo, signInOptions, signOutOptions],
   );
 
-  return (
-    <AuthContext.Provider value={contextValues}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={contextValues}>{children}</AuthContext.Provider>;
 };
 
 export const AuthProvider: FunctionComponentWithChildren<{
@@ -76,12 +67,7 @@ export const AuthProvider: FunctionComponentWithChildren<{
       signInOptions,
       signOutOptions,
     }),
-    [
-      redirectAuthenticatedTo,
-      redirectUnauthenticatedTo,
-      signInOptions,
-      signOutOptions,
-    ],
+    [redirectAuthenticatedTo, redirectUnauthenticatedTo, signInOptions, signOutOptions],
   );
 
   useAuthRedirects({
@@ -93,9 +79,5 @@ export const AuthProvider: FunctionComponentWithChildren<{
   // Don't render the children to avoid a flash of wrong state (i.e. authenticated layout).
   if (isLoading && env.VITE_AUTH_ENABLED) return null;
 
-  return (
-    <AuthContext.Provider value={contextValues}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={contextValues}>{children}</AuthContext.Provider>;
 };

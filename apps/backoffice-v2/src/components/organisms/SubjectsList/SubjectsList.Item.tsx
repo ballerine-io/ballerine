@@ -58,13 +58,13 @@ export const Item: FunctionComponent<IItemProps> = ({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
             className={ctw(`indicator-center indicator-middle indicator-item`, {
-              hidden: status !== 'rejected' && status !== 'approved',
-              'text-success': status === 'approved',
-              'text-error': status === 'rejected',
+              hidden: status !== 'REJECTED' && status !== 'APPROVED',
+              'text-success': status === 'APPROVED',
+              'text-error': status === 'REJECTED',
             })}
           >
-            {status === 'rejected' && <RejectedSvg />}
-            {status === 'approved' && <ApprovedSvg />}
+            {status === 'REJECTED' && <RejectedSvg />}
+            {status === 'APPROVED' && <ApprovedSvg />}
           </motion.div>
           <Avatar
             src={avatarUrl}

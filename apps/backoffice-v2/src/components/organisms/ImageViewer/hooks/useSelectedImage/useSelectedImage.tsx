@@ -7,8 +7,7 @@ import { useParams } from '@tanstack/react-router';
  * @param initialImage
  */
 export const useSelectedImage = (initialImage: string) => {
-  const { onSelectImage, selectedImage, toggleOnIsZoomModalOpen } =
-    useImageViewerContext();
+  const { onSelectImage, selectedImage, toggleOnIsZoomModalOpen } = useImageViewerContext();
   const { endUserId } = useParams();
 
   // Re-pick the initial image when the end user changes.

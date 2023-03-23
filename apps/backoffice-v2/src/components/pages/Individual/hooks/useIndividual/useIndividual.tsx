@@ -1,9 +1,11 @@
 import { useParams } from '@tanstack/react-router';
-import { useEndUserQuery } from '../../../../../lib/react-query/queries/useEndUserQuery/useEndUserQuery';
+import { useConsole } from 'hooks/useConsole/useConsole';
+import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
+import { underscoreToSpace } from '../../../../../utils/underscore-to-space/underscore-to-space';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
-  const { data, isLoading } = useEndUserQuery(endUserId);
+  const { data, isLoading } = useEndUserWithWorkflowQuery(endUserId);
   const {
     firstName,
     middleName,
@@ -42,24 +44,20 @@ export const useIndividual = () => {
     fullName,
     avatarUrl,
   };
-  const faceAUrl = images?.find(({ caption }) =>
-    /face/i.test(caption),
-  )?.imageUrl;
-  const faceBUrl = images?.find(({ caption }) =>
-    /id\scardfront/i.test(caption),
-  )?.imageUrl;
-  const whitelist = [
-    'personalInfo',
-    'passportInfo',
-    'checkResults',
-    'addressInfo',
-  ];
+  const faceAUrl = images?.find(({ caption }) => /face/i.test(caption))?.imageUrl;
+  const faceBUrl = images?.find(({ caption }) => /id\scardfront/i.test(caption))?.imageUrl;
+  const whitelist = ['workflow', 'personalInfo', 'passportInfo', 'checkResults', 'addressInfo'];
   const info = {
     personalInfo,
     passportInfo,
     checkResults,
     addressInfo,
+    workflow: {
+      name: underscoreToSpace(data?.workflow?.name),
+      state: underscoreToSpace(data?.workflow?.workflowContext?.state),
+    },
   };
+  useConsole(data?.workflow);
 
   return {
     selectedEndUser,

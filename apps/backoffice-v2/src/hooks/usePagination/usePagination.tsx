@@ -1,8 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import {
-  useNavigate,
-  useSearch as useTanStackSearch,
-} from '@tanstack/react-router';
+import { useNavigate, useSearch as useTanStackSearch } from '@tanstack/react-router';
 import { AnyArray, TRouteId } from '../../types';
 import { pagination } from 'hooks/usePagination/pagination';
 

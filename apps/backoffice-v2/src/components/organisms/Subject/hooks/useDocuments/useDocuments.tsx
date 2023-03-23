@@ -18,8 +18,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     toggleOffIsCropping,
     onCancelCrop,
   } = useCrop();
-  const [isLoadingOCR, , toggleOnIsLoadingOCR, toggleOffIsLoadingOCR] =
-    useToggle(false);
+  const [isLoadingOCR, , toggleOnIsLoadingOCR, toggleOffIsLoadingOCR] = useToggle(false);
   const selectedImageRef = useRef<HTMLImageElement>();
   const recognize = useTesseract();
   const onOcr = useCallback(async () => {

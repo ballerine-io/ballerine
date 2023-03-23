@@ -7,8 +7,7 @@ import { ICheckboxChildren, ICheckboxProps } from './interfaces';
 import { CheckSvg } from 'components/atoms/icons';
 import { ctw } from '../../../utils/ctw/ctw';
 
-export const Checkbox: FunctionComponent<ICheckboxProps> &
-  ICheckboxChildren = ({
+export const Checkbox: FunctionComponent<ICheckboxProps> & ICheckboxChildren = ({
   children,
   checked,
   value,
@@ -26,10 +25,7 @@ export const Checkbox: FunctionComponent<ICheckboxProps> &
   );
 
   return (
-    <label
-      className={ctw(`flex items-center gap-x-2 text-base-content`, className)}
-      {...props}
-    >
+    <label className={ctw(`flex items-center gap-x-2 text-base-content`, className)} {...props}>
       <RadixCheckbox.Root
         className={ctw(
           `grid place-content-center rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`,

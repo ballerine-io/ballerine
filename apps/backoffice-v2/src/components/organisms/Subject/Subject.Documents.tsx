@@ -17,10 +17,7 @@ import { ctw } from '../../../utils/ctw/ctw';
  *
  * @constructor
  */
-export const Documents: FunctionComponent<IDocumentsProps> = ({
-  documents,
-  isLoading,
-}) => {
+export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoading }) => {
   const {
     crop,
     onCrop,
@@ -69,9 +66,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
               disabled={isLoading}
             >
               {isCropping && !isLoadingOCR && <CheckSvg className={`p-0.5`} />}
-              {!isCropping && !isLoadingOCR && (
-                <span className={`p-0.5`}>OCR</span>
-              )}
+              {!isCropping && !isLoadingOCR && <span className={`p-0.5`}>OCR</span>}
             </button>
             <ImageViewer.ZoomButton disabled={isLoading} />
           </div>
@@ -80,9 +75,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
       <ImageViewer.List>
         {isLoading
           ? skeletons.map(index => (
-              <ImageViewer.SkeletonItem
-                key={`image-viewer-skeleton-${index}`}
-              />
+              <ImageViewer.SkeletonItem key={`image-viewer-skeleton-${index}`} />
             ))
           : documents.map(({ imageUrl, caption }) => (
               <ImageViewer.Item

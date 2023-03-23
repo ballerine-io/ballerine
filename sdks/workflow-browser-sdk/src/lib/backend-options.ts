@@ -1,11 +1,11 @@
 import type { BackendOptions } from './types';
 
 export const backendOptions = {
-  baseUrl: 'https://api-dev.ballerine.io',
+  baseUrl: 'https://api-dev.ballerine.io/external',
   endpoints: {
     persist: {
       endpoint: '/workflows/:workflowId',
-      method: 'PUT',
+      method: 'PATCH',
     },
   },
   headers: {

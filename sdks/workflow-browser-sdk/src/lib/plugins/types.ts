@@ -11,4 +11,5 @@ export type TStatePluginParams = Omit<IStatePlugin, 'name' | 'action' | 'isBlock
 
 export type TBackendPersistPluginParams = TStatePluginParams & {
   fetchOptions: IFetchOptions;
+  isBlocking?: boolean;
 };
