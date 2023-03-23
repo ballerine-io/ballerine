@@ -7,6 +7,10 @@ export const backendOptions = {
       endpoint: '/workflows/:workflowId',
       method: 'PATCH',
     },
+    uploadFile: {
+      endpoint: '/storage',
+      method: 'POST',
+    },
   },
   headers: {
     'Content-Type': 'application/json',

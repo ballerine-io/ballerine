@@ -17,6 +17,7 @@ import type {
   BackendOptions,
   BrowserWorkflowEvent,
   DeepPartial,
+  IFileToUpload,
   IUserStepEvent,
   ObjectValues,
   TSubscribers,
@@ -167,6 +168,10 @@ export class WorkflowBrowserSDK {
           ...backendOptions.endpoints.persist,
           ...overrides?.endpoints?.persist,
         },
+        uploadFile: {
+          ...backendOptions.endpoints.uploadFile,
+          ...overrides?.endpoints?.uploadFile,
+        },
       },
       headers: {
         ...backendOptions.headers,
@@ -242,5 +247,33 @@ export class WorkflowBrowserSDK {
       .map(injectActionsToStateOnProp);
 
     return Object.fromEntries(statesEntries) as StatesConfig<any, any, any, BaseActionObject>;
+  }
+
+  async uploadFile(fileToUpload: IFileToUpload) {
+    const formData = new FormData();
+
+    formData.append('file', fileToUpload.file);
+
+    const res = await fetch(
+      `${this.#__backendOptions.baseUrl as string}${
+        this.#__backendOptions.endpoints.uploadFile.endpoint as string
+      }`,
+      {
+        method: this.#__backendOptions.endpoints.uploadFile.method,
+        body: formData,
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error(`${res.statusText} (${res.status})`);
+    }
+
+    const uploadedFile: { id: string } = await res.json();
+
+    return {
+      ...uploadedFile,
+      type: fileToUpload.type,
+      fileType: fileToUpload.file.type,
+    };
   }
 }
