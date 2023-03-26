@@ -1,11 +1,14 @@
 import { useParams } from '@tanstack/react-router';
-import { useConsole } from 'hooks/useConsole/useConsole';
+import { camelCaseToSpace } from '../../../../../utils/camel-case-to-space/camel-case-to-space';
 import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
+import { useStorageFileQuery } from '../../../../../lib/react-query/queries/useStorageFileQuery/useStorageFileQuery';
 import { underscoreToSpace } from '../../../../../utils/underscore-to-space/underscore-to-space';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
   const { data, isLoading } = useEndUserWithWorkflowQuery(endUserId);
+  const documentOne = data?.workflow?.workflowContext?.machineContext?.documentOne;
+  const { data: blob } = useStorageFileQuery(documentOne?.id);
   const {
     firstName,
     middleName,
@@ -31,12 +34,18 @@ export const useIndividual = () => {
     placeOfBirth,
     sex,
   };
+  const documents = [
+    {
+      url: blob ? URL.createObjectURL(blob) : '',
+      doctype: documentOne?.type,
+    },
+  ];
 
   // Images
   const images =
-    data?.documents?.map(({ url: imageUrl, doctype: caption }) => ({
+    documents?.map(({ url: imageUrl, doctype: caption }) => ({
       imageUrl,
-      caption: caption.replace(/_/g, ' ').replace('id', 'ID'),
+      caption: camelCaseToSpace(caption)?.replace('id', 'ID'),
     })) ?? [];
 
   const selectedEndUser = {
@@ -57,7 +66,6 @@ export const useIndividual = () => {
       state: underscoreToSpace(data?.workflow?.workflowContext?.state),
     },
   };
-  useConsole(data?.workflow);
 
   return {
     selectedEndUser,
