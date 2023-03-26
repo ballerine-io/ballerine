@@ -13,6 +13,7 @@ export interface IFetcher {
     options?: Omit<RequestInit, 'body'>;
     timeout?: number;
     schema: TZodSchema;
+    isBlob?: boolean;
   }): Promise<z.infer<TZodSchema>>;
 
   <TZodSchema extends ZodSchema>(params: {

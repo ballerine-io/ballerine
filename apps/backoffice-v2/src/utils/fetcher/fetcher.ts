@@ -2,7 +2,15 @@ import { IFetcher } from './interfaces';
 import { handlePromise } from '../handle-promise/handle-promise';
 import { isZodError } from '../is-zod-error/is-zod-error';
 
-export const fetcher: IFetcher = async ({ url, method, body, options, timeout = 5000, schema }) => {
+export const fetcher: IFetcher = async ({
+  url,
+  method,
+  body,
+  options,
+  timeout = 5000,
+  schema,
+  isBlob = false,
+}) => {
   const controller = new AbortController();
   const { signal } = controller;
   const timeoutRef = setTimeout(() => {
@@ -13,7 +21,7 @@ export const fetcher: IFetcher = async ({ url, method, body, options, timeout = 
       ...options,
       method,
       signal,
-      body: body ? JSON.stringify(body) : undefined,
+      body: method !== 'GET' && body ? JSON.stringify(body) : undefined,
       headers: {
         'Content-Type': 'application/json',
         ...(options?.headers ?? {}),
@@ -36,10 +44,11 @@ export const fetcher: IFetcher = async ({ url, method, body, options, timeout = 
     throw new Error(message);
   }
 
-  const [data, jsonError] =
-    res.headers.get('content-length') > '0'
-      ? await handlePromise(res.json())
-      : [undefined, undefined];
+  const [data, jsonError] = isBlob
+    ? await handlePromise(res.blob())
+    : res.headers.get('content-length') > '0'
+    ? await handlePromise(res.json())
+    : [undefined, undefined];
 
   if (jsonError) {
     console.error(jsonError);

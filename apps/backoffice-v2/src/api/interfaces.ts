@@ -13,6 +13,7 @@ export interface IApiClient {
     options?: Omit<RequestInit, 'body'>;
     timeout?: number;
     schema: TZodSchema;
+    isBlob?: boolean;
   }): Promise<[z.infer<TZodSchema>, undefined] | [undefined, Error]>;
 
   <TZodSchema extends ZodSchema>(params: {
@@ -21,6 +22,7 @@ export interface IApiClient {
     options?: Omit<RequestInit, 'body'>;
     timeout?: number;
     schema: TZodSchema;
+    isBlob?: boolean;
   }): Promise<[z.infer<TZodSchema>, undefined] | [undefined, Error]>;
 }
 
