@@ -47,7 +47,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
           <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
             <button
               className={ctw(
-                'btn btn-ghost btn-sm btn-circle bg-base-300/70 focus:outline-primary',
+                'btn-ghost btn-sm btn-circle btn bg-base-300/70 focus:outline-primary',
                 {
                   hidden: !isCropping,
                 },
@@ -59,7 +59,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
             <button
               type={`button`}
               className={ctw(
-                `btn btn-ghost btn-sm btn-circle bg-base-300/70 text-[0.688rem] focus:outline-primary`,
+                `btn-ghost btn-sm btn-circle btn bg-base-300/70 text-[0.688rem] focus:outline-primary`,
                 { loading: isLoadingOCR },
               )}
               onClick={onOcr}
