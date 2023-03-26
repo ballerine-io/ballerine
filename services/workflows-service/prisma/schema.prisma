@@ -1,0 +1,96 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id String @id @default(cuid())
+
+  username String @unique
+  password String
+  roles    Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EndUserState {
+  APPROVED
+  REJECTED
+  PROCESSING
+  NEW
+}
+
+model EndUser {
+  id String @id @default(cuid())
+
+  correlationId  String  @db.VarChar
+  verificationId String? @db.VarChar
+
+  endUserType String?
+  state       EndUserState @default(NEW)
+  stateReason String?      @db.VarChar
+  jsonData    Json?
+
+  firstName      String?   @db.VarChar
+  lastName       String?   @db.VarChar
+  email          String?   @db.Text
+  phone          String?   @db.VarChar
+  dateOfBirth    DateTime?
+  avatarUrl      String?
+  additionalInfo Json?
+
+  workflowRuntimeData WorkflowRuntimeData[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkflowDefinition {
+  id              String  @id @default(cuid())
+  reviewMachineId String?
+  name            String
+  version         Int     @default(1)
+
+  definitionType     String
+  definition         Json
+  supportedPlatforms Json?
+  extensions         Json?
+
+  backend       Json?
+  persistStates Json?
+  submitStates  Json?
+
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  createdBy           String                @default("SYSTEM")
+  WorkflowRuntimeData WorkflowRuntimeData[]
+}
+
+model WorkflowRuntimeData {
+  id                        String             @id @default(cuid())
+  endUser                   EndUser            @relation(fields: [endUserId], references: [id])
+  endUserId                 String
+  workflowDefinition        WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
+  workflowDefinitionId      String
+  workflowDefinitionVersion Int
+  context                   Json
+  // history
+  state                     String?
+  status                    String             @default("created")
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+  createdBy                 String             @default("SYSTEM")
+}
+
+model File {
+  id             String   @id @default(cuid())
+  userId         String
+  fileNameOnDisk String
+  createdAt      DateTime @default(now())
+  createdBy      String   @default("SYSTEM")
+}

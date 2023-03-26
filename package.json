@@ -23,7 +23,7 @@
     "kyb"
   ],
   "scripts": {
-    "e2e-example": "nx run-many --target=dev --projects=@ballerine/headless-example,@ballerine/backoffice-v2",
+    "e2e-example": "cross-env ENV_FILE_NAME=.env.example npx nx run-many --target=dev --projects=@ballerine/headless-example,@ballerine/backoffice-v2,@ballerine/workflows-service",
     "branchlint": "branchlint -u -c --prefix \"$(git config --global user.name)\"",
     "format": "nx run-many --target=format",
     "lint": "nx run-many --target=lint --projects=@ballerine/web-sdk",
@@ -35,6 +35,7 @@
     "build": "nx run-many --target=build --projects=@ballerine/workflow-browser-sdk,@ballerine/web-sdk,@ballerine/workflow-core,@ballerine/workflow-node-sdk,@ballerine/rules-engine-lib,@ballerine/common",
     "web-sdk:dev": "nx run @ballerine/web-sdk:dev",
     "web-sdk:start": "nx run @ballerine/web-sdk:start",
+    "workflows-service:start": "nx run @ballerine/workflows-service:start",
     "workflow-browser-sdk:build": "nx run @ballerine/workflow-browser-sdk:build",
     "workflow-browser-sdk:dev": "nx run @ballerine/workflow-browser-sdk:dev",
     "workflow-browser-sdk:watch": "nx run @ballerine/workflow-browser-sdk:watch",
@@ -54,17 +55,21 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "@branchlint/cli": "^1.0.3",
-    "@branchlint/default-config": "^1.0.1",
-    "@changesets/changelog-git": "^0.1.13",
-    "@changesets/cli": "^2.25.0",
-    "@commitlint/cli": "^17.1.2",
-    "@commitlint/config-conventional": "^17.1.0",
-    "commitizen": "^4.2.5",
+    "@branchlint/cli": "^1.0.4",
+    "@branchlint/default-config": "^1.0.2",
+    "@changesets/changelog-git": "^0.1.14",
+    "@changesets/cli": "^2.26.1",
+    "@commitlint/cli": "^17.5.0",
+    "@commitlint/config-conventional": "^17.4.4",
+    "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
-    "editorconfig": "^1.0.1",
-    "husky": "^8.0.1",
+    "editorconfig": "^1.0.2",
+    "husky": "^8.0.3",
     "nx": "15.0.2",
-    "prettier": "^2.7.1"
+    "prettier": "^2.8.7"
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "npx": "^10.2.2"
   }
 }
