@@ -296,7 +296,7 @@ importers:
       typescript: 4.9.5
       vite: 4.1.4_@types+node@18.15.3
 
-  examples/workflow-browser-sdk:
+  examples/headless-example:
     specifiers:
       '@ballerine/workflow-browser-sdk': ^0.4.2
       '@felte/core': ^1.3.7

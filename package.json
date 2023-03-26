@@ -23,7 +23,7 @@
     "kyb"
   ],
   "scripts": {
-    "e2e-example": "nx run-many --target=dev --projects=@ballerine/workflow-browser-sdk-example,@ballerine/backoffice-v2",
+    "e2e-example": "nx run-many --target=dev --projects=@ballerine/headless-example,@ballerine/backoffice-v2",
     "branchlint": "branchlint -u -c --prefix \"$(git config --global user.name)\"",
     "format": "nx run-many --target=format",
     "lint": "nx run-many --target=lint --projects=@ballerine/web-sdk",

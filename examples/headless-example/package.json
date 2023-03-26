@@ -1,5 +1,5 @@
 {
-  "name": "@ballerine/workflow-browser-sdk-example",
+  "name": "@ballerine/headless-example",
   "private": true,
   "version": "0.0.0",
   "type": "module",
