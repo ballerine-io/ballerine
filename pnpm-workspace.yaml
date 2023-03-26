@@ -4,3 +4,4 @@ packages:
   - 'sdks/*'
   - 'services/*'
   - 'websites/*'
+  - 'examples/workflow-browser-sdk'
