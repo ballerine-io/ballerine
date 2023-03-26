@@ -18,7 +18,8 @@
     "docker:db": "docker compose -f docker-compose.db.yml up -d",
     "docker:build": "docker build .",
     "compose:up": "docker compose up -d",
-    "compose:down": "docker compose down --volumes"
+    "compose:down": "docker compose down --volumes",
+    "prepare": "npm run prisma:generate"
   },
   "dependencies": {
     "@ballerine/workflow-node-sdk": "^0.4.2",
@@ -33,6 +34,7 @@
     "@nestjs/serve-static": "3.0.1",
     "@nestjs/testing": "^9.3.12",
     "@prisma/client": "^4.11.0",
+    "accesscontrol": "^2.2.1",
     "bcrypt": "5.0.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
@@ -44,6 +46,7 @@
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.0",
     "reflect-metadata": "0.1.13",
+    "rxjs": "^7.8.0",
     "swagger-ui-express": "4.3.0",
     "ts-node": "9.1.1"
   },
