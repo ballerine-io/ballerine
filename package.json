@@ -34,6 +34,7 @@
     "build": "nx run-many --target=build --projects=@ballerine/workflow-browser-sdk,@ballerine/web-sdk,@ballerine/workflow-core,@ballerine/workflow-node-sdk,@ballerine/rules-engine-lib,@ballerine/common",
     "web-sdk:dev": "nx run @ballerine/web-sdk:dev",
     "web-sdk:start": "nx run @ballerine/web-sdk:start",
+    "workflows-service:start": "nx run @ballerine/workflows-service:start",
     "workflow-browser-sdk:build": "nx run @ballerine/workflow-browser-sdk:build",
     "workflow-browser-sdk:dev": "nx run @ballerine/workflow-browser-sdk:dev",
     "workflow-browser-sdk:watch": "nx run @ballerine/workflow-browser-sdk:watch",
