@@ -37,7 +37,7 @@ import { MulterModule } from '@nestjs/platform-express';
     PrismaModule,
     SecretsManagerModule,
     MorganModule,
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: process.env.ENV_FILE_NAME || '.env' }),
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),

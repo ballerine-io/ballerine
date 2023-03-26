@@ -5,6 +5,7 @@
     "format": "prettier --write .",
     "lint": "eslint . --fix",
     "start": "nest start",
+    "dev": "npm run start:watch",
     "start:watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "build": "nest build",
