@@ -70,8 +70,7 @@ export type BrowserWorkflowEvent =
   | typeof Event.USER_PREV_STEP
   | typeof Event.STATE_ACTION_STATUS
   | typeof Error.ERROR
-  | typeof Error.HTTP_ERROR
-  | string;
+  | typeof Error.HTTP_ERROR;
 
 export type WorkflowEventWithBrowserType = Omit<WorkflowEvent, 'type' | 'error'> & {
   error?: InstanceType<typeof HttpError> | unknown;

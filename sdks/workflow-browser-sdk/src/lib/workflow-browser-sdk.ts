@@ -69,8 +69,8 @@ export class WorkflowBrowserSDK {
       },
     });
 
-    this.#__service.subscribe(event => {
-      this.#__notify(event);
+    this.#__service.subscribe((event) => {
+      this.#__notify(event as WorkflowEventWithBrowserType);
     });
   }
 

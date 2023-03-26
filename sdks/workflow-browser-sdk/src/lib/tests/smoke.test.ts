@@ -135,12 +135,12 @@ describe('smoke', () => {
     const lowerCaseDefaultHeaders = lowerCaseObjKeys(backendOptions.headers);
 
     expect(response).toMatchObject({
-      baseUrl: backendOptions.baseUrl,
+      baseUrl: backendOptions.baseUrl.replace('/external', ''),
       method: backendOptions.endpoints.persist.method,
-      endpoint: backendOptions.endpoints.persist.endpoint.replace(
+      endpoint: `/external${backendOptions.endpoints.persist.endpoint.replace(
         ':workflowId',
         shortWorkflow.definition.id ?? '',
-      ),
+      )}`,
       headers: lowerCaseDefaultHeaders,
     });
 

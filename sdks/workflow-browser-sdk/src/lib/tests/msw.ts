@@ -1,6 +1,7 @@
 import { sleep } from '@ballerine/common';
 import { DefaultBodyType, PathParams, ResponseResolver, rest, RestContext, RestRequest } from 'msw';
 import { setupServer } from 'msw/node';
+import { backendOptions } from '../backend-options';
 export let response:
   | {
       method: string;
@@ -34,7 +35,7 @@ const handler: ResponseResolver<
 };
 
 const restHandlers = [
-  rest.put('https://api-dev.ballerine.io/workflows/:workflowId', handler),
+  rest.patch(`${backendOptions.baseUrl}${backendOptions.endpoints.persist.endpoint}`, handler),
   rest.post('http://localhost:3000/test', handler),
   // Error on all other requests
   rest.all('*', async (req, res, ctx) => {
