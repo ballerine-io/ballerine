@@ -43,14 +43,11 @@ export class WorkflowControllerExternal {
       roles: ['testRole'],
     },
   ): Promise<RunnableWorkflowData[]> {
-    const completeWorkflowData =
-      await this.service.listFullWorkflowDataByUserId(userInfo.id);
-    const response = completeWorkflowData.map(
-      ({ workflowDefinition, ...workflowRuntimeData }) => ({
-        workflowRuntimeData,
-        workflowDefinition,
-      }),
-    );
+    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(userInfo.id);
+    const response = completeWorkflowData.map(({ workflowDefinition, ...workflowRuntimeData }) => ({
+      workflowRuntimeData,
+      workflowDefinition,
+    }));
 
     return response;
   }
@@ -62,9 +59,7 @@ export class WorkflowControllerExternal {
   async getRunnableWorkflowDataById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
   ): Promise<RunnableWorkflowData> {
-    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(
-      params.id,
-    );
+    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(params.id);
     const workflowDefinition = await this.service.getWorkflowDefinitionById(
       workflowRuntimeData.workflowDefinitionId,
     );
@@ -88,9 +83,7 @@ export class WorkflowControllerExternal {
       return await this.service.updateWorkflowRuntimeData(params.id, data);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
-          `No resource was found for ${JSON.stringify(params)}`,
-        );
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
       throw error;
     }
