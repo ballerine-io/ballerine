@@ -14,10 +14,10 @@ import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
-import { mockUserId } from './mock-data.temp';
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
+import { Headers } from '@nestjs/common';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -37,13 +37,13 @@ export class WorkflowControllerExternal {
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   async listWorkflowRuntimeDataByUserId(
     @UserData()
-    userInfo: UserInfo = {
-      id: mockUserId,
-      username: 'test',
-      roles: ['testRole'],
-    },
+    userInfo: UserInfo,
+    @Headers() headers: any,
   ): Promise<RunnableWorkflowData[]> {
-    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(userInfo.id);
+    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      headers.no_auth_user_id,
+    );
     const response = completeWorkflowData.map(({ workflowDefinition, ...workflowRuntimeData }) => ({
       workflowRuntimeData,
       workflowDefinition,
@@ -94,9 +94,10 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async intent(@common.Body() intent: IntentDto): Promise<IntentResponse> {
+  async intent(@common.Body() intent: IntentDto, @Headers() headers: any): Promise<IntentResponse> {
     // Rename to intent or getRunnableWorkflowDataByIntent?
-    return await this.service.resolveIntent(intent.intentName);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    return await this.service.resolveIntent(intent.intentName, headers.no_auth_user_id);
   }
 
   // POST /event

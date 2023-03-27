@@ -9,7 +9,6 @@ import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { IObjectWithId } from '@/types';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import _ from 'lodash';
-import { mockUserId } from './mock-data.temp';
 import { Injectable } from '@nestjs/common';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
@@ -90,7 +89,9 @@ export class WorkflowService {
 
     data.context = _.merge(data.context, runtimeData.context);
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    this.logger.log(`Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`);
+    this.logger.log(
+      `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
+    );
 
     const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
       data,
@@ -154,7 +155,7 @@ export class WorkflowService {
     // const updateUserStateResult = await this.(userId, workflow.version, workflow.reviewMachineId, context);
   }
 
-  async resolveIntent(intent: string): Promise<RunnableWorkflowData[]> {
+  async resolveIntent(intent: string, endUserId: string): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies['signup'];
     const { workflowDefinitionId } = workflowDefinitionResolver({})[0]!; // TODO: implement logic for multiple workflows
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
@@ -162,7 +163,7 @@ export class WorkflowService {
     );
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
       data: {
-        endUserId: mockUserId,
+        endUserId,
         workflowDefinitionVersion: workflowDefinition.version,
         workflowDefinitionId,
         context: {},
@@ -170,14 +171,14 @@ export class WorkflowService {
       },
     });
 
-    await this.endUserRepository.updateById(mockUserId, {
+    await this.endUserRepository.updateById(endUserId, {
       data: {
         state: EndUserState.PROCESSING,
       },
     });
-    this.logger.log(`${mockUserId} is now in state ${EndUserState.PROCESSING}`);
+    this.logger.log(`${endUserId} is now in state ${EndUserState.PROCESSING}`);
     this.logger.log(
-      `Created workflow runtime data ${workflowRuntimeData.id}, for user ${mockUserId}, with workflow ${workflowDefinitionId}, version ${workflowDefinition.version}`,
+      `Created workflow runtime data ${workflowRuntimeData.id}, for user ${endUserId}, with workflow ${workflowDefinitionId}, version ${workflowDefinition.version}`,
     );
 
     return [
@@ -215,7 +216,9 @@ export class WorkflowService {
     const isFinal = snapshot.machine.states[currentState].type === 'final';
 
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    this.logger.log(`Workflow ${workflow.name}-${id}-v${workflow.version} state transiation [${runtimeData.state} -> ${currentState}]`);
+    this.logger.log(
+      `Workflow ${workflow.name}-${id}-v${workflow.version} state transiation [${runtimeData.state} -> ${currentState}]`,
+    );
     await this.updateWorkflowRuntimeData(runtimeData.id, {
       context,
       state: currentState,
