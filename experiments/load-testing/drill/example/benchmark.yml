@@ -1,0 +1,153 @@
+# Example of a test plan with 100 iterations and ~25 requests each.
+# A plan with 2500 requests in total at 5 iterations at the same time,
+# and a rampup of 2 seconds.
+
+---
+base: 'http://localhost:9000'
+iterations: 100
+concurrency: 5
+rampup: 2
+
+plan:
+  - name: Include comments
+    include: comments.yml
+
+  - name: Fetch users
+    request:
+      url: /api/users.json
+
+  - name: Fetch organizations
+    request:
+      url: /api/organizations
+
+  - name: Fetch account
+    request:
+      url: /api/account
+    assign: foo
+
+  - name: Fetch manager user
+    request:
+      url: /api/users/{{ foo.body.manager_id }}
+
+  - name: Fetch string token
+    request:
+      url: /api/tokens/{{ foo.body.token }}
+
+  - name: Fetch manager location
+    request:
+      url: /api/users/at/{{ foo.body.address.floor }}/{{ foo.body.address.room }}
+
+  - name: Assign values
+    assign:
+      key: bar
+      value: "2"
+
+  - name: Fetch user from assign
+    request:
+      url: /api/users/{{ bar }}
+
+  - name: Fetch some users
+    request:
+      url: /api/users/{{ item }}
+    with_items:
+      - 70
+      - 73
+      - 75
+
+  - name: Tagged user request
+    request:
+      url: /api/users/70
+    tags:
+      - tag_user
+
+  - name: Fetch some users by hash
+    assign: fetchuser
+    request:
+      url: /api/users/{{ item.id }}
+    shuffle: true
+    with_items:
+      - { id: 70 }
+      - { id: 73 }
+      - { id: 75 }
+
+  - name: Assert request response code
+    assert:
+      key: fetchuser.status
+      value: 200
+
+  - name: Assert values
+    assert:
+      key: bar
+      value: "2"
+
+  - name: Exec external commands
+    exec:
+      command: "echo '{{ foo.body }}' | jq .phones[0] | tr -d '\"'"
+    assign: baz
+
+  - name: Assert external execution
+    assert:
+      key: baz
+      value: "+44 1234567"
+
+  - name: Fetch some users by range, index {{ index }}
+    request:
+      url: /api/users/{{ item }}
+    with_items_range:
+      start: 70
+      step: 5
+      stop: 75
+
+  - name: Fetch some users from CSV, index {{ index }}
+    request:
+      url: /api/users/contacts/{{ item.id }}
+    shuffle: true
+    with_items_from_csv: ./fixtures/users.csv
+
+  - name: Fetch some users from CSV (alternate syntax), index {{ index }}
+    request:
+      url: /api/users/contacts/{{ item.id }}
+    with_items_from_csv:
+      file_name: ./fixtures/users.csv
+      quote_char: "\'"
+
+  - name: POST some crafted JSONs stored in CSV
+    request:
+      url: /api/transactions
+      method: POST
+      body: '{{ item.txn }}'
+      headers:
+        Content-Type: 'application/json'
+    with_items_from_csv:
+      file_name: ./fixtures/transactions.csv
+      quote_char: "\'"
+
+  - name: Fetch no relative url
+    request:
+      url: http://localhost:9000/api/users.json
+
+  - name: Support for POST method
+    request:
+      url: /api/users
+      method: POST
+      body: foo=bar&arg={{ bar }}
+
+  - name: One request with a random item
+    request:
+      url: /api/users/{{ item }}
+    with_items:
+      - 70
+      - 73
+      - 75
+    shuffle: true
+    pick: 1
+
+  - name: Complex access
+    request:
+      url: /api/users.json
+    assign: complex
+
+  - name: Assert request response code
+    assert:
+      key: complex.body[1].phones[1]
+      value: '+44 2345678'
