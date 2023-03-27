@@ -1,3 +1,4 @@
+
 FROM node:18.12.1 AS base
 
 WORKDIR /app
@@ -18,6 +19,6 @@ COPY --from=base /app/dist ./dist
 COPY --from=base /app/tsconfig* ./
 
 ENV PATH="$PATH:./node_modules/.bin"
-EXPOSE 5173
+EXPOSE ${BACKOFFICE_PORT}
 
 CMD [ "vite", "preview", "--port", "5173", "--host"]
