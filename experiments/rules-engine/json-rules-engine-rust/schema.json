@@ -1,0 +1,800 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Array_of_Rule",
+    "type": "array",
+    "items": {
+        "$ref": "#/definitions/Rule"
+    },
+    "definitions": {
+        "CoalescenceEvent": {
+            "type": "object",
+            "anyOf": [
+                {
+                    "type": "object",
+                    "required": ["params", "type"],
+                    "properties": {
+                        "params": {
+                            "$ref": "#/definitions/EventParams"
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": ["message"]
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["params", "type"],
+                    "properties": {
+                        "params": {
+                            "type": "object",
+                            "required": [
+                                "callback_url",
+                                "message",
+                                "title",
+                                "type"
+                            ],
+                            "properties": {
+                                "app_data": {
+                                    "default": {},
+                                    "type": "object",
+                                    "additionalProperties": true
+                                },
+                                "callback_url": {
+                                    "type": "string"
+                                },
+                                "message": {
+                                    "type": "string"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": ["post_to_callback_url"]
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["params", "type"],
+                    "properties": {
+                        "params": {
+                            "type": "object",
+                            "required": [
+                                "from",
+                                "message",
+                                "title",
+                                "to",
+                                "type"
+                            ],
+                            "properties": {
+                                "from": {
+                                    "type": "string"
+                                },
+                                "message": {
+                                    "type": "string"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "to": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": ["email_notification"]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "coalescence": {
+                    "type": ["integer", "null"],
+                    "format": "uint64",
+                    "minimum": 0.0
+                },
+                "coalescence_group": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "Condition": {
+            "description": "Representation of a node in the rules tree\n\nIt is unnecessary to interact with this type outside of calling `Rule::check()`, to construct the rules tree use the [convenience functions][1] in the module root.\n\n[1]: index.html#functions",
+            "anyOf": [
+                {
+                    "type": "object",
+                    "required": ["and"],
+                    "properties": {
+                        "and": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Condition"
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["or"],
+                    "properties": {
+                        "or": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Condition"
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["not"],
+                    "properties": {
+                        "not": {
+                            "$ref": "#/definitions/Condition"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["conditions", "should_minimum_meet"],
+                    "properties": {
+                        "conditions": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Condition"
+                            }
+                        },
+                        "should_minimum_meet": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["string_equals"]
+                                },
+                                "value": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["string_not_equals"]
+                                },
+                                "value": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["string_contains"]
+                                },
+                                "value": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["string_contains_all"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["string_contains_any"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["string_does_not_contain"]
+                                },
+                                "value": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["string_does_not_contain_any"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["string_in"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["string_not_in"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_equals"]
+                                },
+                                "value": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_not_equals"]
+                                },
+                                "value": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_contains"]
+                                },
+                                "value": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_contains_all"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_contains_any"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_does_not_contain"]
+                                },
+                                "value": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_does_not_contain_any"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_in"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_not_in"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_in_range"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": [
+                                        {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        }
+                                    ],
+                                    "maxItems": 2,
+                                    "minItems": 2
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_not_in_range"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": [
+                                        {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        }
+                                    ],
+                                    "maxItems": 2,
+                                    "minItems": 2
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_less_than"]
+                                },
+                                "value": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_less_than_inclusive"]
+                                },
+                                "value": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_greater_than"]
+                                },
+                                "value": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["int_greater_than_inclusive"]
+                                },
+                                "value": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_equals"]
+                                },
+                                "value": {
+                                    "type": "number",
+                                    "format": "double"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_not_equals"]
+                                },
+                                "value": {
+                                    "type": "number",
+                                    "format": "double"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_contains"]
+                                },
+                                "value": {
+                                    "type": "number",
+                                    "format": "double"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_does_not_contain"]
+                                },
+                                "value": {
+                                    "type": "number",
+                                    "format": "double"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_in"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "number",
+                                        "format": "double"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_not_in"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "number",
+                                        "format": "double"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_in_range"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": [
+                                        {
+                                            "type": "number",
+                                            "format": "double"
+                                        },
+                                        {
+                                            "type": "number",
+                                            "format": "double"
+                                        }
+                                    ],
+                                    "maxItems": 2,
+                                    "minItems": 2
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_not_in_range"]
+                                },
+                                "value": {
+                                    "type": "array",
+                                    "items": [
+                                        {
+                                            "type": "number",
+                                            "format": "double"
+                                        },
+                                        {
+                                            "type": "number",
+                                            "format": "double"
+                                        }
+                                    ],
+                                    "maxItems": 2,
+                                    "minItems": 2
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_less_than"]
+                                },
+                                "value": {
+                                    "type": "number",
+                                    "format": "double"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_less_than_inclusive"]
+                                },
+                                "value": {
+                                    "type": "number",
+                                    "format": "double"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_greater_than"]
+                                },
+                                "value": {
+                                    "type": "number",
+                                    "format": "double"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["float_greater_than_inclusive"]
+                                },
+                                "value": {
+                                    "type": "number",
+                                    "format": "double"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "required": ["operator", "value"],
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["bool_equals"]
+                                },
+                                "value": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    ],
+                    "required": ["field"],
+                    "properties": {
+                        "field": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "EventParams": {
+            "type": "object",
+            "required": ["message", "title", "type"],
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "Rule": {
+            "type": "object",
+            "required": ["conditions", "events"],
+            "properties": {
+                "conditions": {
+                    "$ref": "#/definitions/Condition"
+                },
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CoalescenceEvent"
+                    }
+                }
+            }
+        }
+    }
+}
