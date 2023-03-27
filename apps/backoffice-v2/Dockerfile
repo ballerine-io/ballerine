@@ -21,4 +21,4 @@ COPY --from=base /app/tsconfig* ./
 ENV PATH="$PATH:./node_modules/.bin"
 EXPOSE ${BACKOFFICE_PORT}
 
-CMD [ "vite", "preview", "--port", "5173", "--host"]
+CMD [ "vite", "preview", "--port", "5173", "--host", "--no-open"]
