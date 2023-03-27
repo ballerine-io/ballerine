@@ -2,7 +2,7 @@
   "name": "@ballerine/workflows-service",
   "private": true,
   "scripts": {
-    "setup": "npm run docker:db && npm run db:migrate-save && npm run seed",
+    "setup": "npm run docker:db && npm run db:clean && npm run db:migrate-save && npm run seed",
     "format": "prettier --write .",
     "lint": "eslint . --fix",
     "start": "nest start",
