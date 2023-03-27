@@ -24,6 +24,7 @@
     "@ballerine/workflow-browser-sdk": "^0.4.2",
     "@felte/reporter-svelte": "^1.1.5",
     "@felte/validator-zod": "^1.0.13",
+    "@tanstack/svelte-query": "^4.27.0",
     "@xstate/svelte": "^2.0.1",
     "felte": "^1.2.7",
     "xstate": "4.36.0",
