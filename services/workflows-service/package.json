@@ -39,7 +39,7 @@
     "accesscontrol": "^2.2.1",
     "bcrypt": "5.0.1",
     "class-transformer": "0.5.1",
-    "class-validator": "0.13.2",
+    "class-validator": "0.14.0",
     "lodash": "^4.17.21",
     "nest-access-control": "2.0.3",
     "nest-morgan": "1.0.1",
