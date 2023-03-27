@@ -24,7 +24,6 @@ export const EndUsersListSchema = z
     })),
   )
   .default([]);
-
 export const EndUserByIdSchema = ObjectWithIdSchema.extend({
   avatarUrl: z.string().nullable().default(''),
   createdAt: z.string().default(''),
@@ -49,6 +48,7 @@ export const EndUserByIdSchema = ObjectWithIdSchema.extend({
       expires: z.string().default(''),
     })
     .optional(),
+    
   checkResults: z
     .object({
       finalResult: z.enum(States).default(State.PROCESSING),

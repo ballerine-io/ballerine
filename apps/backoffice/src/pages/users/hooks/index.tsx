@@ -54,7 +54,7 @@ export const useMockData = () => {
     selfie_check: selfieCheck,
   } = data?.check_results ?? {};
   const checkResults = {
-    finalResult,
+    finalResult: data?.state,
     scannedBy,
     amlCheck,
     idCheck,
