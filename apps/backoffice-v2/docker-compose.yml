@@ -1,0 +1,13 @@
+version: '3'
+services:
+  backoffice:
+    build:
+      context: .
+      args:
+        NPM_LOG_LEVEL: notice
+    ports:
+      - 5173:5173
+    environment:
+      BACKOFFICE_PORT: ${BACKOFFICE_PORT}
+
+    restart: unless-stopped
