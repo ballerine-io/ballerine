@@ -1,0 +1,9 @@
+# Example of a included file
+
+---
+- name: Fetch comments
+  request:
+    url: /api/comments.json
+  tags:
+    - tag_user
+

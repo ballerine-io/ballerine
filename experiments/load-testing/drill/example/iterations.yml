@@ -1,0 +1,31 @@
+# Example of a test plan with 5 iterations and 4 requests each.
+# A plan with 50 requests in total at 3 iterations at the same time.
+# This is an example of how to interpolate the iteration number.
+
+---
+base: 'http://localhost:9000'
+iterations: 5
+concurrency: 3
+
+plan:
+  - name: "Fetch 1 - Iteration: {{ iteration }}"
+    request:
+      url: /api/users.json
+
+  - name: "Fetch 2 - Iteration: {{ iteration }}"
+    request:
+      url: /api/organizations
+
+  - name: "Fetch 3 - Iteration: {{ iteration }}"
+    request:
+      url: /api/account
+    assign: foo
+
+  - name: Assert values
+    assert:
+      key: foo.body.manager_id
+      value: "73"
+
+  - name: "Fetch 4 - Iteration: {{ iteration }}"
+    request:
+      url: /api/users/{{ foo.body.manager_id }}
