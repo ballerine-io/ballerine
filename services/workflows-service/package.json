@@ -2,6 +2,7 @@
   "name": "@ballerine/workflows-service",
   "private": true,
   "scripts": {
+    "setup": "npm run docker:db && npm run db:migrate-save && npm run seed",
     "format": "prettier --write .",
     "lint": "eslint . --fix",
     "start": "nest start",
@@ -66,6 +67,7 @@
     "@types/supertest": "2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
+    "dotenv": "^16.0.3",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.7.0",
     "eslint-import-resolver-typescript": "^3.5.3",

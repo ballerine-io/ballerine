@@ -15,12 +15,10 @@ importers:
       cz-conventional-changelog: ^3.3.0
       editorconfig: ^1.0.2
       husky: ^8.0.3
-      npx: ^10.2.2
       nx: 15.0.2
       prettier: ^2.8.7
     dependencies:
       cross-env: 7.0.3
-      npx: 10.2.2
     devDependencies:
       '@branchlint/cli': 1.0.4
       '@branchlint/default-config': 1.0.2
@@ -833,6 +831,7 @@ importers:
       bcrypt: 5.0.1
       class-transformer: 0.5.1
       class-validator: 0.13.2
+      dotenv: ^16.0.3
       eslint: ^8.35.0
       eslint-config-prettier: ^8.7.0
       eslint-import-resolver-typescript: ^3.5.3
@@ -899,6 +898,7 @@ importers:
       '@types/supertest': 2.0.11
       '@typescript-eslint/eslint-plugin': 5.56.0_5duuj3prc6zb45v5q6wwlsshd4
       '@typescript-eslint/parser': 5.56.0_v6t3nkvnobzuvkeeyvq2hmlzbi
+      dotenv: 16.0.3
       eslint: 8.36.0
       eslint-config-prettier: 8.8.0_eslint@8.36.0
       eslint-import-resolver-typescript: 3.5.3_eakrjjutlgqjxe5ydhtnd4qdmy
@@ -18801,14 +18801,6 @@ packages:
       gauge: 3.0.2
       set-blocking: 2.0.0
     dev: false
-
-  /npx/10.2.2:
-    resolution: {integrity: sha512-eImmySusyeWphzs5iNh791XbZnZG0FSNvM4KSah34pdQQIDsdTDhIwg1sjN3AIVcjGLpbQ/YcfqHPshKZQK1fA==}
-    hasBin: true
-    dev: false
-    bundledDependencies:
-      - npm
-      - libnpx
 
   /nth-check/1.0.2:
     resolution: {integrity: sha512-WeBOdju8SnzPN5vTUJYxYUxLeXpCaVP5i5e0LF8fg7WORF2Wd7wFX/pk0tYZk7s8T+J7VLy0Da6J1+wCT0AtHg==}
