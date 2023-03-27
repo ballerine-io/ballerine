@@ -49,6 +49,7 @@ async function seed(bcryptSalt: Salt) {
       lastName: 'Comaneci',
       email: 'nadia@ballerine.com',
       correlationId: '1',
+      dateOfBirth: '2000-11-04T12:45:51.695Z',
     },
   });
 

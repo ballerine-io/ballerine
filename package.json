@@ -23,7 +23,7 @@
     "kyb"
   ],
   "scripts": {
-    "e2e-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example nx run-many --target=dev --projects=@ballerine/headless-example,@ballerine/backoffice-v2,@ballerine/workflows-service",
+    "kyc-manual-review-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example VITE_POOLING_TIME=3 nx run-many --target=dev --projects=@ballerine/headless-example,@ballerine/backoffice-v2,@ballerine/workflows-service",
     "branchlint": "branchlint -u -c --prefix \"$(git config --global user.name)\"",
     "format": "nx run-many --target=format",
     "lint": "nx run-many --target=lint --projects=@ballerine/web-sdk",
@@ -44,7 +44,7 @@
     "web-sdk:example": "nx run @ballerine/web-sdk:example",
     "web-sdk:lint": "nx run @ballerine/web-sdk:lint",
     "web-sdk:format": "nx run @ballerine/web-sdk:format",
-    "backoffice:dev": "nx run @ballerine/backoffice:dev",
+    "backoffice:dev": "nx run-many --target=dev --projects=@ballerine/backoffice-v2",
     "workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
     "web-ui:dev": "echo \"Error: no test specified\" && exit 1",
     "commit": "git add . && git-cz",
