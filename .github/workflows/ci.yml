@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-#    Can be configured to a specific branch or a different action than push.
-#    branches:
-#      - dev
+    branches-ignore:
+      - main
+  workflow_call:
 
 jobs:
   format:
