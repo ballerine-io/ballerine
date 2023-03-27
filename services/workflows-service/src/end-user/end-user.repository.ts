@@ -7,6 +7,12 @@ import { EndUserModel } from './end-user.model';
 export class EndUserRepository {
   constructor(protected readonly prisma: PrismaService) {}
 
+  async create<T extends Prisma.EndUserCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.EndUserCreateArgs>,
+  ) {
+    return await this.prisma.endUser.create(args);
+  }
+
   async findMany<T extends Prisma.EndUserFindManyArgs>(
     args?: Prisma.SelectSubset<T, Prisma.EndUserFindManyArgs>,
   ) {
@@ -15,10 +21,7 @@ export class EndUserRepository {
 
   async findById<T extends Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>(
     id: string,
-    args?: Prisma.SelectSubset<
-      T,
-      Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>
-    >,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>,
   ) {
     return await this.prisma.endUser.findUniqueOrThrow({
       where: { id },
@@ -28,15 +31,11 @@ export class EndUserRepository {
 
   async updateById<T extends Omit<Prisma.EndUserUpdateArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<
-      T,
-      Omit<Prisma.EndUserUpdateArgs, 'where'>
-    >,
+    args: Prisma.SelectSubset<T, Omit<Prisma.EndUserUpdateArgs, 'where'>>,
   ): Promise<EndUserModel> {
     return await this.prisma.endUser.update({
       where: { id },
       ...args,
     });
   }
-
 }
