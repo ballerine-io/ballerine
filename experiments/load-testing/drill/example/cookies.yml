@@ -1,0 +1,40 @@
+# Example of a test plan with 1 iteration and 7 requests.
+# This is an example of how to store information of previous
+# requests and used in next ones.
+
+---
+base: 'http://localhost:9000'
+iterations: 1
+
+plan:
+  - name: Login user
+    request:
+      url: /login?user=example&password=3x4mpl3
+
+  - name: Fetch counter
+    request:
+      url: /counter
+    assign: memory
+
+  - name: Fetch counter
+    request:
+      url: /counter
+    assign: memory
+
+  - name: Fetch endpoint
+    request:
+      url: /?counter={{ memory.body.counter }}
+
+  - name: Reset counter
+    request:
+      method: DELETE
+      url: /
+
+  - name: Fetch counter
+    request:
+      url: /counter
+    assign: memory
+
+  - name: Fetch endpoint
+    request:
+      url: /?counter={{ memory.body.counter }}

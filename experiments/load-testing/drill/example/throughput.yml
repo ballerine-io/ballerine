@@ -1,0 +1,22 @@
+---
+# Example of a test plan with 10000 iterations and 4 requests each.
+# A plan with 40000 requests in total at maximum throughput.
+base: 'http://localhost:9000'
+iterations: 10000
+
+plan:
+  - name: Fetch users
+    request:
+      url: /api/users.json
+
+  - name: Fetch organizations
+    request:
+      url: /api/organizations
+
+  - name: Fetch user 70
+    request:
+      url: /api/users/70
+
+  - name: Fetch user 73
+    request:
+      url: /api/users/73

@@ -1,0 +1,14 @@
+---
+base: 'http://localhost:9000'
+iterations: 1
+concurrency: 1
+
+plan:
+  - name: Include comments
+    include: subtags.yml
+
+  - name: Tagged user request
+    request:
+      url: /api/users/70
+    tags:
+      - tag_user

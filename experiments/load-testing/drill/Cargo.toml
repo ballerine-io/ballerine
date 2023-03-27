@@ -1,0 +1,37 @@
+[package]
+name = "drill"
+version = "0.8.2"
+authors = ["Ferran Basora <fcsonline@gmail.com>"]
+description = "Drill is a HTTP load testing application written in Rust inspired by Ansible syntax"
+repository = "https://github.com/fcsonline/drill"
+keywords = ["performance", "http", "ansible", "jmeter"]
+license = "GPL-3.0"
+edition = "2018"
+
+[dependencies]
+clap = "2.32.0"
+colored = "2.0.0"
+csv = "1.0.5"
+regex = "1.5.5"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.39"
+yaml-rust = "0.4.3"
+url = "2.1.1"
+linked-hash-map = "0.5.3"
+tokio = { version = "1.19.2", features = ["time", "net"] }
+reqwest = { version = "0.11.11", features = ["cookies", "trust-dns"] }
+async-trait = "0.1.30"
+futures = "0.3.5"
+lazy_static = "1.4.0"
+num_cpus = "1.13.0"
+rand = "0.8.5"
+hdrhistogram = "7.4.0"
+
+# Add openssl-sys as a direct dependency so it can be cross compiled to
+# x86_64-unknown-linux-musl using the "vendored" feature below
+openssl-sys = "0.9.66"
+
+[features]
+# Force openssl-sys to statically link in the openssl library. Necessary when
+# cross compiling to x86_64-unknown-linux-musl.
+vendored = ["openssl-sys/vendored"]

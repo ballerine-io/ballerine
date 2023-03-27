@@ -1,0 +1,24 @@
+# Example of a test plan with 1 iteration and 2 requests.
+# This is an example of how to send custom headers.
+
+---
+base: 'http://localhost:3000'
+iterations: 1
+
+plan:
+  - name: Custom headers
+    request:
+      url: /
+      headers:
+        Authorization: Basic aHR0cHdhdGNoOmY=
+        X-Foo: Bar
+
+  - name: Dynamic Custom headers
+    request:
+      url: /
+      headers:
+        Authorization: Basic aHR0cHdhdGNoOmY=
+        X-Foo: Bar {{ item }}
+    with_items:
+      - 70
+      - 73

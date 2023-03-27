@@ -1,0 +1,19 @@
+# Example of a test plan with 1 iteration to demonstrate the delay action.
+
+---
+base: 'http://localhost:9000'
+iterations: 1
+rampup: 0
+
+plan:
+  - name: Fetch users
+    request:
+      url: /api/users.json
+
+  - name: Waiting some seconds
+    delay:
+      seconds: 3
+
+  - name: Fetch organizations
+    request:
+      url: /api/organizations
