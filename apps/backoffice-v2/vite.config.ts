@@ -1,11 +1,14 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
 import react from '@vitejs/plugin-react-swc';
+import { resolve } from 'path';
+import { defineConfig } from 'vite';
 
 export default defineConfig(configEnv => {
   const isDevelopment = configEnv.mode === 'development';
 
   return {
+    server: {
+      open: true,
+    },
     plugins: [react()],
     resolve: {
       alias: {
