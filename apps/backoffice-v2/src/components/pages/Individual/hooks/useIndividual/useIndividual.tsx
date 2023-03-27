@@ -59,7 +59,7 @@ export const useIndividual = () => {
   const info = {
     personalInfo,
     passportInfo,
-    checkResults,
+    checkResults: { ...checkResults, finalResult: data?.state },
     addressInfo,
     workflow: {
       name: underscoreToSpace(data?.workflow?.name),
