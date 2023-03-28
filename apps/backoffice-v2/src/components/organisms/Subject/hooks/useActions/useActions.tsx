@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { ChangeEventHandler, useCallback, useState } from 'react';
 import { useApproveEndUserMutation } from '../../../../../lib/react-query/mutations/useApproveEndUserMutation/useApproveEndUserMutation';
 import { useRejectEndUserMutation } from '../../../../../lib/react-query/mutations/useRejectEndUserMutation/useRejectEndUserMutation';
 import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
@@ -30,8 +30,8 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
   const initials = createInitials(fullName);
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
-  const canReject = workflow?.nextEvents.includes(Action.REJECT.toLowerCase());
-  const canApprove = workflow?.nextEvents.includes(Action.APPROVE.toLowerCase());
+  const canReject = workflow?.nextEvents.includes(Action.REJECT.toLowerCase()) as boolean;
+  const canApprove = workflow?.nextEvents.includes(Action.APPROVE.toLowerCase()) as boolean;
 
   // Only display the button spinners if the request is longer than 300ms
   const debouncedIsLoadingRejectEndUser = useDebounce(isLoadingRejectEndUser, 300);
@@ -39,7 +39,15 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
 
   // Avoid passing the onClick event to mutate
   const onMutateApproveEndUser = useCallback(() => mutateApproveEndUser(), [mutateApproveEndUser]);
-  const onMutateRejectEndUser = useCallback(() => mutateRejectEndUser(), [mutateRejectEndUser]);
+  const onMutateRejectEndUser = useCallback(
+    (payload: Parameters<typeof mutateRejectEndUser>[0]) => () => mutateRejectEndUser(payload),
+    [mutateRejectEndUser],
+  );
+  const [resubmissionReason, setResubmissionReason] = useState('');
+  const onResubmissionReasonChange: ChangeEventHandler<HTMLInputElement> = useCallback(
+    event => setResubmissionReason(event.target.value),
+    [setResubmissionReason],
+  );
 
   useDocumentListener('keydown', event => {
     if (!event.ctrlKey || document.activeElement !== document.body) return;
@@ -56,9 +64,11 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
         onMutateApproveEndUser();
         break;
 
-      // Approve end user on 'Ctrl + J'
+      // Reject end user on 'Ctrl + J'
       case 'j':
-        onMutateRejectEndUser();
+        onMutateRejectEndUser({
+          action: Action.REJECT,
+        });
         break;
     }
   });
@@ -73,5 +83,7 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
     initials,
     canReject,
     canApprove,
+    resubmissionReason,
+    onResubmissionReasonChange,
   };
 };

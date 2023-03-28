@@ -9,6 +9,7 @@
   "ACTION": {
     "APPROVE": "approve",
     "REJECT": "reject",
+    "RESUBMIT": "resubmit",
     "SIGN_IN": "sign in",
     "SIGN_OUT": "sign out"
   },
