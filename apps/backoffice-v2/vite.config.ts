@@ -8,6 +8,7 @@ export default defineConfig(configEnv => {
   return {
     server: {
       open: true,
+      host: true,
     },
     plugins: [react()],
     resolve: {
@@ -22,8 +23,5 @@ export default defineConfig(configEnv => {
         generateScopedName: isDevelopment ? '[name]__[local]__[hash:base64:5]' : '[hash:base64:5]',
       },
     },
-    server: {
-      host: true
-    }
   };
 });
