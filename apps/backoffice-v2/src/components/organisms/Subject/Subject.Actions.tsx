@@ -6,6 +6,21 @@ import { useActions } from 'components/organisms/Subject/hooks/useActions/useAct
 import { motion } from 'framer-motion';
 import * as HoverCard from '@radix-ui/react-hover-card';
 import { ctw } from '../../../utils/ctw/ctw';
+import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
+import { DropdownMenuTrigger } from 'components/molecules/DropdownMenu/DropdownMenu.Trigger';
+import { DropdownMenuContent } from 'components/molecules/DropdownMenu/DropdownMenu.Content';
+import { DropdownMenuSeparator } from 'components/molecules/DropdownMenu/DropdownMenu.Separator';
+import { DropdownMenuLabel } from 'components/molecules/DropdownMenu/DropdownMenu.Label';
+import { DropdownMenuItem } from 'components/molecules/DropdownMenu/DropdownMenu.Item';
+import { DropdownMenuShortcut } from 'components/molecules/DropdownMenu/DropDownMenu.Shortcut';
+import { Action } from '../../../enums';
+import { Dialog } from 'components/organisms/Dialog/Dialog';
+import { DialogFooter } from 'components/organisms/Dialog/Dialog.Footer';
+import { DialogContent } from 'components/organisms/Dialog/Dialog.Content';
+import { DialogTrigger } from 'components/organisms/Dialog/Dialog.Trigger';
+import { DialogTitle } from 'components/organisms/Dialog/Dialog.Title';
+import { DialogDescription } from 'components/organisms/Dialog/Dialog.Description';
+import { DialogHeader } from 'components/organisms/Dialog/Dialog.Header';
 
 /**
  * @description To be used by {@link Subject}. Displays the end user's full name, avatar, and handles the reject/approve mutation.
@@ -31,6 +46,8 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     initials,
     canApprove,
     canReject,
+    resubmissionReason,
+    onResubmissionReasonChange,
   } = useActions({ endUserId: id, fullName });
 
   return (
@@ -67,33 +84,77 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           </h2>
         </motion.div>
         <div className={`flex items-center space-x-6`}>
-          <HoverCard.Root openDelay={0} closeDelay={0}>
-            <HoverCard.Trigger asChild>
-              <button
-                className={ctw(
-                  `btn-error btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-                  {
-                    loading: debouncedIsLoadingRejectEndUser,
-                  },
-                )}
-                disabled={isLoading || !canReject}
-                onClick={onMutateRejectEndUser}
-              >
-                Reject
-              </button>
-            </HoverCard.Trigger>
-            <HoverCard.Portal>
-              <HoverCard.Content
-                className={`card card-compact mt-2 rounded-md border-neutral/10 bg-base-100 p-2 shadow theme-dark:border-neutral/50`}
-              >
-                <div className={`flex items-center space-x-2`}>
-                  <kbd className="kbd">Ctrl</kbd>
-                  <span>+</span>
-                  <kbd className="kbd">J</kbd>
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={ctw(
+                    `btn-error btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
+                    {
+                      loading: debouncedIsLoadingRejectEndUser,
+                    },
+                  )}
+                  disabled={isLoading || !canReject}
+                >
+                  Reject
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className={`min-w-[16rem]`} align={`end`}>
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className={`cursor-pointer`}
+                  onClick={onMutateRejectEndUser({
+                    action: Action.REJECT,
+                  })}
+                >
+                  Reject
+                  <DropdownMenuShortcut>Ctrl + J</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem className={`cursor-pointer`}>
+                    Re-submit Document
+                    <DropdownMenuShortcut>Ctrl + R</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DialogTrigger>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Request document re-submission</DialogTitle>
+                <DialogDescription>
+                  State the reason for requesting a document re-submission.
+                </DialogDescription>
+              </DialogHeader>
+              <div className={`border-neutral/10 p-4 theme-dark:border-neutral/60`}>
+                <label htmlFor="rejectReason" className="label">
+                  <span className="label-text">Re-submission Reason</span>
+                </label>
+                <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60">
+                  <div className={'input-group'}>
+                    <input
+                      type="text"
+                      className="input input-md w-full !border-0 !outline-none !ring-0 placeholder:text-base-content"
+                      onChange={onResubmissionReasonChange}
+                      value={resubmissionReason}
+                    />
+                  </div>
                 </div>
-              </HoverCard.Content>
-            </HoverCard.Portal>
-          </HoverCard.Root>
+              </div>
+              <DialogFooter>
+                <button
+                  className={ctw(`btn-error btn justify-center`)}
+                  onClick={onMutateRejectEndUser({
+                    action: Action.RESUBMIT,
+                    resubmissionReason,
+                  })}
+                  disabled={!resubmissionReason}
+                >
+                  Confirm
+                </button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           <HoverCard.Root openDelay={0} closeDelay={0}>
             <HoverCard.Trigger asChild>
               <button
