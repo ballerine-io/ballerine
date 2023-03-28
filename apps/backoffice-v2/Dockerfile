@@ -5,8 +5,8 @@ WORKDIR /app
 
 COPY . .
 RUN rm -rf /app/node_modules
-RUN npm install
-RUN npm run build
+RUN npm install 1> /dev/null
+RUN npm run build 1> /dev/null
 
 FROM node:18.12.1 AS prod
 
