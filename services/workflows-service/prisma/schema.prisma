@@ -73,7 +73,7 @@ model WorkflowDefinition {
 
 model WorkflowRuntimeData {
   id                        String             @id @default(cuid())
-  endUser                   EndUser            @relation(fields: [endUserId], references: [id])
+  endUser                   EndUser            @relation(fields: [endUserId], references: [id], onDelete: Cascade)
   endUserId                 String
   workflowDefinition        WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
   workflowDefinitionId      String
