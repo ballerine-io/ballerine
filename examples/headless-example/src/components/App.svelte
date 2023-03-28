@@ -121,5 +121,5 @@
 {/if}
 {#if renderIntentButton}
   <SignUp {onSubmit} />
-  <button on:click={handleIntent}>KYC</button>
+  <button disabled={!endUser?.id} on:click={handleIntent}>KYC</button>
 {/if}
