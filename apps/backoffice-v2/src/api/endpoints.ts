@@ -1,5 +1,5 @@
-import { Method } from '../enums';
-import { IEndpoint, IWorkflowId } from './interfaces';
+import { Method } from "@/enums";
+import { IEndpoint, IWorkflowId } from "./interfaces";
 
 /**
  * @description The API's endpoints. The endpoints are appended into the API's base url ({@link env.VITE_API_URL}) by {@link apiClient}.

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 import { X } from 'lucide-react';
 import { DialogOverlay } from 'components/organisms/Dialog/Dialog.Overlay';
 import { DialogPortal } from 'components/organisms/Dialog/Dialog.Portal';

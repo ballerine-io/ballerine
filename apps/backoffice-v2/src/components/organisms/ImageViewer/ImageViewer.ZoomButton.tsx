@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
-import { ButtonComponent } from '../../../types';
+import { ButtonComponent } from '@/types';
 import { useZoomButton } from 'components/organisms/ImageViewer/hooks/useZoomButton/useZoomButton';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 import { MagnifyingGlassSvg } from 'components/atoms/icons';
 
 export const ZoomButton: FunctionComponent<ButtonComponent> = ({ className, ...props }) => {

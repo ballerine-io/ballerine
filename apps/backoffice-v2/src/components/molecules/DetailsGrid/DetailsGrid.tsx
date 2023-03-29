@@ -2,9 +2,9 @@ import { Fragment, PropsWithRef } from 'react';
 import { ChevronDownSvg } from 'components/atoms/icons';
 import { useDetailsGrid } from 'components/molecules/DetailsGrid/hooks/useDetailsGrid/useDetailsGrid';
 import { IDetailsGridProps } from 'components/molecules/DetailsGrid/interfaces';
-import { AnyRecord } from '../../../types';
+import { AnyRecord } from '@/types';
 import { DataField } from 'components/molecules/DataField/DataField';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description Displays a title and a collapsable 3 columns grid of DataField with an option of passing a component next to the title or to the bottom of the grid.

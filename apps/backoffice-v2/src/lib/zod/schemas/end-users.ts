@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { State, States } from '../../../enums';
+import { State, States } from '@/enums';
 import { ObjectWithIdSchema } from '../utils/object-with-id';
 
 export const EndUsersListSchema = z

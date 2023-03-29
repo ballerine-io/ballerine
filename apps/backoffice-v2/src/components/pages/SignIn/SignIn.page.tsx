@@ -1,7 +1,7 @@
-import { useSignInMutation } from '../../../lib/react-query/mutations/useSignInMutation/useSignInMutation';
+import { useSignInMutation } from '@/lib/react-query/mutations/useSignInMutation/useSignInMutation';
 import { FormEventHandler, useCallback } from 'react';
-import { useAuthContext } from '../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
-import { useIsAuthenticated } from '../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
+import { useAuthContext } from '@/context/AuthProvider/hooks/useAuthContext/useAuthContext';
+import { useIsAuthenticated } from '@/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
 export const SignIn = () => {
   const { mutate: signIn } = useSignInMutation();

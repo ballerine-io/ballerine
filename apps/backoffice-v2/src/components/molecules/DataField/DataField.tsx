@@ -1,7 +1,7 @@
 import { isNullish } from '@ballerine/common';
 import { IDataFieldProps } from 'components/molecules/DataField/interfaces';
 import { FunctionComponent } from 'react';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description A component which uses a div to wrap an h4 and a p element in order to display data.

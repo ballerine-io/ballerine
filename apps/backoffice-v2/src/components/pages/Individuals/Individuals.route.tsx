@@ -1,10 +1,10 @@
 import { caseManagementRoute } from 'components/pages/CaseManagement/CaseManagement.route';
-import { endUsers } from '../../../lib/react-query/end-users';
-import { queryClient } from '../../../lib/react-query/query-client';
+import { endUsers } from '@/lib/react-query/end-users';
+import { queryClient } from '@/lib/react-query/query-client';
 import { z } from 'zod';
 import { Route } from '@tanstack/react-router';
 import { Individuals } from 'components/pages/Individuals/Individuals.page';
-import { States } from '../../../enums';
+import { States } from '@/enums';
 
 export const individualsRoute = new Route({
   getParentRoute: () => caseManagementRoute,

@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { TEndUsers } from 'src/api/types';
+import { TEndUsers } from '@/api/types';
 import { endUsers } from '../../end-users';
 
 export const useEndUsersQuery = ({

@@ -1,6 +1,6 @@
 import { INavItemProps } from './interfaces';
 import { Link } from '@tanstack/react-router';
-import { FunctionComponentWithChildren } from '../../../types';
+import { FunctionComponentWithChildren } from '@/types';
 
 /**
  * @description Wraps a {@link Link} @tanstack/react-router component with an li, accepts an optional icon, and handles the link's active state based on current route.

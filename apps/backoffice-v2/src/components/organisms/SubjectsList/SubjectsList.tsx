@@ -8,7 +8,7 @@ import {
 } from 'components/organisms/SubjectsList/interfaces';
 import { Checkbox } from 'components/atoms/Checkbox/Checkbox';
 import { useSubjectsList } from 'components/organisms/SubjectsList/hooks/useSubjectsList/useSubjectsList';
-import { TEndUser } from '../../../api/types';
+import { TEndUser } from '@/api/types';
 import { SkeletonItem } from 'components/organisms/SubjectsList/SubjectsList.SkeletonItem';
 
 /**

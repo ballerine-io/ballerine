@@ -1,5 +1,5 @@
 import { generateEndUsers } from './utils/generate-end-users/generate-end-users';
-import { TEndUser } from '../../../api/types';
+import { TEndUser } from '@/api/types';
 
 export const endUsers = {
   __data: generateEndUsers(20),

@@ -1,8 +1,10 @@
-import { FunctionComponentWithChildren } from '../../types';
-import { createContext, useMemo } from 'react';
-import { env } from '../../env/env';
-import { useAuthRedirects } from './hooks/useAuthRedirects/useAuthRedirects';
-import { useGetSessionQuery } from '../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
+import { FunctionComponentWithChildren } from "@/types";
+import { createContext, useMemo } from "react";
+import { env } from "@/env/env";
+import { useAuthRedirects } from "./hooks/useAuthRedirects/useAuthRedirects";
+import {
+  useGetSessionQuery
+} from "@/lib/react-query/queries/useGetSessionQuery/useGetSessionQuery";
 
 export const AuthContext = createContext(undefined);
 

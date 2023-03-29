@@ -3,7 +3,7 @@ import { Item } from './ImageViewer.Item';
 import { SelectedImage } from './ImageViewer.SelectedImage';
 import { List } from './ImageViewer.List';
 import { ZoomModal } from './ImageViewer.ZoomModal';
-import { ButtonComponent, DivComponent } from '../../../types';
+import { ButtonComponent, DivComponent } from '@/types';
 import { ZoomButton } from './ImageViewer.ZoomButton';
 import { SkeletonItem } from 'components/organisms/ImageViewer/ImageViewer.SkeletonItem';
 

@@ -1,5 +1,5 @@
 import { FunctionComponent, SVGProps } from 'react';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description The Ballerine logo SVG found in Ballerine's Figma design.

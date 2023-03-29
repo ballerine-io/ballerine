@@ -1,7 +1,7 @@
-import { fetcher } from '../utils/fetcher/fetcher';
-import { env } from '../env/env';
-import { IApiClient } from './interfaces';
-import { handlePromise } from '../utils/handle-promise/handle-promise';
+import { fetcher } from "@/utils/fetcher/fetcher";
+import { env } from "@/env/env";
+import { IApiClient } from "./interfaces";
+import { handlePromise } from "@/utils/handle-promise/handle-promise";
 
 /**
  * @description Prepends the API's base url to an endpoint, and sets options and headers re-used across the API.

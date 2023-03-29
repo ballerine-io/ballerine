@@ -5,7 +5,7 @@ import { Group } from './Checkbox.Group';
 import { Item } from './Checkbox.Item';
 import { ICheckboxChildren, ICheckboxProps } from './interfaces';
 import { CheckSvg } from 'components/atoms/icons';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 export const Checkbox: FunctionComponent<ICheckboxProps> & ICheckboxChildren = ({
   children,

@@ -4,14 +4,14 @@ import { useSearch } from 'hooks/useSearch/useSearch';
 import { useFilter } from 'hooks/useFilter/useFilter';
 import { usePagination } from 'hooks/usePagination/usePagination';
 import { ChangeEventHandler, useCallback } from 'react';
-import { TEndUser } from '../../../../../api/types';
-import { createArrayOfNumbers } from '../../../../../utils/create-array-of-numbers/create-array-of-numbers';
-import { TRouteId } from '../../../../../types';
+import { TEndUser } from '@/api/types';
+import { createArrayOfNumbers } from '@/utils/create-array-of-numbers/create-array-of-numbers';
+import { TRouteId } from '@/types';
 import { useSelectEndUserOnMount } from 'hooks/useSelectEndUserOnMount/useSelectEndUserOnMount';
 import { individualsRoute } from 'components/pages/Individuals/Individuals.route';
 import { individualsIndexRoute } from 'components/pages/Individuals/IndividualsIndex.route';
 import { individualRoute } from 'components/pages/Individual/Individual.route';
-import { useEndUsersWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUsersWithWorkflowQuery/useEndUsersWithWorkflowQuery';
+import { useEndUsersWithWorkflowQuery } from '@/lib/react-query/queries/useEndUsersWithWorkflowQuery/useEndUsersWithWorkflowQuery';
 
 export const useIndividuals = () => {
   const matches = useMatches();

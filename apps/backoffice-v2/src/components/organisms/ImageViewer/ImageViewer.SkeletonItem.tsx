@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { PrimaryButton } from 'components/atoms/PrimaryButton/PrimaryButton';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 export const SkeletonItem: FunctionComponent = () => {
   return (

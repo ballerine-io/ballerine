@@ -1,8 +1,8 @@
-import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
-import { useIsAuthenticated } from '../../../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
-import { useAuthContext } from '../../../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
+import { useGetSessionQuery } from '@/lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
+import { useIsAuthenticated } from '@/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
+import { useAuthContext } from '@/context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import { useEffect } from 'react';
-import { env } from '../../../../../env/env';
+import { env } from '@/env/env';
 import { useRouter } from '@tanstack/react-router';
 
 export const useUnauthenticatedLayout = () => {

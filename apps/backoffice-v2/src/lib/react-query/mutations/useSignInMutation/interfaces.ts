@@ -1,4 +1,4 @@
-import { endpoints } from '../../../../api/endpoints';
+import { endpoints } from '@/api/endpoints';
 
 export interface ISignInProps {
   redirect?: boolean;

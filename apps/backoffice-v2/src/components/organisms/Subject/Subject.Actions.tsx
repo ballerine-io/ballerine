@@ -5,7 +5,7 @@ import { EllipsisButton } from 'components/atoms/EllipsisButton/EllipsisButton';
 import { useActions } from 'components/organisms/Subject/hooks/useActions/useActions';
 import { motion } from 'framer-motion';
 import * as HoverCard from '@radix-ui/react-hover-card';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
 import { DropdownMenuTrigger } from 'components/molecules/DropdownMenu/DropdownMenu.Trigger';
 import { DropdownMenuContent } from 'components/molecules/DropdownMenu/DropdownMenu.Content';
@@ -13,7 +13,7 @@ import { DropdownMenuSeparator } from 'components/molecules/DropdownMenu/Dropdow
 import { DropdownMenuLabel } from 'components/molecules/DropdownMenu/DropdownMenu.Label';
 import { DropdownMenuItem } from 'components/molecules/DropdownMenu/DropdownMenu.Item';
 import { DropdownMenuShortcut } from 'components/molecules/DropdownMenu/DropDownMenu.Shortcut';
-import { Action } from '../../../enums';
+import { Action } from '@/enums';
 import { Dialog } from 'components/organisms/Dialog/Dialog';
 import { DialogFooter } from 'components/organisms/Dialog/Dialog.Footer';
 import { DialogContent } from 'components/organisms/Dialog/Dialog.Content';
@@ -185,7 +185,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-          <div className="dropdown-hover dropdown-bottom dropdown-end dropdown">
+          <div className="dropdown-hover dropdown dropdown-bottom dropdown-end">
             <EllipsisButton tabIndex={0} />
             <ul
               className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}

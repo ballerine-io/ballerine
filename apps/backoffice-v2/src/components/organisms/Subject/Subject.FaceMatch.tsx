@@ -3,7 +3,7 @@ import { IFaceMatchProps } from 'components/organisms/Subject/interfaces';
 import { BallerineImage } from 'components/atoms/BallerineImage';
 import { DataField } from 'components/molecules/DataField/DataField';
 import { useFaceMatch } from 'components/organisms/Subject/hooks/useFaceMatch/useFaceMatch';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description To be used by {@link Subject}, and be wrapped by {@link Subject.Content}. Displays a single end user's face match photos and result using {@link BallerineImage}.

@@ -1,8 +1,8 @@
-import { AnyArray, TKeyofArrayElement, TRouteId } from '../../types';
-import { useNavigate, useSearch as useTanStackSearch } from '@tanstack/react-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDebounce } from 'hooks/useDebounce/useDebounce';
-import { search as onSearch } from './search';
+import { AnyArray, TKeyofArrayElement, TRouteId } from "@/types";
+import { useNavigate, useSearch as useTanStackSearch } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useDebounce } from "hooks/useDebounce/useDebounce";
+import { search as onSearch } from "./search";
 
 export const useSearch = <TArray extends AnyArray, TId extends TRouteId>({
   routeId,

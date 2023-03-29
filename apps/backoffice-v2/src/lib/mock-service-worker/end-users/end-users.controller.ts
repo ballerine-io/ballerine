@@ -1,5 +1,5 @@
 import { rest } from 'msw';
-import { env } from '../../../env/env';
+import { env } from '@/env/env';
 import { endUsers } from './end-users.data';
 
 export const endUsersController = [

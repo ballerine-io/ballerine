@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { TListProps } from 'components/organisms/ImageViewer/types';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description To be used by {@link ImageViewer}. Uses a ul element to display a list of images with default styling.

@@ -1,8 +1,8 @@
 import { FunctionComponent } from 'react';
 import { PrimaryButton } from 'components/atoms/PrimaryButton/PrimaryButton';
 import { EllipsisSvg } from 'components/atoms/icons';
-import { ButtonComponent } from '../../../types';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ButtonComponent } from '@/types';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description Wraps {@link EllipsisSvg} with a {@link PrimaryButton} component and applies default styling.

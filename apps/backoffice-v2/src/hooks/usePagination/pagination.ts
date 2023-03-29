@@ -1,5 +1,5 @@
-import { AnyArray } from '../../types';
-import { generatePaginationButtons } from 'hooks/usePagination/generate-pagination-buttons';
+import { AnyArray } from "@/types";
+import { generatePaginationButtons } from "hooks/usePagination/generate-pagination-buttons";
 
 export const pagination = <TArray extends AnyArray>({ data, pageSize, page, siblings }) => {
   const totalItems = data?.length ?? 0;

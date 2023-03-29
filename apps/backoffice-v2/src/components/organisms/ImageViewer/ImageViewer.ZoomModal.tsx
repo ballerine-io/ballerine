@@ -3,7 +3,7 @@ import { useImageViewerContext } from './hooks/useImageViewerContext/useImageVie
 import { IZoomModalProps } from './interfaces';
 import { Modal } from 'components/organisms/Modal/Modal';
 import { BallerineImage } from 'components/atoms/BallerineImage';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description To be used by {@link ImageViewer}. Uses the {@link Modal} component with default styling to display an enlarged version of the selected image.

@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
-import { ButtonComponent } from '../../../types';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ButtonComponent } from '@/types';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description A button element styled with re-occurring CSS, including styling for hover, focus, and active pseudo-states.

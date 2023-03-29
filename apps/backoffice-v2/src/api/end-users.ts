@@ -1,9 +1,9 @@
-import { endpoints } from './endpoints';
-import { apiClient } from './api-client';
-import { EndUserByIdSchema, EndUsersListSchema } from '../lib/zod/schemas/end-users';
-import { handleZodError } from '../utils/handle-zod-error/handle-zod-error';
-import { env } from '../env/env';
-import { endUsers as endUsersApi } from '../lib/mock-service-worker/end-users/end-users.data';
+import { endpoints } from "./endpoints";
+import { apiClient } from "./api-client";
+import { EndUserByIdSchema, EndUsersListSchema } from "@/lib/zod/schemas/end-users";
+import { handleZodError } from "@/utils/handle-zod-error/handle-zod-error";
+import { env } from "@/env/env";
+import { endUsers as endUsersApi } from "@/lib/mock-service-worker/end-users/end-users.data";
 
 export const endUsers = {
   list: async () => {

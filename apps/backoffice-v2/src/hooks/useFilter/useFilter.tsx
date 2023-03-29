@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react';
-import { useNavigate, useSearch } from '@tanstack/react-router';
-import { AnyArray, TKeyofArrayElement, TRouteId } from '../../types';
-import { filter as onFilter } from './filter';
+import { useCallback, useMemo } from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { AnyArray, TKeyofArrayElement, TRouteId } from "@/types";
+import { filter as onFilter } from "./filter";
 
 /**
  * @description A hook to easily filter an array of objects by key using fuzzy search.

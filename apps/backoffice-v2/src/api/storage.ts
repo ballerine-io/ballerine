@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import { handleZodError } from '../utils/handle-zod-error/handle-zod-error';
-import { apiClient } from './api-client';
-import { endpoints } from './endpoints';
+import { z } from "zod";
+import { handleZodError } from "@/utils/handle-zod-error/handle-zod-error";
+import { apiClient } from "./api-client";
+import { endpoints } from "./endpoints";
 
 export const storage = {
   fileById: async (fileId: string) => {

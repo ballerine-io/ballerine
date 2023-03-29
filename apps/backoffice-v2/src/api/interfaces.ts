@@ -1,6 +1,6 @@
-import { AnyArray, AnyRecord, TMethod } from '../types';
-import { Method } from '../enums';
-import { z, ZodSchema } from 'zod';
+import { AnyArray, AnyRecord, TMethod } from "@/types";
+import { Method } from "@/enums";
+import { z, ZodSchema } from "zod";
 
 /**
  * Expect {@link Method.GET} and {@link Method.DELETE} to not have a body.

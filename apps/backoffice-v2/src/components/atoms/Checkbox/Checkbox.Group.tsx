@@ -1,7 +1,7 @@
 import { Provider } from './context';
 import { IGroupProps } from 'components/atoms/Checkbox/interfaces';
-import { FunctionComponentWithChildren } from '../../../types';
-import { ctw } from '../../../utils/ctw/ctw';
+import { FunctionComponentWithChildren } from '@/types';
+import { ctw } from '@/utils/ctw/ctw';
 
 export const Group: FunctionComponentWithChildren<IGroupProps> = ({
   vertical = false,

@@ -1,5 +1,5 @@
 import { rest } from 'msw';
-import { env } from '../../../env/env';
+import { env } from '@/env/env';
 import { workflows } from './workflows.data';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { endUsers } from '../end-users/end-users.data';

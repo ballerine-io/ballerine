@@ -1,7 +1,7 @@
-import { useGetSessionQuery } from '../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
+import { useGetSessionQuery } from '@/lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 import { useRouter } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { env } from '../../../../env/env';
+import { env } from '@/env/env';
 import { useIsAuthenticated } from '../useIsAuthenticated/useIsAuthenticated';
 
 export const useAuthRedirects = ({

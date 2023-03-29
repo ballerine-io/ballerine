@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../../../../api/api';
+import { api } from '@/api/api';
 import { endUsers } from '../../end-users';
-import { Action, Resource } from '../../../../enums';
+import { Action, Resource } from '@/enums';
 
 export const useRejectEndUserMutation = ({
   workflowId,

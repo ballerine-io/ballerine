@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { api } from '../../../../api/api';
+import { api } from '@/api/api';
 import { auth } from '../../auth';
-import { Action, Resource } from '../../../../enums';
+import { Action, Resource } from '@/enums';
 import { ISignInProps } from '../useSignInMutation/interfaces';
 
 export const useSignOutMutation = () => {
