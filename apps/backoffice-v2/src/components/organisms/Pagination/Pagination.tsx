@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { ChevronLeftSvg, ChevronRightSvg } from 'components/atoms/icons';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 import { IPaginationProps } from 'components/organisms/Pagination/interfaces';
 
 export const Pagination: FunctionComponent<IPaginationProps> = ({

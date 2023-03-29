@@ -1,7 +1,7 @@
 import { PrimaryButton } from 'components/atoms/PrimaryButton/PrimaryButton';
 import { TSecondaryButtonProps } from 'components/atoms/SecondaryButton/types';
-import { FunctionComponentWithChildren } from '../../../types';
-import { ctw } from '../../../utils/ctw/ctw';
+import { FunctionComponentWithChildren } from '@/types';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description Wraps children with a {@link PrimaryButton} component and applies default styling.

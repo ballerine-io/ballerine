@@ -1,3 +1,3 @@
-import { ButtonComponent } from '../../../types';
+import { ButtonComponent } from '@/types';
 
 export type IMagnifyingGlassButtonProps = ButtonComponent;

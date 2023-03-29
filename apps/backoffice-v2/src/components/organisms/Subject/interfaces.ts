@@ -3,7 +3,7 @@ import { Documents } from './Subject.Documents';
 import { Info } from './Subject.Info';
 import { Content } from './Subject.Content';
 import { FaceMatch } from './Subject.FaceMatch';
-import { TState } from '../../../types';
+import { TState } from '@/types';
 
 export interface IItemProps {
   id: string;

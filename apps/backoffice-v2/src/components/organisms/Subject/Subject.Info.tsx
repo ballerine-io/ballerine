@@ -6,13 +6,13 @@ import { Modal } from 'components/organisms/Modal/Modal';
 import { IInfoProps } from 'components/organisms/Subject/interfaces';
 import { useToggle } from 'hooks/useToggle/useToggle';
 import { FunctionComponent, useCallback, useState } from 'react';
-import { State } from '../../../enums';
-import { camelCaseToSpace } from '../../../utils/camel-case-to-space/camel-case-to-space';
-import { createArrayOfNumbers } from '../../../utils/create-array-of-numbers/create-array-of-numbers';
-import { ctw } from '../../../utils/ctw/ctw';
-import { formatDate } from '../../../utils/format-date';
-import { isValidDate } from '../../../utils/is-valid-date';
-import { toStartCase } from '../../../utils/to-start-case/to-start-case';
+import { State } from '@/enums';
+import { camelCaseToSpace } from '@/utils/camel-case-to-space/camel-case-to-space';
+import { createArrayOfNumbers } from '@/utils/create-array-of-numbers/create-array-of-numbers';
+import { ctw } from '@/utils/ctw/ctw';
+import { formatDate } from '@/utils/format-date';
+import { isValidDate } from '@/utils/is-valid-date';
+import { toStartCase } from '@/utils/to-start-case/to-start-case';
 
 export const useInfo = ({
   whitelist = [],

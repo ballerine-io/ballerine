@@ -1,6 +1,6 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { isString } from '../../../../utils/is-string/is-string';
-import { TEndUser } from '../../../../api/types';
+import { isString } from '@/utils/is-string/is-string';
+import { TEndUser } from '@/api/types';
 import { endUsers } from '../../end-users';
 
 export const useEndUserQuery = ({

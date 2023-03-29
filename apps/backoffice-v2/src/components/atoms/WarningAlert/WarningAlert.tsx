@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
 import { IWarningAlertProps } from './interfaces';
 import { WarningSvg } from 'components/atoms/icons';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description A closeable div element with a color of yellow and a warning icon.

@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { XMarkSvg } from 'components/atoms/icons';
 import { IModalProps } from 'components/organisms/Modal/interfaces';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 import { MotionScrollArea } from 'components/molecules/MotionScrollArea/MotionScrollArea';
 
 /**

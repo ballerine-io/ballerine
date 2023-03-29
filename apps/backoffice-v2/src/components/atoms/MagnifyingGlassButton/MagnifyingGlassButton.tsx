@@ -1,7 +1,7 @@
-import { FunctionComponent } from 'react';
-import { IMagnifyingGlassButtonProps } from './interfaces';
-import { MagnifyingGlassSvg } from '../icons';
-import { SecondaryButton } from 'components/atoms/SecondaryButton/SecondaryButton';
+import { FunctionComponent } from "react";
+import { IMagnifyingGlassButtonProps } from "./interfaces";
+import { MagnifyingGlassSvg } from "@/icons";
+import { SecondaryButton } from "components/atoms/SecondaryButton/SecondaryButton";
 
 /**
  * @description Wraps {@link MagnifyingGlassSvg} with a {@link SecondaryButton} component.

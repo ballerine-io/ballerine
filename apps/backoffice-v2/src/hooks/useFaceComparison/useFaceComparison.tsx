@@ -1,12 +1,12 @@
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import {
   computeFaceDescriptor,
   euclideanDistance,
   loadFaceRecognitionModel,
-  utils,
-} from 'face-api.js';
-import { isTwoDimensionalArray } from '../../utils/is-two-dimensional-array/is-two-dimensional-array';
-import { useToggle } from 'hooks/useToggle/useToggle';
+  utils
+} from "face-api.js";
+import { isTwoDimensionalArray } from "@/utils/is-two-dimensional-array/is-two-dimensional-array";
+import { useToggle } from "hooks/useToggle/useToggle";
 
 export const useFaceComparison = () => {
   const [faceSimilarity, setFaceSimilarity] = useState(0);

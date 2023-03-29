@@ -1,13 +1,13 @@
 import { ChangeEventHandler, useCallback, useState } from 'react';
-import { useApproveEndUserMutation } from '../../../../../lib/react-query/mutations/useApproveEndUserMutation/useApproveEndUserMutation';
-import { useRejectEndUserMutation } from '../../../../../lib/react-query/mutations/useRejectEndUserMutation/useRejectEndUserMutation';
-import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
+import { useApproveEndUserMutation } from '@/lib/react-query/mutations/useApproveEndUserMutation/useApproveEndUserMutation';
+import { useRejectEndUserMutation } from '@/lib/react-query/mutations/useRejectEndUserMutation/useRejectEndUserMutation';
+import { useEndUserWithWorkflowQuery } from '@/lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
 import { useDebounce } from 'hooks/useDebounce/useDebounce';
 import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
 import { useSelectNextEndUser } from 'hooks/useSelectNextEndUser/useSelectNextEndUser';
-import { createInitials } from '../../../../../utils/create-initials/create-initials';
+import { createInitials } from '@/utils/create-initials/create-initials';
 import { IUseActions } from './interfaces';
-import { Action } from '../../../../../enums';
+import { Action } from '@/enums';
 
 export const useActions = ({ endUserId, fullName }: IUseActions) => {
   const onSelectNextEndUser = useSelectNextEndUser();

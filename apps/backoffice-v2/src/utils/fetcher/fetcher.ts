@@ -1,5 +1,5 @@
 import { IFetcher } from './interfaces';
-import { handlePromise } from '../handle-promise/handle-promise';
+import { handlePromise } from '@ballerine/common';
 import { isZodError } from '../is-zod-error/is-zod-error';
 
 export const fetcher: IFetcher = async ({

@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 import { FunctionComponent } from 'react';
-import { getTimePastFromNow } from '../../../utils/get-time-past-from-now';
+import { getTimePastFromNow } from '@/utils/get-time-past-from-now';
 import { Avatar } from 'components/atoms/Avatar';
 import { ApprovedSvg, RejectedSvg } from 'components/atoms/icons';
 import { IItemProps } from 'components/organisms/Subject/interfaces';
 import { Link } from '@tanstack/react-router';
-import { createInitials } from '../../../utils/create-initials/create-initials';
-import { ctw } from '../../../utils/ctw/ctw';
+import { createInitials } from '@/utils/create-initials/create-initials';
+import { ctw } from '@/utils/ctw/ctw';
 import { useEllipsesWithTitle } from 'hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 
 /**

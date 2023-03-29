@@ -7,7 +7,7 @@ import { ZoomModal } from './ImageViewer.ZoomModal';
 import { Provider } from './context';
 import { ZoomButton } from './ImageViewer.ZoomButton';
 import { SkeletonItem } from 'components/organisms/ImageViewer/ImageViewer.SkeletonItem';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description A component that displays a list of images and a zoomable selected image using a shared context.

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState } from 'react';
 import { TCheckboxGroupState } from './types';
-import { FunctionComponentWithChildren } from '../../../types';
+import { FunctionComponentWithChildren } from '@/types';
 
 export interface IProviderProps {
   values: Array<unknown>;

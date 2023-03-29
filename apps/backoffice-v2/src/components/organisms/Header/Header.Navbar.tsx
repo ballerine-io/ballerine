@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { NavItem } from './Header.NavItem';
-import { navItems } from '../../../App/nav-items';
+import { navItems } from '@/App/nav-items';
 
 /**
  * @description A nav element which wraps {@link NavItem} components of the app's routes. Supports nested routes.

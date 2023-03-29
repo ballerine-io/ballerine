@@ -1,8 +1,8 @@
 import { Item } from './SubjectsList.Item';
 import { List } from './SubjectsList.List';
-import { DivComponent } from '../../../types';
+import { DivComponent } from '@/types';
 import { ChangeEventHandler } from 'react';
-import { TEndUser } from '../../../api/types';
+import { TEndUser } from '@/api/types';
 import { SkeletonItem } from 'components/organisms/SubjectsList/SubjectsList.SkeletonItem';
 
 export interface ISubjectsListChildren {

@@ -1,4 +1,4 @@
-import { TEndUsers } from '../../../../api/types';
+import { TEndUsers } from '@/api/types';
 import { useQuery } from '@tanstack/react-query';
 import { endUsers } from '../../end-users';
 

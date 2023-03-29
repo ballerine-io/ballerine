@@ -1,6 +1,6 @@
-import { camelCaseToSpace } from '../../../../../utils/camel-case-to-space/camel-case-to-space';
-import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
-import { createArrayOfNumbers } from '../../../../../utils/create-array-of-numbers/create-array-of-numbers';
+import { camelCaseToSpace } from '@/utils/camel-case-to-space/camel-case-to-space';
+import { toStartCase } from '@/utils/to-start-case/to-start-case';
+import { createArrayOfNumbers } from '@/utils/create-array-of-numbers/create-array-of-numbers';
 
 /**
  * @description Encapsulates DetailsGrid's state and logic.

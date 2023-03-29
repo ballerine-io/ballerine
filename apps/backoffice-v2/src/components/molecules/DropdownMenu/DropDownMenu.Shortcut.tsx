@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 export const DropdownMenuShortcut = ({
   className,

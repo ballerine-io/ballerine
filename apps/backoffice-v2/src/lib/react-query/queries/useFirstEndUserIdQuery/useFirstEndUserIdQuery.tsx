@@ -1,8 +1,8 @@
-import { TRouteId } from '../../../../types';
+import { TRouteId } from '@/types';
 import { useSearch as useTanStackSearch } from '@tanstack/react-router';
 import { useCallback } from 'react';
-import { sort } from 'hooks/useSort/sort';
-import { TEndUsers } from '../../../../api/types';
+import { sort } from '@/hooks/useSort/sort';
+import { TEndUsers } from '@/api/types';
 import { useSelectEndUsersQuery } from '../useSelectEndUsersQuery/useSelectEndUsersQuery';
 
 export const useFirstEndUserIdQuery = <TId extends TRouteId>({

@@ -1,5 +1,5 @@
 import { ComponentProps } from 'react';
-import { DivComponent } from '../../../types';
+import { DivComponent } from '@/types';
 
 export interface IDataFieldProps extends DivComponent {
   title: string;

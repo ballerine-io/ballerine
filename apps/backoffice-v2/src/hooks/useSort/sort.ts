@@ -1,5 +1,5 @@
-import { AnyArray, TKeyofArrayElement } from '../../types';
-import { KeyOption, matchSorter } from 'match-sorter';
+import { AnyArray, TKeyofArrayElement } from "@/types";
+import { KeyOption, matchSorter } from "match-sorter";
 
 export const sort = <TArray extends AnyArray>(
   {

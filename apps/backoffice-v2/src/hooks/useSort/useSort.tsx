@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react';
-import { AnyArray, TKeyofArrayElement, TRouteId } from '../../types';
-import { sort } from 'hooks/useSort/sort';
-import { useNavigate, useSearch as useTanStackSearch } from '@tanstack/react-router';
+import { useCallback, useMemo } from "react";
+import { AnyArray, TKeyofArrayElement, TRouteId } from "@/types";
+import { sort } from "hooks/useSort/sort";
+import { useNavigate, useSearch as useTanStackSearch } from "@tanstack/react-router";
 
 /**
  * @description A hook to easily sort an array of objects by key, and change sort direction or the sort by key.

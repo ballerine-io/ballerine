@@ -3,7 +3,7 @@ import { IItemProps } from './interfaces';
 import { useImageViewerContext } from './hooks/useImageViewerContext/useImageViewerContext';
 import { BallerineImage } from 'components/atoms/BallerineImage';
 import { PrimaryButton } from 'components/atoms/PrimaryButton/PrimaryButton';
-import { ctw } from '../../../utils/ctw/ctw';
+import { ctw } from '@/utils/ctw/ctw';
 
 /**
  * @description To be used by {@link ImageViewer}, and be wrapped by {@link ImageViewer.List}. Uses an li element with default styling to display a single image which sets the selected image on click.

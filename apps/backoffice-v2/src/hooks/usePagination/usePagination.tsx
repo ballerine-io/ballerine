@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react';
-import { useNavigate, useSearch as useTanStackSearch } from '@tanstack/react-router';
-import { AnyArray, TRouteId } from '../../types';
-import { pagination } from 'hooks/usePagination/pagination';
+import { useCallback, useMemo } from "react";
+import { useNavigate, useSearch as useTanStackSearch } from "@tanstack/react-router";
+import { AnyArray, TRouteId } from "@/types";
+import { pagination } from "hooks/usePagination/pagination";
 
 /**
  * @description A hook to manage pagination state to be consumed by Mantine's Pagination component. Not using Mantine's usePagination hook since it doesn't support changing the number of items per page.

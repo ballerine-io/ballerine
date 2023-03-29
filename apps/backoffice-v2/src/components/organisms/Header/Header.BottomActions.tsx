@@ -1,9 +1,10 @@
-import { CogSvg, LogOutSvg } from 'components/atoms/icons';
 import { useCallback, useState } from 'react';
-import { ctw } from '../../../utils/ctw/ctw';
-import { useSignOutMutation } from '../../../lib/react-query/mutations/useSignOutMutation/useSignOutMutation';
-import { useAuthContext } from '../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
+import { ctw } from '@/utils/ctw/ctw';
+import { useSignOutMutation } from '@/lib/react-query/mutations/useSignOutMutation/useSignOutMutation';
+import { useAuthContext } from '@/context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import packageJson from '../../../../package.json';
+import { Button } from '@/components/atoms/Button';
+import { Cog, LogOut } from 'lucide-react';
 
 export const BottomActions = () => {
   const [theme, setTheme] = useState(() => {
@@ -35,12 +36,9 @@ export const BottomActions = () => {
   return (
     <div className={`mt-auto flex flex-col space-y-4`}>
       <div className="dropdown-hover dropdown-top dropdown">
-        <button
-          tabIndex={0}
-          className={`btn-ghost btn-block btn mt-1 justify-start gap-x-2 focus:outline-primary`}
-        >
-          <CogSvg /> Settings
-        </button>
+        <Button tabIndex={0} variant={'ghost'} className={`w-full justify-start`}>
+          <Cog className={`me-2`} /> Settings
+        </Button>
         <ul
           className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 p-2 text-base-content shadow theme-dark:border-neutral/60`}
         >
@@ -69,12 +67,9 @@ export const BottomActions = () => {
           </li>
         </ul>
       </div>
-      <button
-        className={`btn-ghost btn-block btn justify-start gap-x-2 focus:outline-primary`}
-        onClick={onSignOut}
-      >
-        <LogOutSvg /> Log out
-      </button>
+      <Button variant={'ghost'} className={`justify-start`} onClick={onSignOut}>
+        <LogOut className={`me-2`} /> Log out
+      </Button>
       <span className={`label-text-alt self-end`}>{`v${packageJson.version}`}</span>
     </div>
   );
