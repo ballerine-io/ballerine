@@ -68,7 +68,7 @@ model WorkflowDefinition {
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   createdBy           String                @default("SYSTEM")
-  WorkflowRuntimeData WorkflowRuntimeData[]
+  workflowRuntimeData WorkflowRuntimeData[]
 }
 
 model WorkflowRuntimeData {

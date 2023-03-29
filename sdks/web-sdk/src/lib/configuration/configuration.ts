@@ -49,6 +49,6 @@ export const configuration: IAppConfiguration = {
     },
   },
   metricsConfig: {
-    enabled: true
-  }
+    enabled: true,
+  },
 };

@@ -6,13 +6,11 @@
     type CreateQueryOptions,
     useQueryClient
   } from '@tanstack/svelte-query';
-  import {fetchJson, log, makeWorkflow} from '../utils';
+  import {fetchJson, makeWorkflow} from '@/utils';
   import SignUp from './SignUp.svelte';
   import Workflow from './Workflow.svelte';
-  import {NO_AUTH_USER_KEY} from "../constants";
+  import {NO_AUTH_USER_KEY} from "@/constants";
   import {writable} from "svelte/store";
-  import Dump from "./Dump.svelte";
-
 
   let noAuthUserId = sessionStorage.getItem(NO_AUTH_USER_KEY);
 
@@ -25,8 +23,10 @@
       Array<{
         workflowDefinition: {
           id: string;
+          name: string;
         };
         workflowRuntimeData: {
+          id: string;
           status: string;
         };
       }>
@@ -91,11 +91,12 @@
     enabled: false
   })
   const createFirstWorkflowQuery = () => createWorkflowsQuery({
-    select: (workflows) => Array.isArray(workflows) ? workflows?.find(
-      workflow =>
-        workflow?.workflowDefinition?.id?.startsWith('COLLECT_DOCS') &&
-        workflow?.workflowRuntimeData?.status !== 'completed',
-    ) : undefined
+    select: (workflows) =>
+      Array.isArray(workflows) ? workflows?.find(
+        workflow =>
+          workflow?.workflowDefinition?.name === "onboarding_client_collect_data" &&
+          workflow?.workflowRuntimeData?.status !== 'completed',
+      ) : undefined
   })
   const createWorkflowQuery = (id: string) => createQuery({
     queryKey: [{id}],

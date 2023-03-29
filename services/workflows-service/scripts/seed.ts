@@ -71,6 +71,9 @@ async function seed(bcryptSalt: Salt) {
               reject: {
                 target: 'rejected',
               },
+              resubmit: {
+                target: 'review',
+              },
             },
           },
           approved: {
@@ -117,6 +120,12 @@ async function seed(bcryptSalt: Salt) {
           document_photo: {
             on: {
               USER_PREV_STEP: 'document_selection',
+              USER_NEXT_STEP: 'document_review',
+            },
+          },
+          document_review: {
+            on: {
+              USER_PREV_STEP: 'document_photo',
               USER_NEXT_STEP: 'final',
             },
           },

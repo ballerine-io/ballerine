@@ -1,6 +1,5 @@
 <script lang="ts">
-  import type { WorkflowOptionsBrowser } from "@ballerine/workflow-browser-sdk";
-  import { writable } from "svelte/store";
+  import type {WorkflowOptionsBrowser} from "@ballerine/workflow-browser-sdk";
   import DocumentPhoto from "./DocumentPhoto.svelte";
   import DocumentSelection from "./DocumentSelection.svelte";
   import Dump from "./Dump.svelte";
@@ -8,16 +7,16 @@
   import Final from "./Final.svelte";
   import Resubmission from "./Resubmission.svelte";
   import Success from "./Success.svelte";
-  import { State, type ObjectValues } from "../types";
+  import {type ObjectValues, State} from "@/types";
   import Welcome from "./Welcome.svelte";
-  import { initWorkflowContext } from "../utils";
+  import {initWorkflowContext} from "@/utils";
+  import DocumentReview from "./DocumentReview.svelte";
 
   const Step = {
     WELCOME: Welcome,
     DOCUMENT_SELECTION: DocumentSelection,
     DOCUMENT_PHOTO: DocumentPhoto,
-    DOCUMENT_PHOTO_BACK: DocumentPhoto,
-    DOCUMENT_SELECTION_BACK: DocumentSelection,
+    DOCUMENT_REVIEW: DocumentReview,
     FINAL: Final,
     ERROR: ErrorComponent,
     SUCCESS: Success,

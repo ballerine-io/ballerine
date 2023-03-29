@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { ZodSchema } from 'zod';
-  import type { TOnPrev } from '../types';
-  import type { createZodForm } from '../utils';
+  import type {ZodSchema} from 'zod';
+  import type {TOnPrev} from '@/types';
+  import type {createZodForm} from '@/utils';
 
   export let onPrev: TOnPrev<ZodSchema> | undefined = undefined;
   export let zodForm: ReturnType<typeof createZodForm>;

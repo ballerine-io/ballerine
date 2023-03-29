@@ -19,10 +19,7 @@ describe('Testing the basicStrategyBase.validate()', () => {
   });
   it('should return the user', async () => {
     //ACT
-    const result = await basicStrategy.validate(
-      TEST_USER.username,
-      TEST_PASSWORD,
-    );
+    const result = await basicStrategy.validate(TEST_USER.username, TEST_PASSWORD);
     //ASSERT
     expect(result).toBe(TEST_USER);
   });
