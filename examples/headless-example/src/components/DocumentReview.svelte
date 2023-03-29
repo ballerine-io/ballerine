@@ -5,17 +5,23 @@
   import type {TOnPrev, TOnSubmit} from "@/types";
   import Form from "@/components/Form.svelte";
 
-  const schema = z.any({});
+  const schema = z.object({});
 
+  const workflowService = getWorkflowContext();
+  const context = workflowService.getSnapshot?.()?.context;
   export let initialValues: z.infer<typeof schema>;
   export let onSubmit: TOnSubmit<typeof schema>;
   export let onPrev: TOnPrev<typeof schema>;
 
-  const workflowService = getWorkflowContext();
-  const context = workflowService.getSnapshot?.()?.context;
   const zodForm = createZodForm(schema, {
     initialValues,
-    onSubmit,
+    onSubmit(data, ctx) {
+      const documentOne = workflowService.getSnapshot?.()?.context?.documentOne;
+
+      return onSubmit({
+        documentOne
+      }, ctx);
+    },
   });
   let image: string;
 
@@ -32,5 +38,4 @@
 
 <Form {zodForm} {onPrev} submitText="Submit">
     <legend>DocumentReview</legend>
-
 </Form>

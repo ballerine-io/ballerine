@@ -21,6 +21,7 @@ import { DialogTrigger } from 'components/organisms/Dialog/Dialog.Trigger';
 import { DialogTitle } from 'components/organisms/Dialog/Dialog.Title';
 import { DialogDescription } from 'components/organisms/Dialog/Dialog.Description';
 import { DialogHeader } from 'components/organisms/Dialog/Dialog.Header';
+import { DialogClose } from '@radix-ui/react-dialog';
 
 /**
  * @description To be used by {@link Subject}. Displays the end user's full name, avatar, and handles the reject/approve mutation.
@@ -142,16 +143,18 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                 </div>
               </div>
               <DialogFooter>
-                <button
-                  className={ctw(`btn-error btn justify-center`)}
-                  onClick={onMutateRejectEndUser({
-                    action: Action.RESUBMIT,
-                    resubmissionReason,
-                  })}
-                  disabled={!resubmissionReason}
-                >
-                  Confirm
-                </button>
+                <DialogClose asChild>
+                  <button
+                    className={ctw(`btn-error btn justify-center`)}
+                    onClick={onMutateRejectEndUser({
+                      action: Action.RESUBMIT,
+                      resubmissionReason,
+                    })}
+                    disabled={!resubmissionReason}
+                  >
+                    Confirm
+                  </button>
+                </DialogClose>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -182,7 +185,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-          <div className="dropdown-hover dropdown dropdown-bottom dropdown-end">
+          <div className="dropdown-hover dropdown-bottom dropdown-end dropdown">
             <EllipsisButton tabIndex={0} />
             <ul
               className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
