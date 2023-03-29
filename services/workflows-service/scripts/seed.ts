@@ -136,6 +136,10 @@ async function seed(bcryptSalt: Salt) {
       },
       persistStates: [
         {
+          state: 'document_review',
+          persistence: 'BACKEND',
+        },
+        {
           state: 'document_selection',
           persistence: 'BACKEND',
         },

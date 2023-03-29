@@ -77,6 +77,11 @@
   const createWorkflowsQuery = (options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {}) => createQuery({
     queryKey: [{}],
     queryFn: fetchWorkflows,
+    refetchInterval() {
+      if ($endUserQuery?.data?.state !== "PROCESSING") return false;
+
+      return parseInt(import.meta.env.VITE_POOLING_TIME as string) * 1000 || false;
+    },
     ...options
   })
   const createIntentQuery = () => createQuery({
@@ -107,6 +112,11 @@
 
       return makeWorkflow(data);
     },
+    refetchInterval() {
+      if ($endUserQuery?.data?.state !== "PROCESSING") return false;
+
+      return parseInt(import.meta.env.VITE_POOLING_TIME as string) * 1000 || false;
+    }
   });
   const queryClient = useQueryClient();
   const createSignUpMutation = () => createMutation({
@@ -119,7 +129,7 @@
   })
   $: endUserQuery = createEndUserQuery(noAuthUserId);
   const firstWorkflowQuery = createFirstWorkflowQuery();
-  $: workflowQuery = createWorkflowQuery($firstWorkflowQuery.data?.workflowRuntimeData?.id);
+  $: workflowQuery = createWorkflowQuery($firstWorkflowQuery?.data?.workflowRuntimeData?.id);
   const intentQuery = createIntentQuery();
 
   const signUpMutation = createSignUpMutation();
@@ -138,8 +148,8 @@
   const workflow = writable<WorkflowOptionsBrowser | undefined>();
 
   $: {
-    if ($endUserQuery.data?.id && ($workflowQuery.data?.id || $intentQuery.data?.id)) {
-      workflow.set($workflowQuery.data || $intentQuery.data)
+    if ($endUserQuery?.data?.id && ($workflowQuery?.data?.id || $intentQuery?.data?.id)) {
+      workflow.set($workflowQuery?.data || $intentQuery?.data)
     } else {
       workflow.set(undefined)
     }
@@ -147,7 +157,7 @@
 
 </script>
 
-{#if $endUserQuery.data?.id}
+{#if $endUserQuery?.data?.id}
   <div>
     <div>
       <h4>{$endUserQuery?.data?.firstName ?? ''} {$endUserQuery?.data?.lastName ?? ''}</h4>
@@ -155,18 +165,18 @@
     </div>
     <ul>
       <li>
-        State: {$endUserQuery?.data?.id ? $endUserQuery.data?.state ?? 'NEW' : ''}</li>
+        State: {$endUserQuery?.data?.id ? $endUserQuery?.data?.state ?? 'NEW' : ''}</li>
     </ul>
   </div>
 {/if}
 
-{#if !$endUserQuery.data?.id}
+{#if !$endUserQuery?.data?.id}
   <SignUp {onSubmit}/>
 {/if}
 {#if $workflow}
   <Workflow workflow={$workflow}/>
 {/if}
 {#if !$workflow}
-  <button disabled={!$endUserQuery.data?.id} on:click={$intentQuery.refetch}>KYC
+  <button disabled={!$endUserQuery?.data?.id} on:click={$intentQuery.refetch}>KYC
   </button>
 {/if}
