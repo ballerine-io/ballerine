@@ -1,9 +1,9 @@
 import { FunctionComponent } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { XMarkSvg } from 'components/atoms/icons';
-import { IModalProps } from 'components/organisms/Modal/interfaces';
+import { XMarkSvg } from '@/components/atoms/icons';
+import { IModalProps } from '@/components/organisms/Modal/interfaces';
 import { ctw } from '@/utils/ctw/ctw';
-import { MotionScrollArea } from 'components/molecules/MotionScrollArea/MotionScrollArea';
+import { MotionScrollArea } from '@/components/molecules/MotionScrollArea/MotionScrollArea';
 
 /**
  *
@@ -41,7 +41,7 @@ export const Modal: FunctionComponent<IModalProps> = ({
             <Dialog.Content className={ctw(`modal-box w-full max-w-7xl`, className)} {...props}>
               <div className={`flex justify-end`}>
                 <Dialog.Close
-                  className={`btn-ghost btn-sm btn-square  btn mb-4 focus:outline-primary`}
+                  className={`btn-ghost btn-square btn-sm  btn mb-4 focus:outline-primary`}
                   aria-label={`Close`}
                 >
                   <XMarkSvg />

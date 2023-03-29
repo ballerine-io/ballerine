@@ -1,4 +1,4 @@
-import { AnyArray } from "@/types";
+import { AnyArray } from '@/types';
 
 export const filter = <TArray extends AnyArray>({
   data,

@@ -1,8 +1,8 @@
 import { FunctionComponent } from 'react';
 import * as ScrollArea from '@radix-ui/react-scroll-area';
-import { IMotionScrollAreaChildren } from 'components/molecules/MotionScrollArea/interfaces';
-import { Root } from 'components/molecules/MotionScrollArea/MotionScrollArea.Root';
-import { TMotionScrollAreaProps } from 'components/molecules/MotionScrollArea/types';
+import { IMotionScrollAreaChildren } from '@/components/molecules/MotionScrollArea/interfaces';
+import { Root } from '@/components/molecules/MotionScrollArea/MotionScrollArea.Root';
+import { TMotionScrollAreaProps } from '@/components/molecules/MotionScrollArea/types';
 import { ctw } from '@/utils/ctw/ctw';
 
 export const MotionScrollArea: FunctionComponent<TMotionScrollAreaProps> &

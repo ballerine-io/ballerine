@@ -1,11 +1,11 @@
-import { useCrop } from 'hooks/useCrop/useCrop';
+import { useCrop } from '@/hooks/useCrop/useCrop';
 import { useCallback, useRef } from 'react';
-import { useTesseract } from 'hooks/useTesseract/useTesseract';
-import { IDocumentsProps } from 'components/organisms/Subject/interfaces';
+import { useTesseract } from '@/hooks/useTesseract/useTesseract';
+import { IDocumentsProps } from '@/components/organisms/Subject/interfaces';
 import { createArrayOfNumbers } from '@/utils/create-array-of-numbers/create-array-of-numbers';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { useToggle } from 'hooks/useToggle/useToggle';
+import { useToggle } from '@/hooks/useToggle/useToggle';
 
 export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const initialImage = documents?.[0]?.imageUrl ?? '';

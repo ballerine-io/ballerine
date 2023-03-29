@@ -1,4 +1,4 @@
-import { Avatar } from 'components/atoms/Avatar';
+import { Avatar } from '@/components/atoms/Avatar';
 import { FunctionComponent } from 'react';
 import { ctw } from '@/utils/ctw/ctw';
 

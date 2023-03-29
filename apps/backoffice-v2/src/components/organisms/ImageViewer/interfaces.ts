@@ -5,7 +5,7 @@ import { List } from './ImageViewer.List';
 import { ZoomModal } from './ImageViewer.ZoomModal';
 import { ButtonComponent, DivComponent } from '@/types';
 import { ZoomButton } from './ImageViewer.ZoomButton';
-import { SkeletonItem } from 'components/organisms/ImageViewer/ImageViewer.SkeletonItem';
+import { SkeletonItem } from '@/components/organisms/ImageViewer/ImageViewer.SkeletonItem';
 
 export interface IZoomModalProps extends DivComponent {
   imageProps?: Omit<ComponentPropsWithRef<'img'>, 'src'>;

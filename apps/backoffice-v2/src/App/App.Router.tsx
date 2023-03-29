@@ -1,16 +1,14 @@
-import { ReactRouter, RouterProvider } from "@tanstack/react-router";
-import React, { FunctionComponent } from "react";
-import { rootRoute } from "components/pages/Root/Root.route";
-import { caseManagementRoute } from "components/pages/CaseManagement/CaseManagement.route";
-import {
-  caseManagementIndexRoute
-} from "components/pages/CaseManagement/CaseManagementIndex.route";
-import { individualsRoute } from "components/pages/Individuals/Individuals.route";
-import { individualRoute } from "components/pages/Individual/Individual.route";
-import { rootIndexRoute } from "components/pages/Root/RootIndex.route";
-import { signInRoute } from "components/pages/SignIn/SignIn.route";
-import { individualsIndexRoute } from "components/pages/Individuals/IndividualsIndex.route";
-import { env } from "@/env/env";
+import { ReactRouter, RouterProvider } from '@tanstack/react-router';
+import React, { FunctionComponent } from 'react';
+import { rootRoute } from '@/components/pages/Root/Root.route';
+import { caseManagementRoute } from '@/components/pages/CaseManagement/CaseManagement.route';
+import { caseManagementIndexRoute } from '@/components/pages/CaseManagement/CaseManagementIndex.route';
+import { individualsRoute } from '@/components/pages/Individuals/Individuals.route';
+import { individualRoute } from '@/components/pages/Individual/Individual.route';
+import { rootIndexRoute } from '@/components/pages/Root/RootIndex.route';
+import { signInRoute } from '@/components/pages/SignIn/SignIn.route';
+import { individualsIndexRoute } from '@/components/pages/Individuals/IndividualsIndex.route';
+import { env } from '@/env/env';
 
 declare module '@tanstack/react-router' {
   interface Register {

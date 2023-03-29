@@ -1,5 +1,5 @@
 import { useSearch } from '@tanstack/react-router';
-import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
+import { useDocumentListener } from '@/hooks/useDocumentListener/useDocumentListener';
 import { useCallback, useRef } from 'react';
 
 export const useSubjectsList = () => {

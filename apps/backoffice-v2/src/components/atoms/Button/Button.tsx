@@ -16,7 +16,15 @@ export const buttonVariants = cva(
         ghost:
           'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-100 dark:hover:text-slate-100 data-[state=open]:bg-transparent dark:data-[state=open]:bg-transparent',
         link: 'bg-transparent dark:bg-transparent underline-offset-4 hover:underline text-slate-900 dark:text-slate-100 hover:bg-transparent dark:hover:bg-transparent',
-        square: 'bg-slate-900 text-white hover:bg-slate-700 dark:bg-slate-50 dark:text-slate-900',
+      },
+      fullWidth: {
+        true: 'w-full',
+      },
+      circle: {
+        true: 'rounded-full !p-3',
+      },
+      square: {
+        true: '!p-3',
       },
       size: {
         default: 'h-10 py-2 px-4',
@@ -27,22 +35,40 @@ export const buttonVariants = cva(
     defaultVariants: {
       variant: 'default',
       size: 'default',
+      fullWidth: false,
+      circle: false,
+      square: false,
     },
     compoundVariants: [
       {
-        variant: 'square',
+        circle: true,
         size: 'default',
-        className: 'w-10 py-4',
+        className: 'w-10',
       },
       {
-        variant: 'square',
+        circle: true,
         size: 'sm',
-        className: 'w-9 py-2',
+        className: 'w-9',
       },
       {
-        variant: 'square',
+        circle: true,
         size: 'lg',
-        className: 'w-11 py-8',
+        className: 'w-11',
+      },
+      {
+        square: true,
+        size: 'default',
+        className: 'w-10',
+      },
+      {
+        square: true,
+        size: 'sm',
+        className: 'w-9',
+      },
+      {
+        square: true,
+        size: 'lg',
+        className: 'w-11',
       },
     ],
   },
@@ -50,17 +76,13 @@ export const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  fullWidth?: boolean;
-}
+    VariantProps<typeof buttonVariants> {}
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, fullWidth, size, ...props }, ref) => {
+  ({ className, square, circle, fullWidth, variant, size, ...props }, ref) => {
     return (
       <button
-        className={ctw(buttonVariants({ variant, size, className }), {
-          'w-full': fullWidth,
-        })}
+        className={ctw(buttonVariants({ square, circle, fullWidth, variant, size }), className)}
         ref={ref}
         {...props}
       />

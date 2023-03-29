@@ -1,4 +1,4 @@
-import { ISignInProps } from "@/lib/react-query/mutations/useSignInMutation/interfaces";
+import { ISignInProps } from '@/lib/react-query/mutations/useSignInMutation/interfaces';
 
 export const auth = {
   // signIn: async ({ callbackUrl, provider }: ISignInProps) => {

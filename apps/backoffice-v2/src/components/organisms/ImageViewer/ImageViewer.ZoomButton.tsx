@@ -1,23 +1,27 @@
-import { FunctionComponent } from 'react';
-import { ButtonComponent } from '@/types';
-import { useZoomButton } from 'components/organisms/ImageViewer/hooks/useZoomButton/useZoomButton';
-import { ctw } from '@/utils/ctw/ctw';
-import { MagnifyingGlassSvg } from 'components/atoms/icons';
+import { FunctionComponent } from "react";
+import {
+  useZoomButton
+} from "@/components/organisms/ImageViewer/hooks/useZoomButton/useZoomButton";
+import { ctw } from "@/utils/ctw/ctw";
+import { ZoomIn } from "lucide-react";
+import { Button, ButtonProps } from "@/components/atoms/Button";
 
-export const ZoomButton: FunctionComponent<ButtonComponent> = ({ className, ...props }) => {
+export const ZoomButton: FunctionComponent<ButtonProps> = ({ className, ...props }) => {
   const { onToggleOnIsZoomModalOpen } = useZoomButton();
 
   return (
-    <button
+    <Button
+      circle
+      variant={'ghost'}
       onClick={onToggleOnIsZoomModalOpen}
       aria-label={'Open zoomed selected image modal'}
       className={ctw(
-        `btn-ghost btn-sm btn-circle btn grid place-content-center bg-base-300/70 focus:outline-primary`,
+        `bg-base-300/70 !p-2`,
         className,
       )}
       {...props}
     >
-      <MagnifyingGlassSvg className={`p-0.5`} />
-    </button>
+      <ZoomIn />
+    </Button>
   );
 };

@@ -1,18 +1,17 @@
-import { FunctionComponent } from 'react';
-import { PrimaryButton } from 'components/atoms/PrimaryButton/PrimaryButton';
-import { EllipsisSvg } from 'components/atoms/icons';
-import { ButtonComponent } from '@/types';
-import { ctw } from '@/utils/ctw/ctw';
+import React, { FunctionComponent } from "react";
+import { Button, ButtonProps } from "@/components/atoms/Button";
+import { MoreVertical } from "lucide-react";
 
 /**
- * @description Wraps {@link EllipsisSvg} with a {@link PrimaryButton} component and applies default styling.
+ * @description Wraps {@link MoreVertical} with a {@link Button} component and applies default
+ * styling.
  * @param props
  * @constructor
  */
-export const EllipsisButton: FunctionComponent<ButtonComponent> = ({ className, ...props }) => {
+export const EllipsisButton: FunctionComponent<ButtonProps> = props => {
   return (
-    <button className={ctw(`btn-square btn focus:outline-primary`, className)} {...props}>
-      <EllipsisSvg />
-    </button>
+    <Button size={`lg`} variant={`default`} square {...props}>
+      <MoreVertical />
+    </Button>
   );
 };

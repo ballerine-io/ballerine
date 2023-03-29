@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react';
-import { useFaceComparison } from 'hooks/useFaceComparison/useFaceComparison';
+import { useFaceComparison } from '@/hooks/useFaceComparison/useFaceComparison';
 import { useParams } from '@tanstack/react-router';
 
 export const useFaceMatch = (isLoading?: boolean) => {

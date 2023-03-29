@@ -1,10 +1,10 @@
 import { FunctionComponent, PropsWithChildren } from 'react';
-import { Actions } from 'components/organisms/Subject/Subject.Actions';
-import { Documents } from 'components/organisms/Subject/Subject.Documents';
-import { Info } from 'components/organisms/Subject/Subject.Info';
-import { Content } from 'components/organisms/Subject/Subject.Content';
-import { ISubjectChildren } from 'components/organisms/Subject/interfaces';
-import { FaceMatch } from 'components/organisms/Subject/Subject.FaceMatch';
+import { Actions } from '@/components/organisms/Subject/Subject.Actions';
+import { Documents } from '@/components/organisms/Subject/Subject.Documents';
+import { Info } from '@/components/organisms/Subject/Subject.Info';
+import { Content } from '@/components/organisms/Subject/Subject.Content';
+import { ISubjectChildren } from '@/components/organisms/Subject/interfaces';
+import { FaceMatch } from '@/components/organisms/Subject/Subject.FaceMatch';
 
 /**
  * @description A component which handles a single end user's reject/approve mutation, and displays the user's information and documents.

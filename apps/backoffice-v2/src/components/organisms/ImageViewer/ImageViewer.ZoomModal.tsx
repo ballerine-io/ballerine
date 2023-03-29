@@ -1,8 +1,8 @@
 import { FunctionComponent } from 'react';
 import { useImageViewerContext } from './hooks/useImageViewerContext/useImageViewerContext';
 import { IZoomModalProps } from './interfaces';
-import { Modal } from 'components/organisms/Modal/Modal';
-import { BallerineImage } from 'components/atoms/BallerineImage';
+import { Modal } from '@/components/organisms/Modal/Modal';
+import { BallerineImage } from '@/components/atoms/BallerineImage';
 import { ctw } from '@/utils/ctw/ctw';
 
 /**

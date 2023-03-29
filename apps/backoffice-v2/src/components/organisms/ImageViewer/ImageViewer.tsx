@@ -6,7 +6,7 @@ import { Item } from './ImageViewer.Item';
 import { ZoomModal } from './ImageViewer.ZoomModal';
 import { Provider } from './context';
 import { ZoomButton } from './ImageViewer.ZoomButton';
-import { SkeletonItem } from 'components/organisms/ImageViewer/ImageViewer.SkeletonItem';
+import { SkeletonItem } from '@/components/organisms/ImageViewer/ImageViewer.SkeletonItem';
 import { ctw } from '@/utils/ctw/ctw';
 
 /**

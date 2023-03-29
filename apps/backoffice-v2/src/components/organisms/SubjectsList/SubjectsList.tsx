@@ -1,15 +1,17 @@
 import { FunctionComponent } from 'react';
-import { FilterSvg, MagnifyingGlassSvg, SortSvg } from 'components/atoms/icons';
+import { FilterSvg, SortSvg } from '@/components/atoms/icons';
 import { Item } from './SubjectsList.Item';
 import { List } from './SubjectsList.List';
 import {
   ISubjectsListChildren,
   ISubjectsListProps,
-} from 'components/organisms/SubjectsList/interfaces';
-import { Checkbox } from 'components/atoms/Checkbox/Checkbox';
-import { useSubjectsList } from 'components/organisms/SubjectsList/hooks/useSubjectsList/useSubjectsList';
+} from '@/components/organisms/SubjectsList/interfaces';
+import { Checkbox } from '@/components/atoms/Checkbox/Checkbox';
+import { useSubjectsList } from '@/components/organisms/SubjectsList/hooks/useSubjectsList/useSubjectsList';
 import { TEndUser } from '@/api/types';
-import { SkeletonItem } from 'components/organisms/SubjectsList/SubjectsList.SkeletonItem';
+import { SkeletonItem } from '@/components/organisms/SubjectsList/SubjectsList.SkeletonItem';
+import { Button } from '@/components/atoms/Button';
+import { Search } from 'lucide-react';
 
 /**
  * @description A vertical sidebar for the subjects list, with search, filter, and sort.
@@ -61,7 +63,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
         <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60">
           <div className="input-group">
             <div className={`btn-ghost btn-square btn pointer-events-none`}>
-              <MagnifyingGlassSvg className={`!d-5`} />
+              <Search />
             </div>
             <input
               type="text"
@@ -74,16 +76,17 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
           </div>
         </div>
         <div className={`flex items-center justify-between`}>
-          <div className="dropdown-hover dropdown dropdown-bottom">
-            <button
-              className={`btn-ghost btn-sm btn h-[2.125rem] gap-2 border-neutral/10 text-xs focus-visible:outline-primary theme-dark:border-neutral/50`}
+          <div className="dropdown-hover dropdown-bottom dropdown">
+            <Button
+              variant={`outline`}
+              size={`sm`}
               tabIndex={0}
               ref={filterRef}
               onMouseEnter={handleDropdown}
             >
-              <FilterSvg className={`!d-4`} />
+              <FilterSvg className={`me-2`} />
               Filter
-            </button>
+            </Button>
             <div
               className={`dropdown-content space-y-2 rounded-md  border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
             >
@@ -120,13 +123,16 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
             className={`form-control rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60`}
           >
             <div className={`input-group flex items-center`}>
-              <button
-                className={`btn-ghost btn-sm btn-square btn !rounded-md focus-visible:border-none focus-visible:bg-neutral/10 focus-visible:outline-none focus-visible:ring-0 focus-visible:theme-dark:bg-neutral`}
+              <Button
+                variant={`ghost`}
+                square
+                size={`sm`}
+                className={`!rounded-md focus-visible:border-none focus-visible:bg-neutral/10 focus-visible:outline-none focus-visible:ring-0 focus-visible:theme-dark:bg-neutral`}
                 onClick={onSortDir}
                 ref={sortRef}
               >
                 <SortSvg />
-              </button>
+              </Button>
               <select
                 className={`select-bordered select select-sm !border-0 text-xs leading-snug !outline-none !ring-0`}
                 onChange={onSortBy}

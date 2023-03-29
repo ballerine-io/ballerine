@@ -35,8 +35,8 @@ export const BottomActions = () => {
 
   return (
     <div className={`mt-auto flex flex-col space-y-4`}>
-      <div className="dropdown-hover dropdown-top dropdown">
-        <Button tabIndex={0} variant={'ghost'} className={`w-full justify-start`}>
+      <div className="dropdown-hover dropdown dropdown-top">
+        <Button tabIndex={0} variant={'ghost'} className={`justify-start`} fullWidth>
           <Cog className={`me-2`} /> Settings
         </Button>
         <ul
@@ -46,28 +46,30 @@ export const BottomActions = () => {
             <span>Theme</span>
           </li>
           <li>
-            <button
+            <Button
+              variant={`ghost`}
               className={ctw({
-                active: theme === `dark`,
+                'bg-primary text-base-100': theme === `dark`,
               })}
               onClick={onThemeChange(`dark`)}
             >
               Dark
-            </button>
+            </Button>
           </li>
           <li>
-            <button
+            <Button
+              variant={`ghost`}
               className={ctw({
-                active: theme === `light`,
+                'bg-primary text-base-100': theme === `light`,
               })}
               onClick={onThemeChange(`light`)}
             >
               Light
-            </button>
+            </Button>
           </li>
         </ul>
       </div>
-      <Button variant={'ghost'} className={`justify-start`} onClick={onSignOut}>
+      <Button variant={'ghost'} className={`justify-start`} onClick={onSignOut} fullWidth>
         <LogOut className={`me-2`} /> Log out
       </Button>
       <span className={`label-text-alt self-end`}>{`v${packageJson.version}`}</span>

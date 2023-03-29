@@ -1,7 +1,8 @@
-import { FunctionComponent } from 'react';
-import { ChevronLeftSvg, ChevronRightSvg } from 'components/atoms/icons';
-import { ctw } from '@/utils/ctw/ctw';
-import { IPaginationProps } from 'components/organisms/Pagination/interfaces';
+import { FunctionComponent } from "react";
+import { ctw } from "@/utils/ctw/ctw";
+import { IPaginationProps } from "@/components/organisms/Pagination/interfaces";
+import { Button } from "@/components/atoms/Button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const Pagination: FunctionComponent<IPaginationProps> = ({
   onPaginate,
@@ -11,33 +12,34 @@ export const Pagination: FunctionComponent<IPaginationProps> = ({
 }) => {
   return (
     <nav className={`btn-group flex justify-center`}>
-      <button
-        className={'btn focus:outline-primary'}
+      <Button
+        variant={'default'}
         onClick={onPaginate(page - 1)}
         disabled={page === 1}
       >
-        <ChevronLeftSvg />
-      </button>
+        <ChevronLeft />
+      </Button>
 
       {pages?.map(num => (
-        <button
+        <Button
+          variant={'default'}
           onClick={onPaginate(num)}
-          className={ctw('btn focus:outline-primary', {
-            'btn-active': num === page,
+          className={ctw({
+            'bg-primary': num === page,
           })}
           key={`pagination-item-${num}`}
         >
           {num}
-        </button>
+        </Button>
       ))}
 
-      <button
-        className={'btn focus:outline-primary'}
+      <Button
+        variant={'default'}
         onClick={onPaginate(page + 1)}
         disabled={page === totalPages}
       >
-        <ChevronRightSvg />
-      </button>
+        <ChevronRight />
+      </Button>
     </nav>
   );
 };

@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { IWarningAlertProps } from './interfaces';
-import { WarningSvg } from 'components/atoms/icons';
+import { WarningSvg } from '@/components/atoms/icons';
 import { ctw } from '@/utils/ctw/ctw';
 
 /**
