@@ -1,6 +1,6 @@
 import { TImageViewerState } from './types';
 import { createContext, FunctionComponent, PropsWithChildren, useCallback, useState } from 'react';
-import { useToggle } from 'hooks/useToggle/useToggle';
+import { useToggle } from '@/hooks/useToggle/useToggle';
 
 /**
  * When context is undefined we know that we are outside the provider.

@@ -1,9 +1,9 @@
-import { isErrorWithMessage, isObject } from "@ballerine/common";
-import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
-import { t } from "i18next";
-import toast from "react-hot-toast";
-import { IGlobalToastContext } from "@/interfaces";
-import { isZodError } from "@/utils/is-zod-error/is-zod-error";
+import { isErrorWithMessage, isObject } from '@ballerine/common';
+import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
+import { t } from 'i18next';
+import toast from 'react-hot-toast';
+import { IGlobalToastContext } from '@/interfaces';
+import { isZodError } from '@/utils/is-zod-error/is-zod-error';
 
 // TODO: Add i18n plurals
 // TODO: Make accessing translations typesafe (json properties)

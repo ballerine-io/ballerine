@@ -1,18 +1,19 @@
-import { isNullish } from '@ballerine/common';
-import { WarningAlert } from 'components/atoms/WarningAlert';
-import { DataField } from 'components/molecules/DataField/DataField';
-import { DetailsGrid } from 'components/molecules/DetailsGrid/DetailsGrid';
-import { Modal } from 'components/organisms/Modal/Modal';
-import { IInfoProps } from 'components/organisms/Subject/interfaces';
-import { useToggle } from 'hooks/useToggle/useToggle';
-import { FunctionComponent, useCallback, useState } from 'react';
-import { State } from '@/enums';
-import { camelCaseToSpace } from '@/utils/camel-case-to-space/camel-case-to-space';
-import { createArrayOfNumbers } from '@/utils/create-array-of-numbers/create-array-of-numbers';
-import { ctw } from '@/utils/ctw/ctw';
-import { formatDate } from '@/utils/format-date';
-import { isValidDate } from '@/utils/is-valid-date';
-import { toStartCase } from '@/utils/to-start-case/to-start-case';
+import { isNullish } from "@ballerine/common";
+import { WarningAlert } from "@/components/atoms/WarningAlert";
+import { DataField } from "@/components/molecules/DataField/DataField";
+import { DetailsGrid } from "@/components/molecules/DetailsGrid/DetailsGrid";
+import { Modal } from "@/components/organisms/Modal/Modal";
+import { IInfoProps } from "@/components/organisms/Subject/interfaces";
+import { useToggle } from "@/hooks/useToggle/useToggle";
+import { FunctionComponent, useCallback, useState } from "react";
+import { State } from "@/enums";
+import { camelCaseToSpace } from "@/utils/camel-case-to-space/camel-case-to-space";
+import { createArrayOfNumbers } from "@/utils/create-array-of-numbers/create-array-of-numbers";
+import { ctw } from "@/utils/ctw/ctw";
+import { formatDate } from "@/utils/format-date";
+import { isValidDate } from "@/utils/is-valid-date";
+import { toStartCase } from "@/utils/to-start-case/to-start-case";
+import { Button } from "@/components/atoms/Button";
 
 export const useInfo = ({
   whitelist = [],
@@ -131,9 +132,9 @@ export const Info: FunctionComponent<IInfoProps> = ({ info, whitelist, isLoading
                   >
                     <div className={`flex w-full justify-between`}>
                       OCR & Given details mismatch
-                      <button className={`link-hover link rounded-md p-1`} onClick={onOcrMismatch}>
+                      <Button variant={`link`} onClick={onOcrMismatch}>
                         Resolve
-                      </button>
+                      </Button>
                     </div>
                   </WarningAlert>
                 )
@@ -176,12 +177,12 @@ export const Info: FunctionComponent<IInfoProps> = ({ info, whitelist, isLoading
                           </code>
                         </pre>
                       </Modal>
-                      <button
-                        className={`link-hover link-primary link rounded-md`}
+                      <Button
+                        variant={`link`}
                         onClick={onToggleOnIsViewFullReportOpen}
                       >
                         View full report
-                      </button>
+                      </Button>
                     </>
                   );
                 }

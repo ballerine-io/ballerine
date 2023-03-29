@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
 import { Logo } from './Header.Logo';
 import { Navbar } from './Header.Navbar';
-import { BottomActions } from 'components/organisms/Header/Header.BottomActions';
+import { BottomActions } from '@/components/organisms/Header/Header.BottomActions';
 
 /**
  * @description A header element wrapper for the {@link Logo}, {@link Navbar}, and {@link BottomActions} (Settings and Log out).

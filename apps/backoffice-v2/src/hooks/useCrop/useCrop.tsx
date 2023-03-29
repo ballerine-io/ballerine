@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Crop } from 'react-image-crop';
-import { useToggle } from 'hooks/useToggle/useToggle';
-import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
+import { useToggle } from '@/hooks/useToggle/useToggle';
+import { useDocumentListener } from '@/hooks/useDocumentListener/useDocumentListener';
 
 export const useCrop = () => {
   const [crop, setCrop] = useState<Crop>();

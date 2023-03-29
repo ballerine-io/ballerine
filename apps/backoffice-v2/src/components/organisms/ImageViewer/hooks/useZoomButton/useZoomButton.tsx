@@ -1,4 +1,4 @@
-import { useImageViewerContext } from 'components/organisms/ImageViewer/hooks/useImageViewerContext/useImageViewerContext';
+import { useImageViewerContext } from '@/components/organisms/ImageViewer/hooks/useImageViewerContext/useImageViewerContext';
 import { useCallback } from 'react';
 
 export const useZoomButton = () => {

@@ -1,5 +1,5 @@
 import { Provider } from './context';
-import { IGroupProps } from 'components/atoms/Checkbox/interfaces';
+import { IGroupProps } from '@/components/atoms/Checkbox/interfaces';
 import { FunctionComponentWithChildren } from '@/types';
 import { ctw } from '@/utils/ctw/ctw';
 

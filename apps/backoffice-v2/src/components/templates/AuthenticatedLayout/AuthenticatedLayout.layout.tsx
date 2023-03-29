@@ -1,4 +1,4 @@
-import { Header } from 'components/organisms/Header';
+import { Header } from '@/components/organisms/Header';
 import { FunctionComponentWithChildren } from '@/types';
 
 export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {

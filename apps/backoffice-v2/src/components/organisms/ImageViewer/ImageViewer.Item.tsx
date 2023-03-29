@@ -1,9 +1,9 @@
 import { FunctionComponent } from 'react';
 import { IItemProps } from './interfaces';
 import { useImageViewerContext } from './hooks/useImageViewerContext/useImageViewerContext';
-import { BallerineImage } from 'components/atoms/BallerineImage';
-import { PrimaryButton } from 'components/atoms/PrimaryButton/PrimaryButton';
+import { BallerineImage } from '@/components/atoms/BallerineImage';
 import { ctw } from '@/utils/ctw/ctw';
+import { Button } from '@/components/atoms/Button';
 
 /**
  * @description To be used by {@link ImageViewer}, and be wrapped by {@link ImageViewer.List}. Uses an li element with default styling to display a single image which sets the selected image on click.
@@ -35,7 +35,7 @@ export const Item: FunctionComponent<IItemProps> = ({
 
   return (
     <li className={ctw(`flex justify-center`, className)} {...rest}>
-      <PrimaryButton
+      <Button
         className={ctw(
           `group flex-col space-y-2  hover:bg-transparent focus-visible:!ring-0 active:!ring-0`,
           buttonClassName,
@@ -63,7 +63,7 @@ export const Item: FunctionComponent<IItemProps> = ({
           />
         </div>
         <span className={`capitalize`}>{caption}</span>
-      </PrimaryButton>
+      </Button>
     </li>
   );
 };

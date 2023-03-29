@@ -1,7 +1,7 @@
 import { forwardRef, ReactEventHandler, useCallback, useEffect, useState } from 'react';
 import { IBallerineImageProps } from './interfaces';
 import { isFunction } from '@ballerine/common';
-import { PhotoSvg } from 'components/atoms/icons';
+import { PhotoSvg } from '@/components/atoms/icons';
 import { ctw } from '@/utils/ctw/ctw';
 
 /**

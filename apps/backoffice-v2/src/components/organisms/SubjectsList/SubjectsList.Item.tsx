@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion';
 import { FunctionComponent } from 'react';
 import { getTimePastFromNow } from '@/utils/get-time-past-from-now';
-import { Avatar } from 'components/atoms/Avatar';
-import { ApprovedSvg, RejectedSvg } from 'components/atoms/icons';
-import { IItemProps } from 'components/organisms/Subject/interfaces';
+import { Avatar } from '@/components/atoms/Avatar';
+import { ApprovedSvg, RejectedSvg } from '@/components/atoms/icons';
+import { IItemProps } from '@/components/organisms/Subject/interfaces';
 import { Link } from '@tanstack/react-router';
 import { createInitials } from '@/utils/create-initials/create-initials';
 import { ctw } from '@/utils/ctw/ctw';
-import { useEllipsesWithTitle } from 'hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { useEllipsesWithTitle } from '@/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 
 /**
  * @description To be used by {@link SubjectsList}, and be wrapped by {@link SubjectsList.List}. Uses an li element with default styling to display a single subject's data. Navigates to the selected end user on click by setting the end user id into the path param.

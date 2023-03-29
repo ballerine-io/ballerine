@@ -1,11 +1,13 @@
-import 'react-image-crop/dist/ReactCrop.css';
-import { FunctionComponent } from 'react';
-import { ImageViewer } from 'components/organisms/ImageViewer/ImageViewer';
-import { IDocumentsProps } from 'components/organisms/Subject/interfaces';
-import ReactCrop from 'react-image-crop';
-import { CheckSvg, XMarkSvg } from 'components/atoms/icons';
-import { useDocuments } from 'components/organisms/Subject/hooks/useDocuments/useDocuments';
-import { ctw } from '@/utils/ctw/ctw';
+import "react-image-crop/dist/ReactCrop.css";
+import { FunctionComponent } from "react";
+import { ImageViewer } from "@/components/organisms/ImageViewer/ImageViewer";
+import { IDocumentsProps } from "@/components/organisms/Subject/interfaces";
+import ReactCrop from "react-image-crop";
+import { XMarkSvg } from "@/components/atoms/icons";
+import { useDocuments } from "@/components/organisms/Subject/hooks/useDocuments/useDocuments";
+import { ctw } from "@/utils/ctw/ctw";
+import { Button } from "@/components/atoms/Button";
+import { Check } from "lucide-react";
 
 /**
  * @description To be used by {@link Subject}, and be wrapped by {@link Subject.Content}. Displays a single end user's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
@@ -45,29 +47,27 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
             />
           </ReactCrop>
           <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
-            <button
-              className={ctw(
-                'btn-ghost btn-sm btn-circle btn bg-base-300/70 focus:outline-primary',
-                {
-                  hidden: !isCropping,
-                },
-              )}
+            <Button
+              variant={`ghost`}
+              circle
+              className={ctw(`bg-base-300/70`, {
+                hidden: !isCropping,
+              })}
               onClick={onCancelCrop}
             >
               <XMarkSvg className={`p-0.5`} />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant={`ghost`}
+              circle
               type={`button`}
-              className={ctw(
-                `btn-ghost btn-sm btn-circle btn bg-base-300/70 text-[0.688rem] focus:outline-primary`,
-                { loading: isLoadingOCR },
-              )}
+              className={ctw(`bg-base-300/70 text-[0.688rem] !p-2`, { loading: isLoadingOCR })}
               onClick={onOcr}
               disabled={isLoading}
             >
-              {isCropping && !isLoadingOCR && <CheckSvg className={`p-0.5`} />}
+              {isCropping && !isLoadingOCR && <Check className={`p-0.5`} />}
               {!isCropping && !isLoadingOCR && <span className={`p-0.5`}>OCR</span>}
-            </button>
+            </Button>
             <ImageViewer.ZoomButton disabled={isLoading} />
           </div>
         </div>

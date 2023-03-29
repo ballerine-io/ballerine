@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react';
-import { BallerineLogo } from 'components/atoms/icons';
+import { BallerineLogo } from '@/components/atoms/icons';
 import { Link } from '@tanstack/react-router';
 
 /**

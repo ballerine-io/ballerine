@@ -1,5 +1,5 @@
-import { Subject } from 'components/organisms/Subject/Subject';
-import { useIndividual } from 'components/pages/Individual/hooks/useIndividual/useIndividual';
+import { Subject } from '@/components/organisms/Subject/Subject';
+import { useIndividual } from '@/components/pages/Individual/hooks/useIndividual/useIndividual';
 
 export const Individual = () => {
   const { selectedEndUser, faceAUrl, faceBUrl, info, images, isLoading, whitelist } =

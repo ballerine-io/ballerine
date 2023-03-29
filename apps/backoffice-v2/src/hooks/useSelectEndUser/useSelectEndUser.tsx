@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from '@tanstack/react-router';
 import { useCallback } from 'react';
-import { individualRoute } from 'components/pages/Individual/Individual.route';
+import { individualRoute } from '@/components/pages/Individual/Individual.route';
 
 export const useSelectEndUser = () => {
   const navigate = useNavigate();

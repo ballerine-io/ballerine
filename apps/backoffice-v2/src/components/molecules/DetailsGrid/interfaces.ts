@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react';
-import { IDataFieldProps } from 'components/molecules/DataField/interfaces';
+import { IDataFieldProps } from '@/components/molecules/DataField/interfaces';
 import { AnyRecord, DivComponent } from '@/types';
 
 export interface IDetailsGridProps<TRecord extends AnyRecord>

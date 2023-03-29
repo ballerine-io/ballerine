@@ -1,27 +1,29 @@
 import { FunctionComponent } from 'react';
-import { Avatar } from 'components/atoms/Avatar';
-import { IActionsProps } from 'components/organisms/Subject/interfaces';
-import { EllipsisButton } from 'components/atoms/EllipsisButton/EllipsisButton';
-import { useActions } from 'components/organisms/Subject/hooks/useActions/useActions';
+import { Avatar } from '@/components/atoms/Avatar';
+import { IActionsProps } from '@/components/organisms/Subject/interfaces';
+import { EllipsisButton } from '@/components/atoms/EllipsisButton/EllipsisButton';
+import { useActions } from '@/components/organisms/Subject/hooks/useActions/useActions';
 import { motion } from 'framer-motion';
 import * as HoverCard from '@radix-ui/react-hover-card';
 import { ctw } from '@/utils/ctw/ctw';
-import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
-import { DropdownMenuTrigger } from 'components/molecules/DropdownMenu/DropdownMenu.Trigger';
-import { DropdownMenuContent } from 'components/molecules/DropdownMenu/DropdownMenu.Content';
-import { DropdownMenuSeparator } from 'components/molecules/DropdownMenu/DropdownMenu.Separator';
-import { DropdownMenuLabel } from 'components/molecules/DropdownMenu/DropdownMenu.Label';
-import { DropdownMenuItem } from 'components/molecules/DropdownMenu/DropdownMenu.Item';
-import { DropdownMenuShortcut } from 'components/molecules/DropdownMenu/DropDownMenu.Shortcut';
+import { DropdownMenu } from '@/components/molecules/DropdownMenu/DropdownMenu';
+import { DropdownMenuTrigger } from '@/components/molecules/DropdownMenu/DropdownMenu.Trigger';
+import { DropdownMenuContent } from '@/components/molecules/DropdownMenu/DropdownMenu.Content';
+import { DropdownMenuSeparator } from '@/components/molecules/DropdownMenu/DropdownMenu.Separator';
+import { DropdownMenuLabel } from '@/components/molecules/DropdownMenu/DropdownMenu.Label';
+import { DropdownMenuItem } from '@/components/molecules/DropdownMenu/DropdownMenu.Item';
+import { DropdownMenuShortcut } from '@/components/molecules/DropdownMenu/DropDownMenu.Shortcut';
 import { Action } from '@/enums';
-import { Dialog } from 'components/organisms/Dialog/Dialog';
-import { DialogFooter } from 'components/organisms/Dialog/Dialog.Footer';
-import { DialogContent } from 'components/organisms/Dialog/Dialog.Content';
-import { DialogTrigger } from 'components/organisms/Dialog/Dialog.Trigger';
-import { DialogTitle } from 'components/organisms/Dialog/Dialog.Title';
-import { DialogDescription } from 'components/organisms/Dialog/Dialog.Description';
-import { DialogHeader } from 'components/organisms/Dialog/Dialog.Header';
+import { Dialog } from '@/components/organisms/Dialog/Dialog';
+import { DialogFooter } from '@/components/organisms/Dialog/Dialog.Footer';
+import { DialogContent } from '@/components/organisms/Dialog/Dialog.Content';
+import { DialogTrigger } from '@/components/organisms/Dialog/Dialog.Trigger';
+import { DialogTitle } from '@/components/organisms/Dialog/Dialog.Title';
+import { DialogDescription } from '@/components/organisms/Dialog/Dialog.Description';
+import { DialogHeader } from '@/components/organisms/Dialog/Dialog.Header';
 import { DialogClose } from '@radix-ui/react-dialog';
+import { Button } from '@/components/atoms/Button';
+import { Loader2 } from 'lucide-react';
 
 /**
  * @description To be used by {@link Subject}. Displays the end user's full name, avatar, and handles the reject/approve mutation.
@@ -88,17 +90,15 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           <Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button
-                  className={ctw(
-                    `btn-error btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-                    {
-                      loading: debouncedIsLoadingRejectEndUser,
-                    },
-                  )}
+                <Button
+                  variant={`default`}
+                  size={'lg'}
+                  className={`bg-error text-error-content`}
                   disabled={isLoading || !canReject}
                 >
+                  {debouncedIsLoadingRejectEndUser && <Loader2 className="me-2 animate-spin d-4" />}
                   Reject
-                </button>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className={`min-w-[16rem]`} align={`end`}>
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
@@ -144,8 +144,9 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
               </div>
               <DialogFooter>
                 <DialogClose asChild>
-                  <button
-                    className={ctw(`btn-error btn justify-center`)}
+                  <Button
+                    variant={`default`}
+                    className={`bg-error text-error-content`}
                     onClick={onMutateRejectEndUser({
                       action: Action.RESUBMIT,
                       resubmissionReason,
@@ -153,29 +154,27 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                     disabled={!resubmissionReason}
                   >
                     Confirm
-                  </button>
+                  </Button>
                 </DialogClose>
               </DialogFooter>
             </DialogContent>
           </Dialog>
           <HoverCard.Root openDelay={0} closeDelay={0}>
             <HoverCard.Trigger asChild>
-              <button
-                className={ctw(
-                  `btn-success btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-                  {
-                    loading: debouncedIsLoadingApproveEndUser,
-                  },
-                )}
+              <Button
+                variant={`default`}
+                size={'lg'}
+                className={`bg-success text-success-content`}
                 disabled={isLoading || !canApprove}
                 onClick={onMutateApproveEndUser}
               >
+                {debouncedIsLoadingApproveEndUser && <Loader2 className="me-2 animate-spin d-4" />}
                 Approve
-              </button>
+              </Button>
             </HoverCard.Trigger>
             <HoverCard.Portal>
               <HoverCard.Content
-                className={`card card-compact mt-2 rounded-md border-neutral/10 bg-base-100 p-2 shadow theme-dark:border-neutral/50`}
+                className={`card-compact card mt-2 rounded-md border-neutral/10 bg-base-100 p-2 shadow theme-dark:border-neutral/50`}
               >
                 <div className={`flex items-center space-x-2`}>
                   <kbd className="kbd">Ctrl</kbd>
@@ -185,16 +184,20 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-          <div className="dropdown-hover dropdown dropdown-bottom dropdown-end">
+          <div className="dropdown-hover dropdown-bottom dropdown-end dropdown">
             <EllipsisButton tabIndex={0} />
             <ul
               className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
             >
               <li className={`disabled`}>
-                <button disabled>Coming Soon</button>
+                <Button variant={`ghost`} disabled>
+                  Coming Soon
+                </Button>
               </li>
               <li className={`disabled`}>
-                <button disabled>Coming Soon</button>
+                <Button variant={`ghost`} disabled>
+                  Coming Soon
+                </Button>
               </li>
             </ul>
           </div>

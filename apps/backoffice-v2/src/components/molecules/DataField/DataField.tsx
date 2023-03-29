@@ -1,5 +1,5 @@
 import { isNullish } from '@ballerine/common';
-import { IDataFieldProps } from 'components/molecules/DataField/interfaces';
+import { IDataFieldProps } from '@/components/molecules/DataField/interfaces';
 import { FunctionComponent } from 'react';
 import { ctw } from '@/utils/ctw/ctw';
 

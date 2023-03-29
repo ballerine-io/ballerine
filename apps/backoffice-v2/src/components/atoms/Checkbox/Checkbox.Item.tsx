@@ -1,7 +1,7 @@
 import { Checkbox } from './Checkbox';
 import { FunctionComponent } from 'react';
 import { useCheckboxGroupContext } from './hooks/useCheckboxGroupContext/useCheckboxGroupContext';
-import { ICheckboxProps } from 'components/atoms/Checkbox/interfaces';
+import { ICheckboxProps } from '@/components/atoms/Checkbox/interfaces';
 
 export const Item: FunctionComponent<
   Omit<ICheckboxProps, 'isChecked' | 'onChange'> & {

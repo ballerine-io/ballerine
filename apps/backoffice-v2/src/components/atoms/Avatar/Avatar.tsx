@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
-import { IAvatarProps } from 'components/atoms/Avatar/interfaces';
-import { BallerineImage } from 'components/atoms/BallerineImage';
+import { IAvatarProps } from '@/components/atoms/Avatar/interfaces';
+import { BallerineImage } from '@/components/atoms/BallerineImage';
 import { ctw } from '@/utils/ctw/ctw';
 
 /**

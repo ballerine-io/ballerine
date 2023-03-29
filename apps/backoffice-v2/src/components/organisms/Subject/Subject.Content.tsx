@@ -1,5 +1,5 @@
 import React, { FunctionComponent, PropsWithChildren } from 'react';
-import { MotionScrollArea } from 'components/molecules/MotionScrollArea/MotionScrollArea';
+import { MotionScrollArea } from '@/components/molecules/MotionScrollArea/MotionScrollArea';
 import { motion } from 'framer-motion';
 
 /**
