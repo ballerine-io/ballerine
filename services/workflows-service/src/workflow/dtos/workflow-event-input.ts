@@ -8,4 +8,11 @@ export class WorkflowEventInput {
   })
   @IsString()
   name!: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  resubmissionReason?: string;
 }

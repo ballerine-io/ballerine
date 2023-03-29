@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { ValidationMessage } from "@felte/reporter-svelte";
-  import { z } from "zod";
-  import { createZodForm } from "../utils";
+  import {ValidationMessage} from "@felte/reporter-svelte";
+  import {z} from "zod";
+  import {createZodForm, getWorkflowContext} from "@/utils";
   import Form from "./Form.svelte";
-  import type { TOnPrev, TOnSubmit } from "../types";
-  import { getWorkflowContext } from "../utils";
+  import type {TOnPrev, TOnSubmit} from "@/types";
 
   const schema = z.object({
     documentOne: z.object({

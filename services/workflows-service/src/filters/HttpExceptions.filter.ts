@@ -1,10 +1,4 @@
-import {
-  ArgumentsHost,
-  Catch,
-  HttpException,
-  HttpServer,
-  HttpStatus,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpException, HttpServer, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
@@ -55,13 +49,9 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
       if (exception.code === 'P2002') {
         // Handling Unique Key Constraint Violation Error
         const fields = (exception.meta as { target: string[] }).target;
-        message = `Another record with the requested (${fields.join(
-          ', ',
-        )}) already exists`;
+        message = `Another record with the requested (${fields.join(', ')}) already exists`;
       } else {
-        message =
-          `[${exception.code}]: ` +
-          this.exceptionShortMessage(exception.message);
+        message = `[${exception.code}]: ` + this.exceptionShortMessage(exception.message);
       }
       if (!Object.keys(this.errorCodesStatusMapping).includes(exception.code)) {
         return super.catch(exception, host);
@@ -81,9 +71,6 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
    */
   exceptionShortMessage(message: string): string {
     const shortMessage = message.substring(message.indexOf('→'));
-    return shortMessage
-      .substring(shortMessage.indexOf('\n'))
-      .replace(/\n/g, '')
-      .trim();
+    return shortMessage.substring(shortMessage.indexOf('\n')).replace(/\n/g, '').trim();
   }
 }

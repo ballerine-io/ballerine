@@ -1,10 +1,5 @@
 import { Test } from '@nestjs/testing';
-import {
-  INestApplication,
-  HttpStatus,
-  ExecutionContext,
-  CallHandler,
-} from '@nestjs/common';
+import { INestApplication, HttpStatus, ExecutionContext, CallHandler } from '@nestjs/common';
 import request from 'supertest';
 import { MorganModule } from 'nest-morgan';
 import { ACGuard } from 'nest-access-control';
@@ -181,13 +176,9 @@ describe('Workflow', () => {
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       })
       .then(function () {
-        void agent
-          .post('/workflows')
-          .send(CREATE_INPUT)
-          .expect(HttpStatus.CONFLICT)
-          .expect({
-            statusCode: HttpStatus.CONFLICT,
-          });
+        void agent.post('/workflows').send(CREATE_INPUT).expect(HttpStatus.CONFLICT).expect({
+          statusCode: HttpStatus.CONFLICT,
+        });
       });
   });
 

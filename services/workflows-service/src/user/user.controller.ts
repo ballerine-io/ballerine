@@ -82,9 +82,7 @@ export class UserController {
   @swagger.ApiOkResponse({ type: UserModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async getById(
-    @common.Param() params: UserWhereUniqueInput,
-  ): Promise<UserModel | null> {
+  async getById(@common.Param() params: UserWhereUniqueInput): Promise<UserModel | null> {
     const user = await this.service.getById(params.id, {
       select: {
         id: true,
@@ -95,9 +93,7 @@ export class UserController {
       },
     });
     if (user === null) {
-      throw new errors.NotFoundException(
-        `No resource was found for ${JSON.stringify(params)}`,
-      );
+      throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
     }
     return user;
   }
@@ -129,9 +125,7 @@ export class UserController {
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
-          `No resource was found for ${JSON.stringify(params)}`,
-        );
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
       throw error;
     }
@@ -146,9 +140,7 @@ export class UserController {
   @swagger.ApiOkResponse({ type: UserModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async deleteById(
-    @common.Param() params: UserWhereUniqueInput,
-  ): Promise<UserModel | null> {
+  async deleteById(@common.Param() params: UserWhereUniqueInput): Promise<UserModel | null> {
     try {
       return await this.service.deleteById(params.id, {
         select: {
@@ -161,9 +153,7 @@ export class UserController {
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
-          `No resource was found for ${JSON.stringify(params)}`,
-        );
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
       throw error;
     }

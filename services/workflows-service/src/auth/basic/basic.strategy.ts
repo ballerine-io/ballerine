@@ -6,10 +6,7 @@ import { IAuthStrategy } from '../../auth/types';
 import { UserInfo } from '../../user/user-info';
 
 @Injectable()
-export class BasicStrategy
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy
-{
+export class BasicStrategy extends PassportStrategy(Strategy) implements IAuthStrategy {
   constructor(protected readonly authService: AuthService) {
     super();
   }

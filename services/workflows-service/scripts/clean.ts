@@ -22,10 +22,7 @@ async function clean() {
   await prisma.$disconnect();
 }
 
-async function dropTables(
-  prisma: PrismaClient,
-  tables: string[],
-): Promise<void> {
+async function dropTables(prisma: PrismaClient, tables: string[]): Promise<void> {
   for (const table of tables) {
     await prisma.$executeRawUnsafe(`DROP TABLE public."${table}" CASCADE;`);
   }
@@ -40,8 +37,7 @@ async function dropTypes(prisma: PrismaClient, types: string[]) {
 async function getTables(prisma: PrismaClient): Promise<string[]> {
   const results: Array<{
     tablename: string;
-  }> =
-    await prisma.$queryRaw`SELECT tablename from pg_tables where schemaname = 'public';`;
+  }> = await prisma.$queryRaw`SELECT tablename from pg_tables where schemaname = 'public';`;
   return results.map(result => result.tablename);
 }
 

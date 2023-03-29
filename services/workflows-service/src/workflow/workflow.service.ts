@@ -19,6 +19,7 @@ export interface WorkflowData {
   workflowDefinition: object;
   workflowRuntimeData: object;
 }
+
 // Discuss model classes location
 export type IntentResponse = WorkflowData[];
 
@@ -189,7 +190,7 @@ export class WorkflowService {
     ];
   }
 
-  async event({ name: type, id }: WorkflowEventInput & IObjectWithId) {
+  async event({ name: type, resubmissionReason, id }: WorkflowEventInput & IObjectWithId) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
     const workflow = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
@@ -211,7 +212,7 @@ export class WorkflowService {
     });
 
     const snapshot = service.getSnapshot();
-    const currentState = snapshot.value;
+    let currentState = snapshot.value;
     const context = snapshot.machine.context;
     const isFinal = snapshot.machine.states[currentState].type === 'final';
 
@@ -219,6 +220,18 @@ export class WorkflowService {
     this.logger.log(
       `Workflow ${workflow.name}-${id}-v${workflow.version} state transiation [${runtimeData.state} -> ${currentState}]`,
     );
+
+    // Will be received from the client
+    // const document = "documentOne";
+    //
+    // if (type === "resubmit") {
+    //   switch (resubmissionReason) {
+    //     case "BLURRY_DOCUMENT":
+    //       currentState = "document_photo";
+    //       break;
+    //   }
+    // }
+
     await this.updateWorkflowRuntimeData(runtimeData.id, {
       context,
       state: currentState,
