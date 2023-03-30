@@ -40,8 +40,6 @@
 <!-- Badges - END -->
 
 
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fballerine-io%2Fballerine%2Ftree%2Fmain%2Fexamples%2Fweb-sdk%2Fsdk-react)
-
 </div>
 
 
@@ -52,7 +50,7 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 
 ### What you can find in this project
 
-*  :twisted_rightwards_arrows:   **Workflow engine** - :male_detective: Private Beta (collaborators)
+*  :twisted_rightwards_arrows:   **Workflow engine** - :white_check_mark:  Public beta
    - Automate decisions based on user data, 3rd party input and rules.
 
 * :scroll: **Rule engine** - :male_detective: Private Beta (collaborators)
@@ -61,7 +59,7 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 * :electric_plug:  **Plugin system** - :closed_lock_with_key: Private Alpha
    - Utilize our plugin system and unified API to connect to 3rd party vendors, custom APIs and databases.
 
-* :video_game:  **Frontend headless SDK** - :white_check_mark:  public beta
+* :video_game:  **Frontend headless SDK** - :white_check_mark:  Public beta
    1. Control the journey of your users in real-time, based on their updating attributes.
      1. Onboarding building blocks (community-driven kit) - [Go to directory](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md)
         * KYC/KYB/doc collection flows and UI via Mobile & web SDK
