@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { z } from 'zod';
-  import type { TOnSubmit } from '../types';
-  import { createZodForm } from '../utils';
+  import {z} from 'zod';
+  import type {TOnSubmit} from '@/types';
+  import {createZodForm} from '@/utils';
   import Form from './Form.svelte';
 
   const schema = z.object({

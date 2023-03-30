@@ -8,6 +8,7 @@ export default defineConfig(configEnv => {
   return {
     server: {
       open: true,
+      host: true,
     },
     plugins: [react()],
     resolve: {

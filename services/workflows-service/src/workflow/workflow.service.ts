@@ -19,6 +19,7 @@ export interface WorkflowData {
   workflowDefinition: object;
   workflowRuntimeData: object;
 }
+
 // Discuss model classes location
 export type IntentResponse = WorkflowData[];
 
@@ -87,7 +88,7 @@ export class WorkflowService {
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
 
-    data.context = _.merge(data.context, runtimeData.context);
+    data.context = _.merge(runtimeData.context, data.context);
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     this.logger.log(
       `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
@@ -140,16 +141,36 @@ export class WorkflowService {
     const reviewMachineDefinition = await this.workflowDefinitionRepository.findById(
       workflow.reviewMachineId,
     );
-    const createRuntimeResult = await this.workflowRuntimeDataRepository.create({
-      data: {
-        endUserId: runtime.endUserId,
-        workflowDefinitionVersion: workflow.version,
-        workflowDefinitionId: workflow.reviewMachineId,
-        context: context as any,
-        status: 'created',
-      },
-    });
+    if (!(runtime.context as { resubmissionReason: string })?.resubmissionReason) {
+      const createRuntimeResult = await this.workflowRuntimeDataRepository.create({
+        data: {
+          endUserId: runtime.endUserId,
+          workflowDefinitionVersion: workflow.version,
+          workflowDefinitionId: workflow.reviewMachineId,
+          context: {
+            ...(context as any),
+            parentMachine: {
+              id: runtime.id,
+            },
+          },
+          status: 'created',
+        },
+      });
+    }
     const updateResult = await this.updateWorkflowRuntimeData(runtime.id, {
+      ...((runtime.context as { resubmissionReason: string })?.resubmissionReason
+        ? {
+            endUserId: runtime.endUserId,
+            workflowDefinitionVersion: workflow.version,
+            workflowDefinitionId: workflow.reviewMachineId,
+            context: {
+              ...(context as any),
+              parentMachine: {
+                id: runtime.id,
+              },
+            },
+          }
+        : {}),
       status: 'completed',
     });
     // const updateUserStateResult = await this.(userId, workflow.version, workflow.reviewMachineId, context);
@@ -189,7 +210,7 @@ export class WorkflowService {
     ];
   }
 
-  async event({ name: type, id }: WorkflowEventInput & IObjectWithId) {
+  async event({ name: type, resubmissionReason, id }: WorkflowEventInput & IObjectWithId) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
     const workflow = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
@@ -219,6 +240,35 @@ export class WorkflowService {
     this.logger.log(
       `Workflow ${workflow.name}-${id}-v${workflow.version} state transiation [${runtimeData.state} -> ${currentState}]`,
     );
+
+    // Will be received from the client
+    const document = 'documentOne';
+
+    if (type === 'resubmit') {
+      switch (resubmissionReason) {
+        case 'BLURRY_DOCUMENT':
+          await this.endUserRepository.updateById(runtimeData.endUserId, {
+            data: {
+              state: EndUserState.NEW,
+            },
+          });
+          await this.workflowRuntimeDataRepository.updateById(
+            (runtimeData as any).context?.parentMachine?.id,
+            {
+              data: {
+                state: 'document_photo',
+                status: 'created',
+                context: {
+                  ...context,
+                  resubmissionReason,
+                },
+              },
+            },
+          );
+          break;
+      }
+    }
+
     await this.updateWorkflowRuntimeData(runtimeData.id, {
       context,
       state: currentState,

@@ -1,8 +1,5 @@
 import { Prisma } from '@prisma/client';
-import {
-  isRecordNotFoundError,
-  PRISMA_QUERY_INTERPRETATION_ERROR,
-} from './prisma.util';
+import { isRecordNotFoundError, PRISMA_QUERY_INTERPRETATION_ERROR } from './prisma.util';
 
 describe('isRecordNotFoundError', () => {
   test('returns true for record not found error', () => {

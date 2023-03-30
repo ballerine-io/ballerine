@@ -24,16 +24,18 @@ export class FileRepository {
   }
 
   async findNameById({ id, userId }: IFileIds) {
-    return (await this.findById(
-      {
-        userId,
-        id,
-      },
-      {
-        select: {
-          fileNameOnDisk: true,
+    return (
+      await this.findById(
+        {
+          userId,
+          id,
         },
-      },
-    ))?.fileNameOnDisk;
+        {
+          select: {
+            fileNameOnDisk: true,
+          },
+        },
+      )
+    )?.fileNameOnDisk;
   }
 }

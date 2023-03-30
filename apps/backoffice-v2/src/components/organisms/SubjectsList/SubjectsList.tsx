@@ -60,7 +60,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
       <div className={`border-neutral/10 p-4 theme-dark:border-neutral/60`}>
         <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60">
           <div className="input-group">
-            <div className={`btn btn-ghost btn-square pointer-events-none`}>
+            <div className={`btn-ghost btn-square btn pointer-events-none`}>
               <MagnifyingGlassSvg className={`!d-5`} />
             </div>
             <input
@@ -76,7 +76,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
         <div className={`flex items-center justify-between`}>
           <div className="dropdown-hover dropdown dropdown-bottom">
             <button
-              className={`btn btn-ghost btn-sm h-[2.125rem] gap-2 border-neutral/10 text-xs focus-visible:outline-primary theme-dark:border-neutral/50`}
+              className={`btn-ghost btn-sm btn h-[2.125rem] gap-2 border-neutral/10 text-xs focus-visible:outline-primary theme-dark:border-neutral/50`}
               tabIndex={0}
               ref={filterRef}
               onMouseEnter={handleDropdown}
@@ -121,7 +121,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
           >
             <div className={`input-group flex items-center`}>
               <button
-                className={`btn btn-ghost btn-sm btn-square !rounded-md focus-visible:border-none focus-visible:bg-neutral/10 focus-visible:outline-none focus-visible:ring-0 focus-visible:theme-dark:bg-neutral`}
+                className={`btn-ghost btn-sm btn-square btn !rounded-md focus-visible:border-none focus-visible:bg-neutral/10 focus-visible:outline-none focus-visible:ring-0 focus-visible:theme-dark:bg-neutral`}
                 onClick={onSortDir}
                 ref={sortRef}
               >

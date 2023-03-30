@@ -20,10 +20,7 @@ export class WorkflowRuntimeDataRepository {
 
   async findById<T extends Omit<Prisma.WorkflowRuntimeDataFindUniqueOrThrowArgs, 'where'>>(
     id: string,
-    args?: Prisma.SelectSubset<
-      T,
-      Omit<Prisma.WorkflowRuntimeDataFindUniqueOrThrowArgs, 'where'>
-    >,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataFindUniqueOrThrowArgs, 'where'>>,
   ): Promise<WorkflowRuntimeData> {
     return await this.prisma.workflowRuntimeData.findUniqueOrThrow({
       where: { id },
@@ -33,10 +30,7 @@ export class WorkflowRuntimeDataRepository {
 
   async updateById<T extends Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<
-      T,
-      Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>
-    >,
+    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>,
   ): Promise<WorkflowRuntimeData> {
     return await this.prisma.workflowRuntimeData.update({
       where: { id },
