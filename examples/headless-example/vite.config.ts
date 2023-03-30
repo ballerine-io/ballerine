@@ -6,6 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   server: {
     open: true,
+    host: true
   },
   plugins: [tsconfigPaths(), svelte()],
 })

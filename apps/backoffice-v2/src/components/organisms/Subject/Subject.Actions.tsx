@@ -1,8 +1,11 @@
-import { FunctionComponent } from 'react';
+import React, { FunctionComponent } from 'react';
 import { Avatar } from 'components/atoms/Avatar';
 import { IActionsProps } from 'components/organisms/Subject/interfaces';
 import { EllipsisButton } from 'components/atoms/EllipsisButton/EllipsisButton';
-import { useActions } from 'components/organisms/Subject/hooks/useActions/useActions';
+import {
+  ResubmissionReason,
+  useActions,
+} from 'components/organisms/Subject/hooks/useActions/useActions';
 import { motion } from 'framer-motion';
 import * as HoverCard from '@radix-ui/react-hover-card';
 import { ctw } from '../../../utils/ctw/ctw';
@@ -22,6 +25,13 @@ import { DialogTitle } from 'components/organisms/Dialog/Dialog.Title';
 import { DialogDescription } from 'components/organisms/Dialog/Dialog.Description';
 import { DialogHeader } from 'components/organisms/Dialog/Dialog.Header';
 import { DialogClose } from '@radix-ui/react-dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from 'components/atoms/Select/Select';
 
 /**
  * @description To be used by {@link Subject}. Displays the end user's full name, avatar, and handles the reject/approve mutation.
@@ -124,24 +134,28 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
               <DialogHeader>
                 <DialogTitle>Request document re-submission</DialogTitle>
                 <DialogDescription>
-                  State the reason for requesting a document re-submission.
+                  This action will send a request to the user to re-submit their document. State the
+                  reason for requesting a document re-submission.
                 </DialogDescription>
               </DialogHeader>
-              <div className={`border-neutral/10 p-4 theme-dark:border-neutral/60`}>
-                <label htmlFor="rejectReason" className="label">
-                  <span className="label-text">Re-submission Reason</span>
-                </label>
-                <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60">
-                  <div className={'input-group'}>
-                    <input
-                      type="text"
-                      className="input input-md w-full !border-0 !outline-none !ring-0 placeholder:text-base-content"
-                      onChange={onResubmissionReasonChange}
-                      value={resubmissionReason}
-                    />
-                  </div>
-                </div>
-              </div>
+              <Select onValueChange={onResubmissionReasonChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Re-submission reason" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(ResubmissionReason).map(reason => {
+                    const reasonWithSpaceSpace = reason.replace(/_/g, ' ').toLowerCase();
+                    const capitalizedReason =
+                      reasonWithSpaceSpace.charAt(0).toUpperCase() + reasonWithSpaceSpace.slice(1);
+
+                    return (
+                      <SelectItem key={reason} value={reason}>
+                        {capitalizedReason}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
               <DialogFooter>
                 <DialogClose asChild>
                   <button
@@ -185,7 +199,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-          <div className="dropdown-hover dropdown dropdown-bottom dropdown-end">
+          <div className="dropdown-hover dropdown-bottom dropdown-end dropdown">
             <EllipsisButton tabIndex={0} />
             <ul
               className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}

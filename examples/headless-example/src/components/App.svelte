@@ -77,11 +77,6 @@
   const createWorkflowsQuery = (options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {}) => createQuery({
     queryKey: [{}],
     queryFn: fetchWorkflows,
-    refetchInterval() {
-      if ($endUserQuery?.data?.state !== "PROCESSING") return false;
-
-      return parseInt(import.meta.env.VITE_POOLING_TIME as string) * 1000 || false;
-    },
     ...options
   })
   const createIntentQuery = () => createQuery({
@@ -91,7 +86,7 @@
 
       if (!data?.[0]) return;
 
-      return makeWorkflow(data?.[0]);
+      return data?.[0];
     },
     enabled: false
   })
@@ -110,10 +105,12 @@
 
       if (!data) return;
 
-      return makeWorkflow(data);
+      return data;
     },
-    refetchInterval() {
-      if ($endUserQuery?.data?.state !== "PROCESSING") return false;
+    refetchInterval(data) {
+      if ($endUserQuery?.data?.state === "PROCESSING" &&  data?.workflowRuntimeData?.status !== "completed") {
+        return false;
+      }
 
       return parseInt(import.meta.env.VITE_POOLING_TIME as string) * 1000 || false;
     }
@@ -146,16 +143,21 @@
     });
 
   const workflow = writable<WorkflowOptionsBrowser | undefined>();
+  const workflows = createWorkflowsQuery();
 
   $: {
-    if ($endUserQuery?.data?.id && ($workflowQuery?.data?.id || $intentQuery?.data?.id)) {
-      workflow.set($workflowQuery?.data || $intentQuery?.data)
+    if ($endUserQuery?.data?.id && ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)) {
+      workflow.set(makeWorkflow($workflowQuery?.data || $intentQuery?.data))
     } else {
       workflow.set(undefined)
     }
   }
 
+  const workflowsData = $workflows.data;
+
 </script>
+
+{@debug workflowsData}
 
 {#if $endUserQuery?.data?.id}
   <div>
@@ -176,7 +178,7 @@
 {#if $workflow}
   <Workflow workflow={$workflow}/>
 {/if}
-{#if !$workflow}
+{#if !$workflow }
   <button disabled={!$endUserQuery?.data?.id} on:click={$intentQuery.refetch}>KYC
   </button>
 {/if}

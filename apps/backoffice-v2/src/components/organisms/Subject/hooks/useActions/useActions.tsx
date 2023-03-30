@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useApproveEndUserMutation } from '../../../../../lib/react-query/mutations/useApproveEndUserMutation/useApproveEndUserMutation';
 import { useRejectEndUserMutation } from '../../../../../lib/react-query/mutations/useRejectEndUserMutation/useRejectEndUserMutation';
 import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
@@ -8,6 +8,17 @@ import { useSelectNextEndUser } from 'hooks/useSelectNextEndUser/useSelectNextEn
 import { createInitials } from '../../../../../utils/create-initials/create-initials';
 import { IUseActions } from './interfaces';
 import { Action } from '../../../../../enums';
+
+export const ResubmissionReason = {
+  BLURRY_IMAGE: 'BLURRY_IMAGE',
+  CUT_IMAGE: 'CUT_IMAGE',
+  UNSUPPORTED_DOCUMENT: 'UNSUPPORTED_DOCUMENT',
+  DAMAGED_DOCUMENT: 'DAMAGED_DOCUMENT',
+  EXPIRED_DOCUMENT: 'EXPIRED_DOCUMENT',
+  COPY_OF_A_COPY: 'COPY_OF_A_COPY',
+  FACE_IS_UNCLEAR: 'FACE_IS_UNCLEAR',
+  FACE_IS_NOT_MATCHING: 'FACE_IS_NOT_MATCHING',
+} as const;
 
 export const useActions = ({ endUserId, fullName }: IUseActions) => {
   const onSelectNextEndUser = useSelectNextEndUser();
@@ -43,11 +54,12 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
     (payload: Parameters<typeof mutateRejectEndUser>[0]) => () => mutateRejectEndUser(payload),
     [mutateRejectEndUser],
   );
-  const [resubmissionReason, setResubmissionReason] = useState('');
-  const onResubmissionReasonChange: ChangeEventHandler<HTMLInputElement> = useCallback(
-    event => setResubmissionReason(event.target.value),
+  const [resubmissionReason, setResubmissionReason] = useState<keyof typeof ResubmissionReason>();
+  const onResubmissionReasonChange = useCallback(
+    (value: string) => setResubmissionReason(value as keyof typeof ResubmissionReason),
     [setResubmissionReason],
   );
+  const workflows = endUser?.workflows;
 
   useDocumentListener('keydown', event => {
     if (!event.ctrlKey || document.activeElement !== document.body) return;

@@ -9,12 +9,22 @@ import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { IObjectWithId } from '@/types';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import _ from 'lodash';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { Logger } from '@nestjs/common';
 
+export const ResubmissionReason = {
+  BLURRY_IMAGE: 'BLURRY_IMAGE',
+  CUT_IMAGE: 'CUT_IMAGE',
+  UNSUPPORTED_DOCUMENT: 'UNSUPPORTED_DOCUMENT',
+  DAMAGED_DOCUMENT: 'DAMAGED_DOCUMENT',
+  EXPIRED_DOCUMENT: 'EXPIRED_DOCUMENT',
+  COPY_OF_A_COPY: 'COPY_OF_A_COPY',
+  FACE_IS_UNCLEAR: 'FACE_IS_UNCLEAR',
+  FACE_IS_NOT_MATCHING: 'FACE_IS_NOT_MATCHING',
+} as const;
 export interface WorkflowData {
   workflowDefinition: object;
   workflowRuntimeData: object;
@@ -246,12 +256,7 @@ export class WorkflowService {
 
     if (type === 'resubmit') {
       switch (resubmissionReason) {
-        case 'BLURRY_DOCUMENT':
-          await this.endUserRepository.updateById(runtimeData.endUserId, {
-            data: {
-              state: EndUserState.NEW,
-            },
-          });
+        case ResubmissionReason.BLURRY_IMAGE:
           await this.workflowRuntimeDataRepository.updateById(
             (runtimeData as any).context?.parentMachine?.id,
             {
@@ -260,12 +265,17 @@ export class WorkflowService {
                 status: 'created',
                 context: {
                   ...context,
-                  resubmissionReason,
+                  [document]: {
+                    ...context?.[document],
+                    resubmissionReason,
+                  }
                 },
               },
             },
           );
           break;
+        default:
+          throw new BadRequestException(`Invalid resubmission reason ${resubmissionReason as string}`)
       }
     }
 

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
+import type { ResubmissionReason } from "@/workflow/workflow.service";
 
 export class WorkflowEventInput {
   @ApiProperty({
@@ -14,5 +15,5 @@ export class WorkflowEventInput {
     type: String,
   })
   @IsString()
-  resubmissionReason?: string;
+  resubmissionReason?: keyof typeof ResubmissionReason;
 }
