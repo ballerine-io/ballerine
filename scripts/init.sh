@@ -14,8 +14,8 @@ cp .env.example .env
 
 echo ""
 echo "📈 seeding database"
-npm run docker:db
-npm run db:reset:dev
+pnpm run docker:db
+pnpm run db:reset:dev
 
 echo "✅ all done; use"
 echo "  pnpm run dev"

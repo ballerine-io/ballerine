@@ -5,8 +5,9 @@ import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import { endUserIds, generateEndUser } from './generate-end-user';
 
-dotenv.config();
 if (require.main === module) {
+  dotenv.config();
+
   const { BCRYPT_SALT } = process.env;
 
   if (!BCRYPT_SALT) {
@@ -25,7 +26,6 @@ async function seed(bcryptSalt: Salt) {
   console.info('Seeding database...');
 
   const client = new PrismaClient();
-
   const data = {
     username: 'admin',
     password: await hash('admin', bcryptSalt),
