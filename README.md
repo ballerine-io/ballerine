@@ -130,6 +130,19 @@ Coming soon
 **Getting started**
 :male_detective: Private Beta (collaborators) - Talk to us at oss@ballerine.com to join.
 
+**Dev Environment**
+
+We use pnpm to manage dependencies and docker compose to spin up test databases.
+To get started
+
+- ensure you have the latest [pnpm](https://pnpm.io/)
+- ensure you have docker and [docker compose](https://docs.docker.com/compose/install/)
+- clone the project
+- run the following:
+  ```sh
+  pnpm install
+  node ./scripts/init.sh
+  ```
 
 <br/>
 
