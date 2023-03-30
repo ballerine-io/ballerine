@@ -1,8 +1,6 @@
 version: '3'
 services:
   backoffice:
-    depends_on: 
-      - db
     build:
       context: ../apps/backoffice-v2/
       args:
@@ -10,8 +8,6 @@ services:
     ports:
       - ${BACKOFFICE_PORT}:5173
   service:
-    depends_on: 
-      - db
     build:
       context: ../services/workflows-service/
       args:
@@ -22,7 +18,7 @@ services:
       BCRYPT_SALT: ${BCRYPT_SALT}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
-      DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
+      DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}
     depends_on:
       - db
   db:
