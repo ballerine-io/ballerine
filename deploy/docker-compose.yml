@@ -6,7 +6,7 @@ services:
       args:
         NPM_LOG_LEVEL: notice
     ports:
-      - ${BACKOFFICE_PORT}:3000
+      - ${BACKOFFICE_PORT}:5173
   service:
     build:
       context: ../services/workflows-service/
