@@ -35,7 +35,7 @@ export const BottomActions = () => {
 
   return (
     <div className={`mt-auto flex flex-col space-y-4`}>
-      <div className="dropdown-hover dropdown dropdown-top">
+      <div className="dropdown-hover dropdown-top dropdown">
         <Button tabIndex={0} variant={'ghost'} className={`justify-start`} fullWidth>
           <Cog className={`me-2`} /> Settings
         </Button>

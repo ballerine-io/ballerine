@@ -1,4 +1,12 @@
-import { ComponentProps, FunctionComponent, PropsWithChildren } from 'react';
+import {
+  ComponentProps,
+  ComponentPropsWithoutRef,
+  ComponentPropsWithRef,
+  ElementType,
+  FunctionComponent,
+  JSXElementConstructor,
+  PropsWithChildren,
+} from 'react';
 import { Action, Method, Resource, State } from './enums';
 import { RegisteredRoutesInfo } from '@tanstack/react-router';
 
@@ -39,3 +47,24 @@ export type TAction = TObjectValues<typeof Action>;
 export type TRouteId = keyof RegisteredRoutesInfo['routeInfoById'];
 
 export type TKeyofArrayElement<TArray extends AnyArray> = keyof TArray[number];
+
+export type PropsOf<TElement extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>> =
+  JSX.LibraryManagedAttributes<TElement, ComponentPropsWithoutRef<TElement>>;
+export type AsProps<TElement extends ElementType> = {
+  as?: TElement;
+};
+export type ExtendableProps<ExtendedProps = {}, OverrideProps = {}> = OverrideProps &
+  Omit<ExtendedProps, keyof OverrideProps>;
+export type InheritableElementProps<TElement extends ElementType, Props = {}> = ExtendableProps<
+  PropsOf<TElement>,
+  Props
+>;
+export type PolymorphicComponentProps<
+  TElement extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>,
+  Props = {},
+> = InheritableElementProps<TElement, Props & AsProps<TElement>>;
+export type PolymorphicRef<TElement extends ElementType> = ComponentPropsWithRef<TElement>['ref'];
+export type PolymorphicComponentPropsWithRef<
+  TElement extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>,
+  Props = {},
+> = PolymorphicComponentProps<TElement, Props> & { ref?: PolymorphicRef<TElement> };

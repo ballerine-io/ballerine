@@ -60,9 +60,9 @@ export const useSubjectsList = () => {
       ],
     },
   ] as const;
-  const searchRef = useRef<HTMLInputElement>();
-  const sortRef = useRef<HTMLButtonElement>();
-  const filterRef = useRef<HTMLButtonElement>();
+  const searchRef = useRef<HTMLInputElement | null>(null);
+  const sortRef = useRef<HTMLButtonElement | null>(null);
+  const filterRef = useRef<HTMLButtonElement | null>(null);
   const handleDropdown = useCallback(e => {
     const dropdown = e.target.closest('.dropdown');
 

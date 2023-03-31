@@ -61,10 +61,15 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
     >
       <div className={`border-neutral/10 p-4 theme-dark:border-neutral/60`}>
         <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60">
-          <div className="input-group">
-            <div className={`btn-ghost btn-square btn pointer-events-none`}>
+          <div className="input-group items-center">
+            <Button
+              variant={`ghost`}
+              shape={`square`}
+              as={'div'}
+              className={`pointer-events-none !p-2`}
+            >
               <Search />
-            </div>
+            </Button>
             <input
               type="text"
               className="input input-md w-full !border-0 !outline-none !ring-0 placeholder:text-base-content"
@@ -125,7 +130,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
             <div className={`input-group flex items-center`}>
               <Button
                 variant={`ghost`}
-                square
+                shape={'square'}
                 size={`sm`}
                 className={`!rounded-md focus-visible:border-none focus-visible:bg-neutral/10 focus-visible:outline-none focus-visible:ring-0 focus-visible:theme-dark:bg-neutral`}
                 onClick={onSortDir}

@@ -1,13 +1,13 @@
-import "react-image-crop/dist/ReactCrop.css";
-import { FunctionComponent } from "react";
-import { ImageViewer } from "@/components/organisms/ImageViewer/ImageViewer";
-import { IDocumentsProps } from "@/components/organisms/Subject/interfaces";
-import ReactCrop from "react-image-crop";
-import { XMarkSvg } from "@/components/atoms/icons";
-import { useDocuments } from "@/components/organisms/Subject/hooks/useDocuments/useDocuments";
-import { ctw } from "@/utils/ctw/ctw";
-import { Button } from "@/components/atoms/Button";
-import { Check } from "lucide-react";
+import 'react-image-crop/dist/ReactCrop.css';
+import { FunctionComponent } from 'react';
+import { ImageViewer } from '@/components/organisms/ImageViewer/ImageViewer';
+import { IDocumentsProps } from '@/components/organisms/Subject/interfaces';
+import ReactCrop from 'react-image-crop';
+import { XMarkSvg } from '@/components/atoms/icons';
+import { useDocuments } from '@/components/organisms/Subject/hooks/useDocuments/useDocuments';
+import { ctw } from '@/utils/ctw/ctw';
+import { Button } from '@/components/atoms/Button';
+import { Check } from 'lucide-react';
 
 /**
  * @description To be used by {@link Subject}, and be wrapped by {@link Subject.Content}. Displays a single end user's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
@@ -49,7 +49,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
           <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
             <Button
               variant={`ghost`}
-              circle
+              shape={'circle'}
               className={ctw(`bg-base-300/70`, {
                 hidden: !isCropping,
               })}
@@ -59,9 +59,9 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
             </Button>
             <Button
               variant={`ghost`}
-              circle
+              shape={'circle'}
               type={`button`}
-              className={ctw(`bg-base-300/70 text-[0.688rem] !p-2`, { loading: isLoadingOCR })}
+              className={ctw(`bg-base-300/70 !p-2 text-[0.688rem]`, { loading: isLoadingOCR })}
               onClick={onOcr}
               disabled={isLoading}
             >

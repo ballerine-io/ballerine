@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
-import { Button } from "./Button";
-import { Meta, StoryFn } from "@storybook/react";
+import { Button } from './Button';
+import { Meta, StoryFn } from '@storybook/react';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -34,7 +34,6 @@ Subtle.args = {
   variant: 'subtle',
   children: 'Button',
 };
-
 
 export const Ghost = Template.bind({});
 Ghost.args = {
@@ -74,12 +73,12 @@ FullWidth.args = {
 
 export const Circle = Template.bind({});
 Circle.args = {
-  circle: true,
+  shape: 'circle',
   children: 'X',
 };
 
 export const Square = Template.bind({});
 Square.args = {
-  square: true,
+  shape: 'square',
   children: 'X',
 };
