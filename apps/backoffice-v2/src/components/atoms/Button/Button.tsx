@@ -1,6 +1,9 @@
 import * as React from 'react';
+import { ElementType } from 'react';
 import { ctw } from '@/utils/ctw/ctw';
-import { cva, VariantProps } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
+import { ButtonComponent, ButtonProps } from './types';
+import { PolymorphicRef } from '@/types';
 
 export const buttonVariants = cva(
   'active:scale-95 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 dark:hover:bg-slate-800 dark:hover:text-slate-100 disabled:opacity-50 dark:focus:ring-slate-400 disabled:pointer-events-none dark:focus:ring-offset-slate-900 data-[state=open]:bg-slate-100 dark:data-[state=open]:bg-slate-800',
@@ -20,53 +23,34 @@ export const buttonVariants = cva(
       fullWidth: {
         true: 'w-full',
       },
-      circle: {
-        true: 'rounded-full !p-3',
-      },
-      square: {
-        true: '!p-3',
-      },
       size: {
         default: 'h-10 py-2 px-4',
         sm: 'h-9 px-2 rounded-md',
         lg: 'h-11 px-8 rounded-md',
+      },
+      shape: {
+        square: '!p-3',
+        circle: 'rounded-full !p-3',
       },
     },
     defaultVariants: {
       variant: 'default',
       size: 'default',
       fullWidth: false,
-      circle: false,
-      square: false,
     },
     compoundVariants: [
       {
-        circle: true,
+        shape: ['circle', 'square'],
         size: 'default',
         className: 'w-10',
       },
       {
-        circle: true,
+        shape: ['circle', 'square'],
         size: 'sm',
         className: 'w-9',
       },
       {
-        circle: true,
-        size: 'lg',
-        className: 'w-11',
-      },
-      {
-        square: true,
-        size: 'default',
-        className: 'w-10',
-      },
-      {
-        square: true,
-        size: 'sm',
-        className: 'w-9',
-      },
-      {
-        square: true,
+        shape: ['circle', 'square'],
         size: 'lg',
         className: 'w-11',
       },
@@ -74,18 +58,21 @@ export const buttonVariants = cva(
   },
 );
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {}
+export const Button: ButtonComponent = React.forwardRef(
+  <TElement extends ElementType = 'button'>(
+    { as, children, className, shape, fullWidth, variant, size, ...props }: ButtonProps<TElement>,
+    ref: PolymorphicRef<TElement>,
+  ) => {
+    const Component = as ?? 'button';
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, square, circle, fullWidth, variant, size, ...props }, ref) => {
     return (
-      <button
-        className={ctw(buttonVariants({ square, circle, fullWidth, variant, size }), className)}
+      <Component
+        className={ctw(buttonVariants({ shape, fullWidth, variant, size }), className)}
         ref={ref}
         {...props}
-      />
+      >
+        {children}
+      </Component>
     );
   },
 );
