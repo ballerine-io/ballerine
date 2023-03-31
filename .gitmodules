@@ -1,9 +1,0 @@
-[submodule "sdks/ballerine-ios-sdk"]
-	path = sdks/ios-sdk
-	url = git@github.com:ballerine-io/ballerine-ios-sdk.git
-[submodule "sdks/ballerine-android-sdk"]
-	path = sdks/android-sdk
-	url = git@github.com:ballerine-io/ballerine-android-sdk.git
-[submodule "packages/ballerine-ui-components"]
-	path = packages/ui-components
-	url = git@github.com:ballerine-io/ballerine-ui-components.git
