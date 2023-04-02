@@ -1,8 +1,12 @@
-import { useParams } from '@tanstack/react-router';
-import { camelCaseToSpace } from '../../../../../utils/camel-case-to-space/camel-case-to-space';
-import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
-import { useStorageFileQuery } from '../../../../../lib/react-query/queries/useStorageFileQuery/useStorageFileQuery';
-import { underscoreToSpace } from '../../../../../utils/underscore-to-space/underscore-to-space';
+import { useParams } from "@tanstack/react-router";
+import { camelCaseToSpace } from "../../../../../utils/camel-case-to-space/camel-case-to-space";
+import {
+  useEndUserWithWorkflowQuery
+} from "../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery";
+import {
+  useStorageFileQuery
+} from "../../../../../lib/react-query/queries/useStorageFileQuery/useStorageFileQuery";
+import { underscoreToSpace } from "../../../../../utils/underscore-to-space/underscore-to-space";
 
 export const useIndividual = () => {
   const { endUserId } = useParams();

@@ -1,9 +1,9 @@
-import { isErrorWithMessage, isObject } from '@ballerine/common';
-import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
-import { t } from 'i18next';
-import toast from 'react-hot-toast';
-import { IGlobalToastContext } from '../../interfaces';
-import { isZodError } from '../../utils/is-zod-error/is-zod-error';
+import { isErrorWithMessage, isObject } from "@ballerine/common";
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
+import { t } from "i18next";
+import toast from "react-hot-toast";
+import { IGlobalToastContext } from "../../interfaces";
+import { isZodError } from "../../utils/is-zod-error/is-zod-error";
 
 // TODO: Add i18n plurals
 // TODO: Make accessing translations typesafe (json properties)
@@ -13,7 +13,7 @@ export const queryClient = new QueryClient({
       // Otherwise a simple 'Unauthorized (401)' error could cause a retry
       // until the user signs in.
       retry: 3,
-      refetchInterval: parseInt(import.meta.env.VITE_POOLING_TIME as string) * 1000 || false,
+      refetchInterval: parseInt(import.meta.env.VITE_POLLING_INTERVAL as string) * 1000 || false,
     },
   },
   queryCache: new QueryCache({

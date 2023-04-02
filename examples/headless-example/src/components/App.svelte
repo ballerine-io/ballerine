@@ -54,7 +54,7 @@
   });
 
   const createEndUserQuery = (id: string) => createQuery({
-    queryKey: [{id}],
+    queryKey: ['end-user', {id}],
     queryFn: async () => fetchEndUser(id),
     onSuccess(data) {
       const cached = sessionStorage.getItem(NO_AUTH_USER_KEY);
@@ -75,12 +75,13 @@
     enabled: typeof id === 'string' && id.length > 0,
   })
   const createWorkflowsQuery = (options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {}) => createQuery({
-    queryKey: [{}],
+    queryKey: ['workflows'],
     queryFn: fetchWorkflows,
+    enabled: typeof noAuthUserId === 'string' && noAuthUserId.length > 0,
     ...options
   })
   const createIntentQuery = () => createQuery({
-    queryKey: [{}],
+    queryKey: ['intent'],
     queryFn: async () => {
       const data = await fetchIntent();
 
@@ -91,15 +92,17 @@
     enabled: false
   })
   const createFirstWorkflowQuery = () => createWorkflowsQuery({
-    select: (workflows) =>
-      Array.isArray(workflows) ? workflows?.find(
+    select: (workflows) => {
+      console.log(workflows)
+      return Array.isArray(workflows) ? workflows?.find(
         workflow =>
           workflow?.workflowDefinition?.name === "onboarding_client_collect_data" &&
           workflow?.workflowRuntimeData?.status !== 'completed',
       ) : undefined
+    }
   })
   const createWorkflowQuery = (id: string) => createQuery({
-    queryKey: [{id}],
+    queryKey: ['workflows', {id}],
     queryFn: async () => {
       const data = await fetchWorkflow(id);
 
@@ -108,20 +111,21 @@
       return data;
     },
     refetchInterval(data) {
-      if ($endUserQuery?.data?.state === "PROCESSING" &&  data?.workflowRuntimeData?.status !== "completed") {
+      if ($endUserQuery?.data?.state === "PROCESSING" && data?.workflowRuntimeData?.status !== "completed") {
         return false;
       }
 
-      return parseInt(import.meta.env.VITE_POOLING_TIME as string) * 1000 || false;
-    }
+      return parseInt(import.meta.env.VITE_POLLING_INTERVAL) * 1000 || false;
+    },
+    enabled: typeof id === 'string' && id.length > 0,
   });
   const queryClient = useQueryClient();
   const createSignUpMutation = () => createMutation({
     mutationFn: fetchSignUp,
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       sessionStorage.setItem(NO_AUTH_USER_KEY, data?.id);
       noAuthUserId = data?.id;
-      await queryClient.invalidateQueries();
+      queryClient.invalidateQueries();
     }
   })
   $: endUserQuery = createEndUserQuery(noAuthUserId);
@@ -143,21 +147,33 @@
     });
 
   const workflow = writable<WorkflowOptionsBrowser | undefined>();
-  const workflows = createWorkflowsQuery();
+  const mergeWorkflow = () => makeWorkflow($workflowQuery?.data || $intentQuery?.data);
+  const handleResubmit = () => {
+    workflow.set(mergeWorkflow());
+  };
+
+  let nextWorkflow;
+  let shouldResubmit = false;
 
   $: {
     if ($endUserQuery?.data?.id && ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)) {
-      workflow.set(makeWorkflow($workflowQuery?.data || $intentQuery?.data))
+      nextWorkflow = mergeWorkflow();
+
+      if (
+        nextWorkflow?.definition?.initial !== $workflow?.definition?.initial &&
+        nextWorkflow?.definition?.context?.documentOne?.resubmissionReason
+      ) {
+        shouldResubmit = true;
+      } else {
+        workflow.set(nextWorkflow);
+      }
     } else {
       workflow.set(undefined)
     }
   }
 
-  const workflowsData = $workflows.data;
-
 </script>
 
-{@debug workflowsData}
 
 {#if $endUserQuery?.data?.id}
   <div>
@@ -178,7 +194,15 @@
 {#if $workflow}
   <Workflow workflow={$workflow}/>
 {/if}
-{#if !$workflow }
+{#if $endUserQuery?.data?.state !== 'PROCESSING' && !$workflow}
   <button disabled={!$endUserQuery?.data?.id} on:click={$intentQuery.refetch}>KYC
   </button>
+{/if}
+{#if shouldResubmit && !$workflow}
+  <p>
+    You've been requested to re-submit your documents due
+    to {nextWorkflow?.definition?.context?.documentOne?.resubmissionReason?.toLowerCase()?.replace(/_/g, ' ')}
+    . Please click navigate to re-submit your documents.
+  </p>
+  <button on:click={handleResubmit}>Navigate</button>
 {/if}

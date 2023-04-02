@@ -49,8 +49,12 @@
     },
   };
 
-  workflowService.subscribe("USER_NEXT_STEP", (data) => {
+  workflowService.subscribe("USER_NEXT_STEP", async (data) => {
     currentStep = data.state;
+
+    if (currentStep !== "final") return;
+
+    location.reload();
   });
 
   workflowService.subscribe("USER_PREV_STEP", (data) => {
@@ -96,4 +100,3 @@
 <svelte:component this={step} {onPrev} {onSubmit} {initialValues} />
 
 <Dump value={snapshot} />
-<Dump value={initialValues} />

@@ -151,7 +151,18 @@ export class WorkflowService {
     const reviewMachineDefinition = await this.workflowDefinitionRepository.findById(
       workflow.reviewMachineId,
     );
-    if (!(runtime.context as { resubmissionReason: string })?.resubmissionReason) {
+
+    const workflowRuntimeDataExists = await this.workflowRuntimeDataRepository.findOne({
+      where: {
+        endUserId: runtime.endUserId,
+        context: {
+          path: ['parentMachine', 'id'],
+          equals: runtime.id,
+        }
+      },
+    })
+
+    if (!workflowRuntimeDataExists) {
       const createRuntimeResult = await this.workflowRuntimeDataRepository.create({
         data: {
           endUserId: runtime.endUserId,
@@ -166,7 +177,14 @@ export class WorkflowService {
           status: 'created',
         },
       });
+    } else {
+      const updateRuntimeResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataExists.id, {
+        data: {
+          context: context as any,
+        },
+      });
     }
+
     const updateResult = await this.updateWorkflowRuntimeData(runtime.id, {
       ...((runtime.context as { resubmissionReason: string })?.resubmissionReason
         ? {
