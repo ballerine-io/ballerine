@@ -1,4 +1,3 @@
-import { IMAGE_TYPES } from 'jslib-html5-camera-photo';
 import { DocumentType } from '../../contexts/app-state';
 import { DocumentKind, DocumentVariant } from '../../contexts/app-state/types';
 import { Elements, IElement, Steps, TStepsConfigurations } from '../../contexts/configuration';
@@ -949,16 +948,6 @@ export const uiTheme: IUIPackTheme = {
         },
       },
     },
-    overlay: {
-      selfie: {
-        'background-position-y': '30%',
-      },
-    },
-    list: {
-      titleProps: {},
-      listProps: {},
-      listElementProps: {},
-    },
     container: {
       width: '100%',
       display: 'flex',
@@ -978,20 +967,6 @@ export const uiTheme: IUIPackTheme = {
       'text-align': 'center',
       padding: '10px 0px 24px',
       color: '#001B39',
-    },
-  },
-  settings: {
-    cameraSettings: {
-      sizeFactor: 1,
-      imageType: IMAGE_TYPES.JPG,
-      imageCompression: 0,
-      isImageMirror: false,
-    },
-    selfieCameraSettings: {
-      sizeFactor: 1,
-      imageType: IMAGE_TYPES.JPG,
-      imageCompression: 0,
-      isImageMirror: true,
     },
   },
   steps: stepsTheme,

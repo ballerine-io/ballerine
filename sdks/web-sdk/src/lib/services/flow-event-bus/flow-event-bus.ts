@@ -1,23 +1,23 @@
 import { getFlowConfig } from '../../contexts/flows/hooks';
 import { get } from 'svelte/store';
 import { configuration } from '../../contexts/configuration';
-import { IFlowEventBus } from './interfaces';
-import { FlowEvent } from './enums';
+import { FlowEventBusFn } from './interfaces';
+import { FlowEventType } from './enums';
 
-export const flowEventBus: IFlowEventBus = ({ type, payload }) => {
+export const flowEventBus: FlowEventBusFn = ({ type, payload }) => {
   const { callbacks } = getFlowConfig(get(configuration));
 
   switch (type) {
-    case FlowEvent.FLOW_COMPLETE:
+    case FlowEventType.FLOW_COMPLETE:
       callbacks?.onFlowComplete?.(payload);
       break;
-    case FlowEvent.FLOW_EXIT:
+    case FlowEventType.FLOW_EXIT:
       callbacks?.onFlowExit?.(payload);
       break;
-    case FlowEvent.FLOW_ERROR:
+    case FlowEventType.FLOW_ERROR:
       callbacks?.onFlowError?.(payload);
       break;
-    case FlowEvent.FLOW_NAVIGATION_UPDATE:
+    case FlowEventType.FLOW_NAVIGATION_UPDATE:
       callbacks?.onFlowNavigationUpdate?.(payload);
       break;
     default:

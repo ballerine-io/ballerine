@@ -4,9 +4,7 @@ import TestButton from './Button.test.svelte';
 describe('Button', () => {
   it('should render a button', async () => {
     render(TestButton, {
-      props: {
-        configuration: {},
-      },
+      props: {},
     });
 
     const button = screen.getByRole('button', { name: /test/i });
