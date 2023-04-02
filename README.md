@@ -75,7 +75,7 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 
 Join our mailing list so you know whenever we release new products and features.
 
-<a href="https://www.ballerine.com/mailing-list" title="Ballerine - Request Access">
+<a href="https://www.ballerine.com/" title="Ballerine - Request Access">
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
 </a>
 
@@ -181,7 +181,7 @@ Examples of what you can do with it:
 
 Leave us your email on our mailing list and we'll let you know whenever we release a feature or improvement.
 
-<a href="https://www.ballerine.com/mailing-list" title="Ballerine - Request Access">
+<a href="https://www.ballerine.com/" title="Ballerine - Request Access">
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
 </a>
 </br>
