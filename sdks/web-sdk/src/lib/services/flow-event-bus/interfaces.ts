@@ -35,9 +35,9 @@ type IFlowEventBusParams<TType extends FlowEventType, TPayload extends TFlowEven
 };
 
 type FlowEvent =
-  | IFlowEventBusParams<FlowEventType.FLOW_COMPLETE, IFlowCompletePayload>
-  | IFlowEventBusParams<FlowEventType.FLOW_EXIT, IFlowExitPayload>
-  | IFlowEventBusParams<FlowEventType.FLOW_ERROR, IFlowErrorPayload>
-  | IFlowEventBusParams<FlowEventType.FLOW_NAVIGATION_UPDATE, IFlowNavigationUpdatePayload>;
+  | IFlowEventBusParams<'FLOW_COMPLETE', IFlowCompletePayload>
+  | IFlowEventBusParams<'FLOW_EXIT', IFlowExitPayload>
+  | IFlowEventBusParams<'FLOW_ERROR', IFlowErrorPayload>
+  | IFlowEventBusParams<'FLOW_NAVIGATION_UPDATE', IFlowNavigationUpdatePayload>;
 
 export type FlowEventBusFn = <T extends FlowEvent>(flowEvent: T) => void;

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { sleep, uniqueArray } from '@ballerine/common';
 import { HttpError } from '@ballerine/workflow-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -6,6 +9,7 @@ import { errorWorkflow, workflowOptions } from './workflow-options';
 
 let workflowService: WorkflowBrowserSDK;
 let events: any[] = [];
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let state: string;
 
 const next = (payload?: Record<PropertyKey, any>) => {
@@ -145,7 +149,12 @@ describe('subscribe', () => {
       },
     });
 
-    workflowService.subscribe('custom', event => events.push(event));
+    workflowService.subscribe(
+      'custom' as never,
+      ((event: any) => {
+        return events.push(event);
+      }) as never,
+    );
 
     workflowService.sendEvent({
       type: 'custom',

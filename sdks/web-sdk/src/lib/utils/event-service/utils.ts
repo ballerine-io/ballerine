@@ -3,7 +3,7 @@ import { currentLanguage, Languages } from '../../contexts/translation';
 import { EventTypes, IDocumentVerificationResponse, IOuterEvent, TActionNames } from './types';
 import { get } from 'svelte/store';
 import { flowEventBus } from '../../services/flow-event-bus/flow-event-bus';
-import { FlowEventType } from '../../services/flow-event-bus/enums';
+import { FlowEventTypes } from '../../services/flow-event-bus/enums';
 import { BALLERINE_EVENT } from './constants';
 import { IEventOptions, IFlowErrorPayload } from '../../services/flow-event-bus/interfaces';
 import { configuration } from '../../contexts/configuration';
@@ -42,7 +42,7 @@ export const sendFlowCompleteEvent = (verificationResponse?: IDocumentVerificati
   sendIframeEvent(eventOptions);
   // Should finalize the signature on the callbacks interface
   flowEventBus({
-    type: FlowEventType.FLOW_COMPLETE,
+    type: FlowEventTypes.FLOW_COMPLETE,
     payload: eventOptions,
   });
 };
@@ -75,7 +75,7 @@ export const sendNavigationUpdateEvent = () => {
   };
   window.parent.postMessage(eventOptions, '*');
   flowEventBus({
-    type: FlowEventType.FLOW_NAVIGATION_UPDATE,
+    type: FlowEventTypes.FLOW_NAVIGATION_UPDATE,
     payload: eventOptions,
   });
 };
@@ -116,7 +116,7 @@ export const sendFlowErrorEvent = (_error: Error, _shouldExit = false) => {
   };
   window.parent.postMessage(eventOptions, '*');
   flowEventBus({
-    type: FlowEventType.FLOW_ERROR,
+    type: FlowEventTypes.FLOW_ERROR,
     payload: eventOptions,
   });
 };

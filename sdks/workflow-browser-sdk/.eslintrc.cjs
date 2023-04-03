@@ -8,4 +8,14 @@ module.exports = {
     project: ['./tsconfig.eslint.json'],
   },
   ignorePatterns: ['.eslintrc.cjs'],
+  rules: {
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
+  },
 };
