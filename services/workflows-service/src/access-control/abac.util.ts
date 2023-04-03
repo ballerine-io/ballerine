@@ -6,9 +6,8 @@ import { Permission } from 'accesscontrol';
  */
 export function getInvalidAttributes(
   permission: Permission,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  data: Object,
+  data: Record<string, unknown>,
 ): string[] {
-  const filteredData = permission.filter(data);
+  const filteredData = permission.filter(data) as Record<string, unknown>;
   return Object.keys(data).filter(key => !(key in filteredData));
 }

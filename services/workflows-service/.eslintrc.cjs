@@ -33,6 +33,15 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {
     'import/no-cycle': 'error',
+
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
   },
   ignorePatterns: ['.eslintrc.cjs'],
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -8,12 +9,12 @@ import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { IObjectWithId } from '@/types';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import _ from 'lodash';
-import { Injectable } from '@nestjs/common';
+
+import { Injectable, Logger } from '@nestjs/common';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
-import { Logger } from '@nestjs/common';
+import { merge } from 'lodash';
 
 export interface WorkflowData {
   workflowDefinition: object;
@@ -24,7 +25,7 @@ export type IntentResponse = WorkflowData[];
 
 // TODO: TEMP (STUB)
 const policies = {
-  signup: (ctx: any): { workflowDefinitionId: string; version: number }[] => {
+  signup: (_ctx: unknown): { workflowDefinitionId: string; version: number }[] => {
     return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9aaa', version: 1 }];
   },
 };
@@ -87,8 +88,8 @@ export class WorkflowService {
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
 
-    data.context = _.merge(data.context, runtimeData.context);
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    data.context = merge(data.context, runtimeData.context);
+
     this.logger.log(
       `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
     );
@@ -128,36 +129,19 @@ export class WorkflowService {
 
   async handleRuntimeFinalState(
     runtime: WorkflowRuntimeData,
-    context: Record<string, unknown>,
-    workflow: WorkflowDefinition,
-  ) {
-    // discuss error handling
-    if (!workflow.reviewMachineId) {
-      return;
-    }
-
-    // will throw exception if review machine def is missing
-    const reviewMachineDefinition = await this.workflowDefinitionRepository.findById(
-      workflow.reviewMachineId,
-    );
-    const createRuntimeResult = await this.workflowRuntimeDataRepository.create({
-      data: {
-        endUserId: runtime.endUserId,
-        workflowDefinitionVersion: workflow.version,
-        workflowDefinitionId: workflow.reviewMachineId,
-        context: context as any,
-        status: 'created',
-      },
-    });
-    const updateResult = await this.updateWorkflowRuntimeData(runtime.id, {
+    _context: Record<string, unknown>,
+    _workflow: WorkflowDefinition,
+  ): Promise<void> {
+    await this.updateWorkflowRuntimeData(runtime.id, {
       status: 'completed',
     });
-    // const updateUserStateResult = await this.(userId, workflow.version, workflow.reviewMachineId, context);
   }
 
-  async resolveIntent(intent: string, endUserId: string): Promise<RunnableWorkflowData[]> {
+  async resolveIntent(_intent: string, endUserId: string): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies['signup'];
-    const { workflowDefinitionId } = workflowDefinitionResolver({})[0]!; // TODO: implement logic for multiple workflows
+    // TODO: implement logic for multiple workflows
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const { workflowDefinitionId } = workflowDefinitionResolver({})[0]!;
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
@@ -195,11 +179,10 @@ export class WorkflowService {
       runtimeData.workflowDefinitionId,
     );
 
+    type CreateWorkflowArgs = Parameters<typeof createWorkflow>[0];
     const service = createWorkflow({
-      // @ts-expect-error Should run workflow.definition through Zod to ensure a valid definition.
-      definition: workflow.definition,
-      // @ts-expect-error The SDK supports 'statechart-json' | 'bmpn-json', the DB expects a string.
-      definitionType: workflow.definitionType,
+      definition: workflow.definition as unknown as CreateWorkflowArgs['definition'],
+      definitionType: workflow.definitionType as CreateWorkflowArgs['definitionType'],
       workflowContext: {
         machineContext: runtimeData.context,
         state: runtimeData.state,

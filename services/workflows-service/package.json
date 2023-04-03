@@ -10,7 +10,7 @@
     "start:watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "build": "nest build",
-    "test": "jest",
+    "test": "jest --verbose",
     "seed": "ts-node scripts/seed.ts",
     "db:migrate-save": "prisma migrate dev",
     "db:migrate-up": "prisma migrate deploy",

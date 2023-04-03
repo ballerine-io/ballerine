@@ -1,12 +1,7 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { InjectRolesBuilder, RolesBuilder } from 'nest-access-control';
+import { InjectRolesBuilder, Permission, Role, RolesBuilder } from 'nest-access-control';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
@@ -16,14 +11,15 @@ export class AclFilterResponseInterceptor implements NestInterceptor {
     private readonly reflector: Reflector,
   ) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>(
-      'roles',
-      [context.getHandler(), context.getClass()],
-    );
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    const permissionsRoles = this.reflector.getAllAndMerge<string[]>('roles', [
+      context.getHandler(),
+      context.getClass(),
+    ])[0] as Role;
 
-    const permission = this.rolesBuilder.permission({
-      role: permissionsRoles.role,
+    const permission: Permission = this.rolesBuilder.permission({
+      // TODO: type or delete?
+      // role: permissionsRoles.role,
       action: permissionsRoles.action,
       possession: permissionsRoles.possession,
       resource: permissionsRoles.resource,
@@ -32,9 +28,9 @@ export class AclFilterResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map(data => {
         if (Array.isArray(data)) {
-          return data.map((results: any) => permission.filter(results));
+          return data.map((results: unknown) => permission.filter(results) as unknown);
         } else {
-          return permission.filter(data);
+          return permission.filter(data) as unknown;
         }
       }),
     );
