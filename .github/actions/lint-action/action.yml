@@ -34,6 +34,10 @@ runs:
       shell: bash
       run: pnpm install
 
+    - name: Build
+      shell: bash
+      run: pnpm build
+
     - name: Lint
       shell: bash
       run: pnpm lint

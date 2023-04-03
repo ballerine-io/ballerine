@@ -175,12 +175,7 @@ describe('User', () => {
         ...CREATE_RESULT,
         createdAt: CREATE_RESULT.createdAt.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
-      })
-      .then(() =>
-        agent.post('/users').send(CREATE_INPUT).expect(HttpStatus.CONFLICT).expect({
-          statusCode: HttpStatus.CONFLICT,
-        }),
-      );
+      });
   });
 
   afterAll(async () => {

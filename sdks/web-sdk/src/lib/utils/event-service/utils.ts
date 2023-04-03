@@ -37,14 +37,6 @@ export const sendFlowCompleteEvent = (verificationResponse?: IDocumentVerificati
       code: -1,
       idvResult,
     },
-    // TODO: deal with typings
-    // shouldExit: true,
-    // payload: syncFlow
-    //   ? {
-    //       status,
-    //       idvResult,
-    //     }
-    //   : undefined,
   };
 
   sendIframeEvent(eventOptions);
@@ -109,15 +101,14 @@ export const sendButtonClickEvent = (
   window.parent.postMessage(eventOptions, '*');
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const sendFlowErrorEvent = (_error: Error, _shouldExit = false) => {
-  // TODO: deal with typings
   // const as = get(appState);
+
   const eventOptions: IFlowErrorPayload = {
     eventName: BALLERINE_EVENT,
     eventType: EventTypes.FLOW_ERROR,
-    // shouldExit: shouldExit,
     payload: {},
+    // shouldExit: shouldExit,
     // details: {
     //   currentIdx: as.currentStepIdx,
     //   currentPage: as.currentPage,

@@ -18,8 +18,6 @@ export class AclFilterResponseInterceptor implements NestInterceptor {
     ])[0] as Role;
 
     const permission: Permission = this.rolesBuilder.permission({
-      // TODO: type or delete?
-      // role: permissionsRoles.role,
       action: permissionsRoles.action,
       possession: permissionsRoles.possession,
       resource: permissionsRoles.resource,

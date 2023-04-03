@@ -1,9 +1,24 @@
-import { IAppConfiguration } from '../contexts/configuration';
+import { IAppConfiguration, Steps } from '../contexts/configuration';
+import { IFlow } from '../contexts/flows';
 
 // Config prioritiztion:
 // 3. Theme configuration
 // 2. Step configuration
 // 1. Components configuration
+
+const defaultFlowOrder = [
+  Steps.Welcome,
+  Steps.DocumentSelection,
+  Steps.DocumentPhoto,
+  Steps.CheckDocument,
+  Steps.DocumentPhotoBackStart,
+  Steps.DocumentPhotoBack,
+  Steps.CheckDocumentPhotoBack,
+  Steps.SelfieStart,
+  Steps.Selfie,
+  Steps.CheckSelfie,
+  Steps.Loading,
+];
 
 export const configuration: IAppConfiguration = {
   backendConfig: {
@@ -27,12 +42,11 @@ export const configuration: IAppConfiguration = {
   },
   flows: {
     default: {
-      // TODO: fix this
-      // name: 'default',
-      // stepsOrder: defaultFlowOrder,
-      // syncFlow: true,
-      // useFinalQueryParams: true,
-    },
+      name: 'default',
+      stepsOrder: defaultFlowOrder,
+      syncFlow: true,
+      useFinalQueryParams: true,
+    } as IFlow,
   },
   metricsConfig: {
     enabled: true,

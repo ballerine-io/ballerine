@@ -26,8 +26,6 @@ export class AclValidateRequestInterceptor implements NestInterceptor {
         : context.getArgByIndex<{ data: Record<string, unknown> }>(1).data;
 
     const permission = this.rolesBuilder.permission({
-      // TODO: delete?
-      // role: permissionsRoles.role,
       action: permissionsRoles.action,
       possession: permissionsRoles.possession,
       resource: permissionsRoles.resource,
