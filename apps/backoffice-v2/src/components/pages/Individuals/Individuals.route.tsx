@@ -4,7 +4,7 @@ import { queryClient } from '../../../lib/react-query/query-client';
 import { z } from 'zod';
 import { Route } from '@tanstack/react-router';
 import { Individuals } from 'components/pages/Individuals/Individuals.page';
-import { States } from '../../../enums';
+import { State, States } from '../../../enums';
 
 export const individualsRoute = new Route({
   getParentRoute: () => caseManagementRoute,
@@ -31,7 +31,7 @@ export const individualsRoute = new Route({
       pageSize: 10,
       page: 1,
       filter: {
-        state: [],
+        state: [State.PROCESSING],
         endUserType: [],
       },
       search: '',

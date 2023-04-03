@@ -1,9 +1,9 @@
 <script lang="ts">
-  import {onMount} from 'svelte';
-  import {createZodForm, fetchBlob, getWorkflowContext} from '@/utils';
+  import {createZodForm, getWorkflowContext} from '@/utils';
   import {z} from "zod";
   import type {TOnPrev, TOnSubmit} from "@/types";
   import Form from "@/components/Form.svelte";
+  import RemoteImage from "@/components/RemoteImage.svelte";
 
   const schema = z.object({});
 
@@ -12,30 +12,21 @@
   export let initialValues: z.infer<typeof schema>;
   export let onSubmit: TOnSubmit<typeof schema>;
   export let onPrev: TOnPrev<typeof schema>;
+  export let documentName: string;
 
   const zodForm = createZodForm(schema, {
     initialValues,
     onSubmit(data, ctx) {
-      const documentOne = workflowService.getSnapshot?.()?.context?.documentOne;
-
       return onSubmit({
-        documentOne
+        [documentName]: workflowService.getSnapshot?.()?.context?.[documentName]
       }, ctx);
     },
   });
-  let image: string;
 
-  onMount(async () => {
-    const data = await fetchBlob(
-      `http://localhost:3000/api/external/storage/${context?.documentOne?.id}`,
-    );
-
-    image = URL.createObjectURL(data);
-  });
 </script>
 
-<img src={image} alt="document-one" />
+<RemoteImage id={context?.documentOne?.id} alt="document-review" />
 
 <Form {zodForm} {onPrev} submitText="Submit">
-    <legend>DocumentReview</legend>
+  <legend>DocumentReview</legend>
 </Form>

@@ -93,7 +93,6 @@
   })
   const createFirstWorkflowQuery = () => createWorkflowsQuery({
     select: (workflows) => {
-      console.log(workflows)
       return Array.isArray(workflows) ? workflows?.find(
         workflow =>
           workflow?.workflowDefinition?.name === "onboarding_client_collect_data" &&
@@ -172,8 +171,25 @@
     }
   }
 
-</script>
+  let message;
 
+  $: {
+    switch ($endUserQuery?.data?.state) {
+      case 'PROCESSING':
+        message = '';
+        break;
+      case 'REJECTED':
+        message = 'Your request was declined.';
+        break;
+      case 'APPROVED':
+        message = 'Your request was approved :)';
+        break;
+      default:
+        message = '';
+    }
+  }
+
+</script>
 
 {#if $endUserQuery?.data?.id}
   <div>
@@ -181,10 +197,7 @@
       <h4>{$endUserQuery?.data?.firstName ?? ''} {$endUserQuery?.data?.lastName ?? ''}</h4>
       <img alt="avatar" src={$endUserQuery?.data?.avatarUrl ?? ''}/>
     </div>
-    <ul>
-      <li>
-        State: {$endUserQuery?.data?.id ? $endUserQuery?.data?.state ?? 'NEW' : ''}</li>
-    </ul>
+      <p>{message}</p>
   </div>
 {/if}
 
@@ -194,11 +207,17 @@
 {#if $workflow}
   <Workflow workflow={$workflow}/>
 {/if}
-{#if $endUserQuery?.data?.state !== 'PROCESSING' && !$workflow}
-  <button disabled={!$endUserQuery?.data?.id} on:click={$intentQuery.refetch}>KYC
+{#if $endUserQuery?.data?.id && $endUserQuery?.data?.state !== 'PROCESSING' && !$workflow}
+  <button disabled={!$endUserQuery?.data?.id} on:click={$intentQuery.refetch}>Start KYC
   </button>
 {/if}
-{#if shouldResubmit && !$workflow}
+{#if $endUserQuery?.data?.id && $endUserQuery?.data?.state === 'PROCESSING' && !$workflow}
+  <p>
+    We're processing your request.
+  </p>
+{/if}
+
+{#if $endUserQuery?.data?.id && shouldResubmit && !$workflow}
   <p>
     You've been requested to re-submit your documents due
     to {nextWorkflow?.definition?.context?.documentOne?.resubmissionReason?.toLowerCase()?.replace(/_/g, ' ')}

@@ -17,6 +17,8 @@
     DOCUMENT_SELECTION: DocumentSelection,
     DOCUMENT_PHOTO: DocumentPhoto,
     DOCUMENT_REVIEW: DocumentReview,
+    DOCUMENT_PHOTO_TWO: DocumentPhoto,
+    DOCUMENT_REVIEW_TWO: DocumentReview,
     FINAL: Final,
     ERROR: ErrorComponent,
     SUCCESS: Success,
@@ -47,14 +49,18 @@
     documentOne: {
       type: snapshot?.context?.documentOne?.type,
     },
+    documentTwo: {
+      type: snapshot?.context?.documentOne?.type,
+    },
   };
+  let documentName;
 
   workflowService.subscribe("USER_NEXT_STEP", async (data) => {
     currentStep = data.state;
 
     if (currentStep !== "final") return;
 
-    location.reload();
+    window.location.reload();
   });
 
   workflowService.subscribe("USER_PREV_STEP", (data) => {
@@ -82,6 +88,8 @@
     step = Step[currentStep.toUpperCase() as keyof typeof Step];
     snapshot = workflowService?.getSnapshot();
     initialValues.documentOne.type = snapshot?.context?.documentOne?.type;
+    initialValues.documentTwo.type = snapshot?.context?.documentOne?.type;
+    documentName = currentStep === "document_photo" ? "documentOne" : "documentTwo";
   }
 </script>
 
@@ -97,6 +105,6 @@
   Success!
 {/if}
 
-<svelte:component this={step} {onPrev} {onSubmit} {initialValues} />
+<svelte:component this={step} {onPrev} {onSubmit} {initialValues} {documentName} />
 
 <Dump value={snapshot} />

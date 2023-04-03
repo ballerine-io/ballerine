@@ -82,15 +82,18 @@ model WorkflowRuntimeData {
   // history
   state                     String?
   status                    String             @default("created")
+  files                     File[]
   createdAt                 DateTime           @default(now())
   updatedAt                 DateTime           @updatedAt
   createdBy                 String             @default("SYSTEM")
 }
 
 model File {
-  id             String   @id @default(cuid())
-  userId         String
-  fileNameOnDisk String
-  createdAt      DateTime @default(now())
-  createdBy      String   @default("SYSTEM")
+  id                    String              @id @default(cuid())
+  userId                String
+  fileNameOnDisk        String
+  workflowRuntimeData   WorkflowRuntimeData @relation(fields: [workflowRuntimeDataId], references: [id], onDelete: Cascade)
+  workflowRuntimeDataId String
+  createdAt             DateTime            @default(now())
+  createdBy             String              @default("SYSTEM")
 }

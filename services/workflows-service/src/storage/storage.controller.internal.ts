@@ -44,14 +44,31 @@ export class StorageControllerInternal {
       },
     },
   })
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File
+  ) {
     const id = await this.service.createFileLink({
       fileNameOnDisk: file.filename,
+      workflowId: 'clg0x4zea0003ph13md7i9ypa',
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
     });
 
     return { id };
+  }
+
+  @common.Get()
+  async listFilesByWorkflow(@Res() res: Response) {
+    // currently ignoring user id due to no user info
+    const fileNamesOnDisk = await this.service.listFileNames({
+      userId: '',
+    });
+
+    if (!fileNamesOnDisk) {
+      throw new errors.NotFoundException('files not found');
+    }
+
+    return res.sendFile(fileNameOnDisk, { root: './upload' });
   }
 
   // curl -v http://localhost:3000/api/storage/1679322938093

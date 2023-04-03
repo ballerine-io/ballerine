@@ -9,12 +9,20 @@ export class StorageService {
 
   async createFileLink({
     fileNameOnDisk,
+    workflowId,
     userId,
-  }: Pick<Prisma.FileCreateInput, 'fileNameOnDisk' | 'userId'>) {
+  }: Pick<Prisma.FileCreateInput, 'fileNameOnDisk' | 'userId'> & {
+    workflowId: string;
+  }) {
     const file = await this.fileRepository.create({
       data: {
         fileNameOnDisk,
         userId,
+        workflowRuntimeData: {
+          connect: {
+            id: workflowId,
+          }
+        }
       },
       select: {
         id: true,
@@ -22,6 +30,12 @@ export class StorageService {
     });
 
     return file.id;
+  }
+
+  async listFileNames({ userId }: IFileIds) {
+    return await this.fileRepository.findManyNames({
+      userId,
+    });
   }
 
   async getFileNameById({ id, userId }: IFileIds) {

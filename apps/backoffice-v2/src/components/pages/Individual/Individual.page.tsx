@@ -1,9 +1,12 @@
 import { Subject } from 'components/organisms/Subject/Subject';
 import { useIndividual } from 'components/pages/Individual/hooks/useIndividual/useIndividual';
+import { useConsole } from 'hooks/useConsole/useConsole';
 
 export const Individual = () => {
   const { selectedEndUser, faceAUrl, faceBUrl, info, images, isLoading, whitelist } =
     useIndividual();
+
+  useConsole(images);
 
   // Selected end user
   return (

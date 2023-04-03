@@ -1,11 +1,11 @@
-import "react-image-crop/dist/ReactCrop.css";
-import { FunctionComponent } from "react";
-import { ImageViewer } from "components/organisms/ImageViewer/ImageViewer";
-import { IDocumentsProps } from "components/organisms/Subject/interfaces";
-import ReactCrop from "react-image-crop";
-import { CheckSvg, XMarkSvg } from "components/atoms/icons";
-import { useDocuments } from "components/organisms/Subject/hooks/useDocuments/useDocuments";
-import { ctw } from "../../../utils/ctw/ctw";
+import 'react-image-crop/dist/ReactCrop.css';
+import { FunctionComponent } from 'react';
+import { ImageViewer } from 'components/organisms/ImageViewer/ImageViewer';
+import { IDocumentsProps } from 'components/organisms/Subject/interfaces';
+import ReactCrop from 'react-image-crop';
+import { CheckSvg, XMarkSvg } from 'components/atoms/icons';
+import { useDocuments } from 'components/organisms/Subject/hooks/useDocuments/useDocuments';
+import { ctw } from '../../../utils/ctw/ctw';
 
 /**
  * @description To be used by {@link Subject}, and be wrapped by {@link Subject.Content}. Displays a single end user's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
@@ -39,7 +39,6 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
         >
           <ReactCrop crop={crop} onChange={onCrop} disabled={!isCropping}>
             <ImageViewer.SelectedImage
-              key={initialImage}
               initialImage={initialImage}
               ref={selectedImageRef}
               isLoading={isLoading}
