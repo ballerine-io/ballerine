@@ -88,7 +88,20 @@
     snapshot = workflowService?.getSnapshot();
     initialValues.documentOne.type = snapshot?.context?.documentOne?.type;
     initialValues.documentTwo.type = snapshot?.context?.documentOne?.type;
-    documentName = currentStep === "document_photo" ? "documentOne" : "documentTwo";
+
+    switch (currentStep) {
+      case "document_photo":
+      case "document_review":
+        documentName = "documentOne";
+        break;
+      case "document_photo_two":
+      case "document_review_two":
+        documentName = "documentTwo";
+        break;
+      default:
+        break;
+    }
+
   }
 </script>
 

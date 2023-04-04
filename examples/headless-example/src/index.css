@@ -26,4 +26,8 @@
   legend {
     @apply text-2xl font-bold w-full text-center my-4;
   }
+
+  a {
+    @apply text-blue-500 hover:underline;
+  }
 }

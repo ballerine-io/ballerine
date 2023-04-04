@@ -28,4 +28,4 @@
   });
 </script>
 
-<img {src} {alt} />
+<img class="rounded-md" {src} {alt} />
