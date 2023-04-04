@@ -105,16 +105,18 @@
   }
 </script>
 
-{#if stateActionStatus === "PENDING"}
+<span class="absolute bottom-8 left-8">
+  {#if stateActionStatus === "PENDING"}
   Loading...
 {/if}
 
-{#if stateActionStatus === "ERROR"}
+  {#if stateActionStatus === "ERROR"}
   {error}
 {/if}
 
-{#if stateActionStatus === "SUCCESS"}
-  Success!
+  {#if stateActionStatus === "SUCCESS"}
+  Success
 {/if}
+</span>
 
 <svelte:component this={step} {onPrev} {onSubmit} {initialValues} {documentName} />
