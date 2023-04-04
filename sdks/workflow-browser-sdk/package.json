@@ -20,6 +20,7 @@
     "clean": "rimraf ./dist",
     "build": "pnpm clean && rollup --config rollup.config.js",
     "watch": "tsc -w",
+    "lint": "eslint . --ext .ts",
     "dev": "concurrently --kill-others \"pnpm build -w\" \"pnpm watch\"",
     "test": "vitest run",
     "test:watch": "vitest"

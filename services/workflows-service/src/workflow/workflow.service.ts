@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -8,7 +9,7 @@ import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { IObjectWithId } from '@/types';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import _ from 'lodash';
+import { merge } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
@@ -34,7 +35,7 @@ export type IntentResponse = WorkflowData[];
 
 // TODO: TEMP (STUB)
 const policies = {
-  signup: (ctx: any): { workflowDefinitionId: string; version: number }[] => {
+  signup: (_ctx: unknown): { workflowDefinitionId: string; version: number }[] => {
     return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9aaa', version: 1 }];
   },
 };
@@ -97,8 +98,8 @@ export class WorkflowService {
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
 
-    data.context = _.merge(runtimeData.context, data.context);
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    data.context = merge(runtimeData.context, data.context);
+
     this.logger.log(
       `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
     );
@@ -145,11 +146,16 @@ export class WorkflowService {
     if (!workflow.reviewMachineId) {
       return;
     }
+    const endUserId = runtime.endUserId;
+    await this.endUserRepository.updateById(endUserId, {
+      data: {
+        state: EndUserState.PROCESSING,
+      },
+    });
+    this.logger.log(`${endUserId} is now in state ${EndUserState.PROCESSING}`);
 
     // will throw exception if review machine def is missing
-    const reviewMachineDefinition = await this.workflowDefinitionRepository.findById(
-      workflow.reviewMachineId,
-    );
+    await this.workflowDefinitionRepository.findById(workflow.reviewMachineId);
 
     const workflowRuntimeDataExists = await this.workflowRuntimeDataRepository.findOne({
       where: {
@@ -162,13 +168,13 @@ export class WorkflowService {
     });
 
     if (!workflowRuntimeDataExists) {
-      const createRuntimeResult = await this.workflowRuntimeDataRepository.create({
+      await this.workflowRuntimeDataRepository.create({
         data: {
           endUserId: runtime.endUserId,
           workflowDefinitionVersion: workflow.version,
           workflowDefinitionId: workflow.reviewMachineId,
           context: {
-            ...(context as any),
+            ...context,
             parentMachine: {
               id: runtime.id,
             },
@@ -177,24 +183,22 @@ export class WorkflowService {
         },
       });
     } else {
-      const updateRuntimeResult = await this.workflowRuntimeDataRepository.updateById(
-        workflowRuntimeDataExists.id,
-        {
-          data: {
-            context: context as any,
-          },
+      await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataExists.id, {
+        data: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          context: context as any,
         },
-      );
+      });
     }
 
-    const updateResult = await this.updateWorkflowRuntimeData(runtime.id, {
+    await this.updateWorkflowRuntimeData(runtime.id, {
       ...((runtime.context as { resubmissionReason: string })?.resubmissionReason
         ? {
             endUserId: runtime.endUserId,
             workflowDefinitionVersion: workflow.version,
             workflowDefinitionId: workflow.reviewMachineId,
             context: {
-              ...(context as any),
+              ...context,
               parentMachine: {
                 id: runtime.id,
               },
@@ -203,7 +207,6 @@ export class WorkflowService {
         : {}),
       status: 'completed',
     });
-    // const updateUserStateResult = await this.(userId, workflow.version, workflow.reviewMachineId, context);
   }
 
   async resolveIntent(
@@ -211,6 +214,7 @@ export class WorkflowService {
     endUserId = 'ckkt3qnv40001qxtt7nmj9r2r', // TODO: remove default value
   ): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies['signup'];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const { workflowDefinitionId } = workflowDefinitionResolver({})[0]!; // TODO: implement logic for multiple workflows
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
@@ -233,12 +237,6 @@ export class WorkflowService {
       },
     });
 
-    await this.endUserRepository.updateById(endUserId, {
-      data: {
-        state: EndUserState.PROCESSING,
-      },
-    });
-    this.logger.log(`${endUserId} is now in state ${EndUserState.PROCESSING}`);
     this.logger.log(
       `Created workflow runtime data ${workflowRuntimeData.id}, for user ${endUserId}, with workflow ${workflowDefinitionId}, version ${workflowDefinition.version}`,
     );
@@ -289,6 +287,7 @@ export class WorkflowService {
       switch (resubmissionReason) {
         case ResubmissionReason.BLURRY_IMAGE:
           await this.workflowRuntimeDataRepository.updateById(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
             (runtimeData as any).context?.parentMachine?.id,
             {
               data: {

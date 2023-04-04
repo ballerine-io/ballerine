@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
@@ -14,7 +16,7 @@ const INVALID_CREDENTIALS: LoginDto = {
   username: 'Invalid User',
   password: 'Invalid User Password',
 };
-const USER: any = {
+const USER = {
   ...VALID_CREDENTIALS,
   createdAt: new Date(),
   id: VALID_ID,
@@ -34,13 +36,13 @@ const userService = {
 };
 
 const passwordService = {
-  compare(password: string, encrypted: string) {
+  compare(_password: string, _encrypted: string) {
     return true;
   },
 };
 
 const tokenService = {
-  createToken(username: string, password: string) {
+  createToken(_username: string, _password: string) {
     return SIGN_TOKEN;
   },
 };

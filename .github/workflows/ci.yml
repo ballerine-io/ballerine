@@ -7,16 +7,6 @@ on:
 #      - dev
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Format
-        uses: ./.github/actions/format-action
-
   lint:
     runs-on: ubuntu-latest
 

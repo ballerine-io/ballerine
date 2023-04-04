@@ -5,7 +5,7 @@ import { configuration as defaultConfiguration } from '../../configuration/confi
 export const configuration = writable<IAppConfiguration>(defaultConfiguration);
 
 Object.defineProperty(window, 'configStore', {
-  get: (): any => {
+  get: () => {
     return configuration.subscribe(e => console.log(e));
   },
 });

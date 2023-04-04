@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { uniqueArray } from '@ballerine/common';
 import {
   createWorkflow,
@@ -69,7 +70,7 @@ export class WorkflowBrowserSDK {
       },
     });
 
-    this.#__service.subscribe((event) => {
+    this.#__service.subscribe(event => {
       this.#__notify(event as WorkflowEventWithBrowserType);
     });
   }
@@ -268,7 +269,7 @@ export class WorkflowBrowserSDK {
       throw new Error(`${res.statusText} (${res.status})`);
     }
 
-    const uploadedFile: { id: string } = await res.json();
+    const uploadedFile = (await res.json()) as { id: string };
 
     return {
       ...uploadedFile,

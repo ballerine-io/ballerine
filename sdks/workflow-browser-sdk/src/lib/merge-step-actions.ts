@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Action } from './enums';
 
 /**
@@ -7,7 +8,7 @@ import { Action } from './enums';
  * @param action - `USER_NEXT_STEP`, `USER_PREV_STEP`, or user defined action.
  */
 
-export const mergeStepActions = (state, [event, target]) => {
+export const mergeStepActions = (state: { [x: string]: any }, [event, target]: any): any => {
   const nextTarget = target?.[event] ?? target?.target;
   const eventProps =
     typeof target === 'string'

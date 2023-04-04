@@ -18,7 +18,7 @@ export class PasswordService {
   salt: Salt;
 
   constructor(private configService: ConfigService) {
-    const saltOrRounds = this.configService.get(BCRYPT_SALT_VAR);
+    const saltOrRounds = this.configService.get<string>(BCRYPT_SALT_VAR);
     this.salt = parseSalt(saltOrRounds);
   }
 
