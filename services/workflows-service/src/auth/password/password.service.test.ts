@@ -57,14 +57,10 @@ describe('PasswordService', () => {
       password: EXAMPLE_PASSWORD,
       hashedPassword: EXAMPLE_HASHED_PASSWORD,
     };
-    await expect(
-      service.compare(args.password, args.hashedPassword),
-    ).resolves.toEqual(true);
+    await expect(service.compare(args.password, args.hashedPassword)).resolves.toEqual(true);
   });
 
   it('should hash a password', async () => {
-    await expect(service.hash(EXAMPLE_PASSWORD)).resolves.toEqual(
-      EXAMPLE_HASHED_PASSWORD,
-    );
+    await expect(service.hash(EXAMPLE_PASSWORD)).resolves.toEqual(EXAMPLE_HASHED_PASSWORD);
   });
 });

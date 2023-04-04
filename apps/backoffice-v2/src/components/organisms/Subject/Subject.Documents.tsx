@@ -39,6 +39,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
         >
           <ReactCrop crop={crop} onChange={onCrop} disabled={!isCropping}>
             <ImageViewer.SelectedImage
+              key={initialImage}
               initialImage={initialImage}
               ref={selectedImageRef}
               isLoading={isLoading}

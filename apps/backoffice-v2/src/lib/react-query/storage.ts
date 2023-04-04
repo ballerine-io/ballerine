@@ -3,7 +3,7 @@ import { api } from '../../api/api';
 
 export const storage = createQueryKeys('storage', {
   fileById: (fileId: string) => ({
-    queryKey: [{fileId}],
+    queryKey: [{ fileId }],
     queryFn: () => api.storage.fileById(fileId),
   }),
 });

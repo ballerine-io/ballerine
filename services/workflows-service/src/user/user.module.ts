@@ -1,4 +1,3 @@
-
 import { forwardRef, Module } from '@nestjs/common';
 import { MorganModule } from 'nest-morgan';
 import { ACLModule } from '../access-control/acl.module';
@@ -10,10 +9,7 @@ import { UserService } from './user.service';
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
   controllers: [UserController],
-  providers: [
-    UserRepository,
-    UserService,
-  ],
+  providers: [UserRepository, UserService],
   exports: [ACLModule, AuthModule, MorganModule, UserService],
 })
 export class UserModule {}

@@ -33,10 +33,7 @@ export class UserRepository {
 
   async findById<T extends Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>(
     id: string,
-    args?: Prisma.SelectSubset<
-      T,
-      Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>
-    >,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
   ): Promise<User> {
     return await this.prisma.user.findUniqueOrThrow({
       where: { id },
@@ -46,10 +43,7 @@ export class UserRepository {
 
   async findByUsername<T extends Omit<Prisma.UserFindUniqueArgs, 'where'>>(
     username: string,
-    args?: Prisma.SelectSubset<
-      T,
-      Omit<Prisma.UserFindUniqueArgs, 'where'>
-    >,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueArgs, 'where'>>,
   ): Promise<User | null> {
     return await this.prisma.user.findUnique({
       where: { username },

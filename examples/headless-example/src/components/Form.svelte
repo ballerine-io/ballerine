@@ -1,10 +1,11 @@
 <script lang="ts">
-  import type { ZodSchema } from "zod";
-  import type { createZodForm } from "../utils";
-  import type { TOnPrev } from "../types";
+  import type {ZodSchema} from 'zod';
+  import type {TOnPrev} from '@/types';
+  import type {createZodForm} from '@/utils';
 
   export let onPrev: TOnPrev<ZodSchema> | undefined = undefined;
   export let zodForm: ReturnType<typeof createZodForm>;
+  export let submitText = 'Next';
 
   $: displayBackButton = onPrev !== undefined;
 
@@ -16,5 +17,5 @@
     <button type="button" on:click={onPrev?.($data)}>Prev</button>
   {/if}
   <slot />
-  <button type="submit">Next</button>
+  <button type="submit">{submitText}</button>
 </form>
