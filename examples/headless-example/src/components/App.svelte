@@ -114,7 +114,7 @@
         return false;
       }
 
-      return parseInt(import.meta.env.VITE_POLLING_INTERVAL) * 1000 || false;
+      return parseInt(import.meta.env.VITE_POOLING_TIME) * 1000 || false;
     },
     enabled: typeof id === 'string' && id.length > 0,
   });
