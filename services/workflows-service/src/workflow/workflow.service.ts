@@ -146,6 +146,13 @@ export class WorkflowService {
     if (!workflow.reviewMachineId) {
       return;
     }
+    const endUserId = runtime.endUserId;
+    await this.endUserRepository.updateById(endUserId, {
+      data: {
+        state: EndUserState.PROCESSING,
+      },
+    });
+    this.logger.log(`${endUserId} is now in state ${EndUserState.PROCESSING}`);
 
     // will throw exception if review machine def is missing
     await this.workflowDefinitionRepository.findById(workflow.reviewMachineId);
@@ -230,12 +237,6 @@ export class WorkflowService {
       },
     });
 
-    await this.endUserRepository.updateById(endUserId, {
-      data: {
-        state: EndUserState.PROCESSING,
-      },
-    });
-    this.logger.log(`${endUserId} is now in state ${EndUserState.PROCESSING}`);
     this.logger.log(
       `Created workflow runtime data ${workflowRuntimeData.id}, for user ${endUserId}, with workflow ${workflowDefinitionId}, version ${workflowDefinition.version}`,
     );
