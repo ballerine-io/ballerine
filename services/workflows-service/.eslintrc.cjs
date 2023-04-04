@@ -7,7 +7,6 @@ module.exports = {
     'plugin:import/recommended',
     'plugin:import/typescript',
     'prettier',
-    '../../.eslint.ballerine.cjs',
   ],
   parserOptions: {
     ecmaVersion: 2020,

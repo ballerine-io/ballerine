@@ -2,7 +2,7 @@ const { parserOptions, ...config } = require('../../packages/config/eslintrc.bas
 
 module.exports = {
   ...config,
-  extends: ['../../.eslint.ballerine.cjs'],
+
   parserOptions: {
     ...parserOptions,
     tsconfigRootDir: __dirname,
