@@ -40,7 +40,7 @@ export const SignIn = () => {
           <fieldset>
             <legend className={`card-title mb-8 block text-center text-4xl`}>Sign In</legend>
             <button
-              className={`btn-outline btn btn-block mb-2 gap-2`}
+              className={`btn-outline btn-block btn mb-2 gap-2`}
               type={`button`}
               onClick={onSignInToGoogle}
             >
@@ -116,7 +116,7 @@ export const SignIn = () => {
             </div>
           </fieldset>
           <div className={`card-actions mt-auto self-end`}>
-            <button className={`btn btn-primary`} type={'submit'}>
+            <button className={`btn-primary btn`} type={'submit'}>
               Sign In
             </button>
           </div>

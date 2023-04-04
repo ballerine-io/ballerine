@@ -9,16 +9,26 @@ import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { IObjectWithId } from '@/types';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import _ from 'lodash';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
-import { Logger } from '@nestjs/common';
 
+export const ResubmissionReason = {
+  BLURRY_IMAGE: 'BLURRY_IMAGE',
+  CUT_IMAGE: 'CUT_IMAGE',
+  UNSUPPORTED_DOCUMENT: 'UNSUPPORTED_DOCUMENT',
+  DAMAGED_DOCUMENT: 'DAMAGED_DOCUMENT',
+  EXPIRED_DOCUMENT: 'EXPIRED_DOCUMENT',
+  COPY_OF_A_COPY: 'COPY_OF_A_COPY',
+  FACE_IS_UNCLEAR: 'FACE_IS_UNCLEAR',
+  FACE_IS_NOT_MATCHING: 'FACE_IS_NOT_MATCHING',
+} as const;
 export interface WorkflowData {
   workflowDefinition: object;
   workflowRuntimeData: object;
 }
+
 // Discuss model classes location
 export type IntentResponse = WorkflowData[];
 
@@ -87,7 +97,7 @@ export class WorkflowService {
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
 
-    data.context = _.merge(data.context, runtimeData.context);
+    data.context = _.merge(runtimeData.context, data.context);
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     this.logger.log(
       `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
@@ -140,16 +150,57 @@ export class WorkflowService {
     const reviewMachineDefinition = await this.workflowDefinitionRepository.findById(
       workflow.reviewMachineId,
     );
-    const createRuntimeResult = await this.workflowRuntimeDataRepository.create({
-      data: {
+
+    const workflowRuntimeDataExists = await this.workflowRuntimeDataRepository.findOne({
+      where: {
         endUserId: runtime.endUserId,
-        workflowDefinitionVersion: workflow.version,
-        workflowDefinitionId: workflow.reviewMachineId,
-        context: context as any,
-        status: 'created',
+        context: {
+          path: ['parentMachine', 'id'],
+          equals: runtime.id,
+        },
       },
     });
+
+    if (!workflowRuntimeDataExists) {
+      const createRuntimeResult = await this.workflowRuntimeDataRepository.create({
+        data: {
+          endUserId: runtime.endUserId,
+          workflowDefinitionVersion: workflow.version,
+          workflowDefinitionId: workflow.reviewMachineId,
+          context: {
+            ...(context as any),
+            parentMachine: {
+              id: runtime.id,
+            },
+          },
+          status: 'created',
+        },
+      });
+    } else {
+      const updateRuntimeResult = await this.workflowRuntimeDataRepository.updateById(
+        workflowRuntimeDataExists.id,
+        {
+          data: {
+            context: context as any,
+          },
+        },
+      );
+    }
+
     const updateResult = await this.updateWorkflowRuntimeData(runtime.id, {
+      ...((runtime.context as { resubmissionReason: string })?.resubmissionReason
+        ? {
+            endUserId: runtime.endUserId,
+            workflowDefinitionVersion: workflow.version,
+            workflowDefinitionId: workflow.reviewMachineId,
+            context: {
+              ...(context as any),
+              parentMachine: {
+                id: runtime.id,
+              },
+            },
+          }
+        : {}),
       status: 'completed',
     });
     // const updateUserStateResult = await this.(userId, workflow.version, workflow.reviewMachineId, context);
@@ -200,7 +251,7 @@ export class WorkflowService {
     ];
   }
 
-  async event({ name: type, id }: WorkflowEventInput & IObjectWithId) {
+  async event({ name: type, resubmissionReason, id }: WorkflowEventInput & IObjectWithId) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
     const workflow = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
@@ -230,6 +281,37 @@ export class WorkflowService {
     this.logger.log(
       `Workflow ${workflow.name}-${id}-v${workflow.version} state transiation [${runtimeData.state} -> ${currentState}]`,
     );
+
+    // Will be received from the client
+    const document = 'documentOne';
+
+    if (type === 'resubmit') {
+      switch (resubmissionReason) {
+        case ResubmissionReason.BLURRY_IMAGE:
+          await this.workflowRuntimeDataRepository.updateById(
+            (runtimeData as any).context?.parentMachine?.id,
+            {
+              data: {
+                state: 'document_photo',
+                status: 'created',
+                context: {
+                  ...context,
+                  [document]: {
+                    ...context?.[document],
+                    resubmissionReason,
+                  },
+                },
+              },
+            },
+          );
+          break;
+        default:
+          throw new BadRequestException(
+            `Invalid resubmission reason ${resubmissionReason as string}`,
+          );
+      }
+    }
+
     await this.updateWorkflowRuntimeData(runtimeData.id, {
       context,
       state: currentState,

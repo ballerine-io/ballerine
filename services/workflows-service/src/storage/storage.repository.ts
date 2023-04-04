@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { File, Prisma } from '@prisma/client';
+import { File, Prisma, WorkflowDefinition } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { IFileIds } from './types';
 
@@ -13,6 +13,12 @@ export class FileRepository {
     return await this.prisma.file.create<T>(args);
   }
 
+  async findMany<T extends Prisma.FileFindManyArgs>(
+    args?: Prisma.SelectSubset<T, Prisma.FileFindManyArgs>,
+  ): Promise<File[]> {
+    return await this.prisma.file.findMany(args);
+  }
+
   async findById<T extends Omit<Prisma.FileFindFirstArgs, 'where'>>(
     { id, userId }: IFileIds,
     args?: Prisma.SelectSubset<T, Omit<Prisma.FileFindFirstArgs, 'where'>>,
@@ -24,16 +30,18 @@ export class FileRepository {
   }
 
   async findNameById({ id, userId }: IFileIds) {
-    return (await this.findById(
-      {
-        userId,
-        id,
-      },
-      {
-        select: {
-          fileNameOnDisk: true,
+    return (
+      await this.findById(
+        {
+          userId,
+          id,
         },
-      },
-    ))?.fileNameOnDisk;
+        {
+          select: {
+            fileNameOnDisk: true,
+          },
+        },
+      )
+    )?.fileNameOnDisk;
   }
 }

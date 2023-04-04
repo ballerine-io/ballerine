@@ -1,9 +1,4 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { InjectRolesBuilder, RolesBuilder } from 'nest-access-control';
 import { Reflector } from '@nestjs/core';
@@ -18,17 +13,15 @@ export class AclValidateRequestInterceptor implements NestInterceptor {
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>(
-      'roles',
-      [context.getHandler(), context.getClass()],
-    );
+    const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>('roles', [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
     const type = context.getType();
 
     const inputDataToValidate =
-      type === 'http'
-        ? context.switchToHttp().getRequest().body
-        : context.getArgByIndex(1).data;
+      type === 'http' ? context.switchToHttp().getRequest().body : context.getArgByIndex(1).data;
 
     const permission = this.rolesBuilder.permission({
       role: permissionsRoles.role,
@@ -37,15 +30,10 @@ export class AclValidateRequestInterceptor implements NestInterceptor {
       resource: permissionsRoles.resource,
     });
 
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      inputDataToValidate,
-    );
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, inputDataToValidate);
 
     if (invalidAttributes.length) {
-      throw new ForbiddenException(
-        'Insufficient privileges to complete the operation',
-      );
+      throw new ForbiddenException('Insufficient privileges to complete the operation');
     }
 
     return next.handle();

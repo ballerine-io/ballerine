@@ -4,14 +4,14 @@ import { individualsRoute } from 'components/pages/Individuals/Individuals.route
 import { useSelectEndUser } from 'hooks/useSelectEndUser/useSelectEndUser';
 import { useParams } from '@tanstack/react-router';
 import { env } from '../../env/env';
-import { useEndUsersWithWorkflowQuery } from '../../lib/react-query/queries/useEndUsersWithWorkflowQuery/useEndUsersWithWorkflowQuery';
+import { useEndUsersWithWorkflowsQuery } from '../../lib/react-query/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
 
 /**
  * @description Sets the selected end user to the first end user in the array on mount if no user is currently selected. Returns the select end user handler.
  */
 export const useSelectEndUserOnMount = () => {
   const { endUserId } = useParams();
-  const { data: endUsers } = useEndUsersWithWorkflowQuery();
+  const { data: endUsers } = useEndUsersWithWorkflowsQuery();
   const { data: firstEndUserId } = useFirstEndUserIdQuery({
     initialState: {
       sortBy: 'createdAt',
