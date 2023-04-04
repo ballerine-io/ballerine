@@ -37,5 +37,7 @@
 <Form {zodForm} {onPrev} {submitText}>
   <legend>{title}</legend>
   <p>Does the document below look okay?</p>
-  <RemoteImage {id} alt="document-review" />
+  <div class="h-72 overflow-auto">
+    <RemoteImage {id} alt="document-review" />
+  </div>
 </Form>
