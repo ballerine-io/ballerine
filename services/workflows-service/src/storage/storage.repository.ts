@@ -29,21 +29,6 @@ export class FileRepository {
     });
   }
 
-  async findManyNames({ userId }: IFileIds) {
-    return (
-      await this.findMany(
-        {
-          where: {
-            userId,
-          },
-          select: {
-            fileNameOnDisk: true,
-          },
-        },
-      )
-    )?.map((file) => file.fileNameOnDisk);
-  }
-
   async findNameById({ id, userId }: IFileIds) {
     return (
       await this.findById(

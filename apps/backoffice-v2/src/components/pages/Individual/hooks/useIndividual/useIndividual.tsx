@@ -1,32 +1,16 @@
-import { useParams } from '@tanstack/react-router';
-import { camelCaseToSpace } from '../../../../../utils/camel-case-to-space/camel-case-to-space';
-import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
-import { useStorageFileQuery } from '../../../../../lib/react-query/queries/useStorageFileQuery/useStorageFileQuery';
-import { underscoreToSpace } from '../../../../../utils/underscore-to-space/underscore-to-space';
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '../../../../../api/api-client';
-import { z } from 'zod';
-import { handleZodError } from '../../../../../utils/handle-zod-error/handle-zod-error';
-
-export const useStorageFilesQuery = (workflowId: string) => {
-  return useQuery({
-    queryKey: ['storage', { workflowId }],
-    queryFn: async () => {
-      const [data, error] = await apiClient({
-        endpoint: `storage`,
-        method: 'GET',
-        schema: z.array(z.instanceof(Blob)),
-      });
-
-      return handleZodError(data, error);
-    },
-  });
-};
+import { useParams } from "@tanstack/react-router";
+import { camelCaseToSpace } from "../../../../../utils/camel-case-to-space/camel-case-to-space";
+import {
+  useEndUserWithWorkflowQuery
+} from "../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery";
+import {
+  useStorageFileQuery
+} from "../../../../../lib/react-query/queries/useStorageFileQuery/useStorageFileQuery";
+import { underscoreToSpace } from "../../../../../utils/underscore-to-space/underscore-to-space";
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
   const { data, isLoading } = useEndUserWithWorkflowQuery(endUserId);
-  useStorageFilesQuery(data?.workflow?.id);
   const documentOne = data?.workflow?.workflowContext?.machineContext?.documentOne;
   const documentTwo = data?.workflow?.workflowContext?.machineContext?.documentTwo;
   const { data: data1 } = useStorageFileQuery(documentOne?.id);
@@ -65,7 +49,7 @@ export const useIndividual = () => {
       url: data2,
       doctype: documentTwo?.type + 'Confirmation',
     },
-  ];
+  ].filter(({ url }) => !!url);
 
   // Images
   const images =

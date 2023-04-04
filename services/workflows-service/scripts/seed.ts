@@ -126,6 +126,18 @@ async function seed(bcryptSalt: Salt) {
           document_review: {
             on: {
               USER_PREV_STEP: 'document_photo',
+              USER_NEXT_STEP: 'document_photo_two',
+            },
+          },
+          document_photo_two: {
+            on: {
+              USER_PREV_STEP: 'document_review',
+              USER_NEXT_STEP: 'document_review_two',
+            },
+          },
+          document_review_two: {
+            on: {
+              USER_PREV_STEP: 'document_photo_two',
               USER_NEXT_STEP: 'final',
             },
           },

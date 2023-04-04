@@ -48,7 +48,6 @@ export class StorageControllerExternal {
   ) {
     const id = await this.service.createFileLink({
       fileNameOnDisk: file.filename,
-      workflowId: 'clg0x4zea0003ph13md7i9ypa',
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
     });
