@@ -29,9 +29,7 @@ test('Simple Server Workflow', t => {
   expect(runner.getSnapshot().value).toBe('inactive');
 });
 
-test('Server Workflow persistance MemoryStore', t => {
-  console.log('Server Workflow persistance MemoryStore');
-
+test('Server Workflow persistance MemoryStore', () => {
   const userId = '123456';
   const memoryStore = new MemoryStore();
   const memoryPersistancePlugin = new MemoryPersistencePlugin({
@@ -42,10 +40,6 @@ test('Server Workflow persistance MemoryStore', t => {
   });
 
   simpleMachine.context = { ...(simpleMachine.context || {}), entityId: userId };
-
-  // Create workflow, send an events and verify state transition
-  // Runner is loaded with a memory persistance plugin
-  // that saves 'post' transition the memory state of the running workflow
 
   const workflow = createWorkflow({
     definitionType: 'statechart-json',
@@ -59,7 +53,6 @@ test('Server Workflow persistance MemoryStore', t => {
   workflow.sendEvent({ type: 'TOGGLE' });
   expect(workflow.getSnapshot().value).toBe('active');
 
-  // check memory store, verify it contains the user workflow runtime data
   const userWorkflows = memoryStore.find(userId);
   expect(userWorkflows.length).toBe(1);
 
@@ -67,8 +60,6 @@ test('Server Workflow persistance MemoryStore', t => {
   let workflowData = memoryStore.get(workflowId, userId);
 
   expect(workflowData).toBeTruthy();
-
-  // create a new workflow runner, load into it the context and set state.
 
   console.log(workflowData);
   const restoredWorkflow = createWorkflow({
@@ -83,19 +74,3 @@ test('Server Workflow persistance MemoryStore', t => {
   restoredWorkflow.sendEvent({ type: 'TOGGLE' });
   expect(restoredWorkflow.getSnapshot().value).toBe('inactive');
 });
-
-// test('Server Workflow with logic', (t) => {
-//   console.log('Running create Server Workflow');
-// });
-
-// test('Server Workflow with plugins', (t) => {
-//   console.log('Running create Server Workflow');
-// });
-
-// test('Server Workflow with locking (Workflow scope)', (t) => {
-//   console.log('Running create Server Workflow');
-// });
-
-// test('Server Workflow with locking (User scope)', (t) => {
-//   console.log('Running create Server Workflow');
-// });
