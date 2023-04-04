@@ -191,15 +191,7 @@
 
 </script>
 
-{#if $endUserQuery?.data?.id}
-  <div>
-    <div>
-      <h4>{$endUserQuery?.data?.firstName ?? ''} {$endUserQuery?.data?.lastName ?? ''}</h4>
-      <img alt="avatar" src={$endUserQuery?.data?.avatarUrl ?? ''}/>
-    </div>
-      <p>{message}</p>
-  </div>
-{/if}
+<main class="h-full flex flex-col items-center justify-center p-4">
 
 {#if !$endUserQuery?.data?.id}
   <SignUp {onSubmit}/>
@@ -208,8 +200,13 @@
   <Workflow workflow={$workflow}/>
 {/if}
 {#if $endUserQuery?.data?.id && $endUserQuery?.data?.state !== 'PROCESSING' && !$workflow}
-  <button disabled={!$endUserQuery?.data?.id} on:click={$intentQuery.refetch}>Start KYC
-  </button>
+  <div class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
+    <h1 class="font-bold text-center w-full text-2xl">
+      Welcome
+    </h1>
+    <button class="mt-auto" disabled={!$endUserQuery?.data?.id} on:click={$intentQuery.refetch}>Start KYC
+    </button>
+  </div>
 {/if}
 {#if $endUserQuery?.data?.id && $endUserQuery?.data?.state === 'PROCESSING' && !$workflow}
   <p>
@@ -225,3 +222,4 @@
   </p>
   <button on:click={handleResubmit}>Navigate</button>
 {/if}
+</main>
