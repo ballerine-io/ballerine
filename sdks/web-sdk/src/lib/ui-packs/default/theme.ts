@@ -1,6 +1,13 @@
+import { IMAGE_TYPES } from 'jslib-html5-camera-photo';
 import { DocumentType } from '../../contexts/app-state';
 import { DocumentKind, DocumentVariant } from '../../contexts/app-state/types';
-import { Elements, IElement, Steps, TStepsConfigurations } from '../../contexts/configuration';
+import {
+  Elements,
+  IAppConfigurationUI,
+  IElement,
+  Steps,
+  TStepsConfigurations,
+} from '../../contexts/configuration';
 import { IUIPackTheme } from '../types';
 
 const backIconButton: IElement = {
@@ -712,7 +719,7 @@ const stepsTheme: TStepsConfigurations = [
   },
 ];
 
-export const uiTheme: IUIPackTheme = {
+export const uiTheme: IUIPackTheme & Pick<IAppConfigurationUI, 'settings'> = {
   general: {
     progress: false,
     borderRadius: '16px',
@@ -967,6 +974,20 @@ export const uiTheme: IUIPackTheme = {
       'text-align': 'center',
       padding: '10px 0px 24px',
       color: '#001B39',
+    },
+  },
+  settings: {
+    cameraSettings: {
+      sizeFactor: 1,
+      imageType: IMAGE_TYPES.JPG,
+      imageCompression: 0,
+      isImageMirror: false,
+    },
+    selfieCameraSettings: {
+      sizeFactor: 1,
+      imageType: IMAGE_TYPES.JPG,
+      imageCompression: 0,
+      isImageMirror: true,
     },
   },
   steps: stepsTheme,
