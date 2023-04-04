@@ -1,3 +1,4 @@
+import './index.css';
 import Providers from './components/Providers.svelte';
 
 const app = new Providers({
@@ -5,4 +6,3 @@ const app = new Providers({
 });
 
 export default app;
-//
