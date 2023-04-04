@@ -43,9 +43,7 @@ export class StorageControllerExternal {
       },
     },
   })
-  async uploadFile(
-    @UploadedFile() file: Express.Multer.File
-  ) {
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const id = await this.service.createFileLink({
       fileNameOnDisk: file.filename,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.

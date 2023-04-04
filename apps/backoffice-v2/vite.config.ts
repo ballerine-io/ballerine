@@ -9,7 +9,7 @@ export default defineConfig(configEnv => {
     server: {
       open: true,
       host: true,
-      port: 5137
+      port: 5137,
     },
     plugins: [react()],
     resolve: {
@@ -25,7 +25,7 @@ export default defineConfig(configEnv => {
       },
     },
     server: {
-      host: true
-    }
+      host: true,
+    },
   };
 });

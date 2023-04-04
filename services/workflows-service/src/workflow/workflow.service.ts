@@ -9,11 +9,10 @@ import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { IObjectWithId } from '@/types';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import _ from 'lodash';
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
-import { Logger } from '@nestjs/common';
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -158,9 +157,9 @@ export class WorkflowService {
         context: {
           path: ['parentMachine', 'id'],
           equals: runtime.id,
-        }
+        },
       },
-    })
+    });
 
     if (!workflowRuntimeDataExists) {
       const createRuntimeResult = await this.workflowRuntimeDataRepository.create({
@@ -178,11 +177,14 @@ export class WorkflowService {
         },
       });
     } else {
-      const updateRuntimeResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataExists.id, {
-        data: {
-          context: context as any,
+      const updateRuntimeResult = await this.workflowRuntimeDataRepository.updateById(
+        workflowRuntimeDataExists.id,
+        {
+          data: {
+            context: context as any,
+          },
         },
-      });
+      );
     }
 
     const updateResult = await this.updateWorkflowRuntimeData(runtime.id, {
@@ -297,14 +299,16 @@ export class WorkflowService {
                   [document]: {
                     ...context?.[document],
                     resubmissionReason,
-                  }
+                  },
                 },
               },
             },
           );
           break;
         default:
-          throw new BadRequestException(`Invalid resubmission reason ${resubmissionReason as string}`)
+          throw new BadRequestException(
+            `Invalid resubmission reason ${resubmissionReason as string}`,
+          );
       }
     }
 
