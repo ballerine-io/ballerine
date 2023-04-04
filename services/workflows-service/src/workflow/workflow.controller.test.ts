@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Test } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ExecutionContext, CallHandler } from '@nestjs/common';
 import request from 'supertest';
@@ -7,7 +8,6 @@ import { DefaultAuthGuard } from '../auth/default-auth.guard';
 import { ACLModule } from '../access-control/acl.module';
 import { AclFilterResponseInterceptor } from '../access-control/interceptors/acl-filter-response.interceptor';
 import { AclValidateRequestInterceptor } from '../access-control/interceptors/acl-validate-request.interceptor';
-import { map } from 'rxjs';
 import { WorkflowControllerExternal } from './workflow.controller.external';
 import { WorkflowService } from './workflow.service';
 
@@ -60,7 +60,7 @@ const service = {
 const basicAuthGuard = {
   canActivate: (context: ExecutionContext) => {
     const argumentHost = context.switchToHttp();
-    const request = argumentHost.getRequest();
+    const request: { user: { roles: string[] } } = argumentHost.getRequest();
     request.user = {
       roles: ['operator'],
     };
@@ -75,16 +75,12 @@ const acGuard = {
 };
 
 const aclFilterResponseInterceptor = {
-  intercept: (context: ExecutionContext, next: CallHandler) => {
-    return next.handle().pipe(
-      map(data => {
-        return data;
-      }),
-    );
+  intercept: (_context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
   },
 };
 const aclValidateRequestInterceptor = {
-  intercept: (context: ExecutionContext, next: CallHandler) => {
+  intercept: (_context: ExecutionContext, next: CallHandler) => {
     return next.handle();
   },
 };

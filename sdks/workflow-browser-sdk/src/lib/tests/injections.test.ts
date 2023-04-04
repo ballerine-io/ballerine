@@ -1,14 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { beforeEach, describe, expect, it } from 'vitest';
 import { WorkflowBrowserSDK } from '../workflow-browser-sdk';
 import { workflowOptions } from './workflow-options';
 
 let workflowService: WorkflowBrowserSDK;
-let machine;
-let actions;
+let machine: any;
+let actions: any;
 
 beforeEach(() => {
   workflowService = new WorkflowBrowserSDK(workflowOptions);
-  machine = workflowService?.getSnapshot().machine;
+  machine = workflowService.getSnapshot().machine;
   actions = machine.options.actions;
 });
 
@@ -38,7 +42,7 @@ describe('injections', () => {
 
     // Submit plugin falls back to states with type: 'final'
     expect(
-      machine.states.last.onEntry?.find(({ type }) => type === 'SUBMIT_BACKEND'),
+      machine.states.last.onEntry.find(({ type }: { type: string }) => type === 'SUBMIT_BACKEND'),
     ).toMatchObject({
       type: 'SUBMIT_BACKEND',
       exec: undefined,
@@ -49,7 +53,9 @@ describe('injections', () => {
     machine = workflowService.getSnapshot().machine;
 
     expect(
-      machine.states.fourth.onEntry?.find(({ type }) => type === 'SUBMIT_BACKEND'),
+      machine.states.fourth.onEntry?.find(
+        ({ type }: { type: string }) => type === 'SUBMIT_BACKEND',
+      ),
     ).toMatchObject({
       type: 'SUBMIT_BACKEND',
       exec: undefined,
@@ -57,7 +63,9 @@ describe('injections', () => {
 
     // Injects user defined persistStates
     expect(
-      machine.states.third.onEntry?.find(({ type }) => type === 'SYNC_LOCAL_STORAGE'),
+      machine.states.third.onEntry?.find(
+        ({ type }: { type: string }) => type === 'SYNC_LOCAL_STORAGE',
+      ),
     ).toMatchObject({
       type: 'SYNC_LOCAL_STORAGE',
       exec: undefined,
