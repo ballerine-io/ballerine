@@ -2,20 +2,11 @@ const { parserOptions, ...config } = require('../../packages/config/eslintrc.bas
 
 module.exports = {
   ...config,
+  extends: ['../../.eslint.ballerine.cjs'],
   parserOptions: {
     ...parserOptions,
     tsconfigRootDir: __dirname,
     project: ['./tsconfig.eslint.json'],
   },
   ignorePatterns: ['.eslintrc.cjs'],
-  rules: {
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_',
-      },
-    ],
-  },
 };

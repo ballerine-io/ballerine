@@ -7,6 +7,7 @@ module.exports = {
     'plugin:import/recommended',
     'plugin:import/typescript',
     'prettier',
+    '../../.eslint.ballerine.cjs',
   ],
   parserOptions: {
     ecmaVersion: 2020,
@@ -33,15 +34,6 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {
     'import/no-cycle': 'error',
-
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_',
-      },
-    ],
   },
   ignorePatterns: ['.eslintrc.cjs'],
 };

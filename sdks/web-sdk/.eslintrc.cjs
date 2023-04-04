@@ -2,6 +2,7 @@ const { parserOptions, settings, ...config } = require('../../packages/config/es
 
 module.exports = {
   ...config,
+  extends: ['../../.eslint.ballerine.cjs'],
   parserOptions: {
     ...parserOptions,
     // These types of configs should be relative to the package's root
@@ -12,15 +13,5 @@ module.exports = {
     ...settings,
 
     'svelte3/typescript': require('typescript'),
-  },
-  rules: {
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_',
-      },
-    ],
   },
 };
