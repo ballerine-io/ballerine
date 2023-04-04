@@ -2,7 +2,6 @@
   import type {WorkflowOptionsBrowser} from "@ballerine/workflow-browser-sdk";
   import DocumentPhoto from "./DocumentPhoto.svelte";
   import DocumentSelection from "./DocumentSelection.svelte";
-  import Dump from "./Dump.svelte";
   import ErrorComponent from "./Error.svelte";
   import Final from "./Final.svelte";
   import Resubmission from "./Resubmission.svelte";
@@ -106,5 +105,3 @@
 {/if}
 
 <svelte:component this={step} {onPrev} {onSubmit} {initialValues} {documentName} />
-
-<Dump value={snapshot} />
