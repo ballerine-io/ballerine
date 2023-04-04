@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpError } from '@ballerine/workflow-core';
 import { StatePlugin } from './state-plugin';
@@ -27,7 +28,6 @@ export class BackendPersistPlugin extends StatePlugin {
     try {
       const res = await fetch(url, {
         method,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         body: method !== 'GET' ? JSON.stringify({ context, state }) : undefined,
         headers,
       });

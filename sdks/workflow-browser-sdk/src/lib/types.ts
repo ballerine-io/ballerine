@@ -17,7 +17,7 @@ export type AnyRecord = Record<PropertyKey, unknown>;
 export type ObjectValues<TObject> = TObject[keyof TObject];
 
 export type DeepPartial<TValue> = {
-  [TKey in keyof TValue]?: TValue[TKey] extends Record<symbol, unknown>
+  [TKey in keyof TValue]?: TValue[TKey] extends Record<string, unknown>
     ? DeepPartial<TValue[TKey]>
     : TValue extends Array<infer U>
     ? Array<DeepPartial<U>>

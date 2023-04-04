@@ -46,7 +46,7 @@ export class WorkflowBrowserSDK {
       submitStates: options?.submitStates,
       workflowId: options?.definition.id ?? '',
     });
-    const assignContext = assign<Record<PropertyKey, unknown>, IUserStepEvent>((context, event) => {
+    const assignContext = assign<Record<PropertyKey, any>, IUserStepEvent>((context, event) => {
       context = {
         ...context,
         ...event.payload,
@@ -245,16 +245,9 @@ export class WorkflowBrowserSDK {
   #__injectUserStepActionsToStates(states: StatesConfig<any, any, any, BaseActionObject>) {
     const statesEntries = Object.entries(states)
       // Construct a new `on` object for each state.
-      // eslint-disable-next-line
-      .map(injectActionsToStateOnProp as any);
+      .map(injectActionsToStateOnProp);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return Object.fromEntries(statesEntries as any) as StatesConfig<
-      any,
-      any,
-      any,
-      BaseActionObject
-    >;
+    return Object.fromEntries(statesEntries) as StatesConfig<any, any, any, BaseActionObject>;
   }
 
   async uploadFile(fileToUpload: IFileToUpload) {

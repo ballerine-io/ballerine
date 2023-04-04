@@ -18,7 +18,7 @@ export const injectActionsToStateOnProp = ([state, stateConfig]: [
   const on = Object.entries(stateConfig?.on ?? {})?.reduce(
     mergeStepActions,
     {} as Record<string, IOnProps>,
-  ) as Record<string, IOnProps>;
+  );
 
   // i.e. { WELCOME: { ..., on: { ... }, ... } }
   const injected = {

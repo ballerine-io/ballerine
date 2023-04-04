@@ -26,12 +26,12 @@ export const flows: BallerineSDKFlows = {
       // Otherwise, the steps array could keep growing.
       configuration.set(defaultConfiguration);
 
-      const { translations: _t, ...configWithoutTranslations } = config;
+      const { translations: _translations, ...configWithoutTranslations } = config;
 
       // Extract config from query params
       const {
-        clientId: _i,
-        flowName: _f,
+        clientId: _clientId,
+        flowName: _flowName,
         ...endUserInfoFromQueryParams
       } = getConfigFromQueryParams();
 
