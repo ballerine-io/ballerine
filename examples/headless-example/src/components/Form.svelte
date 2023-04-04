@@ -13,11 +13,11 @@
 </script>
 
 <form use:form class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
-  {#if displayBackButton}
-    <button type="button" on:click={onPrev?.($data)}>Prev</button>
-  {/if}
   <slot />
-  <div class="mt-auto">
+  <div class="mt-auto flex" class:justify-between={displayBackButton} class:space-x-2={displayBackButton}>
+    {#if displayBackButton}
+      <button type="button" on:click={onPrev?.($data)}>Prev</button>
+    {/if}
     <button  type="submit">{submitText}</button>
   </div>
 </form>

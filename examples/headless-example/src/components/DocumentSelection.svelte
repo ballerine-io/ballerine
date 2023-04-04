@@ -4,6 +4,7 @@
   import {createZodForm} from '@/utils';
   import Form from './Form.svelte';
   import type {TOnPrev, TOnSubmit} from '@/types';
+  import DocumentType from "@/components/DocumentType.svelte";
 
   const schema = z.object({
     documentOne: z.object({
@@ -15,7 +16,7 @@
   export let onSubmit: TOnSubmit<typeof schema>;
   export let onPrev: TOnPrev<typeof schema>;
 
-  const { createSubmitHandler, data, ...rest } = createZodForm(schema, {
+  const {createSubmitHandler, data, ...rest} = createZodForm(schema, {
     initialValues: {
       documentOne: {
         type: initialValues.documentOne.type,
@@ -41,40 +42,28 @@
 </script>
 
 <Form {zodForm} {onPrev}>
-  <fieldset on:click={onClick} on:change={onChange}>
-    <legend>DocumentSelection</legend>
-
-    <label for="passport"> Passport </label>
-    <input
-      type="radio"
+  <fieldset class="grid grid-cols-1 gap-2" on:click={onClick} on:change={onChange}>
+    <legend>Choose Document Type</legend>
+    <DocumentType
       id="passport"
+      label="Passport"
       name="documentOne.type"
-      value={'passport'}
-      bind:group={$data.documentOne.type}
+      value="passport"
+      type={$data.documentOne.type}
     />
-    <label for="id-card"> ID Card </label>
-    <input
-      type="radio"
+    <DocumentType
       id="id-card"
+      label="ID Card"
       name="documentOne.type"
-      value={'idCard'}
-      bind:group={$data.documentOne.type}
+      value="idCard"
+      type={$data.documentOne.type}
     />
-    <label for="driver-license"> Driver License </label>
-    <input
-      type="radio"
+    <DocumentType
       id="driver-license"
+      label="Driver License"
       name="documentOne.type"
-      value={'driverLicense'}
-      bind:group={$data.documentOne.type}
-    />
-    <label for="bad-value"> Bad Value </label>
-    <input
-      type="radio"
-      id="bad-value"
-      name="documentOne.type"
-      value="badValue"
-      bind:group={$data.documentOne.type}
+      value="driverLicense"
+      type={$data.documentOne.type}
     />
   </fieldset>
   <ValidationMessage for="document" let:messages={message}>
