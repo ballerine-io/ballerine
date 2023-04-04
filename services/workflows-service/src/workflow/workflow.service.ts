@@ -137,7 +137,10 @@ export class WorkflowService {
     });
   }
 
-  async resolveIntent(_intent: string, endUserId: string): Promise<RunnableWorkflowData[]> {
+  async resolveIntent(
+    intent: string,
+    endUserId = 'ckkt3qnv40001qxtt7nmj9r2r', // TODO: remove default value
+  ): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies['signup'];
     // TODO: implement logic for multiple workflows
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -147,11 +150,19 @@ export class WorkflowService {
     );
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
       data: {
-        endUserId,
+        endUser: {
+          connect: {
+            id: endUserId,
+          },
+        },
         workflowDefinitionVersion: workflowDefinition.version,
-        workflowDefinitionId,
         context: {},
         status: 'created',
+        workflowDefinition: {
+          connect: {
+            id: workflowDefinitionId,
+          },
+        },
       },
     });
 

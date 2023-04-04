@@ -5,12 +5,13 @@ import { AppModule } from './app.module';
 import { swaggerPath, swaggerDocumentOptions, swaggerSetupOptions } from './swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import helmet from 'helmet';
 
 const { PORT = 3000 } = process.env;
 
 async function main() {
   const app = await NestFactory.create(AppModule, { cors: true });
-
+  app.use(helmet());
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({
