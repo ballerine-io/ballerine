@@ -67,7 +67,7 @@ export class WorkflowControllerExternal {
     };
   }
 
-  // PUT /workflows/:id
+  // PATCH /workflows/:id
   @common.Patch('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })

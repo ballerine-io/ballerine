@@ -55,7 +55,7 @@
       },
     }}
   />
-  <MetricsPixel/>
+  <MetricsPixel />
 </main>
 
 <style>

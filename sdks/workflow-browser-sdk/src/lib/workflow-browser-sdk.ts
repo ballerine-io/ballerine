@@ -44,7 +44,7 @@ export class WorkflowBrowserSDK {
       states,
       persistStates: options?.persistStates,
       submitStates: options?.submitStates,
-      workflowId: options?.definition.id ?? '',
+      workflowId: options?.definition?.id ?? '',
     });
     const assignContext = assign<Record<PropertyKey, any>, IUserStepEvent>((context, event) => {
       context = {

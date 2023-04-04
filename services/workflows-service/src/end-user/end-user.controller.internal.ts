@@ -22,9 +22,7 @@ export class EndUserControllerInternal {
   @swagger.ApiOkResponse({ type: [EndUserModel] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EndUserFindManyArgs)
-  async list(
-    @common.Req() request: Request,
-  ): Promise<EndUserModel[]> {
+  async list(@common.Req() request: Request): Promise<EndUserModel[]> {
     const args = plainToClass(EndUserFindManyArgs, request.query);
     return this.service.list(args);
   }
@@ -32,11 +30,7 @@ export class EndUserControllerInternal {
   @common.Get(':id')
   @swagger.ApiOkResponse({ type: EndUserModel })
   @swagger.ApiForbiddenResponse()
-  async getById(
-    @common.Param() params: EndUserWhereUniqueInput,
-  ): Promise<EndUserModel> {
-    return this.service.getById(
-      params.id,
-    );
+  async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel> {
+    return this.service.getById(params.id);
   }
 }
