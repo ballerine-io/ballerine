@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { sleep, uniqueArray } from '@ballerine/common';
 import { HttpError } from '@ballerine/workflow-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -6,21 +9,18 @@ import { errorWorkflow, workflowOptions } from './workflow-options';
 
 let workflowService: WorkflowBrowserSDK;
 let events: any[] = [];
-let state: string;
 
 const next = (payload?: Record<PropertyKey, any>) => {
   workflowService?.sendEvent({
     type: 'USER_NEXT_STEP',
     payload,
   });
-  state = workflowService.getSnapshot().value as string;
 };
 const prev = (payload?: Record<PropertyKey, any>) => {
   workflowService?.sendEvent({
     type: 'USER_PREV_STEP',
     payload,
   });
-  state = workflowService.getSnapshot().value as string;
 };
 
 const breakLocalStorage = () => {
@@ -36,7 +36,6 @@ const breakLocalStorage = () => {
 beforeEach(() => {
   workflowService = new WorkflowBrowserSDK(workflowOptions);
   events = [];
-  state = workflowService.getSnapshot().value as string;
 });
 
 describe('subscribe', () => {
@@ -145,7 +144,7 @@ describe('subscribe', () => {
       },
     });
 
-    workflowService.subscribe('custom', event => events.push(event));
+    workflowService.subscribe('custom' as never, ((event: any) => events.push(event)) as never);
 
     workflowService.sendEvent({
       type: 'custom',

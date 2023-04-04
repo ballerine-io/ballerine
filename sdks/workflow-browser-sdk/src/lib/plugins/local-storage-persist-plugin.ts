@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { StatePlugin } from './state-plugin';
 import { TStatePluginParams } from './types';
 
@@ -18,7 +20,7 @@ export class LocalStoragePersistPlugin extends StatePlugin {
     return new Promise<void>(resolve => {
       try {
         // localStorage key could be configurable or stored as a constant.
-        localStorage.setItem('workflow-context', JSON.stringify({context, state}));
+        localStorage.setItem('workflow-context', JSON.stringify({ context, state }));
 
         resolve();
       } catch (err) {

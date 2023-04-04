@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
@@ -7,9 +11,10 @@ import { readJsonSync } from 'fs-extra';
 import path from 'path';
 import { RollupOptions } from 'rollup';
 import dts from 'rollup-plugin-dts';
-// @ts-ignore
-import size from 'rollup-plugin-size';
+
 import visualizer from 'rollup-plugin-visualizer';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const size = require('rollup-plugin-size');
 
 type Options = {
   input: string;
@@ -34,7 +39,7 @@ const babelPlugin = babel({
   extensions: ['.ts'],
 });
 
-export default function rollup(options: RollupOptions): RollupOptions[] {
+export default function rollup(_options: RollupOptions): RollupOptions[] {
   return buildConfigs({
     name: 'workflow-browser-sdk',
     packageDir: '.',
@@ -84,7 +89,7 @@ function buildConfigs(opts: {
     opts.umd ? umdDev(options) : null,
     opts.umd ? umdProd(options) : null,
     types(options),
-  ].filter(Boolean) as any;
+  ].filter(Boolean) as RollupOptions[];
 }
 
 function esm({ input, packageDir, external, banner }: Options): RollupOptions {
@@ -159,6 +164,7 @@ function umdProd({ input, umdExternal, packageDir, banner, jsName }: Options): R
       nodeResolve({ extensions: ['.ts'] }),
       umdDevPlugin('production'),
       terser(),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       size({}),
       visualizer({
         filename: `${packageDir}/dist/stats-html.html`,

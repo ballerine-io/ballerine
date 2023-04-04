@@ -2,6 +2,7 @@ const { parserOptions, ...config } = require('../../packages/config/eslintrc.bas
 
 module.exports = {
   ...config,
+
   parserOptions: {
     ...parserOptions,
     tsconfigRootDir: __dirname,

@@ -5,7 +5,6 @@ import { PassportModule } from '@nestjs/passport';
 import { JWT_EXPIRATION } from '../env';
 import { SecretsManagerModule } from '../providers/secrets/secrets-manager.module';
 import { SecretsManagerService } from '../providers/secrets/secrets-manager.service';
-import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { BasicStrategy } from './basic/basic.strategy';
@@ -14,6 +13,9 @@ import { jwtSecretFactory } from './jwt/jwt-secret-factory';
 import { PasswordService } from './password/password.service';
 import { TokenService } from './token/token.service';
 import { INJECTION_TOKEN_JWT_SECRET_KEY } from '@/injection-tokens';
+
+// eslint-disable-next-line import/no-cycle
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
