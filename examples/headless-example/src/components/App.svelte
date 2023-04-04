@@ -93,6 +93,7 @@
   })
   const createFirstWorkflowQuery = () => createWorkflowsQuery({
     select: (workflows) => {
+      console.log(workflows)
       return Array.isArray(workflows) ? workflows?.find(
         workflow =>
           workflow?.workflowDefinition?.name === "onboarding_client_collect_data" &&
@@ -219,11 +220,16 @@
 {/if}
 
 {#if $endUserQuery?.data?.id && shouldResubmit && !$workflow}
+  <div class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
+    <h1 class="font-bold text-center w-full text-2xl">
+      Re-upload Document
+    </h1>
   <p>
-    You've been requested to re-submit your documents due
-    to {nextWorkflow?.definition?.context?.documentOne?.resubmissionReason?.toLowerCase()?.replace(/_/g, ' ')}
-    . Please click navigate to re-submit your documents.
+    Your document was rejected due to {nextWorkflow?.definition?.context?.documentOne?.resubmissionReason?.toLowerCase()?.replace(/_/g, ' ')}, please re-upload another image.
+    You can upload <a download="/fake-document.jpg">this file</a>.
   </p>
-  <button on:click={handleResubmit}>Navigate</button>
+    <img src="/re-upload-id.svg" alt="clock" class="mx-auto mb-2"/>
+  <button class="mt-auto" on:click={handleResubmit}>Re-upload document file</button>
+  </div>
 {/if}
 </main>
