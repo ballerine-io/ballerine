@@ -485,12 +485,21 @@ importers:
       '@xstate/inspect':
         specifier: ^0.7.1
         version: 0.7.1(ws@8.13.0)(xstate@4.36.0)
+      autoprefixer:
+        specifier: ^10.4.7
+        version: 10.4.14(postcss@8.4.21)
+      postcss:
+        specifier: ^8.4.21
+        version: 8.4.21
       svelte:
         specifier: ^3.55.1
         version: 3.57.0
       svelte-check:
         specifier: ^2.10.3
         version: 2.10.3(@babel/core@7.21.3)(postcss@8.4.21)(svelte@3.57.0)
+      tailwindcss:
+        specifier: ^3.2.4
+        version: 3.2.7(postcss@8.4.21)(ts-node@10.9.1)
       tslib:
         specifier: ^2.5.0
         version: 2.5.0
