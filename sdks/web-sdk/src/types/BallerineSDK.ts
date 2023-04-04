@@ -92,18 +92,19 @@ export interface EndUserInfo {
   endUserMetadata?: Record<string, string>;
 }
 
+export interface FlowsBackendConfigEndpoints {
+  startVerification?: string;
+  getVerificationStatus?: string;
+  processStepData?: string;
+  getConfig?: string;
+}
 export interface FlowsBackendConfig {
   baseUrl?: string;
   auth?: {
     method?: 'jwt' | 'basic' | 'cookie';
     authorizationHeader?: string;
   };
-  endpoints?: {
-    startVerification?: string;
-    getVerificationStatus?: string;
-    processStepData?: string;
-    getConfig?: string;
-  };
+  endpoints?: FlowsBackendConfigEndpoints;
 }
 
 export interface FlowsInitOptions {
