@@ -41,6 +41,20 @@
     },
   });
   const isSubmitting = zodForm.isSubmitting;
+  let fileInput: HTMLInputElement;
+  let fileName: string;
+  let title: string;
+  const uploadFile = () => {
+    fileInput.click();
+  };
+  const updateFileName = () => {
+    fileName = fileInput?.files?.[0]?.name;
+  }
+
+
+  $: {
+    title = documentName === 'documentOne' ? 'Upload Document One' : 'Upload Document Two';
+  }
 </script>
 
 {#if $isSubmitting}
@@ -48,11 +62,30 @@
 {/if}
 
 <Form {zodForm} {onPrev}>
-  <fieldset>
-    <legend>DocumentPhoto</legend>
-
-    <label for="file"> File </label>
-    <input type="file" id="file" name={`${documentName}.file`} />
+  <fieldset class="h-full flex flex-col mb-2">
+    <legend>{title}</legend>
+<p class="max-w-[50ch] p-1">
+  Pssst... instead of uploading your own ID, you can download <a download="fake-document"  href="/fake-document.jpg">this file</a> and upload it here.
+</p>
+    <label for="file" class="sr-only"> File </label>
+    <input
+      type="file"
+      class="hidden"
+      id="file"
+      name={`${documentName}.file`}
+      on:change={updateFileName}
+      bind:this={fileInput}
+    />
+    <div  class="mt-auto space-y-2">
+    {#if fileName}
+      <div>
+        X {fileName}
+      </div>
+      {:else}
+      <img src="/upload-document.svg" alt="Upload Document" class="mx-auto" />
+    {/if}
+    <button type="button" on:click={uploadFile}>Upload Document File</button>
+    </div>
   </fieldset>
   <ValidationMessage for={`${documentName}.file`} let:messages={message}>
     <div style="color: red; font-weight: bold;">{message || ""}</div>

@@ -8,12 +8,15 @@
   const schema = z.object({});
 
   const workflowService = getWorkflowContext();
-  const context = workflowService.getSnapshot?.()?.context;
   export let initialValues: z.infer<typeof schema>;
   export let onSubmit: TOnSubmit<typeof schema>;
   export let onPrev: TOnPrev<typeof schema>;
   export let documentName: string;
 
+  // Defaults to 'Next'
+  let submitText;
+  let title;
+  let id;
   const zodForm = createZodForm(schema, {
     initialValues,
     onSubmit(data, ctx) {
@@ -23,10 +26,16 @@
     },
   });
 
+  $: {
+    submitText = documentName === 'documentOne' ? undefined : 'Submit';
+    title = documentName === 'documentOne' ? 'Review Document One' : 'Review Document Two';
+    id = workflowService.getSnapshot?.()?.context?.[documentName]?.id;
+  }
+
 </script>
 
-<RemoteImage id={context?.documentOne?.id} alt="document-review" />
-
-<Form {zodForm} {onPrev} submitText="Submit">
-  <legend>DocumentReview</legend>
+<Form {zodForm} {onPrev} {submitText}>
+  <legend>{title}</legend>
+  <p>Does the document below look okay?</p>
+  <RemoteImage {id} alt="document-review" />
 </Form>
