@@ -1,6 +1,6 @@
 import { get } from 'svelte/store';
-import { configuration } from '.';
-import { FlowsBackendConfig } from '../../../types/BallerineSDK';
+import { configuration } from '../configuration';
+import { FlowsBackendConfig, FlowsBackendConfigEndpoints } from '../../../types/BallerineSDK';
 import { resolveStringTemplate } from '../../utils/string-utils/resolve-string-template';
 
 export const getBackendConfig = (): FlowsBackendConfig => {
@@ -8,7 +8,7 @@ export const getBackendConfig = (): FlowsBackendConfig => {
 };
 
 export const resolveEndpoint = (
-  endpointName: keyof FlowsBackendConfig['endpoints'],
+  endpointName: keyof FlowsBackendConfigEndpoints,
   templateParams?: StringKV,
 ): string => {
   const backendConfig = getBackendConfig();

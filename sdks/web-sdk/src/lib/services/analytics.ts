@@ -2,7 +2,7 @@ export const flowStart = () => {
   return;
 };
 
-export const visitedPage = (pathname: string, search: string) => {
+export const visitedPage = (_pathname: string, _search: string) => {
   return;
 };
 

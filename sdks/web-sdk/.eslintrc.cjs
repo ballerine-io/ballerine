@@ -2,6 +2,7 @@ const { parserOptions, settings, ...config } = require('../../packages/config/es
 
 module.exports = {
   ...config,
+
   parserOptions: {
     ...parserOptions,
     // These types of configs should be relative to the package's root
@@ -10,6 +11,7 @@ module.exports = {
   },
   settings: {
     ...settings,
+
     'svelte3/typescript': require('typescript'),
   },
 };

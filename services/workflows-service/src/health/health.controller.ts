@@ -6,7 +6,7 @@ import { Response } from 'express';
 export class HealthController {
   constructor(protected readonly healthService: HealthService) {}
   @Get('live')
-  healthLive(@Res() response: Response): Response<void> {
+  healthLive(@Res() response: Response): Response<unknown> {
     return response.status(HttpStatus.NO_CONTENT).send();
   }
   @Get('ready')

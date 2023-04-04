@@ -37,13 +37,10 @@ export class WorkflowControllerExternal {
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   async listWorkflowRuntimeDataByUserId(
     @UserData()
-    userInfo: UserInfo,
-    @Headers() headers: any,
+    _userInfo: UserInfo,
+    @Headers('no_auth_user_id') no_auth_user_id: string,
   ): Promise<RunnableWorkflowData[]> {
-    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-      headers.no_auth_user_id,
-    );
+    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(no_auth_user_id);
     const response = completeWorkflowData.map(({ workflowDefinition, ...workflowRuntimeData }) => ({
       workflowRuntimeData,
       workflowDefinition,
@@ -94,10 +91,12 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async intent(@common.Body() intent: IntentDto, @Headers() headers: any): Promise<IntentResponse> {
+  async intent(
+    @common.Body() intent: IntentDto,
+    @Headers('no_auth_user_id') no_auth_user_id: string,
+  ): Promise<IntentResponse> {
     // Rename to intent or getRunnableWorkflowDataByIntent?
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-    return await this.service.resolveIntent(intent.intentName, headers.no_auth_user_id);
+    return await this.service.resolveIntent(intent.intentName, no_auth_user_id);
   }
 
   // POST /event
@@ -106,7 +105,7 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async event(
-    @UserData() userInfo: UserInfo,
+    @UserData() _userInfo: UserInfo,
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
   ): Promise<void> {

@@ -11,7 +11,9 @@ const setBackgroundWithOpacity = (
     const color = getComputedStyle(app).getPropertyValue('--general-colors-primary');
     return [
       ...styles,
-      `--${prefix}background: ${color}${hexTransparencies[style.opacity * 100] as string};`,
+      `--${prefix}background: ${color}${
+        hexTransparencies[Math.round(style.opacity * 100) as keyof typeof hexTransparencies]
+      };`,
     ];
   }
   return styles;
