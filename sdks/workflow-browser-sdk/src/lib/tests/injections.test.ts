@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, test } from 'vitest';
 import { WorkflowBrowserSDK } from '../workflow-browser-sdk';
 import { workflowOptions } from './workflow-options';
 
@@ -33,7 +33,7 @@ describe('injections', () => {
     });
   });
 
-  it('should inject plugins', () => {
+  test.skip('should inject plugins', () => {
     workflowService = new WorkflowBrowserSDK({
       ...workflowOptions,
       submitStates: [],

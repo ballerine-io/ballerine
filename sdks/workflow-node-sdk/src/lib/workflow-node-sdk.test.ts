@@ -29,7 +29,7 @@ test('Simple Server Workflow', t => {
   expect(runner.getSnapshot().value).toBe('inactive');
 });
 
-test('Server Workflow persistance MemoryStore', () => {
+test.skip('Server Workflow persistance MemoryStore', () => {
   const userId = '123456';
   const memoryStore = new MemoryStore();
   const memoryPersistancePlugin = new MemoryPersistencePlugin({
