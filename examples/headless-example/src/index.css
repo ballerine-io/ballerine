@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #FAFAFA;
+  }
+
+  html, body, #app {
+    @apply h-full;
+  }
+
+  input {
+    @apply border border-slate-200 rounded-md px-4 py-2 w-full max-w-sm;
+  }
+
+  label {
+    @apply block text-sm mb-1;
+  }
+
+  button, [type="button"], [type="submit"], [type="reset"] {
+    @apply w-full bg-blue-500 px-2 py-4 rounded-md text-white;
+  }
+
+  legend {
+    @apply text-2xl font-bold w-full text-center my-4;
+  }
+}

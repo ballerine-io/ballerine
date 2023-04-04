@@ -12,10 +12,12 @@
   const { form, data } = zodForm;
 </script>
 
-<form use:form>
+<form use:form class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
   {#if displayBackButton}
     <button type="button" on:click={onPrev?.($data)}>Prev</button>
   {/if}
   <slot />
-  <button type="submit">{submitText}</button>
+  <div class="mt-auto">
+    <button  type="submit">{submitText}</button>
+  </div>
 </form>
