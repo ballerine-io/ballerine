@@ -10,10 +10,26 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/js-cookie": "^3.0.2",
     "@types/node": "^18.15.11",
+    "@types/react": "^17.0.6",
+    "@types/react-dom": "^17.0.5",
     "typescript": "^5.0.3"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^1.0.13",
+    "@chakra-ui/react": "^1.6.3",
+    "@xstate/inspect": "^0.8.0",
+    "@xstate/react": "^3.2.1",
+    "elkjs": "^0.7.1",
+    "immer": "^9.0.21",
+    "js-cookie": "^3.0.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "memory-web-storage": "^1.0.0",
+    "date-fns": "^2.22.1",
+    "react-json-view": "^1.21.3",
+    "react-markdown": "^6.0.2",
     "xstate": "^4.37.1"
   }
 }
