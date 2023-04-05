@@ -4,7 +4,7 @@ import { manualReview, onboardingClientCollectData } from './machines/ballerine.
 import { inspect } from '@xstate/inspect';
 import { fetchMachine } from './machines/fetch.machine';
 
-const xstates = {
+const stateMachineConfigs = {
   manReview: manualReview,
   onboarding: onboardingClientCollectData,
   fetchMachine: fetchMachine,
@@ -13,13 +13,9 @@ const xstates = {
 type InspectedMachine = {
   cleanup: () => void;
 };
-let activeInspectionMachine: InspectedMachine = { cleanup: () => {} };
 
 const loadMachine = (cfg: any): InspectedMachine => {
-  inspect({
-    // iframe: () => document.querySelector('iframe[data-xstate]') as HTMLIFrameElement,
-    url: 'https://stately.ai/viz?inspect',
-  })!;
+  inspect({})!;
 
   const machine = createMachine(cfg as any);
 
@@ -32,16 +28,15 @@ const loadMachine = (cfg: any): InspectedMachine => {
     },
   };
 };
-
-loadMachine(manualReview);
+let activeInspectionMachine: InspectedMachine = loadMachine(manualReview);
 
 const allButtons = document.querySelectorAll('[ballerine-machine]');
 
 allButtons.forEach(b => {
   b.addEventListener('click', () => {
     activeInspectionMachine.cleanup();
-    const machineId = b.getAttribute('ballerine-machine') as keyof typeof xstates;
-    const machineCfg = xstates[machineId];
+    const machineId = b.getAttribute('ballerine-machine') as keyof typeof stateMachineConfigs;
+    const machineCfg = stateMachineConfigs[machineId];
 
     activeInspectionMachine = loadMachine(machineCfg);
   });
