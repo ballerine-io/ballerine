@@ -1,4 +1,9 @@
-import * as machine from './sample.workflow-definition.json';
-import { interpret } from 'xstate';
+import { createMachine } from 'xstate';
+import { sampleMachine } from './sample.machine';
 
-const app = document.querySelector<HTMLDivElement>('#app')!;
+import { toDirectedGraph } from './vendored/directedGraph';
+
+// const app = document.querySelector<HTMLDivElement>('#app')!;
+const machine = createMachine(sampleMachine as any);
+const digraph = toDirectedGraph(machine as any);
+console.warn(digraph);
