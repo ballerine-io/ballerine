@@ -1,0 +1,19 @@
+{
+  "name": "@ballerine/experimental-visualiser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "serve": "npx servor ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "typescript": "^5.0.3"
+  },
+  "dependencies": {
+    "xstate": "^4.37.1"
+  }
+}
