@@ -1,19 +1,15 @@
 {
-  "name": "visualiser",
+  "name": "vite-project",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite  --port=8080",
+    "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
     "typescript": "^4.9.3",
     "vite": "^4.2.0"
-  },
-  "dependencies": {
-    "@xstate/inspect": "^0.8.0",
-    "xstate": "^4.37.1"
   }
 }
