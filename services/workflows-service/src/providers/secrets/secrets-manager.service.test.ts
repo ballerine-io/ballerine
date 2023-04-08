@@ -6,9 +6,7 @@ describe('Testing the secrets manager base class', () => {
   const SECRET_KEY = 'SECRET_KEY';
   const SECRET_VALUE = 'SECRET_VALUE';
   const configService = mock<ConfigService>();
-  const secretsManagerService = new SecretsManagerService(
-    configService,
-  );
+  const secretsManagerService = new SecretsManagerService(configService);
   beforeEach(() => {
     configService.get.mockClear();
   });

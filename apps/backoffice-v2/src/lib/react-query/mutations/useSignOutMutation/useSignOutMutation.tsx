@@ -34,7 +34,7 @@ export const useSignOutMutation = () => {
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({queryKey: getSession.queryKey});
+      queryClient.invalidateQueries({ queryKey: getSession.queryKey });
     },
   });
 };

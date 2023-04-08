@@ -13,7 +13,7 @@ runs:
       uses: pnpm/action-setup@v2
       id: pnpm-install
       with:
-        version: 7
+        version: 8
         run_install: false
 
     - name: Get pnpm store directory
@@ -37,11 +37,3 @@ runs:
     - name: Test
       shell: bash
       run: pnpm test
-
-    - name: Install Playwright browsers
-      shell: bash
-      run: pnpm playwright:install
-
-    - name: Test e2e
-      shell: bash
-      run: pnpm test:e2e

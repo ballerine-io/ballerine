@@ -1,0 +1,46 @@
+version: '3'
+services:
+  backoffice:
+    build:
+      context: ../apps/backoffice-v2/
+      args:
+        NPM_LOG_LEVEL: notice
+    ports:
+      - ${BACKOFFICE_PORT}:5173
+  service:
+    build:
+      context: ../services/workflows-service/
+      args:
+        NPM_LOG_LEVEL: notice
+    ports:
+      - ${SERVICE_PORT}:3000
+    environment:
+      BCRYPT_SALT: ${BCRYPT_SALT}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}
+    depends_on:
+      - db
+  db:
+    image: postgres:12
+    ports:
+      - ${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - -q
+        - -d
+        - ${DB_NAME}
+        - -U
+        - ${DB_USER}
+      timeout: 45s
+      interval: 10s
+      retries: 10
+volumes:
+  postgres: ~

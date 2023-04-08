@@ -40,8 +40,6 @@
 <!-- Badges - END -->
 
 
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fballerine-io%2Fballerine%2Ftree%2Fmain%2Fexamples%2Fweb-sdk%2Fsdk-react)
-
 </div>
 
 
@@ -52,7 +50,7 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 
 ### What you can find in this project
 
-*  :twisted_rightwards_arrows:   **Workflow engine** - :male_detective: Private Beta (collaborators)
+*  :twisted_rightwards_arrows:   **Workflow engine** - :white_check_mark:  Public beta
    - Automate decisions based on user data, 3rd party input and rules.
 
 * :scroll: **Rule engine** - :male_detective: Private Beta (collaborators)
@@ -61,23 +59,73 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 * :electric_plug:  **Plugin system** - :closed_lock_with_key: Private Alpha
    - Utilize our plugin system and unified API to connect to 3rd party vendors, custom APIs and databases.
 
-* :video_game:  **Frontend headless SDK** - :white_check_mark:  public beta
+* :video_game:  **Frontend headless SDK** - :white_check_mark:  Public beta
    1. Control the journey of your users in real-time, based on their updating attributes.
      1. Onboarding building blocks (community-driven kit) - [Go to directory](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md)
         * KYC/KYB/doc collection flows and UI via Mobile & web SDK
         * Case management dashboard for users approval
     </br>
 
+## Getting started
+
+Set up an onboarding decisioning workflow using Ballerina's pre-built building blocks. Collect data from users, process it with third-party vendors, automate decisions, or send them for manual review in the back office.
+
+### Local Environment Setup
+
+#### Prerequisites:
+* Install Node.js ([Install NVM](https://github.com/nvm-sh/nvm))
+* Install the latest PNPM version ([Install PNPM](https://pnpm.io/installation))
+* Install docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
+
+#### Install:
+   1. Clone the project:  
+   ```sh
+   git clone https://github.com/ballerine-io/ballerine.git
+   ```
+   2. Install npm depenencies: 
+   ```sh
+   pnpm install
+   ```
+   3. Initilazie monorepo: 
+   ```sh
+   pnpm monorepo:init
+   ```
+  
+#### Run Examples:
+
+##### KYC Manual Review Workflow: 
+The following command will run the workflow's backend (workflow service API), the backoffice, and UI example using the headless web SDK:
+```sh
+pnpm kyc-manual-review-example
+```
+
+Once the process is complete, *2 tabs* will open in your browser:
+the *backffice* and the *example KYC UI*
+(It's recommended to have them positioned side-by-side).
+
+**Steps to go over the flow:**
+
+1. On the KYC UI, click the "Start KYC" button
+2. Go through and complete the flow
+3. Go to the backoffice tab to review the new user that was created
+4. Approve/reject/ask to resubmit
+5. Get back to the KYC UI to see the result
 
 
-
+*Note: most components are currently in beta, if you run into an issue please ping us on [Slack]([https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw))
+  
+#### Development mode:
+   - *Run in development mode* - runs all the projects in dev mode: 
+ ```sh
+ pnpm dev
+ ```
 ---
 
 
 
 Join our mailing list so you know whenever we release new products and features.
 
-<a href="https://www.ballerine.com/mailing-list" title="Ballerine - Request Access">
+<a href="https://www.ballerine.com/" title="Ballerine - Request Access">
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
 </a>
 
@@ -119,17 +167,6 @@ Define and automate complex decisioning processes for your unique business needs
 * Trigger actions to enrich data and uncover risk, and streamline your team's decision-making process.
 * Visualize complex flows to provide observability of how things work to the rest of the company.
 * Improve compliance, reduce fraud, and increase conversion.
-
-<br/>
-
-
-**Live demo:**
-Coming soon
-
-
-**Getting started**
-:male_detective: Private Beta (collaborators) - Talk to us at oss@ballerine.com to join.
-
 
 <br/>
 
@@ -183,7 +220,7 @@ Examples of what you can do with it:
 
 Leave us your email on our mailing list and we'll let you know whenever we release a feature or improvement.
 
-<a href="https://www.ballerine.com/mailing-list" title="Ballerine - Request Access">
+<a href="https://www.ballerine.com/" title="Ballerine - Request Access">
     <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
 </a>
 </br>

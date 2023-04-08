@@ -8,7 +8,9 @@ export const useIndividual = () => {
   const { endUserId } = useParams();
   const { data, isLoading } = useEndUserWithWorkflowQuery(endUserId);
   const documentOne = data?.workflow?.workflowContext?.machineContext?.documentOne;
-  const { data: blob } = useStorageFileQuery(documentOne?.id);
+  const documentTwo = data?.workflow?.workflowContext?.machineContext?.documentTwo;
+  const { data: data1 } = useStorageFileQuery(documentOne?.id);
+  const { data: data2 } = useStorageFileQuery(documentTwo?.id);
   const {
     firstName,
     middleName,
@@ -36,10 +38,14 @@ export const useIndividual = () => {
   };
   const documents = [
     {
-      url: blob ? URL.createObjectURL(blob) : '',
+      url: data1,
       doctype: documentOne?.type,
     },
-  ];
+    {
+      url: data2,
+      doctype: documentTwo?.type + 'Confirmation',
+    },
+  ].filter(({ url }) => !!url);
 
   // Images
   const images =
@@ -59,7 +65,7 @@ export const useIndividual = () => {
   const info = {
     personalInfo,
     passportInfo,
-    checkResults,
+    checkResults: { ...checkResults, finalResult: data?.state },
     addressInfo,
     workflow: {
       name: underscoreToSpace(data?.workflow?.name),

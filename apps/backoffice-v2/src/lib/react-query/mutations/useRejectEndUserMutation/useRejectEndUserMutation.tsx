@@ -15,16 +15,28 @@ export const useRejectEndUserMutation = ({
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () =>
+    mutationFn: (
+      payload:
+        | {
+            action: typeof Action.REJECT;
+          }
+        | {
+            action: typeof Action.RESUBMIT;
+            resubmissionReason: string;
+          },
+    ) =>
       api.workflows.event({
         workflowId,
         body: {
-          name: 'reject',
+          name: payload?.action?.toLowerCase(),
+          ...(payload?.action === Action.RESUBMIT
+            ? { resubmissionReason: payload?.resubmissionReason }
+            : {}),
         },
       }),
-    onMutate: () => ({
+    onMutate: variables => ({
       resource: Resource.END_USER,
-      action: Action.REJECT,
+      action: variables?.action,
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: endUsers.list().queryKey });

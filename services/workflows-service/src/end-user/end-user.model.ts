@@ -2,11 +2,24 @@ import { StringFilter } from '@/query-filters/string-filter';
 import { ApiProperty } from '@nestjs/swagger';
 import { EndUserState } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { IsOptional, IsObject, IsEmail, IsPhoneNumber } from 'class-validator';
+import { IsEmail, IsObject, IsOptional, IsPhoneNumber } from 'class-validator';
 import { JsonValue } from 'type-fest';
 
-
 export class EndUserModel {
+  @ApiProperty({
+    required: true,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  id!: string;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  avatarUrl?: string | null;
+
   @ApiProperty({
     required: true,
     type: StringFilter,

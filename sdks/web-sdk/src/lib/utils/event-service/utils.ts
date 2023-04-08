@@ -3,25 +3,12 @@ import { currentLanguage, Languages } from '../../contexts/translation';
 import { EventTypes, IDocumentVerificationResponse, IOuterEvent, TActionNames } from './types';
 import { get } from 'svelte/store';
 import { flowEventBus } from '../../services/flow-event-bus/flow-event-bus';
-import { FlowEvent } from '../../services/flow-event-bus/enums';
+import { FlowEventTypes } from '../../services/flow-event-bus/enums';
 import { BALLERINE_EVENT } from './constants';
-import { IEventOptions } from '../../services/flow-event-bus/interfaces';
+import { IEventOptions, IFlowErrorPayload } from '../../services/flow-event-bus/interfaces';
 import { configuration } from '../../contexts/configuration';
 import { getFlowConfig } from '../../contexts/flows/hooks';
-
-const outerScopeContext = window.__blrn_context;
-const isProd = window.__blrn_is_prod;
-const endpoint =
-  outerScopeContext && outerScopeContext.debug !== undefined
-    ? '/upload-docs'
-    : '/v2/enduser/verify';
-const local = outerScopeContext && outerScopeContext.local !== undefined;
-const baseUrl = local ? 'http://localhost:3001' : window.__blrn_api_url;
-const docTypeMapping = {
-  documentBack: 'document-back',
-  documentFront: 'document-front',
-  selfie: 'face',
-};
+import { IFlowCompletePayload } from '../../services/flow-event-bus/interfaces';
 
 export const subscribe = () => {
   window.addEventListener('message', e => {
@@ -41,22 +28,21 @@ export const sendIframeEvent = (eventOptions: IEventOptions) => {
 export const sendFlowCompleteEvent = (verificationResponse?: IDocumentVerificationResponse) => {
   const { syncFlow } = getFlowConfig(get(configuration));
   const { status, idvResult } = verificationResponse ?? {};
-  const eventOptions = {
+  const eventOptions: IFlowCompletePayload = {
     eventName: BALLERINE_EVENT,
     eventType: syncFlow ? EventTypes.SYNC_FLOW_COMPLETE : EventTypes.ASYNC_FLOW_COMPLETE,
-    shouldExit: true,
-    payload: syncFlow
-      ? {
-          status,
-          idvResult,
-        }
-      : undefined,
+    payload: {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      status: status!,
+      code: -1,
+      idvResult,
+    },
   };
 
   sendIframeEvent(eventOptions);
   // Should finalize the signature on the callbacks interface
   flowEventBus({
-    type: FlowEvent.FLOW_COMPLETE,
+    type: FlowEventTypes.FLOW_COMPLETE,
     payload: eventOptions,
   });
 };
@@ -89,7 +75,7 @@ export const sendNavigationUpdateEvent = () => {
   };
   window.parent.postMessage(eventOptions, '*');
   flowEventBus({
-    type: FlowEvent.FLOW_NAVIGATION_UPDATE,
+    type: FlowEventTypes.FLOW_NAVIGATION_UPDATE,
     payload: eventOptions,
   });
 };
@@ -115,20 +101,22 @@ export const sendButtonClickEvent = (
   window.parent.postMessage(eventOptions, '*');
 };
 
-export const sendFlowErrorEvent = (error: Error, shouldExit = false) => {
-  const as = get(appState);
-  const eventOptions = {
+export const sendFlowErrorEvent = (_error: Error, _shouldExit = false) => {
+  // const as = get(appState);
+
+  const eventOptions: IFlowErrorPayload = {
     eventName: BALLERINE_EVENT,
     eventType: EventTypes.FLOW_ERROR,
-    shouldExit,
-    details: {
-      currentIdx: as.currentStepIdx,
-      currentPage: as.currentPage,
-    },
+    payload: {},
+    // shouldExit: shouldExit,
+    // details: {
+    //   currentIdx: as.currentStepIdx,
+    //   currentPage: as.currentPage,
+    // },
   };
   window.parent.postMessage(eventOptions, '*');
   flowEventBus({
-    type: FlowEvent.FLOW_ERROR,
+    type: FlowEventTypes.FLOW_ERROR,
     payload: eventOptions,
   });
 };

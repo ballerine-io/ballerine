@@ -5,6 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
+import { NotFoundException, Headers } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -14,7 +15,6 @@ import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
-import { mockUserId } from './mock-data.temp';
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
@@ -37,20 +37,14 @@ export class WorkflowControllerExternal {
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   async listWorkflowRuntimeDataByUserId(
     @UserData()
-    userInfo: UserInfo = {
-      id: mockUserId,
-      username: 'test',
-      roles: ['testRole'],
-    },
+    _userInfo: UserInfo,
+    @Headers('no_auth_user_id') no_auth_user_id: string,
   ): Promise<RunnableWorkflowData[]> {
-    const completeWorkflowData =
-      await this.service.listFullWorkflowDataByUserId(userInfo.id);
-    const response = completeWorkflowData.map(
-      ({ workflowDefinition, ...workflowRuntimeData }) => ({
-        workflowRuntimeData,
-        workflowDefinition,
-      }),
-    );
+    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(no_auth_user_id);
+    const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
+      workflowRuntimeData: rest,
+      workflowDefinition,
+    }));
 
     return response;
   }
@@ -62,9 +56,11 @@ export class WorkflowControllerExternal {
   async getRunnableWorkflowDataById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
   ): Promise<RunnableWorkflowData> {
-    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(
-      params.id,
-    );
+    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(params.id);
+    if (!workflowRuntimeData) {
+      throw new NotFoundException(`No resource with id [${params.id}] was found`);
+    }
+
     const workflowDefinition = await this.service.getWorkflowDefinitionById(
       workflowRuntimeData.workflowDefinitionId,
     );
@@ -75,7 +71,7 @@ export class WorkflowControllerExternal {
     };
   }
 
-  // PUT /workflows/:id
+  // PATCH /workflows/:id
   @common.Patch('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -88,9 +84,7 @@ export class WorkflowControllerExternal {
       return await this.service.updateWorkflowRuntimeData(params.id, data);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
-          `No resource was found for ${JSON.stringify(params)}`,
-        );
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
       throw error;
     }
@@ -101,9 +95,12 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async intent(@common.Body() intent: IntentDto): Promise<IntentResponse> {
+  async intent(
+    @common.Body() intent: IntentDto,
+    @Headers('no_auth_user_id') no_auth_user_id: string,
+  ): Promise<IntentResponse> {
     // Rename to intent or getRunnableWorkflowDataByIntent?
-    return await this.service.resolveIntent(intent.intentName);
+    return await this.service.resolveIntent(intent.intentName, no_auth_user_id);
   }
 
   // POST /event
@@ -112,7 +109,7 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async event(
-    @UserData() userInfo: UserInfo,
+    @UserData() _userInfo: UserInfo,
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
   ): Promise<void> {

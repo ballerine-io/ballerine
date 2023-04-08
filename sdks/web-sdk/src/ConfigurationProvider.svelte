@@ -38,7 +38,7 @@
 {#if !isMobile() && useModal}
   {#if !loading && modalOpened}
     <div class="background">
-      <div class="content ">
+      <div class="content">
         <App {flowName} />
       </div>
     </div>

@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs';
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
@@ -10,13 +9,8 @@ export class DefaultAuthGuard extends JwtAuthGuard {
     super();
   }
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<any> {
-    const isPublic = this.reflector.get<boolean>(
-      IS_PUBLIC_KEY,
-      context.getHandler(),
-    );
+  canActivate(context: ExecutionContext): ReturnType<JwtAuthGuard['canActivate']> {
+    const isPublic = this.reflector.get<boolean>(IS_PUBLIC_KEY, context.getHandler());
 
     if (isPublic) {
       return true;

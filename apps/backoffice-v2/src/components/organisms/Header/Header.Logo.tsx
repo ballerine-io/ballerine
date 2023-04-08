@@ -16,7 +16,7 @@ export const Logo: FunctionComponent = () => {
         }}
         className={`btn-ghost btn flex gap-x-3 text-2xl  normal-case focus:outline-primary`}
       >
-        <BallerineLogo /> Ballerine
+        <BallerineLogo />
       </Link>
     </h1>
   );
