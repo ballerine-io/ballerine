@@ -4,6 +4,7 @@ import { useImageViewerContext } from './hooks/useImageViewerContext/useImageVie
 import { BallerineImage } from '@/components/atoms/BallerineImage';
 import { ctw } from '@/utils/ctw/ctw';
 import { Button } from '@/components/atoms/Button';
+import { AspectRatio } from '@/components/atoms/AspectRatio/AspectRatio';
 
 /**
  * @description To be used by {@link ImageViewer}, and be wrapped by {@link ImageViewer.List}. Uses an li element with default styling to display a single image which sets the selected image on click.
@@ -37,18 +38,19 @@ export const Item: FunctionComponent<IItemProps> = ({
     <li className={ctw(`flex justify-center`, className)} {...rest}>
       <Button
         className={ctw(
-          `group flex-col space-y-2  hover:bg-transparent focus-visible:!ring-0 active:!ring-0`,
+          `!h-unset group flex-col space-y-2 bg-transparent  hover:bg-transparent focus-visible:!ring-0 active:!ring-0`,
           buttonClassName,
         )}
         onClick={onSelectImage(src)}
         {...restButton}
       >
         <div className={`flex h-[4.375rem] w-[4rem]`}>
-          <BallerineImage
-            withPlaceholder
-            src={src}
-            className={ctw(
-              `
+          <AspectRatio ratio={9 / 16}>
+            <BallerineImage
+              withPlaceholder
+              src={src}
+              className={ctw(
+                `
             group-hover:outline
             group-hover:outline-2
             group-hover:outline-primary
@@ -56,11 +58,12 @@ export const Item: FunctionComponent<IItemProps> = ({
             group-focus:outline
             group-focus:outline-2
             group-focus:outline-primary`,
-              imageClassName,
-            )}
-            alt={alt}
-            {...restImage}
-          />
+                imageClassName,
+              )}
+              alt={alt}
+              {...restImage}
+            />
+          </AspectRatio>
         </div>
         <span className={`capitalize`}>{caption}</span>
       </Button>
