@@ -1,5 +1,8 @@
-/* eslint-disable */
-import { beforeEach, describe, expect, it } from 'vitest';
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { beforeEach, describe, expect, it, test } from 'vitest';
 import { WorkflowBrowserSDK } from '../workflow-browser-sdk';
 import { workflowOptions } from './workflow-options';
 
@@ -9,7 +12,7 @@ let actions: any;
 
 beforeEach(() => {
   workflowService = new WorkflowBrowserSDK(workflowOptions);
-  machine = workflowService?.getSnapshot().machine;
+  machine = workflowService.getSnapshot().machine;
   actions = machine.options.actions;
 });
 
@@ -27,6 +30,45 @@ describe('injections', () => {
     expect(machine.states.second.config.on.USER_NEXT_STEP).toMatchObject({
       target: 'third',
       actions: ['USER_NEXT_STEP'],
+    });
+  });
+
+  test.skip('should inject plugins', () => {
+    workflowService = new WorkflowBrowserSDK({
+      ...workflowOptions,
+      submitStates: [],
+    });
+    machine = workflowService.getSnapshot().machine;
+
+    // Submit plugin falls back to states with type: 'final'
+    expect(
+      machine.states.last.onEntry.find(({ type }: { type: string }) => type === 'SUBMIT_BACKEND'),
+    ).toMatchObject({
+      type: 'SUBMIT_BACKEND',
+      exec: undefined,
+    });
+
+    // Injects user defined submitStates
+    workflowService = new WorkflowBrowserSDK(workflowOptions);
+    machine = workflowService.getSnapshot().machine;
+
+    expect(
+      machine.states.fourth.onEntry?.find(
+        ({ type }: { type: string }) => type === 'SUBMIT_BACKEND',
+      ),
+    ).toMatchObject({
+      type: 'SUBMIT_BACKEND',
+      exec: undefined,
+    });
+
+    // Injects user defined persistStates
+    expect(
+      machine.states.third.onEntry?.find(
+        ({ type }: { type: string }) => type === 'SYNC_LOCAL_STORAGE',
+      ),
+    ).toMatchObject({
+      type: 'SYNC_LOCAL_STORAGE',
+      exec: undefined,
     });
   });
 });
