@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflow-node-sdk",
   "author": "Ballerine",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "workflow-node-sdk",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
@@ -22,7 +22,7 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/workflow-core": "^0.4.8",
+    "@ballerine/workflow-core": "^0.4.9",
     "json-logic-js": "^2.0.2",
     "xstate": "^4.36.0"
   },
