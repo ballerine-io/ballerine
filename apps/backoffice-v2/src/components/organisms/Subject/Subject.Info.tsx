@@ -1,19 +1,22 @@
-import { isNullish } from "@ballerine/common";
-import { WarningAlert } from "@/components/atoms/WarningAlert";
-import { DataField } from "@/components/molecules/DataField/DataField";
-import { DetailsGrid } from "@/components/molecules/DetailsGrid/DetailsGrid";
-import { Modal } from "@/components/organisms/Modal/Modal";
-import { IInfoProps } from "@/components/organisms/Subject/interfaces";
-import { useToggle } from "@/hooks/useToggle/useToggle";
-import { FunctionComponent, useCallback, useState } from "react";
-import { State } from "@/enums";
-import { camelCaseToSpace } from "@/utils/camel-case-to-space/camel-case-to-space";
-import { createArrayOfNumbers } from "@/utils/create-array-of-numbers/create-array-of-numbers";
-import { ctw } from "@/utils/ctw/ctw";
-import { formatDate } from "@/utils/format-date";
-import { isValidDate } from "@/utils/is-valid-date";
-import { toStartCase } from "@/utils/to-start-case/to-start-case";
-import { Button } from "@/components/atoms/Button";
+import { isNullish } from '@ballerine/common';
+import { WarningAlert } from '@/components/atoms/WarningAlert';
+import { DataField } from '@/components/molecules/DataField/DataField';
+import { DetailsGrid } from '@/components/molecules/DetailsGrid/DetailsGrid';
+import { IInfoProps } from '@/components/organisms/Subject/interfaces';
+import { useToggle } from '@/hooks/useToggle/useToggle';
+import { FunctionComponent, useCallback, useState } from 'react';
+import { State } from '@/enums';
+import { camelCaseToSpace } from '@/utils/camel-case-to-space/camel-case-to-space';
+import { createArrayOfNumbers } from '@/utils/create-array-of-numbers/create-array-of-numbers';
+import { ctw } from '@/utils/ctw/ctw';
+import { formatDate } from '@/utils/format-date';
+import { isValidDate } from '@/utils/is-valid-date';
+import { toStartCase } from '@/utils/to-start-case/to-start-case';
+import { Button } from '@/components/atoms/Button';
+import { Dialog } from '@/components/molecules/Dialog/Dialog';
+import { DialogContent } from '@/components/molecules/Dialog/Dialog.Content';
+import { DialogHeader } from '@/components/molecules/Dialog/Dialog.Header';
+import { DialogTitle } from '@/components/molecules/Dialog/Dialog.Title';
 
 export const useInfo = ({
   whitelist = [],
@@ -148,39 +151,39 @@ export const Info: FunctionComponent<IInfoProps> = ({ info, whitelist, isLoading
                 if (index === 2 && isCheckResults) {
                   return (
                     <>
-                      <Modal
-                        title={`View full report modal`}
-                        isOpen={isViewFullReportModalOpen}
-                        onIsOpenChange={toggleIsViewFullReportModalOpen}
-                        hideTitle
+                      <Dialog
+                        open={isViewFullReportModalOpen}
+                        onOpenChange={toggleIsViewFullReportModalOpen}
                       >
-                        <pre
-                          className={`mx-auto w-full max-w-4xl rounded-md bg-base-content p-4 text-base-100`}
-                        >
-                          <code>
-                            {JSON.stringify(
-                              sections?.reduce((acc, curr) => {
-                                // Convert titles back to camelCase from Start case.
-                                const title = curr?.title
-                                  ?.toLowerCase()
-                                  ?.replace(/\s[a-z]/g, match =>
-                                    match?.toUpperCase()?.replace(/\s/, ''),
-                                  );
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle className={`sr-only`}>View full report modal</DialogTitle>
+                          </DialogHeader>
+                          <pre
+                            className={`mx-auto w-full max-w-4xl overflow-x-auto rounded-md bg-base-content p-4 text-base-100`}
+                          >
+                            <code>
+                              {JSON.stringify(
+                                sections?.reduce((acc, curr) => {
+                                  // Convert titles back to camelCase from Start case.
+                                  const title = curr?.title
+                                    ?.toLowerCase()
+                                    ?.replace(/\s[a-z]/g, match =>
+                                      match?.toUpperCase()?.replace(/\s/, ''),
+                                    );
 
-                                acc[title] = curr?.data;
+                                  acc[title] = curr?.data;
 
-                                return acc;
-                              }, {}),
-                              null,
-                              2,
-                            )}
-                          </code>
-                        </pre>
-                      </Modal>
-                      <Button
-                        variant={`link`}
-                        onClick={onToggleOnIsViewFullReportOpen}
-                      >
+                                  return acc;
+                                }, {}),
+                                null,
+                                2,
+                              )}
+                            </code>
+                          </pre>
+                        </DialogContent>
+                      </Dialog>
+                      <Button variant={`link`} onClick={onToggleOnIsViewFullReportOpen}>
                         View full report
                       </Button>
                     </>

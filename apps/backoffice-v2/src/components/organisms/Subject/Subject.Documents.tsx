@@ -7,7 +7,7 @@ import { XMarkSvg } from '@/components/atoms/icons';
 import { useDocuments } from '@/components/organisms/Subject/hooks/useDocuments/useDocuments';
 import { ctw } from '@/utils/ctw/ctw';
 import { Button } from '@/components/atoms/Button';
-import { Check } from 'lucide-react';
+import {Check, X} from 'lucide-react';
 
 /**
  * @description To be used by {@link Subject}, and be wrapped by {@link Subject.Content}. Displays a single end user's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
@@ -55,7 +55,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
               })}
               onClick={onCancelCrop}
             >
-              <XMarkSvg className={`p-0.5`} />
+              <X />
             </Button>
             <Button
               variant={`ghost`}
