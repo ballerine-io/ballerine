@@ -39,7 +39,7 @@ const babelPlugin = babel({
   extensions: ['.ts'],
 });
 
-export default function rollup(_options: RollupOptions): RollupOptions[] {
+export default function rollup(): RollupOptions[] {
   return buildConfigs({
     name: 'workflow-browser-sdk',
     packageDir: '.',

@@ -5,6 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
+import { NotFoundException, Headers } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -17,7 +18,6 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
-import { Headers } from '@nestjs/common';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -41,8 +41,8 @@ export class WorkflowControllerExternal {
     @Headers('no_auth_user_id') no_auth_user_id: string,
   ): Promise<RunnableWorkflowData[]> {
     const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(no_auth_user_id);
-    const response = completeWorkflowData.map(({ workflowDefinition, ...workflowRuntimeData }) => ({
-      workflowRuntimeData,
+    const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
+      workflowRuntimeData: rest,
       workflowDefinition,
     }));
 
@@ -57,6 +57,10 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
   ): Promise<RunnableWorkflowData> {
     const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(params.id);
+    if (!workflowRuntimeData) {
+      throw new NotFoundException(`No resource with id [${params.id}] was found`);
+    }
+
     const workflowDefinition = await this.service.getWorkflowDefinitionById(
       workflowRuntimeData.workflowDefinitionId,
     );

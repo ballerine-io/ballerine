@@ -7,13 +7,14 @@ import { EndUserState, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/c
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
-import { IObjectWithId } from '@/types';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { merge } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { EndUserRepository } from '@/end-user/end-user.repository';
+
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { EndUserRepository } from '@/end-user/end-user.repository';
+import { IObjectWithId } from '@/types';
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -35,7 +36,7 @@ export type IntentResponse = WorkflowData[];
 
 // TODO: TEMP (STUB)
 const policies = {
-  signup: (_ctx: unknown): { workflowDefinitionId: string; version: number }[] => {
+  signup: (): { workflowDefinitionId: string; version: number }[] => {
     return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9aaa', version: 1 }];
   },
 };
@@ -214,8 +215,11 @@ export class WorkflowService {
     endUserId = 'ckkt3qnv40001qxtt7nmj9r2r', // TODO: remove default value
   ): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies['signup'];
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const { workflowDefinitionId } = workflowDefinitionResolver({})[0]!; // TODO: implement logic for multiple workflows
+
+    // TODO: implement logic for multiple workflows
+    const { workflowDefinitionId } = workflowDefinitionResolver()[0] as {
+      workflowDefinitionId: string;
+    };
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
@@ -256,10 +260,10 @@ export class WorkflowService {
     );
 
     const service = createWorkflow({
-      // @ts-expect-error Should run workflow.definition through Zod to ensure a valid definition.
-      definition: workflow.definition,
-      // @ts-expect-error The SDK supports 'statechart-json' | 'bmpn-json', the DB expects a string.
-      definitionType: workflow.definitionType,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      definition: workflow.definition as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      definitionType: workflow.definitionType as any,
       workflowContext: {
         machineContext: runtimeData.context,
         state: runtimeData.state,
