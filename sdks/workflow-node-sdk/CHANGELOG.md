@@ -1,5 +1,13 @@
 # @ballerine/workflow-node-sdk
 
+## 0.4.3
+
+### Patch Changes
+
+- a2bed5e: Release
+- Updated dependencies [a2bed5e]
+  - @ballerine/workflow-core@0.4.9
+
 ## 0.4.2
 
 ### Patch Changes
