@@ -16,4 +16,6 @@
   });
 </script>
 
-<Form {zodForm}>Welcome</Form>
+<Form {zodForm}>
+  <legend>Welcome</legend>
+</Form>

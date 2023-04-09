@@ -31,4 +31,4 @@
   });
 </script>
 
-<img class="rounded-md" {src} {alt} />
+<img class="rounded-lg" {src} {alt} />

@@ -13,7 +13,7 @@
   const data = zodForm.data;
 </script>
 
-<form use:form class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
+<form use:form class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-6 rounded-lg border border-slate-200 shadow">
   <slot />
   <div class="mt-auto flex" class:justify-between={displayBackButton} class:space-x-2={displayBackButton}>
     {#if displayBackButton}
