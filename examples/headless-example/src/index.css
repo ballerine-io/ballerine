@@ -21,7 +21,7 @@
   }
 
   button, [type="button"], [type="submit"], [type="reset"] {
-    @apply w-full bg-brand px-2 py-4 rounded-lg text-white font-bold;
+    @apply w-full bg-brand p-2 rounded-lg text-white font-bold;
   }
 
   legend {
