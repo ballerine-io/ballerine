@@ -45,11 +45,11 @@
     });
   };
   let initialValues = {
-    documentOne: {
-      type: snapshot?.context?.documentOne?.type,
+    id: {
+      type: snapshot?.context?.id?.type,
     },
     documentTwo: {
-      type: snapshot?.context?.documentOne?.type,
+      type: snapshot?.context?.id?.type,
     },
   };
   let documentName;
@@ -86,13 +86,13 @@
     currentStep;
     step = Step[currentStep.toUpperCase() as keyof typeof Step];
     snapshot = workflowService?.getSnapshot();
-    initialValues.documentOne.type = snapshot?.context?.documentOne?.type;
-    initialValues.documentTwo.type = snapshot?.context?.documentOne?.type;
+    initialValues.id.type = snapshot?.context?.id?.type;
+    initialValues.documentTwo.type = snapshot?.context?.id?.type;
 
     switch (currentStep) {
       case "document_photo":
       case "document_review":
-        documentName = "documentOne";
+        documentName = "id";
         break;
       case "document_photo_two":
       case "document_review_two":

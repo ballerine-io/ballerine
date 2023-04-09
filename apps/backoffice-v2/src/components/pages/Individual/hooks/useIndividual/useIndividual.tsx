@@ -7,9 +7,9 @@ import { underscoreToSpace } from '../../../../../utils/underscore-to-space/unde
 export const useIndividual = () => {
   const { endUserId } = useParams();
   const { data, isLoading } = useEndUserWithWorkflowQuery(endUserId);
-  const documentOne = data?.workflow?.workflowContext?.machineContext?.documentOne;
+  const id = data?.workflow?.workflowContext?.machineContext?.id;
   const documentTwo = data?.workflow?.workflowContext?.machineContext?.documentTwo;
-  const { data: data1 } = useStorageFileQuery(documentOne?.id);
+  const { data: data1 } = useStorageFileQuery(id?.id);
   const { data: data2 } = useStorageFileQuery(documentTwo?.id);
   const {
     firstName,
@@ -39,7 +39,7 @@ export const useIndividual = () => {
   const documents = [
     {
       url: data1,
-      doctype: documentOne?.type,
+      doctype: id?.type,
     },
     {
       url: data2,

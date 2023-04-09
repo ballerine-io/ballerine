@@ -53,7 +53,7 @@
 
 
   $: {
-    title = documentName === 'documentOne' ? 'Upload Document One' : 'Upload Document Two';
+    title = documentName === 'id' ? 'Upload ID' : 'Upload Document Two';
   }
 </script>
 

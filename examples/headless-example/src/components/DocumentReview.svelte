@@ -27,8 +27,8 @@
   });
 
   $: {
-    submitText = documentName === 'documentOne' ? undefined : 'Submit';
-    title = documentName === 'documentOne' ? 'Review Document One' : 'Review Document Two';
+    submitText = documentName === 'id' ? undefined : 'Submit';
+    title = documentName === 'id' ? 'Review ID' : 'Review Document Two';
     id = workflowService.getSnapshot?.()?.context?.[documentName]?.id;
   }
 

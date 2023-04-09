@@ -176,7 +176,7 @@
 
       if (
         nextWorkflow?.definition?.initial !== $workflow?.definition?.initial &&
-        nextWorkflow?.definition?.context?.documentOne?.resubmissionReason
+        nextWorkflow?.definition?.context?.id?.resubmissionReason
       ) {
         shouldResubmit = true;
       } else {
@@ -207,12 +207,6 @@
     }
   }
 
-  $: {
-    console.log({
-      workflow: $workflow,
-      isCompleted
-    })
-  }
 </script>
 
 <main class="h-full flex flex-col items-center justify-center p-6">
@@ -236,7 +230,7 @@
   {#if isValidWorkflow && shouldResubmit}
     <Resubmission
       {handleResubmit}
-      reason={nextWorkflow?.definition?.context?.documentOne?.resubmissionReason?.toLowerCase()?.replace(/_/g, ' ')}
+      reason={nextWorkflow?.definition?.context?.id?.resubmissionReason?.toLowerCase()?.replace(/_/g, ' ')}
     />
   {/if}
 
