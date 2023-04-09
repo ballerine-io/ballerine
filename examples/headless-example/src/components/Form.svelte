@@ -6,6 +6,7 @@
   export let onPrev: TOnPrev<ZodSchema> | undefined = undefined;
   export let zodForm: ReturnType<typeof createZodForm>;
   export let submitText = 'Next';
+  export let backText = 'Back';
 
   $: displayBackButton = onPrev !== undefined;
 
@@ -17,7 +18,7 @@
   <slot />
   <div class="mt-auto flex" class:justify-between={displayBackButton} class:space-x-2={displayBackButton}>
     {#if displayBackButton}
-      <button type="button" on:click={onPrev?.($data)}>Back</button>
+      <button type="button" on:click={onPrev?.($data)}>{backText}</button>
     {/if}
     <button  type="submit">{submitText}</button>
   </div>

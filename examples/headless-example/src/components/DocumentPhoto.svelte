@@ -54,7 +54,7 @@
 
 
   $: {
-    title = documentName === 'id' ? 'Upload ID' : 'Upload Selfie';
+    title = (documentName.charAt(0).toUpperCase() + documentName.slice(1)).replace(/id/i, "ID");
   }
 </script>
 
@@ -64,9 +64,9 @@
 
 <Form {zodForm} {onPrev}>
   <fieldset class="h-full flex flex-col mb-2">
-    <legend>{title}</legend>
+    <legend>Upload {title}</legend>
 <p class="max-w-[50ch] p-1">
-  Pssst... instead of uploading your own ID, you can download <a download="fake-document"  href="/fake-document.jpg">this file</a> and upload it here.
+  Pssst... instead of uploading your own documents, you can download <a download="fake-document"  href="/fake-document.jpg">this file</a> and upload it here.
 </p>
     <label for="file" class="sr-only"> File </label>
     <input
@@ -77,15 +77,20 @@
       on:change={updateFileName}
       bind:this={fileInput}
     />
-    <div  class="mt-auto space-y-2">
+    <div  class="h-full justify-between flex flex-col space-y-2">
     {#if fileName}
-      <div>
-        X {fileName}
+      <div class="mt-auto flex justify-between py-2">
+        <div class="flex">
+        <img src="/check.svg" class="mr-2"/> <span>{fileName}</span>
+        </div>
+        <span class="text-sm text-slate-400">
+          Chosen
+        </span>
       </div>
       {:else}
-      <img src="/upload-document.svg" alt="Upload Document" class="mx-auto" />
+      <img src={`/${documentName === 'selfie' ? 'selfie' : 'upload-document'}.svg`} alt="Upload Document" class="mx-auto w-48 h-48" />
     {/if}
-    <button type="button" on:click={uploadFile}>Upload Document File</button>
+    <button type="button" on:click={uploadFile}>Choose Document</button>
     </div>
   </fieldset>
   <ValidationMessage for={`${documentName}.file`} let:messages={message}>

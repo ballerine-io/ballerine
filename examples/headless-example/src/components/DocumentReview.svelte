@@ -17,6 +17,7 @@
   let submitText;
   let title;
   let id;
+
   const zodForm = createZodForm(schema, {
     initialValues,
     onSubmit(data, ctx) {
@@ -25,17 +26,18 @@
       }, ctx);
     },
   });
+  const backText = 'Re-upload';
 
   $: {
-    submitText = documentName === 'id' ? undefined : 'Submit';
-    title = documentName === 'id' ? 'Review ID' : 'Review Selfie';
+    submitText = documentName !== 'selfie' ? 'Looks Good' : 'Submit';
+    title = (documentName.charAt(0).toUpperCase() + documentName.slice(1)).replace(/id/i, "ID");
     id = workflowService.getSnapshot?.()?.context?.[documentName]?.id;
   }
 
 </script>
 
-<Form {zodForm} {onPrev} {submitText}>
-  <legend>{title}</legend>
+<Form {zodForm} {onPrev} {submitText} {backText}>
+  <legend>Review {title}</legend>
   <p class="max-w-[50ch] p-1">Does the document below look okay?</p>
   <div class="max-h-64 overflow-auto">
     <RemoteImage {id} alt="document-review" />
