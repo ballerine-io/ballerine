@@ -33,9 +33,22 @@
   let error: string;
 
   const onPrev = (payload: Record<PropertyKey, any>) => () => {
+    const context = workflowService.getSnapshot()?.context;
+
     workflowService.sendEvent({
       type: "USER_PREV_STEP",
-      payload,
+      payload: {
+        ...context,
+        ...payload,
+        id: {
+          ...context?.id,
+          ...payload?.id,
+        },
+        selfie: {
+          ...context?.selfie,
+          ...payload?.selfie,
+        },
+      },
     });
   };
   const onSubmit = (payload: Record<PropertyKey, any>) => {
