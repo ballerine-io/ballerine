@@ -7,7 +7,7 @@
   import DocumentType from "@/components/DocumentType.svelte";
 
   const schema = z.object({
-    documentOne: z.object({
+    id: z.object({
       type: z.union([z.literal('passport'), z.literal('idCard'), z.literal('driverLicense')]),
     }),
   });
@@ -18,8 +18,8 @@
 
   const zodForm = createZodForm(schema, {
     initialValues: {
-      documentOne: {
-        type: initialValues.documentOne.type,
+      id: {
+        type: initialValues.id.type,
       },
     },
     onSubmit,
@@ -34,23 +34,23 @@
     <DocumentType
       id="passport"
       label="Passport"
-      name="documentOne.type"
+      name="id.type"
       value="passport"
-      type={$data.documentOne.type}
+      type={$data.id.type}
     />
     <DocumentType
       id="id-card"
       label="ID Card"
-      name="documentOne.type"
+      name="id.type"
       value="idCard"
-      type={$data.documentOne.type}
+      type={$data.id.type}
     />
     <DocumentType
       id="driver-license"
       label="Driver License"
-      name="documentOne.type"
+      name="id.type"
       value="driverLicense"
-      type={$data.documentOne.type}
+      type={$data.id.type}
     />
   </fieldset>
   <ValidationMessage for="document" let:messages={message}>

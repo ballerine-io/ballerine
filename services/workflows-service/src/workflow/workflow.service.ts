@@ -281,7 +281,7 @@ export class WorkflowService {
     );
 
     // Will be received from the client
-    const document = 'documentOne';
+    const document = 'id';
 
     if (type === 'resubmit') {
       switch (resubmissionReason) {
