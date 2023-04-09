@@ -16,33 +16,20 @@
   export let onSubmit: TOnSubmit<typeof schema>;
   export let onPrev: TOnPrev<typeof schema>;
 
-  const {createSubmitHandler, data, ...rest} = createZodForm(schema, {
+  const zodForm = createZodForm(schema, {
     initialValues: {
       documentOne: {
         type: initialValues.documentOne.type,
       },
     },
-  });
-  const zodForm = {
-    createSubmitHandler,
-    data,
-    ...rest,
-  };
-
-  const onChange = createSubmitHandler({
     onSubmit,
   });
-  const onClick = event => {
-    if (event.target.type !== 'radio' || event.target.value !== $data.documentOne?.type) return;
+  const data = zodForm.data;
 
-    return createSubmitHandler({
-      onSubmit,
-    })(event);
-  };
 </script>
 
 <Form {zodForm} {onPrev}>
-  <fieldset class="grid grid-cols-1 gap-2" on:click={onClick} on:change={onChange}>
+  <fieldset class="grid grid-cols-1 gap-2">
     <legend>Choose Document Type</legend>
     <DocumentType
       id="passport"
