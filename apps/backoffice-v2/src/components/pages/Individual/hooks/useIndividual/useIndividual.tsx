@@ -8,9 +8,9 @@ export const useIndividual = () => {
   const { endUserId } = useParams();
   const { data, isLoading } = useEndUserWithWorkflowQuery(endUserId);
   const id = data?.workflow?.workflowContext?.machineContext?.id;
-  const documentTwo = data?.workflow?.workflowContext?.machineContext?.documentTwo;
+  const selfie = data?.workflow?.workflowContext?.machineContext?.selfie;
   const { data: data1 } = useStorageFileQuery(id?.id);
-  const { data: data2 } = useStorageFileQuery(documentTwo?.id);
+  const { data: data2 } = useStorageFileQuery(selfie?.id);
   const {
     firstName,
     middleName,
@@ -43,7 +43,7 @@ export const useIndividual = () => {
     },
     {
       url: data2,
-      doctype: documentTwo?.type + 'Confirmation',
+      doctype: selfie?.type,
     },
   ].filter(({ url }) => !!url);
 
@@ -59,8 +59,10 @@ export const useIndividual = () => {
     fullName,
     avatarUrl,
   };
-  const faceAUrl = images?.find(({ caption }) => /face/i.test(caption))?.imageUrl;
-  const faceBUrl = images?.find(({ caption }) => /id\scardfront/i.test(caption))?.imageUrl;
+  const faceAUrl = images?.find(({ caption }) => /selfie/i.test(caption))?.imageUrl;
+  const faceBUrl = images?.find(({ caption }) =>
+    /id\scard|passport|driver\slicense/i.test(caption),
+  )?.imageUrl;
   const whitelist = ['workflow', 'personalInfo', 'passportInfo', 'checkResults', 'addressInfo'];
   const info = {
     personalInfo,

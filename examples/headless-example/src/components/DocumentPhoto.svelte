@@ -18,6 +18,7 @@
         z.literal("passport"),
         z.literal("idCard"),
         z.literal("driverLicense"),
+        z.literal("selfie"),
       ]),
       file: z.custom<File>((v) => v instanceof File),
     }),
@@ -53,7 +54,7 @@
 
 
   $: {
-    title = documentName === 'id' ? 'Upload ID' : 'Upload Document Two';
+    title = documentName === 'id' ? 'Upload ID' : 'Upload Selfie';
   }
 </script>
 
