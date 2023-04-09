@@ -14,7 +14,7 @@
   export let documentName: string;
 
   // Defaults to 'Next'
-  let submitText;
+  const submitText = 'Looks Good';
   let title;
   let id;
 
@@ -29,7 +29,6 @@
   const backText = 'Re-upload';
 
   $: {
-    submitText = documentName !== 'selfie' ? 'Looks Good' : 'Submit';
     title = (documentName.charAt(0).toUpperCase() + documentName.slice(1)).replace(/id/i, "ID");
     id = workflowService.getSnapshot?.()?.context?.[documentName]?.id;
   }

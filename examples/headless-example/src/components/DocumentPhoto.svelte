@@ -66,7 +66,11 @@
   <fieldset class="h-full flex flex-col mb-2">
     <legend>Upload {title}</legend>
 <p class="max-w-[50ch] p-1">
-  Pssst... instead of uploading your own documents, you can download <a download="fake-document"  href="/fake-document.jpg">this file</a> and upload it here.
+  {#if documentName === 'selfie'}
+    You can download <a download="fake-document"  href="/fake-document.jpg">this selfie file</a> and upload it here.
+    {:else}
+    Pssst... instead of uploading your own ID, you can download <a download="fake-document"  href="/fake-document.jpg">this file</a> and upload it here.
+    {/if}
 </p>
     <label for="file" class="sr-only"> File </label>
     <input
