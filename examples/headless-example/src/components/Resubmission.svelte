@@ -16,5 +16,5 @@ export let handleResubmit = () => {};
     You can upload <a download="/fake-document.jpg">this file</a>.
   </p>
   <img src="/re-upload-id.svg" alt="clock" class="m-auto mb-2 w-48 h-48"/>
-  <button class="mt-auto" on:click={handleResubmit}>Re-upload ID file</button>
+  <button class="mt-auto" on:click={handleResubmit}>Re-upload ID File</button>
 </Card>
