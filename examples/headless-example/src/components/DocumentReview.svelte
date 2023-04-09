@@ -28,7 +28,7 @@
 
   $: {
     submitText = documentName === 'id' ? undefined : 'Submit';
-    title = documentName === 'id' ? 'Review ID' : 'Review Document Two';
+    title = documentName === 'id' ? 'Review ID' : 'Review Selfie';
     id = workflowService.getSnapshot?.()?.context?.[documentName]?.id;
   }
 

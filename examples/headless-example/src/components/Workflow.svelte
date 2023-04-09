@@ -16,8 +16,8 @@
     DOCUMENT_SELECTION: DocumentSelection,
     DOCUMENT_PHOTO: DocumentPhoto,
     DOCUMENT_REVIEW: DocumentReview,
-    DOCUMENT_PHOTO_TWO: DocumentPhoto,
-    DOCUMENT_REVIEW_TWO: DocumentReview,
+    SELFIE: DocumentPhoto,
+    SELFIE_REVIEW: DocumentReview,
     FINAL: Final,
     ERROR: ErrorComponent,
     SUCCESS: Success,
@@ -48,8 +48,8 @@
     id: {
       type: snapshot?.context?.id?.type,
     },
-    documentTwo: {
-      type: snapshot?.context?.id?.type,
+    selfie: {
+      type: snapshot?.context?.selfie?.type,
     },
   };
   let documentName;
@@ -87,16 +87,16 @@
     step = Step[currentStep.toUpperCase() as keyof typeof Step];
     snapshot = workflowService?.getSnapshot();
     initialValues.id.type = snapshot?.context?.id?.type;
-    initialValues.documentTwo.type = snapshot?.context?.id?.type;
+    initialValues.selfie.type = 'selfie';
 
     switch (currentStep) {
       case "document_photo":
       case "document_review":
         documentName = "id";
         break;
-      case "document_photo_two":
-      case "document_review_two":
-        documentName = "documentTwo";
+      case "selfie":
+      case "selfie_review":
+        documentName = "selfie";
         break;
       default:
         break;
