@@ -24,7 +24,7 @@
 </script>
 
 <Form {zodForm} submitText={'Sign Up'}>
-  <legend>Sign Up</legend>
+  <legend>Welcome</legend>
   <fieldset class="space-y-3">
     <legend class="sr-only">Name</legend>
     <div>

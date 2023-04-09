@@ -454,6 +454,9 @@ importers:
       '@felte/validator-zod':
         specifier: ^1.0.13
         version: 1.0.13(zod@3.21.4)
+      '@fontsource/inter':
+        specifier: ^4.5.15
+        version: 4.5.15
       '@tanstack/svelte-query':
         specifier: ^4.27.0
         version: 4.27.0(svelte@3.57.0)
@@ -5392,6 +5395,10 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       tabbable: 6.1.1
+    dev: false
+
+  /@fontsource/inter@4.5.15:
+    resolution: {integrity: sha512-FzleM9AxZQK2nqsTDtBiY0PMEVWvnKnuu2i09+p6DHvrHsuucoV2j0tmw+kAT3L4hvsLdAIDv6MdGehsPIdT+Q==}
     dev: false
 
   /@formkit/auto-animate@1.0.0-beta.5:
