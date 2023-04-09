@@ -30,7 +30,9 @@
     "@fontsource/inter": "^4.5.15",
     "@tanstack/svelte-query": "^4.27.0",
     "@xstate/svelte": "^2.0.1",
+    "clsx": "^1.2.1",
     "felte": "^1.2.7",
+    "tailwind-merge": "^1.8.1",
     "vite-tsconfig-paths": "^4.0.7",
     "xstate": "4.36.0",
     "zod": "^3.20.6"

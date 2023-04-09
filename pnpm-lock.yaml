@@ -463,9 +463,15 @@ importers:
       '@xstate/svelte':
         specifier: ^2.0.1
         version: 2.0.1(svelte@3.57.0)(xstate@4.36.0)
+      clsx:
+        specifier: ^1.2.1
+        version: 1.2.1
       felte:
         specifier: ^1.2.7
         version: 1.2.7(svelte@3.57.0)
+      tailwind-merge:
+        specifier: ^1.8.1
+        version: 1.10.0
       vite-tsconfig-paths:
         specifier: ^4.0.7
         version: 4.0.7(typescript@4.9.5)(vite@4.2.1)
