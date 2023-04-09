@@ -93,11 +93,9 @@
   })
   const createFirstWorkflowQuery = () => createWorkflowsQuery({
     select: (workflows) => {
-      console.log(workflows)
       return Array.isArray(workflows) ? workflows?.find(
         workflow =>
-          workflow?.workflowDefinition?.name === "onboarding_client_collect_data" &&
-          workflow?.workflowRuntimeData?.status !== 'completed',
+          workflow?.workflowDefinition?.name === "onboarding_client_collect_data",
       ) : undefined
     }
   })
@@ -111,7 +109,7 @@
       return data;
     },
     refetchInterval(data) {
-      if ($endUserQuery?.data?.state === "PROCESSING" && data?.workflowRuntimeData?.status !== "completed") {
+      if (isProcessing && data?.workflowRuntimeData?.status !== "completed") {
         return false;
       }
 
@@ -154,9 +152,14 @@
 
   let nextWorkflow;
   let shouldResubmit = false;
+  $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
+  $: endUserId = $endUserQuery.data?.id;
+  $: endUserState = $endUserQuery.data?.state;
+  $: isProcessing = endUserState === 'PROCESSING';
+  $: isValidWorkflow = endUserId && !isCompleted;
 
   $: {
-    if ($endUserQuery?.data?.id && ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)) {
+    if (endUserId && ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)) {
       nextWorkflow = mergeWorkflow();
 
       if (
@@ -175,7 +178,7 @@
   let message;
 
   $: {
-    switch ($endUserQuery?.data?.state) {
+    switch (endUserState) {
       case 'PROCESSING':
         message = '';
         break;
@@ -194,22 +197,22 @@
 
 <main class="h-full flex flex-col items-center justify-center p-4">
 
-{#if !$endUserQuery?.data?.id}
+{#if !endUserId && !$endUserQuery.isLoading}
   <SignUp {onSubmit}/>
 {/if}
-{#if $workflow}
+{#if $workflow && !isCompleted}
   <Workflow workflow={$workflow}/>
 {/if}
-{#if $endUserQuery?.data?.id && $endUserQuery?.data?.state !== 'PROCESSING' && !$workflow}
+{#if isValidWorkflow && !isProcessing}
   <div class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
     <h1 class="font-bold text-center w-full text-2xl">
       Welcome
     </h1>
-    <button class="mt-auto" disabled={!$endUserQuery?.data?.id} on:click={$intentQuery.refetch}>Start KYC
+    <button class="mt-auto" disabled={!endUserId} on:click={$intentQuery.refetch}>Start KYC
     </button>
   </div>
 {/if}
-{#if $endUserQuery?.data?.id && $endUserQuery?.data?.state === 'PROCESSING' && !$workflow}
+{#if isValidWorkflow && isProcessing}
   <div class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
     <h1 class="font-bold mb-2 text-2xl w-full text-center">Thank You</h1>
     <img src="/thank-you.svg" alt="clock" class="mx-auto mb-2"/>
@@ -219,12 +222,12 @@
   </div>
 {/if}
 
-{#if $endUserQuery?.data?.id && shouldResubmit && !$workflow}
+{#if isValidWorkflow && shouldResubmit}
   <div class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
     <h1 class="font-bold text-center w-full text-2xl">
       Re-upload Document
     </h1>
-  <p>
+  <p class="max-w-[50ch] p-1">
     Your document was rejected due to {nextWorkflow?.definition?.context?.documentOne?.resubmissionReason?.toLowerCase()?.replace(/_/g, ' ')}, please re-upload another image.
     You can upload <a download="/fake-document.jpg">this file</a>.
   </p>
@@ -232,4 +235,17 @@
   <button class="mt-auto" on:click={handleResubmit}>Re-upload document file</button>
   </div>
 {/if}
+
+{#if endUserState === "REJECTED"}
+  <div class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
+    <h1 class="font-bold text-center w-full text-2xl">
+      Failed to verify
+    </h1>
+    <img src="/rejected.svg" alt="rejected" class="mx-auto mb-2"/>
+    <p class="max-w-[50ch] p-1 text-center">
+      Please contact support
+    </p>
+  </div>
+{/if}
+
 </main>
