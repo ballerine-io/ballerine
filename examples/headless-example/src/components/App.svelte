@@ -197,13 +197,13 @@
 
 <main class="h-full flex flex-col items-center justify-center p-4">
 
-{#if !endUserId && !$endUserQuery.isLoading}
+{#if !endUserId}
   <SignUp {onSubmit}/>
 {/if}
 {#if $workflow && !isCompleted}
   <Workflow workflow={$workflow}/>
 {/if}
-{#if isValidWorkflow && !isProcessing}
+{#if endUserId && !$workflow && !isProcessing}
   <div class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
     <h1 class="font-bold text-center w-full text-2xl">
       Welcome
@@ -212,7 +212,7 @@
     </button>
   </div>
 {/if}
-{#if isValidWorkflow && isProcessing}
+{#if endUserId && isProcessing}
   <div class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
     <h1 class="font-bold mb-2 text-2xl w-full text-center">Thank You</h1>
     <img src="/thank-you.svg" alt="clock" class="mx-auto mb-2"/>
@@ -247,5 +247,17 @@
     </p>
   </div>
 {/if}
+
+  {#if endUserState === "APPROVED"}
+    <div class="w-full flex flex-col max-w-sm min-h-[30rem] bg-white p-4 rounded-md border border-slate-200 shadow">
+      <h1 class="font-bold text-center w-full text-2xl">
+        Success!
+      </h1>
+      <img src="/approved.svg" alt="approved" class="mx-auto mb-2"/>
+      <p class="max-w-[50ch] p-1 text-center">
+        Your information was verified successfully.
+      </p>
+    </div>
+  {/if}
 
 </main>

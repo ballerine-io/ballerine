@@ -37,7 +37,7 @@
 <Form {zodForm} {onPrev} {submitText}>
   <legend>{title}</legend>
   <p class="max-w-[50ch] p-1">Does the document below look okay?</p>
-  <div class="h-72 overflow-auto">
+  <div class="max-h-64 overflow-auto">
     <RemoteImage {id} alt="document-review" />
   </div>
 </Form>

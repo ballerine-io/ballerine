@@ -20,6 +20,9 @@
   };
 
   onMount(async () => {
+
+    if (!id) return;
+
     const data = await fetchBlob<Blob>(
       `http://localhost:3000/api/external/storage/${id}`,
     );
