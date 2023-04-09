@@ -71,6 +71,7 @@
       sessionStorage.setItem(NO_AUTH_USER_KEY, noAuthUserId);
     },
     onError(error) {
+
       if (error.message !== 'Not Found (404)') {
         throw error;
       }
@@ -115,7 +116,12 @@
       return data;
     },
     refetchInterval(data) {
-      if (isProcessing && data?.workflowRuntimeData?.status !== "completed") {
+
+      if (
+        endUserState === 'REJECTED' || endUserState === 'APPROVED' ||
+        endUserState === 'NEW' && data?.workflowRuntimeData?.status === "created" ||
+        isProcessing && data?.workflowRuntimeData?.status !== "completed"
+      ) {
         return false;
       }
 
@@ -175,9 +181,11 @@
         shouldResubmit = true;
       } else {
         workflow.set(nextWorkflow);
+        shouldResubmit = false;
       }
     } else {
       workflow.set(undefined)
+      shouldResubmit = false;
     }
   }
 
@@ -199,6 +207,12 @@
     }
   }
 
+  $: {
+    console.log({
+      workflow: $workflow,
+      isCompleted
+    })
+  }
 </script>
 
 <main class="h-full flex flex-col items-center justify-center p-6">
@@ -207,7 +221,7 @@
     <SignUp {onSubmit}/>
   {/if}
 
-  {#if $workflow && !isCompleted}
+  {#if $workflow && !isCompleted && !shouldResubmit}
     <Workflow workflow={$workflow}/>
   {/if}
 
@@ -215,7 +229,7 @@
     <Intent disabled={!endUserId} refetch={$intentQuery.refetch}/>
   {/if}
 
-  {#if endUserId && isProcessing}
+  {#if endUserId && isProcessing && isCompleted}
     <ThankYou/>
   {/if}
 
