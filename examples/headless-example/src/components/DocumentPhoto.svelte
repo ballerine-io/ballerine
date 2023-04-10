@@ -67,9 +67,9 @@
     <legend>Upload {title}</legend>
 <p class="max-w-[50ch] p-1">
   {#if documentName === 'selfie'}
-    You can download <a download="fake-document"  href="/fake-document.jpg">this selfie file</a> and upload it here.
+    You can download <a download="mock-selfie.png"  href="/mock-selfie.png">this selfie file</a> and upload it here.
     {:else}
-    Pssst... instead of uploading your own ID, you can download <a download="fake-document"  href="/fake-document.jpg">this file</a> and upload it here.
+    Pssst... instead of uploading your own ID, you can download <a download="mock-id.png"  href="/mock-id.png">this file</a> and upload it here.
     {/if}
 </p>
     <label for="file" class="sr-only"> File </label>
