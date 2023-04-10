@@ -1,0 +1,34 @@
+@import '@fontsource/inter';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #FAFAFA;
+  }
+
+  html, body, #app {
+    @apply h-full;
+  }
+
+  input:not([type="radio"]) {
+    @apply border border-slate-200 rounded-lg px-4 py-2 w-full max-w-sm;
+  }
+
+  label {
+    @apply block text-sm mb-1;
+  }
+
+  button, [type="button"], [type="submit"], [type="reset"] {
+    @apply w-full bg-brand p-2 rounded-lg text-white font-bold;
+  }
+
+  legend {
+    @apply text-2xl font-bold w-full text-center my-4;
+  }
+
+  a {
+    @apply text-blue-500 hover:underline;
+  }
+}

@@ -1,3 +1,5 @@
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import type { WorkflowBrowserSDK, WorkflowOptionsBrowser } from '@ballerine/workflow-browser-sdk';
 import { createWorkflow } from '@ballerine/workflow-browser-sdk';
 import type { FormConfigWithoutTransformFn, Obj } from '@felte/core';
@@ -134,3 +136,5 @@ export const handlePromise = async <TData>(
     return [undefined, err];
   }
 };
+
+export const ctw = (...classNames: Array<ClassValue>) => twMerge(clsx(classNames));
