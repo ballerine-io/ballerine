@@ -57,6 +57,8 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     initials,
     canApprove,
     canReject,
+    documentToResubmit,
+    onDocumentToResubmitChange,
     resubmissionReason,
     onResubmissionReasonChange,
   } = useActions({ endUserId: id, fullName });
@@ -166,6 +168,8 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                     className={ctw(`btn-error btn justify-center`)}
                     onClick={onMutateRejectEndUser({
                       action: Action.RESUBMIT,
+                      // Currently hardcoded to documentOne.
+                      documentToResubmit,
                       resubmissionReason,
                     })}
                     disabled={!resubmissionReason}
