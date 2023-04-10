@@ -10,6 +10,20 @@ export class WorkflowEventInput {
   @IsString()
   name!: string;
 
+  /**
+   * Which document requires re-submission - only required for re-submission
+   */
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  document?: string;
+
+  /**
+   * Only required for re-submission
+   */
   @ApiProperty({
     required: false,
     type: String,
