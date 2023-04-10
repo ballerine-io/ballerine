@@ -151,7 +151,11 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                       reasonWithSpaceSpace.charAt(0).toUpperCase() + reasonWithSpaceSpace.slice(1);
 
                     return (
-                      <SelectItem key={reason} value={reason}>
+                      <SelectItem
+                        key={reason}
+                        value={reason}
+                        disabled={reason !== ResubmissionReason.BLURRY_IMAGE}
+                      >
                         {capitalizedReason}
                       </SelectItem>
                     );
