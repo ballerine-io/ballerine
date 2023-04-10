@@ -166,7 +166,7 @@
     workflow.set(mergeWorkflow());
   };
 
-  let nextWorkflow;
+  let nextWorkflow: any;
   let shouldResubmit = false;
   $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
   $: endUserId = $endUserQuery.data?.id;
@@ -250,5 +250,7 @@
   {/if}
 </main>
 <aside>
-  <Visualiser workflowId={'abc'} />
+  {#if nextWorkflow?.definition}
+    <Visualiser workflowDefinition={nextWorkflow.definition} />
+  {/if}
 </aside>
