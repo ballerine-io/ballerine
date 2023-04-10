@@ -54,6 +54,11 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
     (payload: Parameters<typeof mutateRejectEndUser>[0]) => () => mutateRejectEndUser(payload),
     [mutateRejectEndUser],
   );
+  const [documentToResubmit, setDocumentToResubmit] = useState('documentOne');
+  const onDocumentToResubmitChange = useCallback(
+    (value: string) => setDocumentToResubmit(value),
+    [setDocumentToResubmit],
+  );
   const [resubmissionReason, setResubmissionReason] = useState<keyof typeof ResubmissionReason>();
   const onResubmissionReasonChange = useCallback(
     (value: string) => setResubmissionReason(value as keyof typeof ResubmissionReason),
@@ -95,7 +100,9 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
     initials,
     canReject,
     canApprove,
+    documentToResubmit,
     resubmissionReason,
+    onDocumentToResubmitChange,
     onResubmissionReasonChange,
   };
 };
