@@ -16,4 +16,10 @@
   });
 </script>
 
-<Form {zodForm}>Welcome</Form>
+<Form {zodForm}>
+  <legend>Let’s get to know you</legend>
+  <p class="max-w-[50ch] p-1 text-center">
+    Please prepare one of the following:
+    Passport / ID / Drivers license
+  </p>
+</Form>
