@@ -18,47 +18,16 @@
   import ThankYou from '@/components/ThankYou.svelte';
   import Intent from '@/components/Intent.svelte';
   import Visualiser from '@/visualiser/visualiser.svelte';
+  import { BallerineBackOfficeService } from '@/services/ballerine-backoffice.service';
 
   let noAuthUserId = sessionStorage.getItem(NO_AUTH_USER_KEY);
 
-  const fetchEndUser = async (id: string) =>
-    fetchJson(`http://localhost:3000/api/external/end-users/${id}`);
-  const fetchWorkflow = async (id: string) =>
-    fetchJson(`http://localhost:3000/api/external/workflows/${id}`);
-  const fetchWorkflows = async () =>
-    fetchJson<
-      Array<{
-        workflowDefinition: {
-          id: string;
-          name: string;
-        };
-        workflowRuntimeData: {
-          id: string;
-          status: string;
-        };
-      }>
-    >(`http://localhost:3000/api/external/workflows`);
-  const fetchIntent = async () =>
-    fetchJson<Array<Record<string, unknown>>>(
-      `http://localhost:3000/api/external/workflows/intent`,
-      {
-        method: 'POST',
-        body: { intentName: 'kyc' },
-      },
-    );
-  const fetchSignUp = async ({ firstName, lastName }: { firstName: string; lastName: string }) =>
-    fetchJson(`http://localhost:3000/api/external/end-users`, {
-      method: 'POST',
-      body: {
-        firstName,
-        lastName,
-      },
-    });
+  const dataService = new BallerineBackOfficeService();
 
   const createEndUserQuery = (id: string) =>
     createQuery({
       queryKey: ['end-user', { id }],
-      queryFn: async () => fetchEndUser(id),
+      queryFn: async () => dataService.fetchEndUser(id),
       onSuccess(data) {
         const cached = sessionStorage.getItem(NO_AUTH_USER_KEY);
 
@@ -78,11 +47,11 @@
       enabled: typeof id === 'string' && id.length > 0,
     });
   const createWorkflowsQuery = (
-    options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {},
+    options: CreateQueryOptions<Awaited<ReturnType<typeof dataService.fetchWorkflows>>> = {},
   ) =>
     createQuery({
       queryKey: ['workflows'],
-      queryFn: fetchWorkflows,
+      queryFn: dataService.fetchWorkflows,
       enabled: typeof noAuthUserId === 'string' && noAuthUserId.length > 0,
       ...options,
     });
@@ -90,7 +59,7 @@
     createQuery({
       queryKey: ['intent'],
       queryFn: async () => {
-        const data = await fetchIntent();
+        const data = await dataService.fetchIntent();
 
         if (!data?.[0]) return;
 
@@ -112,7 +81,7 @@
     createQuery({
       queryKey: ['workflows', { id }],
       queryFn: async () => {
-        const data = await fetchWorkflow(id);
+        const data = await dataService.fetchWorkflow(id);
 
         if (!data) return;
 
@@ -135,7 +104,7 @@
   const queryClient = useQueryClient();
   const createSignUpMutation = () =>
     createMutation({
-      mutationFn: fetchSignUp,
+      mutationFn: dataService.fetchSignUp,
       onSuccess: data => {
         sessionStorage.setItem(NO_AUTH_USER_KEY, data?.id);
         noAuthUserId = data?.id;
