@@ -16,7 +16,7 @@ jobs:
 
       - name: Lint
         uses: ./.github/actions/lint-action
-        
+
   format:
     runs-on: ubuntu-latest
 
