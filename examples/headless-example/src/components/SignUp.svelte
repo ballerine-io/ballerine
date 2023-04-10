@@ -24,12 +24,16 @@
 </script>
 
 <Form {zodForm} submitText={'Sign Up'}>
-  <legend>Sign Up</legend>
-  <fieldset>
-    <legend>Name</legend>
+  <legend>Welcome</legend>
+  <fieldset class="space-y-3">
+    <legend class="sr-only">Name</legend>
+    <div>
     <label for="fname">First Name</label>
     <input type="text" id="fname" name="fname" />
+    </div>
+    <div>
     <label for="lname">Last Name</label>
     <input type="text" id="lname" name="lname" />
+    </div>
   </fieldset>
 </Form>

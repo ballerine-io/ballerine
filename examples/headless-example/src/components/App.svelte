@@ -11,6 +11,12 @@
   import Workflow from './Workflow.svelte';
   import {NO_AUTH_USER_KEY} from "@/constants";
   import {writable} from "svelte/store";
+  import Card from "@/components/Card.svelte";
+  import Approved from "@/components/Approved.svelte";
+  import Rejected from "@/components/Rejected.svelte";
+  import Resubmission from "@/components/Resubmission.svelte";
+  import ThankYou from "@/components/ThankYou.svelte";
+  import Intent from "@/components/Intent.svelte";
 
   let noAuthUserId = sessionStorage.getItem(NO_AUTH_USER_KEY);
 
@@ -65,6 +71,7 @@
       sessionStorage.setItem(NO_AUTH_USER_KEY, noAuthUserId);
     },
     onError(error) {
+
       if (error.message !== 'Not Found (404)') {
         throw error;
       }
@@ -95,8 +102,7 @@
     select: (workflows) => {
       return Array.isArray(workflows) ? workflows?.find(
         workflow =>
-          workflow?.workflowDefinition?.name === "onboarding_client_collect_data" &&
-          workflow?.workflowRuntimeData?.status !== 'completed',
+          workflow?.workflowDefinition?.name === "onboarding_client_collect_data",
       ) : undefined
     }
   })
@@ -110,7 +116,12 @@
       return data;
     },
     refetchInterval(data) {
-      if ($endUserQuery?.data?.state === "PROCESSING" && data?.workflowRuntimeData?.status !== "completed") {
+
+      if (
+        endUserState === 'REJECTED' || endUserState === 'APPROVED' ||
+        endUserState === 'NEW' && data?.workflowRuntimeData?.status === "created" ||
+        isProcessing && data?.workflowRuntimeData?.status !== "completed"
+      ) {
         return false;
       }
 
@@ -153,28 +164,35 @@
 
   let nextWorkflow;
   let shouldResubmit = false;
+  $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
+  $: endUserId = $endUserQuery.data?.id;
+  $: endUserState = $endUserQuery.data?.state;
+  $: isProcessing = endUserState === 'PROCESSING';
+  $: isValidWorkflow = endUserId && !isCompleted;
 
   $: {
-    if ($endUserQuery?.data?.id && ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)) {
+    if (endUserId && ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)) {
       nextWorkflow = mergeWorkflow();
 
       if (
         nextWorkflow?.definition?.initial !== $workflow?.definition?.initial &&
-        nextWorkflow?.definition?.context?.documentOne?.resubmissionReason
+        nextWorkflow?.definition?.context?.id?.resubmissionReason
       ) {
         shouldResubmit = true;
       } else {
         workflow.set(nextWorkflow);
+        shouldResubmit = false;
       }
     } else {
       workflow.set(undefined)
+      shouldResubmit = false;
     }
   }
 
   let message;
 
   $: {
-    switch ($endUserQuery?.data?.state) {
+    switch (endUserState) {
       case 'PROCESSING':
         message = '';
         break;
@@ -191,37 +209,37 @@
 
 </script>
 
-{#if $endUserQuery?.data?.id}
-  <div>
-    <div>
-      <h4>{$endUserQuery?.data?.firstName ?? ''} {$endUserQuery?.data?.lastName ?? ''}</h4>
-      <img alt="avatar" src={$endUserQuery?.data?.avatarUrl ?? ''}/>
-    </div>
-      <p>{message}</p>
-  </div>
-{/if}
+<main class="h-full flex flex-col items-center justify-center p-6">
 
-{#if !$endUserQuery?.data?.id}
-  <SignUp {onSubmit}/>
-{/if}
-{#if $workflow}
-  <Workflow workflow={$workflow}/>
-{/if}
-{#if $endUserQuery?.data?.id && $endUserQuery?.data?.state !== 'PROCESSING' && !$workflow}
-  <button disabled={!$endUserQuery?.data?.id} on:click={$intentQuery.refetch}>Start KYC
-  </button>
-{/if}
-{#if $endUserQuery?.data?.id && $endUserQuery?.data?.state === 'PROCESSING' && !$workflow}
-  <p>
-    We're processing your request.
-  </p>
-{/if}
+  {#if !endUserId}
+    <SignUp {onSubmit}/>
+  {/if}
 
-{#if $endUserQuery?.data?.id && shouldResubmit && !$workflow}
-  <p>
-    You've been requested to re-submit your documents due
-    to {nextWorkflow?.definition?.context?.documentOne?.resubmissionReason?.toLowerCase()?.replace(/_/g, ' ')}
-    . Please click navigate to re-submit your documents.
-  </p>
-  <button on:click={handleResubmit}>Navigate</button>
-{/if}
+  {#if $workflow && !isCompleted && !shouldResubmit}
+    <Workflow workflow={$workflow}/>
+  {/if}
+
+  {#if endUserId && !$workflow && !isProcessing}
+    <Intent disabled={!endUserId} refetch={$intentQuery.refetch}/>
+  {/if}
+
+  {#if endUserId && isProcessing && isCompleted}
+    <ThankYou/>
+  {/if}
+
+  {#if isValidWorkflow && shouldResubmit}
+    <Resubmission
+      {handleResubmit}
+      reason={nextWorkflow?.definition?.context?.id?.resubmissionReason?.toLowerCase()?.replace(/_/g, ' ')}
+    />
+  {/if}
+
+  {#if endUserState === "REJECTED"}
+    <Rejected/>
+  {/if}
+
+  {#if endUserState === "APPROVED"}
+    <Approved/>
+  {/if}
+
+</main>
