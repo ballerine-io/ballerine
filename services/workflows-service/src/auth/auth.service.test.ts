@@ -36,13 +36,13 @@ const userService = {
 };
 
 const passwordService = {
-  compare(_password: string, _encrypted: string) {
+  compare() {
     return true;
   },
 };
 
 const tokenService = {
-  createToken(_username: string, _password: string) {
+  createToken() {
     return SIGN_TOKEN;
   },
 };

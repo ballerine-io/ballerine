@@ -13,7 +13,7 @@ export let handleResubmit = () => {};
   <p class="max-w-[50ch] p-1">
     Your ID was rejected due
     to {reason}, please re-upload a clearer image.
-    You can upload <a download="/fake-document.jpg">this file</a>.
+    You can upload <a download="mock-id.png" href="/mock-id.png">this file</a>.
   </p>
   <img src="/re-upload-id.svg" alt="clock" class="m-auto mb-2 w-48 h-48"/>
   <button class="mt-auto" on:click={handleResubmit}>Re-upload ID File</button>
