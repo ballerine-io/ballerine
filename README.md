@@ -33,9 +33,8 @@
    <a href="https://ycombinator.com"><img src="https://img.shields.io/website?color=%23f26522&down_message=Y%20Combinator&label=Backed&logo=ycombinator&style=flat-square&up_message=Y%20Combinator&url=https%3A%2F%2Fwww.ycombinator.com"></a>
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 [![GitHub release](https://img.shields.io/github/v/release/ballerine-io/ballerine?label=last-release&style=flat-square)](https://github.com/ballerine-io/ballerine/releases)
-[![GitHub release](https://img.shields.io/github/workflow/status/ballerine-io/ballerine/CI/main?label=e2e&style=flat-square)](https://github.com/ballerine-io/ballerine/actions/workflows/ci.yml)
-
-
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ballerine-io/ballerine/ci.yml?label=CI&style=flat-square)](https://github.com/ballerine-io/ballerine/actions/workflows/ci.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ballerine-io/ballerine/release.yml?label=Release&style=flat-square)](https://github.com/ballerine-io/ballerine/actions/workflows/release.yml)
 </p>
 <!-- Badges - END -->
 
