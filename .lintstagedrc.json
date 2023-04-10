@@ -1,0 +1,8 @@
+{
+  "lint-staged": {
+    "*.{js,cjs,mjs,jsx,ts,tsx,json,md,mdx,css,svelte}": [
+      "pnpm format",
+      "git add"
+    ]
+  }
+}

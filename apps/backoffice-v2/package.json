@@ -36,6 +36,7 @@
   },
   "scripts": {
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint . --fix",
     "start": "vite",
     "dev": "vite",
