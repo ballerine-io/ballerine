@@ -27,6 +27,7 @@
     "kyc-manual-review-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example VITE_POLLING_INTERVAL=3 nx run-many --target=dev --projects=@ballerine/headless-example,@ballerine/backoffice-v2,@ballerine/workflows-service",
     "branchlint": "branchlint -u -c --prefix \"$(git config --global user.name)\"",
     "format": "nx run-many --target=format",
+    "format:check": "nx run-many --target=format:check",
     "lint": "nx run-many --target=lint --projects=@ballerine/web-sdk,@ballerine/workflows-service,@ballerine/workflow-browser-sdk",
     "test": "nx run-many --target=test --exclude=@ballerine/backoffice,@ballerine/common",
     "test:e2e": "nx run-many --target=test:e2e",
@@ -66,6 +67,7 @@
     "cz-conventional-changelog": "^3.3.0",
     "editorconfig": "^1.0.2",
     "husky": "^8.0.3",
+    "lint-staged": "^11.2.6",
     "nx": "15.0.2",
     "prettier": "^2.8.7"
   },
