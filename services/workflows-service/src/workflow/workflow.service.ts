@@ -70,13 +70,23 @@ export class WorkflowService {
   }
 
   async listActiveWorkflowsRuntimeStates() {
-    return await this.workflowRuntimeDataRepository.findMany({
+    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findMany({
       select: {
         state: true,
         endUserId: true,
         id: true,
+        workflowDefinition: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
+
+    return workflowRuntimeData?.map(({ workflowDefinition, ...rest }) => ({
+      ...rest,
+      name: workflowDefinition?.name,
+    }));
   }
 
   async listWorkflowRuntimeDataByUserId(userId: string) {
