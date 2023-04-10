@@ -4,6 +4,7 @@
     "esbenp.prettier-vscode",
     "svelte.svelte-vscode",
     "statelyai.stately-vscode",
-    "prisma.prisma"
+    "prisma.prisma",
+    "bradlc.vscode-tailwindcss"
   ]
 }
