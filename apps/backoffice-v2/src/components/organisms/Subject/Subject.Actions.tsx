@@ -168,7 +168,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                     className={ctw(`btn-error btn justify-center`)}
                     onClick={onMutateRejectEndUser({
                       action: Action.RESUBMIT,
-                      // Currently hardcoded to documentOne.
+                      // Currently hardcoded to id.
                       documentToResubmit,
                       resubmissionReason,
                     })}
