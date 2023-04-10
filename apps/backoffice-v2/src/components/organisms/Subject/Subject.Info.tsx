@@ -23,6 +23,7 @@ export const useInfo = ({
   info: Record<PropertyKey, unknown>;
   isLoading?: boolean;
 }) => {
+  
   const [isOcrMismatch, setIsOcrMismatch] = useState(true);
   const onOcrMismatch = useCallback(() => setIsOcrMismatch(prev => !prev), []);
   const skeletons = createArrayOfNumbers(2);
