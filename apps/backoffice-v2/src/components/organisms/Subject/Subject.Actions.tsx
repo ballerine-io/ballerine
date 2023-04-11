@@ -58,7 +58,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     canApprove,
     canReject,
     documentToResubmit,
-    onDocumentToResubmitChange,
+    // onDocumentToResubmitChange,
     resubmissionReason,
     onResubmissionReasonChange,
   } = useActions({ endUserId: id, fullName });
