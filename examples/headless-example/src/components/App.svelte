@@ -17,8 +17,9 @@
   import Resubmission from '@/components/Resubmission.svelte';
   import ThankYou from '@/components/ThankYou.svelte';
   import Intent from '@/components/Intent.svelte';
-  import Visualiser from '@/visualiser/visualiser.svelte';
+
   import { BallerineBackOfficeService } from '@/services/ballerine-backoffice.service';
+  import DevSidebar from '@/visualiser/dev-sidebar.svelte';
 
   let noAuthUserId = sessionStorage.getItem(NO_AUTH_USER_KEY);
 
@@ -130,6 +131,7 @@
     });
 
   const workflow = writable<WorkflowOptionsBrowser | undefined>();
+  workflow.subscribe(w => console.warn({ w }));
   const mergeWorkflow = () => makeWorkflow($workflowQuery?.data || $intentQuery?.data);
   const handleResubmit = () => {
     workflow.set(mergeWorkflow());
@@ -185,45 +187,43 @@
   }
 </script>
 
-<main class="h-full flex flex-col items-center justify-center p-6">
-  {#if !endUserId}
-    <SignUp {onSubmit} />
-  {/if}
+<div class="h-full flex flex-row items-center justify-center">
+  <main class="h-full flex flex-col items-center justify-center p-6 w-full">
+    {#if !endUserId}
+      <SignUp {onSubmit} />
+    {/if}
 
-  {#if $workflow && !isCompleted && !shouldResubmit}
-    <Workflow workflow={$workflow} />
-  {/if}
+    {#if $workflow && !isCompleted && !shouldResubmit}
+      <Workflow workflow={$workflow} />
+    {/if}
 
-  {#if endUserId && !$workflow && !isProcessing}
-    <Intent disabled={!endUserId} refetch={$intentQuery.refetch} />
-  {/if}
+    {#if endUserId && !$workflow && !isProcessing}
+      <Intent disabled={!endUserId} refetch={$intentQuery.refetch} />
+    {/if}
 
-  {#if endUserId && isProcessing && isCompleted}
-    <ThankYou />
-  {/if}
+    {#if endUserId && isProcessing && isCompleted}
+      <ThankYou />
+    {/if}
 
-  {#if isValidWorkflow && shouldResubmit}
-    <Resubmission
-      {handleResubmit}
-      reason={nextWorkflow?.definition?.context?.id?.resubmissionReason
-        ?.toLowerCase()
-        ?.replace(/_/g, ' ')}
-    />
-  {/if}
+    {#if isValidWorkflow && shouldResubmit}
+      <Resubmission
+        {handleResubmit}
+        reason={nextWorkflow?.definition?.context?.id?.resubmissionReason
+          ?.toLowerCase()
+          ?.replace(/_/g, ' ')}
+      />
+    {/if}
 
-  {#if endUserState === 'REJECTED'}
-    <Rejected />
-  {/if}
+    {#if endUserState === 'REJECTED'}
+      <Rejected />
+    {/if}
 
-  {#if endUserState === 'APPROVED'}
-    <Approved />
+    {#if endUserState === 'APPROVED'}
+      <Approved />
+    {/if}
+  </main>
+
+  {#if $workflow}
+    <DevSidebar workflowDefinition={$workflow.definition} workflowContext={$workflow.definition} />
   {/if}
-</main>
-<aside>
-  {#if nextWorkflow?.definition}
-    <Visualiser
-      workflowDefinition={nextWorkflow.definition}
-      workflowContext={nextWorkflow.context}
-    />
-  {/if}
-</aside>
+</div>
