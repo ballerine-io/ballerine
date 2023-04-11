@@ -253,7 +253,12 @@ export class WorkflowService {
     ];
   }
 
-  async event({ name: type, resubmissionReason, id }: WorkflowEventInput & IObjectWithId) {
+  async event({
+    name: type,
+    document,
+    resubmissionReason,
+    id,
+  }: WorkflowEventInput & IObjectWithId) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
     const workflow = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
@@ -284,10 +289,7 @@ export class WorkflowService {
       `Workflow ${workflow.name}-${id}-v${workflow.version} state transiation [${runtimeData.state} -> ${currentState}]`,
     );
 
-    // Will be received from the client
-    const document = 'id';
-
-    if (type === 'resubmit') {
+    if (type === 'resubmit' && document) {
       switch (resubmissionReason) {
         case ResubmissionReason.BLURRY_IMAGE:
           await this.workflowRuntimeDataRepository.updateById(

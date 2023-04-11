@@ -103,7 +103,6 @@
     step = Step[currentStep.toUpperCase() as keyof typeof Step];
     snapshot = workflowService?.getSnapshot();
     workflowUpdated(snapshot);
-    console.warn({ snapshot });
     initialValues.id.type = snapshot?.context?.id?.type;
     initialValues.selfie.type = 'selfie';
 

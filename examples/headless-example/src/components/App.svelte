@@ -6,30 +6,29 @@
     type CreateQueryOptions,
     useQueryClient,
   } from '@tanstack/svelte-query';
-  import { makeWorkflow } from '@/utils';
+  import { fetchJson, makeWorkflow } from '@/utils';
   import SignUp from './SignUp.svelte';
   import Workflow from './Workflow.svelte';
   import { NO_AUTH_USER_KEY } from '@/constants';
   import { writable } from 'svelte/store';
-
+  import Card from '@/components/Card.svelte';
   import Approved from '@/components/Approved.svelte';
   import Rejected from '@/components/Rejected.svelte';
   import Resubmission from '@/components/Resubmission.svelte';
   import ThankYou from '@/components/ThankYou.svelte';
   import Intent from '@/components/Intent.svelte';
-
   import { BallerineBackOfficeService } from '@/services/ballerine-backoffice.service';
   import DevSidebar from '@/visualiser/dev-sidebar.svelte';
-  import Dump from './Dump.svelte';
 
   let noAuthUserId = sessionStorage.getItem(NO_AUTH_USER_KEY);
 
-  const dataService = new BallerineBackOfficeService();
+  const { fetchEndUser, fetchIntent, fetchSignUp, fetchWorkflow, fetchWorkflows } =
+    new BallerineBackOfficeService();
 
   const createEndUserQuery = (id: string) =>
     createQuery({
       queryKey: ['end-user', { id }],
-      queryFn: async () => dataService.fetchEndUser(id),
+      queryFn: async () => fetchEndUser(id),
       onSuccess(data) {
         const cached = sessionStorage.getItem(NO_AUTH_USER_KEY);
 
@@ -49,11 +48,11 @@
       enabled: typeof id === 'string' && id.length > 0,
     });
   const createWorkflowsQuery = (
-    options: CreateQueryOptions<Awaited<ReturnType<typeof dataService.fetchWorkflows>>> = {},
+    options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {},
   ) =>
     createQuery({
       queryKey: ['workflows'],
-      queryFn: dataService.fetchWorkflows,
+      queryFn: fetchWorkflows,
       enabled: typeof noAuthUserId === 'string' && noAuthUserId.length > 0,
       ...options,
     });
@@ -61,7 +60,7 @@
     createQuery({
       queryKey: ['intent'],
       queryFn: async () => {
-        const data = await dataService.fetchIntent();
+        const data = await fetchIntent();
 
         if (!data?.[0]) return;
 
@@ -83,7 +82,7 @@
     createQuery({
       queryKey: ['workflows', { id }],
       queryFn: async () => {
-        const data = await dataService.fetchWorkflow(id);
+        const data = await fetchWorkflow(id);
 
         if (!data) return;
 
@@ -99,14 +98,14 @@
           return false;
         }
 
-        return parseInt(import.meta.env.VITE_POOLING_TIME) * 1000 || false;
+        return parseInt(import.meta.env.VITE_POLLING_INTERVAL) * 1000 || false;
       },
       enabled: typeof id === 'string' && id.length > 0,
     });
   const queryClient = useQueryClient();
   const createSignUpMutation = () =>
     createMutation({
-      mutationFn: dataService.fetchSignUp,
+      mutationFn: fetchSignUp,
       onSuccess: data => {
         sessionStorage.setItem(NO_AUTH_USER_KEY, data?.id);
         noAuthUserId = data?.id;
@@ -132,11 +131,13 @@
     });
 
   const workflow = writable<WorkflowOptionsBrowser | undefined>();
-  const debugWf = writable<unknown>();
+  const debugWf = writable<{ definition: unknown }>();
 
-  workflow.subscribe(w => debugWf.set(w));
+  workflow.subscribe(w => {
+    debugWf.set(w as any);
+  });
 
-  const stateUpdated = ({ detail }: { detail: any }) => {
+  const workflowComponentStateUpdated = ({ detail }: { detail: any }) => {
     const debugState = {
       ...$workflow,
       definition: {
@@ -153,9 +154,8 @@
     workflow.set(mergeWorkflow());
   };
 
-  let nextWorkflow: any;
+  let nextWorkflow;
   let shouldResubmit = false;
-
   $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
   $: endUserId = $endUserQuery.data?.id;
   $: endUserState = $endUserQuery.data?.state;
@@ -204,13 +204,13 @@
 </script>
 
 <div class="h-full flex flex-row items-center justify-center">
-  <main class="h-full flex flex-col items-center justify-center p-6 w-full">
+  <main class="h-full w-full flex flex-col items-center justify-center p-6">
     {#if !endUserId}
       <SignUp {onSubmit} />
     {/if}
 
     {#if $workflow && !isCompleted && !shouldResubmit}
-      <Workflow workflow={$workflow} on:workflow-updated={stateUpdated} />
+      <Workflow workflow={$workflow} on:workflow-updated={workflowComponentStateUpdated} />
     {/if}
 
     {#if endUserId && !$workflow && !isProcessing}
@@ -238,7 +238,6 @@
       <Approved />
     {/if}
   </main>
-
   {#if $debugWf}
     <DevSidebar workflowDefinition={$debugWf?.definition} />
   {/if}
