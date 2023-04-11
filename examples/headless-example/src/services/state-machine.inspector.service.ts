@@ -7,13 +7,10 @@ type InspectedMachine = {
 export class StateMachineInspector {
   #inspectedMachine: InspectedMachine = { cleanup: () => {} };
 
-  constructor() {
-    console.warn('inzzpegdor');
-  }
-  public viewMachine(machineConfig: any, workflowContext: any) {
+  public viewMachine(machineConfig: any) {
     this.#inspectedMachine.cleanup();
     inspect({})!;
-    const machine = createMachine({ ...machineConfig, context: workflowContext });
+    const machine = createMachine({ ...machineConfig });
 
     const service = interpret(machine, { devTools: true });
     service.start();

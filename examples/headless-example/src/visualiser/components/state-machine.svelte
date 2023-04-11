@@ -4,13 +4,19 @@
   import { createEventDispatcher } from 'svelte';
 
   export let workflowDefinition: unknown;
-  export let workflowContext: unknown;
 
   let inspectorWrapper = new StateMachineInspector();
+  let acceptsUpdates = false;
 
   onMount(() => {
-    inspectorWrapper.viewMachine(workflowDefinition, workflowContext);
+    inspectorWrapper.viewMachine(workflowDefinition);
+    acceptsUpdates = true;
   });
+  $: {
+    if (acceptsUpdates) {
+      inspectorWrapper.viewMachine(workflowDefinition);
+    }
+  }
 
   const dispatch = createEventDispatcher();
   function handleClick() {
