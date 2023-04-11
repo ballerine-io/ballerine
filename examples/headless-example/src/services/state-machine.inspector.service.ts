@@ -8,10 +8,10 @@ export class StateMachineInspector {
   static #inspectorInitialized = false;
   #inspectedMachine: InspectedMachine = { cleanup: () => {} };
 
-  public viewMachine(machineConfig: any) {
+  public viewMachine(machineConfig: any, workflowContext: any) {
     this.#inspectedMachine.cleanup();
     inspect({})!;
-    const machine = createMachine(machineConfig);
+    const machine = createMachine({ ...machineConfig, context: workflowContext });
 
     const service = interpret(machine, { devTools: true });
     service.start();

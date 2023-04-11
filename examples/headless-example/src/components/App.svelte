@@ -137,6 +137,7 @@
 
   let nextWorkflow: any;
   let shouldResubmit = false;
+
   $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
   $: endUserId = $endUserQuery.data?.id;
   $: endUserState = $endUserQuery.data?.state;
@@ -220,6 +221,9 @@
 </main>
 <aside>
   {#if nextWorkflow?.definition}
-    <Visualiser workflowDefinition={nextWorkflow.definition} />
+    <Visualiser
+      workflowDefinition={nextWorkflow.definition}
+      workflowContext={nextWorkflow.context}
+    />
   {/if}
 </aside>

@@ -1,6 +1,7 @@
 export BALLERINE_ROOT=~/ballerine
 
 alias ballerine-up-db="cd $BALLERINE_ROOT/services/workflows-service && npm run docker:db"
+alias ballerine-explore-db="cd $BALLERINE_ROOT/services/workflows-service && npx prisma studio"
 alias ballerine-reset-db="cd $BALLERINE_ROOT/services/workflows-service && npm run db:reset:dev"
 alias ballerine-destroy-db="cd $BALLERINE_ROOT/services/workflows-service && docker-compose down -v"
 alias ballerine-start-backoffice="cd $BALLERINE_ROOT/apps/backoffice-v2 && npm run dev"
