@@ -5,9 +5,11 @@ type InspectedMachine = {
 };
 
 export class StateMachineInspector {
-  static #inspectorInitialized = false;
   #inspectedMachine: InspectedMachine = { cleanup: () => {} };
 
+  constructor() {
+    console.warn('inzzpegdor');
+  }
   public viewMachine(machineConfig: any, workflowContext: any) {
     this.#inspectedMachine.cleanup();
     inspect({})!;

@@ -15,12 +15,22 @@
   <Trigger on:click={toggleStateMachineVisibility} />
 </div>
 
-{#if showStateMachine}
-  <div class="fixed bg-white inset-4 rounded-lg drop-shadow-lg overflow-auto p-2">
-    <StateMachine
-      {workflowDefinition}
-      {workflowContext}
-      on:dismiss={toggleStateMachineVisibility}
-    />
-  </div>
-{/if}
+<aside
+  class={['flex h-full w-full', showStateMachine ? 'lg:w-[200%]' : 'w-0'].join(' ')}
+  style="transition: width 0.3s ease-in-out;"
+>
+  {#if showStateMachine}
+    <div
+      class="
+    fixed w-full h-full bg-white inset-4 rounded-lg drop-shadow-lg overflow-auto p-2
+    lg:static lg:drop-shadow-none
+    "
+    >
+      <StateMachine
+        {workflowDefinition}
+        {workflowContext}
+        on:dismiss={toggleStateMachineVisibility}
+      />
+    </div>
+  {/if}
+</aside>

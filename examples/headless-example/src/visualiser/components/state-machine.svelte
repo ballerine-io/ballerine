@@ -9,7 +9,6 @@
   let inspectorWrapper = new StateMachineInspector();
 
   onMount(() => {
-    console.warn('enspecT!');
     inspectorWrapper.viewMachine(workflowDefinition, workflowContext);
   });
 
@@ -20,7 +19,7 @@
 </script>
 
 <div class="w-full h-full flex flex-col items-center relative">
-  <div class="h-[50px]">
+  <div class="h-[50px] flex items-center">
     <h1 class="text-xl">STATE MACHINE</h1>
     <!-- svelte-ignore a11y-missing-attribute -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->

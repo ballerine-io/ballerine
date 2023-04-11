@@ -6,3 +6,4 @@ alias ballerine-reset-db="cd $BALLERINE_ROOT/services/workflows-service && npm r
 alias ballerine-destroy-db="cd $BALLERINE_ROOT/services/workflows-service && docker-compose down -v"
 alias ballerine-start-backoffice="cd $BALLERINE_ROOT/apps/backoffice-v2 && npm run dev"
 alias ballerine-start-workflows-services="cd $BALLERINE_ROOT/services/workflows-service && npm run dev"
+alias ballerine-start-all="cd $BALLERINE_ROOT && npm run kyc-manual-review-example"
