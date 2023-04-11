@@ -4,6 +4,16 @@ import { WorkflowNodeSDK } from './workflow-node-sdk';
 
 export interface WorkflowOptionsNode
   extends Pick<WorkflowOptions, 'definition' | 'definitionType' | 'workflowContext'> {
+  childWorkflows?: [
+    {
+      workflowDefinitionId: string;
+      workflowDefinitionVersion?: number;
+      states: Array<string>;
+      callbackEvent: string;
+      initialContext: Object;
+      contextToCopy?: Object;
+    },
+  ];
   extensions?: {
     statePlugins: Array<NodePlugin>;
   };
