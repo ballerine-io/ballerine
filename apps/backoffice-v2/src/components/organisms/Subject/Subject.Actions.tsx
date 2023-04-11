@@ -57,6 +57,8 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     initials,
     canApprove,
     canReject,
+    documentToResubmit,
+    onDocumentToResubmitChange,
     resubmissionReason,
     onResubmissionReasonChange,
   } = useActions({ endUserId: id, fullName });
@@ -166,6 +168,8 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                     className={ctw(`btn-error btn justify-center`)}
                     onClick={onMutateRejectEndUser({
                       action: Action.RESUBMIT,
+                      // Currently hardcoded to documentOne.
+                      documentToResubmit,
                       resubmissionReason,
                     })}
                     disabled={!resubmissionReason}
@@ -203,7 +207,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-          <div className="dropdown-hover dropdown-bottom dropdown-end dropdown">
+          <div className="dropdown-hover dropdown dropdown-bottom dropdown-end">
             <EllipsisButton tabIndex={0} />
             <ul
               className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}

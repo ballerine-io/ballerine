@@ -14,7 +14,7 @@
 </div>
 
 <aside
-  class={['flex h-full w-full', showStateMachine ? 'lg:w-[200%]' : 'w-0'].join(' ')}
+  class={['flex h-full', showStateMachine ? 'lg:w-[200%]' : 'w-0'].join(' ')}
   style="transition: width 0.3s ease-in-out;"
 >
   {#if showStateMachine}
