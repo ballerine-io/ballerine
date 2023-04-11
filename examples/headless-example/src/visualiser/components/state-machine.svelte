@@ -2,12 +2,15 @@
   import { onMount } from 'svelte';
   import { StateMachineInspector } from '@/services/state-machine.inspector.service';
   import { createEventDispatcher } from 'svelte';
+
   export let workflowDefinition: unknown;
+  export let workflowContext: unknown;
+
   let inspectorWrapper = new StateMachineInspector();
 
   onMount(() => {
     console.warn('enspecT!');
-    inspectorWrapper.viewMachine(workflowDefinition);
+    inspectorWrapper.viewMachine(workflowDefinition, workflowContext);
   });
 
   const dispatch = createEventDispatcher();
@@ -23,18 +26,17 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <a
       class="
-    absolute block cursor-pointer select-none
-  top-1 right-1
-  text-lg p-2 leading-none
-  border border-transparent
-  hover:border-gray-100 hover:bg-gray-100 transition-colors
-  rounded
-  bg-transparent
-  text-gray-600
-  hover:filter-none
-  filter-none
-  text-center no-underline hover:no-underline
-  "
+          absolute block cursor-pointer select-none
+          top-1 right-1
+          text-lg p-2 leading-none
+          border border-transparent
+          hover:border-gray-100 hover:bg-gray-100 transition-colors
+          rounded
+          bg-transparent
+          text-gray-600
+          hover:filter-none
+          filter-none
+          text-center no-underline hover:no-underline"
       on:click={handleClick}>×</a
     >
   </div>

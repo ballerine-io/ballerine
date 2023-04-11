@@ -3,6 +3,7 @@
   import StateMachine from './components/state-machine.svelte';
 
   export let workflowDefinition: unknown;
+  export let workflowContext: unknown;
 
   let showStateMachine = false;
 
@@ -16,6 +17,10 @@
 
 {#if showStateMachine}
   <div class="fixed bg-white inset-4 rounded-lg drop-shadow-lg overflow-auto p-2">
-    <StateMachine {workflowDefinition} on:dismiss={toggleStateMachineVisibility} />
+    <StateMachine
+      {workflowDefinition}
+      {workflowContext}
+      on:dismiss={toggleStateMachineVisibility}
+    />
   </div>
 {/if}
