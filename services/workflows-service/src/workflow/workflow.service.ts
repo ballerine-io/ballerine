@@ -6,7 +6,7 @@
 import { EndUserState, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
-import { createWorkflow } from '@ballerine/workflow-node-sdk';
+import { WorkflowNodeSDK, createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { merge } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
@@ -49,7 +49,9 @@ export class WorkflowService {
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
-  ) {}
+  ) {
+    this.workflowsSDK = new WorkflowNodeSDK();
+  }
 
   async createWorkflowDefinition(args: Parameters<WorkflowDefinitionRepository['create']>[0]) {
     return await this.workflowDefinitionRepository.create(args);
