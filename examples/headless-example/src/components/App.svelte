@@ -20,6 +20,7 @@
 
   import { BallerineBackOfficeService } from '@/services/ballerine-backoffice.service';
   import DevSidebar from '@/visualiser/dev-sidebar.svelte';
+  import Dump from './Dump.svelte';
 
   let noAuthUserId = sessionStorage.getItem(NO_AUTH_USER_KEY);
 
@@ -131,7 +132,22 @@
     });
 
   const workflow = writable<WorkflowOptionsBrowser | undefined>();
-  workflow.subscribe(w => console.warn({ w }));
+  const debugWf = writable<unknown>();
+
+  workflow.subscribe(w => debugWf.set(w));
+
+  const stateUpdated = ({ detail }: { detail: any }) => {
+    const debugState = {
+      ...$workflow,
+      definition: {
+        ...$workflow?.definition,
+        context: detail.context,
+        initial: detail.value,
+      },
+    };
+    debugWf.set(debugState);
+  };
+
   const mergeWorkflow = () => makeWorkflow($workflowQuery?.data || $intentQuery?.data);
   const handleResubmit = () => {
     workflow.set(mergeWorkflow());
@@ -194,7 +210,7 @@
     {/if}
 
     {#if $workflow && !isCompleted && !shouldResubmit}
-      <Workflow workflow={$workflow} />
+      <Workflow workflow={$workflow} on:workflow-updated={stateUpdated} />
     {/if}
 
     {#if endUserId && !$workflow && !isProcessing}
@@ -223,7 +239,7 @@
     {/if}
   </main>
 
-  {#if $workflow}
-    <DevSidebar workflowDefinition={$workflow.definition} workflowContext={$workflow.definition} />
+  {#if $debugWf}
+    <DevSidebar workflowDefinition={$debugWf?.definition} />
   {/if}
 </div>

@@ -3,12 +3,10 @@
   import StateMachine from './components/state-machine.svelte';
 
   export let workflowDefinition: unknown;
-  export let workflowContext: unknown;
 
   let showStateMachine = false;
 
   const toggleStateMachineVisibility = () => (showStateMachine = !showStateMachine);
-  console.warn(workflowDefinition);
 </script>
 
 <div class="fixed right-4 bottom-4 text-xs">
@@ -26,11 +24,7 @@
     lg:static lg:drop-shadow-none
     "
     >
-      <StateMachine
-        {workflowDefinition}
-        {workflowContext}
-        on:dismiss={toggleStateMachineVisibility}
-      />
+      <StateMachine {workflowDefinition} on:dismiss={toggleStateMachineVisibility} />
     </div>
   {/if}
 </aside>
