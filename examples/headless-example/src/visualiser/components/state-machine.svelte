@@ -48,7 +48,7 @@
 
   <div class="flex flex-col w-full h-full overflow-hidden">
     <iframe
-      style="width: calc(100% + clamp(36rem, 36rem + 0px, 70vw)"
+      style="width: calc(100% + clamp(36rem, 36rem + 0px, 70vw))"
       class="w-full h-full"
       data-xstate
       title="inspected machine"

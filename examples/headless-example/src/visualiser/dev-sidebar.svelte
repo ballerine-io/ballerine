@@ -1,6 +1,7 @@
 <script lang="ts">
   import Trigger from './components/trigger.svelte';
   import StateMachine from './components/state-machine.svelte';
+  import { ctw } from '@/utils';
 
   export let workflowDefinition: unknown;
 
@@ -14,7 +15,7 @@
 </div>
 
 <aside
-  class={['flex h-full', showStateMachine ? 'lg:w-[200%]' : 'w-0'].join(' ')}
+  class={ctw('flex h-full', showStateMachine ? 'lg:w-[200%]' : 'w-0')}
   style="transition: width 0.3s ease-in-out;"
 >
   {#if showStateMachine}
