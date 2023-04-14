@@ -24,15 +24,9 @@ const navigationMenuTriggerStyle = cva(
  */
 export const Navbar: FunctionComponent = () => {
   return (
-    <NavigationMenu
-      orientation={'vertical'}
-      className={`h-full w-full justify-start [&>div]:h-full [&>div]:w-full`}
-    >
+    <NavigationMenu orientation={'vertical'} className={`block`}>
       {navItems.map(({ text, key, children }) => (
-        <NavigationMenuList
-          className={`h-full w-full flex-col items-start justify-start`}
-          key={key}
-        >
+        <NavigationMenuList className={`flex-col items-start`} key={key}>
           {children?.length > 0 ? (
             <>
               <div className={`divider`}></div>
@@ -60,7 +54,7 @@ export const Navbar: FunctionComponent = () => {
               ))}
             </>
           ) : (
-            <NavigationMenuItem key={key}>
+            <NavigationMenuItem key={key} className={`w-full`}>
               <NavigationMenuLink href={''}>{text}</NavigationMenuLink>
             </NavigationMenuItem>
           )}
