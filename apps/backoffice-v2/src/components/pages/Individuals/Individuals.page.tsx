@@ -4,7 +4,7 @@ import { Outlet } from '@tanstack/react-router';
 import { Pagination } from '@/components/organisms/Pagination/Pagination';
 import { useIndividuals } from '@/components/pages/Individuals/hooks/useIndividuals/useIndividuals';
 import { Subject } from '@/components/organisms/Subject/Subject';
-import { MotionScrollArea } from '@/components/molecules/MotionScrollArea/MotionScrollArea';
+import { ScrollArea } from '@/components/atoms/ScrollArea/ScrollArea';
 
 export const Individuals = () => {
   const {
@@ -31,7 +31,7 @@ export const Individuals = () => {
         onSortDir={onSortDir}
         search={search}
       >
-        <MotionScrollArea className={`h-[calc(100vh-210px)]`}>
+        <ScrollArea className={`h-[calc(100vh-210px)]`}>
           <SubjectsList.List>
             {isLoading
               ? skeletons.map(index => (
@@ -51,7 +51,7 @@ export const Individuals = () => {
                   ),
                 )}
           </SubjectsList.List>
-        </MotionScrollArea>
+        </ScrollArea>
         <div className={`divider my-0 px-4`}></div>
         <Pagination onPaginate={onPaginate} page={page} pages={pages} totalPages={totalPages} />
       </SubjectsList>

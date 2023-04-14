@@ -1,6 +1,6 @@
 import React, { FunctionComponent, PropsWithChildren } from 'react';
-import { MotionScrollArea } from '@/components/molecules/MotionScrollArea/MotionScrollArea';
 import { motion } from 'framer-motion';
+import { ScrollArea } from '@/components/atoms/ScrollArea/ScrollArea';
 
 /**
  * @description To be used by {@link Subject}. Serves as a container for ${@link Subject.Info} and {@link Subject.Documents}.
@@ -15,7 +15,7 @@ import { motion } from 'framer-motion';
  */
 export const Content: FunctionComponent<PropsWithChildren> = ({ children }) => {
   return (
-    <MotionScrollArea className="h-[calc(100vh-146px)]">
+    <ScrollArea className="h-[calc(100vh-146px)]">
       <motion.div
         initial={{
           opacity: 0,
@@ -30,6 +30,6 @@ export const Content: FunctionComponent<PropsWithChildren> = ({ children }) => {
       >
         {children}
       </motion.div>
-    </MotionScrollArea>
+    </ScrollArea>
   );
 };
