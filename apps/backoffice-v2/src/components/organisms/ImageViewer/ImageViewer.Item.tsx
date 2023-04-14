@@ -38,7 +38,7 @@ export const Item: FunctionComponent<IItemProps> = ({
     <li className={ctw(`flex justify-center`, className)} {...rest}>
       <Button
         className={ctw(
-          `group h-[unset] flex-col space-y-2 bg-transparent  hover:bg-transparent focus-visible:!ring-0 active:!ring-0`,
+          `group h-[unset] flex-col space-y-2  bg-transparent hover:bg-transparent focus-visible:!ring-0 active:!ring-0`,
           buttonClassName,
         )}
         onClick={onSelectImage(src)}
