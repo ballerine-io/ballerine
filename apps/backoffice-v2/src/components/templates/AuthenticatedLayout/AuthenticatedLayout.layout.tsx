@@ -19,7 +19,7 @@ export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children })
       </div>
       <label
         htmlFor="app-drawer"
-        className="btn drawer-button btn-square fixed z-50 bottom-right-6 lg:hidden"
+        className="drawer-button btn-square btn fixed z-50 bottom-right-6 lg:hidden"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -64,6 +64,6 @@ export const endpoints = {
     fileById: {
       endpoint: (fileId: string) => `storage/${fileId}`,
       method: Method.GET,
-    }
-  }
+    },
+  },
 } as const satisfies IEndpoint;

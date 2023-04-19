@@ -34,14 +34,14 @@ beforeEach(() => {
   updateValues();
 });
 
-const next = (payload?: Record<PropertyKey, any>) => {
+const next = (payload?: Record<PropertyKey, unknown>) => {
   workflowService?.sendEvent({
     type: 'USER_NEXT_STEP',
     payload,
   });
   updateValues();
 };
-const prev = (payload?: Record<PropertyKey, any>) => {
+const prev = (payload?: Record<PropertyKey, unknown>) => {
   workflowService?.sendEvent({
     type: 'USER_PREV_STEP',
     payload,

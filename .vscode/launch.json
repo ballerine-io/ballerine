@@ -11,17 +11,24 @@
       "type": "node-terminal"
     },
     {
-        "command": "pnpm --filter '@ballerine/workflow-node-sdk' test",
-        "name": "Test Watch: Workflow Node SDK",
-        "request": "launch",
-        "type": "node-terminal"
-      },
+      "command": "pnpm --filter '@ballerine/workflow-node-sdk' test",
+      "name": "Test Watch: Workflow Node SDK",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "name": "Attach",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
     {
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${file}",
+      "program": "${workspaceFolder}/services/workflows-service/src/workflow/workflow-runtime-data.repository.ts",
       "outFiles": ["${workspaceFolder}/**/*.js"]
     }
   ]

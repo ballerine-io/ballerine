@@ -68,12 +68,12 @@ model WorkflowDefinition {
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   createdBy           String                @default("SYSTEM")
-  WorkflowRuntimeData WorkflowRuntimeData[]
+  workflowRuntimeData WorkflowRuntimeData[]
 }
 
 model WorkflowRuntimeData {
   id                        String             @id @default(cuid())
-  endUser                   EndUser            @relation(fields: [endUserId], references: [id])
+  endUser                   EndUser            @relation(fields: [endUserId], references: [id], onDelete: Cascade)
   endUserId                 String
   workflowDefinition        WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
   workflowDefinitionId      String

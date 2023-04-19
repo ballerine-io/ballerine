@@ -139,9 +139,7 @@ export class WorkflowControllerInternal {
   async getRunnableWorkflowDataById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
   ): Promise<RunnableWorkflowData | null> {
-    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(
-      params.id,
-    );
+    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(params.id);
     const workflowDefinition = await this.service.getWorkflowDefinitionById(
       workflowRuntimeData.workflowDefinitionId,
     );
@@ -182,9 +180,7 @@ export class WorkflowControllerInternal {
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
-          `No resource was found for ${JSON.stringify(params)}`,
-        );
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
       throw error;
     }

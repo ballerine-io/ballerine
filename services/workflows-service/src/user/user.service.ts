@@ -14,9 +14,7 @@ export class UserService {
     return this.repository.create(args);
   }
 
-  async list(
-    args?: Parameters<UserRepository['findMany']>[0],
-  ): Promise<User[]> {
+  async list(args?: Parameters<UserRepository['findMany']>[0]): Promise<User[]> {
     return this.repository.findMany(args);
   }
 
@@ -34,17 +32,11 @@ export class UserService {
     return this.repository.findByUsername(username, args);
   }
 
-  async updateById(
-    id: string,
-    args: Parameters<UserRepository['updateById']>[1],
-  ): Promise<User> {
+  async updateById(id: string, args: Parameters<UserRepository['updateById']>[1]): Promise<User> {
     return this.repository.updateById(id, args);
   }
 
-  async deleteById(
-    id: string,
-    args?: Parameters<UserRepository['deleteById']>[1],
-  ): Promise<User> {
+  async deleteById(id: string, args?: Parameters<UserRepository['deleteById']>[1]): Promise<User> {
     return this.repository.deleteById(id, args);
   }
 }

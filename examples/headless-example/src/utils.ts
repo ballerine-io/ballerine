@@ -1,13 +1,15 @@
-import type { WorkflowOptionsBrowser } from '@ballerine/workflow-browser-sdk';
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import type { WorkflowBrowserSDK, WorkflowOptionsBrowser } from '@ballerine/workflow-browser-sdk';
+import { createWorkflow } from '@ballerine/workflow-browser-sdk';
 import type { FormConfigWithoutTransformFn, Obj } from '@felte/core';
 import { reporter } from '@felte/reporter-svelte';
 import { validator } from '@felte/validator-zod';
 import { createForm } from 'felte';
+import { getContext, setContext } from 'svelte';
 import type { z, ZodSchema } from 'zod';
 import type { FetchInitWithJson, Serializable } from './types';
-import type { WorkflowBrowserSDK } from '@ballerine/workflow-browser-sdk';
-import { createWorkflow } from '@ballerine/workflow-browser-sdk';
-import { getContext, setContext } from 'svelte';
+import {NO_AUTH_USER_KEY} from "./constants";
 
 export const setWorkflowContext = (service: InstanceType<typeof WorkflowBrowserSDK>) => {
   setContext('workflow', service);
@@ -49,13 +51,13 @@ export const makeWorkflow = (data: unknown): WorkflowOptionsBrowser => {
     definitionType,
     definition: {
       ...definition,
-      id: workflowRuntimeData.id,
-      initial: workflowRuntimeData?.state ?? definition.initial,
-      context: workflowRuntimeData.context,
+      id: workflowRuntimeData?.id,
+      initial: workflowRuntimeData?.state ?? definition?.initial,
+      context: workflowRuntimeData?.context,
     },
     workflowContext: {
-      machineContext: workflowRuntimeData.context,
-      state: workflowRuntimeData?.state ?? definition.initial,
+      machineContext: workflowRuntimeData?.context,
+      state: workflowRuntimeData?.state ?? definition?.initial,
     },
     backend: {
       baseUrl: 'http://localhost:3000/api/external',
@@ -77,13 +79,16 @@ export const fetchThrowNotOk = async <TData, TBody = Record<string, unknown>>(
 
 export const fetchSerialize = async <TBody>(
   input: RequestInfo | URL,
-  init: FetchInitWithJson<TBody> = {
-    serializer: body => JSON.stringify(body),
-  },
+  init?: FetchInitWithJson<TBody>,
 ) => {
+  const serializer = init?.serializer ?? JSON.stringify;
   const res = await fetchThrowNotOk(input, {
     ...init,
-    body: init?.body && init?.method !== 'GET' ? init?.serializer?.(init.body) : undefined,
+    body: init?.body && init?.method !== 'GET' ? serializer?.(init.body) : undefined,
+    headers: {
+      'Content-Type': 'application/json',
+      ...init?.headers,
+    },
   });
 
   return res;
@@ -93,7 +98,13 @@ export const fetchJson = async <TData, TBody = Record<string, unknown>>(
   input: RequestInfo | URL,
   init?: FetchInitWithJson<TBody>,
 ) => {
-  const res = await fetchSerialize(input, init);
+  const res = await fetchSerialize(input, {
+    ...init,
+    headers: {
+      ...init?.headers,
+      no_auth_user_id: sessionStorage.getItem(NO_AUTH_USER_KEY) ?? '',
+    },
+  });
   const data: TData = await res.json();
 
   return data;
@@ -103,7 +114,13 @@ export const fetchBlob = async <TData, TBody = Record<string, unknown>>(
   input: RequestInfo | URL,
   init?: FetchInitWithJson<TBody>,
 ) => {
-  const res = await fetchSerialize(input, init);
+  const res = await fetchSerialize(input, {
+    ...init,
+    headers: {
+      ...init?.headers,
+      no_auth_user_id: sessionStorage.getItem(NO_AUTH_USER_KEY) ?? '',
+    },
+  });
 
   return res.blob();
 };
@@ -119,3 +136,5 @@ export const handlePromise = async <TData>(
     return [undefined, err];
   }
 };
+
+export const ctw = (...classNames: Array<ClassValue>) => twMerge(clsx(classNames));

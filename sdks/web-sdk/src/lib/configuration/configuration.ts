@@ -1,5 +1,5 @@
-import { IAppConfiguration } from '../contexts/configuration';
-import { Steps } from '../contexts/configuration/types';
+import { IAppConfiguration, Steps } from '../contexts/configuration';
+import { IFlow } from '../contexts/flows';
 
 // Config prioritiztion:
 // 3. Theme configuration
@@ -46,9 +46,9 @@ export const configuration: IAppConfiguration = {
       stepsOrder: defaultFlowOrder,
       syncFlow: true,
       useFinalQueryParams: true,
-    },
+    } as IFlow,
   },
   metricsConfig: {
-    enabled: true
-  }
+    enabled: true,
+  },
 };

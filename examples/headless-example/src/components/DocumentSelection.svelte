@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { ValidationMessage } from '@felte/reporter-svelte';
-  import { z } from 'zod';
-  import { createZodForm } from '../utils';
+  import {ValidationMessage} from '@felte/reporter-svelte';
+  import {z} from 'zod';
+  import {createZodForm} from '@/utils';
   import Form from './Form.svelte';
-  import type { TOnPrev, TOnSubmit } from '../types';
+  import type {TOnPrev, TOnSubmit} from '@/types';
+  import DocumentType from "@/components/DocumentType.svelte";
 
   const schema = z.object({
-    documentOne: z.object({
+    id: z.object({
       type: z.union([z.literal('passport'), z.literal('idCard'), z.literal('driverLicense')]),
     }),
   });
@@ -15,66 +16,41 @@
   export let onSubmit: TOnSubmit<typeof schema>;
   export let onPrev: TOnPrev<typeof schema>;
 
-  const { createSubmitHandler, data, ...rest } = createZodForm(schema, {
+  const zodForm = createZodForm(schema, {
     initialValues: {
-      documentOne: {
-        type: initialValues.documentOne.type,
+      id: {
+        type: initialValues.id.type,
       },
     },
-  });
-  const zodForm = {
-    createSubmitHandler,
-    data,
-    ...rest,
-  };
-
-  const onChange = createSubmitHandler({
     onSubmit,
   });
-  const onClick = event => {
-    if (event.target.type !== 'radio' || event.target.value !== $data.documentOne?.type) return;
+  const data = zodForm.data;
 
-    return createSubmitHandler({
-      onSubmit,
-    })(event);
-  };
 </script>
 
 <Form {zodForm} {onPrev}>
-  <fieldset on:click={onClick} on:change={onChange}>
-    <legend>DocumentSelection</legend>
-
-    <label for="passport"> Passport </label>
-    <input
-      type="radio"
+  <fieldset class="grid grid-cols-1 gap-2">
+    <legend>Choose Document Type</legend>
+    <DocumentType
       id="passport"
-      name="documentOne.type"
-      value={'passport'}
-      bind:group={$data.documentOne.type}
+      label="Passport"
+      name="id.type"
+      value="passport"
+      type={$data.id.type}
     />
-    <label for="id-card"> ID Card </label>
-    <input
-      type="radio"
+    <DocumentType
       id="id-card"
-      name="documentOne.type"
-      value={'idCard'}
-      bind:group={$data.documentOne.type}
+      label="ID Card"
+      name="id.type"
+      value="idCard"
+      type={$data.id.type}
     />
-    <label for="driver-license"> Driver License </label>
-    <input
-      type="radio"
+    <DocumentType
       id="driver-license"
-      name="documentOne.type"
-      value={'driverLicense'}
-      bind:group={$data.documentOne.type}
-    />
-    <label for="bad-value"> Bad Value </label>
-    <input
-      type="radio"
-      id="bad-value"
-      name="documentOne.type"
-      value="badValue"
-      bind:group={$data.documentOne.type}
+      label="Driver License"
+      name="id.type"
+      value="driverLicense"
+      type={$data.id.type}
     />
   </fieldset>
   <ValidationMessage for="document" let:messages={message}>

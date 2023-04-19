@@ -8,7 +8,7 @@ function userFactory(ctx: ExecutionContext): User {
   const contextType = ctx.getType();
   if (contextType === 'http') {
     // do something that is only important in the context of regular HTTP requests (REST)
-    const { user } = ctx.switchToHttp().getRequest();
+    const { user } = ctx.switchToHttp().getRequest<{ user: User }>();
     return user;
   } else if (contextType === 'rpc') {
     // do something that is only important in the context of Microservice requests

@@ -1,23 +1,23 @@
 <script lang="ts">
-  import type { WorkflowOptionsBrowser } from "@ballerine/workflow-browser-sdk";
-  import { writable } from "svelte/store";
+  import type {WorkflowOptionsBrowser} from "@ballerine/workflow-browser-sdk";
   import DocumentPhoto from "./DocumentPhoto.svelte";
   import DocumentSelection from "./DocumentSelection.svelte";
-  import Dump from "./Dump.svelte";
   import ErrorComponent from "./Error.svelte";
   import Final from "./Final.svelte";
   import Resubmission from "./Resubmission.svelte";
   import Success from "./Success.svelte";
-  import { State, type ObjectValues } from "../types";
+  import {type ObjectValues, State} from "@/types";
   import Welcome from "./Welcome.svelte";
-  import { initWorkflowContext } from "../utils";
+  import {initWorkflowContext} from "@/utils";
+  import DocumentReview from "./DocumentReview.svelte";
 
   const Step = {
     WELCOME: Welcome,
     DOCUMENT_SELECTION: DocumentSelection,
     DOCUMENT_PHOTO: DocumentPhoto,
-    DOCUMENT_PHOTO_BACK: DocumentPhoto,
-    DOCUMENT_SELECTION_BACK: DocumentSelection,
+    DOCUMENT_REVIEW: DocumentReview,
+    SELFIE: DocumentPhoto,
+    SELFIE_REVIEW: DocumentReview,
     FINAL: Final,
     ERROR: ErrorComponent,
     SUCCESS: Success,
@@ -33,9 +33,22 @@
   let error: string;
 
   const onPrev = (payload: Record<PropertyKey, any>) => () => {
+    const context = workflowService.getSnapshot()?.context;
+
     workflowService.sendEvent({
       type: "USER_PREV_STEP",
-      payload,
+      payload: {
+        ...context,
+        ...payload,
+        id: {
+          ...context?.id,
+          ...payload?.id,
+        },
+        selfie: {
+          ...context?.selfie,
+          ...payload?.selfie,
+        },
+      },
     });
   };
   const onSubmit = (payload: Record<PropertyKey, any>) => {
@@ -45,13 +58,21 @@
     });
   };
   let initialValues = {
-    documentOne: {
-      type: snapshot?.context?.documentOne?.type,
+    id: {
+      type: snapshot?.context?.id?.type,
+    },
+    selfie: {
+      type: snapshot?.context?.selfie?.type,
     },
   };
+  let documentName;
 
-  workflowService.subscribe("USER_NEXT_STEP", (data) => {
+  workflowService.subscribe("USER_NEXT_STEP", async (data) => {
     currentStep = data.state;
+
+    if (currentStep !== "final") return;
+
+    window.location.reload();
   });
 
   workflowService.subscribe("USER_PREV_STEP", (data) => {
@@ -78,23 +99,37 @@
     currentStep;
     step = Step[currentStep.toUpperCase() as keyof typeof Step];
     snapshot = workflowService?.getSnapshot();
-    initialValues.documentOne.type = snapshot?.context?.documentOne?.type;
+    initialValues.id.type = snapshot?.context?.id?.type;
+    initialValues.selfie.type = 'selfie';
+
+    switch (currentStep) {
+      case "document_photo":
+      case "document_review":
+        documentName = "id";
+        break;
+      case "selfie":
+      case "selfie_review":
+        documentName = "selfie";
+        break;
+      default:
+        break;
+    }
+
   }
 </script>
 
-{#if stateActionStatus === "PENDING"}
+<span class="absolute text-sm bottom-8 left-8 text-slate-500">
+  {#if stateActionStatus === "PENDING"}
   Loading...
 {/if}
 
-{#if stateActionStatus === "ERROR"}
+  {#if stateActionStatus === "ERROR"}
   {error}
 {/if}
 
-{#if stateActionStatus === "SUCCESS"}
-  Success!
+  {#if stateActionStatus === "SUCCESS"}
+  Success
 {/if}
+</span>
 
-<svelte:component this={step} {onPrev} {onSubmit} {initialValues} />
-
-<Dump value={snapshot} />
-<Dump value={initialValues} />
+<svelte:component this={step} {onPrev} {onSubmit} {initialValues} {documentName} />

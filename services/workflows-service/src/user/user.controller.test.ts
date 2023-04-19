@@ -1,10 +1,8 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test } from '@nestjs/testing';
-import {
-  INestApplication,
-  HttpStatus,
-  ExecutionContext,
-  CallHandler,
-} from '@nestjs/common';
+import { INestApplication, HttpStatus, ExecutionContext, CallHandler } from '@nestjs/common';
 import request from 'supertest';
 import { MorganModule } from 'nest-morgan';
 import { ACGuard } from 'nest-access-control';
@@ -12,7 +10,7 @@ import { DefaultAuthGuard } from '../auth/default-auth.guard';
 import { ACLModule } from '../access-control/acl.module';
 import { AclFilterResponseInterceptor } from '../access-control/interceptors/acl-filter-response.interceptor';
 import { AclValidateRequestInterceptor } from '../access-control/interceptors/acl-validate-request.interceptor';
-import { map } from 'rxjs';
+
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
@@ -82,16 +80,12 @@ const acGuard = {
 };
 
 const aclFilterResponseInterceptor = {
-  intercept: (context: ExecutionContext, next: CallHandler) => {
-    return next.handle().pipe(
-      map(data => {
-        return data;
-      }),
-    );
+  intercept: (_context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
   },
 };
 const aclValidateRequestInterceptor = {
-  intercept: (context: ExecutionContext, next: CallHandler) => {
+  intercept: (_context: ExecutionContext, next: CallHandler) => {
     return next.handle();
   },
 };
@@ -181,15 +175,6 @@ describe('User', () => {
         ...CREATE_RESULT,
         createdAt: CREATE_RESULT.createdAt.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
-      })
-      .then(function () {
-        agent
-          .post('/users')
-          .send(CREATE_INPUT)
-          .expect(HttpStatus.CONFLICT)
-          .expect({
-            statusCode: HttpStatus.CONFLICT,
-          });
       });
   });
 

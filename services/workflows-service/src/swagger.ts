@@ -4,9 +4,7 @@ export const swaggerPath = 'api';
 
 export const swaggerDocumentOptions = new DocumentBuilder()
   .setTitle('Workflow API Service')
-  .setDescription(
-    'Workflow API Service',
-  )
+  .setDescription('Workflow API Service')
   .setVersion('20')
   .addBearerAuth()
   .build();

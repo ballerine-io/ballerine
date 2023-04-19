@@ -1,66 +1,245 @@
 <script lang="ts">
-  import type { WorkflowOptionsBrowser } from "@ballerine/workflow-browser-sdk";
-  import { onMount } from "svelte";
-  import { fetchJson, handlePromise, makeWorkflow } from "../utils";
-  import Workflow from "./Workflow.svelte";
+  import type {WorkflowOptionsBrowser} from '@ballerine/workflow-browser-sdk';
+  import {
+    createMutation,
+    createQuery,
+    type CreateQueryOptions,
+    useQueryClient
+  } from '@tanstack/svelte-query';
+  import {fetchJson, makeWorkflow} from '@/utils';
+  import SignUp from './SignUp.svelte';
+  import Workflow from './Workflow.svelte';
+  import {NO_AUTH_USER_KEY} from "@/constants";
+  import {writable} from "svelte/store";
+  import Card from "@/components/Card.svelte";
+  import Approved from "@/components/Approved.svelte";
+  import Rejected from "@/components/Rejected.svelte";
+  import Resubmission from "@/components/Resubmission.svelte";
+  import ThankYou from "@/components/ThankYou.svelte";
+  import Intent from "@/components/Intent.svelte";
 
-  let workflow: WorkflowOptionsBrowser;
-  let renderIntentButton = false;
+  let noAuthUserId = sessionStorage.getItem(NO_AUTH_USER_KEY);
 
+  const fetchEndUser = async (id: string) =>
+    fetchJson(`http://localhost:3000/api/external/end-users/${id}`);
+  const fetchWorkflow = async (id: string) =>
+    fetchJson(`http://localhost:3000/api/external/workflows/${id}`);
   const fetchWorkflows = async () =>
-  fetchJson<
+    fetchJson<
       Array<{
-        id: string;
-        workflowDefinitionId: string;
-        status: "completed" | "created";
+        workflowDefinition: {
+          id: string;
+          name: string;
+        };
+        workflowRuntimeData: {
+          id: string;
+          status: string;
+        };
       }>
     >(`http://localhost:3000/api/external/workflows`);
-  const fetchWorkflow = async (id: string) =>
-  fetchJson(`http://localhost:3000/api/external/workflows/${id}`);
-  const handleWorkflow = async () => {
-    const [workflows] = await handlePromise(fetchWorkflows());
-
-    const firstWorkflow = workflows?.find(
-      (workflow) =>
-        workflow?.workflowDefinitionId?.startsWith("COLLECT_DOCS") &&
-        workflow?.status !== "completed"
-    );
-
-    if (!firstWorkflow) {
-      renderIntentButton = true;
-
-      return;
-    }
-
-    const [data, error] = await handlePromise(fetchWorkflow(firstWorkflow?.id));
-
-    if (error) throw error;
-    if (!data) return;
-
-    workflow = makeWorkflow(data);
-    renderIntentButton = false;
-  };
-  const handleIntent = async () => {
-    const data = await fetchJson<Array<Record<string, unknown>>>(
+  const fetchIntent = async () =>
+    fetchJson<Array<Record<string, unknown>>>(
       `http://localhost:3000/api/external/workflows/intent`,
       {
-        method: "POST",
-        body: { intentName: "kyc" },
-      }
+        method: 'POST',
+        body: {intentName: 'kyc'},
+      },
     );
+  const fetchSignUp = async ({
+                               firstName,
+                               lastName,
+                             }: {
+    firstName: string;
+    lastName: string;
+  }) => fetchJson(`http://localhost:3000/api/external/end-users`, {
+    method: 'POST',
+    body: {
+      firstName,
+      lastName,
+    },
+  });
 
-    workflow = makeWorkflow(data?.[0]);
-    renderIntentButton = false;
+  const createEndUserQuery = (id: string) => createQuery({
+    queryKey: ['end-user', {id}],
+    queryFn: async () => fetchEndUser(id),
+    onSuccess(data) {
+      const cached = sessionStorage.getItem(NO_AUTH_USER_KEY);
+
+      if (cached && cached === data?.id || !data?.id) return;
+
+      noAuthUserId = data?.id;
+      sessionStorage.setItem(NO_AUTH_USER_KEY, noAuthUserId);
+    },
+    onError(error) {
+
+      if (error.message !== 'Not Found (404)') {
+        throw error;
+      }
+
+      sessionStorage.removeItem(NO_AUTH_USER_KEY);
+      noAuthUserId = undefined;
+    },
+    enabled: typeof id === 'string' && id.length > 0,
+  })
+  const createWorkflowsQuery = (options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {}) => createQuery({
+    queryKey: ['workflows'],
+    queryFn: fetchWorkflows,
+    enabled: typeof noAuthUserId === 'string' && noAuthUserId.length > 0,
+    ...options
+  })
+  const createIntentQuery = () => createQuery({
+    queryKey: ['intent'],
+    queryFn: async () => {
+      const data = await fetchIntent();
+
+      if (!data?.[0]) return;
+
+      return data?.[0];
+    },
+    enabled: false
+  })
+  const createFirstWorkflowQuery = () => createWorkflowsQuery({
+    select: (workflows) => {
+      return Array.isArray(workflows) ? workflows?.find(
+        workflow =>
+          workflow?.workflowDefinition?.name === "onboarding_client_collect_data",
+      ) : undefined
+    }
+  })
+  const createWorkflowQuery = (id: string) => createQuery({
+    queryKey: ['workflows', {id}],
+    queryFn: async () => {
+      const data = await fetchWorkflow(id);
+
+      if (!data) return;
+
+      return data;
+    },
+    refetchInterval(data) {
+
+      if (
+        endUserState === 'REJECTED' || endUserState === 'APPROVED' ||
+        endUserState === 'NEW' && data?.workflowRuntimeData?.status === "created" ||
+        isProcessing && data?.workflowRuntimeData?.status !== "completed"
+      ) {
+        return false;
+      }
+
+      return parseInt(import.meta.env.VITE_POLLING_INTERVAL) * 1000 || false;
+    },
+    enabled: typeof id === 'string' && id.length > 0,
+  });
+  const queryClient = useQueryClient();
+  const createSignUpMutation = () => createMutation({
+    mutationFn: fetchSignUp,
+    onSuccess: (data) => {
+      sessionStorage.setItem(NO_AUTH_USER_KEY, data?.id);
+      noAuthUserId = data?.id;
+      queryClient.invalidateQueries();
+    }
+  })
+  $: endUserQuery = createEndUserQuery(noAuthUserId);
+  const firstWorkflowQuery = createFirstWorkflowQuery();
+  $: workflowQuery = createWorkflowQuery($firstWorkflowQuery?.data?.workflowRuntimeData?.id);
+  const intentQuery = createIntentQuery();
+
+  const signUpMutation = createSignUpMutation();
+  const onSubmit = async ({
+                            fname: firstName,
+                            lname: lastName,
+                          }: {
+    fname: string;
+    lname: string;
+  }) =>
+    $signUpMutation.mutate({
+      firstName,
+      lastName,
+    });
+
+  const workflow = writable<WorkflowOptionsBrowser | undefined>();
+  const mergeWorkflow = () => makeWorkflow($workflowQuery?.data || $intentQuery?.data);
+  const handleResubmit = () => {
+    workflow.set(mergeWorkflow());
   };
 
-  onMount(async () => {
-    await handleWorkflow();
-  });
+  let nextWorkflow;
+  let shouldResubmit = false;
+  $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
+  $: endUserId = $endUserQuery.data?.id;
+  $: endUserState = $endUserQuery.data?.state;
+  $: isProcessing = endUserState === 'PROCESSING';
+  $: isValidWorkflow = endUserId && !isCompleted;
+
+  $: {
+    if (endUserId && ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)) {
+      nextWorkflow = mergeWorkflow();
+
+      if (
+        nextWorkflow?.definition?.initial !== $workflow?.definition?.initial &&
+        nextWorkflow?.definition?.context?.id?.resubmissionReason
+      ) {
+        shouldResubmit = true;
+      } else {
+        workflow.set(nextWorkflow);
+        shouldResubmit = false;
+      }
+    } else {
+      workflow.set(undefined)
+      shouldResubmit = false;
+    }
+  }
+
+  let message;
+
+  $: {
+    switch (endUserState) {
+      case 'PROCESSING':
+        message = '';
+        break;
+      case 'REJECTED':
+        message = 'Your request was declined.';
+        break;
+      case 'APPROVED':
+        message = 'Your request was approved :)';
+        break;
+      default:
+        message = '';
+    }
+  }
+
 </script>
 
-{#if workflow}
-  <Workflow {workflow} />
-{/if}
-{#if renderIntentButton}
-  <button on:click={handleIntent}>KYC</button>
-{/if}
+<main class="h-full flex flex-col items-center justify-center p-6">
+
+  {#if !endUserId}
+    <SignUp {onSubmit}/>
+  {/if}
+
+  {#if $workflow && !isCompleted && !shouldResubmit}
+    <Workflow workflow={$workflow}/>
+  {/if}
+
+  {#if endUserId && !$workflow && !isProcessing}
+    <Intent disabled={!endUserId} refetch={$intentQuery.refetch}/>
+  {/if}
+
+  {#if endUserId && isProcessing && isCompleted}
+    <ThankYou/>
+  {/if}
+
+  {#if isValidWorkflow && shouldResubmit}
+    <Resubmission
+      {handleResubmit}
+      reason={nextWorkflow?.definition?.context?.id?.resubmissionReason?.toLowerCase()?.replace(/_/g, ' ')}
+    />
+  {/if}
+
+  {#if endUserState === "REJECTED"}
+    <Rejected/>
+  {/if}
+
+  {#if endUserState === "APPROVED"}
+    <Approved/>
+  {/if}
+
+</main>

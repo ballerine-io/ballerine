@@ -1,10 +1,6 @@
+/* eslint-disable */
 import { applyDecorators } from '@nestjs/common';
-import {
-  ApiExtraModels,
-  ApiQuery,
-  ApiQueryOptions,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiExtraModels, ApiQuery, ApiQueryOptions, getSchemaPath } from '@nestjs/swagger';
 import 'reflect-metadata';
 
 const generateApiQueryObject = (
@@ -46,13 +42,11 @@ const generateApiQueryObject = (
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-types,@typescript-eslint/explicit-module-boundary-types,@typescript-eslint/naming-convention
 export function ApiNestedQuery(query: Function) {
   const constructor = query.prototype;
-  const properties = Reflect.getMetadata(
-    'swagger/apiModelPropertiesArray',
-    constructor,
-  ).map((prop: any) => prop.slice(1));
+  const properties = Reflect.getMetadata('swagger/apiModelPropertiesArray', constructor).map(
+    (prop: any) => prop.slice(1),
+  );
 
   const decorators = properties
     .map((property: any) => {
@@ -61,17 +55,8 @@ export function ApiNestedQuery(query: Function) {
         constructor,
         property,
       );
-      const propertyType = Reflect.getMetadata(
-        'design:type',
-        constructor,
-        property,
-      );
-      const typedQuery = generateApiQueryObject(
-        property,
-        propertyType,
-        required,
-        isArray,
-      );
+      const propertyType = Reflect.getMetadata('design:type', constructor, property);
+      const typedQuery = generateApiQueryObject(property, propertyType, required, isArray);
       return [ApiExtraModels(propertyType), ApiQuery(typedQuery)];
     })
     .flat();

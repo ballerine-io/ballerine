@@ -1,5 +1,13 @@
 # @ballerine/workflow-core
 
+## 0.4.9
+
+### Patch Changes
+
+- a2bed5e: Release
+- Updated dependencies [a2bed5e]
+  - @ballerine/common@0.4.3
+
 ## 0.4.8
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # web-sdk
 
+## 1.3.2
+
+### Patch Changes
+
+- a2bed5e: Release
+- Updated dependencies [a2bed5e]
+  - @ballerine/common@0.4.3
+
 ## 1.3.1
 
 ### Patch Changes

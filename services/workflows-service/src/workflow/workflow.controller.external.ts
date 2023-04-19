@@ -5,6 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
+import { NotFoundException, Headers } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -17,7 +18,6 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
-import { Headers } from '@nestjs/common';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -37,15 +37,12 @@ export class WorkflowControllerExternal {
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   async listWorkflowRuntimeDataByUserId(
     @UserData()
-    userInfo: UserInfo,
-    @Headers() headers: any,
+    _userInfo: UserInfo,
+    @Headers('no_auth_user_id') no_auth_user_id: string,
   ): Promise<RunnableWorkflowData[]> {
-    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-      headers.no_auth_user_id,
-    );
-    const response = completeWorkflowData.map(({ workflowDefinition, ...workflowRuntimeData }) => ({
-      workflowRuntimeData,
+    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(no_auth_user_id);
+    const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
+      workflowRuntimeData: rest,
       workflowDefinition,
     }));
 
@@ -60,6 +57,10 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
   ): Promise<RunnableWorkflowData> {
     const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(params.id);
+    if (!workflowRuntimeData) {
+      throw new NotFoundException(`No resource with id [${params.id}] was found`);
+    }
+
     const workflowDefinition = await this.service.getWorkflowDefinitionById(
       workflowRuntimeData.workflowDefinitionId,
     );
@@ -70,7 +71,7 @@ export class WorkflowControllerExternal {
     };
   }
 
-  // PUT /workflows/:id
+  // PATCH /workflows/:id
   @common.Patch('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -94,10 +95,12 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async intent(@common.Body() intent: IntentDto, @Headers() headers: any): Promise<IntentResponse> {
+  async intent(
+    @common.Body() intent: IntentDto,
+    @Headers('no_auth_user_id') no_auth_user_id: string,
+  ): Promise<IntentResponse> {
     // Rename to intent or getRunnableWorkflowDataByIntent?
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-    return await this.service.resolveIntent(intent.intentName, headers.no_auth_user_id);
+    return await this.service.resolveIntent(intent.intentName, no_auth_user_id);
   }
 
   // POST /event
@@ -106,7 +109,7 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async event(
-    @UserData() userInfo: UserInfo,
+    @UserData() _userInfo: UserInfo,
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
   ): Promise<void> {

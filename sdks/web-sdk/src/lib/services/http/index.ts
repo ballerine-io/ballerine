@@ -64,7 +64,7 @@ const httpGet = async (url: string) => {
   return response.json();
 };
 
-export const getVerificationStatus = async (endUserId: string) => {
+export const getVerificationStatus = async (_endUserId: string) => {
   const verificationId = localStorage.getItem('verificationId') as string;
   const endpointUrl = getVerificationStatusEndpoint({ verificationId });
   // Enter a validation step here that would infer the response's type
@@ -79,7 +79,7 @@ export const verifyDocuments = async (
   const documentsForUpload: {
     metadata: Record<string, string>;
     type: string;
-    pages: any;
+    pages: unknown;
   }[] = [];
   if (data.selfie) {
     documentsForUpload.push({

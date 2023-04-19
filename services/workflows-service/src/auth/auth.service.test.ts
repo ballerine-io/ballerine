@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
@@ -14,7 +16,7 @@ const INVALID_CREDENTIALS: LoginDto = {
   username: 'Invalid User',
   password: 'Invalid User Password',
 };
-const USER: any = {
+const USER = {
   ...VALID_CREDENTIALS,
   createdAt: new Date(),
   id: VALID_ID,
@@ -34,13 +36,13 @@ const userService = {
 };
 
 const passwordService = {
-  compare(password: string, encrypted: string) {
+  compare() {
     return true;
   },
 };
 
 const tokenService = {
-  createToken(username: string, password: string) {
+  createToken() {
     return SIGN_TOKEN;
   },
 };
@@ -77,10 +79,7 @@ describe('AuthService', () => {
   describe('Testing the authService.validateUser()', () => {
     it('should validate a valid user', async () => {
       await expect(
-        service.validateUser(
-          VALID_CREDENTIALS.username,
-          VALID_CREDENTIALS.password,
-        ),
+        service.validateUser(VALID_CREDENTIALS.username, VALID_CREDENTIALS.password),
       ).resolves.toEqual({
         username: USER.username,
         roles: USER.roles,
@@ -90,10 +89,7 @@ describe('AuthService', () => {
 
     it('should not validate a invalid user', async () => {
       await expect(
-        service.validateUser(
-          INVALID_CREDENTIALS.username,
-          INVALID_CREDENTIALS.password,
-        ),
+        service.validateUser(INVALID_CREDENTIALS.username, INVALID_CREDENTIALS.password),
       ).resolves.toBe(null);
     });
   });

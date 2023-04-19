@@ -5,4 +5,4 @@ export const Tab = {
 
 export const Tabs = [Tab.LEARN, Tab.API] as const;
 
-export type TTab = typeof Tab[keyof typeof Tab];
+export type TTab = (typeof Tab)[keyof typeof Tab];

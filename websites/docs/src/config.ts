@@ -51,7 +51,7 @@ export const ALGOLIA = {
 };
 
 export type Sidebar = Record<
-  typeof KNOWN_LANGUAGE_CODES[number],
+  (typeof KNOWN_LANGUAGE_CODES)[number],
   Record<
     TTab,
     Array<{
