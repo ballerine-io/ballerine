@@ -7,10 +7,7 @@ import { UserInfo } from '../../user/user-info';
 import { INJECTION_TOKEN_JWT_SECRET_KEY } from '@/injection-tokens';
 
 @Injectable()
-export class JwtStrategy
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy
-{
+export class JwtStrategy extends PassportStrategy(Strategy) implements IAuthStrategy {
   constructor(
     protected readonly userService: UserService,
     @Inject(INJECTION_TOKEN_JWT_SECRET_KEY) secretOrKey: string,
@@ -28,11 +25,7 @@ export class JwtStrategy
     if (!user) {
       throw new UnauthorizedException();
     }
-    if (
-      !Array.isArray(user.roles) ||
-      typeof user.roles !== 'object' ||
-      user.roles === null
-    ) {
+    if (!Array.isArray(user.roles) || typeof user.roles !== 'object' || user.roles === null) {
       throw new Error('User roles is not a valid value');
     }
     return { ...user, roles: user.roles as string[] };

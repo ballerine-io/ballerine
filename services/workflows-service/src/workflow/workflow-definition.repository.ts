@@ -18,14 +18,9 @@ export class WorkflowDefinitionRepository {
     return await this.prisma.workflowDefinition.findMany(args);
   }
 
-  async findById<
-    T extends Omit<Prisma.WorkflowDefinitionFindUniqueOrThrowArgs, 'where'>,
-  >(
+  async findById<T extends Omit<Prisma.WorkflowDefinitionFindUniqueOrThrowArgs, 'where'>>(
     id: string,
-    args?: Prisma.SelectSubset<
-      T,
-      Omit<Prisma.WorkflowDefinitionFindUniqueOrThrowArgs, 'where'>
-    >,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionFindUniqueOrThrowArgs, 'where'>>,
   ): Promise<WorkflowDefinition> {
     return await this.prisma.workflowDefinition.findUniqueOrThrow({
       where: { id },
@@ -35,10 +30,7 @@ export class WorkflowDefinitionRepository {
 
   async updateById<T extends Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<
-      T,
-      Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>
-    >,
+    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>,
   ): Promise<WorkflowDefinition> {
     return await this.prisma.workflowDefinition.update({
       where: { id },
@@ -46,14 +38,9 @@ export class WorkflowDefinitionRepository {
     });
   }
 
-  async deleteById<
-    T extends Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>,
-  >(
+  async deleteById<T extends Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>(
     id: string,
-    args?: Prisma.SelectSubset<
-      T,
-      Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>
-    >,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>,
   ): Promise<WorkflowDefinition> {
     return await this.prisma.workflowDefinition.delete({
       where: { id },

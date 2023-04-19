@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { mock } from 'jest-mock-extended';
 import { PrismaService } from 'nestjs-prisma';
 import { HealthService } from './health.service';
@@ -14,9 +15,7 @@ describe('Testing the HealthService', () => {
     });
     it('should return true if allow connection to db', async () => {
       //ARRANGE
-      prismaService.$queryRaw
-        //@ts-ignore
-        .mockReturnValue(Promise.resolve(true));
+      (prismaService.$queryRaw as jest.Mock).mockReturnValue(Promise.resolve(true));
       //ACT
       const response = await healthServiceBase.isDbReady();
       //ASSERT
@@ -24,9 +23,7 @@ describe('Testing the HealthService', () => {
     });
     it('should return false if db is not available', async () => {
       //ARRANGE
-      prismaService.$queryRaw
-        //@ts-ignore
-        .mockReturnValue(Promise.reject(false));
+      (prismaService.$queryRaw as jest.Mock).mockReturnValue(Promise.reject(false));
       //ACT
       const response = await healthServiceBase.isDbReady();
       //ASSERT

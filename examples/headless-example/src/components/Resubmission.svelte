@@ -1,19 +1,20 @@
 <script lang="ts">
-  import { createZodForm } from '../utils';
-  import { z } from 'zod';
-  import type { TOnPrev, TOnSubmit } from '../types';
-  import Form from './Form.svelte';
+import Card from "@/components/Card.svelte";
 
-  const schema = z.object({});
+export let reason: string;
+export let handleResubmit = () => {};
 
-  export let initialValues: z.infer<typeof schema>;
-  export let onSubmit: TOnSubmit<typeof schema>;
-  export let onPrev: TOnPrev<typeof schema>;
-
-  const zodForm = createZodForm(schema, {
-    initialValues,
-    onSubmit,
-  });
 </script>
 
-<Form {zodForm}>Resubmission</Form>
+<Card>
+  <h1 class="font-bold text-center w-full text-2xl">
+    Re-upload ID
+  </h1>
+  <p class="max-w-[50ch] p-1">
+    Your ID was rejected due
+    to {reason}, please re-upload a clearer image.
+    You can upload <a download="mock-id.png" href="/mock-id.png">this file</a>.
+  </p>
+  <img src="/re-upload-id.svg" alt="clock" class="m-auto mb-2 w-48 h-48"/>
+  <button class="mt-auto" on:click={handleResubmit}>Re-upload ID File</button>
+</Card>

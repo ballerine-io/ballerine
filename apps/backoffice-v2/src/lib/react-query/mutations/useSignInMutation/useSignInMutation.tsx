@@ -36,7 +36,7 @@ export const useSignInMutation = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: getSession.queryKey
+        queryKey: getSession.queryKey,
       });
     },
   });

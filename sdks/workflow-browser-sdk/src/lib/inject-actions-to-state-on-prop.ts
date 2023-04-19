@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EventObject, StateNodeConfig, StatesConfig } from 'xstate';
 import { mergeStepActions } from './merge-step-actions';
 import { IOnProps } from './types';

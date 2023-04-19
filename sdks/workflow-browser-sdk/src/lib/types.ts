@@ -12,12 +12,12 @@ export type Serializable =
   | Array<Serializable>
   | { [key: PropertyKey]: Serializable };
 
-export type AnyRecord = Record<PropertyKey, any>;
+export type AnyRecord = Record<PropertyKey, unknown>;
 
 export type ObjectValues<TObject> = TObject[keyof TObject];
 
 export type DeepPartial<TValue> = {
-  [TKey in keyof TValue]?: TValue[TKey] extends Record<any, any>
+  [TKey in keyof TValue]?: TValue[TKey] extends Record<string, unknown>
     ? DeepPartial<TValue[TKey]>
     : TValue extends Array<infer U>
     ? Array<DeepPartial<U>>
@@ -124,7 +124,7 @@ export type TSubscribers = Array<TSubscriber>;
 
 export interface IUserStepEvent {
   type: string;
-  payload: Record<PropertyKey, any>;
+  payload: Record<PropertyKey, unknown>;
 }
 
 export interface IOnProps {

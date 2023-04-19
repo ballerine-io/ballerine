@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "repository": {
@@ -36,6 +36,7 @@
   },
   "scripts": {
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint . --fix",
     "start": "vite",
     "dev": "vite",
@@ -44,16 +45,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ballerine/common": "^0.4.2",
-    "@ballerine/workflow-browser-sdk": "^0.4.2",
-    "@ballerine/workflow-node-sdk": "^0.4.2",
+    "@ballerine/common": "^0.4.3",
+    "@ballerine/workflow-browser-sdk": "^0.4.3",
+    "@ballerine/workflow-node-sdk": "^0.4.3",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-checkbox": "^1.0.1",
     "@radix-ui/react-dialog": "^1.0.2",
-    "@radix-ui/react-dropdown-menu": "^2.0.1",
+    "@radix-ui/react-dropdown-menu": "^2.0.4",
     "@radix-ui/react-hover-card": "^1.0.2",
     "@radix-ui/react-scroll-area": "^1.0.2",
+    "@radix-ui/react-select": "^1.2.1",
     "@tanstack/react-query": "^4.19.1",
     "@tanstack/react-router": "0.0.1-beta.61",
     "clsx": "^1.2.1",
@@ -64,6 +66,7 @@
     "i18next": "^22.4.9",
     "i18next-browser-languagedetector": "^7.0.1",
     "i18next-http-backend": "^2.1.1",
+    "lucide-react": "^0.128.0",
     "match-sorter": "^6.3.1",
     "msw": "^1.0.0",
     "react": "^18.2.0",
@@ -99,7 +102,6 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^28.1.1",
     "jest-environment-jsdom": "^28.1.1",
-    "lint-staged": "^11.2.6",
     "postcss": "^8.4.14",
     "prettier": "^2.8.0",
     "prettier-plugin-tailwindcss": "^0.2.1",

@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { z } from "zod";
-  import { createZodForm } from "../utils";
-  import Dump from "./Dump.svelte";
+  import {z} from "zod";
+  import {createZodForm} from "@/utils";
   import Form from "./Form.svelte";
-  import type { TOnSubmit } from "../types";
+  import type {TOnSubmit} from "@/types";
 
   const schema = z.object({});
 
@@ -17,4 +16,10 @@
   });
 </script>
 
-<Form {zodForm}>Welcome</Form>
+<Form {zodForm}>
+  <legend>Let’s get to know you</legend>
+  <p class="max-w-[50ch] p-1 text-center">
+    Please prepare one of the following:
+    Passport / ID / Drivers license
+  </p>
+</Form>

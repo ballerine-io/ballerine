@@ -7,8 +7,10 @@ import { underscoreToSpace } from '../../../../../utils/underscore-to-space/unde
 export const useIndividual = () => {
   const { endUserId } = useParams();
   const { data, isLoading } = useEndUserWithWorkflowQuery(endUserId);
-  const documentOne = data?.workflow?.workflowContext?.machineContext?.documentOne;
-  const { data: blob } = useStorageFileQuery(documentOne?.id);
+  const id = data?.workflow?.workflowContext?.machineContext?.id;
+  const selfie = data?.workflow?.workflowContext?.machineContext?.selfie;
+  const { data: data1 } = useStorageFileQuery(id?.id);
+  const { data: data2 } = useStorageFileQuery(selfie?.id);
   const {
     firstName,
     middleName,
@@ -36,10 +38,14 @@ export const useIndividual = () => {
   };
   const documents = [
     {
-      url: blob ? URL.createObjectURL(blob) : '',
-      doctype: documentOne?.type,
+      url: data1,
+      doctype: id?.type,
     },
-  ];
+    {
+      url: data2,
+      doctype: selfie?.type,
+    },
+  ].filter(({ url }) => !!url);
 
   // Images
   const images =
@@ -53,8 +59,10 @@ export const useIndividual = () => {
     fullName,
     avatarUrl,
   };
-  const faceAUrl = images?.find(({ caption }) => /face/i.test(caption))?.imageUrl;
-  const faceBUrl = images?.find(({ caption }) => /id\scardfront/i.test(caption))?.imageUrl;
+  const faceAUrl = images?.find(({ caption }) => /selfie/i.test(caption))?.imageUrl;
+  const faceBUrl = images?.find(({ caption }) =>
+    /id\scard|passport|driver\slicense/i.test(caption),
+  )?.imageUrl;
   const whitelist = ['workflow', 'personalInfo', 'passportInfo', 'checkResults', 'addressInfo'];
   const info = {
     personalInfo,

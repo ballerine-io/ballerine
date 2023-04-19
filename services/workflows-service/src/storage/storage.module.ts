@@ -7,10 +7,7 @@ import { StorageService } from './storage.service';
 @Module({
   imports: [],
   controllers: [StorageControllerInternal, StorageControllerExternal],
-  providers: [
-    StorageService,
-    FileRepository
-  ],
+  providers: [StorageService, FileRepository],
   exports: [StorageService],
 })
 export class StorageModule {}

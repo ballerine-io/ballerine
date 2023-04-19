@@ -7,5 +7,10 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [
+    "@ballerine/docs",
+    "@ballerine/workflows-service",
+    "@ballerine/backoffice",
+    "@ballerine/backoffice-v2"
+  ]
 }

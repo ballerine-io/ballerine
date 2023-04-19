@@ -1,11 +1,6 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { InjectRolesBuilder, RolesBuilder } from 'nest-access-control';
+import { InjectRolesBuilder, Role, RolesBuilder } from 'nest-access-control';
 import { Reflector } from '@nestjs/core';
 import * as abacUtil from '../abac.util';
 import { ForbiddenException } from '../../errors';
@@ -17,35 +12,29 @@ export class AclValidateRequestInterceptor implements NestInterceptor {
     private readonly reflector: Reflector,
   ) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>(
-      'roles',
-      [context.getHandler(), context.getClass()],
-    );
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    const permissionsRoles = this.reflector.getAllAndMerge<string[]>('roles', [
+      context.getHandler(),
+      context.getClass(),
+    ])[0] as Role;
 
     const type = context.getType();
 
     const inputDataToValidate =
       type === 'http'
-        ? context.switchToHttp().getRequest().body
-        : context.getArgByIndex(1).data;
+        ? context.switchToHttp().getRequest<{ body: Record<string, unknown> }>().body
+        : context.getArgByIndex<{ data: Record<string, unknown> }>(1).data;
 
     const permission = this.rolesBuilder.permission({
-      role: permissionsRoles.role,
       action: permissionsRoles.action,
       possession: permissionsRoles.possession,
       resource: permissionsRoles.resource,
     });
 
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      inputDataToValidate,
-    );
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, inputDataToValidate);
 
     if (invalidAttributes.length) {
-      throw new ForbiddenException(
-        'Insufficient privileges to complete the operation',
-      );
+      throw new ForbiddenException('Insufficient privileges to complete the operation');
     }
 
     return next.handle();

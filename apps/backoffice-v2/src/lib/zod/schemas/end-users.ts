@@ -48,7 +48,7 @@ export const EndUserByIdSchema = ObjectWithIdSchema.extend({
       expires: z.string().default(''),
     })
     .optional(),
-    
+
   checkResults: z
     .object({
       finalResult: z.enum(States).default(State.PROCESSING),

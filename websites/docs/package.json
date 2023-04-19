@@ -11,6 +11,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "format": "prettier --write --plugin-search-dir=. \"./**/*.{cjs,js,ts,tsx,ts,mts}\"",
+    "format:check": "prettier --check --plugin-search-dir=. \"./**/*.{cjs,js,ts,tsx,ts,mts}\"",
     "lint": "eslint . --fix"
   },
   "peerDependencies": {

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpError } from '@ballerine/workflow-core';
 import { StatePlugin } from './state-plugin';
 import { IFetchOptions, TBackendPersistPluginParams } from './types';

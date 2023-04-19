@@ -18,10 +18,10 @@ export const States = [State.APPROVED, State.REJECTED, State.PROCESSING, State.N
 export const Action = {
   REJECT: 'REJECT',
   APPROVE: 'APPROVE',
+  RESUBMIT: 'RESUBMIT',
   SIGN_IN: 'SIGN_IN',
   SIGN_OUT: 'SIGN_OUT',
 } as const;
-
 export const Resource = {
   END_USER: 'END_USER',
 } as const;

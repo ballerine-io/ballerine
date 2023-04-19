@@ -166,18 +166,20 @@ const mergeStepElements = (
 ) => {
   if (!configurationElements) return uiThemeElements;
   // Elements update
-  let elements = uiThemeElements.map(uiThemeElement => {
-    const configurationElement = configurationElements.find(e => e.id === uiThemeElement.id);
-    if (configurationElement) {
-      return deepmerge(uiThemeElement, configurationElement);
-    }
-    return uiThemeElement;
-  });
-  // Elements delete
-  elements = elements.filter(e => !e.disabled);
-  // Elements add
+  const elements = uiThemeElements
+    .map(uiThemeElement => {
+      const configurationElement = configurationElements.find(e => e.id === uiThemeElement.id);
+      if (configurationElement) {
+        return deepmerge(uiThemeElement, configurationElement);
+      }
+      return uiThemeElement;
+    })
+    .filter(e => !e.disabled);
+
   const newElements = configurationElements.filter(
     element => !uiThemeElements.some(e => e.id === element.id),
   );
-  return [...elements, ...newElements].sort((e1, e2) => e1.orderIndex - e2.orderIndex);
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return [...elements, ...newElements].sort((e1, e2) => e1.orderIndex! - e2.orderIndex!);
 };
