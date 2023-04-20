@@ -1,6 +1,7 @@
 import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
+import * as errors from '../errors';
 import { EndUserWhereUniqueInput } from './dtos/end-user-where-unique-input';
 import { EndUserFindManyArgs } from './dtos/end-user-find-many-args';
 import { EndUserModel } from './end-user.model';
@@ -29,8 +30,13 @@ export class EndUserControllerInternal {
 
   @common.Get(':id')
   @swagger.ApiOkResponse({ type: EndUserModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel> {
-    return this.service.getById(params.id);
+  async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
+    const endUser = await this.service.getById(params.id);
+    if (endUser === null) {
+      throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+    }
+    return endUser;
   }
 }
