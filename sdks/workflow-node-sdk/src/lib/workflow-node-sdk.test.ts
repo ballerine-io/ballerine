@@ -2,6 +2,7 @@ import { expect, test } from 'vitest';
 import { createWorkflow } from './create-workflow';
 import { MemoryStore } from './adapters/memory-store';
 import { MemoryPersistencePlugin } from './plugins/memory-persistence-plugin';
+import { GPTPlugin } from './plugins/gpt/gpt-plugin';
 
 const simpleMachine = {
   id: 'toggle',
@@ -73,4 +74,27 @@ test.skip('Server Workflow persistance MemoryStore', () => {
 
   restoredWorkflow.sendEvent({ type: 'TOGGLE' });
   expect(restoredWorkflow.getSnapshot().value).toBe('inactive');
+});
+
+test.skip('Server Workflow ChatGPT plugin', () => {
+  const userId = '123456';
+  const gptPlugin = new GPTPlugin({
+    name: '',
+    stateNames: ['active'],
+    when: 'post',
+    modelConfig: {},
+    promptConfig: {},
+  });
+
+  simpleMachine.context = { ...(simpleMachine.context || {}), entityId: userId };
+
+  const workflow = createWorkflow({
+    definitionType: 'statechart-json',
+    definition: simpleMachine,
+    extensions: {
+      statePlugins: [gptPlugin],
+    },
+  });
+
+  // expect(workflow.getSnapshot().value).toBe('inactive');
 });

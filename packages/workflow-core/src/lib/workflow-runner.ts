@@ -77,12 +77,18 @@ export class WorkflowRunner {
       });
 
       try {
-        await plugin.action({
+        const actionOutput = await plugin.action({
           workflowId,
           context,
           event,
           state: this.#__currentState,
         });
+
+        // TEMP: plugins work
+        console.log(
+          'actionOutput, this should go into the context and used in the workflow to make decisions ',
+          actionOutput,
+        );
 
         this.#__callback?.({
           type,

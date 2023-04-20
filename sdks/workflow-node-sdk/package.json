@@ -25,6 +25,7 @@
   "dependencies": {
     "@ballerine/workflow-core": "^0.4.9",
     "json-logic-js": "^2.0.2",
+    "node-fetch": "^3.3.1",
     "xstate": "^4.36.0"
   },
   "devDependencies": {
