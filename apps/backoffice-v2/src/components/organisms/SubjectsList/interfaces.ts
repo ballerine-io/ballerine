@@ -1,6 +1,6 @@
 import { Item } from './SubjectsList.Item';
 import { List } from './SubjectsList.List';
-import { DivComponent } from '../../../types';
+import { DivComponent, TRouteId } from '../../../types';
 import { ChangeEventHandler } from 'react';
 import { TEndUser } from '../../../api/types';
 import { SkeletonItem } from 'components/organisms/SubjectsList/SubjectsList.SkeletonItem';
@@ -16,5 +16,6 @@ export interface ISubjectsListProps extends DivComponent {
   onFilter: (filterBy: keyof TEndUser) => (filters: Array<string>) => void;
   onSortBy: ChangeEventHandler<HTMLSelectElement>;
   onSortDir: () => void;
+  routerId: TRouteId;
   search: string;
 }

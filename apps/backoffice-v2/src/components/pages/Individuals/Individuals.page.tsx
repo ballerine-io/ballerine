@@ -20,6 +20,7 @@ export const Individuals = () => {
     pages,
     totalPages,
     skeletons,
+    routerId,
   } = useIndividuals();
 
   return (
@@ -30,6 +31,7 @@ export const Individuals = () => {
         onSortBy={onSortBy}
         onSortDir={onSortDir}
         search={search}
+        routerId={routerId}
       >
         <MotionScrollArea className={`h-[calc(100vh-210px)]`}>
           <SubjectsList.List>
