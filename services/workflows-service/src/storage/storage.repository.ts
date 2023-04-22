@@ -13,6 +13,12 @@ export class FileRepository {
     return await this.prisma.file.create<T>(args);
   }
 
+  async findMany<T extends Prisma.FileFindManyArgs>(
+    args?: Prisma.SelectSubset<T, Prisma.FileFindManyArgs>,
+  ): Promise<File[]> {
+    return await this.prisma.file.findMany(args);
+  }
+
   async findById<T extends Omit<Prisma.FileFindFirstArgs, 'where'>>(
     { id, userId }: IFileIds,
     args?: Prisma.SelectSubset<T, Omit<Prisma.FileFindFirstArgs, 'where'>>,

@@ -22,6 +22,7 @@ export const useRejectEndUserMutation = ({
           }
         | {
             action: typeof Action.RESUBMIT;
+            documentToResubmit: string;
             resubmissionReason: string;
           },
     ) =>
@@ -30,7 +31,10 @@ export const useRejectEndUserMutation = ({
         body: {
           name: payload?.action?.toLowerCase(),
           ...(payload?.action === Action.RESUBMIT
-            ? { resubmissionReason: payload?.resubmissionReason }
+            ? {
+                document: payload?.documentToResubmit,
+                resubmissionReason: payload?.resubmissionReason,
+              }
             : {}),
         },
       }),

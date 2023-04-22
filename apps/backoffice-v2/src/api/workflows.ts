@@ -46,7 +46,15 @@ export const workflows = {
     workflowId,
     body,
   }: IWorkflowId & {
-    body: Record<PropertyKey, unknown>;
+    body:
+      | {
+          name: string;
+        }
+      | {
+          name: string;
+          document: string;
+          resubmissionReason: string;
+        };
   }) => {
     const [workflow, error] = await apiClient({
       endpoint: endpoints.workflows.event.endpoint({ workflowId }),

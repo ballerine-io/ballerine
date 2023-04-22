@@ -1,3 +1,5 @@
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import type { WorkflowBrowserSDK, WorkflowOptionsBrowser } from '@ballerine/workflow-browser-sdk';
 import { createWorkflow } from '@ballerine/workflow-browser-sdk';
 import type { FormConfigWithoutTransformFn, Obj } from '@felte/core';
@@ -7,7 +9,7 @@ import { createForm } from 'felte';
 import { getContext, setContext } from 'svelte';
 import type { z, ZodSchema } from 'zod';
 import type { FetchInitWithJson, Serializable } from './types';
-import {NO_AUTH_USER_KEY} from "./constants";
+import { NO_AUTH_USER_KEY } from './constants';
 
 export const setWorkflowContext = (service: InstanceType<typeof WorkflowBrowserSDK>) => {
   setContext('workflow', service);
@@ -134,3 +136,5 @@ export const handlePromise = async <TData>(
     return [undefined, err];
   }
 };
+
+export const ctw = (...classNames: Array<ClassValue>) => twMerge(clsx(classNames));

@@ -5,7 +5,7 @@ import { HealthService } from './health.service';
 export class HealthControllerBase {
   constructor(protected readonly healthService: HealthService) {}
   @Get('live')
-  healthLive(@Res() response: Response): Response<void> {
+  healthLive(@Res() response: Response): Response<unknown> {
     return response.status(HttpStatus.NO_CONTENT).send();
   }
   @Get('ready')

@@ -4,7 +4,7 @@ import { TDocumentType } from '../../contexts/app-state/types';
 export const getOverlayDocumentType = (
   documentType: TDocumentType,
 ): 'card' | 'passport' | 'a4' | 'selfie' => {
-  const cardOverlayDocumentTypes = [
+  const cardOverlayDocumentTypes: TDocumentType[] = [
     DocumentType.DRIVERS_LICENSE,
     DocumentType.RESIDENCE_PERMIT,
     DocumentType.ID_CARD,

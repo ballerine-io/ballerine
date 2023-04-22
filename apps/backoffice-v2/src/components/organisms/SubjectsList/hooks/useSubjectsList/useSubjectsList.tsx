@@ -1,9 +1,10 @@
 import { useSearch } from '@tanstack/react-router';
 import { useDocumentListener } from '@/hooks/useDocumentListener/useDocumentListener';
 import { useCallback, useRef } from 'react';
+import { TRouteId } from '@/types';
 
-export const useSubjectsList = () => {
-  const { filter, sortBy } = useSearch();
+export const useSubjectsList = (routerId: TRouteId) => {
+  const { filter, sortBy } = useSearch({ from: routerId, strict: false });
   const sortByOptions = [
     {
       label: 'Created At',

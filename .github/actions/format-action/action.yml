@@ -36,4 +36,4 @@ runs:
 
     - name: Format
       shell: bash
-      run: pnpm format
+      run: pnpm format:check

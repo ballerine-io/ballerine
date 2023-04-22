@@ -2,7 +2,6 @@ import { useSignInMutation } from '@/lib/react-query/mutations/useSignInMutation
 import { FormEventHandler, useCallback } from 'react';
 import { useAuthContext } from '@/context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import { useIsAuthenticated } from '@/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
-import { Button } from '@/components/atoms/Button';
 
 export const SignIn = () => {
   const { mutate: signIn } = useSignInMutation();
@@ -40,9 +39,8 @@ export const SignIn = () => {
         <form className={`card-body`} onSubmit={onSubmit}>
           <fieldset>
             <legend className={`card-title mb-8 block text-center text-4xl`}>Sign In</legend>
-            <Button
-              variant={`outline`}
-              className={`mb-2`}
+            <button
+              className={`btn-outline btn-block btn mb-2 gap-2`}
               type={`button`}
               onClick={onSignInToGoogle}
             >
@@ -50,7 +48,7 @@ export const SignIn = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                className="me-2 mt-1 h-6 w-6"
+                className="mt-1 h-6 w-6"
               >
                 <clipPath id="p.0">
                   <path d="m0 0l20.0 0l0 20.0l-20.0 0l0 -20.0z" clipRule="nonzero" />
@@ -75,7 +73,7 @@ export const SignIn = () => {
                 </g>
               </svg>
               Sign in with Google
-            </Button>
+            </button>
             <div className={`divider text-sm`}>Or continue with email</div>
             <div className="form-control w-full">
               <label htmlFor="email" className="label">
@@ -118,9 +116,9 @@ export const SignIn = () => {
             </div>
           </fieldset>
           <div className={`card-actions mt-auto self-end`}>
-            <Button className={`btn-primary btn`} type={'submit'}>
+            <button className={`btn-primary btn`} type={'submit'}>
               Sign In
-            </Button>
+            </button>
           </div>
         </form>
       </div>

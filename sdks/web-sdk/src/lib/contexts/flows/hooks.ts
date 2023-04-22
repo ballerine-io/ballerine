@@ -40,5 +40,5 @@ export const getFlowConfig = (configuration: IAppConfiguration): IFlow => {
 export const isNativeCamera = (configuration: IAppConfiguration): boolean => {
   const flowName = sessionStorage.getItem(FLOW_STORE_KEY) as string;
   const flowConfiguration = configuration.flows[flowName];
-  return !!flowConfiguration?.nativeCamera;
+  return !!flowConfiguration?.mobileNativeCamera;
 };

@@ -122,7 +122,7 @@ const backWhiteIconButton: IElement = {
   },
 };
 
-const stepsTheme: TStepsConfigurations = [
+export const stepsTheme: TStepsConfigurations = [
   {
     name: Steps.Welcome,
     id: Steps.Welcome,
@@ -1262,16 +1262,7 @@ export const uiTheme: IAppConfigurationUI = {
         },
       },
     },
-    overlay: {
-      selfie: {
-        'background-position-y': '30%',
-      },
-    },
-    list: {
-      titleProps: {},
-      listProps: {},
-      listElementProps: {},
-    },
+
     container: {
       width: '100%',
       display: 'flex',
@@ -1302,5 +1293,4 @@ export const uiTheme: IAppConfigurationUI = {
       isImageMirror: true,
     },
   },
-  steps: stepsTheme,
 };

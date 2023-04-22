@@ -4,6 +4,7 @@ import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
+import * as errors from '../errors';
 import * as nestAccessControl from 'nest-access-control';
 import { EndUserCreateDto } from './dtos/end-user-create';
 import { EndUserFindManyArgs } from './dtos/end-user-find-many-args';
@@ -55,8 +56,13 @@ export class EndUserControllerExternal {
 
   @common.Get(':id')
   @swagger.ApiOkResponse({ type: EndUserModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel> {
-    return this.service.getById(params.id);
+  async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
+    const endUser = await this.service.getById(params.id);
+    if (endUser === null) {
+      throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+    }
+    return endUser;
   }
 }
