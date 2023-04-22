@@ -20,5 +20,4 @@ export const ScrollArea = forwardRef<
     <ScrollAreaPrimitive.Corner />
   </ScrollAreaPrimitive.Root>
 ));
-ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName
-
+ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;

@@ -1,8 +1,8 @@
-import { FunctionComponent } from "react";
-import { ctw } from "@/utils/ctw/ctw";
-import { IPaginationProps } from "@/components/organisms/Pagination/interfaces";
-import { Button } from "@/components/atoms/Button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { FunctionComponent } from 'react';
+import { ctw } from '@/utils/ctw/ctw';
+import { IPaginationProps } from '@/components/organisms/Pagination/interfaces';
+import { Button } from '@/components/atoms/Button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const Pagination: FunctionComponent<IPaginationProps> = ({
   onPaginate,
@@ -12,11 +12,7 @@ export const Pagination: FunctionComponent<IPaginationProps> = ({
 }) => {
   return (
     <nav className={`btn-group flex justify-center`}>
-      <Button
-        variant={'default'}
-        onClick={onPaginate(page - 1)}
-        disabled={page === 1}
-      >
+      <Button variant={'default'} onClick={onPaginate(page - 1)} disabled={page === 1}>
         <ChevronLeft />
       </Button>
 
@@ -33,11 +29,7 @@ export const Pagination: FunctionComponent<IPaginationProps> = ({
         </Button>
       ))}
 
-      <Button
-        variant={'default'}
-        onClick={onPaginate(page + 1)}
-        disabled={page === totalPages}
-      >
+      <Button variant={'default'} onClick={onPaginate(page + 1)} disabled={page === totalPages}>
         <ChevronRight />
       </Button>
     </nav>

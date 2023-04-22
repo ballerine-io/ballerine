@@ -545,6 +545,9 @@ importers:
       postcss:
         specifier: ^8.4.21
         version: 8.4.21
+      prettier:
+        specifier: ^2.8.7
+        version: 2.8.7
       prettier-plugin-svelte:
         specifier: ^2.8.0
         version: 2.10.0(prettier@2.8.7)(svelte@3.57.0)
