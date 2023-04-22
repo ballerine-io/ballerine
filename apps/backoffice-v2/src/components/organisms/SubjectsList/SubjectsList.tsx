@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react';
-import { FilterSvg, SortSvg } from '@/components/atoms/icons';
+import { SortSvg } from '@/components/atoms/icons';
 import { Item } from './SubjectsList.Item';
 import { List } from './SubjectsList.List';
 import {
@@ -11,7 +11,8 @@ import { useSubjectsList } from '@/components/organisms/SubjectsList/hooks/useSu
 import { TEndUser } from '@/api/types';
 import { SkeletonItem } from '@/components/organisms/SubjectsList/SubjectsList.SkeletonItem';
 import { Button } from '@/components/atoms/Button';
-import { Search } from 'lucide-react';
+import { Filter, Search } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/atoms/Popover/Popover';
 
 /**
  * @description A vertical sidebar for the subjects list, with search, filter, and sort.
@@ -81,20 +82,20 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
           </div>
         </div>
         <div className={`flex items-center justify-between`}>
-          <div className="dropdown-hover dropdown-bottom dropdown">
-            <Button
-              variant={`outline`}
-              size={`sm`}
-              tabIndex={0}
-              ref={filterRef}
-              onMouseEnter={handleDropdown}
-            >
-              <FilterSvg className={`me-2`} />
-              Filter
-            </Button>
-            <div
-              className={`dropdown-content space-y-2 rounded-md  border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
-            >
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={`outline`}
+                size={`sm`}
+                tabIndex={0}
+                ref={filterRef}
+                onMouseEnter={handleDropdown}
+              >
+                <Filter className={`me-2`} />
+                Filter
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className={`w-96`} align={'start'}>
               {filterByOptions.map(({ label, value, options }) => (
                 <Checkbox.Group
                   key={label}
@@ -122,8 +123,8 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
                   ))}
                 </Checkbox.Group>
               ))}
-            </div>
-          </div>
+            </PopoverContent>
+          </Popover>
           <div
             className={`form-control rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60`}
           >
