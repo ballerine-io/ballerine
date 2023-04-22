@@ -6,6 +6,7 @@ import { swaggerPath, swaggerDocumentOptions, swaggerSetupOptions } from './swag
 import { ValidationPipe } from '@nestjs/common';
 import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import helmet from 'helmet';
+import { LoggerInterceptor } from './access-control/interceptors/logger.interceptor';
 
 const { PORT = 3000 } = process.env;
 
@@ -34,6 +35,7 @@ async function main() {
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
+  app.useGlobalInterceptors(new LoggerInterceptor());
 
   void app.listen(PORT);
   console.log(`Listening on port ${PORT.toString()}`);
