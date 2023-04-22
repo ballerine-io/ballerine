@@ -18,6 +18,7 @@
     "@xstate/inspect": "^0.7.1",
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.21",
+    "prettier": "^2.8.7",
     "prettier-plugin-svelte": "^2.8.0",
     "prettier-plugin-tailwindcss": "^0.2.6",
     "svelte": "^3.55.1",
