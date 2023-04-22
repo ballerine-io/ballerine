@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { handleZodError } from '@/utils/handle-zod-error/handle-zod-error';
 import { apiClient } from './api-client';
 import { endpoints } from './endpoints';
+import { blobToBase64 } from '@/utils/blob-to-base64/blob-to-base64';
 
 export const storage = {
   fileById: async (fileId: string) => {
@@ -12,6 +13,8 @@ export const storage = {
       isBlob: true,
     });
 
-    return handleZodError(error, blob);
+    const data = handleZodError(error, blob);
+
+    return blobToBase64(data);
   },
 };

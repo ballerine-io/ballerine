@@ -1,10 +1,11 @@
 /**
  * Clean all the tables and types created by Prisma in the database
  */
-
+import * as dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 
 if (require.main === module) {
+  dotenv.config();
   clean().catch(error => {
     console.error(error);
     process.exit(1);

@@ -10,5 +10,5 @@ export const getListLength = <
 ) => {
   const list = texts[language][namespace];
 
-  return Object.keys(list as Record<PropertyKey, any>).length - 1;
+  return Object.keys(list as Record<PropertyKey, unknown>).length - 1;
 };

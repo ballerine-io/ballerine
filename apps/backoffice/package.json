@@ -76,6 +76,7 @@
   "scripts": {
     "commit": "git add . && git-cz",
     "format": "prettier --write \"./**/*.{cjs,js,ts,tsx,ts,mts}\"",
+    "format:check": "prettier --check \"./**/*.{cjs,js,ts,tsx,ts,mts}\"",
     "lint": "eslint \"./**/*.{cjs,js,ts,mts,tsx}\" --fix",
     "dev": "craco start",
     "build": "craco build",

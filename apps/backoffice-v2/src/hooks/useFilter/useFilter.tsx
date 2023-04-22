@@ -18,7 +18,7 @@ export const useFilter = <TArray extends AnyArray, TId extends TRouteId>({
   data: TArray;
   initialFilter?: Record<TKeyofArrayElement<TArray>, Array<string>>;
 }) => {
-  const { filter = initialFilter } = useSearch();
+  const { filter = initialFilter } = useSearch({ from: routeId, strict: false });
   const filtered = useMemo(
     () =>
       onFilter({

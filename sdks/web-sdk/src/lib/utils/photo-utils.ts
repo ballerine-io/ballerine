@@ -17,9 +17,6 @@ export const nativeCameraHandler = (e: ICameraEvent): Promise<string> => {
     const reader1 = new FileReader();
     reader1.readAsDataURL(image);
 
-    reader1.onload = e => {
-      const image = e.target?.result;
-    };
     new Compressor(image, {
       quality: 0.6,
       success(result) {

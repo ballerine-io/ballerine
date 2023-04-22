@@ -11,7 +11,7 @@ import { useSelectEndUserOnMount } from '@/hooks/useSelectEndUserOnMount/useSele
 import { individualsRoute } from '@/components/pages/Individuals/Individuals.route';
 import { individualsIndexRoute } from '@/components/pages/Individuals/IndividualsIndex.route';
 import { individualRoute } from '@/components/pages/Individual/Individual.route';
-import { useEndUsersWithWorkflowQuery } from '@/lib/react-query/queries/useEndUsersWithWorkflowQuery/useEndUsersWithWorkflowQuery';
+import { useEndUsersWithWorkflowsQuery } from '@/lib/react-query/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
 
 export const useIndividuals = () => {
   const matches = useMatches();
@@ -19,7 +19,7 @@ export const useIndividuals = () => {
   const isIndividuals =
     lastMatchId === individualsRoute.id || lastMatchId === individualsIndexRoute.id;
   const routeId: TRouteId = isIndividuals ? individualsRoute.id : individualRoute.id;
-  const { data: subjects, isLoading } = useEndUsersWithWorkflowQuery();
+  const { data: subjects, isLoading } = useEndUsersWithWorkflowsQuery();
   const { searched, onSearch, search } = useSearch({
     routeId,
     data: subjects,
@@ -79,5 +79,6 @@ export const useIndividuals = () => {
     pages,
     totalPages,
     skeletons,
+    routeId,
   };
 };

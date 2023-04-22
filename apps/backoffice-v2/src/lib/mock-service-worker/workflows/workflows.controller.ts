@@ -4,12 +4,6 @@ import { workflows } from './workflows.data';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { endUsers } from '../end-users/end-users.data';
 
-// const workflowCore = {
-//   sendEvent({ type }) {
-//     return;
-//   },
-// };
-
 export const workflowsController = [
   // List
   rest.get(`${env.VITE_API_URL}/workflows`, (req, res, ctx) => {

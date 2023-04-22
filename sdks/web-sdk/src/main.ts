@@ -26,19 +26,21 @@ export const flows: BallerineSDKFlows = {
       // Otherwise, the steps array could keep growing.
       configuration.set(defaultConfiguration);
 
-      const { translations, ...restConfig } = config;
+      const { translations: _translations, ...configWithoutTranslations } = config;
+
       // Extract config from query params
       const {
         clientId: _clientId,
         flowName: _flowName,
-        ...endUserInfo
+        ...endUserInfoFromQueryParams
       } = getConfigFromQueryParams();
+
       // Merge the two config objects
       const mergedConfig: FlowsInitOptions = {
-        ...restConfig,
+        ...configWithoutTranslations,
         endUserInfo: {
-          ...restConfig.endUserInfo,
-          ...endUserInfo,
+          ...configWithoutTranslations.endUserInfo,
+          ...endUserInfoFromQueryParams,
         },
       };
       const configPromise = appInit(mergedConfig);
@@ -89,7 +91,7 @@ export const flows: BallerineSDKFlows = {
       },
     });
   },
-  setConfig: function (config: FlowsInitOptions): Promise<void> {
+  setConfig: function (_config: FlowsInitOptions): Promise<void> {
     throw new Error('Function not implemented.');
   },
 };

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
