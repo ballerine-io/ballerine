@@ -31,7 +31,7 @@ jobs:
         id: get-version
         uses: beaconbrigade/package-json-version@v0.3
         with:
-          path: services/workflows-service
+          path: ./services/workflows-service
       - name: Print the version
         run: echo "The version was ${{ steps.get-version.outputs.version }}"
 
