@@ -32,6 +32,7 @@ jobs:
         uses: beaconbrigade/package-json-version@v0.3
         with:
           path: ./services/workflows-service
+
       - name: Print the version
         run: echo "The version was ${{ steps.get-version.outputs.version }}"
 
@@ -45,8 +46,8 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=sha,prefix=sha-,format=short
-          # flavor: |
-          #   latest=${{ steps.package-version.outputs.current-version}}
+          flavor: |
+            latest=${{  steps.get-version.outputs.version }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
