@@ -27,13 +27,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Read package.json
-        uses: dutscher/read-package-json-endpoint-actions@v1.33.7
-        id: package-json
-
-      - name: Show version number
-        run: echo "${{ steps.package-json.outputs.version }}"
-
+      - name: test action
+        id: get-version
+        uses: beaconbrigade/package-json-version@v0.3
+        with:
+          path: .
+      - name: Print the version
+        run: echo "The version was ${{ steps.get-version.outputs.version }}"
+        
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
