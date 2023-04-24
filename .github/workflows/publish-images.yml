@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: workflows-service
+  IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
 
 jobs:
   build-and-push-image:
