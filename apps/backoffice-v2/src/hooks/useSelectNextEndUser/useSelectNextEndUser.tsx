@@ -1,14 +1,14 @@
 import { useNextEndUserIdQuery } from '../../lib/react-query/queries/useNextEndUserIdQuery/useNextEndUserIdQuery';
-import { individualRoute } from 'components/pages/Individual/Individual.route';
 import { useSelectEndUser } from 'hooks/useSelectEndUser/useSelectEndUser';
 import { useCallback } from 'react';
+import { individualsRoute } from 'components/pages/Individuals/Individuals.route';
 
 export const useSelectNextEndUser = () => {
   const { data: nextId } = useNextEndUserIdQuery({
     initialState: {
       sortBy: 'createdAt',
     },
-    routeId: individualRoute.id,
+    routeId: individualsRoute.fullPath,
   });
   const onSelectNextUser = useSelectEndUser();
 
