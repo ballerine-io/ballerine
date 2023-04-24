@@ -1,5 +1,5 @@
 export const companies = {
-  list: async () => {
+  list: async (filterId: string) => {
     return Promise.resolve([
       {
         id: '1',

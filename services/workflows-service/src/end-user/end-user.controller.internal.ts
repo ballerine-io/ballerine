@@ -24,7 +24,11 @@ export class EndUserControllerInternal {
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EndUserFindManyArgs)
   async list(@common.Req() request: Request): Promise<EndUserModel[]> {
-    const args = plainToClass(EndUserFindManyArgs, request.query);
+    const {
+      // @ts-expect-error - Avoids passing filterId to Prisma, temporary until filters are implemented.
+      filterId: _filterId,
+      ...args
+    } = plainToClass(EndUserFindManyArgs, request.query);
     return this.service.list(args);
   }
 
