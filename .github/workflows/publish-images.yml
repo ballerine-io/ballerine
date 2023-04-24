@@ -27,14 +27,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
-        with:
-          path: services/workflows-service
+      - name: Read package.json
+        uses: dutscher/read-package-json-endpoint-actions@v1.33.7
+        id: package-json
 
-      - name: echo version
-        run: echo "::debug::p/json version ${{steps.package-version.outputs.current-version}} ${env.REGISTRY}}"
+      - name: Show version number
+        run: echo "${{ steps.package-json.outputs.version }}"
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
