@@ -1,8 +1,6 @@
 name: Create and publish a Docker image
 
-on:
-  release:
-    types: [published]
+
 
 env:
   REGISTRY: ghcr.io
