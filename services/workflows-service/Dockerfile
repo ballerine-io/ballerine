@@ -26,11 +26,7 @@ COPY --from=base /app/scripts ./scripts
 COPY --from=base /app/src ./src
 COPY --from=base /app/tsconfig* ./
 
-ENV DB_URL={DB_URL}
-RUN npm run db:clean; npm run db:init && npm run prisma:generate && npm run seed
 
-
-
-EXPOSE 3000
+EXPOSE 3007
 
 CMD [ "node", "./dist/main"]
