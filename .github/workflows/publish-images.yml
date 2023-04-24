@@ -1,9 +1,8 @@
 name: Create and publish a Docker image
 
 on:
-  push:
-    branches:
-      - alon-peretz/ci/dockerhub
+  release:
+    types: [published]
 
 env:
   REGISTRY: ghcr.io
