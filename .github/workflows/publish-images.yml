@@ -26,11 +26,12 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Extract package version
-        id: package_version
-        run: |
-          VERSION=$(jq -r .version services/workflows-service/package.json)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        with:
+          path: services/workflows-service
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -43,7 +44,7 @@ jobs:
             type=semver,pattern={{version}}
             type=sha,prefix=sha-,format=short
           flavor: |
-            latest=${{ env.VERSION }}
+            latest=${{ steps.package-version.outputs.current-version}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
