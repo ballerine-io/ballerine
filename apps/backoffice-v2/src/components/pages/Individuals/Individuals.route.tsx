@@ -12,6 +12,7 @@ const SearchSchema = z.object({
   pageSize: z.number().int().optional().catch(10),
   page: z.number().int().optional().catch(1),
   search: z.string().optional().catch(''),
+  filterId: z.string().catch(''),
 });
 
 const IndividualsSearchSchema = SearchSchema.extend({
@@ -55,7 +56,7 @@ export const individualsRoute = new Route({
     }),
   ],
   onLoad: async ({ search }) => {
-    const entityList = queries[search?.kind].list();
+    const entityList = queries[search?.kind].list(search?.filterId);
     await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
 
     return {};

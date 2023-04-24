@@ -29,7 +29,7 @@ export const endpoints = {
   },
   endUsers: {
     list: {
-      endpoint: () => `end-users`,
+      endpoint: (filterId: string) => `end-users?filterId=${filterId}`,
       method: Method.GET,
     },
     byId: {
@@ -39,6 +39,21 @@ export const endpoints = {
     // Unused
     updateById: {
       endpoint: (endUserId: string) => `end-users/${endUserId}`,
+      method: Method.PATCH,
+    },
+  },
+  companies: {
+    list: {
+      endpoint: (filterId: string) => `companies?filterId=${filterId}`,
+      method: Method.GET,
+    },
+    byId: {
+      endpoint: (companyId: string) => `companies/${companyId}`,
+      method: Method.GET,
+    },
+    // Unused
+    updateById: {
+      endpoint: (companyId: string) => `companies/${companyId}`,
       method: Method.PATCH,
     },
   },

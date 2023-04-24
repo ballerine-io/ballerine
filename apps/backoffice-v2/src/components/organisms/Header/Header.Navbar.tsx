@@ -31,6 +31,7 @@ export const Navbar: FunctionComponent = () => {
                       href={'/$locale/case-management/individuals'}
                       search={{
                         kind,
+                        filterId: id,
                       }}
                       key={id}
                       className={`capitalize`}
