@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Avatar } from 'components/atoms/Avatar';
 import { IActionsProps } from 'components/organisms/Subject/interfaces';
-import { EllipsisButton } from 'components/atoms/EllipsisButton/EllipsisButton';
 import {
   ResubmissionReason,
   useActions,
@@ -97,6 +96,17 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           </h2>
         </motion.div>
         <div className={`flex items-center space-x-6`}>
+          <button
+            className={ctw(
+              `btn-info btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
+              {
+                loading: debouncedIsLoadingRejectEndUser,
+              },
+            )}
+            disabled={isLoading || !canReject}
+          >
+            Execute Tasks
+          </button>
           <Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -207,19 +217,19 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-          <div className="dropdown-hover dropdown dropdown-bottom dropdown-end">
-            <EllipsisButton tabIndex={0} />
-            <ul
-              className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
-            >
-              <li className={`disabled`}>
-                <button disabled>Coming Soon</button>
-              </li>
-              <li className={`disabled`}>
-                <button disabled>Coming Soon</button>
-              </li>
-            </ul>
-          </div>
+          {/*<div className="dropdown-hover dropdown dropdown-bottom dropdown-end">*/}
+          {/*  <EllipsisButton tabIndex={0} />*/}
+          {/*  <ul*/}
+          {/*    className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}*/}
+          {/*  >*/}
+          {/*    <li className={`disabled`}>*/}
+          {/*      <button disabled>Coming Soon</button>*/}
+          {/*    </li>*/}
+          {/*    <li className={`disabled`}>*/}
+          {/*      <button disabled>Coming Soon</button>*/}
+          {/*    </li>*/}
+          {/*  </ul>*/}
+          {/*</div>*/}
         </div>
       </div>
       <div className={`divider my-0 w-full`}></div>
