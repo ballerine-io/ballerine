@@ -10,7 +10,7 @@ import helmet from 'helmet';
 const { PORT = 3000 } = process.env;
 
 async function main() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule, { snapshot: true, cors: true });
   app.use(helmet());
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
