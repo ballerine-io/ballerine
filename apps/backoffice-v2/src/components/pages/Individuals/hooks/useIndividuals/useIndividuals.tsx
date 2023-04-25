@@ -79,5 +79,6 @@ export const useIndividuals = () => {
     pages,
     totalPages,
     skeletons,
+    routeId,
   };
 };

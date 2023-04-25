@@ -38,6 +38,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
   onSortBy,
   onSortDir,
   search,
+  routerId,
   ...props
 }) => {
   const {
@@ -49,7 +50,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
     sortRef,
     filterRef,
     handleDropdown,
-  } = useSubjectsList();
+  } = useSubjectsList(routerId);
 
   return (
     <div
