@@ -34,16 +34,19 @@ export const BottomActions = () => {
   );
 
   return (
-    <div className={`mt-auto flex flex-col space-y-4`}>
-      <Avatar
-        // src={avatarUrl}
-        src={''}
-        // placeholder={!avatarUrl ? initials : undefined}
-        placeholder={'O'}
-        alt={`${''}'s profile`}
-        className={`ml-4 d-6`}
-        isLoading={false}
-      />
+    <div className={`mt-auto flex flex-col space-y-2`}>
+      <div>
+        <Avatar
+          // src={avatarUrl}
+          src={''}
+          // placeholder={!avatarUrl ? initials : undefined}
+          placeholder={'O'}
+          alt={`${''}'s profile`}
+          className={`ml-4 mr-2 d-6`}
+          isLoading={false}
+        />
+        {'Operator'}
+      </div>
       <div className="dropdown-hover dropdown-top dropdown">
         <ul
           className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 p-2 text-base-content shadow theme-dark:border-neutral/60`}

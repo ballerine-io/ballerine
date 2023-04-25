@@ -26,7 +26,7 @@ export const Content: FunctionComponent<PropsWithChildren> = ({ children }) => {
           y: 0,
         }}
         transition={{ duration: 0.5 }}
-        className={`mx-2 flex flex-col space-y-3 p-1`}
+        className={`mx-2 flex flex-col space-y-3 p-1 pt-2`}
       >
         {children}
       </motion.div>

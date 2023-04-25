@@ -64,7 +64,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4`}>
-      <div className={`flex h-[7.75rem] justify-between pl-10`}>
+      <div className={`flex h-[7.75rem] justify-between`}>
         <motion.div
           // Animate when the user changes.
           key={id}
@@ -225,7 +225,6 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           {/*</div>*/}
         </div>
       </div>
-      <div className={`divider my-0 w-full`}></div>
     </div>
   );
 };
