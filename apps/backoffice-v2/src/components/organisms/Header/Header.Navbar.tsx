@@ -13,7 +13,9 @@ import { useSearch } from '@tanstack/react-router';
  */
 export const Navbar: FunctionComponent = () => {
   const { data: filters } = useFiltersQuery();
-  const search = useSearch();
+  const search = useSearch({
+    strict: false,
+  });
 
   return (
     <nav>

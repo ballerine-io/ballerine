@@ -3,6 +3,8 @@ import { camelCaseToSpace } from '../../../../../utils/camel-case-to-space/camel
 import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
 import { useStorageFileQuery } from '../../../../../lib/react-query/queries/useStorageFileQuery/useStorageFileQuery';
 import { underscoreToSpace } from '../../../../../utils/underscore-to-space/underscore-to-space';
+import { Subject } from 'components/organisms/Subject/Subject';
+import { ctw } from '../../../../../utils/ctw/ctw';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -75,13 +77,443 @@ export const useIndividual = () => {
     },
   };
 
+  const task1 = [
+    {
+      id: 'actions',
+      type: 'container',
+      value: [
+        {
+          type: 'callToAction',
+          value: 'Options',
+        },
+        {
+          type: 'callToAction',
+          value: 'Approve',
+        },
+      ],
+    },
+    {
+      type: 'container',
+      value: [
+        {
+          type: 'faceComparison',
+          value: {
+            faceAUrl,
+            faceBUrl,
+          },
+        },
+        {
+          type: 'details',
+          value: {
+            title: 'personalInfo',
+            data: [
+              {
+                title: 'firstName',
+                value: firstName,
+              },
+              {
+                title: 'middleName',
+                value: middleName,
+              },
+              {
+                title: 'lastName',
+                value: lastName,
+              },
+              {
+                title: 'phone',
+                value: phone,
+              },
+              {
+                title: 'email',
+                value: email,
+              },
+              {
+                title: 'dateOfBirth',
+                value: dateOfBirth,
+              },
+              {
+                title: 'placeOfBirth',
+                value: placeOfBirth,
+              },
+              {
+                title: 'sex',
+                value: sex,
+              },
+            ],
+          },
+        },
+        {
+          type: 'details',
+          value: {
+            title: 'passportInfo',
+            data: [
+              {
+                title: 'type',
+                value: passportInfo?.type,
+              },
+              {
+                title: 'authority',
+                value: passportInfo?.authority,
+              },
+              {
+                title: 'placeOfIssue',
+                value: passportInfo?.placeOfIssue,
+              },
+              {
+                title: 'dateOfIssue',
+                value: passportInfo?.dateOfIssue,
+              },
+              {
+                title: 'expires',
+                value: passportInfo?.expires,
+              },
+            ],
+          },
+        },
+        {
+          type: 'details',
+          value: {
+            title: 'checkResults',
+            data: [
+              {
+                title: 'amlCheck',
+                value: checkResults?.amlCheck,
+              },
+              {
+                title: 'idCheck',
+                value: checkResults?.idCheck,
+              },
+              {
+                title: 'selfieCheck',
+                value: checkResults?.selfieCheck,
+              },
+              {
+                title: 'scannedBy',
+                value: checkResults?.scannedBy,
+              },
+              {
+                title: 'finalResult',
+                value: checkResults?.finalResult,
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      type: 'multiDocuments',
+      value: {
+        data: [
+          {
+            title: id?.type,
+            imageUrl: data1,
+          },
+          {
+            title: selfie?.type,
+            imageUrl: data2,
+          },
+        ],
+      },
+    },
+  ];
+  const task2 = [
+    {
+      id: 'actions',
+      type: 'container',
+      value: [
+        {
+          type: 'callToAction',
+          value: 'Approve',
+        },
+        {
+          type: 'callToAction',
+          value: 'Options',
+        },
+      ],
+    },
+    {
+      type: 'container',
+      value: [
+        {
+          type: 'details',
+          value: {
+            title: 'personalInfo',
+            data: [
+              {
+                title: 'firstName',
+                value: firstName,
+              },
+              {
+                title: 'middleName',
+                value: middleName,
+              },
+              {
+                title: 'lastName',
+                value: lastName,
+              },
+              {
+                title: 'phone',
+                value: phone,
+              },
+              {
+                title: 'email',
+                value: email,
+              },
+              {
+                title: 'dateOfBirth',
+                value: dateOfBirth,
+              },
+              {
+                title: 'placeOfBirth',
+                value: placeOfBirth,
+              },
+              {
+                title: 'sex',
+                value: sex,
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      type: 'multiDocuments',
+      value: {
+        data: [
+          {
+            title: id?.type,
+            imageUrl: data1,
+          },
+          {
+            title: selfie?.type,
+            imageUrl: data2,
+          },
+        ],
+      },
+    },
+  ];
+  const task3 = [
+    {
+      id: 'actions',
+      type: 'container',
+      value: [
+        {
+          type: 'callToAction',
+          value: 'Approve',
+        },
+        {
+          type: 'callToAction',
+          value: 'Options',
+        },
+      ],
+    },
+    {
+      type: 'container',
+      value: [
+        {
+          type: 'faceComparison',
+          value: {
+            faceAUrl,
+            faceBUrl,
+          },
+        },
+        {
+          type: 'details',
+          value: {
+            title: 'personalInfo',
+            data: [
+              {
+                title: 'firstName',
+                value: firstName,
+              },
+              {
+                title: 'middleName',
+                value: middleName,
+              },
+              {
+                title: 'lastName',
+                value: lastName,
+              },
+              {
+                title: 'phone',
+                value: phone,
+              },
+              {
+                title: 'email',
+                value: email,
+              },
+              {
+                title: 'dateOfBirth',
+                value: dateOfBirth,
+              },
+              {
+                title: 'placeOfBirth',
+                value: placeOfBirth,
+              },
+              {
+                title: 'sex',
+                value: sex,
+              },
+            ],
+          },
+        },
+        {
+          type: 'details',
+          value: {
+            title: 'passportInfo',
+            data: [
+              {
+                title: 'type',
+                value: passportInfo?.type,
+              },
+              {
+                title: 'authority',
+                value: passportInfo?.authority,
+              },
+              {
+                title: 'placeOfIssue',
+                value: passportInfo?.placeOfIssue,
+              },
+              {
+                title: 'dateOfIssue',
+                value: passportInfo?.dateOfIssue,
+              },
+              {
+                title: 'expires',
+                value: passportInfo?.expires,
+              },
+            ],
+          },
+        },
+        {
+          type: 'details',
+          value: {
+            title: 'checkResults',
+            data: [
+              {
+                title: 'amlCheck',
+                value: checkResults?.amlCheck,
+              },
+              {
+                title: 'idCheck',
+                value: checkResults?.idCheck,
+              },
+              {
+                title: 'selfieCheck',
+                value: checkResults?.selfieCheck,
+              },
+              {
+                title: 'scannedBy',
+                value: checkResults?.scannedBy,
+              },
+              {
+                title: 'finalResult',
+                value: checkResults?.finalResult,
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      type: 'multiDocuments',
+      value: {
+        data: [
+          {
+            title: id?.type,
+            imageUrl: data1,
+          },
+          {
+            title: selfie?.type,
+            imageUrl: data2,
+          },
+        ],
+      },
+    },
+  ];
+  const task4 = [
+    {
+      id: 'actions',
+      type: 'container',
+      value: [
+        {
+          type: 'callToAction',
+          value: 'Options',
+        },
+        {
+          type: 'callToAction',
+          value: 'Approve',
+        },
+      ],
+    },
+    {
+      type: 'faceComparison',
+      value: {
+        faceAUrl,
+        faceBUrl,
+      },
+    },
+    {
+      type: 'multiDocuments',
+      value: {
+        data: [
+          {
+            title: id?.type,
+            imageUrl: data1,
+          },
+          {
+            title: selfie?.type,
+            imageUrl: data2,
+          },
+        ],
+      },
+    },
+  ];
+  const tasks = [task1, task2, task3, task4];
+  const components = {
+    container: ({ value, id }) => {
+      return (
+        <div
+          className={ctw({
+            'col-span-full m-2 flex justify-end space-x-2 p-2 text-slate-50': id === 'actions',
+          })}
+        >
+          {value?.map(cell => components[cell.type]?.(cell))}
+        </div>
+      );
+    },
+    callToAction: ({ value }) => (
+      <button className={`rounded border border-slate-400 bg-slate-800 py-2 px-4`}>{value}</button>
+    ),
+    faceComparison: ({ value }) => (
+      <Subject.FaceMatch faceAUrl={value.faceAUrl} faceBUrl={value.faceBUrl} />
+    ),
+    details: ({ value }) => {
+      const data = {
+        [value.title]: value.data?.reduce((acc, curr) => {
+          acc[curr.title] = curr.value;
+
+          return acc;
+        }, {}),
+      };
+
+      return <Subject.Info info={data} whitelist={whitelist} isLoading={isLoading} />;
+    },
+    multiDocuments: ({ value }) => {
+      const documents = value.data
+        .map(({ title, imageUrl }) => ({
+          title,
+          imageUrl,
+        }))
+        .filter(({ imageUrl }) => !!imageUrl);
+
+      return <Subject.Documents documents={documents} />;
+    },
+  };
+
   return {
     selectedEndUser,
-    faceAUrl,
-    faceBUrl,
-    info,
-    images,
-    isLoading,
-    whitelist,
+    components,
+    tasks,
   };
 };
