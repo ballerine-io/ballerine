@@ -1,9 +1,10 @@
-import { CogSvg, LogOutSvg } from 'components/atoms/icons';
-import { useCallback, useState } from 'react';
+import { LogOutSvg } from 'components/atoms/icons';
+import React, { useCallback, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
 import { useSignOutMutation } from '../../../lib/react-query/mutations/useSignOutMutation/useSignOutMutation';
 import { useAuthContext } from '../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import packageJson from '../../../../package.json';
+import { Avatar } from 'components/atoms/Avatar';
 
 export const BottomActions = () => {
   const [theme, setTheme] = useState(() => {
@@ -34,13 +35,16 @@ export const BottomActions = () => {
 
   return (
     <div className={`mt-auto flex flex-col space-y-4`}>
-      <div className="dropdown dropdown-top dropdown-hover">
-        <button
-          tabIndex={0}
-          className={`btn-ghost btn-block btn mt-1 justify-start gap-x-2 focus:outline-primary`}
-        >
-          <CogSvg /> Settings
-        </button>
+      <Avatar
+        // src={avatarUrl}
+        src={''}
+        // placeholder={!avatarUrl ? initials : undefined}
+        placeholder={'O'}
+        alt={`${''}'s profile`}
+        className={`ml-4 d-6`}
+        isLoading={false}
+      />
+      <div className="dropdown-hover dropdown-top dropdown">
         <ul
           className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 p-2 text-base-content shadow theme-dark:border-neutral/60`}
         >

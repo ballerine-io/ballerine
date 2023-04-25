@@ -79,13 +79,6 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           }}
           transition={{ duration: 0.4 }}
         >
-          <Avatar
-            src={avatarUrl}
-            placeholder={!avatarUrl ? initials : undefined}
-            alt={`${fullName}'s profile`}
-            className={`h-16 w-16`}
-            isLoading={isLoadingEndUser}
-          />
           <h2
             className={ctw(`text-2xl`, {
               'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
