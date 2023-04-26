@@ -9,7 +9,6 @@
   "updateInternalDependencies": "patch",
   "ignore": [
     "@ballerine/docs",
-    "@ballerine/workflows-service",
     "@ballerine/backoffice",
     "@ballerine/backoffice-v2"
   ]
