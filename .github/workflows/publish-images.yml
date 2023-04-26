@@ -22,14 +22,14 @@ jobs:
       - name: Install jq    
         run: sudo apt-get install jq
 
-    - name: Check if the tag name contains "workflow-service"
-      run: |
-        TAG_NAME=${{ github.event.release.tag_name }}
-        if [[ "$TAG_NAME" != *"workflow-service"* ]]; then
-          echo "Release tag does not contain 'workflow-service'. Skipping this workflow."
-          exit 1
-        fi
-      continue-on-error: false
+      - name: Check if the tag name contains "workflow-service"
+        run: |
+          TAG_NAME=${{ github.event.release.tag_name }}
+          if [[ "$TAG_NAME" != *"workflow-service"* ]]; then
+            echo "Release tag does not contain 'workflow-service'. Skipping this workflow."
+            exit 1
+          fi  
+        continue-on-error: false
 
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
