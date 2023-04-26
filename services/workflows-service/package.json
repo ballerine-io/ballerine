@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-service",
   "private": false,
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "workflow-service",
   "scripts": {
     "setup": "npm run docker:db && npm run db:clean && npm run db:migrate-save && npm run seed",
