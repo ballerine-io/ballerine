@@ -22,11 +22,11 @@ jobs:
       - name: Install jq    
         run: sudo apt-get install jq
 
-      - name: Check if the tag name contains "workflow-service"
+      - name: Check if the tag name contains "workflows-service"
         run: |
           TAG_NAME=${{ github.event.release.tag_name }}
-          if [[ "$TAG_NAME" != *"workflow-service"* ]]; then
-            echo "Release tag does not contain 'workflow-service'. Skipping this workflow."
+          if [[ "$TAG_NAME" != *"workflows-service"* ]]; then
+            echo "Release tag does not contain 'workflows-service'. Skipping this workflow."
             exit 1
           fi  
         continue-on-error: false
