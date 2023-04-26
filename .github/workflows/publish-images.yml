@@ -1,4 +1,4 @@
-name: Create and publish a Docker image
+name: Publish workflow-service image
 
 on:
   release:
@@ -19,6 +19,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install jq    
+        run: sudo apt-get install jq
+
+    - name: Check if the tag name contains "workflow-service"
+      run: |
+        TAG_NAME=${{ github.event.release.tag_name }}
+        if [[ "$TAG_NAME" != *"workflow-service"* ]]; then
+          echo "Release tag does not contain 'workflow-service'. Skipping this workflow."
+          exit 1
+        fi
+      continue-on-error: false
+
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
@@ -26,14 +38,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: test action
-        id: get-version
-        uses: beaconbrigade/package-json-version@v0.3
-        with:
-          path: .
+      - name: Get package version from package.json
+        id: get_version
+        run: |
+          PACKAGE_VERSION=$(jq -r '.version' services/workflows-service/package.json)
+          echo "::set-output name=version::$PACKAGE_VERSION"
 
       - name: Print the version
-        run: echo "The version was ${{ steps.get-version.outputs.version }}"
+        run: echo "The version was ${{ steps.get_version.outputs.version }}"
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -41,8 +53,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{version}}
-            type=sha,prefix=sha-,format=short
+            type=semver,pattern={{version}},value=v${{ steps.get_version.outputs.version }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4

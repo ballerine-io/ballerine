@@ -1,5 +1,11 @@
 # @ballerine/workflows-service
 
+## 0.4.7
+
+### Patch Changes
+
+- CI/CD Release
+
 ## 0.4.6
 
 ### Patch Changes
