@@ -15,6 +15,8 @@ import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -49,6 +51,7 @@ export class WorkflowService {
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
+    private workflowEventEmitter: WorkflowEventEmitterService,
   ) {}
 
   async createWorkflowDefinition(args: Parameters<WorkflowDefinitionRepository['create']>[0]) {
@@ -288,6 +291,13 @@ export class WorkflowService {
     this.logger.log(
       `Workflow ${workflow.name}-${id}-v${workflow.version} state transiation [${runtimeData.state} -> ${currentState}]`,
     );
+    if (isFinal) {
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData,
+        state: currentState,
+        context, // TODO: final result should be a subset of context, should be defined as part of the workflow definition
+      });
+    }
 
     if (type === 'resubmit' && document) {
       switch (resubmissionReason) {

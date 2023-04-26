@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import { swaggerPath, swaggerDocumentOptions, swaggerSetupOptions } from './swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - there is an issue with helemet types
 import helmet from 'helmet';
 
