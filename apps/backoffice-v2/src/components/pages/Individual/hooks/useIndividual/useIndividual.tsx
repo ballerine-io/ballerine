@@ -536,7 +536,7 @@ export const useIndividual = () => {
             <DropdownMenuTrigger asChild>
               <button
                 className={ctw(
-                  `btn-ghost btn justify-center bg-slate-300 text-slate-500 before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
+                  `btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
                   {
                     // loading: debouncedIsLoadingRejectEndUser,
                   },
