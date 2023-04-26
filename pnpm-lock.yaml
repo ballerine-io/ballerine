@@ -1210,9 +1210,9 @@ importers:
       '@nestjs/core':
         specifier: ^9.3.12
         version: 9.3.12(@nestjs/common@9.3.12)(@nestjs/platform-express@9.3.12)(reflect-metadata@0.1.13)(rxjs@7.8.0)
-      '@nestjs/event-emitter':
-        specifier: ^1.4.1
-        version: 1.4.1(@nestjs/common@9.3.12)(@nestjs/core@9.3.12)(reflect-metadata@0.1.13)
+      '@nestjs/devtools-integration':
+        specifier: ^0.1.4
+        version: 0.1.4(@nestjs/common@9.3.12)(@nestjs/core@9.3.12)(reflect-metadata@0.1.13)
       '@nestjs/graphql':
         specifier: 11.0.4
         version: 11.0.4(@nestjs/common@9.3.12)(@nestjs/core@9.3.12)(class-transformer@0.5.1)(class-validator@0.14.0)(graphql@16.6.0)(reflect-metadata@0.1.13)
@@ -6416,17 +6416,20 @@ packages:
     transitivePeerDependencies:
       - encoding
 
-  /@nestjs/event-emitter@1.4.1(@nestjs/common@9.3.12)(@nestjs/core@9.3.12)(reflect-metadata@0.1.13):
-    resolution: {integrity: sha512-PmLpzMYgEKJNxOUrRjb6kNSm2PC6J+BeLTuF/bkYViGM/mVGvYOgU5jq8DQnXmiSmDmyWN+tO2cHSnR7odJJRA==}
+  /@nestjs/devtools-integration@0.1.4(@nestjs/common@9.3.12)(@nestjs/core@9.3.12)(reflect-metadata@0.1.13):
+    resolution: {integrity: sha512-jAKTrpc+Ilrb7CFV1ZuG9b4OYVlFPHUXna2H8BrmxKResyqnzlzR/YIUr8zJE7p15MipAjiVaLHHyEL0C9OYGA==}
     peerDependencies:
-      '@nestjs/common': ^7.0.0 || ^8.0.0 || ^9.0.0
-      '@nestjs/core': ^7.0.0 || ^8.0.0 || ^9.0.0
+      '@nestjs/common': ^9.3.7
+      '@nestjs/core': ^9.3.7
       reflect-metadata: ^0.1.12
     dependencies:
       '@nestjs/common': 9.3.12(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.0)
       '@nestjs/core': 9.3.12(@nestjs/common@9.3.12)(@nestjs/platform-express@9.3.12)(reflect-metadata@0.1.13)(rxjs@7.8.0)
-      eventemitter2: 6.4.9
+      chalk: 4.1.2
+      node-fetch: 2.6.9
       reflect-metadata: 0.1.13
+    transitivePeerDependencies:
+      - encoding
     dev: false
 
   /@nestjs/graphql@11.0.4(@nestjs/common@9.3.12)(@nestjs/core@9.3.12)(class-transformer@0.5.1)(class-validator@0.14.0)(graphql@16.6.0)(reflect-metadata@0.1.13):
@@ -13665,10 +13668,6 @@ packages:
   /etag@1.8.1:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
-
-  /eventemitter2@6.4.9:
-    resolution: {integrity: sha512-JEPTiaOt9f04oa6NOkc4aH+nVp5I3wEjpHbIPqfgCdD5v5bUzy7xQqwcVO2aDQgOWhI28da57HksMrzK9HlRxg==}
-    dev: false
 
   /eventemitter3@2.0.3:
     resolution: {integrity: sha512-jLN68Dx5kyFHaePoXWPsCGW5qdyZQtLYHkxkg02/Mz6g0kYpDx4FyP6XfArhQdlOC4b8Mv+EMxPo/8La7Tzghg==}
