@@ -1,5 +1,11 @@
 # @ballerine/workflows-service
 
+## 0.4.6
+
+### Patch Changes
+
+- d611b3b: Release
+
 ## 0.4.5
 
 ### Patch Changes
