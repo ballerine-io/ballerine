@@ -47,7 +47,7 @@ export const BottomActions = () => {
         />
         {'Operator'}
       </div>
-      <div className="dropdown-hover dropdown-top dropdown">
+      <div className="dropdown dropdown-top dropdown-hover">
         <ul
           className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 p-2 text-base-content shadow theme-dark:border-neutral/60`}
         >
