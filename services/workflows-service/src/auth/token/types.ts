@@ -1,9 +1,9 @@
 export interface ITokenPayload {
   id: string;
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface ITokenService {
-  createToken: ({ id, username, password }: ITokenPayload) => Promise<string>;
+  createToken: ({ id, email, password }: ITokenPayload) => Promise<string>;
 }

@@ -1,7 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { BusinessRepository } from './business.repository';
 
 @Injectable()
 export class BusinessService {
-  constructor(protected readonly prisma: PrismaService) {}
+  constructor(protected readonly repository: BusinessRepository) {}
+  async create(args: Parameters<BusinessRepository['create']>[0]) {
+    return await this.repository.create(args);
+  }
+
+  async list(args?: Parameters<BusinessRepository['findMany']>[0]) {
+    return await this.repository.findMany(args);
+  }
+
+  async getById(id: string, args?: Parameters<BusinessRepository['findById']>[1]) {
+    return await this.repository.findById(id, args);
+  }
 }

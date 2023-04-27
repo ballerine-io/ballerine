@@ -19,7 +19,7 @@ export class UserWhereInput {
   })
   @Type(() => StringFilter)
   @IsOptional()
-  username?: StringFilter;
+  email?: StringFilter;
 
   @ApiProperty({
     required: false,

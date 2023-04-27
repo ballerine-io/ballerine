@@ -9,11 +9,11 @@ import { TokenService } from './token/token.service';
 import { VALID_ID } from './tests/constants';
 
 const VALID_CREDENTIALS: LoginDto = {
-  username: 'Valid User',
+  email: 'Valid User',
   password: 'Valid User Password',
 };
 const INVALID_CREDENTIALS: LoginDto = {
-  username: 'Invalid User',
+  email: 'Invalid User',
   password: 'Invalid User Password',
 };
 const USER = {
@@ -27,8 +27,8 @@ const USER = {
 const SIGN_TOKEN = 'SIGN_TOKEN';
 
 const userService = {
-  getByUsername(username: string): any | null {
-    if (username === VALID_CREDENTIALS.username) {
+  getByUsername(email: string): any | null {
+    if (email === VALID_CREDENTIALS.email) {
       return USER;
     }
     return null;
@@ -79,9 +79,9 @@ describe('AuthService', () => {
   describe('Testing the authService.validateUser()', () => {
     it('should validate a valid user', async () => {
       await expect(
-        service.validateUser(VALID_CREDENTIALS.username, VALID_CREDENTIALS.password),
+        service.validateUser(VALID_CREDENTIALS.email, VALID_CREDENTIALS.password),
       ).resolves.toEqual({
-        username: USER.username,
+        email: USER.email,
         roles: USER.roles,
         id: USER.id,
       });
@@ -89,16 +89,16 @@ describe('AuthService', () => {
 
     it('should not validate a invalid user', async () => {
       await expect(
-        service.validateUser(INVALID_CREDENTIALS.username, INVALID_CREDENTIALS.password),
+        service.validateUser(INVALID_CREDENTIALS.email, INVALID_CREDENTIALS.password),
       ).resolves.toBe(null);
     });
   });
 
   describe('Testing the authService.login()', () => {
-    it('should return userInfo object for correct username and password', async () => {
+    it('should return userInfo object for correct email and password', async () => {
       const loginResult = await service.login(VALID_CREDENTIALS);
       expect(loginResult).toEqual({
-        username: USER.username,
+        email: USER.email,
         roles: USER.roles,
         accessToken: SIGN_TOKEN,
         id: USER.id,
