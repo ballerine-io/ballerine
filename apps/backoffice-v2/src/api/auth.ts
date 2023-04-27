@@ -39,7 +39,7 @@ export const auth = {
   // },
   signOut: async ({ callbackUrl }: ISignInProps) => ({}),
   getSession: async () => {
-    return { session: true };
+    return Promise.resolve({ session: false });
     // const [data, error] = await apiClient({
     //   endpoint: endpoints.auth.getSession.endpoint(),
     //   method: endpoints.auth.getSession.method,

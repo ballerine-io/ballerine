@@ -23,10 +23,10 @@ export const rootRoute = new RootRoute({
     return {};
   },
   beforeLoad: ({ router }) => {
-    if (router.history.location.pathname.startsWith('/en/case-management/individuals')) return;
+    if (router.history.location.pathname.startsWith('/en')) return;
 
     router.navigate({
-      to: '/$locale/case-management/individuals',
+      to: '/$locale',
       replace: true,
       params: {
         locale: 'en',
