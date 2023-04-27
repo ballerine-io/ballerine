@@ -33,6 +33,8 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {
     'import/no-cycle': 'error',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
+    '@typescript-eslint/no-unsafe-call': 'off',
   },
   ignorePatterns: ['.eslintrc.cjs'],
 };

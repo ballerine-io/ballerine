@@ -17,6 +17,8 @@ import { ServeStaticOptionsService } from './serve-static-options.service';
 import { EndUserModule } from './end-user/end-user.module';
 import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
 
 @Module({
   controllers: [],
@@ -26,6 +28,10 @@ import { MulterModule } from '@nestjs/platform-express';
       limits: {
         fileSize: 1024 * 1024 * 10, // 10MB
       },
+    }),
+    EventEmitterModule.forRoot(),
+    DevtoolsModule.register({
+      http: process.env.NODE_ENV !== 'production',
     }),
     UserModule,
     WorkflowModule,
