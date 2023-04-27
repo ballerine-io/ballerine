@@ -14,11 +14,7 @@ export const rootRoute = new RootRoute({
     if (!env.VITE_AUTH_ENABLED) return {};
 
     const getSession = auth.getSession();
-    const data = queryClient.getQueryData(getSession.queryKey);
-
-    if (data) return {};
-
-    await queryClient.prefetchQuery(getSession.queryKey, getSession.queryFn);
+    await queryClient.ensureQueryData(getSession.queryKey, getSession.queryFn);
 
     return {};
   },

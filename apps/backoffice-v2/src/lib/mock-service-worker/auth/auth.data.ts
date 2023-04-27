@@ -1,11 +1,17 @@
 export const auth = {
-  __session: false,
+  __user: undefined,
 
-  get session() {
-    return this.__session;
+  get user() {
+    return this.__user;
   },
 
-  set session(next: boolean) {
-    this.__session = next;
+  set user(
+    next:
+      | {
+          username: string;
+        }
+      | undefined,
+  ) {
+    this.__user = next;
   },
 };

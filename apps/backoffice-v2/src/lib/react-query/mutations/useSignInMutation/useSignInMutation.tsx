@@ -20,10 +20,8 @@ export const useSignInMutation = () => {
       resource: Resource.END_USER,
       action: Action.SIGN_IN,
     }),
-    onSuccess: (_data, { callbackUrl, redirect }) => {
-      queryClient.setQueryData(getSession.queryKey, {
-        session: true,
-      });
+    onSuccess: (data, { callbackUrl, redirect }) => {
+      queryClient.setQueryData(getSession.queryKey, data);
 
       if (!callbackUrl || !redirect) return;
 

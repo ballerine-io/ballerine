@@ -5,19 +5,23 @@ import { auth } from './auth.data';
 export const authController = [
   // Sign in
   rest.post(`${env.VITE_API_URL}/auth/sign-in`, (req, res, ctx) => {
-    auth.session = true;
+    auth.user = {
+      username: 'admin',
+    };
 
     return res(ctx.json({}));
   }),
   // Sign in with Google
   rest.post(`${env.VITE_API_URL}/auth/sign-in/google`, (req, res, ctx) => {
-    auth.session = true;
+    auth.user = {
+      username: 'admin',
+    };
 
     return res(ctx.json({}));
   }),
   // Sign out
   rest.post(`${env.VITE_API_URL}/auth/sign-out`, (req, res, ctx) => {
-    auth.session = false;
+    auth.user = undefined;
 
     return res(ctx.json({}));
   }),
@@ -25,7 +29,7 @@ export const authController = [
   rest.get(`${env.VITE_API_URL}/auth/session`, (req, res, ctx) => {
     return res(
       ctx.json({
-        session: auth.session,
+        user: auth.user,
       }),
     );
   }),
