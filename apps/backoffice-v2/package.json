@@ -34,8 +34,8 @@
     "yarn": ">=1.22.5"
   },
   "scripts": {
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --plugin-search-dir=. --write .",
+    "format:check": "prettier --plugin-search-dir=. --check .",
     "lint": "eslint . --fix",
     "start": "vite",
     "dev": "vite",

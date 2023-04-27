@@ -13,7 +13,9 @@ import { useSearch } from '@tanstack/react-router';
  */
 export const Navbar: FunctionComponent = () => {
   const { data: filters } = useFiltersQuery();
-  const search = useSearch();
+  const search = useSearch({
+    strict: false,
+  });
 
   return (
     <nav>
@@ -21,7 +23,6 @@ export const Navbar: FunctionComponent = () => {
         <ul className={`menu menu-compact w-full space-y-2`} key={key}>
           {children?.length > 0 ? (
             <>
-              <div className={`divider`}></div>
               <li className={`menu-title`}>
                 <span className={`gap-x-2`}>{text}</span>
               </li>
