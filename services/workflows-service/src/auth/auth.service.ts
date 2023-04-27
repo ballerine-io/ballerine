@@ -13,25 +13,25 @@ export class AuthService {
     private readonly tokenService: TokenService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<UserInfo | null> {
-    const user = await this.userService.getByUsername(username);
+  async validateUser(email: string, password: string): Promise<UserInfo | null> {
+    const user = await this.userService.getByUsername(email);
     if (user && (await this.passwordService.compare(password, user.password))) {
       const { id, roles } = user;
       const roleList = roles as string[];
-      return { id, username, roles: roleList };
+      return { id, email, roles: roleList };
     }
     return null;
   }
   async login(credentials: LoginDto): Promise<UserInfo> {
-    const { username, password } = credentials;
-    const user = await this.validateUser(credentials.username, credentials.password);
+    const { email, password } = credentials;
+    const user = await this.validateUser(credentials.email, credentials.password);
     if (!user) {
       throw new UnauthorizedException('The passed credentials are incorrect');
     }
 
     const accessToken = await this.tokenService.createToken({
       id: user.id,
-      username,
+      email,
       password,
     });
     return {

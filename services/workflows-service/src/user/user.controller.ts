@@ -40,7 +40,7 @@ export class UserController {
       data,
       select: {
         id: true,
-        username: true,
+        email: true,
         roles: true,
         updatedAt: true,
         createdAt: true,
@@ -64,7 +64,7 @@ export class UserController {
       ...args,
       select: {
         id: true,
-        username: true,
+        email: true,
         roles: true,
         updatedAt: true,
         createdAt: true,
@@ -86,7 +86,7 @@ export class UserController {
     const user = await this.service.getById(params.id, {
       select: {
         id: true,
-        username: true,
+        email: true,
         roles: true,
         createdAt: true,
         updatedAt: true,
@@ -118,7 +118,7 @@ export class UserController {
         select: {
           id: true,
           roles: true,
-          username: true,
+          email: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -145,7 +145,7 @@ export class UserController {
       return await this.service.deleteById(params.id, {
         select: {
           id: true,
-          username: true,
+          email: true,
           roles: true,
           createdAt: true,
           updatedAt: true,
