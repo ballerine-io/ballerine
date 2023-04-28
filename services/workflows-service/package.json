@@ -52,7 +52,7 @@
     "lodash": "^4.17.21",
     "nest-access-control": "2.0.3",
     "nest-morgan": "1.0.1",
-    "nestjs-prisma": "0.19.0",
+    "nestjs-prisma": "0.20.0",
     "passport": "0.6.0",
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.0",
