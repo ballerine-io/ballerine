@@ -42,6 +42,7 @@
     "dev": "vite",
     "build": "vite build",
     "test": "jest --passWithNoTests",
+    "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -81,6 +82,7 @@
     "zod": "^3.20.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.32.1",
     "@storybook/addon-a11y": "^6.5.16",
     "@storybook/addon-essentials": "^7.0.0-rc.10",
     "@storybook/addon-interactions": "^7.0.0-rc.10",
