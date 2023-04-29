@@ -1,7 +1,1 @@
-module.exports = {
-  semi: true,
-  trailingComma: 'all',
-  singleQuote: true,
-  arrowParens: 'avoid',
-  // singleAttributePerLine: true,
-};
+module.exports = require('../../packages/config/prettierrc.base.cjs');

@@ -1,21 +1,15 @@
+const config = require('../../packages/config/eslintrc.base.cjs');
+
 module.exports = {
-  parser: '@typescript-eslint/parser',
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'plugin:import/recommended',
-    'plugin:import/typescript',
-    'prettier',
-  ],
+  ...config,
+  extends: [...config.extends, 'plugin:import/recommended', 'plugin:import/typescript'],
   parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: 'module',
+    ...config.parserOptions,
     tsconfigRootDir: __dirname,
     project: './tsconfig.json',
   },
   env: {
-    es6: true,
+    ...config.env,
     node: true,
   },
   settings: {
@@ -30,7 +24,6 @@ module.exports = {
       node: true,
     },
   },
-  plugins: ['@typescript-eslint'],
   rules: {
     'import/no-cycle': 'error',
     '@typescript-eslint/no-unsafe-member-access': 'off',
