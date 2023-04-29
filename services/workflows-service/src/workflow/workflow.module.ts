@@ -8,6 +8,8 @@ import { AuthModule } from '../auth/auth.module';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
+import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
+import { EventConsumerListener } from '@/events/event-consumer';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
@@ -17,6 +19,8 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
     WorkflowRuntimeDataRepository,
     EndUserRepository,
     WorkflowService,
+    WorkflowEventEmitterService,
+    EventConsumerListener,
   ],
   exports: [WorkflowService, ACLModule, AuthModule, MorganModule],
 })
