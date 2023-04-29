@@ -9,7 +9,7 @@ import { createForm } from 'felte';
 import { getContext, setContext } from 'svelte';
 import type { z, ZodSchema } from 'zod';
 import type { FetchInitWithJson, Serializable } from './types';
-import {NO_AUTH_USER_KEY} from "./constants";
+import { NO_AUTH_USER_KEY } from './constants';
 
 export const setWorkflowContext = (service: InstanceType<typeof WorkflowBrowserSDK>) => {
   setContext('workflow', service);
@@ -42,7 +42,10 @@ export const dump = (value: Serializable) => JSON.stringify(value, null, 2);
 
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const makeWorkflow = (data: unknown): WorkflowOptionsBrowser => {
+export const makeWorkflow = (data: {
+  workflowDefinition: any;
+  workflowRuntimeData: any;
+}): WorkflowOptionsBrowser => {
   const { workflowDefinition, workflowRuntimeData } = data ?? {};
   const { definition, definitionType, ...rest } = workflowDefinition ?? {};
 
