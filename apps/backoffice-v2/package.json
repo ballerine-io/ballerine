@@ -42,7 +42,9 @@
     "dev": "vite",
     "build": "vite build",
     "test": "jest --passWithNoTests",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@ballerine/common": "^0.4.3",
@@ -79,6 +81,16 @@
     "zod": "^3.20.0"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "^6.5.16",
+    "@storybook/addon-essentials": "^7.0.0-rc.10",
+    "@storybook/addon-interactions": "^7.0.0-rc.10",
+    "@storybook/addon-links": "^7.0.0-rc.10",
+    "@storybook/blocks": "^7.0.0-rc.10",
+    "@storybook/react": "^7.0.0-rc.10",
+    "@storybook/react-vite": "^7.0.0-rc.10",
+    "@storybook/testing-library": "^0.0.14-next.1",
+    "eslint-plugin-storybook": "^0.6.6",
+    "storybook": "^7.0.0-rc.10",
     "@faker-js/faker": "^7.6.0",
     "@tanstack/react-query-devtools": "4.22.0",
     "@tanstack/react-router-devtools": "0.0.1-beta.61",
