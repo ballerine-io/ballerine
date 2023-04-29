@@ -1,6 +1,6 @@
 import react from '@vitejs/plugin-react-swc';
 import { resolve } from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig(configEnv => {
   const isDevelopment = configEnv.mode === 'development';
@@ -23,6 +23,11 @@ export default defineConfig(configEnv => {
       modules: {
         generateScopedName: isDevelopment ? '[name]__[local]__[hash:base64:5]' : '[hash:base64:5]',
       },
+    },
+    test: {
+      exclude: ['e2e', 'node_modules'],
+      environment: 'jsdom',
+      setupFiles: ['./src/tests-setup.ts'],
     },
   };
 });
