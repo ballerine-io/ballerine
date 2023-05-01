@@ -4,34 +4,30 @@ import * as swagger from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login';
-import { UserInfo } from '@/user/user-info';
 import { UserModel } from '@/user/user.model';
 import { Request } from 'express';
+import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
 
 @ApiTags('auth')
 @Controller('internal/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @common.UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(200)
   async login(
     @Req() req: Request,
     @Body() body: LoginDto,
-  ): Promise<{ user: UserInfo | undefined }> {
-    const { accessToken: _accessToken, ...user } = await this.authService.login(body);
-
-    req.session = {
-      user,
-    };
-
-    return { user: req.session?.user };
+  ): Promise<{ user: Express.User | undefined }> {
+    return { user: req.user };
   }
 
   @Post('logout')
   @HttpCode(200)
   async logout(@Req() req: Request): Promise<{ user: undefined }> {
-    req.session = null;
+    req.session.destroy(() => {});
+    req.logOut(() => {});
 
     return { user: undefined };
   }
@@ -39,10 +35,10 @@ export class AuthController {
   @common.Get('session')
   @swagger.ApiOkResponse({ type: UserModel })
   async getSession(@Req() req: Request): Promise<{
-    user: UserInfo | undefined;
+    user: Express.User | undefined;
   }> {
     return {
-      user: req.session?.user,
+      user: req?.user,
     };
   }
 }

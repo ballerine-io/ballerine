@@ -4,7 +4,7 @@ import { SessionAuthGuard } from './session-auth.guard';
 
 @Injectable()
 export class SessionAuthMiddleware implements NestMiddleware {
-  private authGuard: SessionAuthGuard = new SessionAuthGuard();
+  private sessionAuthGuard: SessionAuthGuard = new SessionAuthGuard();
 
   use(req: Request, res: Response, next: NextFunction) {
     if (req.originalUrl.startsWith('/api/internal/auth')) {
@@ -13,7 +13,7 @@ export class SessionAuthMiddleware implements NestMiddleware {
     }
 
     if (
-      !this.authGuard.canActivate(<ExecutionContext>{
+      !this.sessionAuthGuard.canActivate(<ExecutionContext>{
         switchToHttp: () => ({ getRequest: () => req }),
       })
     ) {

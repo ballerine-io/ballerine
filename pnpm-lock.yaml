@@ -1237,6 +1237,9 @@ importers:
       '@prisma/client':
         specifier: ^4.11.0
         version: 4.12.0(prisma@4.11.0)
+      '@types/passport':
+        specifier: ^1.0.12
+        version: 1.0.12
       accesscontrol:
         specifier: ^2.2.1
         version: 2.2.1
@@ -1249,9 +1252,9 @@ importers:
       class-validator:
         specifier: 0.14.0
         version: 0.14.0
-      cookie-session:
-        specifier: ^2.0.0
-        version: 2.0.0
+      express-session:
+        specifier: ^1.17.3
+        version: 1.17.3
       helmet:
         specifier: ^6.0.1
         version: 6.1.5
@@ -1301,12 +1304,12 @@ importers:
       '@types/bcrypt':
         specifier: 5.0.0
         version: 5.0.0
-      '@types/cookie-session':
-        specifier: ^2.0.44
-        version: 2.0.44
       '@types/express':
         specifier: 4.17.9
         version: 4.17.9
+      '@types/express-session':
+        specifier: ^1.17.7
+        version: 1.17.7
       '@types/jest':
         specifier: ^26.0.19
         version: 26.0.24
@@ -8402,13 +8405,6 @@ packages:
     dependencies:
       '@types/node': 18.15.11
 
-  /@types/cookie-session@2.0.44:
-    resolution: {integrity: sha512-3DheOZ41pql6raSIkqEPphJdhA2dX2bkS+s2Qacv8YMKkoCbAIEXbsDil7351ARzMqvfyDUGNeHGiRZveIzhqQ==}
-    dependencies:
-      '@types/express': 4.17.9
-      '@types/keygrip': 1.0.2
-    dev: true
-
   /@types/cookie@0.4.1:
     resolution: {integrity: sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==}
 
@@ -8460,6 +8456,12 @@ packages:
       '@types/node': 18.15.11
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
+
+  /@types/express-session@1.17.7:
+    resolution: {integrity: sha512-L25080PBYoRLu472HY/HNCxaXY8AaGgqGC8/p/8+BYMhG0RDOLQ1wpXOpAzr4Gi5TGozTKyJv5BVODM5UNyVMw==}
+    dependencies:
+      '@types/express': 4.17.9
+    dev: true
 
   /@types/express@4.17.17:
     resolution: {integrity: sha512-Q4FmmuLGBG58btUnfS1c1r/NQdlp3DMfGDGig8WhfpA2YRUtEkxAjkZb0yvplJGYdF1fsQ81iMDcH24sSCNC/Q==}
@@ -8585,10 +8587,6 @@ packages:
     dependencies:
       '@types/node': 18.15.11
 
-  /@types/keygrip@1.0.2:
-    resolution: {integrity: sha512-GJhpTepz2udxGexqos8wgaBx4I/zWIDPh/KOGEwAqtuGDkOUJu5eFvwmdBX4AmB8Odsr+9pHCQqiAqDL/yKMKw==}
-    dev: true
-
   /@types/lodash.keyby@4.6.7:
     resolution: {integrity: sha512-3qSHbbxLfXlARIKsaijZPb/5ZHDajv1vRg7OlAOuBNwN29PESS3sEOPfG1s2kzSuZnKtxtXZd1lvGj5JasN91w==}
     dependencies:
@@ -8689,7 +8687,6 @@ packages:
     resolution: {integrity: sha512-QFdJ2TiAEoXfEQSNDISJR1Tm51I78CymqcBa8imbjo6dNNu+l2huDxxbDEIoFIwOSKMkOfHEikyDuZ38WwWsmw==}
     dependencies:
       '@types/express': 4.17.9
-    dev: true
 
   /@types/prettier@2.7.2:
     resolution: {integrity: sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==}
@@ -11541,18 +11538,6 @@ packages:
     engines: {node: '>= 4'}
     dev: false
 
-  /cookie-session@2.0.0:
-    resolution: {integrity: sha512-hKvgoThbw00zQOleSlUr2qpvuNweoqBtxrmx0UFosx6AGi9lYtLoA+RbsvknrEX8Pr6MDbdWAb2j6SnMn+lPsg==}
-    engines: {node: '>= 0.10'}
-    dependencies:
-      cookies: 0.8.0
-      debug: 3.2.7
-      on-headers: 1.0.2
-      safe-buffer: 5.2.1
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
   /cookie-signature@1.0.6:
     resolution: {integrity: sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==}
 
@@ -11567,14 +11552,6 @@ packages:
   /cookiejar@2.1.4:
     resolution: {integrity: sha512-LDx6oHrK+PhzLKJU9j5S7/Y3jM/mUHvD/DeI1WQmJn652iPC5Y4TBzC9l+5OMOXlyTTA+SmVUPm0HQUwpD5Jqw==}
     dev: true
-
-  /cookies@0.8.0:
-    resolution: {integrity: sha512-8aPsApQfebXnuI+537McwYsDtjVxGm8gTIzQI3FDW6t5t/DAhERxtnbEPN/8RX+uZthoz4eCOgloXaE5cYyNow==}
-    engines: {node: '>= 0.8'}
-    dependencies:
-      depd: 2.0.0
-      keygrip: 1.1.0
-    dev: false
 
   /copy-anything@3.0.3:
     resolution: {integrity: sha512-fpW2W/BqEzqPp29QS+MwwfisHCQZtiduTe/m8idFo0xbti9fIZ2WVhAsCv4ggFVH3AgCkVdpoOCtQC6gBrdhjw==}
@@ -13815,6 +13792,22 @@ packages:
 
   /export-to-csv-fix-source-map@0.2.1:
     resolution: {integrity: sha512-02CGZG9Kduc0l9ErJ5b+99+PjeQIyoeVGz+f7/Yc04V4YKNPbdT63sQqBC5RW05va4w0MZen7pQpf92H3funYw==}
+    dev: false
+
+  /express-session@1.17.3:
+    resolution: {integrity: sha512-4+otWXlShYlG1Ma+2Jnn+xgKUZTMJ5QD3YvfilX3AcocOAbIkVylSWEklzALe/+Pu4qV6TYBj5GwOBFfdKqLBw==}
+    engines: {node: '>= 0.8.0'}
+    dependencies:
+      cookie: 0.4.2
+      cookie-signature: 1.0.6
+      debug: 2.6.9
+      depd: 2.0.0
+      on-headers: 1.0.2
+      parseurl: 1.3.3
+      safe-buffer: 5.2.1
+      uid-safe: 2.1.5
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /express@4.18.2:
@@ -17384,13 +17377,6 @@ packages:
       tiny-invariant: 1.3.1
     dev: false
 
-  /keygrip@1.1.0:
-    resolution: {integrity: sha512-iYSchDJ+liQ8iwbSI2QqsQOvqv58eJCEanyJPJi+Khyu8smkcKSFUCbPwzFcL7YVtZ6eONjqRX/38caJ7QjRAQ==}
-    engines: {node: '>= 0.6'}
-    dependencies:
-      tsscmp: 1.0.6
-    dev: false
-
   /kind-of@3.2.2:
     resolution: {integrity: sha512-NOW9QQXMoZGg/oqnVNoNTTIFEIid1627WCffUBJEdMxYApq7mNE7CpzucIPc+ZQg25Phej7IJSmX3hO+oblOtQ==}
     engines: {node: '>=0.10.0'}
@@ -20913,6 +20899,11 @@ packages:
     dependencies:
       performance-now: 2.1.0
 
+  /random-bytes@1.0.0:
+    resolution: {integrity: sha512-iv7LhNVO047HzYR3InF6pUcUsPQiHTM1Qal51DcGSuZFBil1aBBWG5eHPNek7bvILMaYJ/8RU1e8w1AMdHmLQQ==}
+    engines: {node: '>= 0.8'}
+    dev: false
+
   /randombytes@2.1.0:
     resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
     dependencies:
@@ -23910,11 +23901,6 @@ packages:
       esbuild: 0.15.18
     dev: false
 
-  /tsscmp@1.0.6:
-    resolution: {integrity: sha512-LxhtAkPDTkVCMQjt2h6eBVY28KCjikZqZfMcC15YBeNjkgUpdCfBu5HoiOTDu86v6smE8yOjyEktJ8hlbANHQA==}
-    engines: {node: '>=0.6.x'}
-    dev: false
-
   /tsutils@3.21.0(typescript@4.2.3):
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
     engines: {node: '>= 6'}
@@ -24085,6 +24071,13 @@ packages:
     hasBin: true
     requiresBuild: true
     optional: true
+
+  /uid-safe@2.1.5:
+    resolution: {integrity: sha512-KPHm4VL5dDXKz01UuEd88Df+KzynaohSL9fBh096KWAxSKZQDI2uBrVqtvRM4rwrIrRRKsdLNML/lnaaVSRioA==}
+    engines: {node: '>= 0.8'}
+    dependencies:
+      random-bytes: 1.0.0
+    dev: false
 
   /uid@2.0.2:
     resolution: {integrity: sha512-u3xV3X7uzvi5b1MncmZo3i2Aw222Zk1keqLA1YkHldREkAhAqi65wuPfe7lHx8H/Wzy+8CE7S7uS3jekIM5s8g==}

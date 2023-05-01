@@ -8,7 +8,9 @@ import { UserInfo } from '@/user/user-info';
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) implements IAuthStrategy {
   constructor(protected readonly authService: AuthService) {
-    super();
+    super({
+      usernameField: 'email',
+    });
   }
 
   async validate(email: string, password: string): Promise<UserInfo> {
