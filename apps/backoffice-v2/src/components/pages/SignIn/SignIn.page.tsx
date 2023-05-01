@@ -2,9 +2,10 @@ import { useSignInMutation } from '../../../lib/react-query/mutations/useSignInM
 import { FormEventHandler, useCallback } from 'react';
 import { useAuthContext } from '../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import { useIsAuthenticated } from '../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
+import { isErrorWithMessage } from '@ballerine/common';
 
 export const SignIn = () => {
-  const { mutate: signIn } = useSignInMutation();
+  const { mutate: signIn, error } = useSignInMutation();
   const { signInOptions } = useAuthContext();
   const onSignIn = useCallback(
     body => {
@@ -37,6 +38,9 @@ export const SignIn = () => {
         <form className={`card-body`} onSubmit={onSubmit}>
           <fieldset>
             <legend className={`card-title mb-8 block text-center text-4xl`}>Sign In</legend>
+            {isErrorWithMessage(error) && error?.message === 'Unauthorized (401)' && (
+              <div className={`alert alert-error mb-8`}>Invalid credentials</div>
+            )}
             <div className="form-control w-full">
               <label htmlFor="email" className="label">
                 <span className="label-text">Email</span>
