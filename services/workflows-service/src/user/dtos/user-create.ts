@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsArray } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 import { InputJsonValue } from '../../types';
 
 export class UserCreateDto {
@@ -9,6 +9,20 @@ export class UserCreateDto {
   })
   @IsString()
   email!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  firstName!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  lastName!: string;
 
   @ApiProperty({
     required: true,

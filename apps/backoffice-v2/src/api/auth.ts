@@ -48,7 +48,9 @@ export const auth = {
       schema: z.object({
         user: z
           .object({
-            username: z.string(),
+            email: z.string(),
+            firstName: z.string(),
+            lastName: z.string(),
           })
           .or(z.undefined()),
       }),

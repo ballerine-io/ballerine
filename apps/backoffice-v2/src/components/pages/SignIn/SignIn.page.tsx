@@ -42,9 +42,9 @@ export const SignIn = () => {
                 <span className="label-text">Email</span>
               </label>
               <input
-                name={'username'}
+                name={'email'}
                 autoComplete={`off`}
-                // type="email"
+                type="email"
                 required
                 id={'email'}
                 className={`peer input-bordered input focus:invalid:input-error`}

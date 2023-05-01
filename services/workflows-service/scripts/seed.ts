@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
-import { Salt, parseSalt } from '../src/auth/password/password.service';
+import { parseSalt, Salt } from '../src/auth/password/password.service';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import { endUserIds, generateEndUser } from './generate-end-user';
@@ -27,7 +27,9 @@ async function seed(bcryptSalt: Salt) {
 
   const client = new PrismaClient();
   const data = {
-    email: 'admin',
+    email: 'admin@admin.com',
+    firstName: 'admin',
+    lastName: 'admin',
     password: await hash('admin', bcryptSalt),
     roles: ['user'],
   };

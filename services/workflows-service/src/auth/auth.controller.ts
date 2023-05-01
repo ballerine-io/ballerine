@@ -7,14 +7,12 @@ import { LoginDto } from './dtos/login';
 import { UserInfo } from '@/user/user-info';
 import { UserModel } from '@/user/user.model';
 import { Request } from 'express';
-import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
 
 @ApiTags('auth')
 @Controller('internal/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @common.UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(200)
   async login(

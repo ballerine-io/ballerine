@@ -6,7 +6,7 @@ export const authController = [
   // Sign in
   rest.post(`${env.VITE_API_URL}/auth/sign-in`, (req, res, ctx) => {
     auth.user = {
-      username: 'admin',
+      email: 'admin@admin.com',
     };
 
     return res(ctx.json({}));
@@ -14,7 +14,7 @@ export const authController = [
   // Sign in with Google
   rest.post(`${env.VITE_API_URL}/auth/sign-in/google`, (req, res, ctx) => {
     auth.user = {
-      username: 'admin',
+      email: 'admin@admin.com',
     };
 
     return res(ctx.json({}));

@@ -8,7 +8,7 @@ export const auth = {
   set user(
     next:
       | {
-          username: string;
+          email: string;
         }
       | undefined,
   ) {

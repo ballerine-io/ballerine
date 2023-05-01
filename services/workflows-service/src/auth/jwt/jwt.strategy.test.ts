@@ -17,6 +17,8 @@ describe('Testing the jwtStrategyBase.validate()', () => {
     const result = jwtStrategy.validate({
       id: TEST_USER.id,
       email: TEST_USER.email,
+      firstName: TEST_USER.firstName,
+      lastName: TEST_USER.lastName,
       roles: TEST_USER.roles,
     });
     //ASSERT
