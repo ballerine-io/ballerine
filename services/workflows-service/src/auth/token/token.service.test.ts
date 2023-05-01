@@ -12,20 +12,20 @@ describe('Testing the TokenService', () => {
     jwtService.signAsync.mockClear();
   });
   describe('Testing the BasicTokenService.createToken()', () => {
-    it('should create valid token for valid username and password', async () => {
+    it('should create valid token for valid email and password', async () => {
       jwtService.signAsync.mockReturnValue(Promise.resolve(SIGN_TOKEN));
       expect(
         await tokenServiceBase.createToken({
           id: VALID_ID,
-          username: VALID_CREDENTIALS.username,
+          email: VALID_CREDENTIALS.email,
           password: VALID_CREDENTIALS.password,
         }),
       ).toBe(SIGN_TOKEN);
     });
-    it('should reject when username missing', () => {
+    it('should reject when email missing', () => {
       const result = tokenServiceBase.createToken({
         id: VALID_ID,
-        username: null as never,
+        email: null as never,
         password: VALID_CREDENTIALS.password,
       });
       return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
@@ -33,7 +33,7 @@ describe('Testing the TokenService', () => {
     it('should reject when password missing', () => {
       const result = tokenServiceBase.createToken({
         id: VALID_ID,
-        username: VALID_CREDENTIALS.username,
+        email: VALID_CREDENTIALS.email,
         password: null as never,
       });
       return expect(result).rejects.toBe(INVALID_PASSWORD_ERROR);

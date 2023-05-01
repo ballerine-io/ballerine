@@ -1,7 +1,7 @@
+import { SortOrder } from '@/query-filters/sort-order';
 import { ApiProperty } from '@nestjs/swagger';
-import { SortOrder } from '../../query-filters/sort-order';
 
-export class UserOrderByInput {
+export class BusinessOrderByInput {
   @ApiProperty({
     required: false,
     enum: ['asc', 'desc'],
@@ -12,29 +12,23 @@ export class UserOrderByInput {
     required: false,
     enum: ['asc', 'desc'],
   })
-  email?: SortOrder;
+  definitionType?: SortOrder;
 
   @ApiProperty({
     required: false,
     enum: ['asc', 'desc'],
   })
-  password?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: ['asc', 'desc'],
-  })
-  roles?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: ['asc', 'desc'],
-  })
-  updatedAt?: SortOrder;
+  name?: SortOrder;
 
   @ApiProperty({
     required: false,
     enum: ['asc', 'desc'],
   })
   createdAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ['asc', 'desc'],
+  })
+  updatedAt?: SortOrder;
 }

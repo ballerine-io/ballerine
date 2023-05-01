@@ -6,7 +6,7 @@ import { ApprovalState } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsEmail, IsOptional, IsPhoneNumber } from 'class-validator';
 
-export class EndUserWhereInput {
+export class BusinessWhereInput {
   @ApiProperty({
     required: true,
     type: StringFilter,
@@ -28,7 +28,7 @@ export class EndUserWhereInput {
   })
   @Type(() => StringNullableFilter)
   @IsOptional()
-  endUserType?: StringNullableFilter;
+  businessType?: StringNullableFilter;
 
   @ApiProperty({
     required: false,

@@ -8,7 +8,7 @@ export class UserCreateDto {
     type: String,
   })
   @IsString()
-  username!: string;
+  email!: string;
 
   @ApiProperty({
     required: true,

@@ -12,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ServeStaticOptionsService } from './serve-static-options.service';
 import { EndUserModule } from './end-user/end-user.module';
+import { BusinessModule } from './business/business.module';
 import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -36,6 +37,7 @@ import { ExtendSessionMiddleware } from '@/middleware/extend-session.middleware'
     WorkflowModule,
     StorageModule,
     EndUserModule,
+    BusinessModule,
     ACLModule,
     AuthModule,
     HealthModule,

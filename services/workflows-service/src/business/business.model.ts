@@ -2,10 +2,9 @@ import { StringFilter } from '@/query-filters/string-filter';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApprovalState } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { IsEmail, IsObject, IsOptional, IsPhoneNumber } from 'class-validator';
-import { JsonValue } from 'type-fest';
+import { IsOptional } from 'class-validator';
 
-export class EndUserModel {
+export class BusinessModel {
   @ApiProperty({
     required: true,
     type: StringFilter,
@@ -14,35 +13,45 @@ export class EndUserModel {
   id!: string;
 
   @ApiProperty({
-    required: false,
+    required: true,
     type: StringFilter,
   })
   @Type(() => StringFilter)
-  avatarUrl?: string | null;
+  companyName!: string | null;
+
+  @ApiProperty({
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  registrationNumber!: string;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @IsOptional()
+  @Type(() => StringFilter)
+  legalForm?: string | null;
 
   @ApiProperty({
     required: true,
     type: StringFilter,
   })
   @Type(() => StringFilter)
-  correlationId!: string;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @IsOptional()
-  @Type(() => StringFilter)
-  verificationId?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  endUserType?: string | null;
-
+  countryOfIncorporation!: string | null;
+  // dateOfIncorporation: Date | null
+  // address: string
+  // phoneNumber: string | null
+  // email: string | null
+  // website: string | null
+  // industry: string
+  // taxIdentificationNumber: string | null
+  // vatNumber: string | null
+  // shareholderStructure: Prisma.JsonValue | null
+  // numberOfEmployees: number | null
+  // businessPurpose: string | null
+  // documents: Prisma.JsonValue
+  // status: ApprovalState
   @ApiProperty({
     required: false,
     enum: ['APPROVED', 'REJECTED', 'PROCESSING', 'NEW'],
@@ -57,54 +66,6 @@ export class EndUserModel {
   @Type(() => StringFilter)
   @IsOptional()
   stateReason?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: 'object',
-  })
-  @IsObject()
-  jsonData?: JsonValue;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  firstName?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  lastName?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsEmail()
-  @IsOptional()
-  email?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsPhoneNumber()
-  @IsOptional()
-  phone?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: 'object',
-  })
-  @IsObject()
-  additionalInfo?: JsonValue;
 
   //   @ApiProperty({
   //     required: false,
