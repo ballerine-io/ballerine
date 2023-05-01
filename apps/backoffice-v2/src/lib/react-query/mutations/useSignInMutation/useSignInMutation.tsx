@@ -11,10 +11,11 @@ export const useSignInMutation = () => {
   const getSession = auth.getSession();
 
   return useMutation({
-    mutationFn: ({ callbackUrl, provider = 'default' }: ISignInProps) =>
+    mutationFn: ({ callbackUrl, provider = 'default', body }: ISignInProps) =>
       api.auth.signIn({
         callbackUrl,
         provider,
+        body,
       }),
     onMutate: () => ({
       resource: Resource.END_USER,

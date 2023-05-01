@@ -5,12 +5,13 @@ import { apiClient } from './api-client';
 import { z } from 'zod';
 
 export const auth = {
-  signIn: async ({ callbackUrl, provider }: ISignInProps) => {
+  signIn: async ({ callbackUrl, provider, body }: ISignInProps) => {
     const [data, error] = await apiClient({
       endpoint: endpoints.auth.signIn[provider].endpoint(),
       method: endpoints.auth.signIn[provider].method,
       schema: z.any(),
       body: {
+        ...body,
         callbackUrl,
       },
       options: {

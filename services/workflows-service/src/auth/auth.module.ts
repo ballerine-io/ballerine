@@ -16,6 +16,7 @@ import { INJECTION_TOKEN_JWT_SECRET_KEY } from '@/injection-tokens';
 
 // eslint-disable-next-line import/no-cycle
 import { UserModule } from '../user/user.module';
+import { LocalStrategy } from '@/auth/local/local.strategy';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { UserModule } from '../user/user.module';
   ],
   providers: [
     AuthService,
+    LocalStrategy,
     BasicStrategy,
     PasswordService,
     JwtStrategy,

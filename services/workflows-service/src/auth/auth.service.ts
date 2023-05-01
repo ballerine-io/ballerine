@@ -22,6 +22,7 @@ export class AuthService {
     }
     return null;
   }
+
   async login(credentials: LoginDto): Promise<UserInfo> {
     const { username, password } = credentials;
     const user = await this.validateUser(credentials.username, credentials.password);
@@ -34,6 +35,7 @@ export class AuthService {
       username,
       password,
     });
+
     return {
       accessToken,
       ...user,

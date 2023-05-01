@@ -6,17 +6,22 @@ import { useIsAuthenticated } from '../../../context/AuthProvider/hooks/useIsAut
 export const SignIn = () => {
   const { mutate: signIn } = useSignInMutation();
   const { signInOptions } = useAuthContext();
-  const onSignIn = useCallback(() => {
-    return signIn({
-      redirect: signInOptions?.redirect,
-      callbackUrl: signInOptions?.callbackUrl,
-    });
-  }, [signInOptions?.redirect, signInOptions?.callbackUrl, signIn]);
+  const onSignIn = useCallback(
+    body => {
+      return signIn({
+        redirect: signInOptions?.redirect,
+        callbackUrl: signInOptions?.callbackUrl,
+        body,
+      });
+    },
+    [signInOptions?.redirect, signInOptions?.callbackUrl, signIn],
+  );
   const onSubmit: FormEventHandler<HTMLFormElement> = useCallback(
     e => {
       e.preventDefault();
+      const formData = Object.fromEntries(new FormData(e.currentTarget).entries());
 
-      return onSignIn();
+      return onSignIn(formData);
     },
     [onSignIn],
   );
@@ -37,8 +42,9 @@ export const SignIn = () => {
                 <span className="label-text">Email</span>
               </label>
               <input
+                name={'username'}
                 autoComplete={`off`}
-                type="email"
+                // type="email"
                 required
                 id={'email'}
                 className={`peer input-bordered input focus:invalid:input-error`}
@@ -54,6 +60,7 @@ export const SignIn = () => {
                 <span className="label-text">Password</span>
               </label>
               <input
+                name={'password'}
                 type={'password'}
                 id={'password'}
                 autoComplete={`off`}
