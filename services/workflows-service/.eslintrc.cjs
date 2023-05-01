@@ -2,7 +2,7 @@ const config = require('../../packages/config/eslintrc.base.cjs');
 
 module.exports = {
   ...config,
-  extends: [...config.extends, 'plugin:import/recommended', 'plugin:import/typescript'],
+  extends: ['plugin:import/recommended', 'plugin:import/typescript', ...config.extends],
   parserOptions: {
     ...config.parserOptions,
     tsconfigRootDir: __dirname,

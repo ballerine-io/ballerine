@@ -2,7 +2,7 @@ const config = require('../../packages/config/eslintrc.base.cjs');
 
 module.exports = {
   ...config,
-  extends: [...config.extends, 'react-app', 'react-app/jest'],
+  extends: ['react-app', 'react-app/jest', ...config.extends],
   env: {
     ...config.env,
     node: true,
