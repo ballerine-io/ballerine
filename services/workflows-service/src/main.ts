@@ -30,12 +30,13 @@ async function main() {
       secret: process.env.JWT_SECRET_KEY!,
       saveUninitialized: false,
       resave: false,
+      rolling: true,
       cookie: {
         httpOnly: true,
         domain: process.env.NODE_ENV === 'production' ? '.example.com' : undefined,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 1000 * 60 * 60 * 1,
+        maxAge: 1000 * 60 * 60 * 1, // 1 hour(s)
       },
     }),
   );

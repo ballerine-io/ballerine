@@ -18,7 +18,6 @@ import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
-import { ExtendSessionMiddleware } from '@/middleware/extend-session.middleware';
 
 @Module({
   controllers: [],
@@ -59,6 +58,6 @@ import { ExtendSessionMiddleware } from '@/middleware/extend-session.middleware'
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ExtendSessionMiddleware, SessionAuthMiddleware).forRoutes('internal/*');
+    consumer.apply(SessionAuthMiddleware).forRoutes('internal/*');
   }
 }
