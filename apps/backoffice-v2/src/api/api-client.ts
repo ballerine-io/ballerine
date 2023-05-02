@@ -19,8 +19,6 @@ export const apiClient: IApiClient = async ({ endpoint, method, options, schema,
       method,
       options: {
         ...options,
-        // Make sure to set headers like Authorization or
-        // credentials depending on your implementation!
         credentials: 'include',
         headers: {
           Authorization: `Api-Key ${env.VITE_API_KEY}`,
