@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { isRecordNotFoundError, PRISMA_QUERY_INTERPRETATION_ERROR } from './prisma.util';
+import { isRecordNotFoundError, PRISMA_RECORD_NOT_FOUND_ERROR } from './prisma.util';
 
 describe('isRecordNotFoundError', () => {
   test('returns true for record not found error', () => {
@@ -9,7 +9,7 @@ describe('isRecordNotFoundError', () => {
           `Error occurred during query execution:
           InterpretationError("Error for binding '0': RecordNotFound("Record to update not found.")")`,
           {
-            code: PRISMA_QUERY_INTERPRETATION_ERROR,
+            code: PRISMA_RECORD_NOT_FOUND_ERROR,
             clientVersion: '0.0.0',
           },
         ),

@@ -16,27 +16,28 @@ export class AuthController {
   @common.UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(200)
-  async login(
-    @Req() req: Request,
-    @Body() body: LoginDto,
-  ): Promise<{ user: Express.User | undefined }> {
+  login(@Req() req: Request, @Body() body: LoginDto): { user: Express.User | undefined } {
     return { user: req.user };
   }
 
   @Post('logout')
   @HttpCode(200)
-  async logout(@Req() req: Request): Promise<{ user: undefined }> {
-    req.session.destroy(() => {});
-    req.logOut(() => {});
+  logout(@Req() req: Request): { user: undefined } {
+    req.session.destroy(() => {
+      return;
+    });
+    req.logOut(() => {
+      return;
+    });
 
     return { user: undefined };
   }
 
   @common.Get('session')
   @swagger.ApiOkResponse({ type: UserModel })
-  async getSession(@Req() req: Request): Promise<{
+  getSession(@Req() req: Request): {
     user: Express.User | undefined;
-  }> {
+  } {
     return {
       user: req?.user,
     };

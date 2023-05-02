@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test } from '@nestjs/testing';
-import { INestApplication, HttpStatus, ExecutionContext, CallHandler } from '@nestjs/common';
+import { CallHandler, ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { MorganModule } from 'nest-morgan';
 import { ACGuard } from 'nest-access-control';
@@ -13,6 +13,7 @@ import { AclValidateRequestInterceptor } from '../access-control/interceptors/ac
 
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import * as errors from '@/errors';
 
 const nonExistingId = 'nonExistingId';
 const existingId = 'existingId';
@@ -57,7 +58,9 @@ const service = {
       case existingId:
         return FIND_ONE_RESULT;
       case nonExistingId:
-        return null;
+        throw new errors.NotFoundException(
+          `No resource was found for {"${'id'}":"${nonExistingId}"}`,
+        );
     }
   },
 };
@@ -145,7 +148,7 @@ describe('User', () => {
 
   test('GET /users/:id non existing', async () => {
     await request(app.getHttpServer())
-      .get(`${'/users'}/${nonExistingId}`)
+      .get(`/users/${nonExistingId}`)
       .expect(HttpStatus.NOT_FOUND)
       .expect({
         statusCode: HttpStatus.NOT_FOUND,
@@ -156,7 +159,7 @@ describe('User', () => {
 
   test('GET /users/:id existing', async () => {
     await request(app.getHttpServer())
-      .get(`${'/users'}/${existingId}`)
+      .get(`/users/${existingId}`)
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,

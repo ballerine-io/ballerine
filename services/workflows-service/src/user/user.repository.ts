@@ -35,7 +35,7 @@ export class UserRepository {
     id: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
   ): Promise<User> {
-    return await this.prisma.user.findUniqueOrThrow({
+    return this.prisma.user.findUniqueOrThrow({
       where: { id },
       ...args,
     });
@@ -45,7 +45,7 @@ export class UserRepository {
     email: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueArgs, 'where'>>,
   ): Promise<User | null> {
-    return await this.prisma.user.findUnique({
+    return this.prisma.user.findUnique({
       where: { email },
       ...args,
     });
