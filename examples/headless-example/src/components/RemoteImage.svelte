@@ -1,6 +1,6 @@
 <script lang="ts">
-  import {onMount} from "svelte";
-  import {fetchBlob} from "@/utils";
+  import { onMount } from 'svelte';
+  import { fetchBlob } from '@/utils';
 
   export let id: string;
   export let alt: string;
@@ -13,19 +13,16 @@
       reader.onloadend = () => {
         resolve(reader.result);
       };
-      reader.onerror = (error) => {
+      reader.onerror = error => {
         reject(error);
       };
     });
   };
 
   onMount(async () => {
-
     if (!id) return;
 
-    const data = await fetchBlob<Blob>(
-      `http://localhost:3000/api/external/storage/${id}`,
-    );
+    const data = await fetchBlob<Blob>(`http://localhost:3000/api/external/storage/${id}`);
 
     src = await blobToBase64(data);
   });

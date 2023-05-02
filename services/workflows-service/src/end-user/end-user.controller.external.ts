@@ -11,6 +11,7 @@ import { EndUserFindManyArgs } from './dtos/end-user-find-many-args';
 import { EndUserWhereUniqueInput } from './dtos/end-user-where-unique-input';
 import { EndUserModel } from './end-user.model';
 import { EndUserService } from './end-user.service';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
 
 @swagger.ApiTags('external/end-users')
 @common.Controller('external/end-users')
@@ -59,10 +60,16 @@ export class EndUserControllerExternal {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
   async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
-    const endUser = await this.service.getById(params.id);
-    if (endUser === null) {
-      throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+    try {
+      const endUser = await this.service.getById(params.id);
+
+      return endUser;
+    } catch (err) {
+      if (isRecordNotFoundError(err)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+
+      throw err;
     }
-    return endUser;
   }
 }

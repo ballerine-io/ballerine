@@ -121,7 +121,7 @@
   }
 </script>
 
-<span class="absolute text-sm bottom-8 left-8 text-slate-500">
+<span class="absolute bottom-8 left-8 text-sm text-slate-500">
   {#if stateActionStatus === 'PENDING'}
     Loading...
   {/if}

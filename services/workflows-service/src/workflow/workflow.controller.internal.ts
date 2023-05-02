@@ -112,7 +112,7 @@ export class WorkflowControllerInternal {
       return await this.service.listActiveWorkflowsRuntimeStates();
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(`No resource was found}`);
+        throw new errors.NotFoundException(`No resource was found`);
       }
       throw error;
     }

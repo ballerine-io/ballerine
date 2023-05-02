@@ -1,6 +1,6 @@
 import { StringFilter } from '@/query-filters/string-filter';
 import { ApiProperty } from '@nestjs/swagger';
-import { EndUserState } from '@prisma/client';
+import { ApprovalState } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsEmail, IsObject, IsOptional, IsPhoneNumber } from 'class-validator';
 import { JsonValue } from 'type-fest';
@@ -48,7 +48,7 @@ export class EndUserModel {
     enum: ['APPROVED', 'REJECTED', 'PROCESSING', 'NEW'],
   })
   @IsOptional()
-  state?: EndUserState;
+  approvalState?: ApprovalState;
 
   @ApiProperty({
     required: false,

@@ -16,7 +16,7 @@ export class UserModel {
     type: String,
   })
   @IsString()
-  username!: string;
+  email!: string;
 
   @ApiProperty({
     required: true,

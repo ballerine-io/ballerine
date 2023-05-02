@@ -10,7 +10,7 @@ export const endpoints = {
   auth: {
     signIn: {
       default: {
-        endpoint: () => `auth/sign-in`,
+        endpoint: () => `auth/login`,
         method: Method.POST,
       },
       google: {
@@ -19,7 +19,7 @@ export const endpoints = {
       },
     },
     signOut: {
-      endpoint: () => `auth/sign-out`,
+      endpoint: () => `auth/logout`,
       method: Method.POST,
     },
     getSession: {

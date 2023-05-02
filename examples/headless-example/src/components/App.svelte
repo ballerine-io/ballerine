@@ -203,8 +203,8 @@
   }
 </script>
 
-<div class="h-full flex flex-row items-center justify-center">
-  <main class="h-full w-full flex flex-col items-center justify-center p-6">
+<div class="flex h-full flex-row items-center justify-center">
+  <main class="flex h-full w-full flex-col items-center justify-center p-6">
     {#if !endUserId}
       <SignUp {onSubmit} />
     {/if}

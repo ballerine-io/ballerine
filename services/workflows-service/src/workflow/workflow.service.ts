@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { EndUserState, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import { ApprovalState, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
@@ -15,7 +15,6 @@ import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 
 export const ResubmissionReason = {
@@ -153,10 +152,10 @@ export class WorkflowService {
     const endUserId = runtime.endUserId;
     await this.endUserRepository.updateById(endUserId, {
       data: {
-        state: EndUserState.PROCESSING,
+        approvalState: ApprovalState.PROCESSING,
       },
     });
-    this.logger.log(`${endUserId} is now in state ${EndUserState.PROCESSING}`);
+    this.logger.log(`${endUserId} is now in state ${ApprovalState.PROCESSING}`);
 
     // will throw exception if review machine def is missing
     await this.workflowDefinitionRepository.findById(workflow.reviewMachineId);
@@ -339,7 +338,7 @@ export class WorkflowService {
 
     await this.endUserRepository.updateById(runtimeData.endUserId, {
       data: {
-        state: EndUserState[currentState.toUpperCase() as keyof typeof EndUserState],
+        approvalState: ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState],
       },
     });
   }

@@ -40,7 +40,7 @@ export class UserController {
       data,
       select: {
         id: true,
-        username: true,
+        email: true,
         roles: true,
         updatedAt: true,
         createdAt: true,
@@ -64,7 +64,7 @@ export class UserController {
       ...args,
       select: {
         id: true,
-        username: true,
+        email: true,
         roles: true,
         updatedAt: true,
         createdAt: true,
@@ -83,19 +83,25 @@ export class UserController {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async getById(@common.Param() params: UserWhereUniqueInput): Promise<UserModel | null> {
-    const user = await this.service.getById(params.id, {
-      select: {
-        id: true,
-        username: true,
-        roles: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-    if (user === null) {
-      throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+    try {
+      const user = await this.service.getById(params.id, {
+        select: {
+          id: true,
+          email: true,
+          roles: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      return user;
+    } catch (err) {
+      if (isRecordNotFoundError(err)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+
+      throw err;
     }
-    return user;
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
@@ -118,7 +124,7 @@ export class UserController {
         select: {
           id: true,
           roles: true,
-          username: true,
+          email: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -145,7 +151,7 @@ export class UserController {
       return await this.service.deleteById(params.id, {
         select: {
           id: true,
-          username: true,
+          email: true,
           roles: true,
           createdAt: true,
           updatedAt: true,

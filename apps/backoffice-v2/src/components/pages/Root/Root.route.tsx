@@ -14,19 +14,15 @@ export const rootRoute = new RootRoute({
     if (!env.VITE_AUTH_ENABLED) return {};
 
     const getSession = auth.getSession();
-    const data = queryClient.getQueryData(getSession.queryKey);
-
-    if (data) return {};
-
-    await queryClient.prefetchQuery(getSession.queryKey, getSession.queryFn);
+    await queryClient.ensureQueryData(getSession.queryKey, getSession.queryFn);
 
     return {};
   },
   beforeLoad: ({ router }) => {
-    if (router.history.location.pathname.startsWith('/en/case-management/individuals')) return;
+    if (router.history.location.pathname.startsWith('/en')) return;
 
     router.navigate({
-      to: '/$locale/case-management/individuals',
+      to: '/$locale',
       replace: true,
       params: {
         locale: 'en',

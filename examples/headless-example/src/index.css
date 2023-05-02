@@ -5,27 +5,32 @@
 
 @layer base {
   body {
-    background-color: #FAFAFA;
+    background-color: #fafafa;
   }
 
-  html, body, #app {
+  html,
+  body,
+  #app {
     @apply h-full;
   }
 
-  input:not([type="radio"]) {
-    @apply border border-slate-200 rounded-lg px-4 py-2 w-full max-w-sm;
+  input:not([type='radio']) {
+    @apply w-full max-w-sm rounded-lg border border-slate-200 px-4 py-2;
   }
 
   label {
-    @apply block text-sm mb-1;
+    @apply mb-1 block text-sm;
   }
 
-  button, [type="button"], [type="submit"], [type="reset"] {
-    @apply w-full bg-brand p-2 rounded-lg text-white font-bold;
+  button,
+  [type='button'],
+  [type='submit'],
+  [type='reset'] {
+    @apply w-full rounded-lg bg-brand p-2 font-bold text-white;
   }
 
   legend {
-    @apply text-2xl font-bold w-full text-center my-4;
+    @apply my-4 w-full text-center text-2xl font-bold;
   }
 
   a {

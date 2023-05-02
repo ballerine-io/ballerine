@@ -6,18 +6,18 @@ import { HealthService } from './health.service';
 describe('Testing the HealthService', () => {
   //ARRANGE
   let prismaService: PrismaService;
-  let healthServiceBase: HealthService;
+  let healthService: HealthService;
 
   describe('Testing the isDbReady function in HealthService class', () => {
     beforeEach(() => {
       prismaService = mock<PrismaService>();
-      healthServiceBase = new HealthService(prismaService);
+      healthService = new HealthService(prismaService);
     });
     it('should return true if allow connection to db', async () => {
       //ARRANGE
       (prismaService.$queryRaw as jest.Mock).mockReturnValue(Promise.resolve(true));
       //ACT
-      const response = await healthServiceBase.isDbReady();
+      const response = await healthService.isDbReady();
       //ASSERT
       expect(response).toBe(true);
     });
@@ -25,7 +25,7 @@ describe('Testing the HealthService', () => {
       //ARRANGE
       (prismaService.$queryRaw as jest.Mock).mockReturnValue(Promise.reject(false));
       //ACT
-      const response = await healthServiceBase.isDbReady();
+      const response = await healthService.isDbReady();
       //ASSERT
       expect(response).toBe(false);
     });
