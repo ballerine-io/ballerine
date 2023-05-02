@@ -76,7 +76,7 @@ model Business {
   numberOfEmployees       Int? // Number of employees working for the business entity
   businessPurpose         String? // Brief description of the business entity's purpose or main activities
   documents               Json // Collection of documents required for the KYB process, e.g., registration documents, financial statements
-  approvalState                  ApprovalState @default(PROCESSING) // Current status of the KYB process for the business entity
+  approvalState           ApprovalState @default(PROCESSING) // Current status of the KYB process for the business entity
 }
 
 model WorkflowDefinition {
@@ -122,4 +122,12 @@ model File {
   fileNameOnDisk String
   createdAt      DateTime @default(now())
   createdBy      String   @default("SYSTEM")
+}
+
+model Policy {
+  id        String @id @default(cuid())
+  name      String
+  version   Int
+  tasks     Json
+  rulesSets Json
 }
