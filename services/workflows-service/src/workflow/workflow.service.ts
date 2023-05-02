@@ -37,8 +37,11 @@ export type IntentResponse = WorkflowData[];
 
 // TODO: TEMP (STUB)
 const policies = {
-  signup: (): { workflowDefinitionId: string; version: number }[] => {
-    return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9aaa', version: 1 }];
+  kycSignup: () => {
+    return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9aaa', version: 1 }] as const;
+  },
+  kybSignup: () => {
+    return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9bbb', version: 1 }] as const;
   },
 };
 
@@ -216,12 +219,10 @@ export class WorkflowService {
     intent: string,
     endUserId = 'ckkt3qnv40001qxtt7nmj9r2r', // TODO: remove default value
   ): Promise<RunnableWorkflowData[]> {
-    const workflowDefinitionResolver = policies['signup'];
+    const workflowDefinitionResolver = policies[intent as keyof typeof policies];
 
     // TODO: implement logic for multiple workflows
-    const { workflowDefinitionId } = workflowDefinitionResolver()[0] as {
-      workflowDefinitionId: string;
-    };
+    const { workflowDefinitionId } = workflowDefinitionResolver()[0];
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );

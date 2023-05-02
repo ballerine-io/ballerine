@@ -18,7 +18,7 @@ async function main() {
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
     cors: {
-      origin: process.env.CORS_ORIGIN!,
+      origin: [process.env.BACKOFFICE_CORS_ORIGIN!, process.env.HEADLESS_EXAMPLE_CORS_ORIGIN!],
       credentials: true,
     },
   });

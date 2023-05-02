@@ -25,7 +25,7 @@ export class BallerineBackOfficeService {
   fetchIntent = async () =>
     fetchJson<Array<Record<string, unknown>>>(`${this.baseUrl}/workflows/intent`, {
       method: 'POST',
-      body: { intentName: 'kyc' },
+      body: { intentName: 'kycSignup' },
     });
 
   fetchSignUp = async ({ firstName, lastName }: { firstName: string; lastName: string }) =>

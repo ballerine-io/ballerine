@@ -42,7 +42,8 @@ async function seed(bcryptSalt: Salt) {
   const manualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const manualMachineVersion = 1;
 
-  const onboardingMachineId = 'COLLECT_DOCS_b0002zpeid7bq9aaa';
+  const onboardingMachineKycId = 'COLLECT_DOCS_b0002zpeid7bq9aaa';
+  const onboardingMachineKybId = 'COLLECT_DOCS_b0002zpeid7bq9bbb';
 
   const user = await client.endUser.create({
     data: {
@@ -91,11 +92,12 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
+  // KYC
   await client.workflowDefinition.create({
     data: {
-      id: onboardingMachineId, // should be auto generated normally
+      id: onboardingMachineKycId, // should be auto generated normally
       reviewMachineId: manualMachineId,
-      name: 'onboarding_client_collect_data',
+      name: 'kyc',
       version: 1,
       definitionType: 'statechart-json',
       definition: {
@@ -134,6 +136,98 @@ async function seed(bcryptSalt: Salt) {
           selfie: {
             on: {
               USER_PREV_STEP: 'document_review',
+              USER_NEXT_STEP: 'selfie_review',
+            },
+          },
+          selfie_review: {
+            on: {
+              USER_PREV_STEP: 'selfie',
+              USER_NEXT_STEP: 'final',
+            },
+          },
+          final: {
+            type: 'final',
+          },
+        },
+      },
+      persistStates: [
+        {
+          state: 'document_review',
+          persistence: 'BACKEND',
+        },
+        {
+          state: 'document_selection',
+          persistence: 'BACKEND',
+        },
+        {
+          state: 'final',
+          persistence: 'BACKEND',
+        },
+      ],
+      submitStates: [
+        {
+          state: 'document_photo',
+        },
+      ],
+    },
+  });
+
+  // KYB
+  await client.workflowDefinition.create({
+    data: {
+      id: onboardingMachineKybId, // should be auto generated normally
+      reviewMachineId: manualMachineId,
+      name: 'kyb',
+      version: 1,
+      definitionType: 'statechart-json',
+      definition: {
+        id: 'kyb',
+        predictableActionArguments: true,
+        initial: 'welcome',
+
+        context: {
+          documents: [],
+        },
+
+        states: {
+          welcome: {
+            on: {
+              USER_NEXT_STEP: 'document_selection',
+            },
+          },
+          document_selection: {
+            on: {
+              USER_PREV_STEP: 'welcome',
+              USER_NEXT_STEP: 'document_photo',
+            },
+          },
+          document_photo: {
+            on: {
+              USER_PREV_STEP: 'document_selection',
+              USER_NEXT_STEP: 'document_review',
+            },
+          },
+          document_review: {
+            on: {
+              USER_PREV_STEP: 'document_photo',
+              USER_NEXT_STEP: 'certificate_of_incorporation',
+            },
+          },
+          certificate_of_incorporation: {
+            on: {
+              USER_PREV_STEP: 'document_review',
+              USER_NEXT_STEP: 'certificate_of_incorporation_review',
+            },
+          },
+          certificate_of_incorporation_review: {
+            on: {
+              USER_PREV_STEP: 'certificate_of_incorporation',
+              USER_NEXT_STEP: 'selfie',
+            },
+          },
+          selfie: {
+            on: {
+              USER_PREV_STEP: 'certificate_of_incorporation_review',
               USER_NEXT_STEP: 'selfie_review',
             },
           },
