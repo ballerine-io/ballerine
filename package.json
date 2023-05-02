@@ -22,6 +22,7 @@
     "kyc",
     "kyb"
   ],
+  "": {},
   "scripts": {
     "monorepo:init": "node ./scripts/init.js",
     "kyc-manual-review-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example VITE_POLLING_INTERVAL=3 nx run-many --target=dev --projects=@ballerine/headless-example,@ballerine/backoffice-v2,@ballerine/workflows-service",
