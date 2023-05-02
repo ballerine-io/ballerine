@@ -878,8 +878,8 @@ importers:
         specifier: 0.4.3
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
-        specifier: ^0.9.3
-        version: 0.9.3(svelte@3.58.0)
+        specifier: 0.8.2
+        version: 0.8.2
       compressorjs:
         specifier: ^1.1.1
         version: 1.2.1
@@ -10775,12 +10775,8 @@ packages:
       tslib: 2.5.0
     dev: true
 
-  /@zerodevx/svelte-toast@0.9.3(svelte@3.58.0):
-    resolution: {integrity: sha512-VPKWR4A9y01fyXRscu9HiTj7tV2hFrpRKZvGwMmaPXfHIXR1D9+NNsz0HXcQ7qZ0C5UaHS3n9uNtPtIcAXT7RQ==}
-    peerDependencies:
-      svelte: ^3.57.0
-    dependencies:
-      svelte: 3.58.0
+  /@zerodevx/svelte-toast@0.8.2:
+    resolution: {integrity: sha512-EDtZ/Hw37T/UWCQ5drhMss0J9vItYUSDivQ3+mET5My6No7YNiNQklj2bkE61UAzut2TjHJfOJNBZsj78ODFtw==}
     dev: false
 
   /@zkochan/js-yaml@0.0.6:
