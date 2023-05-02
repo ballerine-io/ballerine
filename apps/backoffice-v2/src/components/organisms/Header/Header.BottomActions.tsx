@@ -5,6 +5,7 @@ import { useSignOutMutation } from '../../../lib/react-query/mutations/useSignOu
 import { useAuthContext } from '../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import packageJson from '../../../../package.json';
 import { Avatar } from 'components/atoms/Avatar';
+import { useGetSessionQuery } from '../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 
 export const BottomActions = () => {
   const [theme, setTheme] = useState(() => {
@@ -32,6 +33,7 @@ export const BottomActions = () => {
       }),
     [signOutOptions?.redirect, signOutOptions?.callbackUrl, signOut],
   );
+  const { data: session } = useGetSessionQuery();
 
   return (
     <div className={`mt-auto flex flex-col space-y-2`}>
@@ -45,7 +47,7 @@ export const BottomActions = () => {
           className={`ml-4 mr-2 d-6`}
           isLoading={false}
         />
-        {'Operator'}
+        {session?.user?.email}
       </div>
       <div className="dropdown dropdown-top dropdown-hover">
         <ul

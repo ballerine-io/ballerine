@@ -7,7 +7,7 @@
 </script>
 
 <button
-  class="drop-shadow-sm bg-white text-gray-700 hover:bg-slate-100 transition-colors"
+  class="bg-white text-gray-700 drop-shadow-sm transition-colors hover:bg-slate-100"
   on:click={handleClick}
 >
   <div class="flex flex-row items-center">

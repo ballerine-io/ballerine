@@ -1,9 +1,9 @@
 <script lang="ts">
-  import {createZodForm, getWorkflowContext} from '@/utils';
-  import {z} from "zod";
-  import type {TOnPrev, TOnSubmit} from "@/types";
-  import Form from "@/components/Form.svelte";
-  import RemoteImage from "@/components/RemoteImage.svelte";
+  import { createZodForm, getWorkflowContext } from '@/utils';
+  import { z } from 'zod';
+  import type { TOnPrev, TOnSubmit } from '@/types';
+  import Form from '@/components/Form.svelte';
+  import RemoteImage from '@/components/RemoteImage.svelte';
 
   const schema = z.object({});
 
@@ -21,18 +21,20 @@
   const zodForm = createZodForm(schema, {
     initialValues,
     onSubmit(data, ctx) {
-      return onSubmit({
-        [documentName]: workflowService.getSnapshot?.()?.context?.[documentName]
-      }, ctx);
+      return onSubmit(
+        {
+          [documentName]: workflowService.getSnapshot?.()?.context?.[documentName],
+        },
+        ctx,
+      );
     },
   });
   const backText = 'Re-upload';
 
   $: {
-    title = (documentName.charAt(0).toUpperCase() + documentName.slice(1)).replace(/id/i, "ID");
+    title = (documentName.charAt(0).toUpperCase() + documentName.slice(1)).replace(/id/i, 'ID');
     id = workflowService.getSnapshot?.()?.context?.[documentName]?.id;
   }
-
 </script>
 
 <Form {zodForm} {onPrev} {submitText} {backText}>

@@ -9,6 +9,7 @@ import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { EndUserService } from './end-user.service';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
 
 @swagger.ApiTags('internal/end-users')
 @common.Controller('internal/end-users')
@@ -37,10 +38,16 @@ export class EndUserControllerInternal {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
   async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
-    const endUser = await this.service.getById(params.id);
-    if (endUser === null) {
-      throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+    try {
+      const endUser = await this.service.getById(params.id);
+
+      return endUser;
+    } catch (err) {
+      if (isRecordNotFoundError(err)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+
+      throw err;
     }
-    return endUser;
   }
 }
