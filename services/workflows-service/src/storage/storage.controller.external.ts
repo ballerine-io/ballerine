@@ -3,13 +3,11 @@ import { Post, UseInterceptors, UploadedFile, Param, Res } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { Response } from 'express';
-import { diskStorage } from 'multer';
 import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
 import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { fileFilter } from './file-filter';
-import { getFileName } from './get-file-name';
 import { manageFileByProvider } from '@/storage/get-file-storage-manager';
 
 // Temporarily identical to StorageControllerInternal

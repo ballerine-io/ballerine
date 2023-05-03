@@ -20,11 +20,8 @@ const generateAwsConfig = (): S3ClientConfig => {
 
 export const manageFileByProvider = () => {
   if (isS3BucketConfigured()) {
-    let configuration = generateAwsConfig();
-
-    console.log('TESSSSSSSST: ' + JSON.stringify(configuration));
     return multerS3({
-      s3: new S3Client(configuration),
+      s3: new S3Client(generateAwsConfig()),
       acl: 'public-read',
       bucket: z.string().parse(process.env.AWS_S3_BUCKET_NAME),
     });
