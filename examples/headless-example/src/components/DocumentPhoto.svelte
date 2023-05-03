@@ -1,7 +1,7 @@
 <script lang="ts">
   import { ValidationMessage } from '@felte/reporter-svelte';
   import { z } from 'zod';
-  import { createZodForm, getWorkflowContext } from '@/utils';
+  import { camelCaseToTitle, createZodForm, getWorkflowContext } from '@/utils';
   import Form from './Form.svelte';
   import type { TOnPrev, TOnSubmit } from '@/types';
 
@@ -19,6 +19,7 @@
         z.literal('idCard'),
         z.literal('driverLicense'),
         z.literal('selfie'),
+        z.literal('certificateOfIncorporation'),
       ]),
       file: z.custom<File>(v => v instanceof File),
     }),
@@ -53,7 +54,7 @@
   };
 
   $: {
-    title = (documentName.charAt(0).toUpperCase() + documentName.slice(1)).replace(/id/i, 'ID');
+    title = camelCaseToTitle(documentName);
   }
 </script>
 
@@ -66,12 +67,19 @@
     <legend>Upload {title}</legend>
     <p class="max-w-[50ch] p-1">
       {#if documentName === 'selfie'}
-        You can download <a download="mock-selfie.png" href="/mock-selfie.png">this selfie file</a> and
-        upload it here.
-      {:else}
+        You can download <a download="mock-selfie.png" href="/mock-selfie.png">this selfie file</a>
+        and upload it here.
+      {/if}
+      {#if documentName === 'id'}
         Pssst... instead of uploading your own ID, you can download <a
           download="mock-id.png"
           href="/mock-id.png">this file</a
+        > and upload it here.
+      {/if}
+      {#if documentName === 'certificateOfIncorporation'}
+        You can download <a
+          download="mock-certificate-of-incorporation.pdf"
+          href="/mock-certificate-of-incorporation.pdf">this certificate of incorporation file</a
         > and upload it here.
       {/if}
     </p>

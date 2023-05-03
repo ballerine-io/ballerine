@@ -3,6 +3,7 @@ import { NavItem } from './Header.NavItem';
 import { navItems } from '../../../App/nav-items';
 import { useFiltersQuery } from '../../../lib/react-query/queries/useFiltersQuery/useFiltersQuery';
 import { useSearch } from '@tanstack/react-router';
+import { ctw } from '../../../utils/ctw/ctw';
 
 /**
  * @description A nav element which wraps {@link NavItem} components of the app's routes. Supports nested routes.
@@ -35,10 +36,9 @@ export const Navbar: FunctionComponent = () => {
                         filterId: id,
                       }}
                       key={id}
-                      className={`capitalize`}
-                      activeProps={{
-                        className: kind === search?.kind ? `active` : ``,
-                      }}
+                      className={ctw(`capitalize`, {
+                        active: kind === search?.kind,
+                      })}
                     >
                       {kind}
                     </NavItem>

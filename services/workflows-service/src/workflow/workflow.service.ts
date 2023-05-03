@@ -215,10 +215,7 @@ export class WorkflowService {
     });
   }
 
-  async resolveIntent(
-    intent: string,
-    endUserId = 'ckkt3qnv40001qxtt7nmj9r2r', // TODO: remove default value
-  ): Promise<RunnableWorkflowData[]> {
+  async resolveIntent(intent: string, endUserId: string): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies[intent as keyof typeof policies];
 
     // TODO: implement logic for multiple workflows

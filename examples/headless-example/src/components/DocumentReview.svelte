@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createZodForm, getWorkflowContext } from '@/utils';
+  import { camelCaseToTitle, createZodForm, getWorkflowContext } from '@/utils';
   import { z } from 'zod';
   import type { TOnPrev, TOnSubmit } from '@/types';
   import Form from '@/components/Form.svelte';
@@ -17,6 +17,7 @@
   const submitText = 'Looks Good';
   let title;
   let id;
+  let fileType;
 
   const zodForm = createZodForm(schema, {
     initialValues,
@@ -32,8 +33,11 @@
   const backText = 'Re-upload';
 
   $: {
-    title = (documentName.charAt(0).toUpperCase() + documentName.slice(1)).replace(/id/i, 'ID');
-    id = workflowService.getSnapshot?.()?.context?.[documentName]?.id;
+    const document = workflowService.getSnapshot?.()?.context?.[documentName];
+
+    title = camelCaseToTitle(documentName);
+    id = document?.id;
+    fileType = document?.fileType;
   }
 </script>
 
@@ -41,6 +45,6 @@
   <legend>Review {title}</legend>
   <p class="max-w-[50ch] p-1">Does the document below look okay?</p>
   <div class="max-h-64 overflow-auto">
-    <RemoteImage {id} alt="document-review" />
+    <RemoteImage {fileType} {id} alt="document-review" />
   </div>
 </Form>

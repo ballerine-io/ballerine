@@ -37,7 +37,8 @@ export interface ISubjectChildren {
 export interface IDocumentsProps {
   documents: Array<{
     imageUrl: string;
-    caption: string;
+    fileType: string;
+    title: string;
   }>;
   isLoading?: boolean;
 }

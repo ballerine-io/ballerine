@@ -35,8 +35,13 @@ export const useIndividual = () => {
   const { data, isLoading } = useEndUserWithWorkflowQuery(endUserId);
   const id = data?.workflow?.workflowContext?.machineContext?.id;
   const selfie = data?.workflow?.workflowContext?.machineContext?.selfie;
-  const { data: data1 } = useStorageFileQuery(id?.id);
-  const { data: data2 } = useStorageFileQuery(selfie?.id);
+  const certificateOfIncorporation =
+    data?.workflow?.workflowContext?.machineContext?.certificateOfIncorporation;
+  const { data: idUrl } = useStorageFileQuery(id?.id);
+  const { data: selfieUrl } = useStorageFileQuery(selfie?.id);
+  const { data: certificateOfIncorporationUrl } = useStorageFileQuery(
+    certificateOfIncorporation?.id,
+  );
   const {
     firstName,
     middleName,
@@ -64,11 +69,11 @@ export const useIndividual = () => {
   };
   const documents = [
     {
-      url: data1,
+      url: idUrl,
       doctype: id?.type,
     },
     {
-      url: data2,
+      url: selfieUrl,
       doctype: selfie?.type,
     },
   ].filter(({ url }) => !!url);
@@ -90,10 +95,14 @@ export const useIndividual = () => {
     /id\scard|passport|driver\slicense/i.test(caption),
   )?.imageUrl;
   const whitelist = ['workflow', 'personalInfo', 'passportInfo', 'checkResults', 'addressInfo'];
+  const camelCaseToTitle = (str: string) =>
+    str?.replace(/([A-Z])/g, ' $1')?.replace(/^./, str => str?.toUpperCase());
+  const octetToFileType = (base64: string, fileType: string) =>
+    base64?.replace(/application\/octet-stream/gi, fileType);
   const info = {
     personalInfo,
     passportInfo,
-    checkResults: { ...checkResults, finalResult: data?.state },
+    checkResults: { ...checkResults, finalResult: data?.approvalState },
     addressInfo,
     workflow: {
       name: underscoreToSpace(data?.workflow?.name),
@@ -244,11 +253,11 @@ export const useIndividual = () => {
         data: [
           {
             title: id?.type,
-            imageUrl: data1,
+            imageUrl: idUrl,
           },
           {
             title: selfie?.type,
-            imageUrl: data2,
+            imageUrl: selfieUrl,
           },
         ],
       },
@@ -320,11 +329,21 @@ export const useIndividual = () => {
         data: [
           {
             title: id?.type,
-            imageUrl: data1,
+            fileType: id?.fileType,
+            imageUrl: idUrl,
           },
           {
             title: selfie?.type,
-            imageUrl: data2,
+            fileType: selfie?.fileType,
+            imageUrl: selfieUrl,
+          },
+          {
+            title: camelCaseToTitle(certificateOfIncorporation?.type),
+            fileType: certificateOfIncorporation?.fileType,
+            imageUrl: octetToFileType(
+              certificateOfIncorporationUrl,
+              certificateOfIncorporation?.fileType,
+            ),
           },
         ],
       },
@@ -459,11 +478,11 @@ export const useIndividual = () => {
         data: [
           {
             title: id?.type,
-            imageUrl: data1,
+            imageUrl: idUrl,
           },
           {
             title: selfie?.type,
-            imageUrl: data2,
+            imageUrl: selfieUrl,
           },
         ],
       },
@@ -497,11 +516,11 @@ export const useIndividual = () => {
         data: [
           {
             title: id?.type,
-            imageUrl: data1,
+            imageUrl: idUrl,
           },
           {
             title: selfie?.type,
-            imageUrl: data2,
+            imageUrl: selfieUrl,
           },
         ],
       },
@@ -641,12 +660,7 @@ export const useIndividual = () => {
       return <Subject.Info info={data} whitelist={whitelist} isLoading={isLoading} />;
     },
     multiDocuments: ({ value }) => {
-      const documents = value.data
-        .map(({ title, imageUrl }) => ({
-          title,
-          imageUrl,
-        }))
-        .filter(({ imageUrl }) => !!imageUrl);
+      const documents = value.data.filter(({ imageUrl }) => !!imageUrl);
 
       return <Subject.Documents documents={documents} />;
     },

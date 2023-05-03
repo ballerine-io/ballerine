@@ -40,7 +40,15 @@ export const Individuals = () => {
                   <SubjectsList.SkeletonItem key={`subjects-list-skeleton-${index}`} />
                 ))
               : subjects?.map(
-                  ({ id, firstName, lastName, createdAt, assignedTo, avatarUrl, state }) => (
+                  ({
+                    id,
+                    firstName,
+                    lastName,
+                    createdAt,
+                    assignedTo,
+                    avatarUrl,
+                    approvalState,
+                  }) => (
                     <SubjectsList.Item
                       key={id}
                       id={id}
@@ -48,7 +56,7 @@ export const Individuals = () => {
                       avatarUrl={avatarUrl}
                       createdAt={createdAt}
                       assignedTo={assignedTo}
-                      status={state}
+                      status={approvalState}
                     />
                   ),
                 )}

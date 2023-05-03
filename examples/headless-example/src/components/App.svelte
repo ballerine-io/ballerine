@@ -72,9 +72,7 @@
       select: workflows => {
         return Array.isArray(workflows)
           ? workflows?.find(
-              workflow =>
-                workflow?.workflowDefinition?.name === 'kyc' ||
-                workflow?.workflowDefinition?.name === 'kyb',
+              workflow => workflow?.workflowDefinition?.name === import.meta.env.VITE_EXAMPLE_TYPE,
             )
           : undefined;
       },
@@ -159,7 +157,7 @@
   let shouldResubmit = false;
   $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
   $: endUserId = $endUserQuery.data?.id;
-  $: endUserState = $endUserQuery.data?.state;
+  $: endUserState = $endUserQuery.data?.approvalState;
   $: isProcessing = endUserState === 'PROCESSING';
   $: isValidWorkflow = endUserId && !isCompleted;
 
