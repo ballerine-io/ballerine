@@ -29,6 +29,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { Dialog } from 'components/organisms/Dialog/Dialog';
 import React from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
+import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -122,10 +123,16 @@ export const useIndividual = () => {
         {
           type: 'callToAction',
           value: 'Options',
+          data: {
+            id: 'task1',
+          },
         },
         {
           type: 'callToAction',
           value: 'Approve',
+          data: {
+            id: 'task1',
+          },
         },
       ],
     },
@@ -271,10 +278,16 @@ export const useIndividual = () => {
         {
           type: 'callToAction',
           value: 'Approve',
+          data: {
+            id: 'task2',
+          },
         },
         {
           type: 'callToAction',
           value: 'Options',
+          data: {
+            id: 'task2',
+          },
         },
       ],
     },
@@ -357,10 +370,16 @@ export const useIndividual = () => {
         {
           type: 'callToAction',
           value: 'Approve',
+          data: {
+            id: 'task3',
+          },
         },
         {
           type: 'callToAction',
           value: 'Options',
+          data: {
+            id: 'task3',
+          },
         },
       ],
     },
@@ -496,10 +515,16 @@ export const useIndividual = () => {
         {
           type: 'callToAction',
           value: 'Options',
+          data: {
+            id: 'task4',
+          },
         },
         {
           type: 'callToAction',
           value: 'Approve',
+          data: {
+            id: 'task4',
+          },
         },
       ],
     },
@@ -527,6 +552,12 @@ export const useIndividual = () => {
     },
   ];
   const tasks = [task1, task2, task3, task4];
+  const { mutate: mutateApproveTask } = useUpdateWorkflowByIdMutation({ workflowId });
+  const onMutateApproveTask =
+    ({ id }: { id: string }) =>
+    async () => {
+      console.log({ id });
+    };
   const components = {
     heading: ({ value }) => <h2 className={`ml-4 p-2 text-2xl font-bold`}>{value}</h2>,
     alert: ({ value }) => (
@@ -548,7 +579,7 @@ export const useIndividual = () => {
         </div>
       );
     },
-    callToAction: ({ value }) =>
+    callToAction: ({ value, data }) =>
       value === 'Options' ? (
         <Dialog>
           <DropdownMenu>
@@ -640,7 +671,9 @@ export const useIndividual = () => {
             },
           )}
           // disabled={isLoading || !canApprove}
-          // onClick={onMutateApproveEndUser}
+          onClick={onMutateApproveTask({
+            id: data?.workflow?.id,
+          })}
         >
           {value}
         </button>
