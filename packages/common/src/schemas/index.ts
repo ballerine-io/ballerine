@@ -1,11 +1,11 @@
-const userRolesSchema = {
+export const userRolesSchema = {
   type: 'array',
   items: {
     type: 'string',
   },
 };
 
-const endUserAdditionalInfoSchema = {
+export const endUserAdditionalInfoSchema = {
   type: 'object',
   properties: {
     // Define your additional info properties here
@@ -13,7 +13,7 @@ const endUserAdditionalInfoSchema = {
   additionalProperties: false,
 };
 
-const businessShareholderStructureSchema = {
+export const businessShareholderStructureSchema = {
   type: 'array',
   items: {
     type: 'object',
@@ -26,7 +26,7 @@ const businessShareholderStructureSchema = {
   },
 };
 
-const businessDocumentsSchema = {
+export const businessDocumentsSchema = {
   type: 'array',
   items: {
     type: 'object',
@@ -39,7 +39,7 @@ const businessDocumentsSchema = {
   },
 };
 
-const workflowDefinitionDefinitionSchema = {
+export const workflowDefinitionDefinitionSchema = {
   type: 'object',
   properties: {
     // Define your workflow definition properties here
@@ -47,7 +47,7 @@ const workflowDefinitionDefinitionSchema = {
   additionalProperties: false,
 };
 
-const workflowDefinitionSupportedPlatformsSchema = {
+export const workflowDefinitionSupportedPlatformsSchema = {
   type: 'object',
   properties: {
     // Define your supported platforms properties here
@@ -55,7 +55,7 @@ const workflowDefinitionSupportedPlatformsSchema = {
   additionalProperties: false,
 };
 
-const workflowDefinitionExtensionsSchema = {
+export const workflowDefinitionExtensionsSchema = {
   type: 'object',
   properties: {
     // Define your extensions properties here
@@ -63,7 +63,7 @@ const workflowDefinitionExtensionsSchema = {
   additionalProperties: false,
 };
 
-const workflowDefinitionBackendSchema = {
+export const workflowDefinitionBackendSchema = {
   type: 'object',
   properties: {
     // Define your backend properties here
@@ -71,7 +71,7 @@ const workflowDefinitionBackendSchema = {
   additionalProperties: false,
 };
 
-const workflowDefinitionPersistStatesSchema = {
+export const workflowDefinitionPersistStatesSchema = {
   type: 'object',
   properties: {
     // Define your persist states properties here
@@ -79,7 +79,7 @@ const workflowDefinitionPersistStatesSchema = {
   additionalProperties: false,
 };
 
-const workflowDefinitionSubmitStatesSchema = {
+export const workflowDefinitionSubmitStatesSchema = {
   type: 'object',
   properties: {
     // Define your submit states properties here
@@ -87,7 +87,7 @@ const workflowDefinitionSubmitStatesSchema = {
   additionalProperties: false,
 };
 
-const workflowRuntimeDataContextSchema = {
+export const workflowRuntimeDataContextSchema = {
   type: 'object',
   properties: {
     // Define your workflow runtime data context properties here
@@ -95,36 +95,4 @@ const workflowRuntimeDataContextSchema = {
   additionalProperties: false,
 };
 
-const policyTasksSchema = {
-  type: 'array',
-  items: {
-    type: 'object',
-    properties: {
-      taskName: { type: 'string' },
-      // Define other task properties here
-    },
-    required: ['taskName'],
-    additionalProperties: false,
-  },
-};
-
-const policyRulesSetsSchema = {
-  type: 'array',
-  items: {
-    type: 'object',
-    properties: {
-      rules: { type: 'array' },
-      result: {
-        type: 'object',
-        properties: {
-          status: { type: 'string' },
-          fidoScore: { type: 'string' },
-        },
-        required: ['status', 'fidoScore'],
-        additionalProperties: false,
-      },
-    },
-    required: ['rules', 'result'],
-    additionalProperties: false,
-  },
-};
+export * from './policies';

@@ -1,3 +1,18 @@
+import {
+  businessDocumentsSchema,
+  businessShareholderStructureSchema,
+  endUserAdditionalInfoSchema,
+  policyRulesSetsSchema,
+  policyTasksSchema,
+  userRolesSchema,
+  workflowDefinitionBackendSchema,
+  workflowDefinitionDefinitionSchema,
+  workflowDefinitionExtensionsSchema,
+  workflowDefinitionPersistStatesSchema,
+  workflowDefinitionSubmitStatesSchema,
+  workflowDefinitionSupportedPlatformsSchema,
+  workflowRuntimeDataContextSchema,
+} from '@/schemas';
 import Ajv from 'ajv';
 const ajv = new Ajv();
 

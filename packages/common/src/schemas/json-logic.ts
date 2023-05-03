@@ -1,0 +1,66 @@
+import { JSONSchema7 } from 'json-schema';
+
+export const jsonLogicSchema: JSONSchema7 = {
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  type: 'object',
+  definitions: {
+    recursive: {
+      anyOf: [
+        { type: 'string' },
+        { type: 'number' },
+        { type: 'boolean' },
+        { $ref: '#/definitions/logic' },
+      ],
+    },
+    logic: {
+      type: 'object',
+      minProperties: 1,
+      maxProperties: 1,
+      propertyNames: {
+        enum: [
+          '==',
+          '===',
+          '!=',
+          '!==',
+          '>',
+          '>=',
+          '<',
+          '<=',
+          '!!',
+          '!',
+          '%',
+          'log',
+          'in',
+          'cat',
+          'substr',
+          '+',
+          '*',
+          '-',
+          '/',
+          'min',
+          'max',
+          'merge',
+          'var',
+          'missing',
+          'missing_some',
+          'if',
+          'and',
+          'or',
+          'filter',
+          'map',
+          'reduce',
+          'all',
+          'none',
+          'some',
+        ],
+      },
+      additionalProperties: {
+        type: 'array',
+        items: { $ref: '#/definitions/recursive' },
+      },
+    },
+  },
+  additionalProperties: {
+    $ref: '#/definitions/logic',
+  },
+};
