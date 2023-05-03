@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { parseSalt, Salt } from '../src/auth/password/password.service';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
-import { endUserIds, generateEndUser } from './generate-end-user';
+import { businessIds, endUserIds, generateBusiness, generateEndUser } from './generate-end-user';
 
 if (require.main === module) {
   dotenv.config();
@@ -276,6 +276,35 @@ async function seed(bcryptSalt: Salt) {
       }),
     ),
   );
+
+  await client.$transaction(
+    businessIds.map(id =>
+      client.business.create({
+        data: generateBusiness({
+          id,
+        }),
+      }),
+    ),
+  );
+
+  // await client.business.create({
+  //   data: {
+  //     ...generateBusiness({}),
+  //     endUsers: {
+  //       create: [
+  //         {
+  //           assignedBy: 'Bob',
+  //           assignedAt: new Date(),
+  //           endUser: {
+  //             create: {
+  //                 ...generateEndUser({}),
+  //             },
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   },
+  // });
 
   void client.$disconnect();
 

@@ -15,6 +15,64 @@ export const endUserIds = [
   'ckkt3t2bw000aqxtt0hj4pw4c',
 ];
 
+export const businessIds = [
+  'ckkt3qnv41001qxtt7nmj9r26',
+  'ckkt3r0v42002qxtt8sxk7fv9',
+  'ckkt3rhxr3003qxtt5x6h5j18',
+  'ckkt3rv4z4004qxtte4vz9e97',
+  'ckkt3s3ha5005qxttdz5yxg76',
+  'ckkt3sc16006qxtt9e9u7y65',
+  'ckkt3sjz70007qxtt3nqj80j4',
+  'ckkt3st080008qxtt5rxj0wg3',
+  'ckkt3swf90009qxttgx0p6x62',
+  'ckkt3t2b1000aqxtt0hj4pw41',
+];
+
+export const generateBusiness = ({ id }: { id?: string }): Prisma.BusinessCreateInput => {
+  const companyName = faker.company.companyName();
+  const registrationNumber = faker.datatype.uuid();
+  const legalForm = faker.company.companySuffix();
+  const countryOfIncorporation = faker.address.country();
+  const dateOfIncorporation = faker.date.past(10);
+  const address = faker.address.streetAddress();
+  const phoneNumber = faker.phone.phoneNumber('+##########');
+  const email = faker.internet.email();
+  const website = faker.internet.url();
+  const industry = faker.company.bs();
+  const taxIdentificationNumber = faker.finance.account(10);
+  const vatNumber = `VAT${faker.finance.account(8)}`;
+  const numberOfEmployees = faker.datatype.number({ min: 1, max: 1000 });
+  const businessPurpose = faker.company.catchPhrase();
+  const documents = JSON.stringify({
+    registrationDocument: faker.system.filePath(),
+    financialStatement: faker.system.filePath(),
+  });
+  const shareholderStructure = JSON.stringify([
+    { name: faker.name.findName(), ownershipPercentage: faker.finance.amount(0, 100, 2) },
+  ]);
+
+  return {
+    id,
+    companyName,
+    registrationNumber,
+    legalForm,
+    countryOfIncorporation,
+    dateOfIncorporation,
+    address,
+    phoneNumber,
+    email,
+    website,
+    industry,
+    taxIdentificationNumber,
+    vatNumber,
+    numberOfEmployees,
+    businessPurpose,
+    documents,
+    shareholderStructure,
+    approvalState: 'PROCESSING',
+  };
+};
+
 export const generateEndUser = ({
   id,
   workflowDefinitionId,
@@ -29,8 +87,7 @@ export const generateEndUser = ({
   const correlationId = faker.datatype.uuid();
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();
-
-  return {
+  let res: Prisma.EndUserCreateInput = {
     id,
     correlationId,
     firstName,
@@ -40,12 +97,18 @@ export const generateEndUser = ({
     phone: faker.phone.number('+##########'),
     dateOfBirth: faker.date.past(60),
     avatarUrl: faker.image.avatar(),
-    workflowRuntimeData: {
-      create: {
-        workflowDefinitionVersion,
-        context,
-        workflowDefinitionId,
-      },
-    },
   };
+  if (workflowDefinitionId) {
+    res = {
+      ...res,
+      workflowRuntimeData: {
+        create: {
+          workflowDefinitionVersion,
+          context,
+          workflowDefinitionId,
+        },
+      },
+    };
+  }
+  return res;
 };

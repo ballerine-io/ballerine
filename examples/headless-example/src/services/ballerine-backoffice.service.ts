@@ -7,6 +7,7 @@ export class BallerineBackOfficeService {
   constructor(private readonly baseUrl: string = 'http://localhost:3000/api/external') {}
 
   fetchEndUser = async (id: string) => fetchJson(`${this.baseUrl}/end-users/${id}`);
+  fetchBusiness = async (id: string) => fetchJson(`${this.baseUrl}/business/${id}`);
 
   fetchWorkflow = async (id: string) => fetchJson(`${this.baseUrl}/workflows/${id}`);
   fetchWorkflows = async () =>
