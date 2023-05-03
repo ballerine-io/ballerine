@@ -29,12 +29,33 @@ export class BallerineBackOfficeService {
       body: { intentName: import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'kycSignup' : 'kybSignup' },
     });
 
-  fetchSignUp = async ({ firstName, lastName }: { firstName: string; lastName: string }) =>
-    fetchJson(`${this.baseUrl}/end-users`, {
-      method: 'POST',
-      body: {
-        firstName,
-        lastName,
+  fetchBusinessSignUp = async ({
+    companyName,
+    regestrationNubmer,
+  }: {
+    companyName: string;
+    regestrationNubmer: string;
+  }) =>
+    fetchJson(
+      `${this.baseUrl}/${import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'end-users' : 'businesses'}`,
+      {
+        method: 'POST',
+        body: {
+          companyName,
+          regestrationNubmer,
+        },
       },
-    });
+    );
+
+  fetchEnduserSignUp = async ({ firstName, lastName }: { firstName: string; lastName: string }) =>
+    fetchJson(
+      `${this.baseUrl}/${import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'end-users' : 'businesses'}`,
+      {
+        method: 'POST',
+        body: {
+          firstName,
+          lastName,
+        },
+      },
+    );
 }
