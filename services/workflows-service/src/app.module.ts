@@ -19,6 +19,7 @@ import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
+import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
   controllers: [],
@@ -30,6 +31,7 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
       },
     }),
     EventEmitterModule.forRoot(),
+    WebhooksModule,
     DevtoolsModule.register({
       http: process.env.NODE_ENV !== 'production',
     }),
