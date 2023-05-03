@@ -25,19 +25,21 @@ const TWO_STATES_MACHINE_DEFINITION = {
 };
 
 function EventCollectingWorkflow(args) {
-  var wf = new WorkflowRunner(args);
+  const wf = new WorkflowRunner(args);
   wf.events = [];
   wf.subscribe(event => wf.events.push(event));
   return wf;
 }
 
 function promisedSetTimeout() {
+  let callback, ms;
+
   if (arguments.length == 2) {
-    var callback = arguments[0];
-    var ms = arguments[1];
+    callback = arguments[0];
+    ms = arguments[1];
   } else {
-    var callback = Function();
-    var ms = arguments[0];
+    callback = Function();
+    ms = arguments[0];
   }
 
   return new Promise(resolve => {
@@ -50,7 +52,7 @@ function promisedSetTimeout() {
 
 describe('workflow-runner', () => {
   it('does not invoke subscribe callback for an unsubscribed event', () => {
-    var wf = EventCollectingWorkflow({
+    const wf = EventCollectingWorkflow({
       definition: SINGLE_STATE_MACHINE_DEFINITION,
     });
 
@@ -60,7 +62,7 @@ describe('workflow-runner', () => {
   });
 
   it('it does not invoke subscribe callback when staying at the same state', () => {
-    var wf = EventCollectingWorkflow({
+    const wf = EventCollectingWorkflow({
       definition: SINGLE_STATE_MACHINE_DEFINITION,
     });
 
@@ -70,7 +72,7 @@ describe('workflow-runner', () => {
   });
 
   it('invokes subscribe callback when changing state', () => {
-    var wf = EventCollectingWorkflow({
+    const wf = EventCollectingWorkflow({
       definition: TWO_STATES_MACHINE_DEFINITION,
     });
 
@@ -80,7 +82,7 @@ describe('workflow-runner', () => {
   });
 
   it('allows to send an event without a payload', () => {
-    var wf = EventCollectingWorkflow({
+    const wf = EventCollectingWorkflow({
       definition: TWO_STATES_MACHINE_DEFINITION,
     });
 
@@ -90,7 +92,7 @@ describe('workflow-runner', () => {
   });
 
   it('does not fail on state changes without a subscribe callback', () => {
-    var wf = new WorkflowRunner({
+    const wf = new WorkflowRunner({
       definition: TWO_STATES_MACHINE_DEFINITION,
     });
 
@@ -98,7 +100,7 @@ describe('workflow-runner', () => {
   });
 
   it('ignores definition.initial state when workflowContext.state is defined', () => {
-    var wf = EventCollectingWorkflow({
+    const wf = EventCollectingWorkflow({
       definition: {
         initial: 'initial',
         states: {
@@ -127,11 +129,11 @@ describe('workflow-runner', () => {
   });
 
   it('uses the last subscribed callback', () => {
-    var wf = new WorkflowRunner({
+    const wf = new WorkflowRunner({
       definition: TWO_STATES_MACHINE_DEFINITION,
     });
 
-    var events = [];
+    const events = [];
     wf.subscribe(event => events.push(event));
     wf.subscribe(event => {});
     wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
@@ -142,7 +144,7 @@ describe('workflow-runner', () => {
   describe('transition plugins', () => {
     describe('non blocking', () => {
       it('allows to keep track of plugins running status using the callback', async () => {
-        var wf = EventCollectingWorkflow({
+        const wf = EventCollectingWorkflow({
           definition: {
             initial: 'initial',
             states: {
@@ -228,7 +230,7 @@ describe('workflow-runner', () => {
       });
 
       it('runs plugins in an async manner', async () => {
-        var wf = EventCollectingWorkflow({
+        const wf = EventCollectingWorkflow({
           definition: TWO_STATES_MACHINE_DEFINITION,
           extensions: {
             statePlugins: [
@@ -331,7 +333,7 @@ describe('workflow-runner', () => {
         'raises an exception if any of stateNames is not defined',
         async when => {
           expect(() => {
-            var wf = new WorkflowRunner({
+            const wf = new WorkflowRunner({
               definition: TWO_STATES_MACHINE_DEFINITION,
               extensions: {
                 statePlugins: [
@@ -350,7 +352,7 @@ describe('workflow-runner', () => {
 
     describe('blocking', () => {
       it('does not allow to keep track of plugins running status using the callback', async () => {
-        var wf = EventCollectingWorkflow({
+        const wf = EventCollectingWorkflow({
           definition: {
             initial: 'initial',
             states: {
@@ -397,7 +399,7 @@ describe('workflow-runner', () => {
       });
 
       it('runs plugins in a sync manner', async () => {
-        var wf = EventCollectingWorkflow({
+        const wf = EventCollectingWorkflow({
           definition: TWO_STATES_MACHINE_DEFINITION,
           extensions: {
             statePlugins: [
@@ -474,8 +476,8 @@ describe('workflow-runner', () => {
   });
 
   it('allows to pass state actions', () => {
-    var done = false;
-    var wf = new WorkflowRunner({
+    let done = false;
+    const wf = new WorkflowRunner({
       definition: {
         initial: 'initial',
         states: {
