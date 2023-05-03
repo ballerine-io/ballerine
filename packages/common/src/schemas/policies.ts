@@ -1,107 +1,74 @@
-const fileTypeSchema = {
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { jsonLogicSchema } from './json-logic';
+import { rootSchema } from './root';
+import { JSONSchema7 } from 'json-schema';
+
+const decisionSchema: JSONSchema7 = {
   type: 'object',
   properties: {
-    fileType: { type: 'string' },
+    dataDepenency: { type: 'array', items: { type: 'string' } },
+    childPolicy: { type: 'object', properties: { id: { type: 'string' } } },
+    value: { type: 'string' },
+    metadata: { type: 'object' },
   },
-  required: ['fileType'],
 };
 
-const kycRulesSchema = {
+const decisionsSchema: JSONSchema7 = {
   type: 'object',
-  properties: {
-    faceMatch: { type: 'object', properties: { $eq: { type: 'boolean' } } },
-    idDocApproved: { type: 'object', properties: { $eq: { type: 'boolean' } } },
-    'user.age': { type: 'object', properties: { $gte: { type: 'integer' } } },
+  propertyNames: {
+    type: 'string',
   },
-  required: ['faceMatch', 'idDocApproved', 'user.age'],
+  additionalProperties: decisionSchema,
 };
 
-const kycTaskSchema = {
+const ruleSetsFiltersSchema: JSONSchema7 = {
+  type: 'object',
+  propertyNames: {
+    type: 'string',
+  },
+  additionalProperties: jsonLogicSchema,
+};
+
+const ruleSetsRulesSchema: JSONSchema7 = {
+  type: 'object',
+  propertyNames: {
+    type: 'string',
+  },
+  additionalProperties: jsonLogicSchema,
+};
+
+export const policySchema: JSONSchema7 = {
   type: 'object',
   properties: {
-    kyc: {
+    name: { type: 'string' },
+    version: { type: 'number' }, // version of the policy
+    data: {
       type: 'object',
       properties: {
-        files: { type: 'array', items: fileTypeSchema },
-        fields: { type: 'array', items: { type: 'string' } },
-        decisions: {
-          type: 'object',
-          properties: {
-            faceMatch: { type: 'boolean' },
-            idDocApproved: { type: 'boolean' },
-          },
-          required: ['faceMatch', 'idDocApproved'],
-        },
-        rules: { type: 'array', items: kycRulesSchema },
+        endUser: rootSchema.definitions!.EndUser!,
+        business: rootSchema.definitions!.Business!,
       },
-      required: ['files', 'fields', 'decisions', 'rules'],
     },
-  },
-};
-
-const coiTaskSchema = {
-  type: 'object',
-  properties: {
-    certificateOfIncorporation: {
-      type: 'object',
-      properties: {
-        files: { type: 'array', items: fileTypeSchema },
-        decisions: {
-          type: 'object',
-          properties: {
-            coiApproved: { type: 'boolean' },
-          },
-          required: ['coiApproved'],
-        },
-        rules: { type: 'array' }, // Add schema for rules if needed
-      },
-      required: ['files', 'decisions', 'rules'],
-    },
-  },
-};
-
-const rulesSetSchema = {
-  type: 'object',
-  properties: {
-    rules: {
+    decisions: decisionsSchema,
+    rulesSets: {
       type: 'array',
       items: {
         type: 'object',
         properties: {
-          idDocApproved: { type: 'object', properties: { $eq: { type: 'boolean' } } },
-          coiApproved: { type: 'object', properties: { $eq: { type: 'boolean' } } },
-          faceMatch: { type: 'object', properties: { $eq: { type: 'boolean' } } },
-          'user.age': { type: 'object', properties: { $gte: { type: 'integer' } } },
+          filter: {
+            type: 'array',
+            items: ruleSetsFiltersSchema,
+          },
+          rules: {
+            type: 'array',
+            items: ruleSetsRulesSchema,
+          },
+          result: {
+            type: ['number', 'string', 'boolean', 'object', 'array', 'null'],
+          },
         },
+        required: ['filter', 'rules', 'result'],
       },
-    },
-    result: {
-      type: 'object',
-      properties: {
-        status: { type: 'string' },
-        fidoScore: { type: 'string' },
-      },
-      required: ['status', 'fidoScore'],
-    },
-  },
-  required: ['rules', 'result'],
-};
-
-const kybPolicySchema = {
-  $schema: 'http://json-schema.org/draft-07/schema#',
-  type: 'object',
-  properties: {
-    name: { type: 'string' },
-    version: { type: 'integer' },
-    tasks: {
-      type: 'array',
-      items: {
-        anyOf: [kycTaskSchema, coiTaskSchema],
-      },
-    },
-    rulesSets: {
-      type: 'array',
-      items: rulesSetSchema,
     },
   },
 };

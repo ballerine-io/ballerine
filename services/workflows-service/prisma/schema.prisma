@@ -7,6 +7,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator jsonSchema {
+  provider = "prisma-json-schema-generator"
+}
+
 model User {
   id        String  @id @default(cuid())
   firstName String
