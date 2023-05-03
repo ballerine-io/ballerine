@@ -8,11 +8,13 @@ export class StorageService {
   constructor(protected readonly fileRepository: FileRepository) {}
 
   async createFileLink({
+    uri,
     fileNameOnDisk,
     userId,
-  }: Pick<Prisma.FileCreateInput, 'fileNameOnDisk' | 'userId'>) {
+  }: Pick<Prisma.FileCreateInput, 'uri' | 'fileNameOnDisk' | 'userId'>) {
     const file = await this.fileRepository.create({
       data: {
+        uri,
         fileNameOnDisk,
         userId,
       },

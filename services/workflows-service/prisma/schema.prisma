@@ -91,6 +91,7 @@ model File {
   id             String   @id @default(cuid())
   userId         String
   fileNameOnDisk String
+  uri            String
   createdAt      DateTime @default(now())
   createdBy      String   @default("SYSTEM")
 }

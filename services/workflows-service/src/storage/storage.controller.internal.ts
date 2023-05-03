@@ -10,6 +10,7 @@ import * as errors from '../errors';
 import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { fileFilter } from './file-filter';
 import { getFileName } from './get-file-name';
+import { manageFileByProvider } from '@/storage/get-file-storage-manager';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -25,10 +26,7 @@ export class StorageControllerInternal {
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './upload',
-        filename: getFileName,
-      }),
+      storage: manageFileByProvider(),
       fileFilter,
     }),
   )
@@ -44,9 +42,10 @@ export class StorageControllerInternal {
       },
     },
   })
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(@UploadedFile() file: Partial<Express.MulterS3.File>) {
     const id = await this.service.createFileLink({
-      fileNameOnDisk: file.filename,
+      uri: file.location || String(file.path),
+      fileNameOnDisk: String(file.path),
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
     });
