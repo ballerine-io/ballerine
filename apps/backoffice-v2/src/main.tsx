@@ -3,12 +3,13 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import { App } from './App/App';
 import './i18';
+import { env } from './env/env';
 
 const rootElement = document.getElementById('root');
 
 // Avoid race conditions when using the mock server.
 const prepare = async () => {
-  if (import.meta.env.VITE_MOCK_SERVER === 'true') {
+  if (env.VITE_MOCK_SERVER) {
     const { worker } = await import('./lib/mock-service-worker/browser');
 
     return worker.start();

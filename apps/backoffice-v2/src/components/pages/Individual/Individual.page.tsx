@@ -17,7 +17,7 @@ export const Individual = () => {
       <Subject.Content>
         {tasks?.map((task, index) => (
           <div
-            className={ctw('grid gap-2 rounded border border-slate-300 bg-slate-200 shadow', {
+            className={ctw('grid gap-2 rounded border border-slate-300 bg-slate-200 p-1 shadow', {
               'grid-cols-2': task?.some(field => field?.type === 'multiDocuments'),
             })}
             key={index}

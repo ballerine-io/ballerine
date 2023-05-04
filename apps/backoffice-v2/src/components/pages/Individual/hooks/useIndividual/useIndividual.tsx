@@ -583,7 +583,7 @@ export const useIndividual = () => {
       });
     };
   const components = {
-    heading: ({ value }) => <h2 className={`ml-4 p-2 text-2xl font-bold`}>{value}</h2>,
+    heading: ({ value }) => <h2 className={`ml-2 p-2 text-2xl font-bold`}>{value}</h2>,
     alert: ({ value }) => (
       <WarningAlert isOpen className={`w-6/12 text-base-content theme-dark:text-base-100`}>
         {value}
@@ -593,12 +593,18 @@ export const useIndividual = () => {
       return (
         <div
           className={ctw({
-            'm-2 flex justify-end space-x-2 p-2 text-slate-50': id === 'actions',
+            'm-2 flex justify-end space-x-2 rounded border border-slate-300 p-2 text-slate-50':
+              id === 'actions',
+            'rounded border border-slate-300': id === 'alerts',
             'col-span-full':
               (id === 'actions' && value?.every(v => v?.type !== 'heading')) || id === 'alerts',
             'm-2 flex flex-col space-y-2 p-2': id === 'alerts',
           })}
         >
+          {id === 'alerts' && <h4 className={`mb-2 text-lg font-bold`}>Issues</h4>}
+          {id === 'actions' && (
+            <h4 className={`mb-2 mr-auto text-lg font-bold text-base-content`}>Actions</h4>
+          )}
           {value?.map(cell => components[cell.type]?.(cell))}
         </div>
       );
@@ -709,7 +715,10 @@ export const useIndividual = () => {
       );
     },
     faceComparison: ({ value }) => (
-      <Subject.FaceMatch faceAUrl={value.faceAUrl} faceBUrl={value.faceBUrl} />
+      <div className={`m-2 rounded border border-slate-300 p-1`}>
+        <h4 className={`mb-2 text-lg font-bold`}>Face Comparison</h4>
+        <Subject.FaceMatch faceAUrl={value.faceAUrl} faceBUrl={value.faceBUrl} />
+      </div>
     ),
     details: ({ value }) => {
       const data = {
@@ -720,12 +729,21 @@ export const useIndividual = () => {
         }, {}),
       };
 
-      return <Subject.Info info={data} whitelist={whitelist} isLoading={isLoading} />;
+      return (
+        <div className={`m-2 rounded border border-slate-300 p-1`}>
+          <Subject.Info info={data} whitelist={whitelist} isLoading={isLoading} />
+        </div>
+      );
     },
     multiDocuments: ({ value }) => {
       const documents = value.data.filter(({ imageUrl }) => !!imageUrl);
 
-      return <Subject.Documents documents={documents} />;
+      return (
+        <div className={`m-2 rounded border border-slate-300 p-1`}>
+          <h4 className={`mb-2 text-lg font-bold`}>Documents</h4>
+          <Subject.Documents documents={documents} />
+        </div>
+      );
     },
   };
 
