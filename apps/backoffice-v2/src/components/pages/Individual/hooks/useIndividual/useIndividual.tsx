@@ -29,14 +29,20 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { Dialog } from 'components/organisms/Dialog/Dialog';
 import React from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
+import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
-  const { data, isLoading } = useEndUserWithWorkflowQuery(endUserId);
-  const id = data?.workflow?.workflowContext?.machineContext?.id;
-  const selfie = data?.workflow?.workflowContext?.machineContext?.selfie;
-  const { data: data1 } = useStorageFileQuery(id?.id);
-  const { data: data2 } = useStorageFileQuery(selfie?.id);
+  const { data: endUser, isLoading } = useEndUserWithWorkflowQuery(endUserId);
+  const id = endUser?.workflow?.workflowContext?.machineContext?.id;
+  const selfie = endUser?.workflow?.workflowContext?.machineContext?.selfie;
+  const certificateOfIncorporation =
+    endUser?.workflow?.workflowContext?.machineContext?.certificateOfIncorporation;
+  const { data: idUrl } = useStorageFileQuery(id?.id);
+  const { data: selfieUrl } = useStorageFileQuery(selfie?.id);
+  const { data: certificateOfIncorporationUrl } = useStorageFileQuery(
+    certificateOfIncorporation?.id,
+  );
   const {
     firstName,
     middleName,
@@ -51,7 +57,7 @@ export const useIndividual = () => {
     passport: passportInfo,
     address: addressInfo,
     checkResults,
-  } = data ?? {};
+  } = endUser ?? {};
   const personalInfo = {
     firstName,
     middleName,
@@ -64,11 +70,11 @@ export const useIndividual = () => {
   };
   const documents = [
     {
-      url: data1,
+      url: idUrl,
       doctype: id?.type,
     },
     {
-      url: data2,
+      url: selfieUrl,
       doctype: selfie?.type,
     },
   ].filter(({ url }) => !!url);
@@ -90,14 +96,18 @@ export const useIndividual = () => {
     /id\scard|passport|driver\slicense/i.test(caption),
   )?.imageUrl;
   const whitelist = ['workflow', 'personalInfo', 'passportInfo', 'checkResults', 'addressInfo'];
+  const camelCaseToTitle = (str: string) =>
+    str?.replace(/([A-Z])/g, ' $1')?.replace(/^./, str => str?.toUpperCase());
+  const octetToFileType = (base64: string, fileType: string) =>
+    base64?.replace(/application\/octet-stream/gi, fileType);
   const info = {
     personalInfo,
     passportInfo,
-    checkResults: { ...checkResults, finalResult: data?.state },
+    checkResults: { ...checkResults, finalResult: endUser?.approvalState },
     addressInfo,
     workflow: {
-      name: underscoreToSpace(data?.workflow?.name),
-      state: underscoreToSpace(data?.workflow?.workflowContext?.state),
+      name: underscoreToSpace(endUser?.workflow?.name),
+      state: underscoreToSpace(endUser?.workflow?.workflowContext?.state),
     },
   };
 
@@ -113,10 +123,16 @@ export const useIndividual = () => {
         {
           type: 'callToAction',
           value: 'Options',
+          data: {
+            id: 'task1',
+          },
         },
         {
           type: 'callToAction',
           value: 'Approve',
+          data: {
+            id: 'task1',
+          },
         },
       ],
     },
@@ -244,11 +260,11 @@ export const useIndividual = () => {
         data: [
           {
             title: id?.type,
-            imageUrl: data1,
+            imageUrl: idUrl,
           },
           {
             title: selfie?.type,
-            imageUrl: data2,
+            imageUrl: selfieUrl,
           },
         ],
       },
@@ -262,10 +278,16 @@ export const useIndividual = () => {
         {
           type: 'callToAction',
           value: 'Approve',
+          data: {
+            id: 'task2',
+          },
         },
         {
           type: 'callToAction',
           value: 'Options',
+          data: {
+            id: 'task2',
+          },
         },
       ],
     },
@@ -320,11 +342,21 @@ export const useIndividual = () => {
         data: [
           {
             title: id?.type,
-            imageUrl: data1,
+            fileType: id?.fileType,
+            imageUrl: idUrl,
           },
           {
             title: selfie?.type,
-            imageUrl: data2,
+            fileType: selfie?.fileType,
+            imageUrl: selfieUrl,
+          },
+          {
+            title: camelCaseToTitle(certificateOfIncorporation?.type),
+            fileType: certificateOfIncorporation?.fileType,
+            imageUrl: octetToFileType(
+              certificateOfIncorporationUrl,
+              certificateOfIncorporation?.fileType,
+            ),
           },
         ],
       },
@@ -338,10 +370,16 @@ export const useIndividual = () => {
         {
           type: 'callToAction',
           value: 'Approve',
+          data: {
+            id: 'task3',
+          },
         },
         {
           type: 'callToAction',
           value: 'Options',
+          data: {
+            id: 'task3',
+          },
         },
       ],
     },
@@ -459,11 +497,11 @@ export const useIndividual = () => {
         data: [
           {
             title: id?.type,
-            imageUrl: data1,
+            imageUrl: idUrl,
           },
           {
             title: selfie?.type,
-            imageUrl: data2,
+            imageUrl: selfieUrl,
           },
         ],
       },
@@ -477,10 +515,16 @@ export const useIndividual = () => {
         {
           type: 'callToAction',
           value: 'Options',
+          data: {
+            id: 'task4',
+          },
         },
         {
           type: 'callToAction',
           value: 'Approve',
+          data: {
+            id: 'task4',
+          },
         },
       ],
     },
@@ -497,19 +541,49 @@ export const useIndividual = () => {
         data: [
           {
             title: id?.type,
-            imageUrl: data1,
+            imageUrl: idUrl,
           },
           {
             title: selfie?.type,
-            imageUrl: data2,
+            imageUrl: selfieUrl,
           },
         ],
       },
     },
   ];
   const tasks = [task1, task2, task3, task4];
+  const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
+    useUpdateWorkflowByIdMutation({
+      workflowId: endUser?.workflow?.runtimeDataId,
+    });
+  const onMutateUpdateWorkflowById =
+    ({ id }: { id: string }) =>
+    () => {
+      const decisions = [...(endUser?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
+      const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
+
+      if (indexOfTask < 0) {
+        decisions.push({
+          taskId: id,
+          faceMatch: true,
+          idVerification: true,
+        });
+      } else {
+        decisions[indexOfTask] = {
+          taskId: id,
+          faceMatch: true,
+          idVerification: true,
+        };
+      }
+
+      return mutateUpdateWorkflowById({
+        context: {
+          decisions,
+        },
+      });
+    };
   const components = {
-    heading: ({ value }) => <h2 className={`ml-4 p-2 text-2xl font-bold`}>{value}</h2>,
+    heading: ({ value }) => <h2 className={`ml-2 p-2 text-2xl font-bold`}>{value}</h2>,
     alert: ({ value }) => (
       <WarningAlert isOpen className={`w-6/12 text-base-content theme-dark:text-base-100`}>
         {value}
@@ -519,18 +593,29 @@ export const useIndividual = () => {
       return (
         <div
           className={ctw({
-            'm-2 flex justify-end space-x-2 p-2 text-slate-50': id === 'actions',
+            'm-2 flex justify-end space-x-2 rounded border border-slate-300 p-2 text-slate-50':
+              id === 'actions',
+            'rounded border border-slate-300': id === 'alerts',
             'col-span-full':
               (id === 'actions' && value?.every(v => v?.type !== 'heading')) || id === 'alerts',
             'm-2 flex flex-col space-y-2 p-2': id === 'alerts',
           })}
         >
+          {id === 'alerts' && <h4 className={`mb-2 text-lg font-bold`}>Issues</h4>}
+          {id === 'actions' && (
+            <h4 className={`mb-2 mr-auto text-lg font-bold text-base-content`}>Actions</h4>
+          )}
           {value?.map(cell => components[cell.type]?.(cell))}
         </div>
       );
     },
-    callToAction: ({ value }) =>
-      value === 'Options' ? (
+    callToAction: ({ value, data }) => {
+      const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.decisions?.some(
+        ({ taskId, faceMatch, idVerification }) =>
+          taskId === data?.id && faceMatch && idVerification,
+      );
+
+      return value === 'Options' ? (
         <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -617,17 +702,23 @@ export const useIndividual = () => {
           className={ctw(
             `btn-success btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
             {
-              // loading: debouncedIsLoadingApproveEndUser,
+              loading: isLoadingUpdateWorkflowById,
             },
           )}
-          // disabled={isLoading || !canApprove}
-          // onClick={onMutateApproveEndUser}
+          disabled={isLoadingUpdateWorkflowById || isApprovedTask}
+          onClick={onMutateUpdateWorkflowById({
+            id: data?.id,
+          })}
         >
           {value}
         </button>
-      ),
+      );
+    },
     faceComparison: ({ value }) => (
-      <Subject.FaceMatch faceAUrl={value.faceAUrl} faceBUrl={value.faceBUrl} />
+      <div className={`m-2 rounded border border-slate-300 p-1`}>
+        <h4 className={`mb-2 text-lg font-bold`}>Face Comparison</h4>
+        <Subject.FaceMatch faceAUrl={value.faceAUrl} faceBUrl={value.faceBUrl} />
+      </div>
     ),
     details: ({ value }) => {
       const data = {
@@ -638,17 +729,21 @@ export const useIndividual = () => {
         }, {}),
       };
 
-      return <Subject.Info info={data} whitelist={whitelist} isLoading={isLoading} />;
+      return (
+        <div className={`m-2 rounded border border-slate-300 p-1`}>
+          <Subject.Info info={data} whitelist={whitelist} isLoading={isLoading} />
+        </div>
+      );
     },
     multiDocuments: ({ value }) => {
-      const documents = value.data
-        .map(({ title, imageUrl }) => ({
-          title,
-          imageUrl,
-        }))
-        .filter(({ imageUrl }) => !!imageUrl);
+      const documents = value.data.filter(({ imageUrl }) => !!imageUrl);
 
-      return <Subject.Documents documents={documents} />;
+      return (
+        <div className={`m-2 rounded border border-slate-300 p-1`}>
+          <h4 className={`mb-2 text-lg font-bold`}>Documents</h4>
+          <Subject.Documents documents={documents} />
+        </div>
+      );
     },
   };
 

@@ -1,5 +1,5 @@
 import { useCrop } from 'hooks/useCrop/useCrop';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTesseract } from 'hooks/useTesseract/useTesseract';
 import { IDocumentsProps } from 'components/organisms/Subject/interfaces';
 import { createArrayOfNumbers } from '../../../../../utils/create-array-of-numbers/create-array-of-numbers';
@@ -8,7 +8,7 @@ import { t } from 'i18next';
 import { useToggle } from 'hooks/useToggle/useToggle';
 
 export const useDocuments = (documents: IDocumentsProps['documents']) => {
-  const initialImage = documents?.[0]?.imageUrl ?? '';
+  const initialImage = documents?.[0];
   const {
     crop,
     isCropping,
@@ -66,6 +66,16 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     recognize,
   ]);
   const skeletons = createArrayOfNumbers(4);
+  const [selectedImage, setSelectedImage] = useState<{
+    imageUrl: string;
+    fileType: string;
+  }>();
+  const onSelectImage = useCallback(
+    (next: { imageUrl: string; fileType: string }) => () => {
+      setSelectedImage(next);
+    },
+    [],
+  );
 
   return {
     crop,
@@ -77,5 +87,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     initialImage,
     skeletons,
     isLoadingOCR,
+    selectedImage,
+    onSelectImage,
   };
 };

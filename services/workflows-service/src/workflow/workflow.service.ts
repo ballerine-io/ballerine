@@ -16,6 +16,7 @@ import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repositor
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
+import { BusinessRepository } from '@/business/business.repository';
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -37,8 +38,11 @@ export type IntentResponse = WorkflowData[];
 
 // TODO: TEMP (STUB)
 const policies = {
-  signup: (): { workflowDefinitionId: string; version: number }[] => {
-    return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9aaa', version: 1 }];
+  kycSignup: () => {
+    return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9aaa', version: 1 }] as const;
+  },
+  kybSignup: () => {
+    return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9bbb', version: 1 }] as const;
   },
 };
 
@@ -50,6 +54,7 @@ export class WorkflowService {
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
+    protected readonly businessRepository: BusinessRepository,
     private workflowEventEmitter: WorkflowEventEmitterService,
   ) {}
 
@@ -89,7 +94,8 @@ export class WorkflowService {
 
   async listFullWorkflowDataByUserId(userId: string): Promise<CompleteWorkflowData[]> {
     return (await this.workflowRuntimeDataRepository.findMany({
-      where: { endUserId: userId },
+      // todo refactor
+      where: { businessId: userId },
       include: { workflowDefinition: true },
     })) as CompleteWorkflowData[];
   }
@@ -110,16 +116,24 @@ export class WorkflowService {
     const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
       data,
     });
+    // in case current state is a final state, we want to create another machine, of type manual review.
+    // assign runtime to user, copy the context.
+    const currentState = data.state;
+    const workflow = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+    );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (workflow.definition?.states?.[currentState]?.type === 'final') {
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData,
+        state: currentState as string,
+        context: runtimeData.context, // TODO: final result should be a subset of context, should be defined as part of the workflow definition
+      });
+    }
 
     // TODO: Move to a separate method
     if (data.state) {
-      // in case current state is a final state, we want to create another machine, of type manual review.
-      // assign runtime to user, copy the context.
-      const currentState = data.state;
-      const workflow = await this.workflowDefinitionRepository.findById(
-        runtimeData.workflowDefinitionId,
-      );
-
       if (
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -150,19 +164,37 @@ export class WorkflowService {
       return;
     }
     const endUserId = runtime.endUserId;
-    await this.endUserRepository.updateById(endUserId, {
-      data: {
-        approvalState: ApprovalState.PROCESSING,
-      },
-    });
-    this.logger.log(`${endUserId} is now in state ${ApprovalState.PROCESSING}`);
+    const businessId = runtime.businessId;
+    endUserId &&
+      (await this.endUserRepository.updateById(endUserId, {
+        data: {
+          approvalState: ApprovalState.PROCESSING,
+        },
+      }));
+    businessId &&
+      (await this.businessRepository.updateById(businessId as string, {
+        data: {
+          approvalState: ApprovalState.PROCESSING,
+        },
+      }));
+
+    this.logger.log(`${businessId || endUserId} is now in state ${ApprovalState.PROCESSING}`);
 
     // will throw exception if review machine def is missing
     await this.workflowDefinitionRepository.findById(workflow.reviewMachineId);
 
+    const entitySerach: { businessId?: string; endUserId?: string } = {};
+
+    if (businessId) {
+      entitySerach.businessId = runtime.businessId as string;
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      entitySerach.endUserId = runtime.endUserId as string;
+    }
+
     const workflowRuntimeDataExists = await this.workflowRuntimeDataRepository.findOne({
       where: {
-        endUserId: runtime.endUserId,
+        ...entitySerach,
         context: {
           path: ['parentMachine', 'id'],
           equals: runtime.id,
@@ -173,7 +205,7 @@ export class WorkflowService {
     if (!workflowRuntimeDataExists) {
       await this.workflowRuntimeDataRepository.create({
         data: {
-          endUserId: runtime.endUserId,
+          ...entitySerach,
           workflowDefinitionVersion: workflow.version,
           workflowDefinitionId: workflow.reviewMachineId,
           context: {
@@ -197,7 +229,7 @@ export class WorkflowService {
     await this.updateWorkflowRuntimeData(runtime.id, {
       ...((runtime.context as { resubmissionReason: string })?.resubmissionReason
         ? {
-            endUserId: runtime.endUserId,
+            ...entitySerach,
             workflowDefinitionVersion: workflow.version,
             workflowDefinitionId: workflow.reviewMachineId,
             context: {
@@ -214,24 +246,33 @@ export class WorkflowService {
 
   async resolveIntent(
     intent: string,
-    endUserId = 'ckkt3qnv40001qxtt7nmj9r2r', // TODO: remove default value
+    entityId: string,
+    tempEntityType: string,
   ): Promise<RunnableWorkflowData[]> {
-    const workflowDefinitionResolver = policies['signup'];
+    const workflowDefinitionResolver = policies[intent as keyof typeof policies];
 
     // TODO: implement logic for multiple workflows
-    const { workflowDefinitionId } = workflowDefinitionResolver()[0] as {
-      workflowDefinitionId: string;
-    };
+    const { workflowDefinitionId } = workflowDefinitionResolver()[0];
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
+    const entityConnect: any = {} as any;
+    if (tempEntityType === 'enduser') {
+      entityConnect.endUser = {
+        connect: {
+          id: entityId,
+        },
+      };
+    } else {
+      entityConnect.business = {
+        connect: {
+          id: entityId,
+        },
+      };
+    }
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
       data: {
-        endUser: {
-          connect: {
-            id: endUserId,
-          },
-        },
+        ...entityConnect,
         workflowDefinitionVersion: workflowDefinition.version,
         context: {},
         status: 'created',
@@ -244,7 +285,7 @@ export class WorkflowService {
     });
 
     this.logger.log(
-      `Created workflow runtime data ${workflowRuntimeData.id}, for user ${endUserId}, with workflow ${workflowDefinitionId}, version ${workflowDefinition.version}`,
+      `Created workflow runtime data ${workflowRuntimeData.id}, for user ${entityId}, with workflow ${workflowDefinitionId}, version ${workflowDefinition.version}`,
     );
 
     return [
@@ -336,10 +377,11 @@ export class WorkflowService {
       return;
     }
 
-    await this.endUserRepository.updateById(runtimeData.endUserId, {
-      data: {
-        approvalState: ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState],
-      },
-    });
+    runtimeData.endUserId &&
+      (await this.endUserRepository.updateById(runtimeData.endUserId, {
+        data: {
+          approvalState: ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState],
+        },
+      }));
   }
 }

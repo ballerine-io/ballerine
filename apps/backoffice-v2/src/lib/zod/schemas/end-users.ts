@@ -13,7 +13,7 @@ export const EndUsersListSchema = z
       fullName: z.string().default(''),
       email: z.string().nullable().default(''),
       phone: z.string().nullable().default(''),
-      state: z.enum(States).default(State.PROCESSING),
+      approvalState: z.enum(States).default(State.PROCESSING),
       assignedTo: z.string().default(''),
       endUserType: z.string().nullable().default(''),
     }).transform(({ firstName, lastName, ...rest }) => ({
@@ -34,7 +34,7 @@ export const EndUserByIdSchema = ObjectWithIdSchema.extend({
   endUserType: z.string().nullable().default('individual'),
   email: z.string().nullable().default(''),
   phone: z.string().nullable().default(''),
-  state: z.enum(States).default(State.PROCESSING),
+  approvalState: z.enum(States).default(State.PROCESSING),
   dateOfBirth: z.string().default(''),
   placeOfBirth: z.string().default(''),
   assignedTo: z.string().default(''),

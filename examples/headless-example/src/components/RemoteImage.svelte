@@ -4,6 +4,7 @@
 
   export let id: string;
   export let alt: string;
+  export let fileType: string;
   let src: string;
 
   const blobToBase64 = (blob: Blob) => {
@@ -23,9 +24,15 @@
     if (!id) return;
 
     const data = await fetchBlob<Blob>(`http://localhost:3000/api/external/storage/${id}`);
+    const base64 = await blobToBase64(data);
 
-    src = await blobToBase64(data);
+    src = base64?.replace(/application\/octet-stream/gi, fileType);
   });
 </script>
 
-<img class="rounded-lg" {src} {alt} />
+{#if fileType === 'application/pdf'}
+  <iframe class="rounded-lg" {src} {alt} />
+{/if}
+{#if fileType !== 'application/pdf'}
+  <img class="rounded-lg" {src} {alt} />
+{/if}

@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsNumber, IsDate, IsJSON } from 'class-validator';
+
+export enum ApprovalState {
+  PROCESSING = 'PROCESSING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
 
 export class BusinessCreateDto {
   @ApiProperty({
@@ -7,12 +13,12 @@ export class BusinessCreateDto {
     type: String,
   })
   @IsString()
-  firstName!: string;
+  companyName!: string;
 
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  lastName!: string;
+  registrationNumber!: string;
 }

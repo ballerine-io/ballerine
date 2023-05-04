@@ -51,8 +51,17 @@ model EndUser {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  business   Business? @relation(fields: [businessId], references: [id])
-  businessId String?
+  businesses           Business[]
+  EndUsersOnBusinesses EndUsersOnBusinesses[]
+}
+
+model EndUsersOnBusinesses {
+  endUser    EndUser  @relation(fields: [endUserId], references: [id])
+  endUserId  String
+  business   Business @relation(fields: [businessId], references: [id])
+  businessId String
+
+  @@id([endUserId, businessId])
 }
 
 model Business {
@@ -71,12 +80,15 @@ model Business {
   industry                String // Industry sector the business entity operates in
   taxIdentificationNumber String? // Unique tax identification number assigned by the tax authorities
   vatNumber               String? // Unique VAT (Value Added Tax) number for the business entity
-  endUsers                EndUser[]
   shareholderStructure    Json? // Information about the ownership structure, including shareholders and their ownership percentages
   numberOfEmployees       Int? // Number of employees working for the business entity
   businessPurpose         String? // Brief description of the business entity's purpose or main activities
   documents               Json // Collection of documents required for the KYB process, e.g., registration documents, financial statements
-  approvalState           ApprovalState @default(PROCESSING) // Current status of the KYB process for the business entity
+  approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
+
+  workflowRuntimeData  WorkflowRuntimeData[]
+  endUsers             EndUser[]
+  EndUsersOnBusinesses EndUsersOnBusinesses[]
 }
 
 model WorkflowDefinition {
@@ -102,8 +114,10 @@ model WorkflowDefinition {
 
 model WorkflowRuntimeData {
   id                        String             @id @default(cuid())
-  endUser                   EndUser            @relation(fields: [endUserId], references: [id], onDelete: Cascade)
-  endUserId                 String
+  endUser                   EndUser?           @relation(fields: [endUserId], references: [id], onDelete: SetNull)
+  endUserId                 String?
+  business                  Business?          @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  businessId                String?
   workflowDefinition        WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
   workflowDefinitionId      String
   workflowDefinitionVersion Int

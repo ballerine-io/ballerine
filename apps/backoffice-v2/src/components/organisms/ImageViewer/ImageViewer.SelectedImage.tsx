@@ -3,7 +3,7 @@ import { forwardRef, useCallback, useEffect, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
 import { useImageViewerContext } from './hooks/useImageViewerContext/useImageViewerContext';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
-import { ISelectedImageProps } from './interfaces';
+import { TSelectedImageProps } from './interfaces';
 
 /**
  * @description To be used by {@link ImageViewer}. Uses {@link BallerineImage} to display the currently selected image with default styling.
@@ -14,28 +14,41 @@ import { ISelectedImageProps } from './interfaces';
  * @param props.ZoomButton - A button that opens the zoom modal when clicked, receives an onClick handler from {@link useImageViewerContext}.
  * @constructor
  */
-export const SelectedImage = forwardRef<HTMLImageElement, ISelectedImageProps>(
+export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TSelectedImageProps>(
   ({ className, isLoading, initialImage, ...props }, ref) => {
     const { selectedImage } = useSelectedImage(initialImage);
     const [isError, setIsError] = useState(false);
     const onError = useCallback(() => {
       setIsError(true);
     }, []);
-    const isPlaceholder = isLoading || !selectedImage || isError;
+    const isPlaceholder = isLoading || !selectedImage?.imageUrl || isError;
 
     useEffect(() => {
-      if (!isError || !selectedImage) return;
+      if (!isError || !selectedImage?.imageUrl) return;
 
       setIsError(false);
-    }, [isLoading, selectedImage]);
+    }, [isLoading, selectedImage?.imageUrl]);
+
+    if (selectedImage?.fileType === 'application/pdf') {
+      return (
+        <iframe
+          src={selectedImage?.imageUrl}
+          ref={ref}
+          className={ctw(className, `d-full mx-auto`, {
+            'h-[600px] w-[441px]': isPlaceholder,
+          })}
+          {...props}
+        />
+      );
+    }
 
     return (
       <BallerineImage
         withPlaceholder
-        src={selectedImage}
+        src={selectedImage?.imageUrl}
         alt={'Selected image'}
-        className={ctw(className, {
-          'h-[600px] w-[441px]': isPlaceholder,
+        className={ctw(className, `mx-auto`, {
+          '!h-[600px] !w-[441px]': isPlaceholder,
         })}
         ref={ref}
         isLoading={isLoading}

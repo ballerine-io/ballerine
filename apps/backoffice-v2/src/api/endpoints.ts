@@ -42,18 +42,18 @@ export const endpoints = {
       method: Method.PATCH,
     },
   },
-  companies: {
+  businesses: {
     list: {
-      endpoint: (filterId: string) => `companies?filterId=${filterId}`,
+      endpoint: (filterId: string) => `businesses?filterId=${filterId}`,
       method: Method.GET,
     },
     byId: {
-      endpoint: (companyId: string) => `companies/${companyId}`,
+      endpoint: (businessId: string) => `businesses/${businessId}`,
       method: Method.GET,
     },
     // Unused
     updateById: {
-      endpoint: (companyId: string) => `companies/${companyId}`,
+      endpoint: (businessId: string) => `businesses/${businessId}`,
       method: Method.PATCH,
     },
   },
@@ -68,7 +68,7 @@ export const endpoints = {
     },
     updateById: {
       endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}`,
-      method: Method.PUT,
+      method: Method.PATCH,
     },
     event: {
       endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}/event`,

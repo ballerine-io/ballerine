@@ -2,10 +2,10 @@ import { ReactRouter, RouterProvider } from '@tanstack/react-router';
 import React, { FunctionComponent } from 'react';
 import { rootRoute } from 'components/pages/Root/Root.route';
 import { caseManagementRoute } from 'components/pages/CaseManagement/CaseManagement.route';
-import { companiesRoute } from 'components/pages/Companies/Companies.route';
+import { businessesRoute } from 'components/pages/Businesses/Businesses.route';
 import { transactionsRoute } from 'components/pages/Transactions/Transactions.route';
 import { transactionsIndexRoute } from 'components/pages/Transactions/TransactionsIndex.route';
-import { companiesIndexRoute } from 'components/pages/Companies/CompaniesIndex.route';
+import { businessesIndexRoute } from 'components/pages/Businesses/BusinessesIndex.route';
 import { caseManagementIndexRoute } from 'components/pages/CaseManagement/CaseManagementIndex.route';
 import { individualsRoute } from 'components/pages/Individuals/Individuals.route';
 import { individualRoute } from 'components/pages/Individual/Individual.route';
@@ -27,7 +27,7 @@ const routes = [
   caseManagementRoute.addChildren([
     caseManagementIndexRoute,
     individualsRoute.addChildren([individualsIndexRoute, individualRoute]),
-    // companiesRoute.addChildren([companiesIndexRoute]),
+    // businessesRoute.addChildren([businessesIndexRoute]),
     // transactionsRoute.addChildren([transactionsIndexRoute]),
   ]),
 ];

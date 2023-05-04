@@ -102,7 +102,7 @@ export class WorkflowControllerExternal {
     @Headers('no_auth_user_id') no_auth_user_id: string,
   ): Promise<IntentResponse> {
     // Rename to intent or getRunnableWorkflowDataByIntent?
-    return await this.service.resolveIntent(intent.intentName, no_auth_user_id);
+    return await this.service.resolveIntent(intent.intentName, no_auth_user_id, 'business');
   }
 
   // POST /event

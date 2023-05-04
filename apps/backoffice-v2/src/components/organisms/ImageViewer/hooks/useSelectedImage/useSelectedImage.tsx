@@ -6,7 +6,7 @@ import { useParams } from '@tanstack/react-router';
  * @description Encapsulates SelectedImage's state and logic in addition to setting the initial selected image on mount.
  * @param initialImage
  */
-export const useSelectedImage = (initialImage: string) => {
+export const useSelectedImage = (initialImage: { imageUrl: string; fileType: string }) => {
   const { onSelectImage, selectedImage, toggleOnIsZoomModalOpen } = useImageViewerContext();
   const { endUserId } = useParams();
 
@@ -17,10 +17,10 @@ export const useSelectedImage = (initialImage: string) => {
 
   // If no image was selected yet, select the initial image.
   useEffect(() => {
-    if (selectedImage) return;
+    if (selectedImage?.imageUrl) return;
 
     onSelectImage(initialImage)();
-  }, [initialImage, selectedImage, onSelectImage]);
+  }, [initialImage?.imageUrl, selectedImage?.imageUrl, onSelectImage]);
 
   return {
     selectedImage,

@@ -3,12 +3,12 @@ import { auth } from './auth';
 import { workflows } from './workflows';
 import { storage } from './storage';
 import { filters } from './filters';
-import { companies } from './companies';
+import { businesses } from './businesses';
 
 export const api = {
   auth,
   endUsers,
-  companies,
+  businesses,
   workflows,
   storage,
   filters,
