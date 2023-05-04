@@ -10,6 +10,7 @@ export class BusinessRepository {
   async create<T extends Prisma.BusinessCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessCreateArgs>,
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await this.prisma.business.create(args);
   }
 

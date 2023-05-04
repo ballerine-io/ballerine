@@ -17,37 +17,37 @@ const SearchSchema = z.object({
 
 const IndividualsSearchSchema = SearchSchema.extend({
   sortBy: z
-    .enum(['firstName', 'lastName', 'email', 'phone', 'createdAt', 'state'])
+    .enum(['firstName', 'lastName', 'email', 'phone', 'createdAt', 'approvalState'])
     .optional()
     .catch('createdAt'),
   filter: z
     .object({
-      state: z.array(z.enum(States)).optional().catch([]),
+      approvalState: z.array(z.enum(States)).optional().catch([]),
       endUserType: z.array(z.string()).optional().catch([]),
     })
     .optional(),
   kind: z.literal('individuals').catch('individuals'),
 });
 
-const CompaniesSearchSchema = SearchSchema.extend({
+const BusinessesSearchSchema = SearchSchema.extend({
   sortBy: z.enum(['website', 'address']).optional().catch('website'),
   filter: z
     .object({
-      state: z
+      approvalState: z
         .array(z.enum([States]))
         .optional()
         .catch([]),
-      companyType: z.array(z.string()).optional().catch([]),
+      // businessType: z.array(z.string()).optional().catch([]),
     })
     .optional(),
-  kind: z.literal('companies').catch('companies'),
+  kind: z.literal('businesses').catch('businesses'),
 });
 
 export const individualsRoute = new Route({
   getParentRoute: () => caseManagementRoute,
   validateSearch: search =>
-    search?.kind === 'companies'
-      ? CompaniesSearchSchema.parse(search)
+    search?.kind === 'businesses'
+      ? BusinessesSearchSchema.parse(search)
       : IndividualsSearchSchema.parse(search),
   preSearchFilters: [
     search => ({

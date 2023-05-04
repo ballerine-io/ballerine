@@ -10,9 +10,10 @@ import { BusinessWhereUniqueInput } from './dtos/business-where-unique-input';
 import { BusinessModel } from './business.model';
 import { BusinessService } from './business.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import { BusinessCreateDto } from './dtos/business-create';
 
-@swagger.ApiTags('external/businesss')
-@common.Controller('external/businesss')
+@swagger.ApiTags('external/businesses')
+@common.Controller('external/businesses')
 export class BusinessControllerExternal {
   constructor(
     protected readonly service: BusinessService,
@@ -20,29 +21,28 @@ export class BusinessControllerExternal {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
 
-  // @common.Post()
-  // @swagger.ApiCreatedResponse({ type: [BusinessModel] })
-  // @swagger.ApiForbiddenResponse()
-  // async create(
-  //   @common.Body() data: BusinessCreateDto,
-  // ): Promise<Pick<BusinessModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>> {
-  //   return this.service.create({
-  //     data: {
-  //       ...data,
-  //       correlationId: faker.datatype.uuid(),
-  //       email: faker.internet.email(data.firstName, data.lastName),
-  //       phone: faker.phone.number('+##########'),
-  //       dateOfBirth: faker.date.past(60),
-  //       avatarUrl: faker.image.avatar(),
-  //     },
-  //     select: {
-  //       id: true,
-  //       firstName: true,
-  //       lastName: true,
-  //       avatarUrl: true,
-  //     },
-  //   });
-  // }
+  @common.Post()
+  @swagger.ApiCreatedResponse({ type: [BusinessModel] })
+  @swagger.ApiForbiddenResponse()
+  async create(
+    @common.Body() data: BusinessCreateDto,
+  ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return this.service.create({
+      data: {
+        ...data,
+        legalForm: 'name',
+        countryOfIncorporation: 'US',
+        address: 'addess',
+        industry: 'telecom',
+        documents: 's',
+      },
+      select: {
+        id: true,
+        companyName: true,
+      },
+    });
+  }
 
   @common.Get()
   @swagger.ApiOkResponse({ type: [BusinessModel] })

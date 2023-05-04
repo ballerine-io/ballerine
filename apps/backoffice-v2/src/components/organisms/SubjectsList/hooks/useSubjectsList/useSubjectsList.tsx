@@ -26,7 +26,7 @@ export const useSubjectsList = (routerId: TRouteId) => {
   const filterByOptions = [
     {
       label: 'User status',
-      value: 'state',
+      value: 'approvalState',
       options: [
         {
           label: 'Rejected',

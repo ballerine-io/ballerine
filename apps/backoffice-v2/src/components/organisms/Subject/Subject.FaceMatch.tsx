@@ -20,6 +20,8 @@ export const FaceMatch: FunctionComponent<IFaceMatchProps> = ({
   faceAUrl,
   faceBUrl,
   isLoading,
+  className,
+  ...props
 }) => {
   const {
     faceARef,
@@ -32,7 +34,7 @@ export const FaceMatch: FunctionComponent<IFaceMatchProps> = ({
   } = useFaceMatch(isLoading);
 
   return (
-    <div className={`space-y-8 p-4 pt-0`}>
+    <div className={ctw(`space-y-8 p-4 pt-0`, className)} {...props}>
       {/* Compared images */}
       <div className={`flex h-[143px] space-x-4`}>
         <BallerineImage
