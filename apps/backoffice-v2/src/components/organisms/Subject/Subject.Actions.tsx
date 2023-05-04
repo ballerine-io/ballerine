@@ -64,7 +64,9 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-2`}>
-      <button className={`btn-sm btn`}>Re-assign</button>
+      <button disabled className={`btn-sm btn`}>
+        Re-assign
+      </button>
       <div className={`flex h-[7.75rem] justify-between`}>
         <motion.div
           // Animate when the user changes.
@@ -97,7 +99,8 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                 loading: debouncedIsLoadingRejectEndUser,
               },
             )}
-            disabled={isLoading || !canReject}
+            // disabled={isLoading || !canReject}
+            disabled
           >
             Execute Tasks
           </button>
