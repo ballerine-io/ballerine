@@ -1,50 +1,63 @@
 import { caseManagementRoute } from 'components/pages/CaseManagement/CaseManagement.route';
-import { endUsers } from '../../../lib/react-query/end-users';
 import { queryClient } from '../../../lib/react-query/query-client';
 import { z } from 'zod';
 import { Route } from '@tanstack/react-router';
 import { Individuals } from 'components/pages/Individuals/Individuals.page';
-import { State, States } from '../../../enums';
+import { States } from '../../../enums';
+import { queries } from '../../../lib/react-query/queries';
+import { preSearchFiltersByKind } from 'components/pages/Individuals/pre-search-filters';
+
+const SearchSchema = z.object({
+  sortDir: z.enum(['asc', 'desc']).optional().catch('desc'),
+  pageSize: z.number().int().optional().catch(10),
+  page: z.number().int().optional().catch(1),
+  search: z.string().optional().catch(''),
+  filterId: z.string().catch(''),
+});
+
+const IndividualsSearchSchema = SearchSchema.extend({
+  sortBy: z
+    .enum(['firstName', 'lastName', 'email', 'phone', 'createdAt', 'approvalState'])
+    .optional()
+    .catch('createdAt'),
+  filter: z
+    .object({
+      approvalState: z.array(z.enum(States)).optional().catch([]),
+      endUserType: z.array(z.string()).optional().catch([]),
+    })
+    .optional(),
+  kind: z.literal('individuals').catch('individuals'),
+});
+
+const BusinessesSearchSchema = SearchSchema.extend({
+  sortBy: z.enum(['website', 'address']).optional().catch('website'),
+  filter: z
+    .object({
+      approvalState: z
+        .array(z.enum([States]))
+        .optional()
+        .catch([]),
+      // businessType: z.array(z.string()).optional().catch([]),
+    })
+    .optional(),
+  kind: z.literal('businesses').catch('businesses'),
+});
 
 export const individualsRoute = new Route({
   getParentRoute: () => caseManagementRoute,
-  validateSearch: z.object({
-    sortBy: z
-      .enum(['firstName', 'lastName', 'email', 'phone', 'createdAt', 'state'])
-      .optional()
-      .catch('createdAt'),
-    sortDir: z.enum(['asc', 'desc']).optional().catch('desc'),
-    pageSize: z.number().int().optional().catch(10),
-    page: z.number().int().optional().catch(1),
-    filter: z
-      .object({
-        state: z.array(z.enum(States)).optional().catch([]),
-        endUserType: z.array(z.string()).optional().catch([]),
-      })
-      .optional(),
-    search: z.string().optional().catch(''),
-  }).parse,
+  validateSearch: search =>
+    search?.kind === 'businesses'
+      ? BusinessesSearchSchema.parse(search)
+      : IndividualsSearchSchema.parse(search),
   preSearchFilters: [
     search => ({
-      sortBy: 'createdAt' as const,
-      sortDir: 'desc' as const,
-      pageSize: 10,
-      page: 1,
-      filter: {
-        state: [State.PROCESSING],
-        endUserType: [],
-      },
-      search: '',
+      ...preSearchFiltersByKind[search?.kind],
       ...search,
     }),
   ],
-  onLoad: async () => {
-    const endUsersList = endUsers.list();
-    const data = queryClient.getQueryData(endUsersList.queryKey);
-
-    if (data) return {};
-
-    await queryClient.prefetchQuery(endUsersList.queryKey, endUsersList.queryFn);
+  onLoad: async ({ search }) => {
+    const entityList = queries[search?.kind].list(search?.filterId);
+    await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
 
     return {};
   },

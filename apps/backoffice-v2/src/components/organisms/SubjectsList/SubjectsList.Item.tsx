@@ -47,7 +47,7 @@ export const Item: FunctionComponent<IItemProps> = ({
         }}
         preload={'intent'}
         activeProps={{
-          className: `bg-primary/30`,
+          className: `bg-slate-200 shadow border border-slate-300`,
         }}
         className={`flex items-center gap-x-4 rounded-md outline-none`}
       >

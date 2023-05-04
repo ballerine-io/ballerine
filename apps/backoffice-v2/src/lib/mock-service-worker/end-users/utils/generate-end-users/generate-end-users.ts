@@ -34,7 +34,7 @@ export const generateEndUsers = (length: number) => {
 
     const address = {
       country: faker.address.country(),
-      state: faker.address.state(),
+      approvalState: faker.address.state(),
       city: faker.address.city(),
       street: faker.address.streetAddress(),
       houseNum: faker.random.numeric(),
@@ -50,11 +50,11 @@ export const generateEndUsers = (length: number) => {
     };
 
     const amlCheck = generateState();
-    const state = generateState({
+    const approvalState = generateState({
       withNew: true,
     });
     const checkResults = {
-      finalResult: state,
+      finalResult: approvalState,
       amlCheck,
       idCheck: generateState(),
       selfieCheck: generateState(),
@@ -126,7 +126,7 @@ export const generateEndUsers = (length: number) => {
       endUserType,
       email,
       phone,
-      state,
+      approvalState,
       dateOfBirth,
       placeOfBirth: address?.country,
       sex,

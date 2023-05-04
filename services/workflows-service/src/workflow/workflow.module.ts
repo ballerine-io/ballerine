@@ -10,6 +10,7 @@ import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repositor
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { EventConsumerListener } from '@/events/event-consumer';
+import { BusinessRepository } from '@/business/business.repository';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
@@ -18,6 +19,7 @@ import { EventConsumerListener } from '@/events/event-consumer';
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
     EndUserRepository,
+    BusinessRepository,
     WorkflowService,
     WorkflowEventEmitterService,
     EventConsumerListener,

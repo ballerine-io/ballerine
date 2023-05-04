@@ -55,7 +55,7 @@ export const workflowsController = [
     }
 
     workflows.updateById(id, {
-      state: body?.state,
+      approvalState: body?.approvalState,
       context: {
         ...workflow?.context,
         ...body?.context,
@@ -92,7 +92,7 @@ export const workflowsController = [
     const state = snapshot.value;
 
     endUsers.updateById(endUserId, {
-      state: state === 'APPROVE' ? 'approved' : 'rejected',
+      approvalState: state === 'APPROVE' ? 'approved' : 'rejected',
       workflows: endUser?.workflows?.map(workflow => {
         if (workflow.id !== id) return workflow;
 

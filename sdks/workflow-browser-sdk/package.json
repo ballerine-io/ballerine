@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/workflow-browser-sdk",
-  "author": "Ballerine",
+  "author": "Ballerine <dev@ballerine.com>",
   "version": "0.4.3",
   "description": "workflow-browser-sdk",
   "module": "./dist/esm/index.js",

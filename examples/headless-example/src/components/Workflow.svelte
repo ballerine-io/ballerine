@@ -17,6 +17,8 @@
     DOCUMENT_SELECTION: DocumentSelection,
     DOCUMENT_PHOTO: DocumentPhoto,
     DOCUMENT_REVIEW: DocumentReview,
+    CERTIFICATE_OF_INCORPORATION: DocumentPhoto,
+    CERTIFICATE_OF_INCORPORATION_REVIEW: DocumentReview,
     SELFIE: DocumentPhoto,
     SELFIE_REVIEW: DocumentReview,
     FINAL: Final,
@@ -51,6 +53,10 @@
           ...context?.selfie,
           ...payload?.selfie,
         },
+        certificateOfIncorporation: {
+          ...context?.certificateOfIncorporation,
+          ...payload?.certificateOfIncorporation,
+        },
       },
     });
   };
@@ -66,6 +72,9 @@
     },
     selfie: {
       type: snapshot?.context?.selfie?.type,
+    },
+    certificateOfIncorporation: {
+      type: snapshot?.context?.certificateOfIncorporation?.type,
     },
   };
   let documentName;
@@ -105,6 +114,7 @@
     workflowUpdated(snapshot);
     initialValues.id.type = snapshot?.context?.id?.type;
     initialValues.selfie.type = 'selfie';
+    initialValues.certificateOfIncorporation.type = 'certificateOfIncorporation';
 
     switch (currentStep) {
       case 'document_photo':
@@ -115,13 +125,17 @@
       case 'selfie_review':
         documentName = 'selfie';
         break;
+      case 'certificate_of_incorporation':
+      case 'certificate_of_incorporation_review':
+        documentName = 'certificateOfIncorporation';
+        break;
       default:
         break;
     }
   }
 </script>
 
-<span class="absolute text-sm bottom-8 left-8 text-slate-500">
+<span class="absolute bottom-8 left-8 text-sm text-slate-500">
   {#if stateActionStatus === 'PENDING'}
     Loading...
   {/if}

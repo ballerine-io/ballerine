@@ -1,17 +1,15 @@
 import { Prisma } from '@prisma/client';
 
-export const PRISMA_QUERY_INTERPRETATION_ERROR = 'P2016';
-export const PRISMA_RECORD_NOT_FOUND = 'RecordNotFound';
+export const PRISMA_RECORD_NOT_FOUND_ERROR = 'P2025';
 
 export function isRecordNotFoundError(
   error: unknown,
 ): error is Prisma.PrismaClientKnownRequestError & {
-  code: typeof PRISMA_QUERY_INTERPRETATION_ERROR;
+  code: typeof PRISMA_RECORD_NOT_FOUND_ERROR;
 } {
   return (
     error instanceof Prisma.PrismaClientKnownRequestError &&
-    error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
-    error.message.includes(PRISMA_RECORD_NOT_FOUND)
+    error.code === PRISMA_RECORD_NOT_FOUND_ERROR
   );
 }
 

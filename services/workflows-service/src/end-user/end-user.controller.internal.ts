@@ -9,6 +9,7 @@ import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { EndUserService } from './end-user.service';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
 
 @swagger.ApiTags('internal/end-users')
 @common.Controller('internal/end-users')
@@ -24,7 +25,11 @@ export class EndUserControllerInternal {
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EndUserFindManyArgs)
   async list(@common.Req() request: Request): Promise<EndUserModel[]> {
-    const args = plainToClass(EndUserFindManyArgs, request.query);
+    const {
+      // @ts-expect-error - Avoids passing filterId to Prisma, temporary until filters are implemented.
+      filterId: _filterId,
+      ...args
+    } = plainToClass(EndUserFindManyArgs, request.query);
     return this.service.list(args);
   }
 
@@ -33,10 +38,16 @@ export class EndUserControllerInternal {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
   async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
-    const endUser = await this.service.getById(params.id);
-    if (endUser === null) {
-      throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+    try {
+      const endUser = await this.service.getById(params.id);
+
+      return endUser;
+    } catch (err) {
+      if (isRecordNotFoundError(err)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+
+      throw err;
     }
-    return endUser;
   }
 }

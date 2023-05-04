@@ -27,11 +27,15 @@ import { ctw } from '../../../utils/ctw/ctw';
 export const ImageViewer: FunctionComponent<IImageViewerProps> & IImageViewerChildren = ({
   children,
   className,
+  selectedImage,
+  onSelectImage,
   ...rest
 }) => {
   return (
     <div className={ctw(`flex flex-col items-center gap-y-8`, className)} {...rest}>
-      <Provider>{children}</Provider>
+      <Provider selectedImage={selectedImage} onSelectImage={onSelectImage}>
+        {children}
+      </Provider>
     </div>
   );
 };

@@ -18,6 +18,7 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -27,6 +28,7 @@ export class WorkflowControllerExternal {
     protected readonly service: WorkflowService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   // GET /workflows
@@ -100,7 +102,7 @@ export class WorkflowControllerExternal {
     @Headers('no_auth_user_id') no_auth_user_id: string,
   ): Promise<IntentResponse> {
     // Rename to intent or getRunnableWorkflowDataByIntent?
-    return await this.service.resolveIntent(intent.intentName, no_auth_user_id);
+    return await this.service.resolveIntent(intent.intentName, no_auth_user_id, 'business');
   }
 
   // POST /event

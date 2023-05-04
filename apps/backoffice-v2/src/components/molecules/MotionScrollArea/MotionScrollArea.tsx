@@ -9,7 +9,9 @@ export const MotionScrollArea: FunctionComponent<TMotionScrollAreaProps> &
   IMotionScrollAreaChildren = ({ children, className, ...props }) => {
   return (
     <MotionScrollArea.Root type={'hover'} className={ctw('overflow-hidden', className)} {...props}>
-      <ScrollArea.Viewport className="d-full rounded-[inherit]">{children}</ScrollArea.Viewport>
+      <ScrollArea.Viewport className="d-full rounded-[inherit] [&>div]:h-full">
+        {children}
+      </ScrollArea.Viewport>
       <ScrollArea.Scrollbar
         className="flex touch-none select-none bg-base-300 p-0.5 transition-[background] duration-[160] ease-out data-[orientation=horizontal]:h-3 data-[orientation=vertical]:w-3 data-[orientation=horizontal]:flex-col theme-dark:bg-neutral"
         orientation="vertical"

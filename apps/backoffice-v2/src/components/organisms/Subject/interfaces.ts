@@ -4,6 +4,7 @@ import { Info } from './Subject.Info';
 import { Content } from './Subject.Content';
 import { FaceMatch } from './Subject.FaceMatch';
 import { TState } from '../../../types';
+import { ComponentProps } from 'react';
 
 export interface IItemProps {
   id: string;
@@ -37,12 +38,13 @@ export interface ISubjectChildren {
 export interface IDocumentsProps {
   documents: Array<{
     imageUrl: string;
-    caption: string;
+    fileType: string;
+    title: string;
   }>;
   isLoading?: boolean;
 }
 
-export interface IFaceMatchProps {
+export interface IFaceMatchProps extends ComponentProps<'div'> {
   faceAUrl: string;
   faceBUrl: string;
   isLoading?: boolean;

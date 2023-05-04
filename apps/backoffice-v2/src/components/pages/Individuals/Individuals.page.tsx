@@ -5,7 +5,7 @@ import { Pagination } from 'components/organisms/Pagination/Pagination';
 import { useIndividuals } from 'components/pages/Individuals/hooks/useIndividuals/useIndividuals';
 import { Subject } from 'components/organisms/Subject/Subject';
 import { MotionScrollArea } from 'components/molecules/MotionScrollArea/MotionScrollArea';
-
+import { useKind } from 'hooks/useKind/useKind';
 export const Individuals = () => {
   const {
     onPaginate,
@@ -22,7 +22,8 @@ export const Individuals = () => {
     skeletons,
     routerId,
   } = useIndividuals();
-
+  const kind = useKind();
+  console.log(subjects);
   return (
     <>
       <SubjectsList
@@ -40,15 +41,24 @@ export const Individuals = () => {
                   <SubjectsList.SkeletonItem key={`subjects-list-skeleton-${index}`} />
                 ))
               : subjects?.map(
-                  ({ id, firstName, lastName, createdAt, assignedTo, avatarUrl, state }) => (
+                  ({
+                    id,
+                    firstName,
+                    lastName,
+                    createdAt,
+                    companyName,
+                    assignedTo,
+                    avatarUrl,
+                    approvalState,
+                  }) => (
                     <SubjectsList.Item
                       key={id}
                       id={id}
-                      fullName={`${firstName} ${lastName}`}
+                      fullName={kind !== 'businesses' ? `1${firstName} ${lastName}` : companyName}
                       avatarUrl={avatarUrl}
                       createdAt={createdAt}
                       assignedTo={assignedTo}
-                      status={state}
+                      status={approvalState}
                     />
                   ),
                 )}

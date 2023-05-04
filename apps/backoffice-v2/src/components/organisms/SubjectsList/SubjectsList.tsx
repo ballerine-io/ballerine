@@ -53,11 +53,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
   } = useSubjectsList(routerId);
 
   return (
-    <div
-      id={`subjects-list`}
-      className={`border-x border-neutral/10 theme-dark:border-neutral/60`}
-      {...props}
-    >
+    <div id={`subjects-list`} {...props}>
       <div className={`border-neutral/10 p-4 theme-dark:border-neutral/60`}>
         <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60">
           <div className="input-group">
@@ -146,7 +142,6 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
           </div>
         </div>
       </div>
-      <div className={`divider my-0 px-4`}></div>
       {children}
     </div>
   );

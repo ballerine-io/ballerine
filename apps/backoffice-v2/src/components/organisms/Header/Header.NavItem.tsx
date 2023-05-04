@@ -1,6 +1,7 @@
-import { INavItemProps } from './interfaces';
+import { TNavItemProps } from './interfaces';
 import { Link } from '@tanstack/react-router';
 import { FunctionComponentWithChildren } from '../../../types';
+import { ctw } from '../../../utils/ctw/ctw';
 
 /**
  * @description Wraps a {@link Link} @tanstack/react-router component with an li, accepts an optional icon, and handles the link's active state based on current route.
@@ -11,7 +12,13 @@ import { FunctionComponentWithChildren } from '../../../types';
  *
  * @constructor
  */
-export const NavItem: FunctionComponentWithChildren<INavItemProps> = ({ children, icon, href }) => {
+export const NavItem: FunctionComponentWithChildren<TNavItemProps> = ({
+  children,
+  icon,
+  href,
+  className,
+  ...props
+}) => {
   return (
     <li>
       <Link
@@ -19,10 +26,8 @@ export const NavItem: FunctionComponentWithChildren<INavItemProps> = ({ children
         activeProps={{
           className: `active`,
         }}
-        className={`flex gap-x-2  rounded-md`}
-        // Intentionally set to undefined explicitly.
-        search={undefined}
-        params={undefined}
+        className={ctw(`flex gap-x-2 rounded-md`, className)}
+        {...props}
       >
         {icon} {children}
       </Link>

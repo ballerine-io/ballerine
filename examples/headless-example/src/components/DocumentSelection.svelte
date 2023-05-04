@@ -1,10 +1,10 @@
 <script lang="ts">
-  import {ValidationMessage} from '@felte/reporter-svelte';
-  import {z} from 'zod';
-  import {createZodForm} from '@/utils';
+  import { ValidationMessage } from '@felte/reporter-svelte';
+  import { z } from 'zod';
+  import { createZodForm } from '@/utils';
   import Form from './Form.svelte';
-  import type {TOnPrev, TOnSubmit} from '@/types';
-  import DocumentType from "@/components/DocumentType.svelte";
+  import type { TOnPrev, TOnSubmit } from '@/types';
+  import DocumentType from '@/components/DocumentType.svelte';
 
   const schema = z.object({
     id: z.object({
@@ -25,7 +25,6 @@
     onSubmit,
   });
   const data = zodForm.data;
-
 </script>
 
 <Form {zodForm} {onPrev}>
@@ -38,13 +37,7 @@
       value="passport"
       type={$data.id.type}
     />
-    <DocumentType
-      id="id-card"
-      label="ID Card"
-      name="id.type"
-      value="idCard"
-      type={$data.id.type}
-    />
+    <DocumentType id="id-card" label="ID Card" name="id.type" value="idCard" type={$data.id.type} />
     <DocumentType
       id="driver-license"
       label="Driver License"

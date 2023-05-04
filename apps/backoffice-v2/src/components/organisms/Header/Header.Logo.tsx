@@ -8,7 +8,7 @@ import { Link } from '@tanstack/react-router';
  */
 export const Logo: FunctionComponent = () => {
   return (
-    <h1 className={`mb-11 flex`}>
+    <h1 className={`mb-16 flex`}>
       <Link
         to="/$locale"
         params={{

@@ -39,7 +39,7 @@ export const endUsersController = [
     if (
       typeof id !== 'string' ||
       !id.length ||
-      (body?.state !== 'APPROVED' && body?.state !== 'REJECTED')
+      (body?.approvalState !== 'APPROVED' && body?.approvalState !== 'REJECTED')
     ) {
       return res(ctx.status(400));
     }
@@ -51,10 +51,10 @@ export const endUsersController = [
     }
 
     endUsers.updateById(id, {
-      state: body?.state,
+      approvalState: body?.approvalState,
       checkResults: {
         ...endUser?.checkResults,
-        finalResult: body?.state,
+        finalResult: body?.approvalState,
       },
     });
 

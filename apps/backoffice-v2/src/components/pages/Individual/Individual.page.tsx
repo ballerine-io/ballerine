@@ -1,9 +1,9 @@
 import { Subject } from 'components/organisms/Subject/Subject';
 import { useIndividual } from 'components/pages/Individual/hooks/useIndividual/useIndividual';
+import { ctw } from '../../../utils/ctw/ctw';
 
 export const Individual = () => {
-  const { selectedEndUser, faceAUrl, faceBUrl, info, images, isLoading, whitelist } =
-    useIndividual();
+  const { selectedEndUser, tasks, components } = useIndividual();
 
   // Selected end user
   return (
@@ -14,13 +14,17 @@ export const Individual = () => {
         fullName={selectedEndUser.fullName}
         avatarUrl={selectedEndUser.avatarUrl}
       />
-
-      <Subject.Content key={selectedEndUser.id}>
-        <div>
-          <Subject.FaceMatch faceAUrl={faceAUrl} faceBUrl={faceBUrl} isLoading={isLoading} />
-          <Subject.Info info={info} isLoading={isLoading} whitelist={whitelist} />
-        </div>
-        <Subject.Documents documents={images} isLoading={isLoading} />
+      <Subject.Content>
+        {tasks?.map((task, index) => (
+          <div
+            className={ctw('grid gap-2 rounded border border-slate-300 bg-slate-200 p-1 shadow', {
+              'grid-cols-2': task?.some(field => field?.type === 'multiDocuments'),
+            })}
+            key={index}
+          >
+            {task?.map(field => components[field.type]?.(field))}
+          </div>
+        ))}
       </Subject.Content>
     </Subject>
   );

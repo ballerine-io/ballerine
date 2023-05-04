@@ -22,6 +22,7 @@ import { ctw } from '../../../utils/ctw/ctw';
  */
 export const Item: FunctionComponent<IItemProps> = ({
   src,
+  fileType,
   alt,
   caption,
   imageProps = {},
@@ -40,7 +41,10 @@ export const Item: FunctionComponent<IItemProps> = ({
           `group flex-col space-y-2  hover:bg-transparent focus-visible:!ring-0 active:!ring-0`,
           buttonClassName,
         )}
-        onClick={onSelectImage(src)}
+        onClick={onSelectImage({
+          imageUrl: src,
+          fileType,
+        })}
         {...restButton}
       >
         <div className={`flex h-[4.375rem] w-[4rem]`}>

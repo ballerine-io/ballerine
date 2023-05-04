@@ -8,17 +8,19 @@ generator client {
 }
 
 model User {
-  id String @id @default(cuid())
-
-  username String @unique
-  password String
-  roles    Json
+  id        String  @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String  @unique
+  phone     String? @unique
+  password  String
+  roles     Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-enum EndUserState {
+enum ApprovalState {
   APPROVED
   REJECTED
   PROCESSING
@@ -31,10 +33,10 @@ model EndUser {
   correlationId  String  @db.VarChar
   verificationId String? @db.VarChar
 
-  endUserType String?
-  state       EndUserState @default(NEW)
-  stateReason String?      @db.VarChar
-  jsonData    Json?
+  endUserType   String?
+  approvalState ApprovalState @default(NEW)
+  stateReason   String?       @db.VarChar
+  jsonData      Json?
 
   firstName      String?   @db.VarChar
   lastName       String?   @db.VarChar
@@ -48,6 +50,45 @@ model EndUser {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  businesses           Business[]
+  EndUsersOnBusinesses EndUsersOnBusinesses[]
+}
+
+model EndUsersOnBusinesses {
+  endUser    EndUser  @relation(fields: [endUserId], references: [id])
+  endUserId  String
+  business   Business @relation(fields: [businessId], references: [id])
+  businessId String
+
+  @@id([endUserId, businessId])
+}
+
+model Business {
+  id                      String        @id @default(cuid()) // Unique identifier for the business entity
+  createdAt               DateTime      @default(now()) // Timestamp for when the business entity was created
+  updatedAt               DateTime      @updatedAt // Timestamp for when the business entity was last updated
+  companyName             String // Official registered name of the business entity
+  registrationNumber      String // Unique registration number assigned by the relevant authorities
+  legalForm               String // Legal structure of the business entity, e.g., LLC, corporation, partnership
+  countryOfIncorporation  String // Country where the business entity is incorporated
+  dateOfIncorporation     DateTime? // Date when the business entity was incorporated
+  address                 String // Registered address of the business entity
+  phoneNumber             String? // Contact phone number of the business entity
+  email                   String? // Contact email of the business entity
+  website                 String? // Official website of the business entity
+  industry                String // Industry sector the business entity operates in
+  taxIdentificationNumber String? // Unique tax identification number assigned by the tax authorities
+  vatNumber               String? // Unique VAT (Value Added Tax) number for the business entity
+  shareholderStructure    Json? // Information about the ownership structure, including shareholders and their ownership percentages
+  numberOfEmployees       Int? // Number of employees working for the business entity
+  businessPurpose         String? // Brief description of the business entity's purpose or main activities
+  documents               Json // Collection of documents required for the KYB process, e.g., registration documents, financial statements
+  approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
+
+  workflowRuntimeData  WorkflowRuntimeData[]
+  endUsers             EndUser[]
+  EndUsersOnBusinesses EndUsersOnBusinesses[]
 }
 
 model WorkflowDefinition {
@@ -73,8 +114,10 @@ model WorkflowDefinition {
 
 model WorkflowRuntimeData {
   id                        String             @id @default(cuid())
-  endUser                   EndUser            @relation(fields: [endUserId], references: [id], onDelete: Cascade)
-  endUserId                 String
+  endUser                   EndUser?           @relation(fields: [endUserId], references: [id], onDelete: SetNull)
+  endUserId                 String?
+  business                  Business?          @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  businessId                String?
   workflowDefinition        WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
   workflowDefinitionId      String
   workflowDefinitionVersion Int
@@ -94,4 +137,12 @@ model File {
   uri            String
   createdAt      DateTime @default(now())
   createdBy      String   @default("SYSTEM")
+}
+
+model Policy {
+  id        String @id @default(cuid())
+  name      String
+  version   Int
+  tasks     Json
+  rulesSets Json
 }

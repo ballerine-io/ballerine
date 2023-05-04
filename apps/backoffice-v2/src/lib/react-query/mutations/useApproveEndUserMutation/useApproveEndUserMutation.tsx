@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../../api/api';
-import { endUsers } from '../../end-users';
 import { Action, Resource } from '../../../../enums';
-import { sleep } from '@ballerine/common';
+import { useFilterId } from 'hooks/useFilterId/useFilterId';
+import { queries } from '../../queries';
+import { useKind } from 'hooks/useKind/useKind';
 
 export const useApproveEndUserMutation = ({
   endUserId,
@@ -14,6 +15,8 @@ export const useApproveEndUserMutation = ({
   onSelectNextEndUser: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
+  const filterId = useFilterId();
+  const kind = useKind();
 
   return useMutation({
     mutationFn: () =>
@@ -29,10 +32,10 @@ export const useApproveEndUserMutation = ({
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: endUsers.list().queryKey,
+        queryKey: queries[kind].list(filterId).queryKey,
       });
       queryClient.invalidateQueries({
-        queryKey: endUsers.byId(endUserId).queryKey,
+        queryKey: queries[kind].byId(endUserId).queryKey,
       });
 
       onSelectNextEndUser();
