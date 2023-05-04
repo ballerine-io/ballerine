@@ -10,5 +10,7 @@
   <p class="max-w-[50ch] p-1 text-center">
     Before we can provide you with our service we’ll need to get to know you a bit.
   </p>
-  <button class="mt-auto" {disabled} on:click={refetch}> Start KYC Flow </button>
+  <button class="mt-auto" {disabled} on:click={refetch}>
+    Start {import.meta.env.VITE_EXAMPLE_TYPE.toUpperCase()} Flow
+  </button>
 </div>
