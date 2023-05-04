@@ -68,7 +68,7 @@ export const endpoints = {
     },
     updateById: {
       endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}`,
-      method: Method.PUT,
+      method: Method.PATCH,
     },
     event: {
       endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}/event`,

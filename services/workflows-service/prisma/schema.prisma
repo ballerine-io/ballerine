@@ -137,3 +137,11 @@ model File {
   createdAt      DateTime @default(now())
   createdBy      String   @default("SYSTEM")
 }
+
+model Policy {
+  id        String @id @default(cuid())
+  name      String
+  version   Int
+  tasks     Json
+  rulesSets Json
+}
