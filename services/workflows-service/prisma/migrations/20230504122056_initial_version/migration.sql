@@ -4,8 +4,8 @@ CREATE TYPE "ApprovalState" AS ENUM ('APPROVED', 'REJECTED', 'PROCESSING', 'NEW'
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "firstName" TEXT,
-    "lastName" TEXT,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "phone" TEXT,
     "password" TEXT NOT NULL,
@@ -34,9 +34,16 @@ CREATE TABLE "EndUser" (
     "additionalInfo" JSONB,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "businessId" TEXT,
 
     CONSTRAINT "EndUser_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "EndUsersOnBusinesses" (
+    "endUserId" TEXT NOT NULL,
+    "businessId" TEXT NOT NULL,
+
+    CONSTRAINT "EndUsersOnBusinesses_pkey" PRIMARY KEY ("endUserId","businessId")
 );
 
 -- CreateTable
@@ -60,7 +67,7 @@ CREATE TABLE "Business" (
     "numberOfEmployees" INTEGER,
     "businessPurpose" TEXT,
     "documents" JSONB NOT NULL,
-    "status" "ApprovalState" NOT NULL DEFAULT 'PROCESSING',
+    "approvalState" "ApprovalState" NOT NULL DEFAULT 'NEW',
 
     CONSTRAINT "Business_pkey" PRIMARY KEY ("id")
 );
@@ -88,7 +95,8 @@ CREATE TABLE "WorkflowDefinition" (
 -- CreateTable
 CREATE TABLE "WorkflowRuntimeData" (
     "id" TEXT NOT NULL,
-    "endUserId" TEXT NOT NULL,
+    "endUserId" TEXT,
+    "businessId" TEXT,
     "workflowDefinitionId" TEXT NOT NULL,
     "workflowDefinitionVersion" INTEGER NOT NULL,
     "context" JSONB NOT NULL,
@@ -112,17 +120,52 @@ CREATE TABLE "File" (
     CONSTRAINT "File_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Policy" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "version" INTEGER NOT NULL,
+    "tasks" JSONB NOT NULL,
+    "rulesSets" JSONB NOT NULL,
+
+    CONSTRAINT "Policy_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_BusinessToEndUser" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_phone_key" ON "User"("phone");
 
--- AddForeignKey
-ALTER TABLE "EndUser" ADD CONSTRAINT "EndUser_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "Business"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "_BusinessToEndUser_AB_unique" ON "_BusinessToEndUser"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_BusinessToEndUser_B_index" ON "_BusinessToEndUser"("B");
 
 -- AddForeignKey
-ALTER TABLE "WorkflowRuntimeData" ADD CONSTRAINT "WorkflowRuntimeData_endUserId_fkey" FOREIGN KEY ("endUserId") REFERENCES "EndUser"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "EndUsersOnBusinesses" ADD CONSTRAINT "EndUsersOnBusinesses_endUserId_fkey" FOREIGN KEY ("endUserId") REFERENCES "EndUser"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EndUsersOnBusinesses" ADD CONSTRAINT "EndUsersOnBusinesses_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "Business"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "WorkflowRuntimeData" ADD CONSTRAINT "WorkflowRuntimeData_endUserId_fkey" FOREIGN KEY ("endUserId") REFERENCES "EndUser"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "WorkflowRuntimeData" ADD CONSTRAINT "WorkflowRuntimeData_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "Business"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "WorkflowRuntimeData" ADD CONSTRAINT "WorkflowRuntimeData_workflowDefinitionId_fkey" FOREIGN KEY ("workflowDefinitionId") REFERENCES "WorkflowDefinition"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_BusinessToEndUser" ADD CONSTRAINT "_BusinessToEndUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Business"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_BusinessToEndUser" ADD CONSTRAINT "_BusinessToEndUser_B_fkey" FOREIGN KEY ("B") REFERENCES "EndUser"("id") ON DELETE CASCADE ON UPDATE CASCADE;
