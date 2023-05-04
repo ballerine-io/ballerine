@@ -1,7 +1,7 @@
 import { endUsers } from './end-users';
-import { companies } from './companies';
+import { businesses } from './businesses';
 
 export const queries = {
   individuals: endUsers,
-  companies,
+  businesses,
 } as const;

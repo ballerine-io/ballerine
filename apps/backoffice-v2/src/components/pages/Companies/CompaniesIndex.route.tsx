@@ -1,9 +1,9 @@
 import { Route } from '@tanstack/react-router';
-import { companiesRoute } from 'components/pages/Companies/Companies.route';
+import { businessesRoute } from 'components/pages/Businesses/Businesses.route';
 import { ComingSoonPage } from 'components/templates/ComingSoonPage/ComingSoonPage';
 
-export const companiesIndexRoute = new Route({
-  getParentRoute: () => companiesRoute,
+export const businessesIndexRoute = new Route({
+  getParentRoute: () => businessesRoute,
   path: '/',
   component: ComingSoonPage,
 });
