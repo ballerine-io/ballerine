@@ -7,6 +7,7 @@ export class BallerineBackOfficeService {
   constructor(private readonly baseUrl: string = 'http://localhost:3000/api/external') {}
 
   fetchEndUser = async (id: string) => fetchJson(`${this.baseUrl}/end-users/${id}`);
+  fetchBusiness = async (id: string) => fetchJson(`${this.baseUrl}/businesses/${id}`);
 
   fetchWorkflow = async (id: string) => fetchJson(`${this.baseUrl}/workflows/${id}`);
   fetchWorkflows = async () =>
@@ -28,12 +29,33 @@ export class BallerineBackOfficeService {
       body: { intentName: import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'kycSignup' : 'kybSignup' },
     });
 
-  fetchSignUp = async ({ firstName, lastName }: { firstName: string; lastName: string }) =>
-    fetchJson(`${this.baseUrl}/end-users`, {
-      method: 'POST',
-      body: {
-        firstName,
-        lastName,
+  fetchBusinessSignUp = async ({
+    companyName,
+    registrationNumber,
+  }: {
+    companyName: string;
+    registrationNumber: string;
+  }) =>
+    fetchJson(
+      `${this.baseUrl}/${import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'end-users' : 'businesses'}`,
+      {
+        method: 'POST',
+        body: {
+          companyName,
+          registrationNumber,
+        },
       },
-    });
+    );
+
+  fetchEnduserSignUp = async ({ firstName, lastName }: { firstName: string; lastName: string }) =>
+    fetchJson(
+      `${this.baseUrl}/${import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'end-users' : 'businesses'}`,
+      {
+        method: 'POST',
+        body: {
+          firstName,
+          lastName,
+        },
+      },
+    );
 }
