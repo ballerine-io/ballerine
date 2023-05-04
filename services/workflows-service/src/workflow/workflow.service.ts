@@ -81,6 +81,7 @@ export class WorkflowService {
       select: {
         state: true,
         endUserId: true,
+        businessId: true,
         id: true,
       },
     });
