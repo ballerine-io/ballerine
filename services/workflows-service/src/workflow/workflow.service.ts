@@ -109,8 +109,6 @@ export class WorkflowService {
 
     data.context = merge(runtimeData.context, data.context);
 
-    this.logger.log({ data });
-
     this.logger.log(
       `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
     );
