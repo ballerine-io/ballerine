@@ -885,8 +885,8 @@ importers:
         specifier: 0.4.3
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
-        specifier: ^0.9.3
-        version: 0.9.3(svelte@3.57.0)
+        specifier: 0.8.2
+        version: 0.8.2
       compressorjs:
         specifier: ^1.1.1
         version: 1.2.1
@@ -1237,7 +1237,7 @@ importers:
         version: 7.6.0
       '@nestjs/axios':
         specifier: ^2.0.0
-        version: 2.0.0(@nestjs/common@9.3.12)(axios@1.4.0)(reflect-metadata@0.1.13)(rxjs@7.8.0)
+        version: 2.0.0(@nestjs/common@9.4.0)(axios@1.4.0)(reflect-metadata@0.1.13)(rxjs@7.8.0)
       '@nestjs/common':
         specifier: ^9.3.12
         version: 9.4.0(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.0)
@@ -1257,8 +1257,8 @@ importers:
         specifier: 11.0.4
         version: 11.0.4(@nestjs/common@9.4.0)(@nestjs/core@9.4.0)(class-transformer@0.5.1)(class-validator@0.14.0)(graphql@16.6.0)(reflect-metadata@0.1.13)
       '@nestjs/jwt':
-        specifier: 10.0.2
-        version: 10.0.2(@nestjs/common@9.4.0)
+        specifier: 10.0.3
+        version: 10.0.3(@nestjs/common@9.4.0)
       '@nestjs/passport':
         specifier: 9.0.3
         version: 9.0.3(@nestjs/common@9.4.0)(passport@0.6.0)
@@ -1776,7 +1776,7 @@ packages:
       astro: ^2.3.0
     dependencies:
       '@astrojs/prism': 2.1.1
-      astro: 1.9.2(@types/node@18.15.10)(ts-node@10.9.1)
+      astro: 1.9.2(@types/node@18.15.11)(ts-node@10.9.1)
       github-slugger: 1.5.0
       import-meta-resolve: 2.2.2
       rehype-raw: 6.1.1
@@ -6402,7 +6402,7 @@ packages:
       tar-fs: 2.1.1
     dev: true
 
-  /@nestjs/axios@2.0.0(@nestjs/common@9.3.12)(axios@1.4.0)(reflect-metadata@0.1.13)(rxjs@7.8.0):
+  /@nestjs/axios@2.0.0(@nestjs/common@9.4.0)(axios@1.4.0)(reflect-metadata@0.1.13)(rxjs@7.8.0):
     resolution: {integrity: sha512-F6oceoQLEn031uun8NiommeMkRIojQqVryxQy/mK7fx0CI0KbgkJL3SloCQcsOD+agoEnqKJKXZpEvL6FNswJg==}
     peerDependencies:
       '@nestjs/common': ^7.0.0 || ^8.0.0 || ^9.0.0
@@ -6410,7 +6410,7 @@ packages:
       reflect-metadata: ^0.1.12
       rxjs: ^6.0.0 || ^7.0.0
     dependencies:
-      '@nestjs/common': 9.3.12(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.0)
+      '@nestjs/common': 9.4.0(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.0)
       axios: 1.4.0
       reflect-metadata: 0.1.13
       rxjs: 7.8.0
@@ -6596,8 +6596,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@nestjs/jwt@10.0.2(@nestjs/common@9.4.0):
-    resolution: {integrity: sha512-MLxjCSbO7C9fN2hst5kpIhnJAgglJmrKppXAXqElB8A9ip3ZuCowMDjjmNWWJyfOzE98NV0E0iEQGE2StMUC+Q==}
+  /@nestjs/jwt@10.0.3(@nestjs/common@9.4.0):
+    resolution: {integrity: sha512-WO8MI3uEMOFKpbO+SAg6l4aRCr+9KvaL+raFMZaXuEUDphXek6pqdox+4tex9242pNSJUA0trfAMaiy/yVrXQg==}
     peerDependencies:
       '@nestjs/common': ^8.0.0 || ^9.0.0
     dependencies:
@@ -10815,12 +10815,8 @@ packages:
       tslib: 2.5.0
     dev: true
 
-  /@zerodevx/svelte-toast@0.9.3(svelte@3.57.0):
-    resolution: {integrity: sha512-VPKWR4A9y01fyXRscu9HiTj7tV2hFrpRKZvGwMmaPXfHIXR1D9+NNsz0HXcQ7qZ0C5UaHS3n9uNtPtIcAXT7RQ==}
-    peerDependencies:
-      svelte: ^3.57.0
-    dependencies:
-      svelte: 3.57.0
+  /@zerodevx/svelte-toast@0.8.2:
+    resolution: {integrity: sha512-EDtZ/Hw37T/UWCQ5drhMss0J9vItYUSDivQ3+mET5My6No7YNiNQklj2bkE61UAzut2TjHJfOJNBZsj78ODFtw==}
     dev: false
 
   /@zkochan/js-yaml@0.0.6:
