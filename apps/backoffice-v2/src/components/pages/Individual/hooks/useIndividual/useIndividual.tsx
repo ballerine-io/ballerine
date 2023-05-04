@@ -552,11 +552,34 @@ export const useIndividual = () => {
     },
   ];
   const tasks = [task1, task2, task3, task4];
-  const { mutate: mutateApproveTask } = useUpdateWorkflowByIdMutation({ workflowId });
-  const onMutateApproveTask =
+  const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
+    workflowId: data?.workflow?.runtimeDataId,
+  });
+  const onMutateUpdateWorkflowById =
     ({ id }: { id: string }) =>
-    async () => {
-      console.log({ id });
+    () => {
+      const decisions = [...(data?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
+      const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
+
+      if (indexOfTask < 0) {
+        decisions.push({
+          taskId: id,
+          faceMatch: true,
+          idVerification: true,
+        });
+      } else {
+        decisions[indexOfTask] = {
+          taskId: id,
+          faceMatch: true,
+          idVerification: true,
+        };
+      }
+
+      return mutateUpdateWorkflowById({
+        context: {
+          decisions: null,
+        },
+      });
     };
   const components = {
     heading: ({ value }) => <h2 className={`ml-4 p-2 text-2xl font-bold`}>{value}</h2>,
@@ -671,8 +694,8 @@ export const useIndividual = () => {
             },
           )}
           // disabled={isLoading || !canApprove}
-          onClick={onMutateApproveTask({
-            id: data?.workflow?.id,
+          onClick={onMutateUpdateWorkflowById({
+            id: data?.id,
           })}
         >
           {value}

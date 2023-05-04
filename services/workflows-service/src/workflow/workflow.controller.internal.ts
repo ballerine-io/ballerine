@@ -19,6 +19,7 @@ import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
+import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -148,6 +149,25 @@ export class WorkflowControllerInternal {
       workflowDefinition,
       workflowRuntimeData,
     };
+  }
+
+  // PATCH /workflows/:id
+  @common.Patch('/:id')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async updateById(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @common.Body() data: WorkflowDefinitionUpdateInput,
+  ): Promise<WorkflowRuntimeData> {
+    try {
+      return await this.service.updateWorkflowRuntimeData(params.id, data);
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
   }
 
   @nestAccessControl.UseRoles({
