@@ -7,12 +7,11 @@ const sharedPreSearchFilters = {
   search: '',
 } as const;
 export const preSearchFiltersByKind = {
-  companies: {
+  businesses: {
     sortBy: 'website' as const,
-    kind: 'companies' as const,
+    kind: 'businesses' as const,
     filter: {
       approvalState: [State.PROCESSING],
-      companyType: [],
     },
     ...sharedPreSearchFilters,
   },

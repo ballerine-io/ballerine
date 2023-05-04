@@ -25,7 +25,11 @@ export class BusinessControllerInternal {
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(BusinessFindManyArgs)
   list(@common.Req() request: Request): Promise<BusinessModel[]> {
-    const args = plainToClass(BusinessFindManyArgs, request.query);
+    const {
+      // @ts-expect-error - Avoids passing filterId to Prisma, temporary until filters are implemented.
+      filterId: _filterId,
+      ...args
+    } = plainToClass(BusinessFindManyArgs, request.query);
     return this.service.list(args);
   }
 

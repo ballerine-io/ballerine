@@ -11,7 +11,7 @@ export const filters = {
       },
       {
         id: '2',
-        kind: 'companies',
+        kind: 'businesses',
       },
     ]);
   },

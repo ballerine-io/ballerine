@@ -29,7 +29,7 @@ const IndividualsSearchSchema = SearchSchema.extend({
   kind: z.literal('individuals').catch('individuals'),
 });
 
-const CompaniesSearchSchema = SearchSchema.extend({
+const BusinessesSearchSchema = SearchSchema.extend({
   sortBy: z.enum(['website', 'address']).optional().catch('website'),
   filter: z
     .object({
@@ -37,17 +37,17 @@ const CompaniesSearchSchema = SearchSchema.extend({
         .array(z.enum([States]))
         .optional()
         .catch([]),
-      companyType: z.array(z.string()).optional().catch([]),
+      // businessType: z.array(z.string()).optional().catch([]),
     })
     .optional(),
-  kind: z.literal('companies').catch('companies'),
+  kind: z.literal('businesses').catch('businesses'),
 });
 
 export const individualsRoute = new Route({
   getParentRoute: () => caseManagementRoute,
   validateSearch: search =>
-    search?.kind === 'companies'
-      ? CompaniesSearchSchema.parse(search)
+    search?.kind === 'businesses'
+      ? BusinessesSearchSchema.parse(search)
       : IndividualsSearchSchema.parse(search),
   preSearchFilters: [
     search => ({
