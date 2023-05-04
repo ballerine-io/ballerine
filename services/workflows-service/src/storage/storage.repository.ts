@@ -30,18 +30,19 @@ export class FileRepository {
   }
 
   async findNameById({ id, userId }: IFileIds) {
-    return (
-      await this.findById(
-        {
-          userId,
-          id,
+    return await this.findById(
+      {
+        userId,
+        id,
+      },
+      {
+        select: {
+          fileNameOnDisk: true,
+          uri: true,
+          bucketKey: true,
+          id: true,
         },
-        {
-          select: {
-            fileNameOnDisk: true,
-          },
-        },
-      )
-    )?.fileNameOnDisk;
+      },
+    );
   }
 }

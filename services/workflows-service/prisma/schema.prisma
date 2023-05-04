@@ -135,6 +135,7 @@ model File {
   userId         String
   fileNameOnDisk String
   uri            String
+  bucketKey      String?
   createdAt      DateTime @default(now())
   createdBy      String   @default("SYSTEM")
 }

@@ -20,13 +20,30 @@
     });
   };
 
+  const isFileSourcePublic = fileInfo => {
+    return fileInfo.uri.includes('https') && !fileInfo.bucketKey;
+  };
+
   onMount(async () => {
     if (!id) return;
 
-    const data = await fetchBlob<Blob>(`http://localhost:3000/api/external/storage/${id}`);
-    const base64 = await blobToBase64(data);
+    const response = await fetch(`http://localhost:3000/api/external/storage/${id}`);
+    if (!response.ok) {
+      throw new Error(`Error fetching fileInfo: ${response.statusText}`);
+    }
+    const fileInfo = await response.json();
 
-    src = base64?.replace(/application\/octet-stream/gi, fileType);
+    if (isFileSourcePublic(fileInfo)) {
+      src = fileInfo.uri;
+    } else {
+      const streamedFile = await fetchBlob<Blob>(
+        `http://localhost:3000/api/external/storage/content/${id}`,
+      );
+
+      const base64 = await blobToBase64(streamedFile);
+
+      src = base64?.replace(/application\/octet-stream/gi, fileType);
+    }
   });
 </script>
 

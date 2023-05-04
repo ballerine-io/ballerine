@@ -4,18 +4,29 @@ import { apiClient } from './api-client';
 import { endpoints } from './endpoints';
 
 import { blobToBase64 } from '../utils/blob-to-base64/blob-to-base64';
+import { FileInfoSchema } from '../lib/zod/schemas/file-info';
 
 export const storage = {
   fileById: async (fileId: string) => {
-    const [blob, error] = await apiClient({
+    const [fileInfoResponse, error] = await apiClient({
       endpoint: endpoints.storage.fileById.endpoint(fileId),
       method: endpoints.storage.fileById.method,
-      schema: z.instanceof(Blob),
-      isBlob: true,
+      schema: FileInfoSchema,
     });
+    const fileInfo = handleZodError(error, fileInfoResponse);
 
-    const data = handleZodError(error, blob);
+    if (fileInfo.bucketKey) {
+      const [blob, error] = await apiClient({
+        endpoint: endpoints.storage.fileContentById.endpoint(fileId),
+        method: endpoints.storage.fileById.method,
+        schema: z.instanceof(Blob),
+        isBlob: true,
+      });
+      const data = handleZodError(error, blob);
 
-    return blobToBase64(data);
+      return blobToBase64(data);
+    } else {
+      return fileInfo.uri;
+    }
   },
 };
