@@ -79,7 +79,7 @@ export const useIndividuals = () => {
     onSortBy: onSortByChange,
     onSortDir: () => {},
     search,
-    subjects: paginated,
+    subjects: [...paginated].reverse(),
     isLoading,
     page,
     pages,

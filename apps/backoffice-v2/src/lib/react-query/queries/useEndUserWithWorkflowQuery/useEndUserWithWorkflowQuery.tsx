@@ -4,7 +4,7 @@ import { useWorkflowsQuery } from '../useWorkflowsQuery/useWorkflowsQuery';
 
 export const useEndUserWithWorkflowQuery = (endUserId: string) => {
   const workflowId = useWorkflowsQuery()?.data?.find(
-    workflow => workflow.endUserId === endUserId,
+    workflow => (workflow.endUserId === endUserId || workflow.businessId === endUserId),
   )?.id;
   const { data: workflow } = useWorkflowQuery({ workflowId });
 
