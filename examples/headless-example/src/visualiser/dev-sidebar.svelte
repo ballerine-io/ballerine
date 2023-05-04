@@ -10,7 +10,7 @@
   const toggleStateMachineVisibility = () => (showStateMachine = !showStateMachine);
 </script>
 
-<div class="fixed right-4 bottom-4 text-xs">
+<div class="fixed bottom-4 right-4 text-xs">
   <Trigger on:click={toggleStateMachineVisibility} />
 </div>
 
@@ -21,7 +21,7 @@
   {#if showStateMachine}
     <div
       class="
-    fixed w-full h-full bg-white inset-4 rounded-lg drop-shadow-lg overflow-auto p-2
+    fixed inset-4 h-full w-full overflow-auto rounded-lg bg-white p-2 drop-shadow-lg
     lg:static lg:drop-shadow-none
     "
     >

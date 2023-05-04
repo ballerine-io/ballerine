@@ -6,9 +6,9 @@ import { env } from '../env/env';
 import { endUsers as endUsersApi } from '../lib/mock-service-worker/end-users/end-users.data';
 
 export const endUsers = {
-  list: async () => {
+  list: async (filterId: string) => {
     const [endUsers, error] = await apiClient({
-      endpoint: endpoints.endUsers.list.endpoint(),
+      endpoint: endpoints.endUsers.list.endpoint(filterId),
       method: endpoints.endUsers.list.method,
       schema: EndUsersListSchema,
     });
@@ -33,8 +33,10 @@ export const endUsers = {
   },
   updateById: async (endUserId, body) => {
     const [endUser, error] = await apiClient({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       endpoint: endpoints.endUsers.updateById.endpoint(endUserId),
       method: endpoints.endUsers.updateById.method,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       body,
       schema: EndUserByIdSchema,
     });

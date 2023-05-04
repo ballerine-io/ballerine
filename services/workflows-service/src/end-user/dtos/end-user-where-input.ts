@@ -2,9 +2,9 @@ import { DateTimeFilter } from '@/query-filters/date-time-filter';
 import { StringFilter } from '@/query-filters/string-filter';
 import { StringNullableFilter } from '@/query-filters/string-nullable-filter';
 import { ApiProperty } from '@nestjs/swagger';
-import { EndUserState } from '@prisma/client';
+import { ApprovalState } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { IsOptional, IsEmail, IsPhoneNumber } from 'class-validator';
+import { IsEmail, IsOptional, IsPhoneNumber } from 'class-validator';
 
 export class EndUserWhereInput {
   @ApiProperty({
@@ -35,7 +35,7 @@ export class EndUserWhereInput {
     enum: ['APPROVED', 'REJECTED', 'PROCESSING', 'NEW'],
   })
   @IsOptional()
-  state?: EndUserState;
+  approvalState?: ApprovalState;
 
   @ApiProperty({
     required: false,

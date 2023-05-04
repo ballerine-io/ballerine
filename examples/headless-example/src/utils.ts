@@ -141,3 +141,8 @@ export const handlePromise = async <TData>(
 };
 
 export const ctw = (...classNames: Array<ClassValue>) => twMerge(clsx(classNames));
+export const camelCaseToTitle = (str: string) =>
+  str
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, str => str.toUpperCase())
+    .replace(/id/i, 'ID');

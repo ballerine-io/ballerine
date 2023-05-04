@@ -11,20 +11,10 @@ export const navItems = [
     text: 'Case Management',
     children: [
       {
-        text: 'Individuals',
-        href: '/$locale/case-management/individuals',
-        key: 'nav-item-individuals',
+        text: '',
+        href: '',
+        key: '',
       },
-      // {
-      //   text: 'Companies - Soon',
-      //   href: '/$locale/case-management/companies',
-      //   key: 'nav-item-companies',
-      // },
-      // {
-      //   text: 'Transactions - Soon',
-      //   href: '/$locale/case-management/transactions',
-      //   key: 'nav-item-transactions',
-      // },
     ],
     key: 'nav-item-case-management',
   },

@@ -7,25 +7,39 @@ import { ButtonComponent, DivComponent } from '../../../types';
 import { ZoomButton } from './ImageViewer.ZoomButton';
 import { SkeletonItem } from 'components/organisms/ImageViewer/ImageViewer.SkeletonItem';
 
+type ImgOrIframeComponentPropsWithRef =
+  | ComponentPropsWithRef<'img'>
+  | ComponentPropsWithRef<'iframe'>;
+
 export interface IZoomModalProps extends DivComponent {
-  imageProps?: Omit<ComponentPropsWithRef<'img'>, 'src'>;
+  imageProps?: Omit<ImgOrIframeComponentPropsWithRef, 'src'>;
 }
 
-export interface ISelectedImageProps extends ComponentPropsWithRef<'img'> {
+export type TSelectedImageProps = ImgOrIframeComponentPropsWithRef & {
   // The image to show before a selection is made by the end user.
-  initialImage: string;
+  initialImage: {
+    imageUrl: string;
+    fileType: string;
+  };
   isLoading?: boolean;
-}
+};
 
 export interface IItemProps extends Omit<ComponentProps<'li'>, 'children'> {
   caption: string;
   src: string;
+  fileType: string;
   alt: string;
   buttonProps?: ButtonComponent;
   imageProps?: Omit<ComponentPropsWithoutRef<'img'>, 'src' | 'alt'>;
 }
 
-export type IImageViewerProps = DivComponent;
+export interface IImageViewerProps extends ComponentProps<'div'> {
+  selectedImage: {
+    imageUrl: string;
+    fileType: string;
+  };
+  onSelectImage: (next: { imageUrl: string; fileType: string }) => () => void;
+}
 
 /**
  * Components available through dot notation i.e. ImageViewer.List

@@ -10,7 +10,7 @@ export const endpoints = {
   auth: {
     signIn: {
       default: {
-        endpoint: () => `auth/sign-in`,
+        endpoint: () => `auth/login`,
         method: Method.POST,
       },
       google: {
@@ -19,7 +19,7 @@ export const endpoints = {
       },
     },
     signOut: {
-      endpoint: () => `auth/sign-out`,
+      endpoint: () => `auth/logout`,
       method: Method.POST,
     },
     getSession: {
@@ -29,7 +29,7 @@ export const endpoints = {
   },
   endUsers: {
     list: {
-      endpoint: () => `end-users`,
+      endpoint: (filterId: string) => `end-users?filterId=${filterId}`,
       method: Method.GET,
     },
     byId: {
@@ -39,6 +39,21 @@ export const endpoints = {
     // Unused
     updateById: {
       endpoint: (endUserId: string) => `end-users/${endUserId}`,
+      method: Method.PATCH,
+    },
+  },
+  businesses: {
+    list: {
+      endpoint: (filterId: string) => `businesses?filterId=${filterId}`,
+      method: Method.GET,
+    },
+    byId: {
+      endpoint: (businessId: string) => `businesses/${businessId}`,
+      method: Method.GET,
+    },
+    // Unused
+    updateById: {
+      endpoint: (businessId: string) => `businesses/${businessId}`,
       method: Method.PATCH,
     },
   },
@@ -53,7 +68,7 @@ export const endpoints = {
     },
     updateById: {
       endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}`,
-      method: Method.PUT,
+      method: Method.PATCH,
     },
     event: {
       endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}/event`,
