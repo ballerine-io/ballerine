@@ -24,32 +24,32 @@
   }
 </script>
 
-<div class="w-full h-full flex flex-col items-center relative">
-  <div class="h-[50px] flex items-center">
+<div class="relative flex h-full w-full flex-col items-center">
+  <div class="flex h-[50px] items-center">
     <h1 class="text-xl">STATE MACHINE</h1>
     <!-- svelte-ignore a11y-missing-attribute -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <a
       class="
-          absolute block cursor-pointer select-none
-          top-1 right-1
-          text-lg p-2 leading-none
-          border border-transparent
-          hover:border-gray-100 hover:bg-gray-100 transition-colors
-          rounded
-          bg-transparent
+          absolute right-1 top-1 block
+          cursor-pointer select-none
+          rounded border border-transparent
+          bg-transparent p-2
+          text-center text-lg leading-none
           text-gray-600
-          hover:filter-none
+          no-underline
           filter-none
-          text-center no-underline hover:no-underline"
+          transition-colors
+          hover:border-gray-100
+          hover:bg-gray-100 hover:no-underline hover:filter-none"
       on:click={handleClick}>×</a
     >
   </div>
 
-  <div class="flex flex-col w-full h-full overflow-hidden">
+  <div class="flex h-full w-full flex-col overflow-hidden">
     <iframe
       style="width: calc(100% + clamp(36rem, 36rem + 0px, 70vw))"
-      class="w-full h-full"
+      class="h-full w-full"
       data-xstate
       title="inspected machine"
     />

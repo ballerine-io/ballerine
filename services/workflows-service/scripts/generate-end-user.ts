@@ -35,7 +35,7 @@ export const generateEndUser = ({
     correlationId,
     firstName,
     lastName,
-    state: 'PROCESSING',
+    approvalState: 'PROCESSING',
     email: faker.internet.email(firstName, lastName),
     phone: faker.phone.number('+##########'),
     dateOfBirth: faker.date.past(60),

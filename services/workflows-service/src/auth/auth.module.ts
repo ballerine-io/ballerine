@@ -1,7 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
 import { JWT_EXPIRATION } from '../env';
 import { SecretsManagerModule } from '../providers/secrets/secrets-manager.module';
 import { SecretsManagerService } from '../providers/secrets/secrets-manager.service';
@@ -16,11 +15,18 @@ import { INJECTION_TOKEN_JWT_SECRET_KEY } from '@/injection-tokens';
 
 // eslint-disable-next-line import/no-cycle
 import { UserModule } from '../user/user.module';
+import { LocalStrategy } from '@/auth/local/local.strategy';
+import { SessionSerializer } from '@/auth/session-serializer';
+import { UserService } from '@/user/user.service';
+import { UserRepository } from '@/user/user.repository';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     forwardRef(() => UserModule),
-    PassportModule,
+    PassportModule.register({
+      session: true,
+    }),
     SecretsManagerModule,
     JwtModule.registerAsync({
       imports: [SecretsManagerModule],
@@ -43,11 +49,18 @@ import { UserModule } from '../user/user.module';
   ],
   providers: [
     AuthService,
-    BasicStrategy,
     PasswordService,
+    UserRepository,
+    {
+      provide: 'USER_SERVICE',
+      useClass: UserService,
+    },
+    BasicStrategy,
     JwtStrategy,
     jwtSecretFactory,
     TokenService,
+    LocalStrategy,
+    SessionSerializer,
   ],
   controllers: [AuthController],
   exports: [AuthService, PasswordService],

@@ -25,11 +25,11 @@ export class UserService {
     return this.repository.findById(id, args);
   }
 
-  async getByUsername(
-    username: string,
-    args?: Parameters<UserRepository['findByUsername']>[1],
+  async getByEmail(
+    email: string,
+    args?: Parameters<UserRepository['findByEmail']>[1],
   ): Promise<User | null> {
-    return this.repository.findByUsername(username, args);
+    return this.repository.findByEmail(email, args);
   }
 
   async updateById(id: string, args: Parameters<UserRepository['updateById']>[1]): Promise<User> {

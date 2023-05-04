@@ -4,6 +4,8 @@ import { t } from 'i18next';
 import toast from 'react-hot-toast';
 import { IGlobalToastContext } from '../../interfaces';
 import { isZodError } from '../../utils/is-zod-error/is-zod-error';
+import { auth } from './auth';
+import { env } from '../../env/env';
 
 // TODO: Add i18n plurals
 // TODO: Make accessing translations typesafe (json properties)
@@ -13,11 +15,16 @@ export const queryClient = new QueryClient({
       // Otherwise a simple 'Unauthorized (401)' error could cause a retry
       // until the user signs in.
       retry: 3,
-      refetchInterval: parseInt(import.meta.env.VITE_POLLING_INTERVAL as string) * 1000 || false,
+      refetchInterval: env.VITE_POLLING_INTERVAL,
     },
   },
   queryCache: new QueryCache({
-    onError: error => {
+    onError: async error => {
+      if (isErrorWithMessage(error) && error.message === 'Unauthorized (401)') {
+        queryClient.setQueryData(auth.getSession().queryKey, undefined);
+        await queryClient.invalidateQueries(auth.getSession().queryKey);
+      }
+
       if (isZodError(error)) {
         toast.error('❌ Validation error');
 

@@ -12,7 +12,7 @@ export class UserOrderByInput {
     required: false,
     enum: ['asc', 'desc'],
   })
-  username?: SortOrder;
+  email?: SortOrder;
 
   @ApiProperty({
     required: false,

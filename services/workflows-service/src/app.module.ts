@@ -1,4 +1,4 @@
-import { Module, Scope } from '@nestjs/common';
+import { MiddlewareConsumer, Module, Scope } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MorganInterceptor, MorganModule } from 'nest-morgan';
 import { UserModule } from './user/user.module';
@@ -8,18 +8,17 @@ import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SecretsManagerModule } from './providers/secrets/secrets-manager.module';
-import {
-  ConfigModule,
-  // ConfigService
-} from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ServeStaticOptionsService } from './serve-static-options.service';
 import { EndUserModule } from './end-user/end-user.module';
+import { BusinessModule } from './business/business.module';
 import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
 
 @Module({
   controllers: [],
@@ -39,6 +38,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     WorkflowModule,
     StorageModule,
     EndUserModule,
+    BusinessModule,
     ACLModule,
     AuthModule,
     HealthModule,
@@ -58,4 +58,8 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(SessionAuthMiddleware).forRoutes('internal/*');
+  }
+}

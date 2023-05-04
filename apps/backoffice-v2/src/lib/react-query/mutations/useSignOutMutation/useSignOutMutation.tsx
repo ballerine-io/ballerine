@@ -19,10 +19,8 @@ export const useSignOutMutation = () => {
       resource: Resource.END_USER,
       action: Action.SIGN_OUT,
     }),
-    onSuccess: (_data, { callbackUrl, redirect }) => {
-      queryClient.setQueryData(getSession.queryKey, {
-        session: false,
-      });
+    onSuccess: (data, { callbackUrl, redirect }) => {
+      queryClient.setQueryData(getSession.queryKey, undefined);
 
       if (!callbackUrl || !redirect) return;
 
