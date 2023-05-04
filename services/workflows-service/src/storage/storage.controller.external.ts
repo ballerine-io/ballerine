@@ -8,7 +8,11 @@ import { StorageService } from './storage.service';
 import * as errors from '../errors';
 import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { fileFilter } from './file-filter';
-import { manageFileByProvider } from '@/storage/get-file-storage-manager';
+import {
+  downloadFileFromS3,
+  fetchDefaultBucketName,
+  manageFileByProvider,
+} from '@/storage/get-file-storage-manager';
 
 // Temporarily identical to StorageControllerInternal
 @swagger.ApiTags('Storage')
@@ -39,10 +43,11 @@ export class StorageControllerExternal {
       },
     },
   })
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(@UploadedFile() file: Partial<Express.MulterS3.File>) {
     const id = await this.service.createFileLink({
-      uri: file.path,
-      fileNameOnDisk: file.filename,
+      uri: file.location || String(file.path),
+      fileNameOnDisk: String(file.location),
+      bucketKey: file.key,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
     });
@@ -54,15 +59,37 @@ export class StorageControllerExternal {
   @common.Get('/:id')
   async getFileById(@Param('id') id: string, @Res() res: Response) {
     // currently ignoring user id due to no user info
-    const fileNameOnDisk = await this.service.getFileNameById({
+    const persistedFile = await this.service.getFileNameById({
       id,
       userId: '',
     });
-
-    if (!fileNameOnDisk) {
+    if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }
 
-    return res.sendFile(fileNameOnDisk, { root: './upload' });
+    return res.send(persistedFile);
+  }
+
+  // curl -v http://localhost:3000/api/storage/content/1679322938093
+  @common.Get('/content/:id')
+  async fetchFileContent(@Param('id') id: string, @Res() res: Response) {
+    // currently ignoring user id due to no user info
+    const persistedFile = await this.service.getFileNameById({
+      id,
+      userId: '',
+    });
+    if (!persistedFile) {
+      throw new errors.NotFoundException('file not found');
+    }
+
+    if (persistedFile.bucketKey) {
+      const localFilePath = await downloadFileFromS3(
+        fetchDefaultBucketName(),
+        persistedFile.bucketKey,
+      );
+      return res.sendFile(localFilePath, { root: '/' });
+    } else {
+      return res.sendFile(persistedFile.fileNameOnDisk, { root: './upload' });
+    }
   }
 }
