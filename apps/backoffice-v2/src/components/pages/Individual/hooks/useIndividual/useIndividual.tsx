@@ -125,6 +125,7 @@ export const useIndividual = () => {
           value: 'Options',
           data: {
             id: 'task1',
+            approvalStatus: 'rejected',
           },
         },
         {
@@ -132,6 +133,7 @@ export const useIndividual = () => {
           value: 'Approve',
           data: {
             id: 'task1',
+            approvalStatus: 'approved',
           },
         },
       ],
@@ -280,6 +282,7 @@ export const useIndividual = () => {
           value: 'Approve',
           data: {
             id: 'task2',
+            approvalStatus: 'approved',
           },
         },
         {
@@ -287,6 +290,7 @@ export const useIndividual = () => {
           value: 'Options',
           data: {
             id: 'task2',
+            approvalStatus: 'rejected',
           },
         },
       ],
@@ -372,6 +376,7 @@ export const useIndividual = () => {
           value: 'Approve',
           data: {
             id: 'task3',
+            approvalStatus: 'approved',
           },
         },
         {
@@ -379,6 +384,7 @@ export const useIndividual = () => {
           value: 'Options',
           data: {
             id: 'task3',
+            approvalStatus: 'rejected',
           },
         },
       ],
@@ -517,6 +523,7 @@ export const useIndividual = () => {
           value: 'Options',
           data: {
             id: 'task4',
+            approvalStatus: 'rejected',
           },
         },
         {
@@ -524,6 +531,7 @@ export const useIndividual = () => {
           value: 'Approve',
           data: {
             id: 'task4',
+            approvalStatus: 'approved',
           },
         },
       ],
@@ -557,7 +565,7 @@ export const useIndividual = () => {
       workflowId: endUser?.workflow?.runtimeDataId,
     });
   const onMutateUpdateWorkflowById =
-    ({ id }: { id: string }) =>
+    ({ id, approvalStatus }: { id: string; approvalStatus: 'rejected' | 'approved' }) =>
     () => {
       const decisions = [...(endUser?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
       const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
@@ -565,14 +573,14 @@ export const useIndividual = () => {
       if (indexOfTask < 0) {
         decisions.push({
           taskId: id,
-          faceMatch: true,
-          idVerification: true,
+          faceMatch: approvalStatus,
+          idVerification: approvalStatus,
         });
       } else {
         decisions[indexOfTask] = {
           taskId: id,
-          faceMatch: true,
-          idVerification: true,
+          faceMatch: approvalStatus,
+          idVerification: approvalStatus,
         };
       }
 
@@ -612,7 +620,7 @@ export const useIndividual = () => {
     callToAction: ({ value, data }) => {
       const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.decisions?.some(
         ({ taskId, faceMatch, idVerification }) =>
-          taskId === data?.id && faceMatch && idVerification,
+          taskId === data?.id && faceMatch === 'approved' && idVerification === 'approved',
       );
 
       return value === 'Options' ? (
@@ -639,9 +647,10 @@ export const useIndividual = () => {
               </DialogTrigger>
               <DropdownMenuItem
                 className={`cursor-pointer`}
-                // onClick={onMutateRejectEndUser({
-                //   action: Action.REJECT,
-                // })}
+                onClick={onMutateUpdateWorkflowById({
+                  id: data?.id,
+                  approvalStatus: 'rejected',
+                })}
               >
                 Reject
               </DropdownMenuItem>
@@ -708,6 +717,7 @@ export const useIndividual = () => {
           disabled={isLoadingUpdateWorkflowById || isApprovedTask}
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
+            approvalStatus: data?.approvalStatus,
           })}
         >
           {value}
