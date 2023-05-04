@@ -1,4 +1,4 @@
-name: Publish workflow-service image
+name: Publish workflow-service image - dev
 
 on:
   push:
