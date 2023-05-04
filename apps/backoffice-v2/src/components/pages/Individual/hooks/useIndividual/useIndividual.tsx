@@ -33,11 +33,11 @@ import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mu
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
-  const { data, isLoading } = useEndUserWithWorkflowQuery(endUserId);
-  const id = data?.workflow?.workflowContext?.machineContext?.id;
-  const selfie = data?.workflow?.workflowContext?.machineContext?.selfie;
+  const { data: endUser, isLoading } = useEndUserWithWorkflowQuery(endUserId);
+  const id = endUser?.workflow?.workflowContext?.machineContext?.id;
+  const selfie = endUser?.workflow?.workflowContext?.machineContext?.selfie;
   const certificateOfIncorporation =
-    data?.workflow?.workflowContext?.machineContext?.certificateOfIncorporation;
+    endUser?.workflow?.workflowContext?.machineContext?.certificateOfIncorporation;
   const { data: idUrl } = useStorageFileQuery(id?.id);
   const { data: selfieUrl } = useStorageFileQuery(selfie?.id);
   const { data: certificateOfIncorporationUrl } = useStorageFileQuery(
@@ -57,7 +57,7 @@ export const useIndividual = () => {
     passport: passportInfo,
     address: addressInfo,
     checkResults,
-  } = data ?? {};
+  } = endUser ?? {};
   const personalInfo = {
     firstName,
     middleName,
@@ -103,11 +103,11 @@ export const useIndividual = () => {
   const info = {
     personalInfo,
     passportInfo,
-    checkResults: { ...checkResults, finalResult: data?.approvalState },
+    checkResults: { ...checkResults, finalResult: endUser?.approvalState },
     addressInfo,
     workflow: {
-      name: underscoreToSpace(data?.workflow?.name),
-      state: underscoreToSpace(data?.workflow?.workflowContext?.state),
+      name: underscoreToSpace(endUser?.workflow?.name),
+      state: underscoreToSpace(endUser?.workflow?.workflowContext?.state),
     },
   };
 
@@ -552,13 +552,14 @@ export const useIndividual = () => {
     },
   ];
   const tasks = [task1, task2, task3, task4];
-  const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
-    workflowId: data?.workflow?.runtimeDataId,
-  });
+  const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
+    useUpdateWorkflowByIdMutation({
+      workflowId: endUser?.workflow?.runtimeDataId,
+    });
   const onMutateUpdateWorkflowById =
     ({ id }: { id: string }) =>
     () => {
-      const decisions = [...(data?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
+      const decisions = [...(endUser?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
       const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
 
       if (indexOfTask < 0) {
@@ -577,7 +578,7 @@ export const useIndividual = () => {
 
       return mutateUpdateWorkflowById({
         context: {
-          decisions: null,
+          decisions,
         },
       });
     };
@@ -602,8 +603,13 @@ export const useIndividual = () => {
         </div>
       );
     },
-    callToAction: ({ value, data }) =>
-      value === 'Options' ? (
+    callToAction: ({ value, data }) => {
+      const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.decisions?.some(
+        ({ taskId, faceMatch, idVerification }) =>
+          taskId === data?.id && faceMatch && idVerification,
+      );
+
+      return value === 'Options' ? (
         <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -690,17 +696,18 @@ export const useIndividual = () => {
           className={ctw(
             `btn-success btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
             {
-              // loading: debouncedIsLoadingApproveEndUser,
+              loading: isLoadingUpdateWorkflowById,
             },
           )}
-          // disabled={isLoading || !canApprove}
+          disabled={isLoadingUpdateWorkflowById || isApprovedTask}
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
           })}
         >
           {value}
         </button>
-      ),
+      );
+    },
     faceComparison: ({ value }) => (
       <Subject.FaceMatch faceAUrl={value.faceAUrl} faceBUrl={value.faceBUrl} />
     ),
