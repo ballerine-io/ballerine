@@ -17,6 +17,7 @@ import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
+import { WebhooksModule } from './webhooks/webhooks.module';
 import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
 
 @Module({
@@ -29,6 +30,7 @@ import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
       },
     }),
     EventEmitterModule.forRoot(),
+    WebhooksModule,
     DevtoolsModule.register({
       http: process.env.NODE_ENV !== 'production',
     }),
