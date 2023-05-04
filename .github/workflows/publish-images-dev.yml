@@ -1,4 +1,4 @@
-name: Publish workflow-service image
+name: Publish workflow-service image - dev
 
 on:
   push:
@@ -47,7 +47,7 @@ jobs:
           tags: |
             type=raw,value=dev
             type=raw,value=${{ steps.get_version.outputs.version }}
-            type=raw,value=${{ github.sha }}
+            type=raw,value=commit-${{ github.sha }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
