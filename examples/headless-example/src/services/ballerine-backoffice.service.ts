@@ -7,7 +7,7 @@ export class BallerineBackOfficeService {
   constructor(private readonly baseUrl: string = 'http://localhost:3000/api/external') {}
 
   fetchEndUser = async (id: string) => fetchJson(`${this.baseUrl}/end-users/${id}`);
-  fetchBusiness = async (id: string) => fetchJson(`${this.baseUrl}/business/${id}`);
+  fetchBusiness = async (id: string) => fetchJson(`${this.baseUrl}/businesses/${id}`);
 
   fetchWorkflow = async (id: string) => fetchJson(`${this.baseUrl}/workflows/${id}`);
   fetchWorkflows = async () =>
@@ -31,10 +31,10 @@ export class BallerineBackOfficeService {
 
   fetchBusinessSignUp = async ({
     companyName,
-    regestrationNubmer,
+    registrationNumber,
   }: {
     companyName: string;
-    regestrationNubmer: string;
+    registrationNumber: string;
   }) =>
     fetchJson(
       `${this.baseUrl}/${import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'end-users' : 'businesses'}`,
@@ -42,7 +42,7 @@ export class BallerineBackOfficeService {
         method: 'POST',
         body: {
           companyName,
-          regestrationNubmer,
+          registrationNumber,
         },
       },
     );

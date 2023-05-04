@@ -28,7 +28,17 @@ export const businessIds = [
   'ckkt3t2b1000aqxtt0hj4pw41',
 ];
 
-export const generateBusiness = ({ id }: { id?: string }): Prisma.BusinessCreateInput => {
+export const generateBusiness = ({
+  id,
+  workflowDefinitionId,
+  workflowDefinitionVersion,
+  context,
+}: {
+  id: string;
+  workflowDefinitionId: string;
+  workflowDefinitionVersion: number;
+  context: Prisma.InputJsonValue;
+}): Prisma.BusinessCreateInput => {
   const companyName = faker.company.companyName();
   const registrationNumber = faker.datatype.uuid();
   const legalForm = faker.company.companySuffix();
@@ -70,6 +80,13 @@ export const generateBusiness = ({ id }: { id?: string }): Prisma.BusinessCreate
     documents,
     shareholderStructure,
     approvalState: 'PROCESSING',
+    workflowRuntimeData: {
+      create: {
+        workflowDefinitionVersion,
+        context,
+        workflowDefinitionId,
+      },
+    },
   };
 };
 

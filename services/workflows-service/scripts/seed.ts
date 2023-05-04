@@ -282,11 +282,15 @@ async function seed(bcryptSalt: Salt) {
       client.business.create({
         data: generateBusiness({
           id,
+          workflowDefinitionId: onboardingMachineKybId,
+          workflowDefinitionVersion: manualMachineVersion,
+          context: {},
         }),
       }),
     ),
   );
 
+  // TODO: create business with enduser attched to them
   // await client.business.create({
   //   data: {
   //     ...generateBusiness({}),

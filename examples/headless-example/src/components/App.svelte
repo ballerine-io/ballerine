@@ -113,7 +113,7 @@
   const createSignUpMutation = () =>
     createMutation({
       mutationFn:
-        import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? fetchEnduserSignUp : fetchBusinessSignUp,
+        import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? fetchBusinessSignUp : fetchBusinessSignUp,
       onSuccess: data => {
         sessionStorage.setItem(NO_AUTH_USER_KEY, data?.id);
         noAuthUserId = data?.id;
@@ -139,15 +139,15 @@
     });
 
   const onSubmitBusiness = async ({
-    bname: compnayName,
-    rnum: regestrationNumber,
+    bname: companyName,
+    rnum: registrationNumber,
   }: {
     bname: string;
     rnum: string;
   }) =>
     $signUpMutation.mutate({
-      compnayName,
-      regestrationNumber,
+      companyName,
+      registrationNumber,
     });
 
   const onSubmit = import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? onSubmitEnduser : onSubmitBusiness;
@@ -230,7 +230,6 @@
     {#if !entityId}
       <SignUp {onSubmit} />
     {/if}
-
     {#if $workflow && !isCompleted && !shouldResubmit}
       <Workflow workflow={$workflow} on:workflow-updated={workflowComponentStateUpdated} />
     {/if}
