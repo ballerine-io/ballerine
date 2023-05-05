@@ -1,5 +1,11 @@
 # @ballerine/workflows-service
 
+## 0.4.10
+
+### Patch Changes
+
+- bootstrap fixes
+
 ## 0.4.9
 
 ### Patch Changes
