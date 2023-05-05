@@ -1,1 +1,0 @@
-export { SubjectList } from './SubjectList';
