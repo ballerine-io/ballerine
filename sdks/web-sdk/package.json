@@ -92,7 +92,7 @@
   },
   "dependencies": {
     "@ballerine/common": "0.4.3",
-    "@zerodevx/svelte-toast": "^0.9.3",
+    "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "deepmerge": "^4.3.0",
     "dotenv": "^16.0.3",
