@@ -2,14 +2,19 @@ import { useSearch } from '@tanstack/react-router';
 import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
 import { useCallback, useRef } from 'react';
 import { TRouteId } from '../../../../../types';
+import { useKind } from 'hooks/useKind/useKind';
 
 export const useSubjectsList = (routerId: TRouteId) => {
   const { filter, sortBy } = useSearch({ from: routerId, strict: false });
-  const sortByOptions = [
+  const kind = useKind();
+  const sharedSortByOptions = [
     {
       label: 'Created At',
       value: 'createdAt',
     },
+  ];
+  const individualsSortByOptions = [
+    ...sharedSortByOptions,
     {
       label: 'First Name',
       value: 'firstName',
@@ -22,7 +27,15 @@ export const useSubjectsList = (routerId: TRouteId) => {
       label: 'Email',
       value: 'email',
     },
-  ] as const;
+  ];
+  const businessesSortByOptions = [
+    ...sharedSortByOptions,
+    {
+      label: 'Business Name',
+      value: 'companyName',
+    },
+  ];
+  const sortByOptions = kind === 'individuals' ? individualsSortByOptions : businessesSortByOptions;
   const filterByOptions = [
     {
       label: 'User status',

@@ -6,6 +6,7 @@ import { useIndividuals } from 'components/pages/Individuals/hooks/useIndividual
 import { Subject } from 'components/organisms/Subject/Subject';
 import { MotionScrollArea } from 'components/molecules/MotionScrollArea/MotionScrollArea';
 import { useKind } from 'hooks/useKind/useKind';
+
 export const Individuals = () => {
   const {
     onPaginate,
@@ -23,7 +24,7 @@ export const Individuals = () => {
     routerId,
   } = useIndividuals();
   const kind = useKind();
-  console.log(subjects);
+
   return (
     <>
       <SubjectsList
@@ -54,7 +55,7 @@ export const Individuals = () => {
                     <SubjectsList.Item
                       key={id}
                       id={id}
-                      fullName={kind !== 'businesses' ? `1${firstName} ${lastName}` : companyName}
+                      fullName={kind !== 'businesses' ? `${firstName} ${lastName}` : companyName}
                       avatarUrl={avatarUrl}
                       createdAt={createdAt}
                       assignedTo={assignedTo}

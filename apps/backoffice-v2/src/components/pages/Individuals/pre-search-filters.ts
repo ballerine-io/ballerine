@@ -8,7 +8,7 @@ const sharedPreSearchFilters = {
 } as const;
 export const preSearchFiltersByKind = {
   businesses: {
-    sortBy: 'website' as const,
+    sortBy: 'createdAt' as const,
     kind: 'businesses' as const,
     filter: {
       approvalState: [State.PROCESSING],
