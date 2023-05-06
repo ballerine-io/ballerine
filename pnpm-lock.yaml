@@ -1299,8 +1299,8 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       nest-access-control:
-        specifier: 2.2.0
-        version: 2.2.0(@nestjs/graphql@11.0.4)
+        specifier: 2.0.3
+        version: 2.0.3
       nest-morgan:
         specifier: 1.0.1
         version: 1.0.1
@@ -20312,15 +20312,9 @@ packages:
   /neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  /nest-access-control@2.2.0(@nestjs/graphql@11.0.4):
-    resolution: {integrity: sha512-2H9tJHsC8XBb//yYnmVlCGcYsEaCFnoOMp4OeJreTG/CusaTH9jQT+PE4yp4ZSlJm4xabk6A466KVbdd04ZXNQ==}
-    peerDependencies:
-      '@nestjs/graphql': ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
-    peerDependenciesMeta:
-      '@nestjs/graphql':
-        optional: true
+  /nest-access-control@2.0.3:
+    resolution: {integrity: sha512-oRMhSrMdvSLuAXYokWmLSafvOf+dVGOgRYgelWWGLZZYXxj3DbgGua9DwXRiqp3hbmoT8dP5HZVoa5UPbBqrdg==}
     dependencies:
-      '@nestjs/graphql': 11.0.4(@nestjs/common@9.4.0)(@nestjs/core@9.4.0)(class-transformer@0.5.1)(class-validator@0.14.0)(graphql@16.6.0)(reflect-metadata@0.1.13)
       accesscontrol: 2.2.1
     dev: false
 
