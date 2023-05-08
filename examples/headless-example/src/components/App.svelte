@@ -113,7 +113,7 @@
   const createSignUpMutation = () =>
     createMutation({
       mutationFn:
-        import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? fetchBusinessSignUp : fetchBusinessSignUp,
+        import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? fetchEnduserSignUp : fetchBusinessSignUp,
       onSuccess: data => {
         sessionStorage.setItem(NO_AUTH_USER_KEY, data?.id);
         noAuthUserId = data?.id;
