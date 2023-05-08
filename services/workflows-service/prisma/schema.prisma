@@ -18,6 +18,8 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([email])
 }
 
 enum ApprovalState {
@@ -55,10 +57,9 @@ model EndUser {
   EndUsersOnBusinesses EndUsersOnBusinesses[]
 
   @@index([endUserType])
-  @@index([createdAt])
-  @@index([firstName])
-  @@index([correlationId])
   @@index([approvalState])
+  @@index([firstName])
+  @@index([createdAt])
 }
 
 model EndUsersOnBusinesses {
@@ -100,9 +101,6 @@ model Business {
   EndUsersOnBusinesses EndUsersOnBusinesses[]
 
   @@index([companyName])
-  @@index([countryOfIncorporation])
-  @@index([taxIdentificationNumber])
-  @@index([vatNumber])
   @@index([approvalState])
 }
 
@@ -126,7 +124,6 @@ model WorkflowDefinition {
   createdBy           String                @default("SYSTEM")
   workflowRuntimeData WorkflowRuntimeData[]
 
-  @@index([name, version])
   @@index([definitionType])
 }
 
@@ -151,7 +148,6 @@ model WorkflowRuntimeData {
   @@index([businessId, status])
   @@index([workflowDefinitionId, status])
   @@index([state])
-  @@index([createdBy])
 }
 
 model File {
@@ -170,7 +166,4 @@ model Policy {
   version   Int
   tasks     Json
   rulesSets Json
-
-  @@index([name])
-  @@index([version, name])
 }
