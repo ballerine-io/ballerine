@@ -32,6 +32,7 @@ export interface WorkflowData {
   workflowDefinition: object;
   workflowRuntimeData: object;
 }
+export type TEntityType = 'endUser' | 'business';
 
 // Discuss model classes location
 export type IntentResponse = WorkflowData[];
@@ -244,11 +245,10 @@ export class WorkflowService {
       status: 'completed',
     });
   }
-
   async resolveIntent(
     intent: string,
     entityId: string,
-    tempEntityType: string,
+    tempEntityType: TEntityType,
   ): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies[intent as keyof typeof policies];
 
@@ -258,7 +258,7 @@ export class WorkflowService {
       workflowDefinitionId,
     );
     const entityConnect: any = {} as any;
-    if (tempEntityType === 'enduser') {
+    if (tempEntityType === 'endUser') {
       entityConnect.endUser = {
         connect: {
           id: entityId,
