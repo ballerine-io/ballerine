@@ -34,13 +34,7 @@ function EventCollectingWorkflow(args) {
   return wf;
 }
 
-const sleep = ms => {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve();
-    }, ms);
-  });
-};
+const sleep = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
 
 describe('workflow-runner', () => {
   it('does not invoke subscribe callback for an unsubscribed event', () => {
@@ -275,14 +269,14 @@ describe('workflow-runner', () => {
                 isBlocking: true,
                 when: 'pre',
                 stateNames: ['initial'],
-                action: async () => sleep(3),
+                action: () => sleep(3),
               },
               {
                 name: 'PreFinal',
                 isBlocking: true,
                 when: 'pre',
                 stateNames: ['initial'],
-                action: async () => sleep(1),
+                action: () => sleep(1),
               },
             ],
           },
