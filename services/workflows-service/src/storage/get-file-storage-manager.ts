@@ -30,7 +30,7 @@ const generateAwsConfig = (process: NodeJS.ProcessEnv): S3ClientConfig => {
 };
 
 const isS3BucketConfigured = (process: NodeJS.ProcessEnv) => {
-  return z.string().optional().parse(process.AWS_S3_BUCKET_KEY);
+  return !!z.string().optional().parse(process.AWS_S3_BUCKET_KEY);
 };
 
 export const fetchDefaultBucketName = (process: NodeJS.ProcessEnv) => {
