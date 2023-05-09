@@ -208,7 +208,7 @@ export class WorkflowRunner {
     const prePlugins = this.#__extensions.statePlugins.filter(
       plugin =>
         plugin.isBlocking &&
-        plugin.when === 'post' &&
+        plugin.when === 'pre' &&
         plugin.stateNames.includes(this.#__currentState),
     );
     const snapshot = service.getSnapshot();
@@ -233,7 +233,7 @@ export class WorkflowRunner {
     const postPlugins = this.#__extensions.statePlugins.filter(
       plugin =>
         plugin.isBlocking &&
-        plugin.when === 'pre' &&
+        plugin.when === 'post' &&
         plugin.stateNames.includes(this.#__currentState),
     );
 
