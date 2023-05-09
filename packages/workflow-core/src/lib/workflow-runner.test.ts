@@ -27,28 +27,20 @@ const TWO_STATES_MACHINE_DEFINITION = {
 function EventCollectingWorkflow(args) {
   const wf = new WorkflowRunner(args);
   wf.events = [];
-  wf.subscribe(event => wf.events.push(event));
+  wf.subscribe(e => {
+    e.error && (e.error = e.error.message);
+    wf.events.push(e);
+  });
   return wf;
 }
 
-function promisedSetTimeout() {
-  let callback, ms;
-
-  if (arguments.length == 2) {
-    callback = arguments[0];
-    ms = arguments[1];
-  } else {
-    callback = Function();
-    ms = arguments[0];
-  }
-
+const sleep = ms => {
   return new Promise(resolve => {
     setTimeout(() => {
-      callback();
       resolve();
     }, ms);
   });
-}
+};
 
 describe('workflow-runner', () => {
   it('does not invoke subscribe callback for an unsubscribed event', () => {
@@ -143,28 +135,20 @@ describe('workflow-runner', () => {
 
   describe('transition plugins', () => {
     describe('non blocking', () => {
-      it('allows to keep track of plugins running status using the callback', async () => {
+      it('does not allow to keep track of plugins running status using the callback', async () => {
         const wf = EventCollectingWorkflow({
-          definition: {
-            initial: 'initial',
-            states: {
-              initial: {
-                on: { EVENT: { target: 'final', actions: 'SuccessfulPlugin' } },
-              },
-              final: {
-                on: { EVENT: { target: 'initial', actions: 'FailingPlugin' } },
-              },
-            },
-          },
+          definition: TWO_STATES_MACHINE_DEFINITION,
           extensions: {
             statePlugins: [
               {
                 name: 'SuccessfulPlugin',
-                stateNames: ['final'],
+                when: 'pre',
+                stateNames: ['initial'],
                 action: () => {},
               },
               {
                 name: 'FailingPlugin',
+                when: 'pre',
                 stateNames: ['initial'],
                 action: () => {
                   throw new Error('some error');
@@ -175,206 +159,21 @@ describe('workflow-runner', () => {
         });
 
         await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
-        await promisedSetTimeout(1);
+        await sleep(1);
 
-        wf.events.forEach(e => {
-          e.error && (e.error = e.error.message);
-        });
         expect(wf.events).toStrictEqual([
-          {
-            payload: {
-              action: 'FailingPlugin',
-              status: 'PENDING',
-            },
-            state: 'initial',
-            type: 'STATE_ACTION_STATUS',
-          },
-          {
-            error: 'some error',
-            payload: {
-              action: 'FailingPlugin',
-              status: 'ERROR',
-            },
-            state: 'initial',
-            type: 'STATE_ACTION_STATUS',
-          },
-          {
-            error: 'some error',
-            state: 'initial',
-            type: 'ERROR',
-          },
-          {
-            payload: {
-              action: 'SuccessfulPlugin',
-              status: 'PENDING',
-            },
-            state: 'initial',
-            type: 'STATE_ACTION_STATUS',
-          },
-          {
-            payload: {
-              some: 'payload',
-            },
-            state: 'final',
-            type: 'EVENT',
-          },
-          {
-            payload: {
-              action: 'SuccessfulPlugin',
-              status: 'SUCCESS',
-            },
-            state: 'final',
-            type: 'STATE_ACTION_STATUS',
-          },
+          { type: 'EVENT', payload: { some: 'payload' }, state: 'final' },
         ]);
       });
 
-      it('runs plugins in an async manner', async () => {
+      it('does not fail transitions', async () => {
         const wf = EventCollectingWorkflow({
           definition: TWO_STATES_MACHINE_DEFINITION,
           extensions: {
             statePlugins: [
               {
-                name: 'PostInitial',
-                when: 'post',
-                stateNames: ['initial'],
-                action: () => {
-                  return promisedSetTimeout(() => wf.events.push('post initial'), 3);
-                },
-              },
-              {
-                name: 'PreFinal',
+                name: 'FailingPrePlugin',
                 when: 'pre',
-                stateNames: ['final'],
-                action: () => {
-                  return promisedSetTimeout(() => wf.events.push('pre final'), 1);
-                },
-              },
-            ],
-          },
-        });
-
-        await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
-
-        expect(wf.events).toStrictEqual([
-          {
-            payload: {
-              action: 'PostInitial',
-              status: 'PENDING',
-            },
-            state: 'initial',
-            type: 'STATE_ACTION_STATUS',
-          },
-          {
-            payload: {
-              action: 'PreFinal',
-              status: 'PENDING',
-            },
-            state: 'initial',
-            type: 'STATE_ACTION_STATUS',
-          },
-          {
-            payload: {
-              some: 'payload',
-            },
-            state: 'final',
-            type: 'EVENT',
-          },
-        ]);
-
-        await promisedSetTimeout(5);
-
-        expect(wf.events).toStrictEqual([
-          {
-            payload: {
-              action: 'PostInitial',
-              status: 'PENDING',
-            },
-            state: 'initial',
-            type: 'STATE_ACTION_STATUS',
-          },
-          {
-            payload: {
-              action: 'PreFinal',
-              status: 'PENDING',
-            },
-            state: 'initial',
-            type: 'STATE_ACTION_STATUS',
-          },
-          {
-            payload: {
-              some: 'payload',
-            },
-            state: 'final',
-            type: 'EVENT',
-          },
-          'pre final',
-          {
-            payload: {
-              action: 'PreFinal',
-              status: 'SUCCESS',
-            },
-            state: 'final',
-            type: 'STATE_ACTION_STATUS',
-          },
-          'post initial',
-          {
-            payload: {
-              action: 'PostInitial',
-              status: 'SUCCESS',
-            },
-            state: 'final',
-            type: 'STATE_ACTION_STATUS',
-          },
-        ]);
-      });
-
-      it.each(['pre', 'post'])(
-        'raises an exception if any of stateNames is not defined',
-        async when => {
-          expect(() => {
-            const wf = new WorkflowRunner({
-              definition: TWO_STATES_MACHINE_DEFINITION,
-              extensions: {
-                statePlugins: [
-                  {
-                    name: 'PostInitial',
-                    when,
-                    stateNames: ['initial', 'middle', 'final'],
-                  },
-                ],
-              },
-            });
-          }).toThrowError("middle is not defined within the workflow definition's states");
-        },
-      );
-    });
-
-    describe('blocking', () => {
-      it('does not allow to keep track of plugins running status using the callback', async () => {
-        const wf = EventCollectingWorkflow({
-          definition: {
-            initial: 'initial',
-            states: {
-              initial: {
-                on: { EVENT: { target: 'final' } },
-              },
-              final: {
-                on: { EVENT: { target: 'initial' } },
-              },
-            },
-          },
-          extensions: {
-            statePlugins: [
-              {
-                name: 'SuccessfulPlugin',
-                isBlocking: true,
-                stateNames: ['final'],
-                action: () => {},
-              },
-              {
-                name: 'FailingPlugin',
-                isBlocking: true,
                 stateNames: ['initial'],
                 action: () => {
                   throw new Error();
@@ -385,16 +184,84 @@ describe('workflow-runner', () => {
         });
 
         await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
-        await promisedSetTimeout(1);
+        await sleep(1);
+
+        expect(wf.events).toStrictEqual([
+          { type: 'EVENT', payload: { some: 'payload' }, state: 'final' },
+        ]);
+      });
+
+      it('raises an exception if any of stateNames is not defined', async => {
+        expect(() => {
+          const wf = new WorkflowRunner({
+            definition: TWO_STATES_MACHINE_DEFINITION,
+            extensions: {
+              statePlugins: [
+                {
+                  name: 'PostInitial',
+                  when: 'pre',
+                  stateNames: ['initial', 'middle', 'final'],
+                },
+              ],
+            },
+          });
+        }).toThrowError("middle is not defined within the workflow definition's states");
+      });
+    });
+
+    describe('blocking', () => {
+      it('allows to keep track of plugins running status using the callback', async () => {
+        const wf = EventCollectingWorkflow({
+          definition: TWO_STATES_MACHINE_DEFINITION,
+          extensions: {
+            statePlugins: [
+              {
+                name: 'SuccessfulPlugin',
+                when: 'pre',
+                isBlocking: true,
+                stateNames: ['initial'],
+                action: async () => {},
+              },
+              {
+                name: 'FailingPlugin',
+                when: 'pre',
+                isBlocking: true,
+                stateNames: ['initial'],
+                action: async () => {
+                  throw new Error('some error');
+                },
+              },
+            ],
+          },
+        });
+
+        await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+        await sleep(1);
 
         expect(wf.events).toStrictEqual([
           {
-            payload: {
-              some: 'payload',
-            },
-            state: 'final',
-            type: 'EVENT',
+            type: 'STATE_ACTION_STATUS',
+            state: 'initial',
+            payload: { status: 'PENDING', action: 'SuccessfulPlugin' },
           },
+          {
+            type: 'STATE_ACTION_STATUS',
+            state: 'initial',
+            payload: { status: 'SUCCESS', action: 'SuccessfulPlugin' },
+          },
+          {
+            type: 'STATE_ACTION_STATUS',
+            state: 'initial',
+            payload: { status: 'PENDING', action: 'FailingPlugin' },
+          },
+          {
+            type: 'STATE_ACTION_STATUS',
+            state: 'initial',
+            payload: { status: 'ERROR', action: 'FailingPlugin' },
+            error: 'some error',
+          },
+          { type: 'ERROR', state: 'initial', error: 'some error' },
+          { type: 'EVENT', payload: { some: 'payload' }, state: 'final' },
         ]);
       });
 
@@ -406,76 +273,52 @@ describe('workflow-runner', () => {
               {
                 name: 'PostInitial',
                 isBlocking: true,
-                when: 'post',
+                when: 'pre',
                 stateNames: ['initial'],
-                action: () => {
-                  return promisedSetTimeout(() => wf.events.push('post initial'), 3);
-                },
+                action: async () => sleep(3),
               },
               {
                 name: 'PreFinal',
                 isBlocking: true,
                 when: 'pre',
-                stateNames: ['final'],
-                action: () => {
-                  return promisedSetTimeout(() => wf.events.push('pre final'), 1);
-                },
+                stateNames: ['initial'],
+                action: async () => sleep(1),
               },
             ],
           },
         });
 
         await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
-        await promisedSetTimeout(3);
+        await sleep(5);
 
         expect(wf.events).toStrictEqual([
           {
-            payload: {
-              action: 'PostInitial',
-              status: 'PENDING',
-            },
+            type: 'STATE_ACTION_STATUS',
             state: 'initial',
-            type: 'STATE_ACTION_STATUS',
+            payload: { status: 'PENDING', action: 'PostInitial' },
           },
-          'post initial',
           {
-            payload: {
-              action: 'PostInitial',
-              status: 'SUCCESS',
-            },
+            type: 'STATE_ACTION_STATUS',
             state: 'initial',
-            type: 'STATE_ACTION_STATUS',
+            payload: { status: 'SUCCESS', action: 'PostInitial' },
           },
           {
-            payload: {
-              some: 'payload',
-            },
-            state: 'final',
-            type: 'EVENT',
+            type: 'STATE_ACTION_STATUS',
+            state: 'initial',
+            payload: { status: 'PENDING', action: 'PreFinal' },
           },
           {
-            payload: {
-              action: 'PreFinal',
-              status: 'PENDING',
-            },
-            state: 'final',
             type: 'STATE_ACTION_STATUS',
+            state: 'initial',
+            payload: { status: 'SUCCESS', action: 'PreFinal' },
           },
-          'pre final',
-          {
-            payload: {
-              action: 'PreFinal',
-              status: 'SUCCESS',
-            },
-            state: 'final',
-            type: 'STATE_ACTION_STATUS',
-          },
+          { type: 'EVENT', payload: { some: 'payload' }, state: 'final' },
         ]);
       });
     });
   });
 
-  it('allows to pass state actions', () => {
+  it('allows to pass xstate actions', () => {
     let done = false;
     const wf = new WorkflowRunner({
       definition: {
