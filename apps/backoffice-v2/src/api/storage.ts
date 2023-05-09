@@ -8,25 +8,21 @@ import { FileInfoSchema } from '../lib/zod/schemas/file-info';
 
 export const storage = {
   fileById: async (fileId: string) => {
-    const [fileInfoResponse, error] = await apiClient({
+    const [fileInfoResponse, fetchFileError] = await apiClient({
       endpoint: endpoints.storage.fileById.endpoint(fileId),
       method: endpoints.storage.fileById.method,
       schema: FileInfoSchema,
     });
-    const fileInfo = handleZodError(error, fileInfoResponse);
+    const fileInfo = handleZodError(fetchFileError, fileInfoResponse);
 
-    if (fileInfo.bucketKey) {
-      const [blob, error] = await apiClient({
-        endpoint: endpoints.storage.fileContentById.endpoint(fileId),
-        method: endpoints.storage.fileById.method,
-        schema: z.instanceof(Blob),
-        isBlob: true,
-      });
-      const data = handleZodError(error, blob);
+    const [blob, fetchFileContentError] = await apiClient({
+      endpoint: endpoints.storage.fileContentById.endpoint(fileInfo.id),
+      method: endpoints.storage.fileById.method,
+      schema: z.instanceof(Blob),
+      isBlob: true,
+    });
+    const data = handleZodError(fetchFileContentError, blob);
 
-      return blobToBase64(data);
-    } else {
-      return fileInfo.uri;
-    }
+    return blobToBase64(data);
   },
 };

@@ -27,7 +27,7 @@ export class StorageControllerExternal {
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: manageFileByProvider(),
+      storage: manageFileByProvider(process.env),
       fileFilter,
     }),
   )
@@ -84,7 +84,7 @@ export class StorageControllerExternal {
 
     if (persistedFile.bucketKey) {
       const localFilePath = await downloadFileFromS3(
-        fetchDefaultBucketName(),
+        fetchDefaultBucketName(process.env),
         persistedFile.bucketKey,
       );
       return res.sendFile(localFilePath, { root: '/' });

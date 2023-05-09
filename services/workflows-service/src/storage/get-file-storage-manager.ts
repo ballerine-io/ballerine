@@ -9,30 +9,40 @@ import * as fs from 'fs';
 import { Readable } from 'stream';
 export type TLocalFile = string;
 
-const isS3BucketConfigured = () => {
-  return process.env.AWS_S3_BUCKET_KEY;
-};
+export const S3StorageEnvSchema = z.object({
+  AWS_REGION: z.string(),
+  AWS_S3_BUCKET_SECRET: z.string(),
+  AWS_S3_BUCKET_KEY: z.string(),
+});
 
-const generateAwsConfig = (): S3ClientConfig => {
+const generateAwsConfig = (process: NodeJS.ProcessEnv): S3ClientConfig => {
+  const { AWS_REGION, AWS_S3_BUCKET_KEY, AWS_S3_BUCKET_SECRET } = S3StorageEnvSchema.parse(
+    process.env,
+  );
+
   return {
-    region: z.string().parse(process.env.AWS_REGION),
+    region: AWS_REGION,
     credentials: {
-      accessKeyId: z.string().parse(process.env.AWS_S3_BUCKET_KEY),
-      secretAccessKey: z.string().parse(process.env.AWS_S3_BUCKET_SECRET),
+      accessKeyId: AWS_S3_BUCKET_KEY,
+      secretAccessKey: AWS_S3_BUCKET_SECRET,
     },
   };
 };
 
-export const fetchDefaultBucketName = () => {
-  return z.string().parse(process.env.AWS_S3_BUCKET_NAME);
+const isS3BucketConfigured = (process: NodeJS.ProcessEnv) => {
+  return z.string().optional().parse(process.AWS_S3_BUCKET_KEY);
 };
 
-export const manageFileByProvider = () => {
-  if (isS3BucketConfigured()) {
+export const fetchDefaultBucketName = (process: NodeJS.ProcessEnv) => {
+  return z.string().parse(process.AWS_S3_BUCKET_NAME);
+};
+
+export const manageFileByProvider = (process: NodeJS.ProcessEnv) => {
+  if (isS3BucketConfigured(process)) {
     return multerS3({
-      s3: new S3Client(generateAwsConfig()),
+      s3: new S3Client(generateAwsConfig(process)),
       acl: 'private',
-      bucket: fetchDefaultBucketName(),
+      bucket: fetchDefaultBucketName(process),
     });
   } else {
     return diskStorage({
@@ -48,7 +58,7 @@ export const downloadFileFromS3 = async (
 ): Promise<TLocalFile> => {
   try {
     const getObjectCommand = new GetObjectCommand({ Bucket: bucketName, Key: bucketKey });
-    let s3Client = new S3Client(generateAwsConfig());
+    let s3Client = new S3Client(generateAwsConfig(process.env));
     const response = await s3Client.send(getObjectCommand);
     const readableStream = response.Body as Readable;
     const tmpFile = tmp.fileSync();
