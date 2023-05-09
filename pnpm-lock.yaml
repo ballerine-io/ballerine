@@ -1235,6 +1235,9 @@ importers:
       '@aws-sdk/lib-storage':
         specifier: 3.325.0
         version: 3.325.0(@aws-sdk/abort-controller@3.310.0)(@aws-sdk/client-s3@3.325.0)
+      '@ballerine/common':
+        specifier: 0.0.1
+        version: 0.0.1
       '@ballerine/workflow-node-sdk':
         specifier: ^0.4.2
         version: link:../../sdks/workflow-node-sdk
