@@ -278,7 +278,7 @@ export class WorkflowService {
       },
     });
 
-    service.sendEvent({
+    await service.sendEvent({
       type,
     });
 

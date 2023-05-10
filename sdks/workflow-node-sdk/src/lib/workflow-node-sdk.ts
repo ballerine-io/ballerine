@@ -12,7 +12,7 @@ export class WorkflowNodeSDK {
     this.#__service.subscribe(callback);
   }
 
-  sendEvent(event: Parameters<TCreateWorkflowCoreReturn['sendEvent']>[0]) {
+  async sendEvent(event: Parameters<TCreateWorkflowCoreReturn['sendEvent']>[0]) {
     this.#__service.sendEvent(event);
   }
 
