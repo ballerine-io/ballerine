@@ -67,7 +67,7 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 
 ## Getting started
 
-Set up an onboarding decisioning workflow using Ballerina's pre-built building blocks. Collect data from users, process it with third-party vendors, automate decisions, or send them for manual review in the back office.
+Set up an onboarding decisioning workflow using Ballerine's pre-built building blocks. Collect data from users, process it with third-party vendors, automate decisions, or send them for manual review in the back office.
 
 ### Local Environment Setup
 
