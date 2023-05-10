@@ -6,8 +6,8 @@ import {
 import { createReadStream, createWriteStream, promises as fsPromises } from "fs";
 import axios from "axios"; // TODO: NEED to push to package
 
-class AwsS3Service implements IFileProvider {
-  private client = axios;
+class httpService implements IFileProvider {
+  protected client = axios;
 
   async downloadFile(remoteFileConfig: TRemoteUri, localFilePath: TLocalFilePath): Promise<TLocalFilePath> {
     try {

@@ -30,7 +30,7 @@
     "prepare": "npm run prisma:generate"
   },
   "dependencies": {
-    "@ballerine/common": "0.0.1",
+    "@ballerine/common": "0.4.4",
     "@aws-sdk/client-s3": "3.325.0",
     "@aws-sdk/lib-storage": "3.325.0",
     "@ballerine/workflow-node-sdk": "^0.4.2",

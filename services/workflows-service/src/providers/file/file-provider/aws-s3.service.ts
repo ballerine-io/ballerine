@@ -1,7 +1,7 @@
 import {
   IFileProvider,
   TLocalFilePath,
-  TRemoteFileConfig, TS3BucketConfig,
+  TS3BucketConfig,
 } from "@/providers/file/types";
 import {
   GetObjectCommand,
@@ -13,8 +13,7 @@ import {
 import {Readable} from "stream";
 import fs, {createReadStream} from "fs";
 import path from "path";
-import {isErrorWithName} from "../../../../../../packages/common"; // TODO: NEED to push to package
-// import { isErrorWithName } from '@ballerine/common';
+import {isErrorWithName} from "@ballerine/common";
 
 class AwsS3Service implements IFileProvider {
   protected client;
