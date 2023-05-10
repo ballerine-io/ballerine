@@ -28,11 +28,4 @@ console.log('🍎 preparing environment');
 ensureEnvFileIsPresent(backofficeRoot);
 ensureEnvFileIsPresent(workflowServiceRoot);
 
-console.log('');
-console.log('📈 seeding database');
-
-run('pnpm run docker:db', workflowServiceRoot);
-run('pnpm run db:reset:dev', workflowServiceRoot);
-
 console.log('✅ All done!');
-console.log('now you can run "pnpm dev"');
