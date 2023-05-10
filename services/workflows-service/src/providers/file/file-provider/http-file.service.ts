@@ -6,8 +6,11 @@ import {
 import { createReadStream, createWriteStream, promises as fsPromises } from "fs";
 import axios from "axios"; // TODO: NEED to push to package
 
-class httpService implements IFileProvider {
-  protected client = axios;
+export class HttpFileService implements IFileProvider {
+  protected client;
+  constructor(...args: any) {
+    this.client = axios;
+  }
 
   async downloadFile(remoteFileConfig: TRemoteUri, localFilePath: TLocalFilePath): Promise<TLocalFilePath> {
     try {
@@ -36,7 +39,7 @@ class httpService implements IFileProvider {
     }
   }
 
-  async uploadFile(localFilePath: TLocalFilePath, remoteFileConfig: TRemoteFileConfig): Promise<void> {
+  async uploadFile(...any: any): Promise<TRemoteFileConfig> {
     throw new Error("Unable to use upload to uri client")
   }
 }

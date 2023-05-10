@@ -1,10 +1,19 @@
-import {IFileProvider, TLocalFilePath} from "@/providers/file/types";
+import {
+  IFileProvider,
+  TLocalFilePath,
+  TRemoteFileConfig,
+  TRemoteUri,
+  TS3BucketConfig
+} from "@/providers/file/types";
 import fs from "fs";
 
-class localManagerService implements IFileProvider {
-  protected client = fs;
+export class LocalFileService implements IFileProvider {
+  protected client;
+  constructor(...args: any) {
+    this.client = fs
+  }
 
-  async downloadFile(remoteFileConfig: TLocalFilePath, localFilePath: TLocalFilePath): Promise<TLocalFilePath> {
+  async downloadFile(remoteFileConfig: string, localFilePath: TLocalFilePath): Promise<TLocalFilePath> {
     return await this.copyFile(remoteFileConfig, localFilePath)
   }
 
@@ -20,7 +29,7 @@ class localManagerService implements IFileProvider {
     return toFilePath
   }
 
-  async uploadFile(localFilePath: TLocalFilePath, remoteFileConfig: TLocalFilePath): Promise<void> {
+  async uploadFile(...any: any): Promise<TRemoteFileConfig> {
     throw new Error("Unable to use upload to local file manager client, use downloadFile instead")
   }
 }

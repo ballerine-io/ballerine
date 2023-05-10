@@ -126,8 +126,7 @@ model WorkflowDefinition {
   createdBy           String                @default("SYSTEM")
   workflowRuntimeData WorkflowRuntimeData[]
 
-  @@index([name, version])
-  @@index([definitionType])
+  @@index([name])
 }
 
 model WorkflowRuntimeData {

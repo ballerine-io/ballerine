@@ -15,7 +15,7 @@ import fs, {createReadStream} from "fs";
 import path from "path";
 import {isErrorWithName} from "@ballerine/common";
 
-class AwsS3Service implements IFileProvider {
+export class AwsS3FileService implements IFileProvider {
   protected client;
 
   constructor(s3ClientConfig: S3ClientConfig) {
