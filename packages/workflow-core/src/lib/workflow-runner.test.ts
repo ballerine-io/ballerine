@@ -153,7 +153,6 @@ describe('workflow-runner', () => {
         });
 
         await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
-        await sleep(1);
 
         expect(wf.events).toStrictEqual([
           { type: 'EVENT', payload: { some: 'payload' }, state: 'final' },
@@ -178,7 +177,6 @@ describe('workflow-runner', () => {
         });
 
         await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
-        await sleep(1);
 
         expect(wf.events).toStrictEqual([
           { type: 'EVENT', payload: { some: 'payload' }, state: 'final' },
@@ -230,7 +228,6 @@ describe('workflow-runner', () => {
         });
 
         await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
-        await sleep(1);
 
         expect(wf.events).toStrictEqual([
           {
@@ -283,7 +280,6 @@ describe('workflow-runner', () => {
         });
 
         await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
-        await sleep(5);
 
         expect(wf.events).toStrictEqual([
           {
