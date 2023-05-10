@@ -35,58 +35,57 @@ function createEventCollectingWorkflow(args) {
   return workflow;
 }
 
-
 describe('workflow-runner', () => {
-  it('does not invoke subscribe callback for an unsubscribed event', () => {
-    const wf = createEventCollectingWorkflow({
+  it('does not invoke subscribe callback for an unsubscribed event', async () => {
+    const workflow = createEventCollectingWorkflow({
       definition: SINGLE_STATE_MACHINE_DEFINITION,
     });
 
-    wf.sendEvent({ type: 'UnregisteredEvent', ...DEFAULT_PAYLOAD });
+    await workflow.sendEvent({ type: 'UnregisteredEvent', ...DEFAULT_PAYLOAD });
 
-    expect(wf.events).toStrictEqual([]);
+    expect(workflow.events).toStrictEqual([]);
   });
 
-  it('it does not invoke subscribe callback when staying at the same state', () => {
-    const wf = createEventCollectingWorkflow({
+  it('it does not invoke subscribe callback when staying at the same state', async () => {
+    const workflow = createEventCollectingWorkflow({
       definition: SINGLE_STATE_MACHINE_DEFINITION,
     });
 
-    wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+    await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
 
-    expect(wf.events).toStrictEqual([]);
+    expect(workflow.events).toStrictEqual([]);
   });
 
-  it('invokes subscribe callback when changing state', () => {
-    const wf = createEventCollectingWorkflow({
+  it('invokes subscribe callback when changing state', async () => {
+    const workflow = createEventCollectingWorkflow({
       definition: TWO_STATES_MACHINE_DEFINITION,
     });
 
-    wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+    await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
 
-    expect(wf.events).toStrictEqual([{ type: 'EVENT', state: 'final', ...DEFAULT_PAYLOAD }]);
+    expect(workflow.events).toStrictEqual([{ type: 'EVENT', state: 'final', ...DEFAULT_PAYLOAD }]);
   });
 
-  it('allows to send an event without a payload', () => {
-    const wf = createEventCollectingWorkflow({
+  it('allows to send an event without a payload', async () => {
+    const workflow = createEventCollectingWorkflow({
       definition: TWO_STATES_MACHINE_DEFINITION,
     });
 
-    wf.sendEvent({ type: 'EVENT' });
+    await workflow.sendEvent({ type: 'EVENT' });
 
-    expect(wf.events).toStrictEqual([{ type: 'EVENT', state: 'final' }]);
+    expect(workflow.events).toStrictEqual([{ type: 'EVENT', state: 'final' }]);
   });
 
-  it('does not fail on state changes without a subscribe callback', () => {
-    const wf = new WorkflowRunner({
+  it('does not fail on state changes without a subscribe callback', async () => {
+    const workflow = new WorkflowRunner({
       definition: TWO_STATES_MACHINE_DEFINITION,
     });
 
-    wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+    await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
   });
 
-  it('ignores definition.initial state when workflowContext.state is defined', () => {
-    const wf = createEventCollectingWorkflow({
+  it('ignores definition.initial state when workflowContext.state is defined', async () => {
+    const workflow = createEventCollectingWorkflow({
       definition: {
         initial: 'initial',
         states: {
@@ -107,22 +106,22 @@ describe('workflow-runner', () => {
       workflowContext: { state: 'alternative_initial' },
     });
 
-    wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+    await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
 
-    expect(wf.events).toStrictEqual([
+    expect(workflow.events).toStrictEqual([
       { type: 'EVENT', state: 'alternative_final', ...DEFAULT_PAYLOAD },
     ]);
   });
 
-  it('uses the last subscribed callback', () => {
-    const wf = new WorkflowRunner({
+  it('uses the last subscribed callback', async () => {
+    const workflow = new WorkflowRunner({
       definition: TWO_STATES_MACHINE_DEFINITION,
     });
 
     const events = [];
-    wf.subscribe(event => events.push(event));
-    wf.subscribe(event => {});
-    wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+    workflow.subscribe(event => events.push(event));
+    workflow.subscribe(event => {});
+    await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
 
     expect(events).toStrictEqual([]);
   });
@@ -130,7 +129,7 @@ describe('workflow-runner', () => {
   describe('transition plugins', () => {
     describe('non blocking', () => {
       it('does not allow to keep track of plugins running status using the callback', async () => {
-        const wf = createEventCollectingWorkflow({
+        const workflow = createEventCollectingWorkflow({
           definition: TWO_STATES_MACHINE_DEFINITION,
           extensions: {
             statePlugins: [
@@ -152,15 +151,15 @@ describe('workflow-runner', () => {
           },
         });
 
-        await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+        await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
 
-        expect(wf.events).toStrictEqual([
+        expect(workflow.events).toStrictEqual([
           { type: 'EVENT', payload: { some: 'payload' }, state: 'final' },
         ]);
       });
 
       it('does not fail transitions', async () => {
-        const wf = createEventCollectingWorkflow({
+        const workflow = createEventCollectingWorkflow({
           definition: TWO_STATES_MACHINE_DEFINITION,
           extensions: {
             statePlugins: [
@@ -176,16 +175,16 @@ describe('workflow-runner', () => {
           },
         });
 
-        await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+        await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
 
-        expect(wf.events).toStrictEqual([
+        expect(workflow.events).toStrictEqual([
           { type: 'EVENT', payload: { some: 'payload' }, state: 'final' },
         ]);
       });
 
       it('raises an exception if any of stateNames is not defined', async => {
         expect(() => {
-          const wf = new WorkflowRunner({
+          const workflow = new WorkflowRunner({
             definition: TWO_STATES_MACHINE_DEFINITION,
             extensions: {
               statePlugins: [
@@ -203,7 +202,7 @@ describe('workflow-runner', () => {
 
     describe('blocking', () => {
       it('allows to keep track of plugins running status using the callback', async () => {
-        const wf = createEventCollectingWorkflow({
+        const workflow = createEventCollectingWorkflow({
           definition: TWO_STATES_MACHINE_DEFINITION,
           extensions: {
             statePlugins: [
@@ -227,9 +226,9 @@ describe('workflow-runner', () => {
           },
         });
 
-        await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+        await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
 
-        expect(wf.events).toStrictEqual([
+        expect(workflow.events).toStrictEqual([
           {
             type: 'STATE_ACTION_STATUS',
             state: 'initial',
@@ -257,7 +256,7 @@ describe('workflow-runner', () => {
       });
 
       it('runs plugins in a sync manner', async () => {
-        const wf = createEventCollectingWorkflow({
+        const workflow = createEventCollectingWorkflow({
           definition: TWO_STATES_MACHINE_DEFINITION,
           extensions: {
             statePlugins: [
@@ -279,9 +278,9 @@ describe('workflow-runner', () => {
           },
         });
 
-        await wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+        await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
 
-        expect(wf.events).toStrictEqual([
+        expect(workflow.events).toStrictEqual([
           {
             type: 'STATE_ACTION_STATUS',
             state: 'initial',
@@ -308,9 +307,9 @@ describe('workflow-runner', () => {
     });
   });
 
-  it('allows to pass xstate actions', () => {
+  it('allows to pass xstate actions', async () => {
     let done = false;
-    const wf = new WorkflowRunner({
+    const workflow = new WorkflowRunner({
       definition: {
         initial: 'initial',
         states: {
@@ -329,7 +328,7 @@ describe('workflow-runner', () => {
       },
     });
 
-    wf.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+    await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
 
     expect(done).toEqual(true);
   });

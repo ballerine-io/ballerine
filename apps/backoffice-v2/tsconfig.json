@@ -22,5 +22,5 @@
       "hooks/*": ["src/hooks/*"]
     }
   },
-  "include": ["./src"]
+  "include": ["src", "e2e"]
 }
