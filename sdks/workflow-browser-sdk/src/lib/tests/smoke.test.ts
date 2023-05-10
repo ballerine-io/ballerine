@@ -1,4 +1,3 @@
-import { sleep } from '@ballerine/common';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { backendOptions } from '../backend-options';
 import { WorkflowBrowserSDK } from '../workflow-browser-sdk';
@@ -34,15 +33,15 @@ beforeEach(() => {
   updateValues();
 });
 
-const next = (payload?: Record<PropertyKey, unknown>) => {
-  workflowService?.sendEvent({
+const next = async (payload?: Record<PropertyKey, unknown>) => {
+  await workflowService?.sendEvent({
     type: 'USER_NEXT_STEP',
     payload,
   });
   updateValues();
 };
-const prev = (payload?: Record<PropertyKey, unknown>) => {
-  workflowService?.sendEvent({
+const prev = async (payload?: Record<PropertyKey, unknown>) => {
+  await workflowService?.sendEvent({
     type: 'USER_PREV_STEP',
     payload,
   });
@@ -55,29 +54,29 @@ describe('smoke', () => {
     expect(workflowService.getSnapshot()).to.have.property('value', 'first');
   });
 
-  it('should update context on USER_NEXT_STEP', () => {
+  it('should update context on USER_NEXT_STEP', async () => {
     // Does not result in ['document1', 'document1']
-    next({
+    await next({
       documents: ['document1'],
     });
 
     expect(documents).toStrictEqual(['document1']);
 
-    next({
+    await next({
       documents: ['document1'],
     });
 
     expect(documents).toStrictEqual(['document1']);
 
     // Allows partial updates
-    next({
+    await next({
       documents: [...documents, 'document2'],
     });
 
     expect(documents).toStrictEqual(['document1', 'document2']);
 
     // Does not touch unrelated context
-    next({
+    await next({
       email: 'john@doe.com',
     });
 
@@ -87,34 +86,34 @@ describe('smoke', () => {
     });
   });
 
-  it('should update context on USER_PREV_STEP', () => {
+  it('should update context on USER_PREV_STEP', async () => {
     // One before last
     while (state !== 'fifth') {
-      next();
+      await next();
     }
 
     // Does not result in ['document1', 'document1']
-    prev({
+    await prev({
       documents: ['document1'],
     });
 
     expect(documents).toStrictEqual(['document1']);
 
-    prev({
+    await prev({
       documents: ['document1'],
     });
 
     expect(documents).toStrictEqual(['document1']);
 
     // Allows partial updates
-    prev({
+    await prev({
       documents: [...documents, 'document2'],
     });
 
     expect(documents).toStrictEqual(['document1', 'document2']);
 
     // Does not touch unrelated context
-    prev({
+    await prev({
       email: 'john@doe.com',
     });
 
@@ -127,10 +126,7 @@ describe('smoke', () => {
   it('should fire an HTTP request using the backend config', async () => {
     workflowService = new WorkflowBrowserSDK(shortWorkflow);
 
-    // Uses default backend config
-    next();
-
-    await sleep(300);
+    await next();
 
     const lowerCaseDefaultHeaders = lowerCaseObjKeys(backendOptions.headers);
 
@@ -171,9 +167,7 @@ describe('smoke', () => {
       },
     });
 
-    next();
-
-    await sleep(300);
+    await next();
 
     expect(response).toMatchObject({
       ...userDefined,
