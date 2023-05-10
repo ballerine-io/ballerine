@@ -56,7 +56,6 @@ model EndUser {
 
   @@index([endUserType])
   @@index([approvalState])
-  @@index([firstName])
   @@index([createdAt])
 }
 
@@ -121,8 +120,6 @@ model WorkflowDefinition {
   updatedAt           DateTime              @updatedAt
   createdBy           String                @default("SYSTEM")
   workflowRuntimeData WorkflowRuntimeData[]
-
-  @@index([definitionType])
 }
 
 model WorkflowRuntimeData {
