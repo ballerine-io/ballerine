@@ -1,5 +1,4 @@
 import {
-  IFileProvider,
   IStreamableFileProvider,
   TLocalFilePath,
   TRemoteFileConfig,
@@ -12,10 +11,11 @@ import {
   S3Client,
   S3ClientConfig,
 } from '@aws-sdk/client-s3';
-import { Readable } from 'stream';
+import {Readable} from 'stream';
 import fs, { createReadStream } from 'fs';
 import path from 'path';
 import { isErrorWithName } from '@ballerine/common';
+import {Upload} from "@aws-sdk/lib-storage";
 
 export class AwsS3FileService implements IStreamableFileProvider {
   protected client;
@@ -104,6 +104,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
       ts3BucketConfig.fileNameInBucket,
       fileStream,
     );
+
     return this._uploadFileViaClient(putObjectCommand, isPrivate, remoteFileName);
   }
 
@@ -114,7 +115,12 @@ export class AwsS3FileService implements IStreamableFileProvider {
   ) {
     const bucketName = putObjectCommand.input.Bucket as string;
     try {
-      await this.client.send(putObjectCommand);
+      const upload = new Upload({
+        client: this.client,
+        params: putObjectCommand.input,
+      });
+
+      await upload.done();
       const fileUri = isPrivate
         ? this._generateAwsBucketUri(bucketName, remoteFileName)
         : undefined;
