@@ -126,12 +126,11 @@ export class WorkflowService {
     // @ts-ignore
     const isFinal = workflow.definition?.states?.[currentState]?.type === 'final';
 
-    if (isFinal) {
-      data.resolvedAt = new Date();
-    }
-
     const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
-      data,
+      data: {
+        ...data,
+        resolvedAt: isFinal ? new Date() : undefined,
+      },
     });
 
     if (isFinal) {
