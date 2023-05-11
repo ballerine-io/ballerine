@@ -68,7 +68,6 @@ model EndUsersOnBusinesses {
   businessId String
 
   @@id([endUserId, businessId])
-
   @@index([businessId])
   @@index([endUserId])
 }
@@ -146,6 +145,7 @@ model WorkflowRuntimeData {
   createdAt                 DateTime           @default(now())
   updatedAt                 DateTime           @updatedAt
   createdBy                 String             @default("SYSTEM")
+  resolvedAt                DateTime?
 
   @@index([endUserId, status])
   @@index([businessId, status])
