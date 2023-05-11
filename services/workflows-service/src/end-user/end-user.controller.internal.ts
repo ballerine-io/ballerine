@@ -1,5 +1,6 @@
-import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
+import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
+import { Logger, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import * as errors from '../errors';
 import { EndUserWhereUniqueInput } from './dtos/end-user-where-unique-input';
@@ -10,12 +11,22 @@ import { Request } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { EndUserService } from './end-user.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import { EndUserFilterModel } from '@/end-user/dtos/end-user-filter.model';
+import { FilterService } from '@/filter/filter.service';
+import { InputJsonValue } from '@/types';
+import { EndUserFilterCreateDto } from '@/end-user/dtos/end-user-filter-create';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import { EndUserFilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
+import { JsonValue } from 'type-fest';
 
 @swagger.ApiTags('internal/end-users')
 @common.Controller('internal/end-users')
 export class EndUserControllerInternal {
+  private readonly logger = new Logger(EndUserControllerInternal.name);
+
   constructor(
     protected readonly service: EndUserService,
+    protected readonly filterService: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -25,12 +36,18 @@ export class EndUserControllerInternal {
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EndUserFindManyArgs)
   async list(@common.Req() request: Request): Promise<EndUserModel[]> {
-    const {
-      // @ts-expect-error - Avoids passing filterId to Prisma, temporary until filters are implemented.
-      filterId: _filterId,
-      ...args
-    } = plainToClass(EndUserFindManyArgs, request.query);
-    return this.service.list(args);
+    const { filterId, ...args } = plainToClass(EndUserFindManyArgs, request.query);
+    let query: JsonValue = {};
+
+    if (filterId) {
+      const filter = await this.filterService.getById(filterId);
+      query = filter.query;
+    }
+
+    return this.service.list({
+      ...args,
+      ...(query as InputJsonValue),
+    });
   }
 
   @common.Get(':id')
@@ -49,5 +66,20 @@ export class EndUserControllerInternal {
 
       throw err;
     }
+  }
+
+  @common.Post('filters')
+  @swagger.ApiCreatedResponse({ type: EndUserFilterModel })
+  @swagger.ApiForbiddenResponse()
+  @UsePipes(new ZodValidationPipe(EndUserFilterCreateSchema))
+  async createFilter(@common.Body() data: EndUserFilterCreateDto): Promise<EndUserFilterModel> {
+    const filter = await this.filterService.create({
+      data: {
+        ...data,
+        query: data?.query as InputJsonValue,
+      },
+    });
+
+    return filter as EndUserFilterModel;
   }
 }

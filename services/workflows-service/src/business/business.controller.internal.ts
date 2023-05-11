@@ -1,4 +1,4 @@
-import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
+import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import * as errors from '../errors';

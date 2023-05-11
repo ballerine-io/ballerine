@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { MorganModule } from 'nest-morgan';
-import { ACLModule } from '../access-control/acl.module';
+import { ACLModule } from '@/common/access-control/acl.module';
 import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
 import { UserService } from './user.service';

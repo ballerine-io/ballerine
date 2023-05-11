@@ -2,7 +2,7 @@ import passport from 'passport';
 import session from 'express-session';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
-import { HttpExceptionFilter } from './filters/HttpExceptions.filter';
+import { HttpExceptionFilter } from '@/common/filters/HttpExceptions.filter';
 import { AppModule } from './app.module';
 import { swaggerDocumentOptions, swaggerPath, swaggerSetupOptions } from './swagger';
 import { ValidationPipe } from '@nestjs/common';
@@ -13,7 +13,7 @@ import helmet from 'helmet';
 import * as process from 'process';
 
 const { PORT = 3000 } = process.env;
-//
+
 async function main() {
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
