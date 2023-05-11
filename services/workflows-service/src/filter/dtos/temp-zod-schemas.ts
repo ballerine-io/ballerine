@@ -1,3 +1,10 @@
+/**
+ * Before getting rid of this file we need to;
+ * 1. Generate Zod schemas from json-schema or Prisma
+ * 2. Generate Swagger docs from json-schema or Zod schemas
+ * 3. Replace instances of class-validator and class-transformer with Zod
+ */
+
 import { z, ZodSchema } from 'zod';
 
 export const zQueryModeEnum = z.enum(['Default', 'Insensitive']);
@@ -70,21 +77,14 @@ export const DateTimeNullableFilterSchema = z.object({
   gte: z.date().optional(),
 });
 
-export const zDateTimeFilterDateStringUnion = z.union([DateTimeFilterSchema, z.date(), z.string()]);
-
-export const IntFilterSchema = z.object({
-  equals: z.number().optional(),
-  in: zEnumerable(z.number()).optional(),
-  notIn: zEnumerable(z.number()).optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([NestedIntFilterSchema, z.number()]).optional(),
-});
+export const zDateTimeFilterDateStringUnion = z.union([
+  DateTimeFilterSchema.strict(),
+  z.date(),
+  z.string(),
+]);
 
 export const zDateTimeNullableFilterDateStringUnion = z.union([
-  DateTimeNullableFilterSchema,
+  DateTimeNullableFilterSchema.strict(),
   z.date(),
   z.string(),
   z.null(),
@@ -99,40 +99,43 @@ export const FilterSchema = z.object({
   updatedAt: zDateTimeFilterDateStringUnion,
 });
 
-export const zStringFilterStringUnion = z.union([StringFilterSchema, z.string()]);
+export const zStringFilterStringUnion = z.union([StringFilterSchema.strict(), z.string()]);
 
 export const zStringNullableFilterStringNullUnion = z.union([
-  StringNullableFilterSchema,
+  StringNullableFilterSchema.strict(),
   z.string(),
   z.null(),
 ]);
 
 // @ts-expect-error - It is expected for z.lazy to be any.
 export const NestedIntNullableFilterSchema = z.lazy(() =>
-  z.object({
-    equals: z.number().optional().nullable(),
-    in: zEnumerable(z.number()).optional().nullable(),
-    notIn: zEnumerable(z.number()).optional().nullable(),
-    lt: z.number().optional(),
-    lte: z.number().optional(),
-    gt: z.number().optional(),
-    gte: z.number().optional(),
-    not: z.union([NestedIntNullableFilterSchema, z.number(), z.null()]).optional().nullable(),
-  }),
+  z
+    .object({
+      equals: z.number().optional().nullable(),
+      in: zEnumerable(z.number()).optional().nullable(),
+      notIn: zEnumerable(z.number()).optional().nullable(),
+      lt: z.number().optional(),
+      lte: z.number().optional(),
+      gt: z.number().optional(),
+      gte: z.number().optional(),
+      not: z.union([NestedIntNullableFilterSchema, z.number(), z.null()]).optional().nullable(),
+    })
+    .strict(),
 );
 
-// @ts-expect-error - It is expected for z.lazy to be any.
 export const IntNullableFilterSchema = z.lazy(() =>
-  z.object({
-    equals: z.number().optional().nullable(),
-    in: zEnumerable(z.number()).optional().nullable(),
-    notIn: zEnumerable(z.number()).optional().nullable(),
-    lt: z.number().optional(),
-    lte: z.number().optional(),
-    gt: z.number().optional(),
-    gte: z.number().optional(),
-    not: z.union([NestedIntNullableFilterSchema, z.number(), z.null()]).optional().nullable(),
-  }),
+  z
+    .object({
+      equals: z.number().optional().nullable(),
+      in: zEnumerable(z.number()).optional().nullable(),
+      notIn: zEnumerable(z.number()).optional().nullable(),
+      lt: z.number().optional(),
+      lte: z.number().optional(),
+      gt: z.number().optional(),
+      gte: z.number().optional(),
+      not: z.union([NestedIntNullableFilterSchema, z.number(), z.null()]).optional().nullable(),
+    })
+    .strict(),
 );
 
 /* End-users */
@@ -208,8 +211,6 @@ export const EndUserFilterCreateSchema = EndUserFilterSchema.omit({
 
 export const BusinessSelectSchema = z.object({
   id: z.boolean().optional(),
-  createdAt: z.boolean().optional(),
-  updatedAt: z.boolean().optional(),
   companyName: z.boolean().optional(),
   registrationNumber: z.boolean().optional(),
   legalForm: z.boolean().optional(),
@@ -230,6 +231,8 @@ export const BusinessSelectSchema = z.object({
   workflowRuntimeData: z.boolean().optional(),
   endUsers: z.boolean().optional(),
   endUsersOnBusinesses: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
   _count: z.boolean().optional(),
 });
 
@@ -250,8 +253,8 @@ export const BusinessWhereInputSchema = z.object({
   numberOfEmployees: z.union([IntNullableFilterSchema, z.number(), z.null()]).optional(),
   businessPurpose: zStringNullableFilterStringNullUnion.optional(),
   approvalState: z.union([NestedEnumApprovalStateFilter, zApprovalStateEnum]).optional(),
-  createdAt: zDateTimeFilterDateStringUnion,
-  updatedAt: zDateTimeFilterDateStringUnion,
+  createdAt: zDateTimeFilterDateStringUnion.optional(),
+  updatedAt: zDateTimeFilterDateStringUnion.optional(),
 });
 
 export const BusinessFilterSchema = FilterSchema.extend({
