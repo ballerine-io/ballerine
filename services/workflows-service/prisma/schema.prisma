@@ -53,6 +53,12 @@ model EndUser {
 
   businesses           Business[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
+
+  @@index([endUserType])
+  @@index([createdAt])
+  @@index([firstName])
+  @@index([correlationId])
+  @@index([approvalState])
 }
 
 model EndUsersOnBusinesses {
@@ -62,6 +68,8 @@ model EndUsersOnBusinesses {
   businessId String
 
   @@id([endUserId, businessId])
+  @@index([businessId])
+  @@index([endUserId])
 }
 
 model Business {
@@ -89,6 +97,12 @@ model Business {
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
+
+  @@index([companyName])
+  @@index([countryOfIncorporation])
+  @@index([taxIdentificationNumber])
+  @@index([vatNumber])
+  @@index([approvalState])
 }
 
 model WorkflowDefinition {
@@ -110,6 +124,9 @@ model WorkflowDefinition {
   updatedAt           DateTime              @updatedAt
   createdBy           String                @default("SYSTEM")
   workflowRuntimeData WorkflowRuntimeData[]
+
+  @@index([name, version])
+  @@index([definitionType])
 }
 
 model WorkflowRuntimeData {
@@ -128,6 +145,13 @@ model WorkflowRuntimeData {
   createdAt                 DateTime           @default(now())
   updatedAt                 DateTime           @updatedAt
   createdBy                 String             @default("SYSTEM")
+  resolvedAt                DateTime?
+
+  @@index([endUserId, status])
+  @@index([businessId, status])
+  @@index([workflowDefinitionId, status])
+  @@index([state])
+  @@index([createdBy])
 }
 
 model File {
@@ -136,6 +160,8 @@ model File {
   fileNameOnDisk String
   createdAt      DateTime @default(now())
   createdBy      String   @default("SYSTEM")
+
+  @@index([userId])
 }
 
 model Policy {
@@ -144,6 +170,9 @@ model Policy {
   version   Int
   tasks     Json
   rulesSets Json
+
+  @@index([name])
+  @@index([version, name])
 }
 
 model Filter {

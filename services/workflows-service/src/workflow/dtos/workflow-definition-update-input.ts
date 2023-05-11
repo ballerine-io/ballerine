@@ -20,4 +20,5 @@ export class WorkflowDefinitionUpdateInput {
   context?: InputJsonValue;
 
   status?: string;
+  resolvedAt?: Date | null;
 }
