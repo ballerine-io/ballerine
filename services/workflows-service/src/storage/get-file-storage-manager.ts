@@ -72,11 +72,12 @@ export const downloadFileFromS3 = async (
           resolve(tmpFile.name);
         })
         .on('error', error => {
-          reject(error);
+          console.error('Error Upload file to S3:', error);
+          reject(new Error("Failed to upload S3 file"));
         });
     });
   } catch (error) {
-    console.error('Error downloading file from S3:', error);
-    throw error;
+    console.error('Error Stream file to S3:', error);
+    throw new Error("Failed to Stream S3 file");
   }
 };
