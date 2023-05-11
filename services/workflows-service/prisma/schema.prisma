@@ -52,7 +52,7 @@ model EndUser {
   updatedAt DateTime @updatedAt
 
   businesses           Business[]
-  EndUsersOnBusinesses EndUsersOnBusinesses[]
+  endUsersOnBusinesses EndUsersOnBusinesses[]
 }
 
 model EndUsersOnBusinesses {
@@ -88,7 +88,7 @@ model Business {
 
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
-  EndUsersOnBusinesses EndUsersOnBusinesses[]
+  endUsersOnBusinesses EndUsersOnBusinesses[]
 }
 
 model WorkflowDefinition {

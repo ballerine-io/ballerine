@@ -1,26 +1,12 @@
-import { z } from 'zod';
+import { z, ZodSchema } from 'zod';
 
 export const zQueryModeEnum = z.enum(['Default', 'Insensitive']);
 
-export const zEnumerable = <T extends z.ZodType<any, any>>(schema: T) =>
+export const zEnumerable = <TSchema>(schema: ZodSchema<TSchema>) =>
   z.union([schema, schema.array()]);
 
 // @ts-expect-error - It is expected for z.lazy to be any.
-const NestedIntNullableFilter = z.lazy(() =>
-  z.object({
-    equals: z.number().nullable().optional(),
-    in: zEnumerable(z.number()).optional(),
-    notIn: zEnumerable(z.number()).optional(),
-    lt: z.number().optional(),
-    lte: z.number().optional(),
-    gt: z.number().optional(),
-    gte: z.number().optional(),
-    not: z.union([NestedIntNullableFilter, z.number().nullable()]).optional(),
-  }),
-);
-
-// @ts-expect-error - It is expected for z.lazy to be any.
-const NestedIntFilter = z.lazy(() =>
+export const NestedIntFilterSchema = z.lazy(() =>
   z.object({
     equals: z.number().optional(),
     in: zEnumerable(z.number()).optional(),
@@ -29,20 +15,9 @@ const NestedIntFilter = z.lazy(() =>
     lte: z.number().optional(),
     gt: z.number().optional(),
     gte: z.number().optional(),
-    not: z.union([NestedIntFilter, z.number()]).optional(),
+    not: z.union([NestedIntFilterSchema, z.number()]).optional(),
   }),
 );
-
-const IntNullableFilterSchema = z.object({
-  equals: z.number().nullable().optional(),
-  in: zEnumerable(z.number()).optional(),
-  notIn: zEnumerable(z.number()).optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([NestedIntNullableFilter, z.number().nullable()]).optional(),
-});
 
 export const StringFilterSchema = z.object({
   equals: z.string().optional(),
@@ -95,6 +70,71 @@ export const DateTimeNullableFilterSchema = z.object({
   gte: z.date().optional(),
 });
 
+export const zDateTimeFilterDateStringUnion = z.union([DateTimeFilterSchema, z.date(), z.string()]);
+
+export const IntFilterSchema = z.object({
+  equals: z.number().optional(),
+  in: zEnumerable(z.number()).optional(),
+  notIn: zEnumerable(z.number()).optional(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([NestedIntFilterSchema, z.number()]).optional(),
+});
+
+export const zDateTimeNullableFilterDateStringUnion = z.union([
+  DateTimeNullableFilterSchema,
+  z.date(),
+  z.string(),
+  z.null(),
+]);
+
+export const FilterSchema = z.object({
+  id: z.string().cuid(),
+  name: z.string(),
+  entity: z.string(),
+  createdBy: z.string().default('SYSTEM'),
+  createdAt: zDateTimeFilterDateStringUnion,
+  updatedAt: zDateTimeFilterDateStringUnion,
+});
+
+export const zStringFilterStringUnion = z.union([StringFilterSchema, z.string()]);
+
+export const zStringNullableFilterStringNullUnion = z.union([
+  StringNullableFilterSchema,
+  z.string(),
+  z.null(),
+]);
+
+// @ts-expect-error - It is expected for z.lazy to be any.
+export const NestedIntNullableFilterSchema = z.lazy(() =>
+  z.object({
+    equals: z.number().optional().nullable(),
+    in: zEnumerable(z.number()).optional().nullable(),
+    notIn: zEnumerable(z.number()).optional().nullable(),
+    lt: z.number().optional(),
+    lte: z.number().optional(),
+    gt: z.number().optional(),
+    gte: z.number().optional(),
+    not: z.union([NestedIntNullableFilterSchema, z.number(), z.null()]).optional().nullable(),
+  }),
+);
+
+// @ts-expect-error - It is expected for z.lazy to be any.
+export const IntNullableFilterSchema = z.lazy(() =>
+  z.object({
+    equals: z.number().optional().nullable(),
+    in: zEnumerable(z.number()).optional().nullable(),
+    notIn: zEnumerable(z.number()).optional().nullable(),
+    lt: z.number().optional(),
+    lte: z.number().optional(),
+    gt: z.number().optional(),
+    gte: z.number().optional(),
+    not: z.union([NestedIntNullableFilterSchema, z.number(), z.null()]).optional().nullable(),
+  }),
+);
+
 /* End-users */
 
 export const zApprovalStateEnum = z.enum(['APPROVED', 'REJECTED', 'PROCESSING', 'NEW']);
@@ -109,25 +149,21 @@ export const NestedEnumApprovalStateFilter = z.lazy(() =>
   }),
 );
 
-export const EnumApprovalStateFilter = z.object({
-  equals: zApprovalStateEnum.optional(),
-  in: zEnumerable(zApprovalStateEnum).optional(),
-  notIn: zEnumerable(zApprovalStateEnum).optional(),
-  not: z.union([NestedEnumApprovalStateFilter, zApprovalStateEnum]).optional(),
-});
-
 export const EndUserWhereInputSchema = z.object({
-  correlationId: StringFilterSchema.optional(),
-  verificationId: StringNullableFilterSchema.optional(),
-  endUserType: StringNullableFilterSchema.optional(),
-  approvalState: EnumApprovalStateFilter.optional(),
-  stateReason: StringNullableFilterSchema.optional(),
-  firstName: StringNullableFilterSchema.optional(),
-  lastName: StringNullableFilterSchema.optional(),
-  email: StringNullableFilterSchema.optional(),
-  phone: StringNullableFilterSchema.optional(),
-  createdAt: DateTimeFilterSchema.optional(),
-  updatedAt: DateTimeFilterSchema.optional(),
+  id: zStringFilterStringUnion.optional(),
+  correlationId: zStringFilterStringUnion.optional(),
+  verificationId: zStringNullableFilterStringNullUnion.optional(),
+  endUserType: zStringNullableFilterStringNullUnion.optional(),
+  approvalState: z.union([NestedEnumApprovalStateFilter, zApprovalStateEnum]).optional(),
+  stateReason: zStringNullableFilterStringNullUnion.optional(),
+  firstName: zStringNullableFilterStringNullUnion.optional(),
+  lastName: zStringNullableFilterStringNullUnion.optional(),
+  email: zStringNullableFilterStringNullUnion.optional(),
+  phone: zStringNullableFilterStringNullUnion.optional(),
+  dateOfBirth: zDateTimeNullableFilterDateStringUnion.optional(),
+  avatarUrl: zStringNullableFilterStringNullUnion.optional(),
+  createdAt: zDateTimeFilterDateStringUnion.optional(),
+  updatedAt: zDateTimeFilterDateStringUnion.optional(),
 });
 
 export const EndUserSelectSchema = z.object({
@@ -149,23 +185,17 @@ export const EndUserSelectSchema = z.object({
   updatedAt: z.boolean().optional(),
   workflowRuntimeData: z.boolean().optional(),
   businesses: z.boolean().optional(),
-  EndUsersOnBusinesses: z.boolean().optional(),
+  endUsersOnBusinesses: z.boolean().optional(),
   _count: z.boolean().optional(),
 });
 
-export const EndUserFilterSchema = z.object({
-  id: z.string().cuid(),
-  name: z.string(),
-  entity: z.string(),
+export const EndUserFilterSchema = FilterSchema.extend({
   query: z
     .object({
       select: EndUserSelectSchema.strict().optional(),
       where: EndUserWhereInputSchema.strict().optional(),
     })
     .refine(v => v.select || v.where, 'At least `query.select` or `query.where` must be provided'),
-  createdBy: z.string().default('SYSTEM'),
-  createdAt: z.date(),
-  updatedAt: z.date(),
 });
 
 export const EndUserFilterCreateSchema = EndUserFilterSchema.omit({
@@ -197,42 +227,44 @@ export const BusinessSelectSchema = z.object({
   businessPurpose: z.boolean().optional(),
   documents: z.boolean().optional(),
   approvalState: z.boolean().optional(),
+  workflowRuntimeData: z.boolean().optional(),
+  endUsers: z.boolean().optional(),
+  endUsersOnBusinesses: z.boolean().optional(),
   _count: z.boolean().optional(),
 });
 
 export const BusinessWhereInputSchema = z.object({
-  companyName: StringFilterSchema.optional(),
-  registrationNumber: StringFilterSchema.optional(),
-  legalForm: StringFilterSchema.optional(),
-  countryOfIncorporation: StringFilterSchema.optional(),
-  dateOfIncorporation: DateTimeNullableFilterSchema.optional(),
-  address: StringFilterSchema.optional(),
-  phoneNumber: StringNullableFilterSchema.optional(),
-  email: StringNullableFilterSchema.optional(),
-  website: StringNullableFilterSchema.optional(),
-  industry: StringFilterSchema.optional(),
-  taxIdentificationNumber: StringNullableFilterSchema.optional(),
-  vatNumber: StringNullableFilterSchema.optional(),
-  shareholderStructure: z.unknown().optional(),
-  numberOfEmployees: IntNullableFilterSchema.optional(),
-  businessPurpose: StringNullableFilterSchema.optional(),
-  documents: z.unknown().optional(),
-  approvalState: z.union([EnumApprovalStateFilter, zApprovalStateEnum]).optional(),
-  createdAt: DateTimeFilterSchema.optional(),
-  updatedAt: DateTimeFilterSchema.optional(),
+  id: zStringFilterStringUnion.optional(),
+  companyName: zStringFilterStringUnion.optional(),
+  registrationNumber: zStringFilterStringUnion.optional(),
+  legalForm: zStringFilterStringUnion.optional(),
+  countryOfIncorporation: zStringFilterStringUnion.optional(),
+  dateOfIncorporation: zDateTimeNullableFilterDateStringUnion.optional(),
+  address: zStringFilterStringUnion.optional(),
+  phoneNumber: zStringNullableFilterStringNullUnion.optional(),
+  email: zStringNullableFilterStringNullUnion.optional(),
+  website: zStringNullableFilterStringNullUnion.optional(),
+  industry: zStringFilterStringUnion.optional(),
+  taxIdentificationNumber: zStringNullableFilterStringNullUnion.optional(),
+  vatNumber: zStringNullableFilterStringNullUnion.optional(),
+  numberOfEmployees: z.union([IntNullableFilterSchema, z.number(), z.null()]).optional(),
+  businessPurpose: zStringNullableFilterStringNullUnion.optional(),
+  approvalState: z.union([NestedEnumApprovalStateFilter, zApprovalStateEnum]).optional(),
+  createdAt: zDateTimeFilterDateStringUnion,
+  updatedAt: zDateTimeFilterDateStringUnion,
 });
 
-export const BusinessFilterSchema = z.object({
-  id: z.string().cuid(),
-  name: z.string(),
-  entity: z.string(),
+export const BusinessFilterSchema = FilterSchema.extend({
   query: z
     .object({
-      select: EndUserSelectSchema.strict().optional(),
-      where: EndUserWhereInputSchema.strict().optional(),
+      select: BusinessSelectSchema.strict().optional(),
+      where: BusinessWhereInputSchema.strict().optional(),
     })
     .refine(v => v.select || v.where, 'At least `query.select` or `query.where` must be provided'),
-  createdBy: z.string().default('SYSTEM'),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+});
+
+export const BusinessFilterCreateSchema = BusinessFilterSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
