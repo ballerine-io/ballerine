@@ -36,6 +36,7 @@ export class EndUserWhereInput {
     enum: ['APPROVED', 'REJECTED', 'PROCESSING', 'NEW'],
   })
   @IsOptional()
+  // Incorrect type - would be a lot of time and effort to type this correctly.
   approvalState?: ApprovalState;
 
   @ApiProperty({

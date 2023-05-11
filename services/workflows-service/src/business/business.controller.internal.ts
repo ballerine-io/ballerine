@@ -1,5 +1,6 @@
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
+import { UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import * as errors from '../errors';
 import { BusinessWhereUniqueInput } from './dtos/business-where-unique-input';
@@ -10,12 +11,20 @@ import { Request } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { BusinessService } from './business.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import { BusinessFilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
+import { InputJsonValue } from '@/types';
+import { FilterService } from '@/filter/filter.service';
+import { BusinessFilterModel } from '@/business/dtos/business-filter.model';
+import { BusinessFilterCreateDto } from '@/business/dtos/business-filter-create';
+import { JsonValue } from 'type-fest';
 
 @swagger.ApiTags('internal/businesses')
 @common.Controller('internal/businesses')
 export class BusinessControllerInternal {
   constructor(
     protected readonly service: BusinessService,
+    protected readonly filterService: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -24,13 +33,19 @@ export class BusinessControllerInternal {
   @swagger.ApiOkResponse({ type: [BusinessModel] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(BusinessFindManyArgs)
-  list(@common.Req() request: Request): Promise<BusinessModel[]> {
-    const {
-      // @ts-expect-error - Avoids passing filterId to Prisma, temporary until filters are implemented.
-      filterId: _filterId,
-      ...args
-    } = plainToClass(BusinessFindManyArgs, request.query);
-    return this.service.list(args);
+  async list(@common.Req() request: Request): Promise<BusinessModel[]> {
+    const { filterId, ...args } = plainToClass(BusinessFindManyArgs, request.query);
+    let query: JsonValue = {};
+
+    if (filterId) {
+      const filter = await this.filterService.getById(filterId);
+      query = filter.query;
+    }
+
+    return this.service.list({
+      ...args,
+      ...(query as InputJsonValue),
+    });
   }
 
   @common.Get(':id')
@@ -49,5 +64,20 @@ export class BusinessControllerInternal {
 
       throw err;
     }
+  }
+
+  @common.Post('filters')
+  @swagger.ApiCreatedResponse({ type: BusinessFilterModel })
+  @swagger.ApiForbiddenResponse()
+  @UsePipes(new ZodValidationPipe(BusinessFilterCreateSchema))
+  async createFilter(@common.Body() data: BusinessFilterCreateDto): Promise<BusinessFilterModel> {
+    const filter = await this.filterService.create({
+      data: {
+        ...data,
+        query: data?.query as InputJsonValue,
+      },
+    });
+
+    return filter as BusinessFilterModel;
   }
 }
