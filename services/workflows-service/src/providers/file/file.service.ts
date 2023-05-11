@@ -1,5 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   TLocalFilePath,
   TRemoteFileConfig,
@@ -8,8 +6,7 @@ import {
 } from './types';
 import * as tmp from 'tmp';
 
-@Injectable()
-export class FileServiceService {
+export class FileService {
   async copyFileFromSourceToSource(
     fromServiceProvider: TFileServiceProvider,
     fromRemoteFileConfig: TRemoteFileConfig,
@@ -54,13 +51,18 @@ export class FileServiceService {
   ) {
     const tmpFile = tmp.fileSync();
 
-    const localeFilePath = await fromServiceProvider.downloadFile(
-      fromRemoteFileConfig,
-      tmpFile.name,
-    );
+    const localeFilePath = await fromServiceProvider.downloadFile(fromRemoteFileConfig, tmpFile.name);
     const remoteFilePath = await toServiceProvider.uploadFile(localeFilePath, toFileConfig);
 
     return remoteFilePath;
+  }
+
+  async downloadFile(
+    fromServiceProvider: TFileServiceProvider,
+    fromRemoteFileConfig: TRemoteFileConfig,
+    toLocaleFilePath: TLocalFilePath,
+  ) {
+    return await fromServiceProvider.downloadFile(fromRemoteFileConfig, toLocaleFilePath);
   }
 
   private isBothServicesSupportStream(
@@ -70,13 +72,5 @@ export class FileServiceService {
     return (
       'fetchRemoteFileDownStream' in fromServiceProvider && 'uploadFileStream' in toServiceProvider
     );
-  }
-
-  async downloadFile(
-    fromServiceProvider: TFileServiceProvider,
-    fromRemoteFileConfig: TRemoteFileConfig,
-    toLocaleFilePath: TLocalFilePath,
-  ) {
-    return await fromServiceProvider.downloadFile(fromRemoteFileConfig, toLocaleFilePath);
   }
 }
