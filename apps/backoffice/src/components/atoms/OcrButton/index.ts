@@ -1,1 +1,0 @@
-export { OcrButton } from './OcrButton';
