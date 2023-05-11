@@ -2,8 +2,7 @@ import {
   IFileProvider,
   TLocalFilePath,
   TRemoteFileConfig,
-  TRemoteUri,
-  TS3BucketConfig
+  TRemoteUri
 } from "@/providers/file/types";
 import fs from "fs";
 
@@ -13,8 +12,8 @@ export class LocalFileService implements IFileProvider {
     this.client = fs
   }
 
-  async downloadFile(remoteFileConfig: string, localFilePath: TLocalFilePath): Promise<TLocalFilePath> {
-    return await this.copyFile(remoteFileConfig, localFilePath)
+  async downloadFile(remoteFileConfig: TRemoteFileConfig, localFilePath: TLocalFilePath): Promise<TLocalFilePath> {
+    return await this.copyFile(remoteFileConfig as TRemoteUri, localFilePath)
   }
 
   async isRemoteFileExists(remoteFileConfig: TLocalFilePath): Promise<boolean> {

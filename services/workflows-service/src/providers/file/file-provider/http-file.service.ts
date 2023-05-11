@@ -1,9 +1,9 @@
 import {
-  IFileProvider,
+  IFileProvider, TFileServiceProvider,
   TLocalFilePath,
   TRemoteFileConfig, TRemoteUri,
 } from "@/providers/file/types";
-import { createReadStream, createWriteStream, promises as fsPromises } from "fs";
+import { promises as fsPromises } from "fs";
 import axios from "axios"; // TODO: NEED to push to package
 
 export class HttpFileService implements IFileProvider {
@@ -12,9 +12,9 @@ export class HttpFileService implements IFileProvider {
     this.client = axios;
   }
 
-  async downloadFile(remoteFileConfig: TRemoteUri, localFilePath: TLocalFilePath): Promise<TLocalFilePath> {
+  async downloadFile(remoteFileConfig: TRemoteFileConfig, localFilePath: TLocalFilePath): Promise<TLocalFilePath> {
     try {
-      const response = await this.client.get(remoteFileConfig, { responseType: "arraybuffer" });
+      const response = await this.client.get(remoteFileConfig as TRemoteUri, { responseType: "arraybuffer" });
 
       if (response.status < 200 || response.status >= 300) {
         throw new Error(`Error downloading file: ${response.statusText}`);
@@ -42,4 +42,5 @@ export class HttpFileService implements IFileProvider {
   async uploadFile(...any: any): Promise<TRemoteFileConfig> {
     throw new Error("Unable to use upload to uri client")
   }
+
 }
