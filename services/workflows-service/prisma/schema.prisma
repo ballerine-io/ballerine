@@ -193,3 +193,17 @@ model Filter {
   updatedAt                 DateTime           @updatedAt
   createdBy                 String             @default("SYSTEM")
 }
+
+model Filter {
+  id String @id @default(cuid())
+  // Name of the filter i.e. "KYC"
+  name String
+  // Does the filter belong to EndUser or Business?
+  entity String
+  // 1:1 with Prisma's select object
+  // Example: { select: { id: true, firstName: true, lastName: true }, where: { id: { equals: "123" } } }
+  query Json
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+  createdBy                 String             @default("SYSTEM")
+}
