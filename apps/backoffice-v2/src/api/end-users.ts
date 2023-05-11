@@ -15,7 +15,7 @@ export const endUsers = {
 
     return handleZodError(error, endUsers);
   },
-  byId: async (endUserId: string) => {
+  byId: async ({ endUserId, filterId }: { endUserId: string; filterId: string }) => {
     // TODO: Remove once Mock Service Worker is no longer in use.
     // When the page reloads the end user with the ID matching the ID in the
     // URL no longer exists on the first render, causing a 404 error
@@ -24,7 +24,7 @@ export const endUsers = {
     if (env.VITE_MOCK_SERVER && !endUsersApi.findById(endUserId)) return {};
 
     const [endUser, error] = await apiClient({
-      endpoint: endpoints.endUsers.byId.endpoint(endUserId),
+      endpoint: endpoints.endUsers.byId.endpoint({ endUserId, filterId }),
       method: endpoints.endUsers.byId.method,
       schema: EndUserByIdSchema,
     });

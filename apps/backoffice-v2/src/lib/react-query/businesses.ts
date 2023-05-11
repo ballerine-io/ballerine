@@ -6,8 +6,12 @@ export const businesses = createQueryKeys('businesses', {
     queryKey: [{ filterId }],
     queryFn: () => api.businesses.list(filterId),
   }),
-  byId: (businessId: string) => ({
-    queryKey: [businessId],
-    queryFn: () => api.businesses.byId(businessId),
+  byId: (businessId: string, filterId: string) => ({
+    queryKey: [{ businessId, filterId }],
+    queryFn: () =>
+      api.businesses.byId({
+        businessId,
+        filterId,
+      }),
   }),
 });
