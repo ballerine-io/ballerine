@@ -30,7 +30,7 @@
     "format": "nx run-many --target=format",
     "format:check": "nx run-many --target=format:check",
     "lint": "nx run-many --target=lint --projects=@ballerine/web-sdk,@ballerine/workflows-service,@ballerine/workflow-browser-sdk",
-    "test": "nx run-many --target=test --exclude=@ballerine/backoffice,@ballerine/common",
+    "test": "nx run-many --target=test --exclude=@ballerine/common",
     "test:e2e": "nx run-many --target=test:e2e",
     "playwright:install": "nx run-many --target=playwright:install",
     "dev": "nx run-many --target=dev --projects=@ballerine/workflows-service,@ballerine/backoffice-v2",
