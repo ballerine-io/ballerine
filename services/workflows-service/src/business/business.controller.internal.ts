@@ -18,6 +18,8 @@ import { FilterService } from '@/filter/filter.service';
 import { BusinessFilterModel } from '@/business/dtos/business-filter.model';
 import { BusinessFilterCreateDto } from '@/business/dtos/business-filter-create';
 import { JsonValue } from 'type-fest';
+import { BusinessFindUniqueArgs } from '@/business/dtos/business-find-unique-args';
+import { TBusinessFilter } from '@/business/types';
 
 @swagger.ApiTags('internal/businesses')
 @common.Controller('internal/businesses')
@@ -52,9 +54,27 @@ export class BusinessControllerInternal {
   @swagger.ApiOkResponse({ type: BusinessModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  async getById(@common.Param() params: BusinessWhereUniqueInput): Promise<BusinessModel | null> {
+  @ApiNestedQuery(BusinessFindUniqueArgs)
+  async getById(
+    @common.Param() params: BusinessWhereUniqueInput,
+    @common.Req() request: Request,
+  ): Promise<BusinessModel | null> {
     try {
-      const business = await this.service.getById(params.id);
+      const { filterId, ...args } = plainToClass(BusinessFindUniqueArgs, request.query);
+      let query: TBusinessFilter['query'] = {};
+
+      if (filterId) {
+        const filter = await this.filterService.getById(filterId);
+        // findUnique does not support `where`.
+        const { where: _where, ...restQuery } = filter?.query as TBusinessFilter['query'];
+
+        query = restQuery;
+      }
+
+      const business = await this.service.getById(params?.id, {
+        ...args,
+        ...(query as InputJsonValue),
+      });
 
       return business;
     } catch (err) {

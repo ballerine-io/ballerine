@@ -18,6 +18,8 @@ import { EndUserFilterCreateDto } from '@/end-user/dtos/end-user-filter-create';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { EndUserFilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
 import { JsonValue } from 'type-fest';
+import { EndUserFindUniqueArgs } from '@/end-user/dtos/end-user-find-unique-args';
+import { TEndUserFilter } from '@/end-user/types';
 
 @swagger.ApiTags('internal/end-users')
 @common.Controller('internal/end-users')
@@ -54,9 +56,27 @@ export class EndUserControllerInternal {
   @swagger.ApiOkResponse({ type: EndUserModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
+  @ApiNestedQuery(EndUserFindUniqueArgs)
+  async getById(
+    @common.Param() params: EndUserWhereUniqueInput,
+    @common.Req() request: Request,
+  ): Promise<EndUserModel | null> {
     try {
-      const endUser = await this.service.getById(params.id);
+      const { filterId, ...args } = plainToClass(EndUserFindUniqueArgs, request.query);
+      let query: TEndUserFilter['query'] = {};
+
+      if (filterId) {
+        const filter = await this.filterService.getById(filterId);
+        // findUnique does not support `where`.
+        const { where: _where, ...restQuery } = filter?.query as TEndUserFilter['query'];
+
+        query = restQuery;
+      }
+
+      const endUser = await this.service.getById(params?.id, {
+        ...args,
+        ...(query as InputJsonValue),
+      });
 
       return endUser;
     } catch (err) {

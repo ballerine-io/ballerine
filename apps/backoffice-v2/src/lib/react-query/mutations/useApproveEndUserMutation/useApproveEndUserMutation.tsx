@@ -35,7 +35,7 @@ export const useApproveEndUserMutation = ({
         queryKey: queries[entity].list(filterId).queryKey,
       });
       queryClient.invalidateQueries({
-        queryKey: queries[entity].byId(endUserId).queryKey,
+        queryKey: queries[entity].byId(endUserId, filterId).queryKey,
       });
 
       onSelectNextEndUser();

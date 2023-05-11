@@ -33,11 +33,12 @@ export const endpoints = {
   },
   endUsers: {
     list: {
-      endpoint: (filterId: string) => `end-users?filterId=${filterId}`,
+      endpoint: (filterId: string) => `end-users?filterId=${filterId ?? ''}`,
       method: Method.GET,
     },
     byId: {
-      endpoint: (endUserId: string) => `end-users/${endUserId}`,
+      endpoint: ({ endUserId, filterId }: { endUserId: string; filterId: string }) =>
+        `end-users/${endUserId}?filterId=${filterId ?? ''}`,
       method: Method.GET,
     },
     // Unused
@@ -48,11 +49,12 @@ export const endpoints = {
   },
   businesses: {
     list: {
-      endpoint: (filterId: string) => `businesses?filterId=${filterId}`,
+      endpoint: (filterId: string) => `businesses?filterId=${filterId ?? ''}`,
       method: Method.GET,
     },
     byId: {
-      endpoint: (businessId: string) => `businesses/${businessId}`,
+      endpoint: ({ businessId, filterId }: { businessId: string; filterId: string }) =>
+        `businesses/${businessId}?filterId=${filterId ?? ''}`,
       method: Method.GET,
     },
     // Unused
