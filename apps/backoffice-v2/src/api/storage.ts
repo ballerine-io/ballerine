@@ -3,7 +3,7 @@ import { handleZodError } from '../utils/handle-zod-error/handle-zod-error';
 import { apiClient } from './api-client';
 import { endpoints } from './endpoints';
 
-import { blobToBase64 } from '../utils/blob-to-base64/blob-to-base64';
+import { blobToBase64 } from '../utils/fetch-blob-to-base64/fetch-blob-to-base64';
 import { FileInfoSchema } from '../lib/zod/schemas/file-info';
 
 export const storage = {

@@ -17,7 +17,7 @@ export const S3StorageEnvSchema = z.object({
 
 const generateAwsConfig = (processEnv: NodeJS.ProcessEnv): S3ClientConfig => {
   const { AWS_REGION, AWS_S3_BUCKET_KEY, AWS_S3_BUCKET_SECRET } = S3StorageEnvSchema.parse(
-    processEnv.env,
+    processEnv
   );
 
   return {
@@ -54,10 +54,10 @@ export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
 
 export const downloadFileFromS3 = async (
   bucketName: string,
-  bucketKey: string,
+  fileNameInBucket: string,
 ): Promise<TLocalFile> => {
   try {
-    const getObjectCommand = new GetObjectCommand({ Bucket: bucketName, Key: bucketKey });
+    const getObjectCommand = new GetObjectCommand({ Bucket: bucketName, Key: fileNameInBucket });
     const s3Client = new S3Client(generateAwsConfig(process.env));
     const response = await s3Client.send(getObjectCommand);
     const readableStream = response.Body as Readable;
@@ -71,11 +71,12 @@ export const downloadFileFromS3 = async (
           resolve(tmpFile.name);
         })
         .on('error', error => {
-          reject(error);
+          console.error('Error Upload file to S3:', error);
+          reject(new Error("Failed to upload S3 file"));
         });
     });
   } catch (error) {
-    console.error('Error downloading file from S3:', error);
-    throw error;
+    console.error('Error Stream file to S3:', error);
+    throw new Error("Failed to Stream S3 file");
   }
 };

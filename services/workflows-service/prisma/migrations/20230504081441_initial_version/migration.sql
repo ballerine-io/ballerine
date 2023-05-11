@@ -1,2 +1,2 @@
 -- AlterTable
-ALTER TABLE "File" ADD COLUMN     "bucketKey" TEXT;
+ALTER TABLE "File" ADD COLUMN     "fileNameInBucket" TEXT;

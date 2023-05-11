@@ -47,7 +47,7 @@ export class StorageControllerExternal {
     const id = await this.service.createFileLink({
       uri: file.location || String(file.path),
       fileNameOnDisk: String(file.location),
-      bucketKey: file.key,
+      fileNameInBucket: file.key,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
     });
@@ -82,10 +82,10 @@ export class StorageControllerExternal {
       throw new errors.NotFoundException('file not found');
     }
 
-    if (persistedFile.bucketKey) {
+    if (persistedFile.fileNameInBucket) {
       const localFilePath = await downloadFileFromS3(
         fetchDefaultBucketName(process.env),
-        persistedFile.bucketKey,
+        persistedFile.fileNameInBucket,
       );
       return res.sendFile(localFilePath, { root: '/' });
     } else {
