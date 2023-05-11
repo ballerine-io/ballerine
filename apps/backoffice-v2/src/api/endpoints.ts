@@ -1,6 +1,10 @@
 import { Method } from '../enums';
 import { IEndpoint, IWorkflowId } from './interfaces';
 
+export interface IFilterId {
+  filterId: string;
+}
+
 /**
  * @description The API's endpoints. The endpoints are appended into the API's base url ({@link env.VITE_API_URL}) by {@link apiClient}.
  *
@@ -73,6 +77,16 @@ export const endpoints = {
     event: {
       endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}/event`,
       method: Method.POST,
+    },
+  },
+  filters: {
+    list: {
+      endpoint: () => `filters`,
+      method: Method.GET,
+    },
+    byId: {
+      endpoint: ({ filterId }: IFilterId) => `filters/${filterId}`,
+      method: Method.GET,
     },
   },
   storage: {

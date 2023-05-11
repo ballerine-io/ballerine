@@ -10,7 +10,7 @@ export const individualRoute = new Route({
   path: '$endUserId',
   onLoad: async ({ params, search }) => {
     const { endUserId } = params;
-    const entityById = queries[search?.kind].byId(endUserId);
+    const entityById = queries[search?.entity].byId(endUserId);
     // TODO: Add workflowId to params/searchParams
     // const workflowById = workflows.byId({ workflowId });
 

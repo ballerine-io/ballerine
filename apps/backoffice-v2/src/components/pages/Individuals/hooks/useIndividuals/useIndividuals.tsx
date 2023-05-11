@@ -1,5 +1,4 @@
 import { useMatches } from '@tanstack/react-router';
-import { useSort } from 'hooks/useSort/useSort';
 import { useSearch } from 'hooks/useSearch/useSearch';
 import { useFilter } from 'hooks/useFilter/useFilter';
 import { usePagination } from 'hooks/usePagination/usePagination';
@@ -12,12 +11,12 @@ import { individualsRoute } from 'components/pages/Individuals/Individuals.route
 import { individualsIndexRoute } from 'components/pages/Individuals/IndividualsIndex.route';
 import { individualRoute } from 'components/pages/Individual/Individual.route';
 import { useEndUsersWithWorkflowsQuery } from '../../../../../lib/react-query/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
-import { useKind } from 'hooks/useKind/useKind';
+import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 import { useConsole } from 'hooks/useConsole/useConsole';
 
 export const useIndividuals = () => {
   const matches = useMatches();
-  const kind = useKind();
+  const entity = useFilterEntity();
 
   const lastMatchId = matches.at(-1)?.route?.id;
   const isIndividuals =
