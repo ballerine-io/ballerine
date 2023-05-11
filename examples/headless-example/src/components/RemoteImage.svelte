@@ -21,7 +21,7 @@
   };
 
   const isFileSourcePublic = fileInfo => {
-    return fileInfo.uri.includes('https') && !fileInfo.bucketKey;
+    return fileInfo.uri.includes('https') && !fileInfo.fileNameInBucket;
   };
 
   onMount(async () => {

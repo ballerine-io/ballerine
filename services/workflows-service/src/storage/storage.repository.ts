@@ -39,7 +39,7 @@ export class FileRepository {
         select: {
           fileNameOnDisk: true,
           uri: true,
-          bucketKey: true,
+          fileNameInBucket: true,
           id: true,
         },
       },

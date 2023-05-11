@@ -11,14 +11,14 @@ export class StorageService {
     uri,
     fileNameOnDisk,
     userId,
-    bucketKey,
-  }: Pick<Prisma.FileCreateInput, 'uri' | 'fileNameOnDisk' | 'userId' | 'bucketKey'>) {
+    fileNameInBucket,
+  }: Pick<Prisma.FileCreateInput, 'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket'>) {
     const file = await this.fileRepository.create({
       data: {
         uri,
         fileNameOnDisk,
         userId,
-        bucketKey,
+        fileNameInBucket,
       },
       select: {
         id: true,
