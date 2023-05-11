@@ -38,7 +38,6 @@ export const fetchDefaultBucketName = (processEnv: NodeJS.ProcessEnv) => {
 };
 
 export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
-  console.log(processEnv)
   if (isS3BucketConfigured(processEnv)) {
     return multerS3({
       s3: new S3Client(generateAwsConfig(processEnv)),
