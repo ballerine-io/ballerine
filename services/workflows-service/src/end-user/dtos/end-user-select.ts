@@ -155,7 +155,7 @@ export class EndUserSelect {
   })
   @IsOptional()
   @Type(() => Boolean)
-  EndUsersOnBusinesses?: boolean;
+  endUsersOnBusinesses?: boolean;
   // | EndUser$EndUsersOnBusinessesArgs
 
   @ApiProperty({
