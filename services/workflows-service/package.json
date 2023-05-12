@@ -4,6 +4,7 @@
   "version": "0.4.10",
   "description": "workflow-service",
   "scripts": {
+    "validate-env": "ts-node ./src/env.ts",
     "setup": "npm run docker:db && npm run db:clean && npm run db:migrate-save && npm run seed",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -12,7 +13,7 @@
     "dev": "npm run start:watch",
     "start:watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "build": "nest build",
+    "build": "pnpm validate-env && nest build",
     "test": "jest --verbose",
     "test:watch": "jest --verbose --watch",
     "seed": "ts-node scripts/seed.ts",
