@@ -1,7 +1,6 @@
 import { useParams } from '@tanstack/react-router';
 import { camelCaseToSpace } from '../../../../../utils/camel-case-to-space/camel-case-to-space';
 import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
-import { useStorageFileQuery } from '../../../../../lib/react-query/queries/useStorageFileQuery/useStorageFileQuery';
 import { underscoreToSpace } from '../../../../../utils/underscore-to-space/underscore-to-space';
 import { Subject } from 'components/organisms/Subject/Subject';
 import { ctw } from '../../../../../utils/ctw/ctw';
@@ -30,6 +29,7 @@ import { Dialog } from 'components/organisms/Dialog/Dialog';
 import React from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/useStorageFilesQuery/useStorageFilesQuery';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -38,11 +38,8 @@ export const useIndividual = () => {
   const selfie = endUser?.workflow?.workflowContext?.machineContext?.selfie;
   const certificateOfIncorporation =
     endUser?.workflow?.workflowContext?.machineContext?.certificateOfIncorporation;
-  const { data: idUrl } = useStorageFileQuery(id?.id);
-  const { data: selfieUrl } = useStorageFileQuery(selfie?.id);
-  const { data: certificateOfIncorporationUrl } = useStorageFileQuery(
-    certificateOfIncorporation?.id,
-  );
+  const [{ data: idUrl }, { data: selfieUrl }, { data: certificateOfIncorporationUrl }] =
+    useStorageFilesQuery([id?.id, selfie?.id, certificateOfIncorporation?.id]);
   const {
     firstName,
     middleName,
