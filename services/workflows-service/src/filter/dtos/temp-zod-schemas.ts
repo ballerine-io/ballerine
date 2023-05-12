@@ -195,7 +195,9 @@ export const EndUserSelectSchema = z.object({
 export const EndUserFilterSchema = FilterSchema.extend({
   query: z
     .object({
-      select: EndUserSelectSchema.strict().optional(),
+      select: EndUserSelectSchema.strict()
+        .refine(v => Object.keys(v).length > 0, 'At least one `select` field must be provided')
+        .optional(),
       where: EndUserWhereInputSchema.strict().optional(),
     })
     .refine(v => v.select || v.where, 'At least `query.select` or `query.where` must be provided'),
@@ -260,7 +262,9 @@ export const BusinessWhereInputSchema = z.object({
 export const BusinessFilterSchema = FilterSchema.extend({
   query: z
     .object({
-      select: BusinessSelectSchema.strict().optional(),
+      select: BusinessSelectSchema.strict()
+        .refine(v => Object.keys(v).length > 0, 'At least one `select` field must be provided')
+        .optional(),
       where: BusinessWhereInputSchema.strict().optional(),
     })
     .refine(v => v.select || v.where, 'At least `query.select` or `query.where` must be provided'),
