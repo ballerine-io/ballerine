@@ -30,6 +30,9 @@ import { Dialog } from 'components/organisms/Dialog/Dialog';
 import React from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { AnyRecord } from '../../../../../types';
+import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -161,7 +164,7 @@ export const useIndividual = () => {
         {
           type: 'details',
           value: {
-            title: 'personalInfo',
+            title: 'Personal Info',
             data: [
               {
                 title: 'firstName',
@@ -201,7 +204,7 @@ export const useIndividual = () => {
         {
           type: 'details',
           value: {
-            title: 'passportInfo',
+            title: 'Passport Info',
             data: [
               {
                 title: 'type',
@@ -229,7 +232,7 @@ export const useIndividual = () => {
         {
           type: 'details',
           value: {
-            title: 'checkResults',
+            title: 'Check Results',
             data: [
               {
                 title: 'amlCheck',
@@ -559,7 +562,10 @@ export const useIndividual = () => {
       },
     },
   ];
-  const tasks = [task1, task2, task3, task4];
+  const tasks = [
+    task1,
+    // task2, task3, task4
+  ];
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
     useUpdateWorkflowByIdMutation({
       workflowId: endUser?.workflow?.runtimeDataId,
@@ -590,6 +596,10 @@ export const useIndividual = () => {
         },
       });
     };
+  const onMutateTaskDecisionById = ({ context }: { context: AnyRecord }) =>
+    mutateUpdateWorkflowById({
+      context,
+    });
   const components = {
     heading: ({ value }) => <h2 className={`ml-2 p-2 text-2xl font-bold`}>{value}</h2>,
     alert: ({ value }) => (
@@ -731,18 +741,35 @@ export const useIndividual = () => {
       </div>
     ),
     details: ({ value }) => {
-      const data = {
-        [value.title]: value.data?.reduce((acc, curr) => {
-          acc[curr.title] = curr.value;
+      const data = value.data?.reduce((acc, curr) => {
+        acc[curr.title] = curr.value;
 
-          return acc;
-        }, {}),
+        return acc;
+      }, {});
+      const methods = useForm({
+        defaultValues: data,
+      });
+      const onSubmit: SubmitHandler<any> = data => {
+        return onMutateTaskDecisionById({
+          context: data,
+        });
       };
 
       return (
-        <div className={`m-2 rounded border border-slate-300 p-1`}>
-          <Subject.Info info={data} whitelist={whitelist} isLoading={isLoading} />
-        </div>
+        <FormProvider {...methods}>
+          <form
+            className={`m-2 grid grid-cols-2 gap-2 rounded border border-slate-300 p-1`}
+            onSubmit={methods.handleSubmit(onSubmit, err => alert(err))}
+          >
+            <legend className={`col-span-full`}>{value.title}</legend>
+            {Object.keys(data)?.map(title => (
+              <div className={`flex flex-col`} key={title}>
+                <label htmlFor={title}>{toStartCase(camelCaseToSpace(title))}</label>
+                <input {...methods.register(title)} />
+              </div>
+            ))}
+          </form>
+        </FormProvider>
       );
     },
     multiDocuments: ({ value }) => {
