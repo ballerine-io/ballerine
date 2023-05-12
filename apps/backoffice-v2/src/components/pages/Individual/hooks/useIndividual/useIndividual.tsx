@@ -169,34 +169,42 @@ export const useIndividual = () => {
               {
                 title: 'firstName',
                 value: firstName,
+                isEditable: false,
               },
               {
                 title: 'middleName',
                 value: middleName,
+                isEditable: true,
               },
               {
                 title: 'lastName',
                 value: lastName,
+                isEditable: true,
               },
               {
                 title: 'phone',
                 value: phone,
+                isEditable: true,
               },
               {
                 title: 'email',
                 value: email,
+                isEditable: true,
               },
               {
                 title: 'dateOfBirth',
                 value: dateOfBirth,
+                isEditable: true,
               },
               {
                 title: 'placeOfBirth',
                 value: placeOfBirth,
+                isEditable: true,
               },
               {
                 title: 'sex',
                 value: sex,
+                isEditable: true,
               },
             ],
           },
@@ -209,22 +217,27 @@ export const useIndividual = () => {
               {
                 title: 'type',
                 value: passportInfo?.type,
+                isEditable: true,
               },
               {
                 title: 'authority',
                 value: passportInfo?.authority,
+                isEditable: true,
               },
               {
                 title: 'placeOfIssue',
                 value: passportInfo?.placeOfIssue,
+                isEditable: true,
               },
               {
                 title: 'dateOfIssue',
                 value: passportInfo?.dateOfIssue,
+                isEditable: true,
               },
               {
                 title: 'expires',
                 value: passportInfo?.expires,
+                isEditable: true,
               },
             ],
           },
@@ -237,22 +250,27 @@ export const useIndividual = () => {
               {
                 title: 'amlCheck',
                 value: checkResults?.amlCheck,
+                isEditable: true,
               },
               {
                 title: 'idCheck',
                 value: checkResults?.idCheck,
+                isEditable: true,
               },
               {
                 title: 'selfieCheck',
                 value: checkResults?.selfieCheck,
+                isEditable: true,
               },
               {
                 title: 'scannedBy',
                 value: checkResults?.scannedBy,
+                isEditable: true,
               },
               {
                 title: 'finalResult',
                 value: checkResults?.finalResult,
+                isEditable: true,
               },
             ],
           },
@@ -741,13 +759,13 @@ export const useIndividual = () => {
       </div>
     ),
     details: ({ value }) => {
-      const data = value.data?.reduce((acc, curr) => {
+      const defaultValues = value.data?.reduce((acc, curr) => {
         acc[curr.title] = curr.value;
 
         return acc;
       }, {});
       const methods = useForm({
-        defaultValues: data,
+        defaultValues,
       });
       const onSubmit: SubmitHandler<any> = data => {
         return onMutateTaskDecisionById({
@@ -762,10 +780,10 @@ export const useIndividual = () => {
             onSubmit={methods.handleSubmit(onSubmit, err => alert(err))}
           >
             <legend className={`col-span-full`}>{value.title}</legend>
-            {Object.keys(data)?.map(title => (
+            {value?.data?.map(({ title, isEditable }) => (
               <div className={`flex flex-col`} key={title}>
                 <label htmlFor={title}>{toStartCase(camelCaseToSpace(title))}</label>
-                <input {...methods.register(title)} />
+                <input {...methods.register(title)} disabled={!isEditable} />
               </div>
             ))}
           </form>
