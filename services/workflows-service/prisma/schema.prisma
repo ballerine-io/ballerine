@@ -178,7 +178,7 @@ model Policy {
 model Filter {
   id String @id @default(cuid())
   // Name of the filter i.e. "KYC"
-  name String
+  name String @unique
   // Does the filter belong to EndUser or Business?
   entity String
   // 1:1 with Prisma's select object

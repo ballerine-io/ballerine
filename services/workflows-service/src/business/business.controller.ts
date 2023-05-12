@@ -13,7 +13,7 @@ import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
 
 @swagger.ApiTags('internal/businesses')
-@common.Controller('internalƒ/businesses')
+@common.Controller('internal/businesses')
 export class BusinessControllerExternal {
   constructor(
     protected readonly service: BusinessService,
