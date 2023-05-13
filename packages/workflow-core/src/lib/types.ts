@@ -4,7 +4,7 @@ export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObje
 
 export interface Workflow {
   subscribe: (callback: (event: WorkflowEvent) => void) => void;
-  sendEvent: (event: Omit<WorkflowEvent, 'state'>) => void;
+  sendEvent: (event: Omit<WorkflowEvent, 'state'>) => Promise<void>;
   getSnapshot: () => Record<PropertyKey, any>;
 }
 
