@@ -5,7 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { NotFoundException, Headers } from '@nestjs/common';
+import { NotFoundException, Headers, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -19,6 +19,8 @@ import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Response } from 'express';
+import { WorkflowRunDto } from './dtos/workflow-run';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -104,6 +106,27 @@ export class WorkflowControllerExternal {
     // Rename to intent or getRunnableWorkflowDataByIntent?
     const entityType = intent.intentName === 'kycSignup' ? 'endUser' : 'business';
     return await this.service.resolveIntent(intent.intentName, no_auth_user_id, entityType);
+  }
+
+  // TODO: add API Key auth
+  @common.Post('/run')
+  @swagger.ApiOkResponse()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async createWorkflowRuntimeData(
+    @common.Body() body: WorkflowRunDto,
+    @Headers('no_auth_user_id') no_auth_user_id: string,
+    @Res() res: Response,
+  ): Promise<any> {
+    const { workflowId } = body;
+    // get workflow definition
+    const workflowDefinition = await this.service.getWorkflowDefinitionById(workflowId);
+    // check body.context against workflowDefinition.contextSchema
+    // check if no other workflow is running for this entity
+    // create workflow runtime data
+
+    // temp resp
+    return res.json(workflowDefinition);
   }
 
   // POST /event
