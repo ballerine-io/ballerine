@@ -23,7 +23,7 @@ const run = (cmd, cwd = rootDir) => {
 // START
 console.log('🏗️ preparing project');
 run('pnpm run db:reset', workflowServiceRoot);
-run(`ts-node scripts/seed_${process.env.SEED_FILENAME}.ts`, workflowServiceRoot);
+run(`ts-node scripts/${process.env.SEED_FILENAME}.ts`, workflowServiceRoot);
 
 
 console.log('✅ All done!');
