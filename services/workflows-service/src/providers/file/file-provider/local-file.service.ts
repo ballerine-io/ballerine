@@ -34,7 +34,12 @@ export class LocalFileService implements IFileProvider {
     return toFilePath;
   }
 
-  async uploadFile(...any: any): Promise<TRemoteFileConfig> {
-    throw new Error('Unable to use upload to local file manager client, use downloadFile instead');
-  }
-}
+  async uploadFile(
+    localFilePath: TLocalFilePath,
+    remoteFileConfig: TRemoteFileConfig,
+  ): Promise<TRemoteFileConfig> {
+    const toLocalFilePAth = remoteFileConfig as TLocalFilePath;
+    this.client.createReadStream(localFilePath).pipe(this.client.createWriteStream(toLocalFilePAth))
+
+    return Promise.resolve(toLocalFilePAth);
+  }}
