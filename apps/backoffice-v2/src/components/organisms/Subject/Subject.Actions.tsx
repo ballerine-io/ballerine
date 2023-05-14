@@ -1,36 +1,10 @@
 import React, { FunctionComponent } from 'react';
 import { Avatar } from 'components/atoms/Avatar';
 import { IActionsProps } from 'components/organisms/Subject/interfaces';
-import {
-  ResubmissionReason,
-  useActions,
-} from 'components/organisms/Subject/hooks/useActions/useActions';
+import { useActions } from 'components/organisms/Subject/hooks/useActions/useActions';
 import { motion } from 'framer-motion';
-import * as HoverCard from '@radix-ui/react-hover-card';
 import { ctw } from '../../../utils/ctw/ctw';
-import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
-import { DropdownMenuTrigger } from 'components/molecules/DropdownMenu/DropdownMenu.Trigger';
-import { DropdownMenuContent } from 'components/molecules/DropdownMenu/DropdownMenu.Content';
-import { DropdownMenuSeparator } from 'components/molecules/DropdownMenu/DropdownMenu.Separator';
-import { DropdownMenuLabel } from 'components/molecules/DropdownMenu/DropdownMenu.Label';
-import { DropdownMenuItem } from 'components/molecules/DropdownMenu/DropdownMenu.Item';
-import { DropdownMenuShortcut } from 'components/molecules/DropdownMenu/DropDownMenu.Shortcut';
-import { Action } from '../../../enums';
-import { Dialog } from 'components/organisms/Dialog/Dialog';
-import { DialogFooter } from 'components/organisms/Dialog/Dialog.Footer';
-import { DialogContent } from 'components/organisms/Dialog/Dialog.Content';
-import { DialogTrigger } from 'components/organisms/Dialog/Dialog.Trigger';
-import { DialogTitle } from 'components/organisms/Dialog/Dialog.Title';
-import { DialogDescription } from 'components/organisms/Dialog/Dialog.Description';
-import { DialogHeader } from 'components/organisms/Dialog/Dialog.Header';
-import { DialogClose } from '@radix-ui/react-dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from 'components/atoms/Select/Select';
+import { Button } from 'components/atoms/Button/button';
 
 /**
  * @description To be used by {@link Subject}. Displays the end user's full name, avatar, and handles the reject/approve mutation.
@@ -64,10 +38,13 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-2`}>
-      <button disabled className={`btn-sm btn`}>
-        Re-assign
-      </button>
-      <div className={`flex h-[7.75rem] justify-between`}>
+      <div className={`space-x-4`}>
+        <Button variant={'outline'} disabled>
+          Un-assign
+        </Button>
+        <Button variant={'outline'}>Re-assign</Button>
+      </div>
+      <div className={`flex h-24 justify-between`}>
         <motion.div
           // Animate when the user changes.
           key={id}
@@ -91,143 +68,6 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
             {fullName}
           </h2>
         </motion.div>
-        <div className={`flex items-center space-x-6`}>
-          <button
-            className={ctw(
-              `btn-info btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-              {
-                loading: debouncedIsLoadingRejectEndUser,
-              },
-            )}
-            // disabled={isLoading || !canReject}
-            disabled
-          >
-            Execute Tasks
-          </button>
-          <Dialog>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className={ctw(
-                    `btn-error btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-                    {
-                      loading: debouncedIsLoadingRejectEndUser,
-                    },
-                  )}
-                  disabled={isLoading || !canReject}
-                >
-                  Reject
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className={`min-w-[16rem]`} align={`end`}>
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className={`cursor-pointer`}
-                  onClick={onMutateRejectEndUser({
-                    action: Action.REJECT,
-                  })}
-                >
-                  Reject
-                  <DropdownMenuShortcut>Ctrl + J</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DialogTrigger asChild>
-                  <DropdownMenuItem className={`cursor-pointer`}>
-                    Re-submit Document
-                    <DropdownMenuShortcut>Ctrl + R</DropdownMenuShortcut>
-                  </DropdownMenuItem>
-                </DialogTrigger>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Request document re-submission</DialogTitle>
-                <DialogDescription>
-                  This action will send a request to the user to re-submit their document. State the
-                  reason for requesting a document re-submission.
-                </DialogDescription>
-              </DialogHeader>
-              <Select onValueChange={onResubmissionReasonChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Re-submission reason" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(ResubmissionReason).map(reason => {
-                    const reasonWithSpaceSpace = reason.replace(/_/g, ' ').toLowerCase();
-                    const capitalizedReason =
-                      reasonWithSpaceSpace.charAt(0).toUpperCase() + reasonWithSpaceSpace.slice(1);
-
-                    return (
-                      <SelectItem
-                        key={reason}
-                        value={reason}
-                        disabled={reason !== ResubmissionReason.BLURRY_IMAGE}
-                      >
-                        {capitalizedReason}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <button
-                    className={ctw(`btn-error btn justify-center`)}
-                    onClick={onMutateRejectEndUser({
-                      action: Action.RESUBMIT,
-                      // Currently hardcoded to documentOne.
-                      documentToResubmit,
-                      resubmissionReason,
-                    })}
-                    disabled={!resubmissionReason}
-                  >
-                    Confirm
-                  </button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          <HoverCard.Root openDelay={0} closeDelay={0}>
-            <HoverCard.Trigger asChild>
-              <button
-                className={ctw(
-                  `btn-success btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-                  {
-                    loading: debouncedIsLoadingApproveEndUser,
-                  },
-                )}
-                disabled={isLoading || !canApprove}
-                onClick={onMutateApproveEndUser}
-              >
-                Approve
-              </button>
-            </HoverCard.Trigger>
-            <HoverCard.Portal>
-              <HoverCard.Content
-                className={`card card-compact mt-2 rounded-md border-neutral/10 bg-base-100 p-2 shadow theme-dark:border-neutral/50`}
-              >
-                <div className={`flex items-center space-x-2`}>
-                  <kbd className="kbd">Ctrl</kbd>
-                  <span>+</span>
-                  <kbd className="kbd">A</kbd>
-                </div>
-              </HoverCard.Content>
-            </HoverCard.Portal>
-          </HoverCard.Root>
-          {/*<div className="dropdown-hover dropdown dropdown-bottom dropdown-end">*/}
-          {/*  <EllipsisButton tabIndex={0} />*/}
-          {/*  <ul*/}
-          {/*    className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}*/}
-          {/*  >*/}
-          {/*    <li className={`disabled`}>*/}
-          {/*      <button disabled>Coming Soon</button>*/}
-          {/*    </li>*/}
-          {/*    <li className={`disabled`}>*/}
-          {/*      <button disabled>Coming Soon</button>*/}
-          {/*    </li>*/}
-          {/*  </ul>*/}
-          {/*</div>*/}
-        </div>
       </div>
     </div>
   );

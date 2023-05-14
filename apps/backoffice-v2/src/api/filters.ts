@@ -7,11 +7,11 @@ export const filters = {
     return Promise.resolve([
       {
         id: '1',
-        kind: 'individuals',
+        kind: 'Fido score improvement',
       },
       {
         id: '2',
-        kind: 'businesses',
+        kind: 'Know your business',
       },
     ]);
   },

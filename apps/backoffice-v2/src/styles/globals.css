@@ -2,37 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer utilities {
-  .ring-ballerine {
-    @apply outline-none ring-2 ring-primary;
-  }
-
-  .d-full {
-    @apply h-full w-full;
-  }
-  .d-screen {
-    @apply h-screen w-screen;
-  }
-}
-
 @layer base {
-  html {
-    @apply antialiased;
-  }
-
-  html,
-  body,
-  #root {
-    height: 100%;
-  }
-  body {
-    @apply overflow-hidden;
-  }
-
-  .tooltip::before {
-    @apply bg-base-100 text-base-content shadow !important;
-  }
-
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 47.4% 11.2%;

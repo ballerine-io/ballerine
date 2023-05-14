@@ -30,6 +30,9 @@ import { Dialog } from 'components/organisms/Dialog/Dialog';
 import React from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { Separator } from 'components/atoms/Separator/separator';
+import { Button } from 'components/atoms/Button/button';
+import { AlertTriangle, PinOff, RotateCcw } from 'lucide-react';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -114,7 +117,7 @@ export const useIndividual = () => {
   const task1 = [
     {
       type: 'heading',
-      value: 'Lorem Ipsum',
+      value: 'Proof of address',
     },
     {
       id: 'actions',
@@ -139,25 +142,8 @@ export const useIndividual = () => {
       ],
     },
     {
-      id: 'alerts',
       type: 'container',
       value: [
-        {
-          type: 'alert',
-          value: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ',
-        },
-      ],
-    },
-    {
-      type: 'container',
-      value: [
-        {
-          type: 'faceComparison',
-          value: {
-            faceAUrl,
-            faceBUrl,
-          },
-        },
         {
           type: 'details',
           value: {
@@ -201,7 +187,7 @@ export const useIndividual = () => {
         {
           type: 'details',
           value: {
-            title: 'passportInfo',
+            title: 'electricityBill',
             data: [
               {
                 title: 'type',
@@ -222,34 +208,6 @@ export const useIndividual = () => {
               {
                 title: 'expires',
                 value: passportInfo?.expires,
-              },
-            ],
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'checkResults',
-            data: [
-              {
-                title: 'amlCheck',
-                value: checkResults?.amlCheck,
-              },
-              {
-                title: 'idCheck',
-                value: checkResults?.idCheck,
-              },
-              {
-                title: 'selfieCheck',
-                value: checkResults?.selfieCheck,
-              },
-              {
-                title: 'scannedBy',
-                value: checkResults?.scannedBy,
-              },
-              {
-                title: 'finalResult',
-                value: checkResults?.finalResult,
               },
             ],
           },
@@ -559,7 +517,10 @@ export const useIndividual = () => {
       },
     },
   ];
-  const tasks = [task1, task2, task3, task4];
+  const tasks = [
+    task1,
+    // task2, task3, task4
+  ];
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
     useUpdateWorkflowByIdMutation({
       workflowId: endUser?.workflow?.runtimeDataId,
@@ -591,7 +552,7 @@ export const useIndividual = () => {
       });
     };
   const components = {
-    heading: ({ value }) => <h2 className={`ml-2 p-2 text-2xl font-bold`}>{value}</h2>,
+    heading: ({ value }) => <h2 className={`ml-2 mt-6 p-2 text-2xl font-bold`}>{value}</h2>,
     alert: ({ value }) => (
       <WarningAlert isOpen className={`w-6/12 text-base-content theme-dark:text-base-100`}>
         {value}
@@ -601,18 +562,12 @@ export const useIndividual = () => {
       return (
         <div
           className={ctw({
-            'm-2 flex justify-end space-x-2 rounded border border-slate-300 p-2 text-slate-50':
-              id === 'actions',
-            'rounded border border-slate-300': id === 'alerts',
-            'col-span-full':
-              (id === 'actions' && value?.every(v => v?.type !== 'heading')) || id === 'alerts',
+            'm-2 mt-6 flex justify-end space-x-2 rounded p-2 text-slate-50': id === 'actions',
+            rounded: id === 'alerts',
+            'col-span-full': id === 'alerts',
             'm-2 flex flex-col space-y-2 p-2': id === 'alerts',
           })}
         >
-          {id === 'alerts' && <h4 className={`mb-2 text-lg font-bold`}>Issues</h4>}
-          {id === 'actions' && (
-            <h4 className={`mb-2 mr-auto text-lg font-bold text-base-content`}>Actions</h4>
-          )}
           {value?.map(cell => components[cell.type]?.(cell))}
         </div>
       );
@@ -627,31 +582,37 @@ export const useIndividual = () => {
         <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button
-                className={ctw(
-                  `btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-                  {
-                    // loading: debouncedIsLoadingRejectEndUser,
-                  },
-                )}
+              <Button
+                variant={`secondary`}
+                className={ctw({
+                  // loading: debouncedIsLoadingRejectEndUser,
+                })}
                 // disabled={isLoading || !canReject}
               >
                 Options
-              </button>
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className={`min-w-[16rem]`} align={`end`}>
               <DropdownMenuLabel>Options</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DialogTrigger asChild>
-                <DropdownMenuItem className={`cursor-pointer`}>Ask to re-submit</DropdownMenuItem>
+                <DropdownMenuItem className={`cursor-pointer space-x-2`}>
+                  <RotateCcw />
+                  Ask to re-submit
+                </DropdownMenuItem>
               </DialogTrigger>
+              <DropdownMenuItem className={`cursor-pointer space-x-2`}>
+                <PinOff />
+                Ignore
+              </DropdownMenuItem>
               <DropdownMenuItem
-                className={`cursor-pointer`}
+                className={`cursor-pointer space-x-2 text-red-500`}
                 onClick={onMutateUpdateWorkflowById({
                   id: data?.id,
                   approvalStatus: 'rejected',
                 })}
               >
+                <AlertTriangle className={`text-red-500`} />
                 Reject
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -707,13 +668,10 @@ export const useIndividual = () => {
           </DialogContent>
         </Dialog>
       ) : (
-        <button
-          className={ctw(
-            `btn-success btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-            {
-              loading: isLoadingUpdateWorkflowById,
-            },
-          )}
+        <Button
+          className={ctw(`bg-green-500 `, {
+            loading: isLoadingUpdateWorkflowById,
+          })}
           disabled={isLoadingUpdateWorkflowById || isApprovedTask}
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
@@ -721,12 +679,12 @@ export const useIndividual = () => {
           })}
         >
           {value}
-        </button>
+        </Button>
       );
     },
     faceComparison: ({ value }) => (
-      <div className={`m-2 rounded border border-slate-300 p-1`}>
-        <h4 className={`mb-2 text-lg font-bold`}>Face Comparison</h4>
+      <div className={`m-2 rounded p-1`}>
+        <h4 className={`mb-2 text-lg`}>Face Comparison</h4>
         <Subject.FaceMatch faceAUrl={value.faceAUrl} faceBUrl={value.faceBUrl} />
       </div>
     ),
@@ -739,8 +697,11 @@ export const useIndividual = () => {
         }, {}),
       };
 
+      if (Object.values(data[value.title]).every(value => !value)) return;
+
       return (
-        <div className={`m-2 rounded border border-slate-300 p-1`}>
+        <div className={`m-2 rounded p-1`}>
+          <Separator />
           <Subject.Info info={data} whitelist={whitelist} isLoading={isLoading} />
         </div>
       );
@@ -749,8 +710,7 @@ export const useIndividual = () => {
       const documents = value.data.filter(({ imageUrl }) => !!imageUrl);
 
       return (
-        <div className={`m-2 rounded border border-slate-300 p-1`}>
-          <h4 className={`mb-2 text-lg font-bold`}>Documents</h4>
+        <div className={`m-2 rounded p-1`}>
           <Subject.Documents documents={documents} />
         </div>
       );
