@@ -114,6 +114,8 @@ CREATE TABLE "File" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "fileNameOnDisk" TEXT NOT NULL,
+    "uri" TEXT NOT NULL,
+    "fileNameInBucket" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdBy" TEXT NOT NULL DEFAULT 'SYSTEM',
 
@@ -132,6 +134,26 @@ CREATE TABLE "Policy" (
 );
 
 -- CreateTable
+CREATE TABLE "CaseFile" (
+    "id" TEXT NOT NULL,
+    "endUserId" TEXT,
+    "businessId" TEXT,
+    "workflowRuntimeDataId" TEXT,
+    "fileType" TEXT NOT NULL,
+    "fileSize" INTEGER NOT NULL,
+    "documentType" TEXT NOT NULL,
+    "uri" TEXT NOT NULL,
+    "metadata" JSONB NOT NULL,
+    "provider" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "replacedAt" TIMESTAMP(3),
+    "deletedAt" TIMESTAMP(3),
+
+    CONSTRAINT "CaseFile_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_BusinessToEndUser" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
@@ -142,6 +164,69 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_phone_key" ON "User"("phone");
+
+-- CreateIndex
+CREATE INDEX "EndUser_endUserType_idx" ON "EndUser"("endUserType");
+
+-- CreateIndex
+CREATE INDEX "EndUser_createdAt_idx" ON "EndUser"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "EndUser_firstName_idx" ON "EndUser"("firstName");
+
+-- CreateIndex
+CREATE INDEX "EndUser_correlationId_idx" ON "EndUser"("correlationId");
+
+-- CreateIndex
+CREATE INDEX "EndUser_approvalState_idx" ON "EndUser"("approvalState");
+
+-- CreateIndex
+CREATE INDEX "EndUsersOnBusinesses_businessId_idx" ON "EndUsersOnBusinesses"("businessId");
+
+-- CreateIndex
+CREATE INDEX "EndUsersOnBusinesses_endUserId_idx" ON "EndUsersOnBusinesses"("endUserId");
+
+-- CreateIndex
+CREATE INDEX "Business_companyName_idx" ON "Business"("companyName");
+
+-- CreateIndex
+CREATE INDEX "Business_countryOfIncorporation_idx" ON "Business"("countryOfIncorporation");
+
+-- CreateIndex
+CREATE INDEX "Business_taxIdentificationNumber_idx" ON "Business"("taxIdentificationNumber");
+
+-- CreateIndex
+CREATE INDEX "Business_vatNumber_idx" ON "Business"("vatNumber");
+
+-- CreateIndex
+CREATE INDEX "Business_approvalState_idx" ON "Business"("approvalState");
+
+-- CreateIndex
+CREATE INDEX "WorkflowDefinition_name_idx" ON "WorkflowDefinition"("name");
+
+-- CreateIndex
+CREATE INDEX "WorkflowRuntimeData_endUserId_status_idx" ON "WorkflowRuntimeData"("endUserId", "status");
+
+-- CreateIndex
+CREATE INDEX "WorkflowRuntimeData_businessId_status_idx" ON "WorkflowRuntimeData"("businessId", "status");
+
+-- CreateIndex
+CREATE INDEX "WorkflowRuntimeData_workflowDefinitionId_status_idx" ON "WorkflowRuntimeData"("workflowDefinitionId", "status");
+
+-- CreateIndex
+CREATE INDEX "WorkflowRuntimeData_state_idx" ON "WorkflowRuntimeData"("state");
+
+-- CreateIndex
+CREATE INDEX "WorkflowRuntimeData_createdBy_idx" ON "WorkflowRuntimeData"("createdBy");
+
+-- CreateIndex
+CREATE INDEX "File_userId_idx" ON "File"("userId");
+
+-- CreateIndex
+CREATE INDEX "Policy_name_idx" ON "Policy"("name");
+
+-- CreateIndex
+CREATE INDEX "Policy_version_name_idx" ON "Policy"("version", "name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_BusinessToEndUser_AB_unique" ON "_BusinessToEndUser"("A", "B");
@@ -163,6 +248,15 @@ ALTER TABLE "WorkflowRuntimeData" ADD CONSTRAINT "WorkflowRuntimeData_businessId
 
 -- AddForeignKey
 ALTER TABLE "WorkflowRuntimeData" ADD CONSTRAINT "WorkflowRuntimeData_workflowDefinitionId_fkey" FOREIGN KEY ("workflowDefinitionId") REFERENCES "WorkflowDefinition"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CaseFile" ADD CONSTRAINT "CaseFile_endUserId_fkey" FOREIGN KEY ("endUserId") REFERENCES "EndUser"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CaseFile" ADD CONSTRAINT "CaseFile_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "Business"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CaseFile" ADD CONSTRAINT "CaseFile_workflowRuntimeDataId_fkey" FOREIGN KEY ("workflowRuntimeDataId") REFERENCES "WorkflowRuntimeData"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_BusinessToEndUser" ADD CONSTRAINT "_BusinessToEndUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Business"("id") ON DELETE CASCADE ON UPDATE CASCADE;

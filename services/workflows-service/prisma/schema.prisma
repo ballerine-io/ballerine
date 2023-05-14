@@ -45,13 +45,12 @@ model EndUser {
   dateOfBirth    DateTime?
   avatarUrl      String?
   additionalInfo Json?
-
-  workflowRuntimeData WorkflowRuntimeData[]
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   businesses           Business[]
+  caseFiles            CaseFile[]
+  workflowRuntimeData WorkflowRuntimeData[]
   EndUsersOnBusinesses EndUsersOnBusinesses[]
 
   @@index([endUserType])
@@ -98,6 +97,7 @@ model Business {
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
   EndUsersOnBusinesses EndUsersOnBusinesses[]
+  caseFiles CaseFile[]
 
   @@index([companyName])
   @@index([countryOfIncorporation])
@@ -146,6 +146,8 @@ model WorkflowRuntimeData {
   updatedAt                 DateTime           @updatedAt
   createdBy                 String             @default("SYSTEM")
 
+  caseFiles CaseFile[]
+
   @@index([endUserId, status])
   @@index([businessId, status])
   @@index([workflowDefinitionId, status])
@@ -174,4 +176,24 @@ model Policy {
 
   @@index([name])
   @@index([version, name])
+}
+
+model CaseFile {
+  id                      String   @id @default(cuid())
+  endUser                 EndUser?  @relation(fields: [endUserId], references: [id], onDelete: Cascade)
+  endUserId               String?
+  business                Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId              String?
+  workflowRuntimeData     WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onDelete: Cascade)
+  workflowRuntimeDataId   String?
+  fileType                String // png|jpg|jpeg|gif|pdf|
+  fileSize                Int // KB
+  documentType            String // ID,Passport,Utility Bill
+  uri                     String
+  metadata                Json // pageNumber   Int, side     String // front/back/
+  provider                String
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  replacedAt              DateTime?
+  deletedAt               DateTime?
 }

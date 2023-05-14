@@ -19,6 +19,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
+import { CaseFileModule } from './case-file/case-file.module';
 
 @Module({
   controllers: [],
@@ -49,6 +50,7 @@ import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),
+    CaseFileModule,
   ],
   providers: [
     {
