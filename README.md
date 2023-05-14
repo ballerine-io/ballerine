@@ -44,7 +44,7 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 
 - :twisted_rightwards_arrows: **Workflow engine** - :white_check_mark: Public beta
 
-  - Automate decisions based on user data, 3rd party input and rules.
+* Automate decisions based on user data, 3rd party input and rules.
 
 - :scroll: **Rule engine** - :male_detective: Private Beta (collaborators)
 
@@ -57,9 +57,9 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 - :video_game: **Frontend headless SDK** - :white_check_mark: Public beta
   1. Control the journey of your users in real-time, based on their updating attributes.
   1. Onboarding building blocks (community-driven kit) - [Go to directory](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md)
-     _ KYC/KYB/doc collection flows and UI via Mobile & web SDK
-     _ Case management dashboard for users approval
-     </br>
+  - KYC/KYB/doc collection flows and UI via Mobile & web SDK
+  - Case management dashboard for users approval
+    </br>
 
 ## Getting started
 
@@ -75,23 +75,18 @@ Set up an onboarding decisioning workflow using Ballerina's pre-built building b
 
 #### Install:
 
-1.  Clone the project:
-
-```sh
-git clone https://github.com/ballerine-io/ballerine.git
-```
-
-2.  Install npm depenencies:
-
-```sh
-pnpm install
-```
-
-3.  Initilazie monorepo:
-
-```sh
-pnpm monorepo:init
-```
+1. Clone the project:
+   ```sh
+   git clone https://github.com/ballerine-io/ballerine.git
+   ```
+2. Install npm depenencies:
+   ```sh
+   pnpm install
+   ```
+3. Initilazie monorepo:
+   ```sh
+   pnpm monorepo:init
+   ```
 
 #### Run Examples:
 
