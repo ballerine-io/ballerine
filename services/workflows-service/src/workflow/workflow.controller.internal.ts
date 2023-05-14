@@ -41,9 +41,9 @@ export class WorkflowControllerInternal {
       | 'id'
       | 'name'
       | 'version'
-      | 'state'
-      | 'context'
-      | 'definition'
+      | 'state' // PR comments:
+      | 'context' // 1. how come we return more than we select below?
+      | 'definition' // 2. y do we need both?
       | 'definitionType'
       | 'backend'
       | 'extensions'
