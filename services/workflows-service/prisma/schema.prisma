@@ -129,22 +129,27 @@ model WorkflowDefinition {
   @@index([definitionType])
 }
 
+enum WorkflowRuntimeDataStatus {
+  created
+  completed
+}
+
 model WorkflowRuntimeData {
-  id                        String             @id @default(cuid())
-  endUser                   EndUser?           @relation(fields: [endUserId], references: [id], onDelete: SetNull)
+  id                        String                    @id @default(cuid())
+  endUser                   EndUser?                  @relation(fields: [endUserId], references: [id], onDelete: SetNull)
   endUserId                 String?
-  business                  Business?          @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  business                  Business?                 @relation(fields: [businessId], references: [id], onDelete: SetNull)
   businessId                String?
-  workflowDefinition        WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
+  workflowDefinition        WorkflowDefinition        @relation(fields: [workflowDefinitionId], references: [id])
   workflowDefinitionId      String
   workflowDefinitionVersion Int
   context                   Json
   // history
   state                     String?
-  status                    String             @default("created")
-  createdAt                 DateTime           @default(now())
-  updatedAt                 DateTime           @updatedAt
-  createdBy                 String             @default("SYSTEM")
+  status                    WorkflowRuntimeDataStatus @default(created)
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+  createdBy                 String                    @default("SYSTEM")
   resolvedAt                DateTime?
 
   @@index([endUserId, status])
