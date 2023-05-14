@@ -94,6 +94,7 @@ export class BusinessControllerInternal {
     const filter = await this.filterService.create({
       data: {
         ...data,
+        entity: 'businesses',
         query: data?.query as InputJsonValue,
       },
     });

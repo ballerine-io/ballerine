@@ -151,7 +151,121 @@ export const NestedEnumApprovalStateFilter = z.lazy(() =>
     not: z.union([NestedEnumApprovalStateFilter, zApprovalStateEnum]).optional(),
   }),
 );
+// @ts-expect-error - It is expected for z.lazy to be any.
+const NestedIntFilterSchema = z.lazy(() =>
+  z.object({
+    equals: z.number().optional(),
+    in: z.array(z.number()).optional(),
+    notIn: z.array(z.number()).optional(),
+    lt: z.number().optional(),
+    lte: z.number().optional(),
+    gt: z.number().optional(),
+    gte: z.number().optional(),
+    not: z.union([NestedIntFilterSchema, z.number()]).optional(),
+  }),
+);
 
+const IntFilterSchema = z.lazy(() =>
+  z.object({
+    equals: z.number().optional(),
+    in: z.array(z.number()).optional(),
+    notIn: z.array(z.number()).optional(),
+    lt: z.number().optional(),
+    lte: z.number().optional(),
+    gt: z.number().optional(),
+    gte: z.number().optional(),
+    not: z.union([NestedIntFilterSchema, z.number()]).optional(),
+  }),
+);
+
+export const BusinessRelationFilterSchema = z.object({
+  is: z.lazy(() => BusinessWhereInputSchema).optional(),
+  isNot: z.lazy(() => BusinessWhereInputSchema).optional(),
+});
+
+// @ts-expect-error - It is expected for z.lazy to be any.
+export const WorkflowRuntimeDataWhereInputSchema = z.lazy(() =>
+  z.object({
+    id: zStringFilterStringUnion.optional(),
+    endUserId: zStringNullableFilterStringNullUnion.optional(),
+    businessId: zStringNullableFilterStringNullUnion.optional(),
+    workflowDefinitionId: zStringFilterStringUnion.optional(),
+    workflowDefinitionVersion: zStringFilterStringUnion.optional(),
+    context: z.unknown().optional(),
+    state: zStringNullableFilterStringNullUnion.optional(),
+    status: zStringFilterStringUnion.optional(),
+    createdAt: zDateTimeFilterDateStringUnion.optional(),
+    updatedAt: zDateTimeFilterDateStringUnion.optional(),
+    createdBy: zStringFilterStringUnion.optional(),
+    endUser: z.union([EndUserRelationFilterSchema, EndUserWhereInputSchema, z.null()]).optional(),
+    business: z
+      .union([BusinessRelationFilterSchema, BusinessWhereInputSchema, z.null()])
+      .optional(),
+    workflowDefinition: WorkflowDefinitionRelationFilterSchema.or(
+      WorkflowDefinitionWhereInputSchema,
+    ).optional(),
+  }),
+);
+
+// @ts-ignore
+export const WorkflowRuntimeDataListRelationFilterSchema = z.object({
+  every: WorkflowRuntimeDataWhereInputSchema.optional(),
+  some: WorkflowRuntimeDataWhereInputSchema.optional(),
+  none: WorkflowRuntimeDataWhereInputSchema.optional(),
+});
+
+export const WorkflowDefinitionWhereInput = z.lazy(() =>
+  z.object({
+    id: zStringFilterStringUnion.optional(),
+    reviewMachineId: zStringNullableFilterStringNullUnion.optional(),
+    name: zStringFilterStringUnion.optional(),
+    version: z.union([IntFilterSchema, z.number()]).optional(),
+    definitionType: zStringFilterStringUnion.optional(),
+    definition: z.unknown().optional(),
+    supportedPlatforms: z.unknown().optional(),
+    extensions: z.unknown().optional(),
+    backend: z.unknown().optional(),
+    persistStates: z.unknown().optional(),
+    submitStates: z.unknown().optional(),
+    createdAt: zDateTimeFilterDateStringUnion.optional(),
+    updatedAt: zDateTimeFilterDateStringUnion.optional(),
+    createdBy: zStringFilterStringUnion.optional(),
+    workflowRuntimeData: WorkflowRuntimeDataListRelationFilterSchema.optional(),
+  }),
+);
+
+// @ts-ignore
+export const WorkflowDefinitionWhereInputSchema = z.object({
+  id: zStringFilterStringUnion.optional(),
+  reviewMachineId: zStringNullableFilterStringNullUnion.optional(),
+  name: zStringFilterStringUnion.optional(),
+  version: IntFilterSchema.optional(),
+  definitionType: zStringFilterStringUnion.optional(),
+  definition: z.unknown().optional(),
+  supportedPlatforms: z.unknown().optional(),
+  extensions: z.unknown().optional(),
+  backend: z.unknown().optional(),
+  persistStates: z.unknown().optional(),
+  submitStates: z.unknown().optional(),
+  createdAt: zDateTimeFilterDateStringUnion.optional(),
+  updatedAt: zDateTimeFilterDateStringUnion.optional(),
+  createdBy: zStringFilterStringUnion.optional(),
+  workflowRuntimeData: WorkflowRuntimeDataListRelationFilterSchema.optional(),
+});
+
+// @ts-ignore
+export const WorkflowDefinitionRelationFilterSchema = z.object({
+  is: WorkflowDefinitionWhereInputSchema.optional(),
+  isNot: WorkflowDefinitionWhereInputSchema.optional(),
+});
+
+// @ts-ignore
+export const EndUserRelationFilterSchema = z.object({
+  is: z.lazy(() => EndUserWhereInputSchema).optional(),
+  isNot: z.lazy(() => EndUserWhereInputSchema).optional(),
+});
+
+// @ts-ignore
 export const EndUserWhereInputSchema = z.object({
   id: zStringFilterStringUnion.optional(),
   correlationId: zStringFilterStringUnion.optional(),
@@ -165,6 +279,7 @@ export const EndUserWhereInputSchema = z.object({
   phone: zStringNullableFilterStringNullUnion.optional(),
   dateOfBirth: zDateTimeNullableFilterDateStringUnion.optional(),
   avatarUrl: zStringNullableFilterStringNullUnion.optional(),
+  workflowRuntimeData: WorkflowRuntimeDataListRelationFilterSchema.optional(),
   createdAt: zDateTimeFilterDateStringUnion.optional(),
   updatedAt: zDateTimeFilterDateStringUnion.optional(),
 });
@@ -205,6 +320,7 @@ export const EndUserFilterSchema = FilterSchema.extend({
 
 export const EndUserFilterCreateSchema = EndUserFilterSchema.omit({
   id: true,
+  entity: true,
   createdAt: true,
   updatedAt: true,
 });
@@ -272,6 +388,7 @@ export const BusinessFilterSchema = FilterSchema.extend({
 
 export const BusinessFilterCreateSchema = BusinessFilterSchema.omit({
   id: true,
+  entity: true,
   createdAt: true,
   updatedAt: true,
 });
