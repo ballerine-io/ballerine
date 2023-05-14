@@ -13,7 +13,6 @@ export type TS3BucketConfig = {
 };
 
 export type TRemoteFileConfig = TS3BucketConfig | TRemoteUri;
-export type TStringInt = string | number;
 export type TFileServiceProvider = HttpFileService | AwsS3FileService | LocalFileService;
 
 export interface IFileProvider {
