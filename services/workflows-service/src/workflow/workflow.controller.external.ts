@@ -120,11 +120,14 @@ export class WorkflowControllerExternal {
   ): Promise<any> {
     const { workflowId } = body;
     // get workflow definition
+    console.log(body);
     const workflowDefinition = await this.service.getWorkflowDefinitionById(workflowId);
     // check body.context against workflowDefinition.contextSchema
     // check if no other workflow is running for this entity
     // create workflow runtime data
 
+    console.log('test');
+    console.log(workflowDefinition);
     // temp resp
     return res.json(workflowDefinition);
   }

@@ -54,37 +54,109 @@ async function seed(bcryptSalt: Salt) {
             entity: {
               type: 'object',
               properties: {
-                entityType: { type: 'string', enum: ['individual', 'business'] },
-                additionalDetails: { type: 'object' },
-                ballerineEid: { type: 'string' }, // Ballerine Entity ID
-                id: { type: 'string' },
+                entityType: {
+                  type: 'string',
+                  enum: ['individual', 'business'],
+                },
+                entityData: {
+                  type: 'object',
+                },
+                additionalDetails: {
+                  type: 'object',
+                },
+                ballerineEntityId: {
+                  type: 'string',
+                },
+                id: {
+                  type: 'string',
+                },
               },
-              required: ['entityType', 'ballerineId', 'id'],
+              required: ['entityType', 'id'],
+              additionalProperties: false, // added
             },
             documents: {
               type: 'array',
               items: {
                 type: 'object',
                 properties: {
-                  category: { type: 'string' },
-                  type: { type: 'string' },
+                  category: {
+                    type: 'string',
+                  },
+                  type: {
+                    type: 'string',
+                  },
                   issuer: {
                     type: 'object',
                     properties: {
-                      type: { type: 'string' },
-                      name: { type: 'string' },
-                      country: { type: 'string' },
-                      city: { type: 'string' },
-                      additionalDetails: { type: 'object' },
+                      type: {
+                        type: 'string',
+                      },
+                      name: {
+                        type: 'string',
+                      },
+                      country: {
+                        type: 'string',
+                      },
+                      city: {
+                        type: 'string',
+                      },
+                      additionalDetails: {
+                        type: 'object',
+                      },
                     },
                     required: ['type', 'name', 'country', 'city'],
+                    additionalProperties: false, // added
                   },
-                  issuingVersion: { type: 'integer' },
-                  currentApprovalState: {
-                    type: 'string',
-                    enum: ['new', 'pending', 'resubmit', 'approved', 'rejected'],
+                  issuingVersion: {
+                    type: 'integer',
                   },
-                  version: { type: 'integer' },
+                  decision: {
+                    type: 'object',
+                    properties: {
+                      status: {
+                        type: 'string',
+                        enum: ['new', 'pending', 'revision', 'approved', 'rejected'],
+                      },
+                      rejectionReason: {
+                        oneOf: [
+                          {
+                            type: 'string',
+                            enum: [
+                              'Suspicious document',
+                              'Document does not match customer profile',
+                              'Potential identity theft',
+                              'Fake or altered document',
+                              'Document on watchlist or blacklist',
+                            ],
+                          },
+                          {
+                            type: 'string',
+                          },
+                        ],
+                      },
+                      revisionReason: {
+                        oneOf: [
+                          {
+                            type: 'string',
+                            enum: [
+                              'Blurry image',
+                              'Missing page',
+                              'Invalid document',
+                              'Expired document',
+                              'Unreadable document',
+                            ],
+                          },
+                          {
+                            type: 'string',
+                          },
+                        ],
+                      },
+                    },
+                    additionalProperties: false, // added
+                  },
+                  version: {
+                    type: 'integer',
+                  },
                   pages: {
                     type: 'array',
                     items: {
@@ -94,36 +166,67 @@ async function seed(bcryptSalt: Salt) {
                           type: 'string',
                           enum: ['gcs', 'http', 'stream', 'base64', 'ftp'],
                         },
-                        uri: { type: 'string' },
-                        type: { type: 'string', enum: ['pdf', 'png', 'jpg'] },
-                        data: { type: 'string' },
+                        uri: {
+                          type: 'string',
+                          format: 'uri', // added
+                        },
+                        type: {
+                          type: 'string',
+                          enum: ['pdf', 'png', 'jpg'],
+                        },
+                        data: {
+                          type: 'string',
+                        },
                         metadata: {
                           type: 'object',
                           properties: {
-                            side: { type: 'string' },
-                            pageNumber: { type: 'string' },
+                            side: {
+                              type: 'string',
+                            },
+                            pageNumber: {
+                              type: 'string',
+                            },
                           },
+                          additionalProperties: false, // added
                         },
                       },
                       required: ['provider', 'uri', 'type'],
+                      additionalProperties: false, // added
                     },
                   },
-                  propertiesSchema: { type: 'object' },
+                  properties: {
+                    type: 'object',
+                    additionalProperties: {
+                      oneOf: [
+                        {
+                          type: 'string',
+                        },
+                        {
+                          type: 'object',
+                          properties: {
+                            type: {
+                              type: 'string',
+                              enum: ['date'],
+                            },
+                            value: {
+                              type: 'string',
+                              format: 'date',
+                            },
+                          },
+                          required: ['type', 'value'],
+                          additionalProperties: false,
+                        },
+                      ],
+                    },
+                  },
                 },
-                required: [
-                  'category',
-                  'type',
-                  'issuer',
-                  'issuingVersion',
-                  'currentApprovalState',
-                  'version',
-                  'pages',
-                  'propertiesSchema',
-                ],
+                required: ['category', 'type', 'issuer', 'version', 'pages', 'properties'],
+                additionalProperties: false, // added
               },
             },
           },
           required: ['entity', 'documents'],
+          additionalProperties: false, // added
         },
       },
       definition: {
@@ -158,34 +261,44 @@ async function seed(bcryptSalt: Salt) {
   const mockContext = {
     entity: {
       entityType: 'business',
-      additionalDetails: {
-        industry: 'Financial Services',
-        size: '51-200 employees',
+      entityData: {
+        businessName: 'Tech Solutions Inc.',
+        businessAddress: '123 Tech Lane, Techville',
+        businessNumber: '123456789',
       },
-      ballerineEid: 'BID20230001',
-      id: '2023-001',
+      additionalDetails: {
+        industry: 'Technology',
+        numberOfEmployees: '50',
+      },
+      ballerineEntityId: 'B123456',
+      id: 'E123456',
     },
     documents: [
       {
-        category: 'Registration',
-        type: 'Certificate of Incorporation',
+        category: 'Identification Document',
+        type: 'ID Card',
         issuer: {
           type: 'Government',
-          name: 'Registrar of Companies',
+          name: 'Techville City Council',
           country: 'USA',
-          city: 'Delaware',
+          city: 'Techville',
           additionalDetails: {
-            address: 'John G Townsend Bldg, Dover, DE 19901, USA',
+            department: 'Identification and Passport Services',
           },
         },
         issuingVersion: 1,
-        currentApprovalState: 'new',
+        decision: {
+          status: 'pending',
+          rejectionReason: '',
+          revisionReason: '',
+        },
+        approvalStatus: 'new',
         version: 1,
         pages: [
           {
             provider: 'http',
-            uri: 'http://example.com/document1.pdf',
-            type: 'pdf',
+            uri: 'http://example.com/id_front.jpg',
+            type: 'jpg',
             data: '',
             metadata: {
               side: 'front',
@@ -194,8 +307,8 @@ async function seed(bcryptSalt: Salt) {
           },
           {
             provider: 'http',
-            uri: 'http://example.com/document1-2.pdf',
-            type: 'pdf',
+            uri: 'http://example.com/id_back.jpg',
+            type: 'jpg',
             data: '',
             metadata: {
               side: 'back',
@@ -203,51 +316,68 @@ async function seed(bcryptSalt: Salt) {
             },
           },
         ],
-        propertiesSchema: {
-          incorporationDate: '2022-01-01',
-          businessName: 'My Business Inc.',
-          registrationNumber: '1234567',
+        properties: {
+          cardNumber: {
+            type: 'number',
+            value: '987654321',
+          },
+          issueDate: {
+            type: 'date',
+            value: '2020-01-01',
+          },
+          expiryDate: {
+            type: 'date',
+            value: '2030-12-31',
+          },
+          name: 'John Doe',
+          address: '123 Tech Lane, Techville',
+          dateOfBirth: {
+            type: 'date',
+            value: '1980-01-01',
+          },
         },
       },
       {
-        category: 'Financial',
-        type: 'Annual Report',
+        category: 'Registration Document',
+        type: 'Certificate of Incorporation',
         issuer: {
-          type: 'Private',
-          name: 'My Business Inc.',
+          type: 'Government',
+          name: 'Techville City Council',
           country: 'USA',
-          city: 'New York',
+          city: 'Techville',
           additionalDetails: {
-            address: '123 Wall Street, New York, NY 10005, USA',
+            department: 'Business Registration',
           },
         },
         issuingVersion: 1,
-        currentApprovalState: 'new',
+        decision: {
+          status: 'pending',
+          rejectionReason: '',
+          revisionReason: '',
+        },
+        approvalStatus: 'new',
         version: 1,
         pages: [
           {
-            provider: 'gcs',
-            uri: 'gs://example-bucket/document2.pdf',
+            provider: 'http',
+            uri: 'http://example.com/certificate.pdf',
             type: 'pdf',
             data: '',
             metadata: {
+              side: 'front',
               pageNumber: '1',
             },
           },
-          {
-            provider: 'gcs',
-            uri: 'gs://example-bucket/document2-2.pdf',
-            type: 'pdf',
-            data: '',
-            metadata: {
-              pageNumber: '2',
-            },
-          },
         ],
-        propertiesSchema: {
-          fiscalYear: '2022',
-          totalRevenue: '10M USD',
-          netIncome: '2M USD',
+        properties: {
+          companyName: 'Tech Solutions Inc.',
+          companyNumber: '123456789',
+          issueDate: {
+            type: 'date',
+            value: '2020-01-01',
+          },
+          directors: 'John Doe, Jane Doe',
+          registeredAddress: '123 Tech Lane, Techville',
         },
       },
     ],
