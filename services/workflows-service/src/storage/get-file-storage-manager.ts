@@ -15,7 +15,7 @@ export const S3StorageEnvSchema = z.object({
   AWS_S3_BUCKET_KEY: z.string(),
 });
 
-const generateAwsConfig = (processEnv: NodeJS.ProcessEnv): S3ClientConfig => {
+const __generateAwsConfig = (processEnv: NodeJS.ProcessEnv): S3ClientConfig => {
   const { AWS_REGION, AWS_S3_BUCKET_KEY, AWS_S3_BUCKET_SECRET } = S3StorageEnvSchema.parse(
     processEnv
   );
@@ -29,7 +29,7 @@ const generateAwsConfig = (processEnv: NodeJS.ProcessEnv): S3ClientConfig => {
   };
 };
 
-const isS3BucketConfigured = (processEnv: NodeJS.ProcessEnv) => {
+const __isS3BucketConfigured = (processEnv: NodeJS.ProcessEnv) => {
   return !!z.string().optional().parse(processEnv.AWS_S3_BUCKET_KEY);
 };
 
@@ -38,9 +38,9 @@ export const fetchDefaultBucketName = (processEnv: NodeJS.ProcessEnv) => {
 };
 
 export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
-  if (isS3BucketConfigured(processEnv)) {
+  if (__isS3BucketConfigured(processEnv)) {
     return multerS3({
-      s3: new S3Client(generateAwsConfig(processEnv)),
+      s3: new S3Client(__generateAwsConfig(processEnv)),
       acl: 'private',
       bucket: fetchDefaultBucketName(processEnv),
     });
@@ -58,7 +58,7 @@ export const downloadFileFromS3 = async (
 ): Promise<TLocalFile> => {
   try {
     const getObjectCommand = new GetObjectCommand({ Bucket: bucketName, Key: fileNameInBucket });
-    let s3Client = new S3Client(generateAwsConfig(process.env));
+    let s3Client = new S3Client(__generateAwsConfig(process.env));
     const response = await s3Client.send(getObjectCommand);
     const readableStream = response.Body as Readable;
     const tmpFile = tmp.fileSync();
