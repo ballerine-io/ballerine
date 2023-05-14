@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-repository';
 
 import { WorkflowControllerInternal } from './workflow.controller.internal';
