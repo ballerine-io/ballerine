@@ -96,6 +96,7 @@ export class EndUserControllerInternal {
     const filter = await this.filterService.create({
       data: {
         ...data,
+        entity: 'individuals',
         query: data?.query as InputJsonValue,
       },
     });
