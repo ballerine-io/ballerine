@@ -11,11 +11,11 @@ import {
   S3Client,
   S3ClientConfig,
 } from '@aws-sdk/client-s3';
-import {Readable} from 'stream';
+import { Readable } from 'stream';
 import fs, { createReadStream } from 'fs';
 import path from 'path';
 import { isErrorWithName } from '@ballerine/common';
-import {Upload} from "@aws-sdk/lib-storage";
+import { Upload } from '@aws-sdk/lib-storage';
 
 export class AwsS3FileService implements IStreamableFileProvider {
   protected client;
