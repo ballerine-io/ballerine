@@ -7,7 +7,7 @@ import * as tmp from 'tmp';
 import * as fs from 'fs';
 
 import { Readable } from 'stream';
-export type TLocalFile = string;
+type TLocalFile = string;
 
 export const S3StorageEnvSchema = z.object({
   AWS_REGION: z.string(),
