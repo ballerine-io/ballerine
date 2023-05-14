@@ -10,7 +10,7 @@ export const env = createEnv({
   server: {
     NODE_ENV: z.enum(['development', 'production', 'test']),
     ENV_FILE_NAME: z.string().optional(),
-    BCRYPT_SALT: z.coerce.number().int().nonnegative(),
+    BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
     COMPOSE_PROJECT_NAME: z.string(),
     JWT_SECRET_KEY: z.string(),
     JWT_EXPIRATION: z.string(),
