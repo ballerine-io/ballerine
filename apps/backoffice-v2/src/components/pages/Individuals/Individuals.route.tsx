@@ -57,7 +57,9 @@ export const individualsRoute = new Route({
   ],
   onLoad: async ({ search }) => {
     const entityList = queries[search?.kind].list(search?.filterId);
+    const usersList = users.list();
     await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
+    await queryClient.ensureQueryData(usersList.queryKey, usersList.queryFn);
 
     return {};
   },
