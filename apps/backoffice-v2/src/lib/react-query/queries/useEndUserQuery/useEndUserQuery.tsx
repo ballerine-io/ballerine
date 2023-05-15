@@ -2,7 +2,8 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { isString } from '../../../../utils/is-string/is-string';
 import { TEndUser } from '../../../../api/types';
 import { queries } from '../../queries';
-import { useKind } from 'hooks/useKind/useKind';
+import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
+import { useFilterId } from 'hooks/useFilterId/useFilterId';
 
 export const useEndUserQuery = ({
   endUserId,
@@ -11,10 +12,11 @@ export const useEndUserQuery = ({
   endUserId: string;
   select?: UseQueryOptions<TEndUser>['select'];
 }) => {
-  const kind = useKind();
+  const entity = useFilterEntity();
+  const filterId = useFilterId();
 
   return useQuery({
-    ...queries[kind].byId(endUserId),
+    ...queries[entity].byId(endUserId, filterId),
     enabled: isString(endUserId) && endUserId.length > 0,
     select,
   });

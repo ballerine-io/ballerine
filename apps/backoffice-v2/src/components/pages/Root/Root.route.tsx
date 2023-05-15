@@ -8,13 +8,15 @@ import { filters } from '../../../lib/react-query/filters';
 // Layout and globals
 export const rootRoute = new RootRoute({
   onLoad: async () => {
-    const filtersList = filters.list();
-    await queryClient.ensureQueryData(filtersList.queryKey, filtersList.queryFn);
-
     if (!env.VITE_AUTH_ENABLED) return {};
 
     const getSession = auth.getSession();
-    await queryClient.ensureQueryData(getSession.queryKey, getSession.queryFn);
+    const session = await queryClient.ensureQueryData(getSession.queryKey, getSession.queryFn);
+
+    if (!session?.user) return;
+
+    const filtersList = filters.list();
+    await queryClient.ensureQueryData(filtersList.queryKey, filtersList.queryFn);
 
     return {};
   },

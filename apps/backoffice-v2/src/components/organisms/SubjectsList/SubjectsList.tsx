@@ -118,7 +118,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
           >
             <div className={`input-group flex items-center`}>
               <button
-                className={`btn-ghost btn-sm btn-square btn !rounded-md focus-visible:border-none focus-visible:bg-neutral/10 focus-visible:outline-none focus-visible:ring-0 focus-visible:theme-dark:bg-neutral`}
+                className={`btn-ghost btn-square btn-sm btn !rounded-md focus-visible:border-none focus-visible:bg-neutral/10 focus-visible:outline-none focus-visible:ring-0 focus-visible:theme-dark:bg-neutral`}
                 onClick={onSortDir}
                 ref={sortRef}
               >
