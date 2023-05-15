@@ -13,11 +13,11 @@
 </br>
   <!-- Nav header - Start -->
 
-<a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw">Slack</a>
-·
-<a href="https://www.ballerine.com/">Website</a>
-·
-<a href="https://github.com/ballerine-io/ballerine/issues">Issues</a>
+   <a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw">Slack</a>
+    ·
+    <a href="https://www.ballerine.com/">Website</a>
+    ·
+    <a href="https://github.com/ballerine-io/ballerine/issues">Issues</a>
 
 
 <!-- Nav header - END -->
@@ -26,11 +26,11 @@
 
 
 
-<a href="https://github.com/ballerine-io/ballerine/stargazers"><img src="https://img.shields.io/github/stars/ballerine-io/ballerine?logo=GitHub&style=flat-square"></a>
-<a href="https://discord.gg/e2rQE4YygA"><img src="https://img.shields.io/website?color=%237289DA&down_color=%237289DA&down_message=Join&label=Discord&logo=discord&logoColor=white&style=flat-square&up_color=%237289DA&up_message=Join&url=https%3A%2F%2Fdiscord.gg%2Fe2rQE4YygA"></a>
-<a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw"><img src="https://img.shields.io/website?color=%23441949&down_color=%23441949&down_message=Join&label=Slack&logo=slack&logoColor=white&style=flat-square&up_color=%23441949&up_message=Join&url=https%3A%2F%2Fjoin.slack.com%2Ft%2Fballerine-oss%2Fshared_invite%2Fzt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw"></a>
-<a href="https://twitter.com/ballerine_io"><img src="https://img.shields.io/website?color=%231DA1F2&down_color=%231DA1F2&down_message=Follow&label=Twitter&logo=twitter&logoColor=%231DA1F2&style=flat-square&up_color=%231DA1F2&up_message=%40ballerine.io&url=https%3A%2F%2Ftwitter.com%2FBallerine_io"></a>
-<a href="https://ycombinator.com"><img src="https://img.shields.io/website?color=%23f26522&down_message=Y%20Combinator&label=Backed&logo=ycombinator&style=flat-square&up_message=Y%20Combinator&url=https%3A%2F%2Fwww.ycombinator.com"></a>
+   <a href="https://github.com/ballerine-io/ballerine/stargazers"><img src="https://img.shields.io/github/stars/ballerine-io/ballerine?logo=GitHub&style=flat-square"></a>
+   <a href="https://discord.gg/e2rQE4YygA"><img src="https://img.shields.io/website?color=%237289DA&down_color=%237289DA&down_message=Join&label=Discord&logo=discord&logoColor=white&style=flat-square&up_color=%237289DA&up_message=Join&url=https%3A%2F%2Fdiscord.gg%2Fe2rQE4YygA"></a>
+   <a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw"><img src="https://img.shields.io/website?color=%23441949&down_color=%23441949&down_message=Join&label=Slack&logo=slack&logoColor=white&style=flat-square&up_color=%23441949&up_message=Join&url=https%3A%2F%2Fjoin.slack.com%2Ft%2Fballerine-oss%2Fshared_invite%2Fzt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw"></a>
+   <a href="https://twitter.com/ballerine_io"><img src="https://img.shields.io/website?color=%231DA1F2&down_color=%231DA1F2&down_message=Follow&label=Twitter&logo=twitter&logoColor=%231DA1F2&style=flat-square&up_color=%231DA1F2&up_message=%40ballerine.io&url=https%3A%2F%2Ftwitter.com%2FBallerine_io"></a>
+   <a href="https://ycombinator.com"><img src="https://img.shields.io/website?color=%23f26522&down_message=Y%20Combinator&label=Backed&logo=ycombinator&style=flat-square&up_message=Y%20Combinator&url=https%3A%2F%2Fwww.ycombinator.com"></a>
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 [![GitHub release](https://img.shields.io/github/v/release/ballerine-io/ballerine?label=last-release&style=flat-square)](https://github.com/ballerine-io/ballerine/releases)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ballerine-io/ballerine/ci.yml?label=CI&style=flat-square)](https://github.com/ballerine-io/ballerine/actions/workflows/ci.yml)
@@ -50,20 +50,20 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 ### What you can find in this project
 
 *  :twisted_rightwards_arrows:   **Workflow engine** - :white_check_mark:  Public beta
-  - Automate decisions based on user data, 3rd party input and rules.
+   - Automate decisions based on user data, 3rd party input and rules.
 
 * :scroll: **Rule engine** - :male_detective: Private Beta (collaborators)
-  - Use different rule types to determine when and how to serve customers.
+   - Use different rule types to determine when and how to serve customers.
 
 * :electric_plug:  **Plugin system** - :closed_lock_with_key: Private Alpha
-  - Utilize our plugin system and unified API to connect to 3rd party vendors, custom APIs and databases.
+   - Utilize our plugin system and unified API to connect to 3rd party vendors, custom APIs and databases.
 
 * :video_game:  **Frontend headless SDK** - :white_check_mark:  Public beta
-  1. Control the journey of your users in real-time, based on their updating attributes.
-  1. Onboarding building blocks (community-driven kit) - [Go to directory](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md)
-    * KYC/KYB/doc collection flows and UI via Mobile & web SDK
-    * Case management dashboard for users approval
-      </br>
+   1. Control the journey of your users in real-time, based on their updating attributes.
+     1. Onboarding building blocks (community-driven kit) - [Go to directory](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md)
+        * KYC/KYB/doc collection flows and UI via Mobile & web SDK
+        * Case management dashboard for users approval
+    </br>
 
 ## Getting started
 
@@ -77,22 +77,22 @@ Set up an onboarding decisioning workflow using Ballerine's pre-built building b
 * Install docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
 
 #### Install:
-1. Clone the project:
+   1. Clone the project:  
    ```sh
    git clone https://github.com/ballerine-io/ballerine.git
    ```
-2. Install npm depenencies:
+   2. Install npm depenencies: 
    ```sh
    pnpm install
    ```
-3. Initilazie monorepo:
+   3. Initilazie monorepo: 
    ```sh
    pnpm monorepo:init
    ```
-
+  
 #### Run Examples:
 
-##### KYC Manual Review Workflow:
+##### KYC Manual Review Workflow: 
 The following command will run the workflow's backend (workflow service API), the backoffice, and UI example using the headless web SDK:
 ```sh
 pnpm kyc-manual-review-example
@@ -112,9 +112,9 @@ the *backffice* and the *example KYC UI*
 
 
 *Note: most components are currently in beta, if you run into an issue please ping us on [Slack]([https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw))
-
+  
 #### Development mode:
-- *Run in development mode* - runs all the projects in dev mode:
+   - *Run in development mode* - runs all the projects in dev mode: 
  ```sh
  pnpm dev
  ```
