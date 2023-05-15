@@ -12,7 +12,7 @@
     "dev": "npm run start:watch",
     "start:watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "build": "nest build",
+    "build": "nest build --path='./tsconfig.build.json'",
     "test": "jest --verbose",
     "test:watch": "jest --verbose --watch",
     "seed": "ts-node scripts/seed.ts",

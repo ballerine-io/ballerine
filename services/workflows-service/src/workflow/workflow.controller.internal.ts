@@ -36,22 +36,7 @@ export class WorkflowControllerInternal {
   async createWorkflowDefinition(
     @UserData() userInfo: UserInfo,
     @common.Body() data: WorkflowDefinitionCreateDto,
-  ): Promise<
-    Pick<
-      WorkflowDefinitionModel,
-      | 'id'
-      | 'name'
-      | 'version'
-      | 'state'
-      | 'context'
-      | 'definition'
-      | 'definitionType'
-      | 'backend'
-      | 'extensions'
-      | 'persistStates'
-      | 'submitStates'
-    >
-  > {
+  ) {
     return await this.service.createWorkflowDefinition({
       data,
       select: {
