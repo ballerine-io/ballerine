@@ -4,4 +4,3 @@ prisma/migrations/
 package-lock.json
 coverage/
 scripts/
-**/*.test.ts

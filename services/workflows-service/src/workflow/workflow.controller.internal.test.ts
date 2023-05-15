@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+
 import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-repository';
 
 import { WorkflowControllerInternal } from './workflow.controller.internal';
@@ -62,7 +68,7 @@ describe('WorkflowControllerInternal', () => {
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
       {} as any,
-      eventEmitterSpy as any,
+      eventEmitterSpy,
     );
 
     controller = new WorkflowControllerInternal(service, {} as any);
@@ -143,7 +149,6 @@ describe('WorkflowControllerInternal', () => {
           {
             status: 'workflow.completed',
             data: {
-              // PR comment: is it really the runtimeData we intended to return?
               runtimeData: initialRuntimeData,
               state: 'completed',
               context: {

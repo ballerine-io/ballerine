@@ -35,22 +35,7 @@ export class WorkflowControllerInternal {
   async createWorkflowDefinition(
     @UserData() userInfo: UserInfo,
     @common.Body() data: WorkflowDefinitionCreateDto,
-  ): Promise<
-    Pick<
-      WorkflowDefinitionModel,
-      | 'id'
-      | 'name'
-      | 'version'
-      | 'state' // PR comments:
-      | 'context' // 1. how come we return more than we select below?
-      | 'definition' // 2. y do we need both?
-      | 'definitionType'
-      | 'backend'
-      | 'extensions'
-      | 'persistStates'
-      | 'submitStates'
-    >
-  > {
+  ) {
     return await this.service.createWorkflowDefinition({
       data,
       select: {
