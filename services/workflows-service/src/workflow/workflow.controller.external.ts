@@ -121,7 +121,14 @@ export class WorkflowControllerExternal {
     const { workflowId } = body;
     // get workflow definition
     console.log(body);
-    const workflowDefinition = await this.service.getWorkflowDefinitionById(workflowId);
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - remove after adding context type
+    const workflowDefinition = await this.service.createWorkflowRuntime(
+      workflowId,
+      context.entity.entityId,
+      context.entity.type,
+    );
     // check body.context against workflowDefinition.contextSchema
     // check if no other workflow is running for this entity
     // create workflow runtime data

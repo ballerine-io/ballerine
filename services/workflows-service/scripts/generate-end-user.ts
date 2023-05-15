@@ -30,15 +30,16 @@ export const businessIds = [
 
 export const generateBusiness = ({
   id,
-  workflowDefinitionId,
-  workflowDefinitionVersion,
-  context,
+  workflow,
 }: {
   id: string;
-  workflowDefinitionId: string;
-  workflowDefinitionVersion: number;
-  context: Prisma.InputJsonValue;
+  workflow: {
+    workflowDefinitionId: string;
+    workflowDefinitionVersion: number;
+    context: Prisma.InputJsonValue;
+  };
 }): Prisma.BusinessCreateInput => {
+  const { workflowDefinitionId, workflowDefinitionVersion, context } = workflow;
   const companyName = faker.company.companyName();
   const registrationNumber = faker.datatype.uuid();
   const legalForm = faker.company.companySuffix();
@@ -92,15 +93,16 @@ export const generateBusiness = ({
 
 export const generateEndUser = ({
   id,
-  workflowDefinitionId,
-  workflowDefinitionVersion,
-  context,
+  workflow,
 }: {
   id: string;
-  workflowDefinitionId: string;
-  workflowDefinitionVersion: number;
-  context: Prisma.InputJsonValue;
-}): Prisma.EndUserCreateInput => {
+  workflow: {
+    workflowDefinitionId: string;
+    workflowDefinitionVersion: number;
+    context: Prisma.InputJsonValue;
+  };
+}): Prisma.BusinessCreateInput => {
+  const { workflowDefinitionId, workflowDefinitionVersion, context } = workflow;
   const correlationId = faker.datatype.uuid();
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();

@@ -17,6 +17,9 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
+import Ajv from 'ajv';
+
+const ajv = new Ajv();
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -247,6 +250,7 @@ export class WorkflowService {
       status: 'completed',
     });
   }
+
   async resolveIntent(
     intent: string,
     entityId: string,
@@ -256,9 +260,28 @@ export class WorkflowService {
 
     // TODO: implement logic for multiple workflows
     const { workflowDefinitionId } = workflowDefinitionResolver()[0];
+
+    return this.createWorkflowRuntime(workflowDefinitionId, entityId, tempEntityType);
+  }
+
+  async createWorkflowRuntime(
+    workflowDefinitionId: string,
+    entityId: string,
+    tempEntityType: TEntityType,
+    context = {},
+  ): Promise<RunnableWorkflowData[]> {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
+
+    if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema!).length) {
+      const validate = ajv.compile(workflowDefinition.contextSchema as any); // TODO: fix type
+      const validationResult = validate(context);
+      if (!validationResult) {
+        console.log(validationResult);
+        throw new BadRequestException('Invalid context');
+      }
+    }
     const entityConnect: any = {} as any;
     if (tempEntityType === 'endUser') {
       entityConnect.endUser = {

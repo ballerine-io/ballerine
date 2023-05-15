@@ -355,7 +355,6 @@ async function seed(bcryptSalt: Salt) {
           rejectionReason: '',
           revisionReason: '',
         },
-        approvalStatus: 'new',
         version: 1,
         pages: [
           {
