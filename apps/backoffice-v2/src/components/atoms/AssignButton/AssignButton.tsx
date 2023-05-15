@@ -9,14 +9,14 @@ import {DropdownMenu} from "components/molecules/DropdownMenu/DropdownMenu";
 import {DropdownMenuContent} from "components/molecules/DropdownMenu/DropdownMenu.Content";
 
 type Assignee = {
-  id: number;
+  id: string;
   fullName: string;
   isCaseAssignedToMe?: boolean;
 };
 
 type UserItemProps = {
   assignee: Assignee;
-  onAssigneeSelect: (id: number) => void;
+  onAssigneeSelect: (id: string) => void;
 };
 
 const AssigneeItem: React.FC<UserItemProps> = ({assignee, onAssigneeSelect}) => (
@@ -29,7 +29,7 @@ type AssignButtonProps = {
   caseState: TCaseManagementState;
   buttonType: "Assign" | "Re-Assign";
   assignees: Assignee | Assignee[];
-  onAssigneeSelect: (id: number) => void;
+  onAssigneeSelect: (id: string) => void;
   authenticatedUser: TAuthenticatedUser;
 };
 const AssignButton: React.FC<AssignButtonProps> = ({
@@ -50,7 +50,7 @@ const AssignButton: React.FC<AssignButtonProps> = ({
             disabled={!caseState.assignToMeEnabled}
             onClick={(_event) => isAssignButtonType ? onAssigneeSelect((assignees as Assignee).id) : undefined}
           >
-            {buttonType}
+            Assign Me
           </button>) :
           (
         <DropdownMenu>

@@ -13,6 +13,9 @@ import {
   useGetSessionQuery
 } from "../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery";
 import {useCaseState} from "components/organisms/Subject/hooks/useCaseState/useCaseState";
+import {
+  useAssignWorkflowMutation
+} from "../../../../../lib/react-query/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation";
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -41,7 +44,13 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
       workflowId: workflow?.runtimeDataId,
       onSelectNextEndUser,
     });
-  const isLoading = isLoadingApproveEndUser || isLoadingRejectEndUser || isLoadingEndUser;
+
+  const {
+    mutate: mutateAssignWorkflow,
+    isLoading: isLoadingAssignWorkflow
+  } = useAssignWorkflowMutation({workflowRuntimeId: workflow.runtimeDataId as string});
+
+  const isLoading = isLoadingApproveEndUser || isLoadingRejectEndUser || isLoadingEndUser || isLoadingAssignWorkflow;
   // Create initials from the first character of the first name, middle name, and last name.
   const initials = createInitials(fullName);
 
@@ -57,6 +66,7 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
   // Only display the button spinners if the request is longer than 300ms
   const debouncedIsLoadingRejectEndUser = useDebounce(isLoadingRejectEndUser, 300);
   const debouncedIsLoadingApproveEndUser = useDebounce(isLoadingApproveEndUser, 300);
+  const debouncedIsLoadingAssignEndUser = useDebounce(isLoadingAssignWorkflow, 300);
 
   // Avoid passing the onClick event to mutate
   const onMutateApproveEndUser = useCallback(() => mutateApproveEndUser(), [mutateApproveEndUser]);
@@ -64,6 +74,10 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
     (payload: Parameters<typeof mutateRejectEndUser>[0]) => () => mutateRejectEndUser(payload),
     [mutateRejectEndUser],
   );
+  const onMutateAssignWorkflow = useCallback((assigneeId: string, isAssignedToMe: boolean) => mutateAssignWorkflow({
+    assigneeId,
+    isAssignedToMe
+  }), [mutateAssignWorkflow]);
   const [documentToResubmit, setDocumentToResubmit] = useState('documentOne');
   const onDocumentToResubmitChange = useCallback(
     (value: string) => setDocumentToResubmit(value),
@@ -102,8 +116,10 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
   return {
     onMutateApproveEndUser,
     onMutateRejectEndUser,
+    onMutateAssignWorkflow,
     debouncedIsLoadingRejectEndUser,
     debouncedIsLoadingApproveEndUser,
+    debouncedIsLoadingAssignEndUser,
     isLoading,
     isLoadingEndUser,
     initials,

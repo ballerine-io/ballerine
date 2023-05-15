@@ -53,8 +53,10 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
   const {
     onMutateApproveEndUser,
     onMutateRejectEndUser,
+    onMutateAssignWorkflow,
     debouncedIsLoadingApproveEndUser,
     debouncedIsLoadingRejectEndUser,
+    debouncedIsLoadingAssignEndUser,
     isLoading,
     isLoadingEndUser,
     initials,
@@ -75,23 +77,22 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
 
       <div className={`flex flex-row space-x-3.5`}>
         <AssignButton
-          assignees={{id: 1, fullName: 'Omri', isCaseAssignedToMe: false}}
+          assignees={{id: '1', fullName: 'Omri', isCaseAssignedToMe: false}}
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={(id) => {
-            console.log(String(id))
+            onMutateAssignWorkflow(id, true)
           }}
           buttonType={"Assign"}/>
         <AssignButton
-          assignees={[{id: 2, fullName: 'Omri Hagever', isCaseAssignedToMe: false}, {
-            id: 3,
-            fullName: 'Nitzan Kogen',
-            isCaseAssignedToMe: false
-          }]}
+          assignees={[
+            {id: '2', fullName: 'Omri Hagever', isCaseAssignedToMe: false},
+            {id: '3', fullName: 'Nitzan Kogen', isCaseAssignedToMe: false}
+          ]}
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={(id) => {
-            console.log(String(id))
+            onMutateAssignWorkflow(id, false)
           }}
           buttonType={"Re-Assign"}/>
       </div>

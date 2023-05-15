@@ -11,7 +11,9 @@
     "REJECT": "reject",
     "RESUBMIT": "resubmit",
     "SIGN_IN": "sign in",
-    "SIGN_OUT": "sign out"
+    "SIGN_OUT": "sign out",
+    "ASSIGN_TO_ME": "Case Assigned to Me",
+    "ASSIGN_TO_OTHER": "Case Assigned"
   },
   "EVENT": "{{result}} {{action}} {{resource}}"
 }
