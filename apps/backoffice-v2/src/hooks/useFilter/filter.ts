@@ -24,6 +24,7 @@ export const filter = <TArray extends AnyArray>({
     return data;
   }
 
+  // Filter
   return data?.filter(item => {
     return terms?.every(term => {
       if (!filter?.[term]?.length) return true;

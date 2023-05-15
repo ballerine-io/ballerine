@@ -36,7 +36,6 @@ export const EndUserByIdSchema = ObjectWithIdSchema.extend({
   approvalState: z.enum(States).default(State.PROCESSING),
   dateOfBirth: z.string().default(''),
   placeOfBirth: z.string().default(''),
-  assignedTo: z.string().default(''),
   sex: z.union([z.literal('male'), z.literal('female'), z.literal('other')]).default('other'),
   passport: z
     .object({
