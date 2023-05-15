@@ -228,8 +228,8 @@ export class WorkflowBrowserSDK {
     this.#__subscribers.push({ event, cb });
   }
 
-  sendEvent(event: WorkflowEventWithoutState) {
-    this.#__service.sendEvent(event);
+  async sendEvent(event: WorkflowEventWithoutState) {
+    return this.#__service.sendEvent(event);
   }
 
   getSnapshot() {

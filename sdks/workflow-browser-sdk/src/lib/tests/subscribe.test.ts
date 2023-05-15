@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { sleep, uniqueArray } from '@ballerine/common';
+import { uniqueArray } from '@ballerine/common';
 import { HttpError } from '@ballerine/workflow-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { WorkflowBrowserSDK } from '../workflow-browser-sdk';
@@ -10,14 +10,14 @@ import { errorWorkflow, workflowOptions } from './workflow-options';
 let workflowService: WorkflowBrowserSDK;
 let events: any[] = [];
 
-const next = (payload?: Record<PropertyKey, any>) => {
-  workflowService?.sendEvent({
+const next = async (payload?: Record<PropertyKey, any>) => {
+  await workflowService?.sendEvent({
     type: 'USER_NEXT_STEP',
     payload,
   });
 };
-const prev = (payload?: Record<PropertyKey, any>) => {
-  workflowService?.sendEvent({
+const prev = async (payload?: Record<PropertyKey, any>) => {
+  await workflowService?.sendEvent({
     type: 'USER_PREV_STEP',
     payload,
   });
@@ -39,25 +39,25 @@ beforeEach(() => {
 });
 
 describe('subscribe', () => {
-  it('should subscribe to USER_NEXT_STEP events', () => {
+  it('should subscribe to USER_NEXT_STEP events', async () => {
     workflowService?.subscribe('USER_NEXT_STEP', event => events.push(event));
 
-    next();
+    await next();
 
     expect(events).to.have.lengthOf(1);
     expect(events[0]).toMatchObject({ state: 'second' });
 
-    next();
+    await next();
 
     expect(events).to.have.lengthOf(2);
     expect(events[1]).toMatchObject({ state: 'third' });
   });
 
-  it('should subscribe to USER_PREV_STEP events', () => {
+  it('should subscribe to USER_PREV_STEP events', async () => {
     workflowService.subscribe('USER_PREV_STEP', event => events.push(event));
 
-    next();
-    prev();
+    await next();
+    await prev();
 
     expect(events).to.have.lengthOf(1);
     expect(events[0]).toMatchObject({ state: 'first' });
@@ -70,15 +70,10 @@ describe('subscribe', () => {
 
     workflowService.subscribe('*', event => events.push(event));
 
-    // Don't fire USER_PREV_STEP from the first step.
-    next();
-    prev();
-    next();
+    await next();
+    await prev();
+    await next();
 
-    // Wait for the http request to finish
-    await sleep(300);
-
-    // Ensure both arrays are ordered the same way
     const types = uniqueArray(events.map(({ type }: { type: string }) => type)).sort();
     const expectedTypes = [
       'STATE_ACTION_STATUS',
@@ -98,10 +93,7 @@ describe('subscribe', () => {
 
     workflowService.subscribe('ERROR', event => events.push(event));
 
-    next();
-
-    // Wait for the http request to finish
-    await sleep(300);
+    await next();
 
     expect(events).to.have.lengthOf(2);
 
@@ -117,17 +109,14 @@ describe('subscribe', () => {
 
     workflowService.subscribe('HTTP_ERROR', event => events.push(event));
 
-    next();
-
-    // Wait for the http request to finish
-    await sleep(300);
+    await next();
 
     expect(events).to.have.lengthOf(1);
     expect(events[0]).to.not.have.property('type');
     expect(events[0].error).toBeInstanceOf(HttpError);
   });
 
-  it('should subscribe to user defined events', () => {
+  it('should subscribe to user defined events', async () => {
     workflowService = new WorkflowBrowserSDK({
       definitionType: 'statechart-json',
       definition: {
@@ -146,7 +135,7 @@ describe('subscribe', () => {
 
     workflowService.subscribe('custom' as never, ((event: any) => events.push(event)) as never);
 
-    workflowService.sendEvent({
+    await workflowService.sendEvent({
       type: 'custom',
       payload: {
         foo: 'bar',
