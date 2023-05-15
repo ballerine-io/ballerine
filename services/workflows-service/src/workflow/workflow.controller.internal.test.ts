@@ -88,7 +88,8 @@ describe('WorkflowControllerInternal', () => {
         },
       });
 
-      expect(definitions).toMatchObject([{ id: '3', name: 'name 3' }]);
+      expect(definitions).toHaveLength(1);
+      expect(definitions[0]).toMatchObject({ id: '3', name: 'name 3' });
       expect(definitions[0]).not.toHaveProperty('updatedAt');
     });
 
