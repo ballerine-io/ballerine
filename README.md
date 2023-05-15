@@ -77,22 +77,22 @@ Set up an onboarding decisioning workflow using Ballerine's pre-built building b
 * Install docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
 
 #### Install:
-   1. Clone the project:  
+   1. Clone the project:
    ```sh
    git clone https://github.com/ballerine-io/ballerine.git
    ```
-   2. Install npm depenencies: 
+   2. Install npm depenencies:
    ```sh
    pnpm install
    ```
-   3. Initilazie monorepo: 
+   3. Initilazie monorepo:
    ```sh
    pnpm monorepo:init
    ```
-  
+
 #### Run Examples:
 
-##### KYC Manual Review Workflow: 
+##### KYC Manual Review Workflow:
 The following command will run the workflow's backend (workflow service API), the backoffice, and UI example using the headless web SDK:
 ```sh
 pnpm kyc-manual-review-example
@@ -101,6 +101,12 @@ pnpm kyc-manual-review-example
 Once the process is complete, *2 tabs* will open in your browser:
 the *backffice* and the *example KYC UI*
 (It's recommended to have them positioned side-by-side).
+
+##### KYB Manual Review Workflow:
+The following command will run the workflow's backend (workflow service API), the backoffice, and UI example using the headless web SDK:
+```sh
+pnpm kyb-manual-review-example
+```
 
 **Steps to go over the flow:**
 
@@ -112,9 +118,9 @@ the *backffice* and the *example KYC UI*
 
 
 *Note: most components are currently in beta, if you run into an issue please ping us on [Slack]([https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw))
-  
+
 #### Development mode:
-   - *Run in development mode* - runs all the projects in dev mode: 
+   - *Run in development mode* - runs all the projects in dev mode:
  ```sh
  pnpm dev
  ```
