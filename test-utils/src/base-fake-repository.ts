@@ -1,11 +1,11 @@
 const { validate } = require('class-validator');
 
 export class BaseFakeRepository {
-  #__rows: Array<any>;
+  #__rows: Array<any> = [];
   #__ModelClass: any;
 
   constructor(ModelClass: any) {
-    this.#__rows = [];
+    this.#__rows;
     this.#__ModelClass = ModelClass;
   }
 
@@ -27,10 +27,10 @@ export class BaseFakeRepository {
   }
 
   async findMany(args: any) {
-    return this._findMany(args).map(row => __deepCopy(row, args.select));
+    return this.__findMany(args).map(row => __deepCopy(row, args.select));
   }
 
-  _findMany(args: any) {
+  __findMany(args: any) {
     return this.#__rows.filter(row => {
       for (const key in args.where) {
         if (row[key] !== args.where[key]) return false;
@@ -39,19 +39,19 @@ export class BaseFakeRepository {
     });
   }
 
-  _findById(id: string) {
-    const rows = this._findMany({ where: { id: id } });
+  __findById(id: string) {
+    const rows = this.__findMany({ where: { id: id } });
     if (rows.length === 0) throw new Error(`could not find id ${id}`);
     return rows[0];
   }
 
   async findById(id: string) {
-    const row = this._findById(id);
+    const row = this.__findById(id);
     return __deepCopy(row);
   }
 
   async updateById(id: string, args: any) {
-    const row = this._findById(id);
+    const row = this.__findById(id);
     Object.assign(row, args.data);
     return __deepCopy(row);
   }

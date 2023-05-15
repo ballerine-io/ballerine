@@ -45,7 +45,7 @@ describe('WorkflowControllerInternal', () => {
   let controller;
   let workflowRuntimeDataRepo;
   let eventEmitterSpy;
-  const _ = Symbol('not in use');
+  const numbUserInfo = Symbol();
 
   beforeEach(() => {
     const workflowDefinitionRepo = new FakeWorkflowDefinitionRepo();
@@ -70,11 +70,11 @@ describe('WorkflowControllerInternal', () => {
 
   describe('.listWorkflowDefinitions', () => {
     it('returns workflows by query', async () => {
-      await controller.createWorkflowDefinition(_, buildWorkflowDeifintion(2));
-      await controller.createWorkflowDefinition(_, buildWorkflowDeifintion(3));
-      await controller.createWorkflowDefinition(_, buildWorkflowDeifintion(4));
+      await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(2));
+      await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(3));
+      await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(4));
 
-      const definitions = await controller.listWorkflowDefinitions(_, {
+      const definitions = await controller.listWorkflowDefinitions(numbUserInfo, {
         query: {
           where: {
             name: 'name 3',
@@ -82,16 +82,14 @@ describe('WorkflowControllerInternal', () => {
         },
       });
 
-      expect(definitions).toHaveLength(1);
-      expect(definitions[0].id).toEqual('3');
-      expect(definitions[0].name).toEqual('name 3');
+      expect(definitions).toMatchObject([{ id: '3', name: 'name 3' }]);
       expect(definitions[0]).not.toHaveProperty('updatedAt');
     });
 
     it('filters out certain fields', async () => {
-      await controller.createWorkflowDefinition(_, buildWorkflowDeifintion(3));
+      await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(3));
 
-      const definitions = await controller.listWorkflowDefinitions(_, {
+      const definitions = await controller.listWorkflowDefinitions(numbUserInfo, {
         query: {
           where: {
             name: 'name 3',
@@ -117,7 +115,7 @@ describe('WorkflowControllerInternal', () => {
           data: initialRuntimeData,
         });
 
-        await controller.createWorkflowDefinition(_, buildWorkflowDeifintion(2));
+        await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(2));
         await controller.event({ id: '2' }, { name: 'COMPLETE' });
 
         const runtimeData = await workflowRuntimeDataRepo.findById('2');
@@ -138,7 +136,7 @@ describe('WorkflowControllerInternal', () => {
           data: initialRuntimeData,
         });
 
-        await controller.createWorkflowDefinition(_, buildWorkflowDeifintion(2));
+        await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(2));
         await controller.event({ id: '2' }, { name: 'COMPLETE' });
 
         expect(eventEmitterSpy.emitted).toEqual([
