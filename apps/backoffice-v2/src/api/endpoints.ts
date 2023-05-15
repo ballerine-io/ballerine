@@ -42,6 +42,12 @@ export const endpoints = {
       method: Method.PATCH,
     },
   },
+  users: {
+    list: {
+      endpoint: () => `users`,
+      method: Method.GET,
+    },
+  },
   businesses: {
     list: {
       endpoint: (filterId: string) => `businesses?filterId=${filterId}`,
