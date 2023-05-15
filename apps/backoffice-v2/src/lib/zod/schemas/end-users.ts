@@ -14,7 +14,7 @@ export const EndUsersListSchema = z
       email: z.string().nullable().default(''),
       phone: z.string().nullable().default(''),
       approvalState: z.enum(States).default(State.PROCESSING),
-      assignedTo: z.string().default(''),
+      assignedTo: z.string().nullable().default(null),
       endUserType: z.string().nullable().default(''),
     }).transform(({ firstName, lastName, ...rest }) => ({
       ...rest,

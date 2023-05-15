@@ -24,13 +24,16 @@ export const filter = <TArray extends AnyArray>({
     return data;
   }
 
-  // Filter
   return data?.filter(item => {
     return terms?.every(term => {
       if (!filter?.[term]?.length) return true;
 
       return filter?.[term]?.some(termValue => {
-        return item?.[term]?.includes(termValue);
+        if (typeof item?.[term]?.includes === 'function') {
+          return item?.[term]?.includes(termValue);
+        }
+
+        return item?.[term] === termValue;
       });
     });
   });
