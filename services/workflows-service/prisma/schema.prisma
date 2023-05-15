@@ -18,7 +18,7 @@ model User {
 
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
-  WorkflowRuntimeData WorkflowRuntimeData[]
+  workflowRuntimeData WorkflowRuntimeData[]
 }
 
 enum ApprovalState {
