@@ -67,7 +67,7 @@ With Ballerine you can build custom account-opening, underwriting, and transacti
 
 ## Getting started
 
-Set up an onboarding decisioning workflow using Ballerine's pre-built building blocks. Collect data from users, process it with third-party vendors, automate decisions, or send them for manual review in the back office.
+Set up an onboarding decisioning workflow using Ballerina's pre-built building blocks. Collect data from users, process it with third-party vendors, automate decisions, or send them for manual review in the back office.
 
 ### Local Environment Setup
 
@@ -101,6 +101,12 @@ pnpm kyc-manual-review-example
 Once the process is complete, *2 tabs* will open in your browser:
 the *backffice* and the *example KYC UI*
 (It's recommended to have them positioned side-by-side).
+
+##### KYB Manual Review Workflow:
+The following command will run the workflow's backend (workflow service API), the backoffice, and UI example using the headless web SDK:
+```sh
+pnpm kyb-manual-review-example
+```
 
 **Steps to go over the flow:**
 
