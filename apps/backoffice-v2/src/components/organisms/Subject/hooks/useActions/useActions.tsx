@@ -44,10 +44,15 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
   const isLoading = isLoadingApproveEndUser || isLoadingRejectEndUser || isLoadingEndUser;
   // Create initials from the first character of the first name, middle name, and last name.
   const initials = createInitials(fullName);
+
+  const {data: {user}} = useGetSessionQuery()
+  const authenticatedUser = user
+  const caseState = useCaseState(authenticatedUser, workflow);
+
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
-  const canReject = workflow?.nextEvents.includes(Action.REJECT.toLowerCase()) as boolean;
-  const canApprove = workflow?.nextEvents.includes(Action.APPROVE.toLowerCase()) as boolean;
+  const canReject = (workflow?.nextEvents.includes(Action.REJECT.toLowerCase()) as boolean) && caseState.actionButtonsEnabled;
+  const canApprove = (workflow?.nextEvents.includes(Action.APPROVE.toLowerCase()) as boolean) && caseState.actionButtonsEnabled;
 
   // Only display the button spinners if the request is longer than 300ms
   const debouncedIsLoadingRejectEndUser = useDebounce(isLoadingRejectEndUser, 300);
@@ -69,9 +74,6 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
     (value: string) => setResubmissionReason(value as keyof typeof ResubmissionReason),
     [setResubmissionReason],
   );
-  const {data: {user}} = useGetSessionQuery()
-  const authenticatedUser = user
-  const caseState = useCaseState(authenticatedUser ,workflow);
 
   useDocumentListener('keydown', event => {
     if (!event.ctrlKey || document.activeElement !== document.body) return;

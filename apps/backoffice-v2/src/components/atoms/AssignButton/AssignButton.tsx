@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {TAuthenticatedUser, TCaseManagementState} from "../../../api/types";
 import {CaseState} from "../../../enums";
 import {ctw} from "../../../utils/ctw/ctw";
@@ -8,10 +8,9 @@ import {DropdownMenuTrigger} from "components/molecules/DropdownMenu/DropdownMen
 import {DropdownMenu} from "components/molecules/DropdownMenu/DropdownMenu";
 import {DropdownMenuContent} from "components/molecules/DropdownMenu/DropdownMenu.Content";
 
-
 type Assignee = {
   id: number;
-  name: string;
+  fullName: string;
   isCaseAssignedToMe?: boolean;
 };
 
@@ -20,50 +19,59 @@ type UserItemProps = {
   onAssigneeSelect: (id: number) => void;
 };
 
-const AssigneeItem: React.FC<UserItemProps> = ({ assignee, onAssigneeSelect }) => (
+const AssigneeItem: React.FC<UserItemProps> = ({assignee, onAssigneeSelect}) => (
   <DropdownMenuItem key={assignee.id} onClick={() => onAssigneeSelect(assignee.id)}>
-    {assignee.name}
+    {assignee.fullName}
   </DropdownMenuItem>
 );
 
 type AssignButtonProps = {
   caseState: TCaseManagementState;
-  assignees: Assignee[];
+  buttonType: "Assign" | "Re-Assign";
+  assignees: Assignee | Assignee[];
   onAssigneeSelect: (id: number) => void;
   authenticatedUser: TAuthenticatedUser;
 };
-const AssignButton: React.FC<AssignButtonProps> = ({assignees, onAssigneeSelect, caseState  }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const isAssignedToMe = caseState == CaseState.ASSIGNED_TO_ME
-  const assignText = caseState === CaseState.UNASSIGNED ? "Assign" : "Re-Assign"
-  const isAssignEnabled = caseState.assignToMeEnabled || caseState.assignToOther
-  const toggleList = () => {
-    if (isAssignEnabled) setIsOpen(!isOpen);
-  };
-  const handleAssigneeSelected = (id: number) => {
-    setIsOpen(false);
-    onAssigneeSelect(id);
-  };
+const AssignButton: React.FC<AssignButtonProps> = ({
+                                                     buttonType,
+                                                     assignees,
+                                                     onAssigneeSelect,
+                                                     caseState
+                                                   }) => {
+
+  const isAssignButtonType = buttonType === "Assign";
 
   return (
     <div>
-      {(
+      {
+        isAssignButtonType ?
+          (<button
+            className={ctw(`btn-sm btn ${isAssignButtonType ? 'bg-black' : 'bg-white'}`)}
+            disabled={!caseState.assignToMeEnabled}
+            onClick={(_event) => isAssignButtonType ? onAssigneeSelect((assignees as Assignee).id) : undefined}
+          >
+            {buttonType}
+          </button>) :
+          (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className={ctw(`btn-sm btn`)}
-              disabled={!isAssignEnabled}>
-              {assignText}
+              className={ctw(`btn-sm btn ${isAssignButtonType ? 'bg-black' : 'bg-white'}`)}
+              disabled={!caseState.assignToOther}
+            >
+              {buttonType}
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className={`min-w-[16rem]`}>
-            {assignees.map(assignee => (
-              <AssigneeItem
-                key={`assignItem${assignee.id}`}
-                assignee={assignee}
-                onAssigneeSelect={handleAssigneeSelected}
-              />
-            ))}
+            {Array.isArray(assignees)
+              ? assignees.map(assignee => (
+                <AssigneeItem
+                  key={assignee.id}
+                  assignee={assignee}
+                  onAssigneeSelect={(id) => onAssigneeSelect(id)}
+                />
+              )) : null
+            }
           </DropdownMenuContent>
         </DropdownMenu>
       )}

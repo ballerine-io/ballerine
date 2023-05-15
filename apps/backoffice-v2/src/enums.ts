@@ -38,6 +38,7 @@ export const CaseState : TCaseStateEnum = {
     writeEnabled: false,
     assignToMeEnabled: true,
     assignToOther: true,
+    actionButtonsEnabled: false,
   },
   ASSIGNED_TO_ME: {
     state: 'assignedToMe',
@@ -45,6 +46,7 @@ export const CaseState : TCaseStateEnum = {
     writeEnabled: true,
     assignToMeEnabled: false,
     assignToOther: true,
+    actionButtonsEnabled: true,
   },
   ASSIGNED_TO_OTHER: {
     state: 'assignToOther',
@@ -52,6 +54,7 @@ export const CaseState : TCaseStateEnum = {
     writeEnabled: false,
     assignToMeEnabled: true,
     assignToOther: false,
+    actionButtonsEnabled: false,
   },
   UNKNOWN: {
     state: 'unknown',
@@ -59,6 +62,7 @@ export const CaseState : TCaseStateEnum = {
     writeEnabled: false,
     assignToMeEnabled: false,
     assignToOther: false,
+    actionButtonsEnabled: false,
   }
 } as const;
 

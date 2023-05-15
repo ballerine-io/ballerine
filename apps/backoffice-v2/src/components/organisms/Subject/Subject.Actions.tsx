@@ -68,14 +68,33 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     authenticatedUser
   } = useActions({ endUserId: id, fullName });
 
+  const actionButtonDisabled = !caseState.actionButtonsEnabled
+
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-2`}>
-      <AssignButton
-        assignees={[{id: 1, name: 'Omri', isCaseAssignedToMe: false}, {id: 2, name: 'ME', isCaseAssignedToMe: false}]}
-        authenticatedUser={authenticatedUser}
-        caseState={caseState}
-        onAssigneeSelect={(id) => {console.log(String(id))}}
-      />
+
+      <div className={`flex flex-row space-x-3.5`}>
+        <AssignButton
+          assignees={{id: 1, fullName: 'Omri', isCaseAssignedToMe: false}}
+          authenticatedUser={authenticatedUser}
+          caseState={caseState}
+          onAssigneeSelect={(id) => {
+            console.log(String(id))
+          }}
+          buttonType={"Assign"}/>
+        <AssignButton
+          assignees={[{id: 2, fullName: 'Omri Hagever', isCaseAssignedToMe: false}, {
+            id: 3,
+            fullName: 'Nitzan Kogen',
+            isCaseAssignedToMe: false
+          }]}
+          authenticatedUser={authenticatedUser}
+          caseState={caseState}
+          onAssigneeSelect={(id) => {
+            console.log(String(id))
+          }}
+          buttonType={"Re-Assign"}/>
+      </div>
       <div className={`flex h-[7.75rem] justify-between`}>
         <motion.div
           // Animate when the user changes.
@@ -108,8 +127,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                 loading: debouncedIsLoadingRejectEndUser,
               },
             )}
-            // disabled={isLoading || !canReject}
-            disabled
+            disabled={actionButtonDisabled}
           >
             Execute Tasks
           </button>
@@ -170,7 +188,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                       <SelectItem
                         key={reason}
                         value={reason}
-                        disabled={reason !== ResubmissionReason.BLURRY_IMAGE}
+                        disabled={actionButtonDisabled && reason !== ResubmissionReason.BLURRY_IMAGE}
                       >
                         {capitalizedReason}
                       </SelectItem>
@@ -188,7 +206,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                       documentToResubmit,
                       resubmissionReason,
                     })}
-                    disabled={!resubmissionReason}
+                    disabled={actionButtonDisabled && !resubmissionReason}
                   >
                     Confirm
                   </button>
@@ -203,6 +221,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                   `btn-success btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
                   {
                     loading: debouncedIsLoadingApproveEndUser,
+                    // 'opacity-50': isLoading || !canApprove
                   },
                 )}
                 disabled={isLoading || !canApprove}

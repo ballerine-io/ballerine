@@ -14,4 +14,5 @@ export type TCaseManagementState = {
   assignToMeEnabled: boolean,
   assignToOther: boolean,
   unassignedEnabled?: boolean,
+  actionButtonsEnabled: boolean,
 };
