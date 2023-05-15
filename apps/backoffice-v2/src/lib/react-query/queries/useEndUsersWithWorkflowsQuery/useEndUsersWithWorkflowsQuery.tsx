@@ -8,7 +8,12 @@ export const useEndUsersWithWorkflowsQuery = () => {
     select: endUsers =>
       endUsers.map(endUser => ({
         ...endUser,
-        workflows: workflows?.filter(workflow => workflow?.endUserId === endUser?.id),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        workflows: workflows?.filter(workflow => workflow.endUserId === endUser.id),
+        assignedTo: workflows
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          ?.map(workflow => workflow.assigneeId)
+          .filter((value, index, assignees) => assignees.indexOf(value) === index),
       })),
   });
 };
