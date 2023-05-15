@@ -334,13 +334,6 @@ export class WorkflowService {
     this.logger.log(
       `Workflow ${workflow.name}-${id}-v${workflow.version} state transiation [${runtimeData.state} -> ${currentState}]`,
     );
-    if (isFinal) {
-      this.workflowEventEmitter.emit('workflow.completed', {
-        runtimeData,
-        state: currentState,
-        context, // TODO: final result should be a subset of context, should be defined as part of the workflow definition
-      });
-    }
 
     if (type === 'resubmit' && document) {
       switch (resubmissionReason) {
