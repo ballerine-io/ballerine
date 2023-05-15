@@ -596,23 +596,23 @@ export const useIndividual = () => {
               <DropdownMenuLabel>Options</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DialogTrigger asChild>
-                <DropdownMenuItem className={`cursor-pointer space-x-2`}>
-                  <RotateCcw />
+                <DropdownMenuItem className={`cursor-pointer gap-x-2`}>
+                  <RotateCcw size={18} />
                   Ask to re-submit
                 </DropdownMenuItem>
               </DialogTrigger>
-              <DropdownMenuItem className={`cursor-pointer space-x-2`}>
-                <PinOff />
+              <DropdownMenuItem className={`cursor-pointer gap-x-2`}>
+                <PinOff size={18} />
                 Ignore
               </DropdownMenuItem>
               <DropdownMenuItem
-                className={`cursor-pointer space-x-2 text-red-500`}
+                className={`cursor-pointer gap-x-2 text-red-500`}
                 onClick={onMutateUpdateWorkflowById({
                   id: data?.id,
                   approvalStatus: 'rejected',
                 })}
               >
-                <AlertTriangle className={`text-red-500`} />
+                <AlertTriangle className={`text-red-500`} size={18} />
                 Reject
               </DropdownMenuItem>
             </DropdownMenuContent>
