@@ -29,11 +29,7 @@ export const filter = <TArray extends AnyArray>({
       if (!filter?.[term]?.length) return true;
 
       return filter?.[term]?.some(termValue => {
-        if (typeof item?.[term]?.includes === 'function') {
-          return item?.[term]?.includes(termValue);
-        }
-
-        return item?.[term] === termValue;
+        return item?.[term]?.includes(termValue);
       });
     });
   });
