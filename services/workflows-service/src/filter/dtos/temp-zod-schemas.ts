@@ -284,6 +284,84 @@ export const EndUserWhereInputSchema = z.object({
   updatedAt: zDateTimeFilterDateStringUnion.optional(),
 });
 
+export const WorkflowDefinitionSelectSchema = z.object({
+  id: z.boolean().optional(),
+  reviewMachineId: z.boolean().optional(),
+  name: z.boolean().optional(),
+  version: z.boolean().optional(),
+  definitionType: z.boolean().optional(),
+  definition: z.boolean().optional(),
+  supportedPlatforms: z.boolean().optional(),
+  extensions: z.boolean().optional(),
+  backend: z.boolean().optional(),
+  persistStates: z.boolean().optional(),
+  submitStates: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
+  createdBy: z.boolean().optional(),
+  workflowRuntimeData: z
+    .union([
+      z.boolean(),
+      z.object({
+        select: z
+          .lazy(() => WorkflowRuntimeDataSelectSchema)
+          .nullable()
+          .optional(),
+      }),
+    ])
+    .optional(),
+});
+
+// @ts-ignore
+export const WorkflowRuntimeDataSelectSchema = z.object({
+  id: z.boolean().optional(),
+  endUserId: z.boolean().optional(),
+  businessId: z.boolean().optional(),
+  workflowDefinitionId: z.boolean().optional(),
+  workflowDefinitionVersion: z.boolean().optional(),
+  context: z.boolean().optional(),
+  state: z.boolean().optional(),
+  status: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
+  createdBy: z.boolean().optional(),
+  resolvedAt: z.boolean().optional(),
+  endUser: z
+    .union([
+      z.boolean(),
+      z.object({
+        select: z
+          .lazy(() => EndUserSelectSchema.strict())
+          .nullable()
+          .optional(),
+      }),
+    ])
+    .optional(),
+  business: z
+    .union([
+      z.boolean(),
+      z.object({
+        select: z
+          .lazy(() => BusinessSelectSchema.strict())
+          .nullable()
+          .optional(),
+      }),
+    ])
+    .optional(),
+  workflowDefinition: z
+    .union([
+      z.boolean(),
+      z.object({
+        select: z
+          .lazy(() => WorkflowDefinitionSelectSchema.strict())
+          .nullable()
+          .optional(),
+      }),
+    ])
+    .optional(),
+});
+
+// @ts-ignore
 export const EndUserSelectSchema = z.object({
   id: z.boolean().optional(),
   correlationId: z.boolean().optional(),
@@ -301,17 +379,29 @@ export const EndUserSelectSchema = z.object({
   additionalInfo: z.boolean().optional(),
   createdAt: z.boolean().optional(),
   updatedAt: z.boolean().optional(),
-  workflowRuntimeData: z.boolean().optional(),
+  workflowRuntimeData: z
+    .union([
+      z.boolean(),
+      z.object({
+        select: z
+          .lazy(() => WorkflowRuntimeDataSelectSchema)
+          .nullable()
+          .optional(),
+      }),
+    ])
+    .optional(),
   businesses: z.boolean().optional(),
   endUsersOnBusinesses: z.boolean().optional(),
-  _count: z.boolean().optional(),
 });
 
 export const EndUserFilterSchema = FilterSchema.extend({
   query: z
     .object({
       select: EndUserSelectSchema.strict()
-        .refine(v => Object.keys(v).length > 0, 'At least one `select` field must be provided')
+        .refine(
+          (v: Record<PropertyKey, unknown>) => Object.keys(v).length > 0,
+          'At least one `select` field must be provided',
+        )
         .optional(),
       where: EndUserWhereInputSchema.strict().optional(),
     })
@@ -346,12 +436,21 @@ export const BusinessSelectSchema = z.object({
   businessPurpose: z.boolean().optional(),
   documents: z.boolean().optional(),
   approvalState: z.boolean().optional(),
-  workflowRuntimeData: z.boolean().optional(),
+  workflowRuntimeData: z
+    .union([
+      z.boolean(),
+      z.object({
+        select: z
+          .lazy(() => WorkflowRuntimeDataSelectSchema)
+          .nullable()
+          .optional(),
+      }),
+    ])
+    .optional(),
   endUsers: z.boolean().optional(),
   endUsersOnBusinesses: z.boolean().optional(),
   createdAt: z.boolean().optional(),
   updatedAt: z.boolean().optional(),
-  _count: z.boolean().optional(),
 });
 
 export const BusinessWhereInputSchema = z.object({
@@ -371,6 +470,7 @@ export const BusinessWhereInputSchema = z.object({
   numberOfEmployees: z.union([IntNullableFilterSchema, z.number(), z.null()]).optional(),
   businessPurpose: zStringNullableFilterStringNullUnion.optional(),
   approvalState: z.union([NestedEnumApprovalStateFilter, zApprovalStateEnum]).optional(),
+  workflowRuntimeData: WorkflowRuntimeDataListRelationFilterSchema.optional(),
   createdAt: zDateTimeFilterDateStringUnion.optional(),
   updatedAt: zDateTimeFilterDateStringUnion.optional(),
 });
