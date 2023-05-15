@@ -2,6 +2,7 @@ import { useSearch } from '@tanstack/react-router';
 import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
 import { useCallback, useRef } from 'react';
 import { TRouteId } from '../../../../../types';
+import { useUsersQuery } from '../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
 
 export const useSubjectsList = (routerId: TRouteId) => {
   const { filter, sortBy } = useSearch({ from: routerId, strict: false });
@@ -23,6 +24,7 @@ export const useSubjectsList = (routerId: TRouteId) => {
       value: 'email',
     },
   ] as const;
+  const { data: users } = useUsersQuery();
   const filterByOptions = [
     {
       label: 'User status',
@@ -57,6 +59,20 @@ export const useSubjectsList = (routerId: TRouteId) => {
         {
           label: 'Business',
           value: 'business',
+        },
+      ],
+    },
+    {
+      label: 'Assignee',
+      value: 'assignedTo',
+      options: [
+        ...users.map(({ id, fullName }) => ({
+          label: fullName,
+          value: id,
+        })),
+        {
+          label: 'Unassigned',
+          value: null,
         },
       ],
     },
