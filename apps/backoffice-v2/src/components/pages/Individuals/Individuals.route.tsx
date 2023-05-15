@@ -6,6 +6,7 @@ import { Individuals } from 'components/pages/Individuals/Individuals.page';
 import { States } from '../../../enums';
 import { queries } from '../../../lib/react-query/queries';
 import { preSearchFiltersByKind } from 'components/pages/Individuals/pre-search-filters';
+import { users } from '../../../lib/react-query/users';
 
 const SearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).optional().catch('desc'),
@@ -24,6 +25,7 @@ const IndividualsSearchSchema = SearchSchema.extend({
     .object({
       approvalState: z.array(z.enum(States)).optional().catch([]),
       endUserType: z.array(z.string()).optional().catch([]),
+      assignedTo: z.array(z.string().nullable()).optional().catch([]),
     })
     .optional(),
   entity: z.literal('individuals').catch('individuals'),
@@ -33,10 +35,8 @@ const BusinessesSearchSchema = SearchSchema.extend({
   sortBy: z.enum(['website', 'address']).optional().catch('website'),
   filter: z
     .object({
-      approvalState: z
-        .array(z.enum([States]))
-        .optional()
-        .catch([]),
+      approvalState: z.array(z.enum(States)).optional().catch([]),
+      assignedTo: z.array(z.string().nullable()).optional().catch([]),
       // businessType: z.array(z.string()).optional().catch([]),
     })
     .optional(),
