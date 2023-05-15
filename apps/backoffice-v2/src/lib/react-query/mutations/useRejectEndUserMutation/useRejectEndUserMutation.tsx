@@ -3,7 +3,7 @@ import { api } from '../../../../api/api';
 import { Action, Resource } from '../../../../enums';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
 import { queries } from '../../queries';
-import { useKind } from 'hooks/useKind/useKind';
+import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 
 export const useRejectEndUserMutation = ({
   workflowId,
@@ -16,7 +16,7 @@ export const useRejectEndUserMutation = ({
 }) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
-  const kind = useKind();
+  const entity = useFilterEntity();
 
   return useMutation({
     mutationFn: (
@@ -47,9 +47,9 @@ export const useRejectEndUserMutation = ({
       action: variables?.action,
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queries[kind].list(filterId).queryKey });
+      queryClient.invalidateQueries({ queryKey: queries[entity].list(filterId).queryKey });
       queryClient.invalidateQueries({
-        queryKey: queries[kind].byId(endUserId).queryKey,
+        queryKey: queries[entity].byId(endUserId, filterId).queryKey,
       });
 
       onSelectNextEndUser();

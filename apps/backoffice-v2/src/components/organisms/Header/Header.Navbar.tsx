@@ -28,19 +28,20 @@ export const Navbar: FunctionComponent = () => {
                 <span className={`gap-x-2`}>{text}</span>
               </li>
               {text === 'Case Management'
-                ? filters?.map(({ id, kind }) => (
+                ? filters?.map(({ id, name, entity }) => (
                     <NavItem
                       href={'/$locale/case-management/individuals'}
                       search={{
-                        kind,
+                        entity,
                         filterId: id,
+                        filterName: name,
                       }}
                       key={id}
                       className={ctw(`capitalize`, {
-                        active: kind === search?.kind,
+                        active: name === search?.name,
                       })}
                     >
-                      {kind}
+                      {name}
                     </NavItem>
                   ))
                 : children?.map(({ text, href, key }) => (

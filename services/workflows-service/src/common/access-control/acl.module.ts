@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AccessControlModule, RolesBuilder } from 'nest-access-control';
-import grants from '../grants.json';
+import grants from '../../grants.json';
 
 const rolesBuilder = new RolesBuilder(grants);
 

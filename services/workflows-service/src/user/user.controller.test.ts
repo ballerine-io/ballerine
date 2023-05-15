@@ -7,9 +7,9 @@ import request from 'supertest';
 import { MorganModule } from 'nest-morgan';
 import { ACGuard } from 'nest-access-control';
 import { DefaultAuthGuard } from '../auth/default-auth.guard';
-import { ACLModule } from '../access-control/acl.module';
-import { AclFilterResponseInterceptor } from '../access-control/interceptors/acl-filter-response.interceptor';
-import { AclValidateRequestInterceptor } from '../access-control/interceptors/acl-validate-request.interceptor';
+import { ACLModule } from '@/common/access-control/acl.module';
+import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
+import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
 
 import { UserController } from './user.controller';
 import { UserService } from './user.service';

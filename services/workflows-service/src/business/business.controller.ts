@@ -1,4 +1,4 @@
-import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
+import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
@@ -13,7 +13,7 @@ import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
 
 @swagger.ApiTags('internal/businesses')
-@common.Controller('internalƒ/businesses')
+@common.Controller('internal/businesses')
 export class BusinessControllerExternal {
   constructor(
     protected readonly service: BusinessService,

@@ -1,7 +1,7 @@
 import { useSearch } from '@tanstack/react-router';
 
-export const useKind = () =>
+export const useFilterEntity = () =>
   useSearch({
     strict: false,
-    track: ({ kind }) => kind,
-  })?.kind;
+    track: ({ entity }) => entity,
+  })?.entity;

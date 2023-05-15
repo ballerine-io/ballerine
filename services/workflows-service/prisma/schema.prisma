@@ -52,7 +52,7 @@ model EndUser {
   updatedAt DateTime @updatedAt
 
   businesses           Business[]
-  EndUsersOnBusinesses EndUsersOnBusinesses[]
+  endUsersOnBusinesses EndUsersOnBusinesses[]
 
   @@index([endUserType])
   @@index([createdAt])
@@ -96,7 +96,7 @@ model Business {
 
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
-  EndUsersOnBusinesses EndUsersOnBusinesses[]
+  endUsersOnBusinesses EndUsersOnBusinesses[]
 
   @@index([companyName])
   @@index([countryOfIncorporation])
@@ -178,4 +178,18 @@ model Policy {
 
   @@index([name])
   @@index([version, name])
+}
+
+model Filter {
+  id String @id @default(cuid())
+  // Name of the filter i.e. "KYC"
+  name String @unique
+  // Does the filter belong to EndUser or Business?
+  entity String
+  // 1:1 with Prisma's select object
+  // Example: { select: { id: true, firstName: true, lastName: true }, where: { id: { equals: "123" } } }
+  query Json
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+  createdBy                 String             @default("SYSTEM")
 }

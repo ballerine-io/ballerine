@@ -1,5 +1,5 @@
 import { INJECTION_TOKEN_JWT_SECRET_KEY } from '@/injection-tokens';
-import { SecretsManagerService } from '../../providers/secrets/secrets-manager.service';
+import { SecretsManagerService } from '@/common/providers/secrets/secrets-manager.service';
 
 export const jwtSecretFactory = {
   provide: INJECTION_TOKEN_JWT_SECRET_KEY,
