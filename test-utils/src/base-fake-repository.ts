@@ -5,7 +5,6 @@ export class BaseFakeRepository {
   #__ModelClass: any;
 
   constructor(ModelClass: any) {
-    this.#__rows;
     this.#__ModelClass = ModelClass;
   }
 
