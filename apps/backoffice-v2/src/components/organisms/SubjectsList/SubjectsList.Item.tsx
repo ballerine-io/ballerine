@@ -8,7 +8,6 @@ import { Link } from '@tanstack/react-router';
 import { createInitials } from '../../../utils/create-initials/create-initials';
 import { ctw } from '../../../utils/ctw/ctw';
 import { useEllipsesWithTitle } from 'hooks/useEllipsesWithTitle/useEllipsesWithTitle';
-import { SubjectsList } from './SubjectsList';
 
 /**
  * @description To be used by {@link SubjectsList}, and be wrapped by {@link SubjectsList.List}. Uses an li element with default styling to display a single subject's data. Navigates to the selected end user on click by setting the end user id into the path param.

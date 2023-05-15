@@ -64,7 +64,7 @@ export const useSubjectsList = (routerId: TRouteId) => {
     },
     {
       label: 'Assignee',
-      value: 'assignedTo',
+      value: 'assigneeId',
       options: [
         ...users.map(({ id, fullName }) => ({
           label: fullName,

@@ -20,13 +20,6 @@ import { EndUserFilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
 import { JsonValue } from 'type-fest';
 import { EndUserFindUniqueArgs } from '@/end-user/dtos/end-user-find-unique-args';
 import { TEndUserFilter } from '@/end-user/types';
-import { EndUserFilterModel } from '@/end-user/dtos/end-user-filter.model';
-import { FilterService } from '@/filter/filter.service';
-import { InputJsonValue } from '@/types';
-import { EndUserFilterCreateDto } from '@/end-user/dtos/end-user-filter-create';
-import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
-import { EndUserFilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
-import { JsonValue } from 'type-fest';
 
 @swagger.ApiTags('internal/end-users')
 @common.Controller('internal/end-users')
