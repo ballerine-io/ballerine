@@ -1,0 +1,10 @@
+import {z} from "zod";
+
+export const AuthenticatedUserSchema = z
+  .object({
+    id: z.string(),
+    email: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+  })
+  .or(z.undefined());

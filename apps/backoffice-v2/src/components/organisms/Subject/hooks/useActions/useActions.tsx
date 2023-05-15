@@ -7,7 +7,12 @@ import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListen
 import { useSelectNextEndUser } from 'hooks/useSelectNextEndUser/useSelectNextEndUser';
 import { createInitials } from '../../../../../utils/create-initials/create-initials';
 import { IUseActions } from './interfaces';
-import { Action } from '../../../../../enums';
+import {Action, CaseState} from '../../../../../enums';
+import {TAuthenticatedUser, TCaseManagementState} from "../../../../../api/types";
+import {
+  useGetSessionQuery
+} from "../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery";
+import {useCaseState} from "components/organisms/Subject/hooks/useCaseState/useCaseState";
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -64,7 +69,9 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
     (value: string) => setResubmissionReason(value as keyof typeof ResubmissionReason),
     [setResubmissionReason],
   );
-  const workflows = endUser?.workflows;
+  const {data: {user}} = useGetSessionQuery()
+  const authenticatedUser = user
+  const caseState = useCaseState(authenticatedUser ,workflow);
 
   useDocumentListener('keydown', event => {
     if (!event.ctrlKey || document.activeElement !== document.body) return;
@@ -104,5 +111,7 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
     resubmissionReason,
     onDocumentToResubmitChange,
     onResubmissionReasonChange,
+    caseState,
+    authenticatedUser
   };
 };

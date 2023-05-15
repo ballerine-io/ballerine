@@ -31,6 +31,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from 'components/atoms/Select/Select';
+import AssignButton from "components/atoms/AssignButton/AssignButton";
+import {
+  useGetSessionQuery
+} from "../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery";
 
 /**
  * @description To be used by {@link Subject}. Displays the end user's full name, avatar, and handles the reject/approve mutation.
@@ -60,13 +64,18 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     onDocumentToResubmitChange,
     resubmissionReason,
     onResubmissionReasonChange,
+    caseState,
+    authenticatedUser
   } = useActions({ endUserId: id, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-2`}>
-      <button disabled className={`btn-sm btn`}>
-        Re-assign
-      </button>
+      <AssignButton
+        assignees={[{id: 1, name: 'Omri', isCaseAssignedToMe: false}, {id: 2, name: 'ME', isCaseAssignedToMe: false}]}
+        authenticatedUser={authenticatedUser}
+        caseState={caseState}
+        onAssigneeSelect={(id) => {console.log(String(id))}}
+      />
       <div className={`flex h-[7.75rem] justify-between`}>
         <motion.div
           // Animate when the user changes.

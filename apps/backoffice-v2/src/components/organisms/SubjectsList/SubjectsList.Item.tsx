@@ -87,7 +87,7 @@ export const Item: FunctionComponent<IItemProps> = ({
               key={assignedTo}
               // src={assignedTo}
               src={''}
-              placeholder={'O'}
+              placeholder={assignedTo}
               alt={`Operator's avatar`}
               className={`h-4 w-4 text-[0.6rem]`}
             />

@@ -52,6 +52,13 @@ export const CaseState : TCaseStateEnum = {
     writeEnabled: false,
     assignToMeEnabled: true,
     assignToOther: false,
+  },
+  UNKNOWN: {
+    state: 'unknown',
+    readEnabled: false,
+    writeEnabled: false,
+    assignToMeEnabled: false,
+    assignToOther: false,
   }
 } as const;
 
