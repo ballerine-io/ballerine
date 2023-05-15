@@ -15,7 +15,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "noImplicitAny": false,
     "noUncheckedIndexedAccess": true,
     "baseUrl": "./",
     "paths": {
