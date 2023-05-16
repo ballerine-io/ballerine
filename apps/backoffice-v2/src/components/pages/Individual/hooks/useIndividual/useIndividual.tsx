@@ -1,8 +1,6 @@
 import { useParams } from '@tanstack/react-router';
 import { camelCaseToSpace } from '../../../../../utils/camel-case-to-space/camel-case-to-space';
 import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
-import { useStorageFileQuery } from '../../../../../lib/react-query/queries/useStorageFileQuery/useStorageFileQuery';
-import { underscoreToSpace } from '../../../../../utils/underscore-to-space/underscore-to-space';
 import { Subject } from 'components/organisms/Subject/Subject';
 import { ctw } from '../../../../../utils/ctw/ctw';
 import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
@@ -30,536 +28,28 @@ import { Dialog } from 'components/organisms/Dialog/Dialog';
 import React from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { SubmitHandler } from 'react-hook-form';
+import { AnyRecord } from '../../../../../types';
+import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
+import { Form } from 'components/organisms/Form/Form';
+import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/useStorageFilesQuery/useStorageFilesQuery';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
   const { data: endUser, isLoading } = useEndUserWithWorkflowQuery(endUserId);
-  const id = endUser?.workflow?.workflowContext?.machineContext?.id;
-  const selfie = endUser?.workflow?.workflowContext?.machineContext?.selfie;
-  const certificateOfIncorporation =
-    endUser?.workflow?.workflowContext?.machineContext?.certificateOfIncorporation;
-  const { data: idUrl } = useStorageFileQuery(id?.id);
-  const { data: selfieUrl } = useStorageFileQuery(selfie?.id);
-  const { data: certificateOfIncorporationUrl } = useStorageFileQuery(
-    certificateOfIncorporation?.id,
+  const results = useStorageFilesQuery(
+    endUser?.workflow?.context?.documents?.flatMap(({ pages }) =>
+      pages?.map(({ ballerineFileId }) => ballerineFileId),
+    ),
   );
-  const {
-    firstName,
-    middleName,
-    lastName,
-    fullName,
-    phone,
-    email,
-    dateOfBirth,
-    placeOfBirth,
-    sex,
-    avatarUrl,
-    passport: passportInfo,
-    address: addressInfo,
-    checkResults,
-  } = endUser ?? {};
-  const personalInfo = {
-    firstName,
-    middleName,
-    lastName,
-    phone,
-    email,
-    dateOfBirth,
-    placeOfBirth,
-    sex,
-  };
-  const documents = [
-    {
-      url: idUrl,
-      doctype: id?.type,
-    },
-    {
-      url: selfieUrl,
-      doctype: selfie?.type,
-    },
-  ].filter(({ url }) => !!url);
-
-  // Images
-  const images =
-    documents?.map(({ url: imageUrl, doctype: caption }) => ({
-      imageUrl,
-      caption: camelCaseToSpace(caption)?.replace('id', 'ID'),
-    })) ?? [];
-
+  const { fullName, avatarUrl } = endUser ?? {};
   const selectedEndUser = {
     id: endUserId,
     fullName,
     avatarUrl,
   };
-  const faceAUrl = images?.find(({ caption }) => /selfie/i.test(caption))?.imageUrl;
-  const faceBUrl = images?.find(({ caption }) =>
-    /id\scard|passport|driver\slicense/i.test(caption),
-  )?.imageUrl;
-  const whitelist = ['workflow', 'personalInfo', 'passportInfo', 'checkResults', 'addressInfo'];
-  const camelCaseToTitle = (str: string) =>
-    str?.replace(/([A-Z])/g, ' $1')?.replace(/^./, str => str?.toUpperCase());
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
-  const info = {
-    personalInfo,
-    passportInfo,
-    checkResults: { ...checkResults, finalResult: endUser?.approvalState },
-    addressInfo,
-    workflow: {
-      name: underscoreToSpace(endUser?.workflow?.name),
-      state: underscoreToSpace(endUser?.workflow?.workflowContext?.state),
-    },
-  };
-
-  const task1 = [
-    {
-      type: 'heading',
-      value: 'Lorem Ipsum',
-    },
-    {
-      id: 'actions',
-      type: 'container',
-      value: [
-        {
-          type: 'callToAction',
-          value: 'Options',
-          data: {
-            id: 'task1',
-            approvalStatus: 'rejected',
-          },
-        },
-        {
-          type: 'callToAction',
-          value: 'Approve',
-          data: {
-            id: 'task1',
-            approvalStatus: 'approved',
-          },
-        },
-      ],
-    },
-    {
-      id: 'alerts',
-      type: 'container',
-      value: [
-        {
-          type: 'alert',
-          value: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ',
-        },
-      ],
-    },
-    {
-      type: 'container',
-      value: [
-        {
-          type: 'faceComparison',
-          value: {
-            faceAUrl,
-            faceBUrl,
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'personalInfo',
-            data: [
-              {
-                title: 'firstName',
-                value: firstName,
-              },
-              {
-                title: 'middleName',
-                value: middleName,
-              },
-              {
-                title: 'lastName',
-                value: lastName,
-              },
-              {
-                title: 'phone',
-                value: phone,
-              },
-              {
-                title: 'email',
-                value: email,
-              },
-              {
-                title: 'dateOfBirth',
-                value: dateOfBirth,
-              },
-              {
-                title: 'placeOfBirth',
-                value: placeOfBirth,
-              },
-              {
-                title: 'sex',
-                value: sex,
-              },
-            ],
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'passportInfo',
-            data: [
-              {
-                title: 'type',
-                value: passportInfo?.type,
-              },
-              {
-                title: 'authority',
-                value: passportInfo?.authority,
-              },
-              {
-                title: 'placeOfIssue',
-                value: passportInfo?.placeOfIssue,
-              },
-              {
-                title: 'dateOfIssue',
-                value: passportInfo?.dateOfIssue,
-              },
-              {
-                title: 'expires',
-                value: passportInfo?.expires,
-              },
-            ],
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'checkResults',
-            data: [
-              {
-                title: 'amlCheck',
-                value: checkResults?.amlCheck,
-              },
-              {
-                title: 'idCheck',
-                value: checkResults?.idCheck,
-              },
-              {
-                title: 'selfieCheck',
-                value: checkResults?.selfieCheck,
-              },
-              {
-                title: 'scannedBy',
-                value: checkResults?.scannedBy,
-              },
-              {
-                title: 'finalResult',
-                value: checkResults?.finalResult,
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      type: 'multiDocuments',
-      value: {
-        data: [
-          {
-            title: id?.type,
-            imageUrl: idUrl,
-          },
-          {
-            title: selfie?.type,
-            imageUrl: selfieUrl,
-          },
-        ],
-      },
-    },
-  ];
-  const task2 = [
-    {
-      id: 'actions',
-      type: 'container',
-      value: [
-        {
-          type: 'callToAction',
-          value: 'Approve',
-          data: {
-            id: 'task2',
-            approvalStatus: 'approved',
-          },
-        },
-        {
-          type: 'callToAction',
-          value: 'Options',
-          data: {
-            id: 'task2',
-            approvalStatus: 'rejected',
-          },
-        },
-      ],
-    },
-    {
-      type: 'container',
-      value: [
-        {
-          type: 'details',
-          value: {
-            title: 'personalInfo',
-            data: [
-              {
-                title: 'firstName',
-                value: firstName,
-              },
-              {
-                title: 'middleName',
-                value: middleName,
-              },
-              {
-                title: 'lastName',
-                value: lastName,
-              },
-              {
-                title: 'phone',
-                value: phone,
-              },
-              {
-                title: 'email',
-                value: email,
-              },
-              {
-                title: 'dateOfBirth',
-                value: dateOfBirth,
-              },
-              {
-                title: 'placeOfBirth',
-                value: placeOfBirth,
-              },
-              {
-                title: 'sex',
-                value: sex,
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      type: 'multiDocuments',
-      value: {
-        data: [
-          {
-            title: id?.type,
-            fileType: id?.fileType,
-            imageUrl: idUrl,
-          },
-          {
-            title: selfie?.type,
-            fileType: selfie?.fileType,
-            imageUrl: selfieUrl,
-          },
-          {
-            title: camelCaseToTitle(certificateOfIncorporation?.type),
-            fileType: certificateOfIncorporation?.fileType,
-            imageUrl: octetToFileType(
-              certificateOfIncorporationUrl,
-              certificateOfIncorporation?.fileType,
-            ),
-          },
-        ],
-      },
-    },
-  ];
-  const task3 = [
-    {
-      id: 'actions',
-      type: 'container',
-      value: [
-        {
-          type: 'callToAction',
-          value: 'Approve',
-          data: {
-            id: 'task3',
-            approvalStatus: 'approved',
-          },
-        },
-        {
-          type: 'callToAction',
-          value: 'Options',
-          data: {
-            id: 'task3',
-            approvalStatus: 'rejected',
-          },
-        },
-      ],
-    },
-    {
-      type: 'container',
-      value: [
-        {
-          type: 'faceComparison',
-          value: {
-            faceAUrl,
-            faceBUrl,
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'personalInfo',
-            data: [
-              {
-                title: 'firstName',
-                value: firstName,
-              },
-              {
-                title: 'middleName',
-                value: middleName,
-              },
-              {
-                title: 'lastName',
-                value: lastName,
-              },
-              {
-                title: 'phone',
-                value: phone,
-              },
-              {
-                title: 'email',
-                value: email,
-              },
-              {
-                title: 'dateOfBirth',
-                value: dateOfBirth,
-              },
-              {
-                title: 'placeOfBirth',
-                value: placeOfBirth,
-              },
-              {
-                title: 'sex',
-                value: sex,
-              },
-            ],
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'passportInfo',
-            data: [
-              {
-                title: 'type',
-                value: passportInfo?.type,
-              },
-              {
-                title: 'authority',
-                value: passportInfo?.authority,
-              },
-              {
-                title: 'placeOfIssue',
-                value: passportInfo?.placeOfIssue,
-              },
-              {
-                title: 'dateOfIssue',
-                value: passportInfo?.dateOfIssue,
-              },
-              {
-                title: 'expires',
-                value: passportInfo?.expires,
-              },
-            ],
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'checkResults',
-            data: [
-              {
-                title: 'amlCheck',
-                value: checkResults?.amlCheck,
-              },
-              {
-                title: 'idCheck',
-                value: checkResults?.idCheck,
-              },
-              {
-                title: 'selfieCheck',
-                value: checkResults?.selfieCheck,
-              },
-              {
-                title: 'scannedBy',
-                value: checkResults?.scannedBy,
-              },
-              {
-                title: 'finalResult',
-                value: checkResults?.finalResult,
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      type: 'multiDocuments',
-      value: {
-        data: [
-          {
-            title: id?.type,
-            imageUrl: idUrl,
-          },
-          {
-            title: selfie?.type,
-            imageUrl: selfieUrl,
-          },
-        ],
-      },
-    },
-  ];
-  const task4 = [
-    {
-      id: 'actions',
-      type: 'container',
-      value: [
-        {
-          type: 'callToAction',
-          value: 'Options',
-          data: {
-            id: 'task4',
-            approvalStatus: 'rejected',
-          },
-        },
-        {
-          type: 'callToAction',
-          value: 'Approve',
-          data: {
-            id: 'task4',
-            approvalStatus: 'approved',
-          },
-        },
-      ],
-    },
-    {
-      type: 'faceComparison',
-      value: {
-        faceAUrl,
-        faceBUrl,
-      },
-    },
-    {
-      type: 'multiDocuments',
-      value: {
-        data: [
-          {
-            title: id?.type,
-            imageUrl: idUrl,
-          },
-          {
-            title: selfie?.type,
-            imageUrl: selfieUrl,
-          },
-        ],
-      },
-    },
-  ];
-  const tasks = [task1, task2, task3, task4];
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
     useUpdateWorkflowByIdMutation({
       workflowId: endUser?.workflow?.runtimeDataId,
@@ -567,6 +57,7 @@ export const useIndividual = () => {
   const onMutateUpdateWorkflowById =
     ({ id, approvalStatus }: { id: string; approvalStatus: 'rejected' | 'approved' }) =>
     () => {
+      const data = endUser?.workflow?.documents?.find(({ id: documentId }) => documentId === id);
       const decisions = [...(endUser?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
       const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
 
@@ -590,6 +81,10 @@ export const useIndividual = () => {
         },
       });
     };
+  const onMutateTaskDecisionById = ({ context }: { context: AnyRecord }) =>
+    mutateUpdateWorkflowById({
+      context,
+    });
   const components = {
     heading: ({ value }) => <h2 className={`ml-2 p-2 text-2xl font-bold`}>{value}</h2>,
     alert: ({ value }) => (
@@ -613,7 +108,11 @@ export const useIndividual = () => {
           {id === 'actions' && (
             <h4 className={`mb-2 mr-auto text-lg font-bold text-base-content`}>Actions</h4>
           )}
-          {value?.map(cell => components[cell.type]?.(cell))}
+          {value?.map((cell, index) => {
+            const Cell = components[cell?.type];
+
+            return <Cell key={index} {...cell} />;
+          })}
         </div>
       );
     },
@@ -731,17 +230,71 @@ export const useIndividual = () => {
       </div>
     ),
     details: ({ value }) => {
-      const data = {
-        [value.title]: value.data?.reduce((acc, curr) => {
-          acc[curr.title] = curr.value;
+      const defaultValues = value.data?.reduce((acc, curr) => {
+        acc[curr.title] = curr.value;
 
-          return acc;
-        }, {}),
+        return acc;
+      }, {});
+      const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = data => {
+        const context = {
+          documents: endUser?.workflow?.context?.documents?.map(document => {
+            if (document?.id !== value?.id) return document;
+
+            return {
+              ...document,
+              properties: Object.keys(document?.properties).reduce((acc, curr) => {
+                acc[curr] = {
+                  ...document?.properties?.[curr],
+                  value: data?.[curr],
+                };
+
+                return acc;
+              }, {}),
+            };
+          }),
+        };
+
+        return onMutateTaskDecisionById({
+          context,
+        });
       };
+
+      if (!value.data?.length) return;
 
       return (
         <div className={`m-2 rounded border border-slate-300 p-1`}>
-          <Subject.Info info={data} whitelist={whitelist} isLoading={isLoading} />
+          <Form
+            options={{
+              defaultValues,
+            }}
+            onSubmit={onSubmit}
+            className={`flex h-full flex-col`}
+          >
+            {methods => (
+              <>
+                <legend>{value.title}</legend>
+                <div className={`grid grid-cols-2 gap-2`}>
+                  {value?.data?.map(({ title, isEditable, type }) => (
+                    <div className={`flex flex-col`} key={title}>
+                      <label htmlFor={title}>{toStartCase(camelCaseToSpace(title))}</label>
+                      <input
+                        {...methods.register(title)}
+                        type={type === 'string' ? 'text' : type}
+                        disabled={!isEditable}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className={`ml-2 mt-auto flex justify-end`}>
+                  {value?.data?.some(({ isEditable }) => isEditable) && (
+                    <button className={`btn`} type={'submit'}>
+                      Save
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </Form>
         </div>
       );
     },
@@ -756,6 +309,80 @@ export const useIndividual = () => {
       );
     },
   };
+  const tasks = endUser?.workflow?.context?.entity
+    ? [
+        [
+          {
+            type: 'details',
+            value: {
+              title: `${toStartCase(endUser?.workflow?.context?.entity?.type)} Information`,
+              data: Object.entries(endUser?.workflow?.context?.entity?.data ?? {})?.map(
+                ([title, value]) => ({
+                  title,
+                  value,
+                  type: 'string',
+                  isEditable: false,
+                }),
+              ),
+            },
+          },
+        ],
+        ...(endUser?.workflow?.context?.documents?.map(({ id, category, properties }, index) => [
+          {
+            id: 'actions',
+            type: 'container',
+            value: [
+              {
+                type: 'callToAction',
+                value: 'Options',
+                data: {
+                  id,
+                  approvalStatus: 'rejected',
+                },
+              },
+              {
+                type: 'callToAction',
+                value: 'Approve',
+                data: {
+                  id,
+                  approvalStatus: 'approved',
+                },
+              },
+            ],
+          },
+          {
+            type: 'details',
+            value: {
+              id,
+              title: category,
+              data: Object.entries(properties ?? {}).map(
+                ([title, { value, type, isEditable }]) => ({
+                  title,
+                  value,
+                  type,
+                  isEditable,
+                }),
+              ),
+            },
+          },
+          {
+            type: 'multiDocuments',
+            value: {
+              data:
+                endUser?.workflow?.context?.documents?.[index]?.pages?.map(
+                  ({ type, metadata }, index) => ({
+                    title: metadata?.side ? `${category} ${metadata?.side}` : category,
+                    imageUrl:
+                      type === 'pdf'
+                        ? octetToFileType(results[index]?.data, type)
+                        : results[index]?.data,
+                  }),
+                ) ?? [],
+            },
+          },
+        ]) ?? []),
+      ]
+    : [];
 
   return {
     selectedEndUser,
