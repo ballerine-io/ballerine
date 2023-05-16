@@ -30,9 +30,10 @@ import { Dialog } from 'components/organisms/Dialog/Dialog';
 import React from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler } from 'react-hook-form';
 import { AnyRecord } from '../../../../../types';
 import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
+import { Form } from 'components/organisms/Form/Form';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -113,477 +114,6 @@ export const useIndividual = () => {
       state: underscoreToSpace(endUser?.workflow?.workflowContext?.state),
     },
   };
-
-  const task1 = [
-    {
-      type: 'heading',
-      value: 'Lorem Ipsum',
-    },
-    {
-      id: 'actions',
-      type: 'container',
-      value: [
-        {
-          type: 'callToAction',
-          value: 'Options',
-          data: {
-            id: 'task1',
-            approvalStatus: 'rejected',
-          },
-        },
-        {
-          type: 'callToAction',
-          value: 'Approve',
-          data: {
-            id: 'task1',
-            approvalStatus: 'approved',
-          },
-        },
-      ],
-    },
-    {
-      id: 'alerts',
-      type: 'container',
-      value: [
-        {
-          type: 'alert',
-          value: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ',
-        },
-      ],
-    },
-    {
-      type: 'container',
-      value: [
-        {
-          type: 'faceComparison',
-          value: {
-            faceAUrl,
-            faceBUrl,
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'Personal Info',
-            data: [
-              {
-                title: 'firstName',
-                value: firstName,
-                isEditable: false,
-              },
-              {
-                title: 'middleName',
-                value: middleName,
-                isEditable: true,
-              },
-              {
-                title: 'lastName',
-                value: lastName,
-                isEditable: true,
-              },
-              {
-                title: 'phone',
-                value: phone,
-                isEditable: true,
-              },
-              {
-                title: 'email',
-                value: email,
-                isEditable: true,
-              },
-              {
-                title: 'dateOfBirth',
-                value: dateOfBirth,
-                isEditable: true,
-              },
-              {
-                title: 'placeOfBirth',
-                value: placeOfBirth,
-                isEditable: true,
-              },
-              {
-                title: 'sex',
-                value: sex,
-                isEditable: true,
-              },
-            ],
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'Passport Info',
-            data: [
-              {
-                title: 'type',
-                value: passportInfo?.type,
-                isEditable: true,
-              },
-              {
-                title: 'authority',
-                value: passportInfo?.authority,
-                isEditable: true,
-              },
-              {
-                title: 'placeOfIssue',
-                value: passportInfo?.placeOfIssue,
-                isEditable: true,
-              },
-              {
-                title: 'dateOfIssue',
-                value: passportInfo?.dateOfIssue,
-                isEditable: true,
-              },
-              {
-                title: 'expires',
-                value: passportInfo?.expires,
-                isEditable: true,
-              },
-            ],
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'Check Results',
-            data: [
-              {
-                title: 'amlCheck',
-                value: checkResults?.amlCheck,
-                isEditable: true,
-              },
-              {
-                title: 'idCheck',
-                value: checkResults?.idCheck,
-                isEditable: true,
-              },
-              {
-                title: 'selfieCheck',
-                value: checkResults?.selfieCheck,
-                isEditable: true,
-              },
-              {
-                title: 'scannedBy',
-                value: checkResults?.scannedBy,
-                isEditable: true,
-              },
-              {
-                title: 'finalResult',
-                value: checkResults?.finalResult,
-                isEditable: true,
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      type: 'multiDocuments',
-      value: {
-        data: [
-          {
-            title: id?.type,
-            imageUrl: idUrl,
-          },
-          {
-            title: selfie?.type,
-            imageUrl: selfieUrl,
-          },
-        ],
-      },
-    },
-  ];
-  const task2 = [
-    {
-      id: 'actions',
-      type: 'container',
-      value: [
-        {
-          type: 'callToAction',
-          value: 'Approve',
-          data: {
-            id: 'task2',
-            approvalStatus: 'approved',
-          },
-        },
-        {
-          type: 'callToAction',
-          value: 'Options',
-          data: {
-            id: 'task2',
-            approvalStatus: 'rejected',
-          },
-        },
-      ],
-    },
-    {
-      type: 'container',
-      value: [
-        {
-          type: 'details',
-          value: {
-            title: 'personalInfo',
-            data: [
-              {
-                title: 'firstName',
-                value: firstName,
-              },
-              {
-                title: 'middleName',
-                value: middleName,
-              },
-              {
-                title: 'lastName',
-                value: lastName,
-              },
-              {
-                title: 'phone',
-                value: phone,
-              },
-              {
-                title: 'email',
-                value: email,
-              },
-              {
-                title: 'dateOfBirth',
-                value: dateOfBirth,
-              },
-              {
-                title: 'placeOfBirth',
-                value: placeOfBirth,
-              },
-              {
-                title: 'sex',
-                value: sex,
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      type: 'multiDocuments',
-      value: {
-        data: [
-          {
-            title: id?.type,
-            fileType: id?.fileType,
-            imageUrl: idUrl,
-          },
-          {
-            title: selfie?.type,
-            fileType: selfie?.fileType,
-            imageUrl: selfieUrl,
-          },
-          {
-            title: camelCaseToTitle(certificateOfIncorporation?.type),
-            fileType: certificateOfIncorporation?.fileType,
-            imageUrl: octetToFileType(
-              certificateOfIncorporationUrl,
-              certificateOfIncorporation?.fileType,
-            ),
-          },
-        ],
-      },
-    },
-  ];
-  const task3 = [
-    {
-      id: 'actions',
-      type: 'container',
-      value: [
-        {
-          type: 'callToAction',
-          value: 'Approve',
-          data: {
-            id: 'task3',
-            approvalStatus: 'approved',
-          },
-        },
-        {
-          type: 'callToAction',
-          value: 'Options',
-          data: {
-            id: 'task3',
-            approvalStatus: 'rejected',
-          },
-        },
-      ],
-    },
-    {
-      type: 'container',
-      value: [
-        {
-          type: 'faceComparison',
-          value: {
-            faceAUrl,
-            faceBUrl,
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'personalInfo',
-            data: [
-              {
-                title: 'firstName',
-                value: firstName,
-              },
-              {
-                title: 'middleName',
-                value: middleName,
-              },
-              {
-                title: 'lastName',
-                value: lastName,
-              },
-              {
-                title: 'phone',
-                value: phone,
-              },
-              {
-                title: 'email',
-                value: email,
-              },
-              {
-                title: 'dateOfBirth',
-                value: dateOfBirth,
-              },
-              {
-                title: 'placeOfBirth',
-                value: placeOfBirth,
-              },
-              {
-                title: 'sex',
-                value: sex,
-              },
-            ],
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'passportInfo',
-            data: [
-              {
-                title: 'type',
-                value: passportInfo?.type,
-              },
-              {
-                title: 'authority',
-                value: passportInfo?.authority,
-              },
-              {
-                title: 'placeOfIssue',
-                value: passportInfo?.placeOfIssue,
-              },
-              {
-                title: 'dateOfIssue',
-                value: passportInfo?.dateOfIssue,
-              },
-              {
-                title: 'expires',
-                value: passportInfo?.expires,
-              },
-            ],
-          },
-        },
-        {
-          type: 'details',
-          value: {
-            title: 'checkResults',
-            data: [
-              {
-                title: 'amlCheck',
-                value: checkResults?.amlCheck,
-              },
-              {
-                title: 'idCheck',
-                value: checkResults?.idCheck,
-              },
-              {
-                title: 'selfieCheck',
-                value: checkResults?.selfieCheck,
-              },
-              {
-                title: 'scannedBy',
-                value: checkResults?.scannedBy,
-              },
-              {
-                title: 'finalResult',
-                value: checkResults?.finalResult,
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      type: 'multiDocuments',
-      value: {
-        data: [
-          {
-            title: id?.type,
-            imageUrl: idUrl,
-          },
-          {
-            title: selfie?.type,
-            imageUrl: selfieUrl,
-          },
-        ],
-      },
-    },
-  ];
-  const task4 = [
-    {
-      id: 'actions',
-      type: 'container',
-      value: [
-        {
-          type: 'callToAction',
-          value: 'Options',
-          data: {
-            id: 'task4',
-            approvalStatus: 'rejected',
-          },
-        },
-        {
-          type: 'callToAction',
-          value: 'Approve',
-          data: {
-            id: 'task4',
-            approvalStatus: 'approved',
-          },
-        },
-      ],
-    },
-    {
-      type: 'faceComparison',
-      value: {
-        faceAUrl,
-        faceBUrl,
-      },
-    },
-    {
-      type: 'multiDocuments',
-      value: {
-        data: [
-          {
-            title: id?.type,
-            imageUrl: idUrl,
-          },
-          {
-            title: selfie?.type,
-            imageUrl: selfieUrl,
-          },
-        ],
-      },
-    },
-  ];
-  const tasks = [
-    task1,
-    // task2, task3, task4
-  ];
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
     useUpdateWorkflowByIdMutation({
       workflowId: endUser?.workflow?.runtimeDataId,
@@ -764,30 +294,34 @@ export const useIndividual = () => {
 
         return acc;
       }, {});
-      const methods = useForm({
-        defaultValues,
-      });
-      const onSubmit: SubmitHandler<any> = data => {
+      const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = data => {
         return onMutateTaskDecisionById({
           context: data,
         });
       };
 
+      if (!value.data?.length) return;
+
       return (
-        <FormProvider {...methods}>
-          <form
-            className={`m-2 grid grid-cols-2 gap-2 rounded border border-slate-300 p-1`}
-            onSubmit={methods.handleSubmit(onSubmit, err => alert(err))}
-          >
-            <legend className={`col-span-full`}>{value.title}</legend>
-            {value?.data?.map(({ title, isEditable }) => (
-              <div className={`flex flex-col`} key={title}>
-                <label htmlFor={title}>{toStartCase(camelCaseToSpace(title))}</label>
-                <input {...methods.register(title)} disabled={!isEditable} />
-              </div>
-            ))}
-          </form>
-        </FormProvider>
+        <Form
+          options={{
+            defaultValues,
+          }}
+          onSubmit={onSubmit}
+          className={`m-2 grid grid-cols-2 gap-2 rounded border border-slate-300 p-1`}
+        >
+          {methods => (
+            <>
+              <legend className={`col-span-full`}>{value.title}</legend>
+              {value?.data?.map(({ title, isEditable }) => (
+                <div className={`flex flex-col`} key={title}>
+                  <label htmlFor={title}>{toStartCase(camelCaseToSpace(title))}</label>
+                  <input {...methods.register(title)} disabled={!isEditable} />
+                </div>
+              ))}
+            </>
+          )}
+        </Form>
       );
     },
     multiDocuments: ({ value }) => {
@@ -801,6 +335,40 @@ export const useIndividual = () => {
       );
     },
   };
+  const tasks = [
+    endUser?.workflow?.context?.entity
+      ? [
+          {
+            type: 'details',
+            value: {
+              title: `${toStartCase(endUser?.workflow?.context?.entity?.entityType)} Information`,
+              data: Object.entries(endUser?.workflow?.context?.entity?.entityData ?? {})?.map(
+                ([title, value]) => ({
+                  title,
+                  value,
+                  type: 'string',
+                  isEditable: false,
+                }),
+              ),
+            },
+          },
+        ]
+      : [],
+    ...(endUser?.workflow?.context?.documents?.map(({ category, properties }) => [
+      {
+        type: 'details',
+        value: {
+          title: category,
+          data: Object.entries(properties ?? {}).map(([title, { value, type, isEditable }]) => ({
+            title,
+            value,
+            type,
+            isEditable,
+          })),
+        },
+      },
+    ]) ?? []),
+  ];
 
   return {
     selectedEndUser,
