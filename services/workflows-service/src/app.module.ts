@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, Scope } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod, Scope } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MorganInterceptor, MorganModule } from 'nest-morgan';
 import { UserModule } from './user/user.module';
@@ -62,6 +62,9 @@ import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SessionAuthMiddleware).forRoutes('internal/*');
+    consumer.apply(SessionAuthMiddleware).forRoutes({
+      path: 'v(\\d)+/internal/*',
+      method: RequestMethod.ALL,
+    });
   }
 }

@@ -7,7 +7,7 @@ export class SessionAuthMiddleware implements NestMiddleware {
   private sessionAuthGuard: SessionAuthGuard = new SessionAuthGuard();
 
   use(req: Request, res: Response, next: NextFunction) {
-    if (req.originalUrl.startsWith('/api/internal/auth')) {
+    if (isInternalAuthEndpoint(req.originalUrl)) {
       next();
       return;
     }
@@ -23,4 +23,8 @@ export class SessionAuthMiddleware implements NestMiddleware {
 
     next();
   }
+}
+
+function isInternalAuthEndpoint(url: string) {
+  return RegExp('^/api/v(\\d)+/internal/auth').test(url);
 }

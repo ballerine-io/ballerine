@@ -5,7 +5,7 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from '@/common/filters/HttpExceptions.filter';
 import { AppModule } from './app.module';
 import { swaggerDocumentOptions, swaggerPath, swaggerSetupOptions } from './swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - there is an issue with helemet types
@@ -49,6 +49,10 @@ async function main() {
       transform: true,
     }),
   );
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
 
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
 
