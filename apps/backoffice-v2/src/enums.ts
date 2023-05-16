@@ -1,4 +1,4 @@
-import {TCaseManagementState} from "./api/types";
+import { TCaseManagementState } from './api/types';
 
 export const Method = {
   GET: 'GET',
@@ -28,13 +28,13 @@ export const Action = {
 } as const;
 export const Resource = {
   END_USER: 'END_USER',
-  ASSIGNMENT: 'ASSIGNMENT'
+  ASSIGNMENT: 'ASSIGNMENT',
 } as const;
 
 type TCaseStateEnum = {
   [key: string]: TCaseManagementState;
 };
-export const CaseState : TCaseStateEnum = {
+export const CaseState: TCaseStateEnum = {
   UNASSIGNED: {
     state: 'unassigned',
     readEnabled: true,
@@ -66,7 +66,5 @@ export const CaseState : TCaseStateEnum = {
     assignToMeEnabled: false,
     assignToOther: false,
     actionButtonsEnabled: false,
-  }
+  },
 } as const;
-
-

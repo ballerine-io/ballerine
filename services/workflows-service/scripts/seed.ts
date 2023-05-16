@@ -65,7 +65,6 @@ async function seed(bcryptSalt: Salt) {
     create: diffUser2,
   });
 
-
   const manualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const manualMachineVersion = 1;
 

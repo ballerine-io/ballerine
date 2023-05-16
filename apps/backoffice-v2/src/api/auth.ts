@@ -3,7 +3,7 @@ import { handleZodError } from '../utils/handle-zod-error/handle-zod-error';
 import { endpoints } from './endpoints';
 import { apiClient } from './api-client';
 import { z } from 'zod';
-import {AuthenticatedUserSchema} from "../lib/zod/schemas/authenticated-user";
+import { AuthenticatedUserSchema } from '../lib/zod/schemas/authenticated-user';
 
 export const auth = {
   signIn: async ({ callbackUrl, provider, body }: ISignInProps) => {

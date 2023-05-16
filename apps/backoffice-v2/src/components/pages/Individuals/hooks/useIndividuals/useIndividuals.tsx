@@ -14,6 +14,7 @@ import { useEndUsersWithWorkflowsQuery } from '../../../../../lib/react-query/qu
 import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 import { useConsole } from 'hooks/useConsole/useConsole';
 import { useUsersQuery } from '../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
+import {useSort} from "hooks/useSort/useSort";
 
 export const useIndividuals = () => {
   const matches = useMatches();

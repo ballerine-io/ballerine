@@ -91,7 +91,7 @@ export const Item: FunctionComponent<IItemProps> = ({
               src={''}
               placeholder={initials}
               alt={`assigned to: ${assigneeFullName}`}
-              className={`h-6 w-6 text-[0.6rem] pt-1`}
+              className={`h-6 w-6 pt-1 text-[0.6rem]`}
             />
           )}
         </div>

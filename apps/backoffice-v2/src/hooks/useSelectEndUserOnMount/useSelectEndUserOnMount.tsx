@@ -5,7 +5,7 @@ import { useSelectEndUser } from 'hooks/useSelectEndUser/useSelectEndUser';
 import { useParams } from '@tanstack/react-router';
 import { env } from '../../env/env';
 import { useEndUsersWithWorkflowsQuery } from '../../lib/react-query/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
-import {useUsersQuery} from "../../lib/react-query/queries/useUsersQuery/useUsersQuery";
+import { useUsersQuery } from '../../lib/react-query/queries/useUsersQuery/useUsersQuery';
 
 /**
  * @description Sets the selected end user to the first end user in the array on mount if no user is currently selected. Returns the select end user handler.

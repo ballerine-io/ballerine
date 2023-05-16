@@ -1,6 +1,6 @@
 import { useEndUsersQuery } from '../useEndUsersQuery/useEndUsersQuery';
 
-export const useEndUsersWithWorkflowsQuery = (users) => {
+export const useEndUsersWithWorkflowsQuery = users => {
   return useEndUsersQuery({
     select: endUsers =>
       endUsers.map(endUser => {
@@ -9,7 +9,7 @@ export const useEndUsersWithWorkflowsQuery = (users) => {
         return {
           ...endUser,
           assigneeId: assigneeId,
-          assigneeFullName: users?.find(user => user.id == assigneeId)?.fullName
+          assigneeFullName: users?.find(user => user.id == assigneeId)?.fullName,
         };
       }),
   });

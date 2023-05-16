@@ -25,5 +25,5 @@ export class WorkflowDefinitionUpdateInput {
 
   @IsString()
   @IsOptional()
-  assigneeId?: string
+  assigneeId?: string;
 }
