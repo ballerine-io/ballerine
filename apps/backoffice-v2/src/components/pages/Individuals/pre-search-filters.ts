@@ -6,12 +6,14 @@ const sharedPreSearchFilters = {
   page: 1,
   search: '',
 } as const;
+
 export const preSearchFiltersByKind = {
   businesses: {
     sortBy: 'website' as const,
     entity: 'businesses' as const,
     filter: {
       approvalState: [State.PROCESSING],
+      assigneeId: [],
     },
     ...sharedPreSearchFilters,
   },
@@ -21,6 +23,7 @@ export const preSearchFiltersByKind = {
     filter: {
       approvalState: [State.PROCESSING],
       endUserType: [],
+      assigneeId: [],
     },
     ...sharedPreSearchFilters,
   },

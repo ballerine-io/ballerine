@@ -91,9 +91,7 @@ export class WorkflowControllerInternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async listActiveStates(): Promise<
-    Pick<WorkflowRuntimeData, 'state' | 'id' | 'endUserId'>[] | null
-  > {
+  async listActiveStates() {
     try {
       return await this.service.listActiveWorkflowsRuntimeStates();
     } catch (error) {
