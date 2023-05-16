@@ -21,11 +21,12 @@ export class EndUserModel {
   avatarUrl?: string | null;
 
   @ApiProperty({
-    required: true,
+    required: false,
     type: StringFilter,
   })
+  @IsOptional()
   @Type(() => StringFilter)
-  correlationId!: string;
+  correlationId?: string | null;
 
   @ApiProperty({
     required: false,

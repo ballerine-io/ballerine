@@ -101,7 +101,7 @@ export const generateEndUser = ({
     workflowDefinitionVersion: number;
     context: Prisma.InputJsonValue;
   };
-}): Prisma.BusinessCreateInput => {
+}): Prisma.EndUserCreateInput => {
   const { workflowDefinitionId, workflowDefinitionVersion, context } = workflow;
   const correlationId = faker.datatype.uuid();
   const firstName = faker.name.firstName();

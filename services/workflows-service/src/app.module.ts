@@ -31,9 +31,9 @@ import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
     }),
     EventEmitterModule.forRoot(),
     WebhooksModule,
-    DevtoolsModule.register({
-      http: process.env.NODE_ENV !== 'production',
-    }),
+    // DevtoolsModule.register({
+    //   http: process.env.NODE_ENV !== 'production',
+    // }),
     UserModule,
     WorkflowModule,
     StorageModule,

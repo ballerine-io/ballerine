@@ -118,17 +118,26 @@ export class WorkflowControllerExternal {
     @Headers('no_auth_user_id') no_auth_user_id: string,
     @Res() res: Response,
   ): Promise<any> {
-    const { workflowId } = body;
+    const { workflowId, context } = body;
     // get workflow definition
     console.log(body);
+    const { entity } = context;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - remove after adding context type
-    const workflowDefinition = await this.service.createWorkflowRuntime(
-      workflowId,
-      context.entity.entityId,
-      context.entity.type,
-    );
+    if (!entity.id && !entity.ballerineEntityId)
+      throw new common.BadRequestException('Entity id is required');
+    // if (!entity.ballerineEntityId) {
+    // get entity by ballerine entity id
+    // };
+
+    // try to get entity, if not entity, create one
+
+    // check if the user has running workflow by correlation id (customer end-user id)
+    // const workflowExists = await this.service.getWorkflowRuntimeDataByCorrelationId();
+
+    const workflowDefinition = await this.service.createWorkflowRuntime({
+      workflowDefinitionId: workflowId,
+      context,
+    });
     // check body.context against workflowDefinition.contextSchema
     // check if no other workflow is running for this entity
     // create workflow runtime data

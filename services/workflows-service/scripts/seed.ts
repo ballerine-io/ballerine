@@ -1,9 +1,12 @@
 import * as dotenv from 'dotenv';
+import { faker } from '@faker-js/faker';
+
 import { PrismaClient } from '@prisma/client';
 import { parseSalt, Salt } from '../src/auth/password/password.service';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import { businessIds, endUserIds, generateBusiness, generateEndUser } from './generate-end-user';
+import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
 
 if (require.main === module) {
   dotenv.config();
@@ -56,21 +59,41 @@ async function seed(bcryptSalt: Salt) {
       dateOfBirth: '2000-11-04T12:45:51.695Z',
     },
   });
-  const faker = require('faker');
 
   function createMockContextData() {
+    const correlationId = faker.datatype.uuid();
     let mockData = {
       entity: {
-        entityType: 'business',
-        entityData: {},
+        type: 'business', //changed from entityType
+        data: {
+          companyName: faker.company.companyName(),
+          registrationNumber: faker.finance.account(9),
+          legalForm: faker.company.bs(),
+          countryOfIncorporation: faker.address.country(),
+          dateOfIncorporation: faker.date.past(20).toISOString(),
+          address: faker.address.streetAddress(),
+          phoneNumber: faker.phone.phoneNumber(),
+          email: faker.internet.email(),
+          website: faker.internet.url(),
+          industry: faker.company.catchPhrase(),
+          taxIdentificationNumber: faker.finance.account(12),
+          vatNumber: faker.finance.account(9),
+          shareholderStructure: JSON.stringify({
+            shareholders: ['Shareholder 1', 'Shareholder 2'],
+            ownershipPercentages: ['40%', '60%'],
+          }),
+          numberOfEmployees: faker.datatype.number(1000),
+          businessPurpose: faker.company.catchPhraseDescriptor(),
+          approvalState: 'NEW',
+        },
         additionalDetails: {},
         ballerineEntityId: faker.datatype.uuid(),
-        id: faker.datatype.uuid(),
+        id: correlationId,
       },
       documents: [
         {
           category: 'ID',
-          type: 'photo',
+          type: 'photo', //changed from type
           issuer: {
             type: 'government',
             name: 'Government',
@@ -111,22 +134,22 @@ async function seed(bcryptSalt: Salt) {
           ],
           properties: {
             fullName: {
-              type: 'string',
+              type: 'string', //changed from type
               value: faker.name.findName(),
             },
             dateOfBirth: {
-              type: 'date',
+              type: 'date', //changed from type
               value: faker.date.past(30).toISOString().split('T')[0],
             },
             nationality: {
-              type: 'string',
+              type: 'string', //changed from type
               value: faker.address.country(),
             },
           },
         },
         {
           category: 'incorporation',
-          type: 'certificate',
+          type: 'certificate', //changed from type
           issuer: {
             type: 'government',
             name: 'Government',
@@ -153,31 +176,31 @@ async function seed(bcryptSalt: Salt) {
           ],
           properties: {
             companyName: {
-              type: 'string',
+              type: 'string', //changed from type
               value: faker.company.companyName(),
             },
             registrationNumber: {
-              type: 'string',
+              type: 'string', //changed from type
               value: faker.finance.account(9),
             },
             issueDate: {
-              type: 'date',
+              type: 'date', //changed from type
               value: faker.date.past(20).toISOString().split('T')[0],
             },
             registeredAddress: {
-              type: 'string',
+              type: 'string', //changed from type
               value: faker.address.streetAddress(),
             },
             businessType: {
-              type: 'string',
+              type: 'string', //changed from type
               value: faker.company.bs(),
             },
           },
         },
       ],
     };
+
     return mockData;
-    ƒ;
   }
 
   const riskScoreWorkflowContext = {
@@ -332,188 +355,7 @@ async function seed(bcryptSalt: Salt) {
       definitionType: 'statechart-json',
       contextSchema: {
         type: 'json-schema',
-        schema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          type: 'object',
-          properties: {
-            entity: {
-              type: 'object',
-              properties: {
-                entityType: {
-                  type: 'string',
-                  enum: ['individual', 'business'],
-                },
-                entityData: {
-                  type: 'object',
-                },
-                additionalDetails: {
-                  type: 'object',
-                },
-                ballerineEntityId: {
-                  type: 'string',
-                },
-                id: {
-                  type: 'string',
-                },
-              },
-              required: ['entityType', 'id'],
-              additionalProperties: false, // added
-            },
-            documents: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  category: {
-                    type: 'string',
-                  },
-                  type: {
-                    type: 'string',
-                  },
-                  issuer: {
-                    type: 'object',
-                    properties: {
-                      type: {
-                        type: 'string',
-                      },
-                      name: {
-                        type: 'string',
-                      },
-                      country: {
-                        type: 'string',
-                      },
-                      city: {
-                        type: 'string',
-                      },
-                      additionalDetails: {
-                        type: 'object',
-                      },
-                    },
-                    required: ['type', 'name', 'country', 'city'],
-                    additionalProperties: false, // added
-                  },
-                  issuingVersion: {
-                    type: 'integer',
-                  },
-                  decision: {
-                    type: 'object',
-                    properties: {
-                      status: {
-                        type: 'string',
-                        enum: ['new', 'pending', 'revision', 'approved', 'rejected'],
-                      },
-                      rejectionReason: {
-                        oneOf: [
-                          {
-                            type: 'string',
-                            enum: [
-                              'Suspicious document',
-                              'Document does not match customer profile',
-                              'Potential identity theft',
-                              'Fake or altered document',
-                              'Document on watchlist or blacklist',
-                            ],
-                          },
-                          {
-                            type: 'string',
-                          },
-                        ],
-                      },
-                      revisionReason: {
-                        oneOf: [
-                          {
-                            type: 'string',
-                            enum: [
-                              'Blurry image',
-                              'Missing page',
-                              'Invalid document',
-                              'Expired document',
-                              'Unreadable document',
-                            ],
-                          },
-                          {
-                            type: 'string',
-                          },
-                        ],
-                      },
-                    },
-                    additionalProperties: false, // added
-                  },
-                  version: {
-                    type: 'integer',
-                  },
-                  pages: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        ballerineFileId: { type: 'string' },
-                        provider: {
-                          type: 'string',
-                          enum: ['gcs', 'http', 'stream', 'base64', 'ftp'],
-                        },
-                        uri: {
-                          type: 'string',
-                          format: 'uri', // added
-                        },
-                        type: {
-                          type: 'string',
-                          enum: ['pdf', 'png', 'jpg'],
-                        },
-                        data: {
-                          type: 'string',
-                        },
-                        metadata: {
-                          type: 'object',
-                          properties: {
-                            side: {
-                              type: 'string',
-                            },
-                            pageNumber: {
-                              type: 'string',
-                            },
-                          },
-                          additionalProperties: false, // added
-                        },
-                      },
-                      required: ['provider', 'uri', 'type'],
-                      additionalProperties: false, // added
-                    },
-                  },
-                  properties: {
-                    type: 'object',
-                    additionalProperties: {
-                      oneOf: [
-                        {
-                          type: 'string',
-                        },
-                        {
-                          type: 'object',
-                          properties: {
-                            type: {
-                              type: 'string',
-                              enum: ['date'],
-                            },
-                            value: {
-                              type: 'string',
-                              format: 'date',
-                            },
-                          },
-                          required: ['type', 'value'],
-                          additionalProperties: false,
-                        },
-                      ],
-                    },
-                  },
-                },
-                required: ['category', 'type', 'issuer', 'version', 'pages', 'properties'],
-                additionalProperties: false, // added
-              },
-            },
-          },
-          required: ['entity', 'documents'],
-          additionalProperties: false, // added
-        },
+        schema: defaultContextSchema,
       },
       definition: {
         id: 'risk-score-improvement',
@@ -755,11 +597,14 @@ async function seed(bcryptSalt: Salt) {
   await client.$transaction(
     endUserIds.map(id =>
       client.endUser.create({
+        /// i tryed to fix that so i can run through ajv, currently it dosent like something in the schema (anyOf  )
         data: generateEndUser({
           id,
-          workflowDefinitionId: manualMachineId,
-          workflowDefinitionVersion: manualMachineVersion,
-          context: {},
+          workflow: {
+            workflowDefinitionId: manualMachineId,
+            workflowDefinitionVersion: manualMachineVersion,
+            context: {},
+          },
         }),
       }),
     ),

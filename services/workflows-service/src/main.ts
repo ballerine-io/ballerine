@@ -11,6 +11,7 @@ import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.in
 // @ts-ignore - there is an issue with helemet types
 import helmet from 'helmet';
 import * as process from 'process';
+import { AllExceptionsFilter } from './filters/AllExceptions.filter';
 
 const { PORT = 3000 } = process.env;
 
@@ -63,6 +64,7 @@ async function main() {
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
   const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
 
   void app.listen(PORT);
