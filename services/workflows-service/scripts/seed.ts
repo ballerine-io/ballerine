@@ -290,7 +290,7 @@ async function seed(bcryptSalt: Salt) {
             select: {
               id: true,
               status: true,
-              // assigneeId: true
+              assigneeId: true,
               workflowDefinition: {
                 select: {
                   id: true,
@@ -343,7 +343,7 @@ async function seed(bcryptSalt: Salt) {
             select: {
               id: true,
               status: true,
-              // assigneeId: true
+              assigneeId: true,
               workflowDefinition: {
                 select: {
                   id: true,
