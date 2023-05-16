@@ -47,14 +47,14 @@ async function seed(bcryptSalt: Salt) {
       lastName: 'MAMI',
       password: await hash('admin3', bcryptSalt),
       roles: ['user'],
-    }
-  ]
+    },
+  ];
   for (const user of users) {
     await client.user.upsert({
       where: { email: user.email },
       update: {},
       create: user,
-    })
+    });
   }
 
   const manualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';

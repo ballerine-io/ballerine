@@ -1,5 +1,5 @@
 import { useEndUsersQuery } from '../useEndUsersQuery/useEndUsersQuery';
-import {TUsers} from "../../../../api/types";
+import { TUsers } from '../../../../api/types';
 
 export const useEndUsersWithWorkflowsQuery = (users: TUsers) => {
   return useEndUsersQuery({

@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from 'components/atoms/Select/Select';
-import AssignButton, {Assignee} from 'components/atoms/AssignButton/AssignButton';
+import AssignButton, { Assignee } from 'components/atoms/AssignButton/AssignButton';
 import { useGetSessionQuery } from '../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 
 /**
@@ -76,10 +76,12 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-2`}>
       <div className={`flex flex-row space-x-3.5`}>
         <AssignButton
-          assignees={[{
-            id: authenticatedUser.id,
-            fullName: authenticatedUser.fullName
-          }]}
+          assignees={[
+            {
+              id: authenticatedUser.id,
+              fullName: authenticatedUser.fullName,
+            },
+          ]}
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={id => {
@@ -224,7 +226,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                 className={ctw(
                   `btn-success btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
                   {
-                    loading: debouncedIsLoadingApproveEndUser
+                    loading: debouncedIsLoadingApproveEndUser,
                   },
                 )}
                 disabled={isLoading || !canApprove}
