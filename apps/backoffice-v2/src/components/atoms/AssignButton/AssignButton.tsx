@@ -16,7 +16,7 @@ export type Assignee = {
 interface IUserItemProps {
   assignee: Assignee;
   onAssigneeSelect: (id: string) => void;
-};
+}
 
 const AssigneeItem: React.FC<IUserItemProps> = ({ assignee, onAssigneeSelect }) => (
   <DropdownMenuItem key={assignee.id} onClick={() => onAssigneeSelect(assignee.id)}>
@@ -24,13 +24,13 @@ const AssigneeItem: React.FC<IUserItemProps> = ({ assignee, onAssigneeSelect }) 
   </DropdownMenuItem>
 );
 
-interface IAssignButtonProps{
+interface IAssignButtonProps {
   caseState: TCaseManagementState;
   buttonType: 'Assign' | 'Re-Assign';
   assignees: Assignee[];
   onAssigneeSelect: (id: string) => void;
   authenticatedUser: TAuthenticatedUser;
-};
+}
 const AssignButton: React.FC<IAssignButtonProps> = ({
   buttonType,
   assignees,
@@ -38,7 +38,7 @@ const AssignButton: React.FC<IAssignButtonProps> = ({
   caseState,
 }) => {
   const isAssignButtonType = buttonType === 'Assign';
-  const unassignEnabled = caseState !== CaseState.UNASSIGNED
+  const unassignEnabled = caseState !== CaseState.UNASSIGNED;
   const buttonColorClass = isAssignButtonType ? 'bg-black' : 'bg-white border-gray-200';
 
   return (
@@ -47,9 +47,7 @@ const AssignButton: React.FC<IAssignButtonProps> = ({
         <button
           className={ctw(`btn-sm btn ${buttonColorClass}`)}
           disabled={!caseState.assignToMeEnabled}
-          onClick={_event =>
-            isAssignButtonType ? onAssigneeSelect((assignees[0]).id) : undefined
-          }
+          onClick={_event => (isAssignButtonType ? onAssigneeSelect(assignees[0].id) : undefined)}
         >
           Assign Me
         </button>
@@ -64,15 +62,17 @@ const AssignButton: React.FC<IAssignButtonProps> = ({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className={`min-w-[16rem]`} align={'start'}>
-            { unassignEnabled ?
-              <DropdownMenuItem className={`text-cyan-950 border-b-2`} key={'unassigne'} onClick={() => onAssigneeSelect(null)}>
-              Unassign
-            </DropdownMenuItem>
-              : null
-            }
+            {unassignEnabled ? (
+              <DropdownMenuItem
+                className={`border-b-2 text-cyan-950`}
+                key={'unassigne'}
+                onClick={() => onAssigneeSelect(null)}
+              >
+                Unassign
+              </DropdownMenuItem>
+            ) : null}
             {Array.isArray(assignees)
-              ? assignees
-                .map(assignee => (
+              ? assignees.map(assignee => (
                   <AssigneeItem
                     key={assignee.id}
                     assignee={assignee}
