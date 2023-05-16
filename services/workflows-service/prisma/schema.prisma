@@ -54,6 +54,8 @@ model EndUser {
 
   businesses           Business[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
+  entityId             String
+  Entity               Entity[]               @relation("EndUserEntity")
 
   @@index([endUserType])
   @@index([approvalState])
@@ -96,6 +98,8 @@ model Business {
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
+  entityId             String
+  Entity               Entity[]               @relation("BusinessEntity")
 
   @@index([companyName])
   @@index([approvalState])
@@ -184,4 +188,20 @@ model Filter {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   createdBy String   @default("SYSTEM")
+}
+
+enum EntityType {
+  EndUserType
+  UserType
+  BusinessType
+  WorkflowType
+}
+
+model Entity {
+  id         String     @id @default(cuid())
+  entityId   String
+  entityType EntityType
+
+  EndUser  EndUser?  @relation("EndUserEntity", fields: [entityId], references: [id], map: "enduser_entityId")
+  Business Business? @relation("BusinessEntity", fields: [entityId], references: [id], map: "business_entityId")
 }
