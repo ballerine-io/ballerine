@@ -6,7 +6,7 @@ import {UsersListSchema} from "../lib/zod/schemas/users";
 export type TEndUser = z.infer<typeof EndUserByIdSchema>;
 
 export type TEndUsers = z.infer<typeof EndUsersListSchema>;
-export type TUser = z.infer<typeof UsersListSchema>;
+export type TUsers = z.infer<typeof UsersListSchema>;
 export type TAuthenticatedUser = z.infer<typeof AuthenticatedUserSchema>;
 
 export type TCaseManagementState = {
@@ -14,7 +14,7 @@ export type TCaseManagementState = {
   readEnabled: boolean;
   writeEnabled: boolean;
   assignToMeEnabled: boolean;
-  assignToOther: boolean;
+  assignToOtherEnabled: boolean;
   unassignedEnabled?: boolean;
   actionButtonsEnabled: boolean;
 };

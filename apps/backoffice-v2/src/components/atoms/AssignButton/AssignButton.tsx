@@ -58,7 +58,7 @@ const AssignButton: React.FC<AssignButtonProps> = ({
           <DropdownMenuTrigger asChild>
             <button
               className={ctw(`btn-sm btn ${buttonColorClass}`)}
-              disabled={!caseState.assignToOther}
+              disabled={!caseState.assignToOtherEnabled}
             >
               {buttonType}
             </button>

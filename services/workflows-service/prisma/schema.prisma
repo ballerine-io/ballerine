@@ -16,9 +16,8 @@ model User {
   password  String
   roles     Json
 
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  workflowRuntimeData WorkflowRuntimeData[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum ApprovalState {
@@ -46,14 +45,13 @@ model EndUser {
   dateOfBirth    DateTime?
   avatarUrl      String?
   additionalInfo Json?
-
-  workflowRuntimeData WorkflowRuntimeData[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   businesses           Business[]
-  endUsersOnBusinesses EndUsersOnBusinesses[]
+  caseFiles            CaseFile[]
+  workflowRuntimeData  WorkflowRuntimeData[]
+  EndUsersOnBusinesses EndUsersOnBusinesses[]
 
   @@index([endUserType])
   @@index([createdAt])
@@ -97,7 +95,8 @@ model Business {
 
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
-  endUsersOnBusinesses EndUsersOnBusinesses[]
+  EndUsersOnBusinesses EndUsersOnBusinesses[]
+  caseFiles            CaseFile[]
 
   @@index([companyName])
   @@index([countryOfIncorporation])
@@ -126,36 +125,28 @@ model WorkflowDefinition {
   createdBy           String                @default("SYSTEM")
   workflowRuntimeData WorkflowRuntimeData[]
 
-  @@index([name, version])
-  @@index([definitionType])
-}
-
-enum WorkflowRuntimeDataStatus {
-  created
-  completed
+  @@index([name])
 }
 
 model WorkflowRuntimeData {
-  id                        String                    @id @default(cuid())
-  endUser                   EndUser?                  @relation(fields: [endUserId], references: [id], onDelete: SetNull)
+  id                        String             @id @default(cuid())
+  endUser                   EndUser?           @relation(fields: [endUserId], references: [id], onDelete: SetNull)
   endUserId                 String?
-  business                  Business?                 @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  business                  Business?          @relation(fields: [businessId], references: [id], onDelete: SetNull)
   businessId                String?
-  assignee                  User?                     @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
-  assigneeId                String?
-  workflowDefinition        WorkflowDefinition        @relation(fields: [workflowDefinitionId], references: [id])
+  workflowDefinition        WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
   workflowDefinitionId      String
   workflowDefinitionVersion Int
   context                   Json
   // history
   state                     String?
-  status                    WorkflowRuntimeDataStatus @default(created)
-  createdAt                 DateTime                  @default(now())
-  updatedAt                 DateTime                  @updatedAt
-  createdBy                 String                    @default("SYSTEM")
-  resolvedAt                DateTime?
+  status                    String             @default("created")
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+  createdBy                 String             @default("SYSTEM")
 
-  @@index([assigneeId, status])
+  caseFiles CaseFile[]
+
   @@index([endUserId, status])
   @@index([businessId, status])
   @@index([workflowDefinitionId, status])
@@ -164,11 +155,13 @@ model WorkflowRuntimeData {
 }
 
 model File {
-  id             String   @id @default(cuid())
-  userId         String
-  fileNameOnDisk String
-  createdAt      DateTime @default(now())
-  createdBy      String   @default("SYSTEM")
+  id               String   @id @default(cuid())
+  userId           String
+  fileNameOnDisk   String
+  uri              String
+  fileNameInBucket String?
+  createdAt        DateTime @default(now())
+  createdBy        String   @default("SYSTEM")
 
   @@index([userId])
 }
@@ -184,16 +177,22 @@ model Policy {
   @@index([version, name])
 }
 
-model Filter {
-  id        String   @id @default(cuid())
-  // Name of the filter i.e. "KYC"
-  name      String   @unique
-  // Does the filter belong to EndUser or Business?
-  entity    String
-  // 1:1 with Prisma's select object
-  // Example: { select: { id: true, firstName: true, lastName: true }, where: { id: { equals: "123" } } }
-  query     Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdBy String   @default("SYSTEM")
+model FileMetadata {
+  id                    String               @id @default(cuid())
+  endUser               EndUser?             @relation(fields: [endUserId], references: [id], onDelete: Cascade)
+  endUserId             String?
+  business              Business?            @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId            String?
+  // entityId
+  workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onDelete: Cascade)
+  workflowRuntimeDataId String?
+  fileType              String // png|jpg|jpeg|gif|pdf|
+  fileSize              Int // KB
+  documentType          String // ID,Passport,Utility Bill
+  uri                   String
+  metadata              Json // pageNumber   Int, side     String // front/back/
+  provider              String
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  deletedAt             DateTime?
 }
