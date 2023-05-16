@@ -11,6 +11,12 @@ export const BusinessesListSchema = z
       countryOfIncorporation: z.string().default(''),
       createdAt: z.string().default(''),
       approvalState: z.enum(States).default(State.PROCESSING),
+      workflowRuntimeData: z.preprocess(
+        workflows => workflows?.[0],
+        ObjectWithIdSchema.extend({
+          assigneeId: z.string().nullable().optional(),
+        }).optional(),
+      ),
     }),
   )
   .default([]);

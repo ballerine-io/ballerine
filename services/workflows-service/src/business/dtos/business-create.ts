@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEnum, IsNumber, IsDate, IsJSON } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export enum ApprovalState {
   PROCESSING = 'PROCESSING',

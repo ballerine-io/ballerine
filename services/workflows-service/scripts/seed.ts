@@ -26,18 +26,36 @@ async function seed(bcryptSalt: Salt) {
   console.info('Seeding database...');
 
   const client = new PrismaClient();
-  const data = {
-    email: 'admin@admin.com',
-    firstName: 'admin',
-    lastName: 'admin',
-    password: await hash('admin', bcryptSalt),
-    roles: ['user'],
-  };
-  await client.user.upsert({
-    where: { email: data.email },
-    update: {},
-    create: data,
-  });
+  const users = [
+    {
+      email: 'admin@admin.com',
+      firstName: 'admin',
+      lastName: 'admin',
+      password: await hash('admin', bcryptSalt),
+      roles: ['user'],
+    },
+    {
+      email: 'admin2@admin.com',
+      firstName: 'eythan',
+      lastName: 'Flex',
+      password: await hash('admin2', bcryptSalt),
+      roles: ['user'],
+    },
+    {
+      email: 'admin3@admin.com',
+      firstName: 'Alon',
+      lastName: 'MAMI',
+      password: await hash('admin3', bcryptSalt),
+      roles: ['user'],
+    },
+  ];
+  for (const user of users) {
+    await client.user.upsert({
+      where: { email: user.email },
+      update: {},
+      create: user,
+    });
+  }
 
   const manualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const manualMachineVersion = 1;
@@ -261,6 +279,112 @@ async function seed(bcryptSalt: Salt) {
           state: 'document_photo',
         },
       ],
+    },
+  });
+
+  await client.filter.create({
+    data: {
+      entity: 'individuals',
+      name: 'Individuals',
+      query: {
+        select: {
+          id: true,
+          correlationId: true,
+          verificationId: true,
+          endUserType: true,
+          approvalState: true,
+          stateReason: true,
+          jsonData: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          dateOfBirth: true,
+          avatarUrl: true,
+          additionalInfo: true,
+          createdAt: true,
+          updatedAt: true,
+          workflowRuntimeData: {
+            select: {
+              id: true,
+              status: true,
+              assigneeId: true,
+              workflowDefinition: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          workflowRuntimeData: {
+            some: {
+              workflowDefinition: {
+                is: {
+                  id: manualMachineId,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  await client.filter.create({
+    data: {
+      entity: 'businesses',
+      name: 'Businesses',
+      query: {
+        select: {
+          id: true,
+          companyName: true,
+          registrationNumber: true,
+          legalForm: true,
+          countryOfIncorporation: true,
+          dateOfIncorporation: true,
+          address: true,
+          phoneNumber: true,
+          email: true,
+          website: true,
+          industry: true,
+          taxIdentificationNumber: true,
+          vatNumber: true,
+          shareholderStructure: true,
+          numberOfEmployees: true,
+          businessPurpose: true,
+          documents: true,
+          approvalState: true,
+          workflowRuntimeData: {
+            select: {
+              id: true,
+              status: true,
+              assigneeId: true,
+              workflowDefinition: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          createdAt: true,
+          updatedAt: true,
+        },
+        where: {
+          workflowRuntimeData: {
+            some: {
+              workflowDefinition: {
+                is: {
+                  id: manualMachineId,
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
 

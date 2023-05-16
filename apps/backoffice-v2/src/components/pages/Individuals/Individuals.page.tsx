@@ -1,11 +1,10 @@
 import { SubjectsList } from 'components/organisms/SubjectsList/SubjectsList';
 import { Outlet } from '@tanstack/react-router';
-
 import { Pagination } from 'components/organisms/Pagination/Pagination';
 import { useIndividuals } from 'components/pages/Individuals/hooks/useIndividuals/useIndividuals';
 import { Subject } from 'components/organisms/Subject/Subject';
 import { MotionScrollArea } from 'components/molecules/MotionScrollArea/MotionScrollArea';
-import { useKind } from 'hooks/useKind/useKind';
+import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 
 export const Individuals = () => {
   const {
@@ -22,8 +21,8 @@ export const Individuals = () => {
     skeletons,
     routerId,
   } = useIndividuals();
-  const kind = useKind();
-  console.log(subjects);
+  const entity = useFilterEntity();
+
   return (
     <>
       <SubjectsList
@@ -47,17 +46,19 @@ export const Individuals = () => {
                     lastName,
                     createdAt,
                     companyName,
-                    assignedTo,
+                    assigneeId,
+                    assigneeFullName,
                     avatarUrl,
                     approvalState,
                   }) => (
                     <SubjectsList.Item
                       key={id}
                       id={id}
-                      fullName={kind !== 'businesses' ? `1${firstName} ${lastName}` : companyName}
+                      fullName={entity !== 'businesses' ? `${firstName} ${lastName}` : companyName}
                       avatarUrl={avatarUrl}
                       createdAt={createdAt}
-                      assignedTo={assignedTo}
+                      assigneeId={assigneeId}
+                      assigneeFullName={assigneeFullName}
                       status={approvalState}
                     />
                   ),
