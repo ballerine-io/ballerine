@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import { ExecutionContext, Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { SessionAuthGuard } from './session-auth.guard';
 
