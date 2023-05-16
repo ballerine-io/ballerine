@@ -20,6 +20,7 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
 import { CaseFileModule } from './case-file/case-file.module';
+import { FileMetadataModule } from './file-metadata/file-metadata.module';
 
 @Module({
   controllers: [],
@@ -51,6 +52,7 @@ import { CaseFileModule } from './case-file/case-file.module';
       useClass: ServeStaticOptionsService,
     }),
     CaseFileModule,
+    FileMetadataModule,
   ],
   providers: [
     {

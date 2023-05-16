@@ -49,7 +49,7 @@ model EndUser {
   updatedAt      DateTime  @updatedAt
 
   businesses           Business[]
-  caseFiles            CaseFile[]
+  fileMetadatas        FileMetadata[]
   workflowRuntimeData  WorkflowRuntimeData[]
   EndUsersOnBusinesses EndUsersOnBusinesses[]
 
@@ -96,7 +96,7 @@ model Business {
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
   EndUsersOnBusinesses EndUsersOnBusinesses[]
-  caseFiles            CaseFile[]
+  fileMetadata         FileMetadata[]
 
   @@index([companyName])
   @@index([countryOfIncorporation])
@@ -145,7 +145,7 @@ model WorkflowRuntimeData {
   updatedAt                 DateTime           @updatedAt
   createdBy                 String             @default("SYSTEM")
 
-  caseFiles CaseFile[]
+  fileMetadatas FileMetadata[]
 
   @@index([endUserId, status])
   @@index([businessId, status])
@@ -177,22 +177,26 @@ model Policy {
   @@index([version, name])
 }
 
-model CaseFile {
-  id                    String               @id @default(cuid())
-  endUser               EndUser?             @relation(fields: [endUserId], references: [id], onDelete: Cascade)
-  endUserId             String?
-  business              Business?            @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  businessId            String?
-  // entityId
-  workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onDelete: Cascade)
-  workflowRuntimeDataId String?
-  fileType              String // png|jpg|jpeg|gif|pdf|
-  fileSize              Int // KB
-  documentType          String // ID,Passport,Utility Bill
-  uri                   String
-  metadata              Json // pageNumber   Int, side     String // front/back/
-  provider              String
-  createdAt             DateTime             @default(now())
-  updatedAt             DateTime             @updatedAt
-  deletedAt             DateTime?
+model FileMetadata {
+  id           String    @id @default(cuid())
+  entityTpe    String?
+  entityId     String?
+  fileType     String // png|jpg|jpeg|gif|pdf|
+  fileSize     Int // KB
+  documentType String // ID,Passport,Utility Bill
+  uri          String
+  metadata     Json // pageNumber   Int, side     String // front/back/
+  provider     String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  workflowRuntimeData WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onDelete: Cascade)
+  business            Business?            @relation(fields: [entityTpe, entityId], references: [id], onDelete: Cascade)
+  endUser             EndUser?             @relation(fields: [endUserId], references: [id], onDelete: Cascade)
+
+  @@index([endUserId])
+  @@index([businessId])
+  @@index([workflowRuntimeDataId])
+  @@index([provider])
 }
