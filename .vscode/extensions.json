@@ -5,6 +5,7 @@
     "svelte.svelte-vscode",
     "statelyai.stately-vscode",
     "prisma.prisma",
-    "bradlc.vscode-tailwindcss"
+    "bradlc.vscode-tailwindcss",
+    "github.vscode-github-actions"
   ]
 }
