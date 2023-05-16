@@ -46,6 +46,7 @@
     "@nestjs/testing": "^9.3.12",
     "@prisma/client": "^4.13.0",
     "accesscontrol": "^2.2.1",
+    "ajv": "^8.12.0",
     "axios": "^1.4.0",
     "bcrypt": "5.1.0",
     "class-transformer": "0.5.1",
