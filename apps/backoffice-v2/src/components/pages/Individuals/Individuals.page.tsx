@@ -5,7 +5,7 @@ import { Pagination } from 'components/organisms/Pagination/Pagination';
 import { useIndividuals } from 'components/pages/Individuals/hooks/useIndividuals/useIndividuals';
 import { Subject } from 'components/organisms/Subject/Subject';
 import { MotionScrollArea } from 'components/molecules/MotionScrollArea/MotionScrollArea';
-import { useKind } from 'hooks/useKind/useKind';
+import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 
 export const Individuals = () => {
   const {
@@ -23,7 +23,7 @@ export const Individuals = () => {
     skeletons,
     routerId,
   } = useIndividuals();
-  const kind = useKind();
+  const entity = useFilterEntity();
 
   return (
     <>
@@ -55,7 +55,7 @@ export const Individuals = () => {
                     <SubjectsList.Item
                       key={id}
                       id={id}
-                      fullName={kind !== 'businesses' ? `${firstName} ${lastName}` : companyName}
+                      fullName={entity !== 'businesses' ? `${firstName} ${lastName}` : companyName}
                       avatarUrl={avatarUrl}
                       createdAt={createdAt}
                       assignedTo={assignedTo}

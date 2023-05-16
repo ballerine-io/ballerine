@@ -2,11 +2,12 @@ import { useSearch } from '@tanstack/react-router';
 import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
 import { useCallback, useRef } from 'react';
 import { TRouteId } from '../../../../../types';
-import { useKind } from 'hooks/useKind/useKind';
+import { useUsersQuery } from '../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
+import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 
 export const useSubjectsList = (routerId: TRouteId) => {
   const { filter, sortBy } = useSearch({ from: routerId, strict: false });
-  const kind = useKind();
+  const entity = useFilterEntity();
   const sharedSortByOptions = [
     {
       label: 'Created At',
@@ -27,7 +28,8 @@ export const useSubjectsList = (routerId: TRouteId) => {
       label: 'Email',
       value: 'email',
     },
-  ];
+  ] as const;
+  const { data: users } = useUsersQuery();
   const businessesSortByOptions = [
     ...sharedSortByOptions,
     {
@@ -35,7 +37,8 @@ export const useSubjectsList = (routerId: TRouteId) => {
       value: 'companyName',
     },
   ];
-  const sortByOptions = kind === 'individuals' ? individualsSortByOptions : businessesSortByOptions;
+  const sortByOptions =
+    entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions;
   const filterByOptions = [
     {
       label: 'User status',
@@ -70,6 +73,20 @@ export const useSubjectsList = (routerId: TRouteId) => {
         {
           label: 'Business',
           value: 'business',
+        },
+      ],
+    },
+    {
+      label: 'Assignee',
+      value: 'assigneeId',
+      options: [
+        ...users.map(({ id, fullName }) => ({
+          label: fullName,
+          value: id,
+        })),
+        {
+          label: 'Unassigned',
+          value: null,
         },
       ],
     },

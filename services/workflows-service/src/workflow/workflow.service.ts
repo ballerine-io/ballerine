@@ -32,6 +32,7 @@ export interface WorkflowData {
   workflowDefinition: object;
   workflowRuntimeData: object;
 }
+export type TEntityType = 'endUser' | 'business';
 
 // Discuss model classes location
 export type IntentResponse = WorkflowData[];
@@ -82,6 +83,7 @@ export class WorkflowService {
         state: true,
         endUserId: true,
         businessId: true,
+        assigneeId: true,
         id: true,
       },
     });
@@ -114,18 +116,25 @@ export class WorkflowService {
       `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
     );
 
-    const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
-      data,
-    });
     // in case current state is a final state, we want to create another machine, of type manual review.
     // assign runtime to user, copy the context.
     const currentState = data.state;
     const workflow = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
     );
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    if (workflow.definition?.states?.[currentState]?.type === 'final') {
+    const isFinal = workflow.definition?.states?.[currentState]?.type === 'final';
+
+    const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
+      data: {
+        ...data,
+        resolvedAt: isFinal ? new Date() : undefined,
+      },
+    });
+
+    if (isFinal) {
       this.workflowEventEmitter.emit('workflow.completed', {
         runtimeData,
         state: currentState as string,
@@ -135,12 +144,7 @@ export class WorkflowService {
 
     // TODO: Move to a separate method
     if (data.state) {
-      if (
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        workflow.definition?.states?.[currentState]?.type === 'final' &&
-        workflow.reviewMachineId
-      ) {
+      if (isFinal && workflow.reviewMachineId) {
         await this.handleRuntimeFinalState(runtimeData, data.context, workflow);
       }
     }
@@ -173,7 +177,7 @@ export class WorkflowService {
         },
       }));
     businessId &&
-      (await this.businessRepository.updateById(businessId as string, {
+      (await this.businessRepository.updateById(businessId, {
         data: {
           approvalState: ApprovalState.PROCESSING,
         },
@@ -244,11 +248,10 @@ export class WorkflowService {
       status: 'completed',
     });
   }
-
   async resolveIntent(
     intent: string,
     entityId: string,
-    tempEntityType: string,
+    tempEntityType: TEntityType,
   ): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies[intent as keyof typeof policies];
 
@@ -258,7 +261,7 @@ export class WorkflowService {
       workflowDefinitionId,
     );
     const entityConnect: any = {} as any;
-    if (tempEntityType === 'enduser') {
+    if (tempEntityType === 'endUser') {
       entityConnect.endUser = {
         connect: {
           id: entityId,
@@ -319,7 +322,7 @@ export class WorkflowService {
       },
     });
 
-    service.sendEvent({
+    await service.sendEvent({
       type,
     });
 
