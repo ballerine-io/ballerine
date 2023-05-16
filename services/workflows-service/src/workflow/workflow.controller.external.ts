@@ -123,11 +123,9 @@ export class WorkflowControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createWorkflowRuntimeData(
     @common.Body() body: WorkflowRunDto,
-    @Headers('no_auth_user_id') no_auth_user_id: string,
     @Res() res: Response,
   ): Promise<any> {
     const { workflowId, context } = body;
-    console.log(body);
     const { entity } = context;
 
     if (!entity.id && !entity.ballerineEntityId)
@@ -141,6 +139,7 @@ export class WorkflowControllerExternal {
     return res.json({
       workflowDefinitionId: actionResult[0]!.workflowDefinition.id,
       workflowRuntimeId: actionResult[0]!.workflowRuntimeData.id,
+      ballerineEntityId: actionResult[0]!.ballerineEntityId,
     });
   }
 

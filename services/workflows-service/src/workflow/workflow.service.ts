@@ -27,7 +27,9 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { DefaultContextSchema } from './schemas/context';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+  strict: false,
+});
 addFormats(ajv, { formats: ['email', 'uri'] });
 
 export const ResubmissionReason = {
@@ -294,7 +296,7 @@ export class WorkflowService {
       workflowDefinitionId,
     );
     if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema!).length) {
-      const validate = ajv.compile(workflowDefinition.contextSchema as any); // TODO: fix type
+      const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
       const validationResult = validate(context);
       console.log('validationResult', validationResult);
 
@@ -324,12 +326,18 @@ export class WorkflowService {
       // TODO: run validation on entity data
       if (entity.type === 'business') {
         const { id } = await this.businessRepository.create({
-          data: context.entity.data as Prisma.BusinessCreateInput,
+          data: {
+            correlationId: entity.id,
+            ...(context.entity.data as object),
+          } as Prisma.BusinessCreateInput,
         });
         entityId = id;
       } else {
         const { id } = await this.endUserRepository.create({
-          data: context.entity.data as Prisma.EndUserCreateInput,
+          data: {
+            correlationId: entity.id,
+            ...(context.entity.data as object),
+          } as Prisma.EndUserCreateInput,
         });
         entityId = id;
       }
@@ -371,6 +379,7 @@ export class WorkflowService {
       {
         workflowDefinition,
         workflowRuntimeData,
+        ballerineEntityId: entityId,
       },
     ];
   }

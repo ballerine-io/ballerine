@@ -11,7 +11,7 @@ import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.in
 // @ts-ignore - there is an issue with helemet types
 import helmet from 'helmet';
 import * as process from 'process';
-import { AllExceptionsFilter } from './filters/AllExceptions.filter';
+import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
 
 const { PORT = 3000 } = process.env;
 

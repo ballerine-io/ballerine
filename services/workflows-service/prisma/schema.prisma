@@ -44,7 +44,7 @@ enum ApprovalState {
 model EndUser {
   id String @id @default(cuid())
 
-  correlationId  String?  @db.VarChar @unique
+  correlationId  String? @unique @db.VarChar
   verificationId String? @db.VarChar
 
   endUserType   String?
@@ -85,8 +85,8 @@ model EndUsersOnBusinesses {
 }
 
 model Business {
-  id            String @id @default(cuid()) // Unique identifier for the business entity
-  correlationId String? @db.VarChar @unique
+  id            String  @id @default(cuid()) // Unique identifier for the business entity
+  correlationId String? @unique @db.VarChar
 
   createdAt               DateTime      @default(now()) // Timestamp for when the business entity was created
   updatedAt               DateTime      @updatedAt // Timestamp for when the business entity was last updated
