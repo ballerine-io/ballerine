@@ -73,7 +73,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
   const isAssignedToMe = true;
 
   return (
-    <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-2`}>
+    <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-4`}>
       <div className={`flex flex-row space-x-3.5`}>
         <AssignButton
           assignees={[

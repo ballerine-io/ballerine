@@ -269,11 +269,13 @@ export const useIndividual = () => {
           >
             {methods => (
               <>
-                <legend>{value.title}</legend>
+                <legend className={`text-lg font-bold`}>{value.title}</legend>
                 <div className={`grid grid-cols-2 gap-2`}>
                   {value?.data?.map(({ title, isEditable, type }) => (
                     <div className={`flex flex-col`} key={title}>
-                      <label htmlFor={title}>{toStartCase(camelCaseToSpace(title))}</label>
+                      <label htmlFor={title} className={`font-bold`}>
+                        {toStartCase(camelCaseToSpace(title))}
+                      </label>
                       <input
                         {...methods.register(title)}
                         type={type === 'string' ? 'text' : type}
