@@ -1,6 +1,7 @@
 {
   "RESOURCE": {
-    "END_USER": "user"
+    "END_USER": "user",
+    "ASSIGNMENT": ""
   },
   "RESULT": {
     "SUCCEEDED": "Action succeeded:",

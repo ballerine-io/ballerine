@@ -28,7 +28,7 @@ const IndividualsSearchSchema = SearchSchema.extend({
       assignedTo: z.array(z.string().nullable()).optional().catch([]),
     })
     .optional(),
-  kind: z.literal('individuals').catch('individuals'),
+  entity: z.literal('individuals').catch('individuals'),
 });
 
 const BusinessesSearchSchema = SearchSchema.extend({
@@ -40,23 +40,23 @@ const BusinessesSearchSchema = SearchSchema.extend({
       // businessType: z.array(z.string()).optional().catch([]),
     })
     .optional(),
-  kind: z.literal('businesses').catch('businesses'),
+  entity: z.literal('businesses').catch('businesses'),
 });
 
 export const individualsRoute = new Route({
   getParentRoute: () => caseManagementRoute,
   validateSearch: search =>
-    search?.kind === 'businesses'
+    search?.entity === 'businesses'
       ? BusinessesSearchSchema.parse(search)
       : IndividualsSearchSchema.parse(search),
   preSearchFilters: [
     search => ({
-      ...preSearchFiltersByKind[search?.kind],
+      ...preSearchFiltersByKind[search?.entity],
       ...search,
     }),
   ],
   onLoad: async ({ search }) => {
-    const entityList = queries[search?.kind].list(search?.filterId);
+    const entityList = queries[search?.entity].list(search?.filterId);
     const usersList = users.list();
     await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
     await queryClient.ensureQueryData(usersList.queryKey, usersList.queryFn);

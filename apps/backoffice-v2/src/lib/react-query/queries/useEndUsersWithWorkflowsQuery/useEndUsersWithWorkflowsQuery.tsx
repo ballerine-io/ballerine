@@ -5,6 +5,7 @@ export const useEndUsersWithWorkflowsQuery = (users) => {
     select: endUsers =>
       endUsers.map(endUser => {
         const assigneeId = endUser.workflowRuntimeData?.assigneeId;
+
         return {
           ...endUser,
           assigneeId: assigneeId,

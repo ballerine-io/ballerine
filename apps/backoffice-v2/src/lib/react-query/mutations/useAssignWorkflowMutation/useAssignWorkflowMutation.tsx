@@ -25,7 +25,7 @@ export const useAssignWorkflowMutation = ({
     onMutate: ({
       isAssignedToMe
     }) => ({
-      resource: Resource.END_USER,
+      resource: Resource.ASSIGNMENT,
       action:  isAssignedToMe ? Action.ASSIGNED_TO_ME : Action.ASSIGNED_TO_OTHER,
     }),
     onSuccess: () => {

@@ -28,6 +28,7 @@ export const Action = {
 } as const;
 export const Resource = {
   END_USER: 'END_USER',
+  ASSIGNMENT: 'ASSIGNMENT'
 } as const;
 
 type TCaseStateEnum = {
