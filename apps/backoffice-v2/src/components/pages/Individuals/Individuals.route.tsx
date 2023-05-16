@@ -32,7 +32,7 @@ const IndividualsSearchSchema = SearchSchema.extend({
 });
 
 const BusinessesSearchSchema = SearchSchema.extend({
-  sortBy: z.enum(['website', 'address']).optional().catch('website'),
+  sortBy: z.enum(['createdAt', 'companyName']).optional().catch('createdAt'),
   filter: z
     .object({
       approvalState: z.array(z.enum(States)).optional().catch([]),

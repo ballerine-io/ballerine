@@ -11,39 +11,31 @@ import { individualsRoute } from 'components/pages/Individuals/Individuals.route
 import { individualsIndexRoute } from 'components/pages/Individuals/IndividualsIndex.route';
 import { individualRoute } from 'components/pages/Individual/Individual.route';
 import { useEndUsersWithWorkflowsQuery } from '../../../../../lib/react-query/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
-import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
-import { useConsole } from 'hooks/useConsole/useConsole';
+import { useSort } from 'hooks/useSort/useSort';
 
 export const useIndividuals = () => {
   const matches = useMatches();
-  const entity = useFilterEntity();
-
   const lastMatchId = matches.at(-1)?.route?.id;
   const isIndividuals =
     lastMatchId === individualsRoute.id || lastMatchId === individualsIndexRoute.id;
   const routeId: TRouteId = isIndividuals ? individualsRoute.id : individualRoute.id;
   const { data: subjects, isLoading } = useEndUsersWithWorkflowsQuery();
-  useConsole(subjects);
   const { searched, onSearch, search } = useSearch({
     routeId,
     data: subjects,
     searchBy: ['firstName', 'lastName', 'email', 'phone'],
   });
-  useConsole({ searched });
-
-  // const { sorted, onSortBy, onSortDir } = useSort({
-  //   routeId,
-  //   data: searched,
-  //   initialState: {
-  //     sortBy: 'createdAt',
-  //   },
-  // });
-  // useConsole({sorted})
-  const { filtered, onFilter } = useFilter({
+  const { sorted, onSortBy, onSortDir } = useSort({
     routeId,
     data: searched,
+    initialState: {
+      sortBy: 'createdAt',
+    },
   });
-  useConsole(filtered);
+  const { filtered, onFilter } = useFilter({
+    routeId,
+    data: sorted,
+  });
   const { paginated, page, pages, totalPages, onPaginate } = usePagination({
     routeId,
     data: filtered,
@@ -51,14 +43,17 @@ export const useIndividuals = () => {
     initialPage: 1,
   });
   const onSearchChange: ChangeEventHandler<HTMLInputElement> = useCallback(
-    e => {
-      onSearch(e.target.value);
+    event => {
+      onSearch(event.target.value);
     },
     [onSearch],
   );
-  const onSortByChange: ChangeEventHandler<HTMLSelectElement> = useCallback(e => {
-    // onSortBy(e.target.value);
-  }, []);
+  const onSortByChange: ChangeEventHandler<HTMLSelectElement> = useCallback(
+    event => {
+      onSortBy(event.target.value);
+    },
+    [onSortBy],
+  );
   const onFilterChange = useCallback(
     (key: keyof TEndUser) => (values: Array<string>) => {
       onFilter({
@@ -76,9 +71,9 @@ export const useIndividuals = () => {
     onSearch: onSearchChange,
     onFilter: onFilterChange,
     onSortBy: onSortByChange,
-    onSortDir: () => {},
+    onSortDir,
     search,
-    subjects: [...paginated].reverse(),
+    subjects: paginated,
     isLoading,
     page,
     pages,
