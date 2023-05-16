@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from 'components/atoms/Select/Select';
-import AssignButton from 'components/atoms/AssignButton/AssignButton';
+import AssignButton, {Assignee} from 'components/atoms/AssignButton/AssignButton';
 import { useGetSessionQuery } from '../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 
 /**
@@ -77,8 +77,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
         <AssignButton
           assignees={{
             id: authenticatedUser.id,
-            fullName: authenticatedUser.fullName,
-            isCaseAssignedToMe: false,
+            fullName: authenticatedUser.fullName
           }}
           authenticatedUser={authenticatedUser}
           caseState={caseState}
@@ -88,7 +87,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           buttonType={'Assign'}
         />
         <AssignButton
-          assignees={assignees}
+          assignees={assignees as Assignee[]}
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={id => {
@@ -224,8 +223,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                 className={ctw(
                   `btn-success btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
                   {
-                    loading: debouncedIsLoadingApproveEndUser,
-                    // 'opacity-50': isLoading || !canApprove
+                    loading: debouncedIsLoadingApproveEndUser
                   },
                 )}
                 disabled={isLoading || !canApprove}

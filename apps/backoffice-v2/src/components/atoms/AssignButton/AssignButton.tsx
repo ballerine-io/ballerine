@@ -8,10 +8,9 @@ import { DropdownMenuTrigger } from 'components/molecules/DropdownMenu/DropdownM
 import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
 import { DropdownMenuContent } from 'components/molecules/DropdownMenu/DropdownMenu.Content';
 
-type Assignee = {
+export type Assignee = {
   id: string;
   fullName: string;
-  isCaseAssignedToMe?: boolean;
 };
 
 type UserItemProps = {
