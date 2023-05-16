@@ -39,7 +39,8 @@ const AssignButton: React.FC<AssignButtonProps> = ({
   caseState,
 }) => {
   const isAssignButtonType = buttonType === 'Assign';
-  const buttonColorClass = `${isAssignButtonType ? 'bg-black' : 'bg-white'}`;
+  const unassignEnabled = caseState !== CaseState.UNASSIGNED
+  const buttonColorClass = isAssignButtonType ? 'bg-black' : 'bg-white border-gray-200';
 
   return (
     <div>
@@ -64,8 +65,15 @@ const AssignButton: React.FC<AssignButtonProps> = ({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className={`min-w-[16rem]`} align={'start'}>
+            { unassignEnabled ?
+              <DropdownMenuItem className={`text-cyan-950 border-b-2`} key={'unassigne'} onClick={() => onAssigneeSelect(null)}>
+              Unassign
+            </DropdownMenuItem>
+              : null
+            }
             {Array.isArray(assignees)
-              ? assignees.map(assignee => (
+              ? assignees
+                .map(assignee => (
                   <AssigneeItem
                     key={assignee.id}
                     assignee={assignee}
