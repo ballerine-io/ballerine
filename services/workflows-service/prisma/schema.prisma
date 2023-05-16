@@ -16,8 +16,9 @@ model User {
   password  String
   roles     Json
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  workflowRuntimeData WorkflowRuntimeData[]
 }
 
 model Entities {
@@ -65,13 +66,11 @@ model EndUser {
   updatedAt DateTime @updatedAt
 
   businesses           Business[]
-  EndUsersOnBusinesses EndUsersOnBusinesses[]
+  endUsersOnBusinesses EndUsersOnBusinesses[]
 
   @@index([endUserType])
-  @@index([createdAt])
-  @@index([firstName])
-  @@index([correlationId])
   @@index([approvalState])
+  @@index([createdAt])
 }
 
 model EndUsersOnBusinesses {
@@ -111,12 +110,9 @@ model Business {
 
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
-  EndUsersOnBusinesses EndUsersOnBusinesses[]
+  endUsersOnBusinesses EndUsersOnBusinesses[]
 
   @@index([companyName])
-  @@index([countryOfIncorporation])
-  @@index([taxIdentificationNumber])
-  @@index([vatNumber])
   @@index([approvalState])
   @@index([correlationId])
 }
@@ -141,34 +137,38 @@ model WorkflowDefinition {
   updatedAt           DateTime              @updatedAt
   createdBy           String                @default("SYSTEM")
   workflowRuntimeData WorkflowRuntimeData[]
+}
 
-  @@index([name, version])
-  @@index([definitionType])
+enum WorkflowRuntimeDataStatus {
+  created
+  completed
 }
 
 model WorkflowRuntimeData {
-  id                        String             @id @default(cuid())
-  endUser                   EndUser?           @relation(fields: [endUserId], references: [id], onDelete: SetNull)
+  id                        String                    @id @default(cuid())
+  endUser                   EndUser?                  @relation(fields: [endUserId], references: [id], onDelete: SetNull)
   endUserId                 String?
-  business                  Business?          @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  business                  Business?                 @relation(fields: [businessId], references: [id], onDelete: SetNull)
   businessId                String?
-  workflowDefinition        WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
+  assignee                  User?                     @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+  assigneeId                String?
+  workflowDefinition        WorkflowDefinition        @relation(fields: [workflowDefinitionId], references: [id])
   workflowDefinitionId      String
   workflowDefinitionVersion Int
   context                   Json
   // history
   state                     String?
-  status                    String             @default("created")
-  createdAt                 DateTime           @default(now())
-  updatedAt                 DateTime           @updatedAt
-  createdBy                 String             @default("SYSTEM")
+  status                    WorkflowRuntimeDataStatus @default(created)
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+  createdBy                 String                    @default("SYSTEM")
   resolvedAt                DateTime?
 
+  @@index([assigneeId, status])
   @@index([endUserId, status])
   @@index([businessId, status])
   @@index([workflowDefinitionId, status])
   @@index([state])
-  @@index([createdBy])
 }
 
 model File {
@@ -187,7 +187,18 @@ model Policy {
   version   Int
   tasks     Json
   rulesSets Json
+}
 
-  @@index([name])
-  @@index([version, name])
+model Filter {
+  id        String   @id @default(cuid())
+  // Name of the filter i.e. "KYC"
+  name      String   @unique
+  // Does the filter belong to EndUser or Business?
+  entity    String
+  // 1:1 with Prisma's select object
+  // Example: { select: { id: true, firstName: true, lastName: true }, where: { id: { equals: "123" } } }
+  query     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("SYSTEM")
 }

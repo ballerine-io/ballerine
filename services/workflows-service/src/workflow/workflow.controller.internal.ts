@@ -15,7 +15,7 @@ import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { RunnableWorkflowData } from './types';
-import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
+import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
@@ -36,22 +36,7 @@ export class WorkflowControllerInternal {
   async createWorkflowDefinition(
     @UserData() userInfo: UserInfo,
     @common.Body() data: WorkflowDefinitionCreateDto,
-  ): Promise<
-    Pick<
-      WorkflowDefinitionModel,
-      | 'id'
-      | 'name'
-      | 'version'
-      | 'state'
-      | 'context'
-      | 'definition'
-      | 'definitionType'
-      | 'backend'
-      | 'extensions'
-      | 'persistStates'
-      | 'submitStates'
-    >
-  > {
+  ) {
     return await this.service.createWorkflowDefinition({
       data,
       select: {
@@ -106,9 +91,7 @@ export class WorkflowControllerInternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async listActiveStates(): Promise<
-    Pick<WorkflowRuntimeData, 'state' | 'id' | 'endUserId'>[] | null
-  > {
+  async listActiveStates() {
     try {
       return await this.service.listActiveWorkflowsRuntimeStates();
     } catch (error) {

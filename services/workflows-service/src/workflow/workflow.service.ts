@@ -102,6 +102,7 @@ export class WorkflowService {
         state: true,
         endUserId: true,
         businessId: true,
+        assigneeId: true,
         id: true,
       },
     });

@@ -2,10 +2,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
+import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { NotFoundException, Headers, Res } from '@nestjs/common';
+import { Headers, NotFoundException, UseGuards, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -21,6 +21,7 @@ import { IntentResponse, WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
+import { KeyAuthGuard } from '@/auth/key-auth.guard';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -32,6 +33,13 @@ export class WorkflowControllerExternal {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     private eventEmitter: EventEmitter2,
   ) {}
+
+  @common.Get('/test')
+  @common.HttpCode(200)
+  @UseGuards(KeyAuthGuard)
+  async test() {
+    return Promise.resolve({ success: true });
+  }
 
   // GET /workflows
   @common.Get()
