@@ -39,6 +39,33 @@ async function seed(bcryptSalt: Salt) {
     create: data,
   });
 
+  const diffUser1 = {
+    email: 'admin2@admin.com',
+    firstName: 'eythan',
+    lastName: 'Flex',
+    password: await hash('admin2', bcryptSalt),
+    roles: ['user'],
+  };
+  await client.user.upsert({
+    where: { email: diffUser1.email },
+    update: {},
+    create: diffUser1,
+  });
+
+  const diffUser2 = {
+    email: 'admin3@admin.com',
+    firstName: 'Alon',
+    lastName: 'MAMI',
+    password: await hash('admin3', bcryptSalt),
+    roles: ['user'],
+  };
+  await client.user.upsert({
+    where: { email: diffUser2.email },
+    update: {},
+    create: diffUser2,
+  });
+
+
   const manualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const manualMachineVersion = 1;
 

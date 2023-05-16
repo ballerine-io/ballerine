@@ -16,6 +16,7 @@ import {useCaseState} from "components/organisms/Subject/hooks/useCaseState/useC
 import {
   useAssignWorkflowMutation
 } from "../../../../../lib/react-query/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation";
+import {useUsersQuery} from "../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery";
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -48,7 +49,7 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
   const {
     mutate: mutateAssignWorkflow,
     isLoading: isLoadingAssignWorkflow
-  } = useAssignWorkflowMutation({workflowRuntimeId: workflow.runtimeDataId as string});
+  } = useAssignWorkflowMutation({workflowRuntimeId: workflow?.runtimeDataId});
 
   const isLoading = isLoadingApproveEndUser || isLoadingRejectEndUser || isLoadingEndUser || isLoadingAssignWorkflow;
   // Create initials from the first character of the first name, middle name, and last name.
@@ -57,7 +58,8 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
   const {data: {user}} = useGetSessionQuery()
   const authenticatedUser = user
   const caseState = useCaseState(authenticatedUser, workflow);
-
+  const { data: users } = useUsersQuery();
+  const assignees = users.filter(assignee => assignee.id !== authenticatedUser.id)
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
   const canReject = (workflow?.nextEvents.includes(Action.REJECT.toLowerCase()) as boolean) && caseState.actionButtonsEnabled;
@@ -130,6 +132,7 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
     onDocumentToResubmitChange,
     onResubmissionReasonChange,
     caseState,
-    authenticatedUser
+    authenticatedUser,
+    assignees
   };
 };

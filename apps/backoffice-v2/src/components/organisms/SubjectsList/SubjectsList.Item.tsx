@@ -30,12 +30,13 @@ export const Item: FunctionComponent<IItemProps> = ({
   id,
   fullName,
   createdAt,
-  assignedTo,
+  assigneeId,
+  assigneeFullName,
   avatarUrl,
   status,
 }) => {
   const timePast = getTimePastFromNow(new Date(createdAt));
-  const initials = createInitials(fullName);
+  const initials = createInitials(assigneeFullName);
   const { ref, styles } = useEllipsesWithTitle();
 
   return (
@@ -83,14 +84,14 @@ export const Item: FunctionComponent<IItemProps> = ({
           <div className={`text-sm`}>Waiting {timePast}</div>
         </div>
         <div className={`ml-auto mr-1 flex -space-x-2 overflow-hidden`}>
-          {!!assignedTo && (
+          {!!assigneeId && (
             <Avatar
-              key={assignedTo}
+              key={assigneeId}
               // src={assignedTo}
               src={''}
-              placeholder={assignedTo}
-              alt={`Operator's avatar`}
-              className={`h-4 w-4 text-[0.6rem]`}
+              placeholder={initials}
+              alt={`assigned to: ${assigneeFullName}`}
+              className={`h-6 w-6 text-[0.6rem] pt-1`}
             />
           )}
         </div>

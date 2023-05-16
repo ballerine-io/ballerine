@@ -13,6 +13,7 @@ import { individualRoute } from 'components/pages/Individual/Individual.route';
 import { useEndUsersWithWorkflowsQuery } from '../../../../../lib/react-query/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
 import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 import { useConsole } from 'hooks/useConsole/useConsole';
+import {useUsersQuery} from "../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery";
 
 export const useIndividuals = () => {
   const matches = useMatches();
@@ -22,7 +23,8 @@ export const useIndividuals = () => {
   const isIndividuals =
     lastMatchId === individualsRoute.id || lastMatchId === individualsIndexRoute.id;
   const routeId: TRouteId = isIndividuals ? individualsRoute.id : individualRoute.id;
-  const { data: subjects, isLoading } = useEndUsersWithWorkflowsQuery();
+  const { data: users } = useUsersQuery();
+  const { data: subjects, isLoading } = useEndUsersWithWorkflowsQuery(users);
   useConsole(subjects);
   const { searched, onSearch, search } = useSearch({
     routeId,

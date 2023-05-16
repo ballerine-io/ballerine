@@ -6,5 +6,10 @@ export const AuthenticatedUserSchema = z
     email: z.string(),
     firstName: z.string(),
     lastName: z.string(),
-  })
+  }).transform(({ firstName, lastName, ...other }) => ({
+    ...other,
+    firstName,
+    lastName,
+    fullName: `${firstName} ${lastName}`
+  }))
   .or(z.undefined());

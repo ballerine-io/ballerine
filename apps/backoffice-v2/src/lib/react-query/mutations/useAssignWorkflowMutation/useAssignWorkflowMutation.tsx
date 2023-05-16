@@ -17,9 +17,9 @@ export const useAssignWorkflowMutation = ({
       isAssignedToMe: boolean
     }) =>
       api.workflows.updateById({
-        workflowRuntimeId,
+        workflowId: workflowRuntimeId,
         body: {
-          userId: assigneeId,
+          assigneeId
         },
       }),
     onMutate: ({

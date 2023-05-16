@@ -55,7 +55,7 @@ export const CaseState : TCaseStateEnum = {
     readEnabled: true,
     writeEnabled: false,
     assignToMeEnabled: true,
-    assignToOther: false,
+    assignToOther: true,
     actionButtonsEnabled: false,
   },
   UNKNOWN: {

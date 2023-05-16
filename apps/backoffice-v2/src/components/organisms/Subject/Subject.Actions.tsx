@@ -67,7 +67,8 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     resubmissionReason,
     onResubmissionReasonChange,
     caseState,
-    authenticatedUser
+    authenticatedUser,
+    assignees
   } = useActions({ endUserId: id, fullName });
 
   const actionButtonDisabled = !caseState.actionButtonsEnabled
@@ -77,7 +78,11 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
 
       <div className={`flex flex-row space-x-3.5`}>
         <AssignButton
-          assignees={{id: '1', fullName: 'Omri', isCaseAssignedToMe: false}}
+          assignees={{
+            id: authenticatedUser.id,
+            fullName: authenticatedUser.fullName,
+            isCaseAssignedToMe: false
+          }}
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={(id) => {
@@ -85,10 +90,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           }}
           buttonType={"Assign"}/>
         <AssignButton
-          assignees={[
-            {id: '2', fullName: 'Omri Hagever', isCaseAssignedToMe: false},
-            {id: '3', fullName: 'Nitzan Kogen', isCaseAssignedToMe: false}
-          ]}
+          assignees={assignees}
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={(id) => {

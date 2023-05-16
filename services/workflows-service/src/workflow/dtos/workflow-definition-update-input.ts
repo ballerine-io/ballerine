@@ -22,4 +22,8 @@ export class WorkflowDefinitionUpdateInput {
 
   status?: WorkflowRuntimeDataStatus;
   resolvedAt?: Date | null;
+
+  @IsString()
+  @IsOptional()
+  assigneeId?: string
 }

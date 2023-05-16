@@ -48,7 +48,8 @@ export const Individuals = () => {
                     lastName,
                     createdAt,
                     companyName,
-                    assignedTo,
+                    assigneeId,
+                    assigneeFullName,
                     avatarUrl,
                     approvalState,
                   }) => (
@@ -58,7 +59,8 @@ export const Individuals = () => {
                       fullName={entity !== 'businesses' ? `1${firstName} ${lastName}` : companyName}
                       avatarUrl={avatarUrl}
                       createdAt={createdAt}
-                      assignedTo={assignedTo}
+                      assigneeId={assigneeId}
+                      assigneeFullName={assigneeFullName}
                       status={approvalState}
                     />
                   ),

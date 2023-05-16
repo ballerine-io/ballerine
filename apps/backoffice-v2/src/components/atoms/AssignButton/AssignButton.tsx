@@ -40,13 +40,14 @@ const AssignButton: React.FC<AssignButtonProps> = ({
                                                    }) => {
 
   const isAssignButtonType = buttonType === "Assign";
+  const buttonColorClass = `${isAssignButtonType ? 'bg-black' : 'bg-white'}`;
 
   return (
     <div>
       {
         isAssignButtonType ?
           (<button
-            className={ctw(`btn-sm btn ${isAssignButtonType ? 'bg-black' : 'bg-white'}`)}
+            className={ctw(`btn-sm btn ${buttonColorClass}`)}
             disabled={!caseState.assignToMeEnabled}
             onClick={(_event) => isAssignButtonType ? onAssigneeSelect((assignees as Assignee).id) : undefined}
           >
@@ -56,13 +57,13 @@ const AssignButton: React.FC<AssignButtonProps> = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className={ctw(`btn-sm btn ${isAssignButtonType ? 'bg-black' : 'bg-white'}`)}
+              className={ctw(`btn-sm btn ${buttonColorClass}`)}
               disabled={!caseState.assignToOther}
             >
               {buttonType}
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className={`min-w-[16rem]`}>
+          <DropdownMenuContent className={`min-w-[16rem]`} align={'start'}>
             {Array.isArray(assignees)
               ? assignees.map(assignee => (
                 <AssigneeItem
