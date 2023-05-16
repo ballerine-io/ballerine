@@ -204,4 +204,6 @@ model Entity {
 
   EndUser  EndUser?  @relation("EndUserEntity", fields: [entityId], references: [id], map: "enduser_entityId")
   Business Business? @relation("BusinessEntity", fields: [entityId], references: [id], map: "business_entityId")
+
+  @@index([entityId, entityType])
 }
