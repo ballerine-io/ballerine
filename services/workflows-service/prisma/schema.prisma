@@ -45,12 +45,12 @@ model EndUser {
   dateOfBirth    DateTime?
   avatarUrl      String?
   additionalInfo Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   businesses           Business[]
   caseFiles            CaseFile[]
-  workflowRuntimeData WorkflowRuntimeData[]
+  workflowRuntimeData  WorkflowRuntimeData[]
   EndUsersOnBusinesses EndUsersOnBusinesses[]
 
   @@index([endUserType])
@@ -67,7 +67,6 @@ model EndUsersOnBusinesses {
   businessId String
 
   @@id([endUserId, businessId])
-
   @@index([businessId])
   @@index([endUserId])
 }
@@ -97,7 +96,7 @@ model Business {
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
   EndUsersOnBusinesses EndUsersOnBusinesses[]
-  caseFiles CaseFile[]
+  caseFiles            CaseFile[]
 
   @@index([companyName])
   @@index([countryOfIncorporation])
@@ -156,13 +155,13 @@ model WorkflowRuntimeData {
 }
 
 model File {
-  id             String   @id @default(cuid())
-  userId         String
-  fileNameOnDisk String
-  uri            String
-  fileNameInBucket      String?
-  createdAt      DateTime @default(now())
-  createdBy      String   @default("SYSTEM")
+  id               String   @id @default(cuid())
+  userId           String
+  fileNameOnDisk   String
+  uri              String
+  fileNameInBucket String?
+  createdAt        DateTime @default(now())
+  createdBy        String   @default("SYSTEM")
 
   @@index([userId])
 }
@@ -179,21 +178,21 @@ model Policy {
 }
 
 model CaseFile {
-  id                      String   @id @default(cuid())
-  endUser                 EndUser?  @relation(fields: [endUserId], references: [id], onDelete: Cascade)
-  endUserId               String?
-  business                Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  businessId              String?
-  workflowRuntimeData     WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onDelete: Cascade)
-  workflowRuntimeDataId   String?
-  fileType                String // png|jpg|jpeg|gif|pdf|
-  fileSize                Int // KB
-  documentType            String // ID,Passport,Utility Bill
-  uri                     String
-  metadata                Json // pageNumber   Int, side     String // front/back/
-  provider                String
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-  replacedAt              DateTime?
-  deletedAt               DateTime?
+  id                    String               @id @default(cuid())
+  endUser               EndUser?             @relation(fields: [endUserId], references: [id], onDelete: Cascade)
+  endUserId             String?
+  business              Business?            @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId            String?
+  // entityId
+  workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onDelete: Cascade)
+  workflowRuntimeDataId String?
+  fileType              String // png|jpg|jpeg|gif|pdf|
+  fileSize              Int // KB
+  documentType          String // ID,Passport,Utility Bill
+  uri                   String
+  metadata              Json // pageNumber   Int, side     String // front/back/
+  provider              String
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  deletedAt             DateTime?
 }

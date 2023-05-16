@@ -31,4 +31,5 @@ export const TMetadataSchema = z.object({
   fileProviderInformation: FileProviderInformation.optional(),
   pageNumber: z.number().optional(),
   side: ImageSideSchema.optional(),
+  // issuer/country/providingFIle: ImageSideSchema.optional(),
 });
