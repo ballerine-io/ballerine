@@ -25,7 +25,7 @@ const IndividualsSearchSchema = SearchSchema.extend({
     .object({
       approvalState: z.array(z.enum(States)).optional().catch([]),
       endUserType: z.array(z.string()).optional().catch([]),
-      assigneeId: z.array(z.string().nullable()).optional().catch([]),
+      assignedTo: z.array(z.string().nullable()).optional().catch([]),
     })
     .optional(),
   entity: z.literal('individuals').catch('individuals'),
@@ -36,7 +36,7 @@ const BusinessesSearchSchema = SearchSchema.extend({
   filter: z
     .object({
       approvalState: z.array(z.enum(States)).optional().catch([]),
-      assigneeId: z.array(z.string().nullable()).optional().catch([]),
+      assignedTo: z.array(z.string().nullable()).optional().catch([]),
       // businessType: z.array(z.string()).optional().catch([]),
     })
     .optional(),
