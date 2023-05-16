@@ -8,7 +8,7 @@ export class EndUserRepository {
   constructor(protected readonly prisma: PrismaService) {}
 
   async create<T extends Prisma.EndUserCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EndUserCreateArgs>,
+    args: Prisma.SelectSubset<T, Prisma.EndUserUncheckedCreateInput>,
   ) {
     return await this.prisma.endUser.create(args);
   }

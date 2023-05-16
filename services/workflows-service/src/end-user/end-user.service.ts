@@ -6,7 +6,16 @@ export class EndUserService {
   constructor(protected readonly repository: EndUserRepository) {}
 
   async create(args: Parameters<EndUserRepository['create']>[0]) {
-    return await this.repository.create(args);
+    const endUser = {
+      ...args,
+      Entity: {
+        create: {
+          entityType: 'EndUser', // or whatever your EntityType enum is
+        },
+      },
+    }
+
+    return await this.repository.create(endUser);
   }
 
   async list(args?: Parameters<EndUserRepository['findMany']>[0]) {
