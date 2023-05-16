@@ -24,7 +24,7 @@ export const Individuals = () => {
     routerId,
   } = useIndividuals();
   const entity = useFilterEntity();
-  console.log(subjects);
+
   return (
     <>
       <SubjectsList
@@ -55,7 +55,7 @@ export const Individuals = () => {
                     <SubjectsList.Item
                       key={id}
                       id={id}
-                      fullName={entity !== 'businesses' ? `1${firstName} ${lastName}` : companyName}
+                      fullName={entity !== 'businesses' ? `${firstName} ${lastName}` : companyName}
                       avatarUrl={avatarUrl}
                       createdAt={createdAt}
                       assignedTo={assignedTo}
