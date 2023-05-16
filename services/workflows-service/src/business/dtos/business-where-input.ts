@@ -1,6 +1,6 @@
-import { DateTimeFilter } from '@/query-filters/date-time-filter';
-import { StringFilter } from '@/query-filters/string-filter';
-import { StringNullableFilter } from '@/query-filters/string-nullable-filter';
+import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
+import { StringFilter } from '@/common/query-filters/string-filter';
+import { StringNullableFilter } from '@/common/query-filters/string-nullable-filter';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApprovalState } from '@prisma/client';
 import { Type } from 'class-transformer';

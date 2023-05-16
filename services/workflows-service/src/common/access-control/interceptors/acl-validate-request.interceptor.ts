@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { InjectRolesBuilder, Role, RolesBuilder } from 'nest-access-control';
 import { Reflector } from '@nestjs/core';
 import * as abacUtil from '../abac.util';
-import { ForbiddenException } from '../../errors';
+import { ForbiddenException } from '../../../errors';
 
 @Injectable()
 export class AclValidateRequestInterceptor implements NestInterceptor {

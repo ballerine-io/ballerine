@@ -5,14 +5,14 @@
   "description": "workflow-service",
   "scripts": {
     "setup": "npm run docker:db && npm run db:clean && npm run db:migrate-save && npm run seed",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --write . '!**/*.{md}'",
+    "format:check": "prettier --check .'!**/*.{md}'",
     "lint": "eslint . --fix",
     "start": "nest start",
     "dev": "npm run start:watch",
     "start:watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "build": "nest build",
+    "build": "nest build --path='./tsconfig.build.json'",
     "test": "jest --verbose",
     "test:watch": "jest --verbose --watch",
     "seed": "ts-node scripts/seed.ts",
@@ -64,7 +64,8 @@
     "reflect-metadata": "0.1.13",
     "rxjs": "^7.8.0",
     "swagger-ui-express": "4.6.2",
-    "ts-node": "9.1.1"
+    "ts-node": "9.1.1",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@nestjs/cli": "9.3.0",

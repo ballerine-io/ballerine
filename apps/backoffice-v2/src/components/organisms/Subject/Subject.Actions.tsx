@@ -31,6 +31,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from 'components/atoms/Select/Select';
+import AssignButton, { Assignee } from 'components/atoms/AssignButton/AssignButton';
+import { useGetSessionQuery } from '../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 
 /**
  * @description To be used by {@link Subject}. Displays the end user's full name, avatar, and handles the reject/approve mutation.
@@ -49,8 +51,10 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
   const {
     onMutateApproveEndUser,
     onMutateRejectEndUser,
+    onMutateAssignWorkflow,
     debouncedIsLoadingApproveEndUser,
     debouncedIsLoadingRejectEndUser,
+    debouncedIsLoadingAssignEndUser,
     isLoading,
     isLoadingEndUser,
     initials,
@@ -60,13 +64,41 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     onDocumentToResubmitChange,
     resubmissionReason,
     onResubmissionReasonChange,
+    caseState,
+    authenticatedUser,
+    assignees,
   } = useActions({ endUserId: id, fullName });
+
+  const actionButtonDisabled = !caseState.actionButtonsEnabled;
+  const isAssignedToMe = true;
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-2`}>
-      <button disabled className={`btn-sm btn`}>
-        Re-assign
-      </button>
+      <div className={`flex flex-row space-x-3.5`}>
+        <AssignButton
+          assignees={[
+            {
+              id: authenticatedUser.id,
+              fullName: authenticatedUser.fullName,
+            },
+          ]}
+          authenticatedUser={authenticatedUser}
+          caseState={caseState}
+          onAssigneeSelect={id => {
+            onMutateAssignWorkflow(id, isAssignedToMe);
+          }}
+          buttonType={'Assign'}
+        />
+        <AssignButton
+          assignees={assignees as Assignee[]}
+          authenticatedUser={authenticatedUser}
+          caseState={caseState}
+          onAssigneeSelect={id => {
+            onMutateAssignWorkflow(id, !isAssignedToMe);
+          }}
+          buttonType={'Re-Assign'}
+        />
+      </div>
       <div className={`flex h-[7.75rem] justify-between`}>
         <motion.div
           // Animate when the user changes.
@@ -99,8 +131,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                 loading: debouncedIsLoadingRejectEndUser,
               },
             )}
-            // disabled={isLoading || !canReject}
-            disabled
+            disabled={actionButtonDisabled}
           >
             Execute Tasks
           </button>
@@ -161,7 +192,9 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                       <SelectItem
                         key={reason}
                         value={reason}
-                        disabled={reason !== ResubmissionReason.BLURRY_IMAGE}
+                        disabled={
+                          actionButtonDisabled && reason !== ResubmissionReason.BLURRY_IMAGE
+                        }
                       >
                         {capitalizedReason}
                       </SelectItem>
@@ -179,7 +212,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                       documentToResubmit,
                       resubmissionReason,
                     })}
-                    disabled={!resubmissionReason}
+                    disabled={actionButtonDisabled && !resubmissionReason}
                   >
                     Confirm
                   </button>

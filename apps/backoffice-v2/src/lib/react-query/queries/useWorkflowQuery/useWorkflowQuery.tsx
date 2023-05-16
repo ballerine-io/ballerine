@@ -28,6 +28,7 @@ export const useWorkflowQuery = ({ workflowId }: { workflowId: string }) => {
       return {
         ...workflow,
         runtimeDataId: workflowRuntimeData?.id,
+        assigneeId: workflowRuntimeData?.assigneeId,
         nextEvents: snapshot.nextEvents,
         context: {
           ...workflow.context,

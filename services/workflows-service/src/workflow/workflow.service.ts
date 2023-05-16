@@ -83,6 +83,7 @@ export class WorkflowService {
         state: true,
         endUserId: true,
         businessId: true,
+        assigneeId: true,
         id: true,
       },
     });
@@ -323,7 +324,7 @@ export class WorkflowService {
       },
     });
 
-    service.sendEvent({
+    await service.sendEvent({
       type,
     });
 

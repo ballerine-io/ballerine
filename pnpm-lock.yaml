@@ -1132,6 +1132,9 @@ importers:
       ts-node:
         specifier: 9.1.1
         version: 9.1.1(typescript@4.2.3)
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
     devDependencies:
       '@nestjs/cli':
         specifier: 9.3.0
