@@ -15,6 +15,12 @@ export const EndUsersListSchema = z
       phone: z.string().nullable().default(''),
       approvalState: z.enum(States).default(State.PROCESSING),
       endUserType: z.string().nullable().default(''),
+      workflowRuntimeData: z.preprocess(
+        workflows => workflows?.[0],
+        ObjectWithIdSchema.extend({
+          assigneeId: z.string().nullable().optional(),
+        }).optional(),
+      ),
     }).transform(({ firstName, lastName, ...rest }) => ({
       ...rest,
       firstName,

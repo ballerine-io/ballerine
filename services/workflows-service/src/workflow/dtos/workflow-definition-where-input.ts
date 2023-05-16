@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { StringNullableFilter } from '../../query-filters/string-nullable-filter';
+import { StringNullableFilter } from '@/common/query-filters/string-nullable-filter';
 import { Type } from 'class-transformer';
 import { IsOptional, ValidateNested } from 'class-validator';
-import { StringFilter } from '../../query-filters/string-filter';
+import { StringFilter } from '@/common/query-filters/string-filter';
 import { UserWhereUniqueInput } from '@/user/dtos/user-where-unique-input';
-import { DateTimeFilter } from '@/query-filters/date-time-filter';
+import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 
 export class WorkflowDefinitionWhereInput {
   @ApiProperty({

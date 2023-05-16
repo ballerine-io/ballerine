@@ -1,6 +1,10 @@
 import { Method } from '../enums';
 import { IEndpoint, IWorkflowId } from './interfaces';
 
+export interface IFilterId {
+  filterId: string;
+}
+
 /**
  * @description The API's endpoints. The endpoints are appended into the API's base url ({@link env.VITE_API_URL}) by {@link apiClient}.
  *
@@ -29,11 +33,12 @@ export const endpoints = {
   },
   endUsers: {
     list: {
-      endpoint: (filterId: string) => `end-users?filterId=${filterId}`,
+      endpoint: (filterId: string) => `end-users?filterId=${filterId ?? ''}`,
       method: Method.GET,
     },
     byId: {
-      endpoint: (endUserId: string) => `end-users/${endUserId}`,
+      endpoint: ({ endUserId, filterId }: { endUserId: string; filterId: string }) =>
+        `end-users/${endUserId}?filterId=${filterId ?? ''}`,
       method: Method.GET,
     },
     // Unused
@@ -50,11 +55,12 @@ export const endpoints = {
   },
   businesses: {
     list: {
-      endpoint: (filterId: string) => `businesses?filterId=${filterId}`,
+      endpoint: (filterId: string) => `businesses?filterId=${filterId ?? ''}`,
       method: Method.GET,
     },
     byId: {
-      endpoint: (businessId: string) => `businesses/${businessId}`,
+      endpoint: ({ businessId, filterId }: { businessId: string; filterId: string }) =>
+        `businesses/${businessId}?filterId=${filterId ?? ''}`,
       method: Method.GET,
     },
     // Unused
@@ -79,6 +85,16 @@ export const endpoints = {
     event: {
       endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}/event`,
       method: Method.POST,
+    },
+  },
+  filters: {
+    list: {
+      endpoint: () => `filters`,
+      method: Method.GET,
+    },
+    byId: {
+      endpoint: ({ filterId }: IFilterId) => `filters/${filterId}`,
+      method: Method.GET,
     },
   },
   storage: {
