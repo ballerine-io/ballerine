@@ -2,6 +2,7 @@ export {
   handlePromise,
   isEmptyObject,
   isErrorWithMessage,
+  isErrorWithName,
   isFunction,
   isNullish,
   isObject,

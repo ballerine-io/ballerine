@@ -32,6 +32,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.325.0",
     "@aws-sdk/lib-storage": "3.325.0",
+    "@ballerine/common": "0.4.4",
     "@ballerine/workflow-node-sdk": "^0.4.2",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
@@ -47,6 +48,7 @@
     "@nestjs/serve-static": "3.0.1",
     "@nestjs/testing": "^9.3.12",
     "@prisma/client": "^4.13.0",
+    "@types/tmp": "^0.2.3",
     "accesscontrol": "^2.2.1",
     "axios": "^1.4.0",
     "bcrypt": "5.1.0",
@@ -61,15 +63,16 @@
     "nestjs-prisma": "0.20.0",
     "passport": "0.6.0",
     "passport-http": "0.3.0",
-    "passport-local": "^1.0.0",
     "passport-jwt": "4.0.1",
+    "passport-local": "^1.0.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "^7.8.0",
     "swagger-ui-express": "4.6.2",
-    "ts-node": "9.1.1"
+    "tmp": "^0.2.1",
+    "ts-node": "9.1.1",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@types/passport": "^1.0.12",
     "@nestjs/cli": "9.3.0",
     "@nestjs/swagger": "6.2.1",
     "@types/bcrypt": "5.0.0",
@@ -81,6 +84,7 @@
     "@types/multer-s3": "^3.0.0",
     "@types/node": "^18.14.6",
     "@types/normalize-path": "3.0.0",
+    "@types/passport": "^1.0.12",
     "@types/passport-http": "0.3.9",
     "@types/passport-jwt": "3.0.6",
     "@types/passport-local": "^1.0.35",
