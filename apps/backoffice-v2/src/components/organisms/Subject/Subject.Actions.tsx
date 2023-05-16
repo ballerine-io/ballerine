@@ -70,19 +70,20 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
   } = useActions({ endUserId: id, fullName });
 
   const actionButtonDisabled = !caseState.actionButtonsEnabled;
+  const isAssignedToMe = true;
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-2`}>
       <div className={`flex flex-row space-x-3.5`}>
         <AssignButton
-          assignees={{
+          assignees={[{
             id: authenticatedUser.id,
             fullName: authenticatedUser.fullName
-          }}
+          }]}
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, true);
+            onMutateAssignWorkflow(id, isAssignedToMe);
           }}
           buttonType={'Assign'}
         />
@@ -91,7 +92,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, false);
+            onMutateAssignWorkflow(id, !isAssignedToMe);
           }}
           buttonType={'Re-Assign'}
         />

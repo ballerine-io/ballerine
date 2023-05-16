@@ -13,25 +13,25 @@ export type Assignee = {
   fullName: string;
 };
 
-type UserItemProps = {
+interface IUserItemProps {
   assignee: Assignee;
   onAssigneeSelect: (id: string) => void;
 };
 
-const AssigneeItem: React.FC<UserItemProps> = ({ assignee, onAssigneeSelect }) => (
+const AssigneeItem: React.FC<IUserItemProps> = ({ assignee, onAssigneeSelect }) => (
   <DropdownMenuItem key={assignee.id} onClick={() => onAssigneeSelect(assignee.id)}>
     {assignee.fullName}
   </DropdownMenuItem>
 );
 
-type AssignButtonProps = {
+interface IAssignButtonProps{
   caseState: TCaseManagementState;
   buttonType: 'Assign' | 'Re-Assign';
-  assignees: Assignee | Assignee[];
+  assignees: Assignee[];
   onAssigneeSelect: (id: string) => void;
   authenticatedUser: TAuthenticatedUser;
 };
-const AssignButton: React.FC<AssignButtonProps> = ({
+const AssignButton: React.FC<IAssignButtonProps> = ({
   buttonType,
   assignees,
   onAssigneeSelect,
@@ -48,7 +48,7 @@ const AssignButton: React.FC<AssignButtonProps> = ({
           className={ctw(`btn-sm btn ${buttonColorClass}`)}
           disabled={!caseState.assignToMeEnabled}
           onClick={_event =>
-            isAssignButtonType ? onAssigneeSelect((assignees as Assignee).id) : undefined
+            isAssignButtonType ? onAssigneeSelect((assignees[0]).id) : undefined
           }
         >
           Assign Me
