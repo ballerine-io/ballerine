@@ -13,7 +13,7 @@ export const preSearchFiltersByKind = {
     entity: 'businesses' as const,
     filter: {
       approvalState: [State.PROCESSING],
-      assigneeId: [],
+      assignedTo: [],
     },
     ...sharedPreSearchFilters,
   },
@@ -23,7 +23,7 @@ export const preSearchFiltersByKind = {
     filter: {
       approvalState: [State.PROCESSING],
       endUserType: [],
-      assigneeId: [],
+      assignedTo: [],
     },
     ...sharedPreSearchFilters,
   },

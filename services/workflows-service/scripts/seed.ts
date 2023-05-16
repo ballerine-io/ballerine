@@ -26,18 +26,36 @@ async function seed(bcryptSalt: Salt) {
   console.info('Seeding database...');
 
   const client = new PrismaClient();
-  const data = {
-    email: 'admin@admin.com',
-    firstName: 'admin',
-    lastName: 'admin',
-    password: await hash('admin', bcryptSalt),
-    roles: ['user'],
-  };
-  await client.user.upsert({
-    where: { email: data.email },
-    update: {},
-    create: data,
-  });
+  const users = [
+    {
+      email: 'admin@admin.com',
+      firstName: 'admin',
+      lastName: 'admin',
+      password: await hash('admin', bcryptSalt),
+      roles: ['user'],
+    },
+    {
+      email: 'admin2@admin.com',
+      firstName: 'eythan',
+      lastName: 'Flex',
+      password: await hash('admin2', bcryptSalt),
+      roles: ['user'],
+    },
+    {
+      email: 'admin3@admin.com',
+      firstName: 'Alon',
+      lastName: 'MAMI',
+      password: await hash('admin3', bcryptSalt),
+      roles: ['user'],
+    }
+  ]
+  for (const user of users) {
+    await client.user.upsert({
+      where: { email: user.email },
+      update: {},
+      create: user,
+    })
+  }
 
   const manualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const manualMachineVersion = 1;
