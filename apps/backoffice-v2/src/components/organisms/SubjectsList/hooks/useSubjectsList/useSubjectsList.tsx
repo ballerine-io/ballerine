@@ -3,14 +3,19 @@ import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListen
 import { useCallback, useRef } from 'react';
 import { TRouteId } from '../../../../../types';
 import { useUsersQuery } from '../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
+import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 
 export const useSubjectsList = (routerId: TRouteId) => {
   const { filter, sortBy } = useSearch({ from: routerId, strict: false });
-  const sortByOptions = [
+  const entity = useFilterEntity();
+  const sharedSortByOptions = [
     {
       label: 'Created At',
       value: 'createdAt',
     },
+  ];
+  const individualsSortByOptions = [
+    ...sharedSortByOptions,
     {
       label: 'First Name',
       value: 'firstName',
@@ -25,6 +30,15 @@ export const useSubjectsList = (routerId: TRouteId) => {
     },
   ] as const;
   const { data: users } = useUsersQuery();
+  const businessesSortByOptions = [
+    ...sharedSortByOptions,
+    {
+      label: 'Business Name',
+      value: 'companyName',
+    },
+  ];
+  const sortByOptions =
+    entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions;
   const filterByOptions = [
     {
       label: 'User status',
