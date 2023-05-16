@@ -7,7 +7,7 @@ import * as tmp from 'tmp';
 import * as fs from 'fs';
 
 import { Readable } from 'stream';
-export type TLocalFile = string;
+type TLocalFile = string;
 
 export const S3StorageEnvSchema = z.object({
   AWS_REGION: z.string(),
@@ -15,7 +15,7 @@ export const S3StorageEnvSchema = z.object({
   AWS_S3_BUCKET_KEY: z.string(),
 });
 
-const generateAwsConfig = (processEnv: NodeJS.ProcessEnv): S3ClientConfig => {
+const __generateAwsConfig = (processEnv: NodeJS.ProcessEnv): S3ClientConfig => {
   const { AWS_REGION, AWS_S3_BUCKET_KEY, AWS_S3_BUCKET_SECRET } = S3StorageEnvSchema.parse(
     processEnv
   );
@@ -29,7 +29,7 @@ const generateAwsConfig = (processEnv: NodeJS.ProcessEnv): S3ClientConfig => {
   };
 };
 
-const isS3BucketConfigured = (processEnv: NodeJS.ProcessEnv) => {
+const __isS3BucketConfigured = (processEnv: NodeJS.ProcessEnv) => {
   return !!z.string().optional().parse(processEnv.AWS_S3_BUCKET_KEY);
 };
 
@@ -38,9 +38,9 @@ export const fetchDefaultBucketName = (processEnv: NodeJS.ProcessEnv) => {
 };
 
 export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
-  if (isS3BucketConfigured(processEnv)) {
+  if (__isS3BucketConfigured(processEnv)) {
     return multerS3({
-      s3: new S3Client(generateAwsConfig(processEnv)),
+      s3: new S3Client(__generateAwsConfig(processEnv)),
       acl: 'private',
       bucket: fetchDefaultBucketName(processEnv),
     });
