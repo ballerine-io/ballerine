@@ -116,9 +116,9 @@ export class WorkflowControllerExternal {
     return await this.service.resolveIntent(intent.intentName, no_auth_user_id, entityType);
   }
 
-  // TODO: add API Key auth
   @common.Post('/run')
   @swagger.ApiOkResponse()
+  @UseGuards(KeyAuthGuard)
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createWorkflowRuntimeData(
@@ -127,33 +127,21 @@ export class WorkflowControllerExternal {
     @Res() res: Response,
   ): Promise<any> {
     const { workflowId, context } = body;
-    // get workflow definition
     console.log(body);
     const { entity } = context;
 
     if (!entity.id && !entity.ballerineEntityId)
       throw new common.BadRequestException('Entity id is required');
-    // if (!entity.ballerineEntityId) {
-    // get entity by ballerine entity id
-    // };
 
-    // try to get entity, if not entity, create one
-
-    // check if the user has running workflow by correlation id (customer end-user id)
-    // const workflowExists = await this.service.getWorkflowRuntimeDataByCorrelationId();
-
-    const workflowDefinition = await this.service.createWorkflowRuntime({
+    const actionResult = await this.service.createWorkflowRuntime({
       workflowDefinitionId: workflowId,
       context,
     });
-    // check body.context against workflowDefinition.contextSchema
-    // check if no other workflow is running for this entity
-    // create workflow runtime data
 
-    console.log('test');
-    console.log(workflowDefinition);
-    // temp resp
-    return res.json(workflowDefinition);
+    return res.json({
+      workflowDefinitionId: actionResult[0]!.workflowDefinition.id,
+      workflowRuntimeId: actionResult[0]!.workflowRuntimeData.id,
+    });
   }
 
   // POST /event
