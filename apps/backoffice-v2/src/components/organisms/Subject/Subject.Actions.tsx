@@ -99,7 +99,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           buttonType={'Re-Assign'}
         />
       </div>
-      <div className={`flex h-[7.75rem] justify-between`}>
+      <div className={`flex h-20 justify-between`}>
         <motion.div
           // Animate when the user changes.
           key={id}
