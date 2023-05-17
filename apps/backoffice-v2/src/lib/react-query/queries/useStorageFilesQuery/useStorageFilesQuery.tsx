@@ -1,19 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '../../../../api/api-client';
-import { z } from 'zod';
-import { handleZodError } from '../../../../utils/handle-zod-error/handle-zod-error';
+import { useQueries } from '@tanstack/react-query';
+import { storage } from '../../storage';
+import { isString } from '../../../../utils/is-string/is-string';
 
-export const useStorageFilesQuery = (workflowId: string) => {
-  return useQuery({
-    queryKey: ['storage', { workflowId }],
-    queryFn: async () => {
-      const [data, error] = await apiClient({
-        endpoint: `storage`,
-        method: 'GET',
-        schema: z.array(z.instanceof(Blob)),
-      });
-
-      return handleZodError(data, error);
-    },
+export const useStorageFilesQuery = (fileIds: Array<string>) => {
+  return useQueries({
+    queries:
+      fileIds?.map(fileId => ({
+        ...storage.fileById(fileId),
+        enabled: isString(fileId) && fileId?.length > 0,
+      })) ?? [],
   });
 };

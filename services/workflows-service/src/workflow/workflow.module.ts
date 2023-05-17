@@ -3,7 +3,7 @@ import { WorkflowService } from './workflow.service';
 import { WorkflowControllerExternal } from './workflow.controller.external';
 import { WorkflowControllerInternal } from './workflow.controller.internal';
 import { MorganModule } from 'nest-morgan';
-import { ACLModule } from '../access-control/acl.module';
+import { ACLModule } from '@/common/access-control/acl.module';
 import { AuthModule } from '../auth/auth.module';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';

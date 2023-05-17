@@ -6,6 +6,7 @@ import { Individuals } from 'components/pages/Individuals/Individuals.page';
 import { States } from '../../../enums';
 import { queries } from '../../../lib/react-query/queries';
 import { preSearchFiltersByKind } from 'components/pages/Individuals/pre-search-filters';
+import { users } from '../../../lib/react-query/users';
 
 const SearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).optional().catch('desc'),
@@ -24,40 +25,41 @@ const IndividualsSearchSchema = SearchSchema.extend({
     .object({
       approvalState: z.array(z.enum(States)).optional().catch([]),
       endUserType: z.array(z.string()).optional().catch([]),
+      assigneeId: z.array(z.string().nullable()).optional().catch([]),
     })
     .optional(),
-  kind: z.literal('individuals').catch('individuals'),
+  entity: z.literal('individuals').catch('individuals'),
 });
 
 const BusinessesSearchSchema = SearchSchema.extend({
-  sortBy: z.enum(['website', 'address']).optional().catch('website'),
+  sortBy: z.enum(['createdAt', 'companyName']).optional().catch('createdAt'),
   filter: z
     .object({
-      approvalState: z
-        .array(z.enum([States]))
-        .optional()
-        .catch([]),
+      approvalState: z.array(z.enum(States)).optional().catch([]),
+      assigneeId: z.array(z.string().nullable()).optional().catch([]),
       // businessType: z.array(z.string()).optional().catch([]),
     })
     .optional(),
-  kind: z.literal('businesses').catch('businesses'),
+  entity: z.literal('businesses').catch('businesses'),
 });
 
 export const individualsRoute = new Route({
   getParentRoute: () => caseManagementRoute,
   validateSearch: search =>
-    search?.kind === 'businesses'
+    search?.entity === 'businesses'
       ? BusinessesSearchSchema.parse(search)
       : IndividualsSearchSchema.parse(search),
   preSearchFilters: [
     search => ({
-      ...preSearchFiltersByKind[search?.kind],
+      ...preSearchFiltersByKind[search?.entity],
       ...search,
     }),
   ],
   onLoad: async ({ search }) => {
-    const entityList = queries[search?.kind].list(search?.filterId);
+    const entityList = queries[search?.entity].list(search?.filterId);
+    const usersList = users.list();
     await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
+    await queryClient.ensureQueryData(usersList.queryKey, usersList.queryFn);
 
     return {};
   },

@@ -2,10 +2,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
+import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { NotFoundException, Headers } from '@nestjs/common';
+import { Headers, NotFoundException, UseGuards, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -19,6 +19,9 @@ import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Response } from 'express';
+import { WorkflowRunDto } from './dtos/workflow-run';
+import { KeyAuthGuard } from '@/auth/key-auth.guard';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -30,6 +33,13 @@ export class WorkflowControllerExternal {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     private eventEmitter: EventEmitter2,
   ) {}
+
+  @common.Get('/test')
+  @common.HttpCode(200)
+  @UseGuards(KeyAuthGuard)
+  async test() {
+    return Promise.resolve({ success: true });
+  }
 
   // GET /workflows
   @common.Get()
@@ -104,6 +114,33 @@ export class WorkflowControllerExternal {
     // Rename to intent or getRunnableWorkflowDataByIntent?
     const entityType = intent.intentName === 'kycSignup' ? 'endUser' : 'business';
     return await this.service.resolveIntent(intent.intentName, no_auth_user_id, entityType);
+  }
+
+  @common.Post('/run')
+  @swagger.ApiOkResponse()
+  @UseGuards(KeyAuthGuard)
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async createWorkflowRuntimeData(
+    @common.Body() body: WorkflowRunDto,
+    @Res() res: Response,
+  ): Promise<any> {
+    const { workflowId, context } = body;
+    const { entity } = context;
+
+    if (!entity.id && !entity.ballerineEntityId)
+      throw new common.BadRequestException('Entity id is required');
+
+    const actionResult = await this.service.createWorkflowRuntime({
+      workflowDefinitionId: workflowId,
+      context,
+    });
+
+    return res.json({
+      workflowDefinitionId: actionResult[0]!.workflowDefinition.id,
+      workflowRuntimeId: actionResult[0]!.workflowRuntimeData.id,
+      ballerineEntityId: actionResult[0]!.ballerineEntityId,
+    });
   }
 
   // POST /event

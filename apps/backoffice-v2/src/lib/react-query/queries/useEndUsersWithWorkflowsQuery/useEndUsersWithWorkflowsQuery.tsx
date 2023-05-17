@@ -1,14 +1,17 @@
 import { useEndUsersQuery } from '../useEndUsersQuery/useEndUsersQuery';
-import { useWorkflowsQuery } from '../useWorkflowsQuery/useWorkflowsQuery';
+import { TUsers } from '../../../../api/types';
 
-export const useEndUsersWithWorkflowsQuery = () => {
-  const { data: workflows } = useWorkflowsQuery();
-
+export const useEndUsersWithWorkflowsQuery = (users: TUsers) => {
   return useEndUsersQuery({
     select: endUsers =>
-      endUsers.map(endUser => ({
-        ...endUser,
-        workflows: workflows?.filter(workflow => workflow?.endUserId === endUser?.id),
-      })),
+      endUsers.map(endUser => {
+        const assigneeId = endUser.workflowRuntimeData?.assigneeId;
+
+        return {
+          ...endUser,
+          assigneeId: assigneeId,
+          assigneeFullName: users?.find(user => user.id == assigneeId)?.fullName,
+        };
+      }),
   });
 };

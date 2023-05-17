@@ -1,9 +1,12 @@
 import * as dotenv from 'dotenv';
+import { faker } from '@faker-js/faker';
+
 import { PrismaClient } from '@prisma/client';
 import { parseSalt, Salt } from '../src/auth/password/password.service';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import { businessIds, endUserIds, generateBusiness, generateEndUser } from './generate-end-user';
+import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
 
 if (require.main === module) {
   dotenv.config();
@@ -26,24 +29,43 @@ async function seed(bcryptSalt: Salt) {
   console.info('Seeding database...');
 
   const client = new PrismaClient();
-  const data = {
-    email: 'admin@admin.com',
-    firstName: 'admin',
-    lastName: 'admin',
-    password: await hash('admin', bcryptSalt),
-    roles: ['user'],
-  };
-  await client.user.upsert({
-    where: { email: data.email },
-    update: {},
-    create: data,
-  });
+  const users = [
+    {
+      email: 'admin@admin.com',
+      firstName: 'admin',
+      lastName: 'admin',
+      password: await hash('admin', bcryptSalt),
+      roles: ['user'],
+    },
+    {
+      email: 'admin2@admin.com',
+      firstName: 'eythan',
+      lastName: 'Flex',
+      password: await hash('admin2', bcryptSalt),
+      roles: ['user'],
+    },
+    {
+      email: 'admin3@admin.com',
+      firstName: 'Alon',
+      lastName: 'MAMI',
+      password: await hash('admin3', bcryptSalt),
+      roles: ['user'],
+    },
+  ];
+  for (const user of users) {
+    await client.user.upsert({
+      where: { email: user.email },
+      update: {},
+      create: user,
+    });
+  }
 
   const manualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const manualMachineVersion = 1;
 
   const onboardingMachineKycId = 'COLLECT_DOCS_b0002zpeid7bq9aaa';
   const onboardingMachineKybId = 'COLLECT_DOCS_b0002zpeid7bq9bbb';
+  const riskScoreMachineKybId = 'risk-score-improvement-dev';
 
   const user = await client.endUser.create({
     data: {
@@ -56,6 +78,332 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
+  function createMockContextData() {
+    const correlationId = faker.datatype.uuid();
+    let mockData = {
+      entity: {
+        type: 'business', //changed from entityType
+        data: {
+          companyName: faker.company.companyName(),
+          registrationNumber: faker.finance.account(9),
+          legalForm: faker.company.bs(),
+          countryOfIncorporation: faker.address.country(),
+          dateOfIncorporation: faker.date.past(20).toISOString(),
+          address: faker.address.streetAddress(),
+          phoneNumber: faker.phone.phoneNumber(),
+          email: faker.internet.email(),
+          website: faker.internet.url(),
+          industry: faker.company.catchPhrase(),
+          taxIdentificationNumber: faker.finance.account(12),
+          vatNumber: faker.finance.account(9),
+          shareholderStructure: JSON.stringify({
+            shareholders: ['Shareholder 1', 'Shareholder 2'],
+            ownershipPercentages: ['40%', '60%'],
+          }),
+          numberOfEmployees: faker.datatype.number(1000),
+          businessPurpose: faker.company.catchPhraseDescriptor(),
+          approvalState: 'NEW',
+        },
+        additionalDetails: {},
+        ballerineEntityId: faker.datatype.uuid(),
+        id: correlationId,
+      },
+      documents: [
+        {
+          category: 'ID',
+          type: 'photo', //changed from type
+          issuer: {
+            type: 'government',
+            name: 'Government',
+            country: faker.address.country(),
+            city: faker.address.city(),
+            additionalDetails: {},
+          },
+          issuingVersion: 1,
+          decision: {
+            status: 'revision',
+            rejectionReason: '',
+            revisionReason: 'Blurry image',
+          },
+          version: 1,
+          pages: [
+            {
+              ballerineFileId: faker.datatype.uuid(),
+              provider: 'http',
+              uri: faker.internet.url(),
+              type: 'jpg',
+              data: '',
+              metadata: {
+                side: 'front',
+                pageNumber: '1',
+              },
+            },
+            {
+              ballerineFileId: faker.datatype.uuid(),
+              provider: 'http',
+              uri: faker.internet.url(),
+              type: 'jpg',
+              data: '',
+              metadata: {
+                side: 'back',
+                pageNumber: '1',
+              },
+            },
+          ],
+          properties: {
+            fullName: {
+              type: 'string', //changed from type
+              value: faker.name.findName(),
+            },
+            dateOfBirth: {
+              type: 'date', //changed from type
+              value: faker.date.past(30).toISOString().split('T')[0],
+            },
+            nationality: {
+              type: 'string', //changed from type
+              value: faker.address.country(),
+            },
+          },
+        },
+        {
+          category: 'incorporation',
+          type: 'certificate', //changed from type
+          issuer: {
+            type: 'government',
+            name: 'Government',
+            country: faker.address.country(),
+            city: faker.address.city(),
+            additionalDetails: {},
+          },
+          issuingVersion: 1,
+          decision: {
+            status: 'approved',
+            rejectionReason: '',
+            revisionReason: '',
+          },
+          version: 1,
+          pages: [
+            {
+              ballerineFileId: faker.datatype.uuid(),
+              provider: 'http',
+              uri: faker.internet.url(),
+              type: 'pdf',
+              data: '',
+              metadata: {},
+            },
+          ],
+          properties: {
+            companyName: {
+              type: 'string', //changed from type
+              value: faker.company.companyName(),
+            },
+            registrationNumber: {
+              type: 'string', //changed from type
+              value: faker.finance.account(9),
+            },
+            issueDate: {
+              type: 'date', //changed from type
+              value: faker.date.past(20).toISOString().split('T')[0],
+            },
+            registeredAddress: {
+              type: 'string', //changed from type
+              value: faker.address.streetAddress(),
+            },
+            businessType: {
+              type: 'string', //changed from type
+              value: faker.company.bs(),
+            },
+          },
+        },
+      ],
+    };
+
+    return mockData;
+  }
+
+  const riskScoreWorkflowContext = {
+    entity: {
+      entityType: 'business',
+      entityData: {
+        name: 'Tech Solutions Inc.',
+        businessNumber: '123456789',
+        registeredAddress: '123 Tech Lane, Techville, USA',
+      },
+      additionalDetails: {
+        businessType: 'IT Solutions',
+        numberOfEmployees: '100',
+      },
+      ballerineEntityId: 'B123456',
+      id: 'T123456',
+    },
+    documents: [
+      {
+        category: 'Identification Document',
+        type: 'ID Card',
+        issuer: {
+          type: 'Government',
+          name: 'Techville City Council',
+          country: 'USA',
+          city: 'Techville',
+          additionalDetails: {
+            department: 'Identification and Passport Services',
+          },
+        },
+        issuingVersion: 1,
+        decision: {
+          status: 'revision',
+          rejectionReason: '',
+          revisionReason: 'Blurry image',
+        },
+        version: 1,
+        pages: [
+          {
+            ballerineFileId: 'BF123456',
+            provider: 'http',
+            uri: 'http://example.com/id_front.jpg',
+            type: 'jpg',
+            data: '',
+            metadata: {
+              side: 'front',
+              pageNumber: '1',
+            },
+          },
+          {
+            ballerineFileId: 'BF123457',
+            provider: 'http',
+            uri: 'http://example.com/id_back.jpg',
+            type: 'jpg',
+            data: '',
+            metadata: {
+              side: 'back',
+              pageNumber: '2',
+            },
+          },
+        ],
+        properties: {
+          cardNumber: {
+            type: 'string',
+            value: 'ID987654321',
+          },
+          issueDate: {
+            type: 'date',
+            value: '2020-01-01',
+          },
+          expiryDate: {
+            type: 'date',
+            value: '2030-12-31',
+          },
+          name: {
+            type: 'string',
+            value: 'John Doe',
+          },
+          address: {
+            type: 'string',
+            value: '123 Tech Lane, Techville',
+          },
+          dateOfBirth: {
+            type: 'date',
+            value: '1980-01-01',
+          },
+        },
+      },
+      {
+        category: 'Registration Document',
+        type: 'Certificate of Incorporation',
+        issuer: {
+          type: 'Government',
+          name: 'Techville City Council',
+          country: 'USA',
+          city: 'Techville',
+          additionalDetails: {
+            department: 'Business Registration',
+          },
+        },
+        issuingVersion: 1,
+        decision: {
+          status: 'approved',
+          rejectionReason: '',
+          revisionReason: '',
+        },
+        version: 1,
+        pages: [
+          {
+            ballerineFileId: 'BF123458',
+            provider: 'http',
+            uri: 'http://example.com/certificate.pdf',
+            type: 'pdf',
+            data: '',
+            metadata: {
+              pageNumber: '1',
+            },
+          },
+        ],
+        properties: {
+          companyName: {
+            type: 'string',
+            value: 'Tech Solutions Inc.',
+          },
+          registrationNumber: {
+            type: 'string',
+            value: '123456789',
+          },
+          issueDate: {
+            type: 'date',
+            value: '2000-01-01',
+          },
+          registeredAddress: {
+            type: 'string',
+            value: '123 Tech Lane, Techville',
+          },
+          businessType: {
+            type: 'string',
+            value: 'IT Solutions',
+          },
+        },
+      },
+    ],
+  };
+
+  // Risk score improvment
+  await client.workflowDefinition.create({
+    data: {
+      id: 'risk-score-improvement-dev', // should be auto generated normally
+      name: 'risk-score-improvement',
+      version: 1,
+      definitionType: 'statechart-json',
+      contextSchema: {
+        type: 'json-schema',
+        schema: defaultContextSchema,
+      },
+      definition: {
+        id: 'risk-score-improvement',
+        initial: 'idle',
+        states: {
+          review: {
+            on: {
+              idle: {
+                target: 'review',
+              },
+              review: {
+                target: ['rejected', 'approved', 'revision'],
+              },
+              revision: {
+                target: ['rejected', 'approved', 'review'],
+              },
+            },
+          },
+          approved: {
+            type: 'final',
+          },
+          rejected: {
+            type: 'final',
+          },
+        },
+      },
+    },
+  });
+
+  // Manual Review
   await client.workflowDefinition.create({
     data: {
       id: manualMachineId,
@@ -264,30 +612,148 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
+  await client.filter.create({
+    data: {
+      entity: 'individuals',
+      name: 'Individuals',
+      query: {
+        select: {
+          id: true,
+          correlationId: true,
+          verificationId: true,
+          endUserType: true,
+          approvalState: true,
+          stateReason: true,
+          jsonData: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          dateOfBirth: true,
+          avatarUrl: true,
+          additionalInfo: true,
+          createdAt: true,
+          updatedAt: true,
+          workflowRuntimeData: {
+            select: {
+              id: true,
+              status: true,
+              assigneeId: true,
+              workflowDefinition: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          workflowRuntimeData: {
+            some: {
+              workflowDefinition: {
+                is: {
+                  id: manualMachineId,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  await client.filter.create({
+    data: {
+      entity: 'businesses',
+      name: 'Businesses',
+      query: {
+        select: {
+          id: true,
+          companyName: true,
+          registrationNumber: true,
+          legalForm: true,
+          countryOfIncorporation: true,
+          dateOfIncorporation: true,
+          address: true,
+          phoneNumber: true,
+          email: true,
+          website: true,
+          industry: true,
+          taxIdentificationNumber: true,
+          vatNumber: true,
+          shareholderStructure: true,
+          numberOfEmployees: true,
+          businessPurpose: true,
+          documents: true,
+          approvalState: true,
+          workflowRuntimeData: {
+            select: {
+              id: true,
+              status: true,
+              assigneeId: true,
+              workflowDefinition: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          createdAt: true,
+          updatedAt: true,
+        },
+        where: {
+          workflowRuntimeData: {
+            some: {
+              workflowDefinition: {
+                is: {
+                  id: manualMachineId,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
   await client.$transaction(
     endUserIds.map(id =>
       client.endUser.create({
+        /// i tryed to fix that so i can run through ajv, currently it dosent like something in the schema (anyOf  )
         data: generateEndUser({
           id,
-          workflowDefinitionId: manualMachineId,
-          workflowDefinitionVersion: manualMachineVersion,
-          context: {},
+          workflow: {
+            workflowDefinitionId: manualMachineId,
+            workflowDefinitionVersion: manualMachineVersion,
+            context: {},
+          },
         }),
       }),
     ),
   );
 
   await client.$transaction(
-    businessIds.map(id =>
-      client.business.create({
+    businessIds.map(id => {
+      const exampleWf = {
+        workflowDefinitionId: onboardingMachineKybId,
+        workflowDefinitionVersion: manualMachineVersion,
+        context: {},
+      };
+      const riskWf = () => ({
+        workflowDefinitionId: riskScoreMachineKybId,
+        workflowDefinitionVersion: 1,
+        context: createMockContextData(),
+      });
+
+      return client.business.create({
         data: generateBusiness({
           id,
-          workflowDefinitionId: onboardingMachineKybId,
-          workflowDefinitionVersion: manualMachineVersion,
-          context: {},
+          workflow: Math.random() > 0.5 ? riskWf() : exampleWf,
         }),
-      }),
-    ),
+      });
+    }),
   );
 
   // TODO: create business with enduser attched to them

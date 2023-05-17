@@ -38,7 +38,7 @@ export const BallerineImage = forwardRef<HTMLImageElement, IBallerineImageProps>
           className={ctw(
             {
               'animate-pulse bg-gray-200 theme-dark:bg-neutral-focus': isLoading,
-              'd-full bg-neutral': !isLoading && isPlaceholder,
+              'd-full bg-neutral text-center': !isLoading && isPlaceholder,
             },
             'rounded-md',
             className,

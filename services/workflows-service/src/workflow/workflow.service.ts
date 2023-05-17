@@ -3,20 +3,33 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { ApprovalState, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import {
+  ApprovalState,
+  Business,
+  Prisma,
+  WorkflowDefinition,
+  WorkflowRuntimeData,
+} from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { merge } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+import { DefaultContextSchema } from './schemas/context';
+
+const ajv = new Ajv({
+  strict: false,
+});
+addFormats(ajv, { formats: ['email', 'uri'] });
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -70,6 +83,13 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.findById(id, args);
   }
 
+  async getWorkflowRuntimeDataByCorrelationId(
+    id: string,
+    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+  ) {
+    return await this.workflowRuntimeDataRepository.findById(id, args);
+  }
+
   async getWorkflowDefinitionById(
     id: string,
     args?: Parameters<WorkflowDefinitionRepository['findById']>[1],
@@ -83,6 +103,7 @@ export class WorkflowService {
         state: true,
         endUserId: true,
         businessId: true,
+        assigneeId: true,
         id: true,
       },
     });
@@ -108,6 +129,8 @@ export class WorkflowService {
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
+    // const ajv = new Ajv();
+    // const validate = ajv.compile(runtimeData.contextSchema);
 
     data.context = merge(runtimeData.context, data.context);
 
@@ -115,18 +138,25 @@ export class WorkflowService {
       `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
     );
 
-    const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
-      data,
-    });
     // in case current state is a final state, we want to create another machine, of type manual review.
     // assign runtime to user, copy the context.
     const currentState = data.state;
     const workflow = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
     );
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    if (workflow.definition?.states?.[currentState]?.type === 'final') {
+    const isFinal = workflow.definition?.states?.[currentState]?.type === 'final';
+
+    const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
+      data: {
+        ...data,
+        resolvedAt: isFinal ? new Date() : undefined,
+      },
+    });
+
+    if (isFinal) {
       this.workflowEventEmitter.emit('workflow.completed', {
         runtimeData,
         state: currentState as string,
@@ -136,12 +166,7 @@ export class WorkflowService {
 
     // TODO: Move to a separate method
     if (data.state) {
-      if (
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        workflow.definition?.states?.[currentState]?.type === 'final' &&
-        workflow.reviewMachineId
-      ) {
+      if (isFinal && workflow.reviewMachineId) {
         await this.handleRuntimeFinalState(runtimeData, data.context, workflow);
       }
     }
@@ -174,7 +199,7 @@ export class WorkflowService {
         },
       }));
     businessId &&
-      (await this.businessRepository.updateById(businessId as string, {
+      (await this.businessRepository.updateById(businessId, {
         data: {
           approvalState: ApprovalState.PROCESSING,
         },
@@ -245,6 +270,7 @@ export class WorkflowService {
       status: 'completed',
     });
   }
+
   async resolveIntent(
     intent: string,
     entityId: string,
@@ -254,11 +280,72 @@ export class WorkflowService {
 
     // TODO: implement logic for multiple workflows
     const { workflowDefinitionId } = workflowDefinitionResolver()[0];
+    const context: DefaultContextSchema = {
+      entity: { ballerineEntityId: entityId, entityType: tempEntityType },
+    };
+    return this.createWorkflowRuntime({ workflowDefinitionId, context });
+  }
+
+  async createWorkflowRuntime({
+    workflowDefinitionId,
+    context,
+  }: {
+    workflowDefinitionId: string;
+    context: DefaultContextSchema;
+  }): Promise<RunnableWorkflowData[]> {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
+    if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema!).length) {
+      const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
+      const validationResult = validate(context);
+      console.log('validationResult', validationResult);
+
+      if (!validationResult) {
+        console.log(validate.errors);
+        throw new BadRequestException('Invalid context', JSON.stringify(validate.errors));
+      }
+    }
+    const { entity } = context;
+
+    // extract this logic into entity service
+    let entityId: string | null;
+    if (entity.ballerineEntityId) {
+      entityId = entity.ballerineEntityId as string;
+    } else {
+      if (entity.type === 'business') {
+        const res = await this.businessRepository.findByCorrelationId(entity.id as string);
+        entityId = res && (res.id as string);
+      } else {
+        const res = await this.endUserRepository.findByCorrelationId(entity.id as string);
+        entityId = res && res.id;
+      }
+    }
+
+    if (!entityId) {
+      if (!entity.data) throw new BadRequestException('Entity data is required');
+      // TODO: run validation on entity data
+      if (entity.type === 'business') {
+        const { id } = await this.businessRepository.create({
+          data: {
+            correlationId: entity.id,
+            ...(context.entity.data as object),
+          } as Prisma.BusinessCreateInput,
+        });
+        entityId = id;
+      } else {
+        const { id } = await this.endUserRepository.create({
+          data: {
+            correlationId: entity.id,
+            ...(context.entity.data as object),
+          } as Prisma.EndUserCreateInput,
+        });
+        entityId = id;
+      }
+    }
+
     const entityConnect: any = {} as any;
-    if (tempEntityType === 'endUser') {
+    if (entity.type === 'individual') {
       entityConnect.endUser = {
         connect: {
           id: entityId,
@@ -293,6 +380,7 @@ export class WorkflowService {
       {
         workflowDefinition,
         workflowRuntimeData,
+        ballerineEntityId: entityId,
       },
     ];
   }
@@ -319,7 +407,7 @@ export class WorkflowService {
       },
     });
 
-    service.sendEvent({
+    await service.sendEvent({
       type,
     });
 
