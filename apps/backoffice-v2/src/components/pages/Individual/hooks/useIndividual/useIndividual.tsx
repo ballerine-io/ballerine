@@ -336,8 +336,8 @@ export const useIndividual = () => {
           },
         ],
         ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
-          ({ type, category, country, properties }, index) => {
-            const id = `${type}${category}${country}`;
+          ({ type, category, issuer, properties }, index) => {
+            const id = `${type}${category}${issuer?.country ?? ''}`;
 
             return [
               {
