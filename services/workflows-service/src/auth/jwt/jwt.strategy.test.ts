@@ -6,7 +6,7 @@ import { TEST_USER } from '../tests/constants';
 
 describe('Testing the jwtStrategyBase.validate()', () => {
   const userService = mock<UserService>();
-  const jwtStrategy = new JwtStrategy(userService, 'Secrete');
+  const jwtStrategy = new JwtStrategy(userService);
   beforeEach(() => {
     userService.getByEmail.mockClear();
   });

@@ -7,7 +7,6 @@ import { ACLModule } from '@/common/access-control/acl.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { SecretsManagerModule } from '@/common/providers/secrets/secrets-manager.module';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ServeStaticOptionsService } from './serve-static-options.service';
@@ -16,10 +15,10 @@ import { BusinessModule } from './business/business.module';
 import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { FilterModule } from '@/filter/filter.module';
 import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
+import { env } from '@/env';
 
 @Module({
   controllers: [],
@@ -45,9 +44,11 @@ import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
     AuthModule,
     HealthModule,
     PrismaModule,
-    SecretsManagerModule,
     MorganModule,
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: process.env.ENV_FILE_NAME || '.env' }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: env.ENV_FILE_NAME ?? '.env',
+    }),
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),
