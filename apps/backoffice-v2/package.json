@@ -68,7 +68,7 @@
     "i18next": "^22.4.9",
     "i18next-browser-languagedetector": "^7.0.1",
     "i18next-http-backend": "^2.1.1",
-    "lucide-react": "^0.144.0",
+    "lucide-react": "^0.181.0",
     "match-sorter": "^6.3.1",
     "msw": "^1.0.0",
     "react": "^18.2.0",
