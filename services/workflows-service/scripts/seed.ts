@@ -8,6 +8,7 @@ import { businessIds, endUserIds, generateBusiness, generateEndUser } from './ge
 import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
+import * as crypto from 'crypto';
 
 if (require.main === module) {
   dotenv.config();
@@ -89,10 +90,6 @@ async function seed(bcryptSalt: Salt) {
           industry: faker.company.catchPhrase(),
           taxIdentificationNumber: faker.finance.account(12),
           vatNumber: faker.finance.account(9),
-          shareholderStructure: JSON.stringify({
-            shareholders: ['Shareholder 1', 'Shareholder 2'],
-            ownershipPercentages: ['40%', '60%'],
-          }),
           numberOfEmployees: faker.datatype.number(1000),
           businessPurpose: faker.company.catchPhraseDescriptor(),
           approvalState: 'NEW',
@@ -103,6 +100,7 @@ async function seed(bcryptSalt: Salt) {
       },
       documents: [
         {
+          id: crypto.randomUUID(),
           category: 'ID',
           type: 'photo', //changed from type
           issuer: {
@@ -147,18 +145,22 @@ async function seed(bcryptSalt: Salt) {
             fullName: {
               type: 'string', //changed from type
               value: faker.name.findName(),
+              isEditable: true,
             },
             dateOfBirth: {
               type: 'date', //changed from type
               value: faker.date.past(30).toISOString().split('T')[0],
+              isEditable: true,
             },
             nationality: {
               type: 'string', //changed from type
               value: faker.address.country(),
+              isEditable: true,
             },
           },
         },
         {
+          id: crypto.randomUUID(),
           category: 'incorporation',
           type: 'certificate', //changed from type
           issuer: {
@@ -231,6 +233,7 @@ async function seed(bcryptSalt: Salt) {
     },
     documents: [
       {
+        id: crypto.randomUUID(),
         category: 'Identification Document',
         type: 'ID Card',
         issuer: {
@@ -277,30 +280,37 @@ async function seed(bcryptSalt: Salt) {
           cardNumber: {
             type: 'string',
             value: 'ID987654321',
+            isEditable: true,
           },
           issueDate: {
             type: 'date',
             value: '2020-01-01',
+            isEditable: true,
           },
           expiryDate: {
             type: 'date',
             value: '2030-12-31',
+            isEditable: true,
           },
           name: {
             type: 'string',
             value: 'John Doe',
+            isEditable: true,
           },
           address: {
             type: 'string',
             value: '123 Tech Lane, Techville',
+            isEditable: true,
           },
           dateOfBirth: {
             type: 'date',
             value: '1980-01-01',
+            isEditable: true,
           },
         },
       },
       {
+        id: crypto.randomUUID(),
         category: 'Registration Document',
         type: 'Certificate of Incorporation',
         issuer: {
@@ -335,22 +345,27 @@ async function seed(bcryptSalt: Salt) {
           companyName: {
             type: 'string',
             value: 'Tech Solutions Inc.',
+            isEditable: true,
           },
           registrationNumber: {
             type: 'string',
             value: '123456789',
+            isEditable: true,
           },
           issueDate: {
             type: 'date',
             value: '2000-01-01',
+            isEditable: true,
           },
           registeredAddress: {
             type: 'string',
             value: '123 Tech Lane, Techville',
+            isEditable: true,
           },
           businessType: {
             type: 'string',
             value: 'IT Solutions',
+            isEditable: true,
           },
         },
       },
