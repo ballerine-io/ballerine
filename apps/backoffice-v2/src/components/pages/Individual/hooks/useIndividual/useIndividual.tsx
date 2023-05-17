@@ -30,7 +30,7 @@ import { WarningAlert } from 'components/atoms/WarningAlert';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { Separator } from 'components/atoms/Separator/separator';
 import { Button } from 'components/atoms/Button/button';
-import { AlertTriangle, PinOff, RotateCcw } from 'lucide-react';
+import { AlertTriangle, RotateCcw } from 'lucide-react';
 import { SubmitHandler } from 'react-hook-form';
 import { AnyRecord } from '../../../../../types';
 import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
@@ -115,7 +115,7 @@ export const useIndividual = () => {
           taskId === data?.id && faceMatch === 'approved' && idVerification === 'approved',
       );
 
-      return value === 'Options' ? (
+      return value === 'Reject' ? (
         <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -126,11 +126,11 @@ export const useIndividual = () => {
                 })}
                 // disabled={isLoading || !canReject}
               >
-                Options
+                {value}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className={`min-w-[16rem]`} align={`end`}>
-              <DropdownMenuLabel>Options</DropdownMenuLabel>
+              <DropdownMenuLabel>{value}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DialogTrigger asChild>
                 <DropdownMenuItem className={`cursor-pointer gap-x-2`}>
@@ -138,10 +138,6 @@ export const useIndividual = () => {
                   Ask to re-submit
                 </DropdownMenuItem>
               </DialogTrigger>
-              <DropdownMenuItem className={`cursor-pointer gap-x-2`}>
-                <PinOff size={18} />
-                Ignore
-              </DropdownMenuItem>
               <DropdownMenuItem
                 className={`cursor-pointer gap-x-2 text-red-500`}
                 onClick={onMutateUpdateWorkflowById({
@@ -150,7 +146,7 @@ export const useIndividual = () => {
                 })}
               >
                 <AlertTriangle className={`text-red-500`} size={18} />
-                Reject
+                Block
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -331,7 +327,7 @@ export const useIndividual = () => {
             value: [
               {
                 type: 'callToAction',
-                value: 'Options',
+                value: 'Reject',
                 data: {
                   id,
                   approvalStatus: 'rejected',
