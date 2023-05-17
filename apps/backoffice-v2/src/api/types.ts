@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { EndUserByIdSchema, EndUsersListSchema } from '../lib/zod/schemas/end-users';
+import { FileInfoSchema } from '../lib/zod/schemas/file-info';
 import { AuthenticatedUserSchema } from '../lib/zod/schemas/authenticated-user';
 import { UsersListSchema } from '../lib/zod/schemas/users';
 
@@ -18,3 +19,4 @@ export type TCaseManagementState = {
   unassignedEnabled?: boolean;
   actionButtonsEnabled: boolean;
 };
+export type TFileInfo = z.infer<typeof FileInfoSchema>;

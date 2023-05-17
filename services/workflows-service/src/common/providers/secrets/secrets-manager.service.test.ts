@@ -14,7 +14,7 @@ describe('Testing the secrets manager base class', () => {
     //ARRANGE
     configService.get.mockReturnValue(SECRET_VALUE);
     //ACT
-    const result = await secretsManagerService.getSecret<unknown>(SECRET_KEY);
+    const result = await secretsManagerService.fetchSecret<unknown>(SECRET_KEY);
     //ASSERT
     expect(result).toBe(SECRET_VALUE);
   });
@@ -22,16 +22,16 @@ describe('Testing the secrets manager base class', () => {
     //ARRANGE
     configService.get.mockReturnValue(undefined);
     //ACT
-    const result = await secretsManagerService.getSecret(SECRET_KEY);
+    const result = await secretsManagerService.fetchSecret(SECRET_KEY);
     //ASSERT
     expect(result).toBeNull();
   });
   it('should throw error if dont get key', () => {
     //@ts-expect-error - testing with no key
-    return expect(secretsManagerService.getSecret()).rejects.toThrow();
+    return expect(secretsManagerService.fetchSecret()).rejects.toThrow();
   });
   it('should throw an exeption if getting null key', () => {
     //@ts-expect-error - testing with null key
-    return expect(secretsManagerService.getSecret(null)).rejects.toThrow();
+    return expect(secretsManagerService.fetchSecret(null)).rejects.toThrow();
   });
 });

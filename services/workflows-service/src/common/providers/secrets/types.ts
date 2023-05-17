@@ -1,3 +1,3 @@
 export interface ISecretsManager {
-  getSecret: (key: string) => Promise<unknown | null>;
+  fetchSecret: (key: string) => Promise<unknown | null>;
 }
