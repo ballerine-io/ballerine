@@ -282,6 +282,7 @@ export class WorkflowService {
     const { workflowDefinitionId } = workflowDefinitionResolver()[0];
     const context: DefaultContextSchema = {
       entity: { ballerineEntityId: entityId, entityType: tempEntityType },
+      documents: [],
     };
     return this.createWorkflowRuntime({ workflowDefinitionId, context });
   }
