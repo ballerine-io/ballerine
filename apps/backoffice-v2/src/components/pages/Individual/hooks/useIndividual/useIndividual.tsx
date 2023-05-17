@@ -60,7 +60,6 @@ export const useIndividual = () => {
   const onMutateUpdateWorkflowById =
     ({ id, approvalStatus }: { id: string; approvalStatus: 'rejected' | 'approved' }) =>
     () => {
-      const data = endUser?.workflow?.documents?.find(({ id: documentId }) => documentId === id);
       const decisions = [...(endUser?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
       const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
 
@@ -101,7 +100,8 @@ export const useIndividual = () => {
           className={ctw({
             'm-2 mt-6 flex justify-end space-x-2 rounded p-2 text-slate-50': id === 'actions',
             rounded: id === 'alerts',
-            'col-span-full': id === 'alerts' || id === 'actions',
+            'col-span-full': id === 'alerts' || id === 'details-container',
+            'grid grid-cols-2': id === 'details-container',
             'm-2 flex flex-col space-y-2 p-2': id === 'alerts',
           })}
         >
@@ -120,7 +120,7 @@ export const useIndividual = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                variant={`secondary`}
+                variant={`destructive`}
                 className={ctw({
                   // loading: debouncedIsLoadingRejectEndUser,
                 })}
@@ -202,7 +202,8 @@ export const useIndividual = () => {
         </Dialog>
       ) : (
         <Button
-          className={ctw(`bg-green-500 `, {
+          variant={`success`}
+          className={ctw({
             loading: isLoadingUpdateWorkflowById,
           })}
           disabled={isLoadingUpdateWorkflowById || isApprovedTask}
@@ -255,7 +256,6 @@ export const useIndividual = () => {
 
       return (
         <div className={`m-2 rounded p-1`}>
-          <Separator className={`my-2`} />
           <Form
             options={{
               defaultValues,
@@ -265,7 +265,7 @@ export const useIndividual = () => {
           >
             {methods => (
               <>
-                <legend className={`text-lg font-bold`}>{value.title}</legend>
+                <legend className={`sr-only text-lg font-bold`}>{value.title}</legend>
                 <div className={`grid grid-cols-2 gap-2`}>
                   {value?.data?.map(({ title, isEditable, type }) => (
                     <div className={`flex flex-col`} key={title}>
@@ -276,7 +276,9 @@ export const useIndividual = () => {
                         {...methods.register(title)}
                         type={type === 'string' ? 'text' : type}
                         disabled={!isEditable}
-                        className={`disabled:bg-background`}
+                        className={ctw(`disabled:bg-background`, {
+                          'rounded border border-border p-1': isEditable,
+                        })}
                       />
                     </div>
                   ))}
@@ -289,6 +291,7 @@ export const useIndividual = () => {
               </>
             )}
           </Form>
+          <Separator className={`my-2`} />
         </div>
       );
     },
@@ -322,24 +325,34 @@ export const useIndividual = () => {
         ],
         ...(endUser?.workflow?.context?.documents?.map(({ id, category, properties }, index) => [
           {
-            id: 'actions',
+            id: 'details-container',
             type: 'container',
             value: [
               {
-                type: 'callToAction',
-                value: 'Reject',
-                data: {
-                  id,
-                  approvalStatus: 'rejected',
-                },
+                type: 'heading',
+                value: category,
               },
               {
-                type: 'callToAction',
-                value: 'Approve',
-                data: {
-                  id,
-                  approvalStatus: 'approved',
-                },
+                id: 'actions',
+                type: 'container',
+                value: [
+                  {
+                    type: 'callToAction',
+                    value: 'Reject',
+                    data: {
+                      id,
+                      approvalStatus: 'rejected',
+                    },
+                  },
+                  {
+                    type: 'callToAction',
+                    value: 'Approve',
+                    data: {
+                      id,
+                      approvalStatus: 'approved',
+                    },
+                  },
+                ],
               },
             ],
           },

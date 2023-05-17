@@ -9,7 +9,7 @@ export const Pagination: FunctionComponent<IPaginationProps> = ({
   totalPages,
 }) => {
   return (
-    <div className={`flex items-center space-x-2 px-1`}>
+    <div className={`mt-3 flex items-center space-x-2 px-1`}>
       <span className={`w-full text-sm font-bold`}>
         Page {page} of {totalPages}
       </span>

@@ -115,7 +115,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           transition={{ duration: 0.4 }}
         >
           <h2
-            className={ctw(`text-2xl`, {
+            className={ctw(`text-2xl font-bold`, {
               'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
                 isLoadingEndUser,
             })}
