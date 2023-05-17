@@ -336,60 +336,64 @@ export const useIndividual = () => {
           },
         ],
         ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
-          ({ id, category, properties }, index) => [
-            {
-              id: 'actions',
-              type: 'container',
-              value: [
-                {
-                  type: 'callToAction',
-                  value: 'Options',
-                  data: {
-                    id,
-                    approvalStatus: 'rejected',
+          ({ type, category, country, properties }, index) => {
+            const id = `${type}${category}${country}`;
+
+            return [
+              {
+                id: 'actions',
+                type: 'container',
+                value: [
+                  {
+                    type: 'callToAction',
+                    value: 'Options',
+                    data: {
+                      id,
+                      approvalStatus: 'rejected',
+                    },
                   },
-                },
-                {
-                  type: 'callToAction',
-                  value: 'Approve',
-                  data: {
-                    id,
-                    approvalStatus: 'approved',
+                  {
+                    type: 'callToAction',
+                    value: 'Approve',
+                    data: {
+                      id,
+                      approvalStatus: 'approved',
+                    },
                   },
+                ],
+              },
+              {
+                type: 'details',
+                value: {
+                  id,
+                  title: category,
+                  data: Object.entries(properties ?? {}).map(
+                    ([title, { value, type, isEditable }]) => ({
+                      title,
+                      value,
+                      type,
+                      isEditable,
+                    }),
+                  ),
                 },
-              ],
-            },
-            {
-              type: 'details',
-              value: {
-                id,
-                title: category,
-                data: Object.entries(properties ?? {}).map(
-                  ([title, { value, type, isEditable }]) => ({
-                    title,
-                    value,
-                    type,
-                    isEditable,
-                  }),
-                ),
               },
-            },
-            {
-              type: 'multiDocuments',
-              value: {
-                data:
-                  endUser?.workflow?.workflowContext?.machineContext?.documents?.[
-                    index
-                  ]?.pages?.map(({ type, metadata }, index) => ({
-                    title: metadata?.side ? `${category} ${metadata?.side}` : category,
-                    imageUrl:
-                      type === 'pdf'
-                        ? octetToFileType(results[index]?.data, type)
-                        : results[index]?.data,
-                  })) ?? [],
+              {
+                type: 'multiDocuments',
+                value: {
+                  data:
+                    endUser?.workflow?.workflowContext?.machineContext?.documents?.[
+                      index
+                    ]?.pages?.map(({ type, metadata }, index) => ({
+                      title: metadata?.side ? `${category} ${metadata?.side}` : category,
+                      imageUrl:
+                        type === 'pdf'
+                          ? octetToFileType(results[index]?.data, type)
+                          : results[index]?.data,
+                    })) ?? [],
+                },
               },
-            },
-          ],
+            ];
+          },
         ) ?? []),
       ]
     : [];

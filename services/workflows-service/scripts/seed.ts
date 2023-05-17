@@ -8,7 +8,6 @@ import { businessIds, endUserIds, generateBusiness, generateEndUser } from './ge
 import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
-import * as crypto from 'crypto';
 
 if (require.main === module) {
   dotenv.config();
@@ -76,7 +75,7 @@ async function seed(bcryptSalt: Salt) {
     const correlationId = faker.datatype.uuid();
     let mockData = {
       entity: {
-        type: 'business', //changed from entityType
+        type: 'business',
         data: {
           companyName: faker.company.companyName(),
           registrationNumber: faker.finance.account(9),
@@ -100,9 +99,8 @@ async function seed(bcryptSalt: Salt) {
       },
       documents: [
         {
-          id: crypto.randomUUID(),
           category: 'ID',
-          type: 'photo', //changed from type
+          type: 'photo',
           issuer: {
             type: 'government',
             name: 'Government',
@@ -142,27 +140,14 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            fullName: {
-              type: 'string', //changed from type
-              value: faker.name.findName(),
-              isEditable: true,
-            },
-            dateOfBirth: {
-              type: 'date', //changed from type
-              value: faker.date.past(30).toISOString().split('T')[0],
-              isEditable: true,
-            },
-            nationality: {
-              type: 'string', //changed from type
-              value: faker.address.country(),
-              isEditable: true,
-            },
+            fullName: faker.name.findName(),
+            dateOfBirth: faker.date.past(30).toISOString().split('T')[0],
+            nationality: faker.address.country(),
           },
         },
         {
-          id: crypto.randomUUID(),
           category: 'incorporation',
-          type: 'certificate', //changed from type
+          type: 'certificate',
           issuer: {
             type: 'government',
             name: 'Government',
@@ -188,26 +173,11 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            companyName: {
-              type: 'string', //changed from type
-              value: faker.company.companyName(),
-            },
-            registrationNumber: {
-              type: 'string', //changed from type
-              value: faker.finance.account(9),
-            },
-            issueDate: {
-              type: 'date', //changed from type
-              value: faker.date.past(20).toISOString().split('T')[0],
-            },
-            registeredAddress: {
-              type: 'string', //changed from type
-              value: faker.address.streetAddress(),
-            },
-            businessType: {
-              type: 'string', //changed from type
-              value: faker.company.bs(),
-            },
+            companyName: faker.company.companyName(),
+            registrationNumber: faker.finance.account(9),
+            issueDate: faker.date.past(20).toISOString().split('T')[0],
+            registeredAddress: faker.address.streetAddress(),
+            businessType: faker.company.bs(),
           },
         },
       ],
@@ -215,162 +185,6 @@ async function seed(bcryptSalt: Salt) {
 
     return mockData;
   }
-
-  const riskScoreWorkflowContext = {
-    entity: {
-      entityType: 'business',
-      entityData: {
-        name: 'Tech Solutions Inc.',
-        businessNumber: '123456789',
-        registeredAddress: '123 Tech Lane, Techville, USA',
-      },
-      additionalDetails: {
-        businessType: 'IT Solutions',
-        numberOfEmployees: '100',
-      },
-      ballerineEntityId: 'B123456',
-      id: 'T123456',
-    },
-    documents: [
-      {
-        id: crypto.randomUUID(),
-        category: 'Identification Document',
-        type: 'ID Card',
-        issuer: {
-          type: 'Government',
-          name: 'Techville City Council',
-          country: 'USA',
-          city: 'Techville',
-          additionalDetails: {
-            department: 'Identification and Passport Services',
-          },
-        },
-        issuingVersion: 1,
-        decision: {
-          status: 'revision',
-          rejectionReason: '',
-          revisionReason: 'Blurry image',
-        },
-        version: 1,
-        pages: [
-          {
-            ballerineFileId: 'BF123456',
-            provider: 'http',
-            uri: 'http://example.com/id_front.jpg',
-            type: 'jpg',
-            data: '',
-            metadata: {
-              side: 'front',
-              pageNumber: '1',
-            },
-          },
-          {
-            ballerineFileId: 'BF123457',
-            provider: 'http',
-            uri: 'http://example.com/id_back.jpg',
-            type: 'jpg',
-            data: '',
-            metadata: {
-              side: 'back',
-              pageNumber: '2',
-            },
-          },
-        ],
-        properties: {
-          cardNumber: {
-            type: 'string',
-            value: 'ID987654321',
-            isEditable: true,
-          },
-          issueDate: {
-            type: 'date',
-            value: '2020-01-01',
-            isEditable: true,
-          },
-          expiryDate: {
-            type: 'date',
-            value: '2030-12-31',
-            isEditable: true,
-          },
-          name: {
-            type: 'string',
-            value: 'John Doe',
-            isEditable: true,
-          },
-          address: {
-            type: 'string',
-            value: '123 Tech Lane, Techville',
-            isEditable: true,
-          },
-          dateOfBirth: {
-            type: 'date',
-            value: '1980-01-01',
-            isEditable: true,
-          },
-        },
-      },
-      {
-        id: crypto.randomUUID(),
-        category: 'Registration Document',
-        type: 'Certificate of Incorporation',
-        issuer: {
-          type: 'Government',
-          name: 'Techville City Council',
-          country: 'USA',
-          city: 'Techville',
-          additionalDetails: {
-            department: 'Business Registration',
-          },
-        },
-        issuingVersion: 1,
-        decision: {
-          status: 'approved',
-          rejectionReason: '',
-          revisionReason: '',
-        },
-        version: 1,
-        pages: [
-          {
-            ballerineFileId: 'BF123458',
-            provider: 'http',
-            uri: 'http://example.com/certificate.pdf',
-            type: 'pdf',
-            data: '',
-            metadata: {
-              pageNumber: '1',
-            },
-          },
-        ],
-        properties: {
-          companyName: {
-            type: 'string',
-            value: 'Tech Solutions Inc.',
-            isEditable: true,
-          },
-          registrationNumber: {
-            type: 'string',
-            value: '123456789',
-            isEditable: true,
-          },
-          issueDate: {
-            type: 'date',
-            value: '2000-01-01',
-            isEditable: true,
-          },
-          registeredAddress: {
-            type: 'string',
-            value: '123 Tech Lane, Techville',
-            isEditable: true,
-          },
-          businessType: {
-            type: 'string',
-            value: 'IT Solutions',
-            isEditable: true,
-          },
-        },
-      },
-    ],
-  };
 
   // Risk score improvment
   await client.workflowDefinition.create({
