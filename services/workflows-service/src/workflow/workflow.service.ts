@@ -16,7 +16,6 @@ import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { merge } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import Ajv from 'ajv';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
@@ -130,8 +129,8 @@ export class WorkflowService {
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
-    const ajv = new Ajv();
-    const validate = ajv.compile(runtimeData.contextSchema);
+    // const ajv = new Ajv();
+    // const validate = ajv.compile(runtimeData.contextSchema);
 
     data.context = merge(runtimeData.context, data.context);
 
