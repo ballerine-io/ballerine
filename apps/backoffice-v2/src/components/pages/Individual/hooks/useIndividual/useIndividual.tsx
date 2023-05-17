@@ -33,6 +33,7 @@ import { AnyRecord } from '../../../../../types';
 import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
 import { Form } from 'components/organisms/Form/Form';
 import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/useStorageFilesQuery/useStorageFilesQuery';
+import { useConsole } from 'hooks/useConsole/useConsole';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -309,6 +310,9 @@ export const useIndividual = () => {
       );
     },
   };
+  useConsole({
+    test: endUser?.workflow,
+  });
   const tasks = endUser?.workflow?.context?.entity
     ? [
         [

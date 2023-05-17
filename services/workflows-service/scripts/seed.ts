@@ -659,7 +659,7 @@ async function seed(bcryptSalt: Salt) {
   await client.filter.create({
     data: {
       entity: 'businesses',
-      name: 'Businesses',
+      name: 'Risk Score Improvement',
       query: {
         select: {
           id: true,
@@ -701,7 +701,7 @@ async function seed(bcryptSalt: Salt) {
             some: {
               workflowDefinition: {
                 is: {
-                  id: manualMachineId,
+                  id: riskScoreMachineKybId,
                 },
               },
             },
