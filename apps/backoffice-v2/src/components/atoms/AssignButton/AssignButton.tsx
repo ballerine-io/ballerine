@@ -43,7 +43,7 @@ export const AssignButton: React.FC<IAssignButtonProps> = ({
   return (
     <div>
       {isAssignButtonType ? (
-        <Button variant={`outline`} disabled={!caseState.assignToMeEnabled} onClick={onClick}>
+        <Button disabled={!caseState.assignToMeEnabled} onClick={onClick}>
           Assign Me
         </Button>
       ) : (
