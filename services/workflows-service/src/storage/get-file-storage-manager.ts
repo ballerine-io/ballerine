@@ -58,7 +58,7 @@ export const downloadFileFromS3 = async (
 ): Promise<TLocalFile> => {
   try {
     const getObjectCommand = new GetObjectCommand({ Bucket: bucketName, Key: fileNameInBucket });
-    const s3Client = new S3Client(generateAwsConfig(process.env));
+    const s3Client = new S3Client(__generateAwsConfig(process.env));
     const response = await s3Client.send(getObjectCommand);
     const readableStream = response.Body as Readable;
     const tmpFile = tmp.fileSync();
