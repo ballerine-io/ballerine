@@ -385,12 +385,14 @@ async function seed(bcryptSalt: Salt) {
               },
             },
           },
+          idle: {},
           approved: {
             type: 'final',
           },
           rejected: {
             type: 'final',
           },
+          revision: {},
         },
       },
     },
