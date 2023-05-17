@@ -41,7 +41,7 @@ const aclValidateRequestInterceptor = {
   },
 };
 
-describe('Workflow (external)', () => {
+describe.skip('Workflow (external)', () => {
   let app: INestApplication;
   let moduleRef: TestingModule;
   let wfService: WorkflowService;

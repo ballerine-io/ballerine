@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+import { HttpService } from '@nestjs/axios';
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
@@ -18,18 +19,52 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter } from './event-emitter';
+
+import { WorkflowDefinitionRepository } from './workflow-definition.repository';
+import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { EndUserRepository } from '@/end-user/end-user.repository';
+import { BusinessRepository } from '@/business/business.repository';
+
+import {
+  ContextChangedWebookCaller,
+  ProcessEnvWebhookConfig,
+} from './context-changed-webhook-caller';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
+  #__service: WorkflowService;
+
   constructor(
-    protected readonly service: WorkflowService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-    private eventEmitter: EventEmitter2,
-  ) {}
+    private prisma: PrismaService,
+  ) {
+    const webhookConfig = new ProcessEnvWebhookConfig(process.env);
+    const eventEmitter = new EventEmitter();
+
+    const contextChangedWebhookCaller = new ContextChangedWebookCaller(
+      eventEmitter,
+      webhookConfig,
+      HttpService,
+    );
+
+    this.#__service = new WorkflowService(
+      new WorkflowDefinitionRepository(prisma),
+      new WorkflowRuntimeDataRepository(prisma),
+      new EndUserRepository(prisma),
+      new BusinessRepository(prisma),
+      eventEmitter,
+      contextChangedWebhookCaller,
+    );
+  }
+
+  get service() {
+    return this.#__service;
+  }
 
   // GET /workflows
   @common.Get()

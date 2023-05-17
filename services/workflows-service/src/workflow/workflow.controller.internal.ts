@@ -37,23 +37,7 @@ export class WorkflowControllerInternal {
     @UserData() userInfo: UserInfo,
     @common.Body() data: WorkflowDefinitionCreateDto,
   ) {
-    return await this.service.createWorkflowDefinition({
-      data,
-      select: {
-        id: true,
-        name: true,
-        version: true,
-
-        definition: true,
-        definitionType: true,
-
-        backend: true,
-
-        extensions: true,
-        persistStates: true,
-        submitStates: true,
-      },
-    });
+    return await this.service.createWorkflowDefinition(data);
   }
 
   @common.Get()
@@ -66,25 +50,7 @@ export class WorkflowControllerInternal {
   ): Promise<WorkflowDefinition[]> {
     const args = plainToClass(WorkflowDefinitionFindManyArgs, request.query);
 
-    return await this.service.listWorkflowDefinitions({
-      ...args,
-      where: {
-        ...args.where,
-      },
-      select: {
-        id: true,
-        name: true,
-        version: true,
-        definition: true,
-        definitionType: true,
-
-        backend: true,
-
-        extensions: true,
-        persistStates: true,
-        submitStates: true,
-      },
-    });
+    return await this.service.listWorkflowDefinitions(args);
   }
 
   @common.Get('/active-states')

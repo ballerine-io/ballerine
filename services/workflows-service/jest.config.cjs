@@ -4,6 +4,7 @@ module.exports = {
   modulePathIgnorePatterns: ['<rootDir>/dist/'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    axios: 'axios/dist/node/axios.cjs',
   },
   globals: {
     'ts-jest': {

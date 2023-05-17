@@ -8,7 +8,6 @@ import { AuthModule } from '../auth/auth.module';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
-import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { EventConsumerListener } from '@/events/event-consumer';
 import { BusinessRepository } from '@/business/business.repository';
 
@@ -21,8 +20,6 @@ import { BusinessRepository } from '@/business/business.repository';
     EndUserRepository,
     BusinessRepository,
     WorkflowService,
-    WorkflowEventEmitterService,
-    EventConsumerListener,
   ],
   exports: [WorkflowService, ACLModule, AuthModule, MorganModule],
 })

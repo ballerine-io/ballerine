@@ -3,19 +3,23 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { ApprovalState, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { merge } from 'lodash';
+import { merge, isEqual } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
+import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
+import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
+
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
-import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
+import { EventEmitter } from './event-emitter';
 import { BusinessRepository } from '@/business/business.repository';
 
 export const ResubmissionReason = {
@@ -52,15 +56,30 @@ export class WorkflowService {
   private readonly logger = new Logger(WorkflowService.name);
 
   constructor(
-    protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
-    protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
-    protected readonly endUserRepository: EndUserRepository,
-    protected readonly businessRepository: BusinessRepository,
-    private workflowEventEmitter: WorkflowEventEmitterService,
+    private workflowDefinitionRepository: WorkflowDefinitionRepository,
+    private workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
+    private endUserRepository: EndUserRepository,
+    private businessRepository: BusinessRepository,
+    private eventEmitter: EventEmitter,
+    private contextChangedSubscriber: any,
   ) {}
 
-  async createWorkflowDefinition(args: Parameters<WorkflowDefinitionRepository['create']>[0]) {
-    return await this.workflowDefinitionRepository.create(args);
+  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
+    const select = {
+      id: true,
+      name: true,
+      version: true,
+
+      definition: true,
+      definitionType: true,
+
+      backend: true,
+
+      extensions: true,
+      persistStates: true,
+      submitStates: true,
+    };
+    return await this.workflowDefinitionRepository.create({ data, select });
   }
 
   async getWorkflowRuntimeDataById(
@@ -102,14 +121,27 @@ export class WorkflowService {
     })) as CompleteWorkflowData[];
   }
 
-  async listWorkflowDefinitions(args?: Parameters<WorkflowDefinitionRepository['findMany']>[0]) {
-    return await this.workflowDefinitionRepository.findMany(args);
+  async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {
+    const select = {
+      id: true,
+      name: true,
+      version: true,
+      definition: true,
+      definitionType: true,
+
+      backend: true,
+
+      extensions: true,
+      persistStates: true,
+      submitStates: true,
+    };
+    return await this.workflowDefinitionRepository.findMany({ ...args, select });
   }
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
-
-    data.context = merge(runtimeData.context, data.context);
+    const contextHasChanged = !isEqual(data.context, runtimeData.context);
+    const mergedContext = merge({}, runtimeData.context, data.context);
 
     this.logger.log(
       `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
@@ -126,18 +158,20 @@ export class WorkflowService {
     // @ts-ignore
     const isFinal = workflow.definition?.states?.[currentState]?.type === 'final';
 
+    data.context = mergedContext;
+
     const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
       data: {
         ...data,
-        resolvedAt: isFinal ? new Date() : undefined,
+        resolvedAt: isFinal ? new Date() : null,
       },
     });
 
-    if (isFinal) {
-      this.workflowEventEmitter.emit('workflow.completed', {
+    if (contextHasChanged) {
+      this.eventEmitter.emit('workflow.context.changed', {
         runtimeData,
         state: currentState as string,
-        context: runtimeData.context, // TODO: final result should be a subset of context, should be defined as part of the workflow definition
+        newContext: mergedContext as any,
       });
     }
 
