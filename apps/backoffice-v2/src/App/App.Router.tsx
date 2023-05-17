@@ -9,6 +9,7 @@ import { rootIndexRoute } from 'components/pages/Root/RootIndex.route';
 import { signInRoute } from 'components/pages/SignIn/SignIn.route';
 import { individualsIndexRoute } from 'components/pages/Individuals/IndividualsIndex.route';
 import { env } from '../env/env';
+import {versionRoute} from "components/pages/Version/Version.route";
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -19,6 +20,7 @@ declare module '@tanstack/react-router' {
 
 const routes = [
   rootIndexRoute,
+  versionRoute,
   ...(env.VITE_AUTH_ENABLED ? [signInRoute] : []),
   caseManagementRoute.addChildren([
     caseManagementIndexRoute,
