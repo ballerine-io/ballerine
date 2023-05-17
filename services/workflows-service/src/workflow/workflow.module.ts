@@ -11,6 +11,8 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { EventConsumerListener } from '@/events/event-consumer';
 import { BusinessRepository } from '@/business/business.repository';
+import {FileServiceModule} from "@/providers/file/file-service.module";
+import {FileService} from "@/providers/file/file.service";
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
@@ -21,6 +23,7 @@ import { BusinessRepository } from '@/business/business.repository';
     EndUserRepository,
     BusinessRepository,
     WorkflowService,
+    FileService,
     WorkflowEventEmitterService,
     EventConsumerListener,
   ],

@@ -93,7 +93,7 @@ model Business {
   companyName             String // Official registered name of the business entity
   registrationNumber      String // Unique registration number assigned by the relevant authorities
   legalForm               String? // Legal structure of the business entity, e.g., LLC, corporation, partnership
-  countryOfIncorporation  String // Country where the business entity is incorporated
+  countryOfIncorporation  String? // Country where the business entity is incorporated
   dateOfIncorporation     DateTime? // Date when the business entity was incorporated
   address                 String? // Registered address of the business entity
   phoneNumber             String? // Contact phone number of the business entity
@@ -172,13 +172,13 @@ model WorkflowRuntimeData {
 }
 
 model File {
-  id             String   @id @default(cuid())
-  userId         String
-  fileNameOnDisk String
-  uri            String
-  fileNameInBucket      String?
-  createdAt      DateTime @default(now())
-  createdBy      String   @default("SYSTEM")
+  id               String   @id @default(cuid())
+  userId           String
+  fileNameOnDisk   String
+  uri              String
+  fileNameInBucket String?
+  createdAt        DateTime @default(now())
+  createdBy        String   @default("SYSTEM")
 
   @@index([userId])
 }

@@ -25,7 +25,13 @@ import { BusinessRepository } from '@/business/business.repository';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { DefaultContextSchema } from './schemas/context';
-
+import {FileService} from "@/providers/file/file.service";
+import * as console from "console";
+import {TFileServiceProvider, TRemoteFileConfig} from "@/providers/file/types";
+import {HttpFileService} from "@/providers/file/file-provider/http-file.service";
+import {z} from "zod";
+import {LocalFileService} from "@/providers/file/file-provider/local-file.service";
+type TEntityId = string;
 const ajv = new Ajv({
   strict: false,
 });
@@ -69,6 +75,7 @@ export class WorkflowService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
     protected readonly businessRepository: BusinessRepository,
+    protected readonly fileService: FileService,
     private workflowEventEmitter: WorkflowEventEmitterService,
   ) {}
 
@@ -293,71 +300,14 @@ export class WorkflowService {
     workflowDefinitionId: string;
     context: DefaultContextSchema;
   }): Promise<RunnableWorkflowData[]> {
+    console.log(context)
+
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
-    if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema!).length) {
-      const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
-      const validationResult = validate(context);
-      console.log('validationResult', validationResult);
-
-      if (!validationResult) {
-        console.log(validate.errors);
-        throw new BadRequestException('Invalid context', JSON.stringify(validate.errors));
-      }
-    }
-    const { entity } = context;
-
-    // extract this logic into entity service
-    let entityId: string | null;
-    if (entity.ballerineEntityId) {
-      entityId = entity.ballerineEntityId as string;
-    } else {
-      if (entity.type === 'business') {
-        const res = await this.businessRepository.findByCorrelationId(entity.id as string);
-        entityId = res && (res.id as string);
-      } else {
-        const res = await this.endUserRepository.findByCorrelationId(entity.id as string);
-        entityId = res && res.id;
-      }
-    }
-
-    if (!entityId) {
-      if (!entity.data) throw new BadRequestException('Entity data is required');
-      // TODO: run validation on entity data
-      if (entity.type === 'business') {
-        const { id } = await this.businessRepository.create({
-          data: {
-            correlationId: entity.id,
-            ...(context.entity.data as object),
-          } as Prisma.BusinessCreateInput,
-        });
-        entityId = id;
-      } else {
-        const { id } = await this.endUserRepository.create({
-          data: {
-            correlationId: entity.id,
-            ...(context.entity.data as object),
-          } as Prisma.EndUserCreateInput,
-        });
-        entityId = id;
-      }
-    }
-
-    const entityConnect: any = {} as any;
-    if (entity.type === 'individual') {
-      entityConnect.endUser = {
-        connect: {
-          id: entityId,
-        },
-      };
-    } else {
-      entityConnect.business = {
-        connect: {
-          id: entityId,
-        },
-      };
-    }
+    this.__validateWorkflowDefinitionContext(workflowDefinition, context);
+    const {entityId, entityConnect} = await this.__findOrPersistEntityInformation(context);
+    const ballerineFileIds = this.__copyFileAndPersist(context);
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
       data: {
         ...entityConnect,
@@ -383,6 +333,87 @@ export class WorkflowService {
         ballerineEntityId: entityId,
       },
     ];
+  }
+
+  private __copyFileAndPersist(context: DefaultContextSchema): string[] {
+    return context.documents?.map(document => {
+      {fromServiceProvider, fromRemoteFileConfig} = this.__fetchReceivingServiceProviders(document)
+      this.fileService.copyThruLocalFile()
+    })
+  }
+
+  private async __findOrPersistEntityInformation(context: DefaultContextSchema) {
+    const {entity} = context;
+    const entityId = await this.__tryToFetchExistingEntityIc(entity);
+
+    if (!entityId) {
+      if (!entity.data) throw new BadRequestException('Entity data is required');
+    }
+
+    const entityConnect: any = {} as any;
+    if (entity.type === 'individual') {
+      entityConnect.endUser = {
+        connect: {
+          id: entityId || await this.__persistEndUserInfo(entity, context),
+        },
+      };
+    } else {
+      entityConnect.business = {
+        connect: {
+          id: entityId || await this.__persistBusinessInformation(entity, context),
+        },
+      };
+    }
+    return {entityId, entityConnect};
+  }
+
+  private async __persistEndUserInfo(entity: { [p: string]: unknown }, context: DefaultContextSchema) {
+    const {id} = await this.endUserRepository.create({
+      data: {
+        correlationId: entity.id,
+        ...(context.entity.data as object),
+      } as Prisma.EndUserCreateInput,
+    });
+    return id;
+  }
+
+  private async __persistBusinessInformation(entity: { [p: string]: unknown }, context: DefaultContextSchema) {
+    const {id} = await this.businessRepository.create({
+      data: {
+        correlationId: entity.id,
+        ...(context.entity.data as object),
+      } as Prisma.BusinessCreateInput,
+    });
+
+    return id;
+  }
+
+  private async __tryToFetchExistingEntityIc(entity: { [p: string]: unknown }): Promise<TEntityId | null> {
+    if (entity.ballerineEntityId) {
+      return entity.ballerineEntityId as TEntityId;
+    } else {
+      if (entity.type === 'business') {
+        const res = await this.businessRepository.findByCorrelationId(entity.id as TEntityId);
+        return res && (res.id as string);
+      } else {
+        const res = await this.endUserRepository.findByCorrelationId(entity.id as TEntityId);
+        return res && res.id;
+      }
+    }
+  }
+
+  private __validateWorkflowDefinitionContext(workflowDefinition: WorkflowDefinition, context: DefaultContextSchema) {
+    console.log(JSON.stringify(context))
+    if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema!).length) {
+      const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
+      const validationResult = validate(context);
+      console.log('validationResult', validationResult);
+
+      if (!validationResult) {
+        console.log(validate.errors);
+        throw new BadRequestException('Invalid context', JSON.stringify(validate.errors));
+      }
+    }
   }
 
   async event({
@@ -472,5 +503,13 @@ export class WorkflowService {
           approvalState: ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState],
         },
       }));
+  }
+
+  private __fetchReceivingServiceProviders(document: DefaultContextSchema['documents']): {fromServiceProvider: TFileServiceProvider, fromRemoteFileConfig: TRemoteFileConfig} {
+    if (document.provider == 'http' && z.string().parse(document.uri)){
+      return {fromServiceProvider: new HttpFileService(), fromRemoteFileConfig: document.uri};
+    }
+
+    return {fromServiceProvider: new LocalFileService(), fromRemoteFileConfig: document.uri}
   }
 }
