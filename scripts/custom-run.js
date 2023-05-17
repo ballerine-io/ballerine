@@ -14,5 +14,4 @@ console.log('🏗️ preparing project');
 run('pnpm run db:reset', workflowServiceRoot);
 run(`ts-node scripts/${process.env.SEED_FILENAME}.ts`, workflowServiceRoot);
 
-
 console.log('✅ All done!');

@@ -16,9 +16,8 @@ export const S3StorageEnvSchema = z.object({
 });
 
 const __generateAwsConfig = (processEnv: NodeJS.ProcessEnv): S3ClientConfig => {
-  const { AWS_REGION, AWS_S3_BUCKET_KEY, AWS_S3_BUCKET_SECRET } = S3StorageEnvSchema.parse(
-    processEnv
-  );
+  const { AWS_REGION, AWS_S3_BUCKET_KEY, AWS_S3_BUCKET_SECRET } =
+    S3StorageEnvSchema.parse(processEnv);
 
   return {
     region: AWS_REGION,
@@ -72,11 +71,11 @@ export const downloadFileFromS3 = async (
         })
         .on('error', error => {
           console.error('Error Upload file to S3:', error);
-          reject(new Error("Failed to upload S3 file"));
+          reject(new Error('Failed to upload S3 file'));
         });
     });
   } catch (error) {
     console.error('Error Stream file to S3:', error);
-    throw new Error("Failed to Stream S3 file");
+    throw new Error('Failed to Stream S3 file');
   }
 };

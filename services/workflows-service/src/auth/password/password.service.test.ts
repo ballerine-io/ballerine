@@ -5,11 +5,12 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PasswordService } from './password.service';
 import * as bcrypt from 'bcrypt';
+import { env } from '@/env';
 
 const EXAMPLE_PASSWORD = 'examplePassword';
 const EXAMPLE_HASHED_PASSWORD = 'exampleHashedPassword';
 
-const EXAMPLE_SALT_OR_ROUNDS = 1;
+const EXAMPLE_SALT_OR_ROUNDS = env.BCRYPT_SALT;
 
 const configServiceGetMock = jest.fn(() => {
   return EXAMPLE_SALT_OR_ROUNDS;

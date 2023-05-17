@@ -51,7 +51,10 @@ export class FileService {
   ) {
     const tmpFile = tmp.fileSync();
 
-    const localeFilePath = await fromServiceProvider.downloadFile(fromRemoteFileConfig, tmpFile.name);
+    const localeFilePath = await fromServiceProvider.downloadFile(
+      fromRemoteFileConfig,
+      tmpFile.name,
+    );
     const remoteFilePath = await toServiceProvider.uploadFile(localeFilePath, toFileConfig);
 
     return remoteFilePath;

@@ -2,24 +2,17 @@ import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker';
 
 import { PrismaClient } from '@prisma/client';
-import { parseSalt, Salt } from '../src/auth/password/password.service';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import { businessIds, endUserIds, generateBusiness, generateEndUser } from './generate-end-user';
 import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
+import { Salt } from '../src/auth/password/password.service';
+import { env } from '../src/env';
 
 if (require.main === module) {
   dotenv.config();
 
-  const { BCRYPT_SALT } = process.env;
-
-  if (!BCRYPT_SALT) {
-    throw new Error('BCRYPT_SALT environment variable must be defined');
-  }
-
-  const salt = parseSalt(BCRYPT_SALT);
-
-  seed(salt).catch(error => {
+  seed(env.BCRYPT_SALT).catch(error => {
     console.error(error);
     process.exit(1);
   });
