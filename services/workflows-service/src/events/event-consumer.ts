@@ -14,12 +14,12 @@ export class EventConsumerListener {
   constructor(private eventEmitter: EventEmitter2) {}
 
   @OnEvent('workflow.context.changed')
-  handleWorkflowEvent(eventName: string, data: WorkflowEventRawData) {
+  handleWorkflowEvent(data: WorkflowEventRawData) {
     const oldDocuments = (data.runtimeData.context as any)['documents'] || [];
     const newDocuments = data.context?.['documents'] || [];
 
     const documentIdentifier = (doc: any) => {
-      return `${doc.category as string}$${doc.type as string}$${doc.issuer.country as string}`;
+      return `${doc.category as string}$${doc.type as string}$${doc.issuer?.country as string}`;
     };
 
     const newDocumentsByIdentifier = newDocuments.reduce((accumulator: any, doc: any) => {

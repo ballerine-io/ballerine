@@ -22,13 +22,11 @@ export interface WorkflowEventData {
 export class WorkflowEventEmitterService {
   constructor(private eventEmitter: EventEmitter2) {}
 
-  emit(eventName: string, runtimeRawData: WorkflowEventRawData) {
+  emit(eventName: string, eventData: WorkflowEventRawData) {
     if (!eventName) {
       throw new Error('Event name is required');
     }
 
-    this.eventEmitter.emit(eventName, {
-      ...runtimeRawData,
-    });
+    this.eventEmitter.emit(eventName, eventData);
   }
 }
