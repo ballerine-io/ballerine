@@ -5,13 +5,17 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from '@/common/filters/HttpExceptions.filter';
 import { AppModule } from './app.module';
 import { swaggerDocumentOptions, swaggerPath, swaggerSetupOptions } from './swagger';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
 import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - there is an issue with helemet types
 import helmet from 'helmet';
 import { env } from '@/env';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
+
+// This line is used to improve Sentry's stack traces
+// https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
+global.__rootdir__ = __dirname || process.cwd();
 
 async function main() {
   const app = await NestFactory.create(AppModule, {
@@ -68,6 +72,8 @@ async function main() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
+
+  app.enableShutdownHooks();
 
   void app.listen(env.PORT);
   console.log(`Listening on port ${env.PORT}`);
