@@ -1,21 +1,71 @@
-// import { WorkflowEventData } from '@/workflow/workflow-event-emitter.service';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+
+import { WorkflowEventRawData } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
 import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';
 import { ListenerFn } from './types';
+import axios from 'axios';
+import { randomUUID } from 'crypto';
+import { sortBy } from 'lodash';
 
 @Injectable()
 export class EventConsumerListener {
   constructor(private eventEmitter: EventEmitter2) {}
 
-  subscribe(event: string, callback: ListenerFn) {
-    this.eventEmitter.addListener(event, eventData => {
-      callback(undefined, eventData);
-    });
-  }
+  @OnEvent('workflow.context.changed')
+  handleWorkflowEvent(eventName: string, data: WorkflowEventRawData) {
+    const oldDocuments = (data.runtimeData.context as any)['documents'] || [];
+    const newDocuments = data.context?.['documents'] || [];
 
-  // OnEvent is not working, need to check why, for now we subscribe explicitly
-  // @OnEvent('workflow.a')
-  // handleWorkflowEvent(eventName: string, data: WorkflowEventData) {
-  //   console.log('eeeee', eventName, data);
-  // }
+    const documentIdentifier = (doc: any) => {
+      return `${doc.category as string}$${doc.type as string}$${doc.issuer.country as string}`;
+    };
+
+    const newDocumentsByIdentifier = newDocuments.reduce((accumulator: any, doc: any) => {
+      const id = documentIdentifier(doc);
+      accumulator[id] = doc;
+      return accumulator;
+    }, {});
+
+    const anyDocumentStatusChanged = (oldDocuments as Array<any>).some(oldDocument => {
+      const id = documentIdentifier(oldDocument);
+      return (
+        id in newDocumentsByIdentifier &&
+        oldDocument.decision.status !== newDocumentsByIdentifier[id].decision.status
+      );
+    });
+
+    const id = randomUUID();
+    const url = process.env.WEBHOOK_URL as string;
+    const environment = process.env.NODE_ENV;
+    const authSecret = process.env.WEBHOOK_SECRET as string;
+
+    if (anyDocumentStatusChanged) {
+      console.log(`sending request id: ${id}`);
+
+      axios
+        .post(
+          url,
+          {
+            id,
+            eventName: 'workflow.context.document.changed',
+            apiVersion: 1,
+            timestamp: new Date().toISOString(),
+            workflowRuntimeId: data.runtimeData.id,
+            environment,
+            data: data.context,
+          },
+          {
+            auth: {
+              username: 'TBD',
+              password: authSecret,
+            },
+          },
+        )
+        .catch(err => {
+          console.log(`failed to send request id: ${id}`, err);
+        });
+    }
+  }
 }

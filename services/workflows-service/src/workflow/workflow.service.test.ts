@@ -9,11 +9,7 @@ import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-reposit
 
 import { WorkflowService } from './workflow.service';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
-import { EventEmitter } from './event-emitter';
-import {
-  ContextChangedWebookCaller,
-  ProcessEnvWebhookConfig,
-} from './context-changed-webhook-caller';
+import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -51,47 +47,31 @@ function buildWorkflowDeifintion(sequenceNum) {
   };
 }
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-
 describe('WorkflowService', () => {
   let service;
   let workflowRuntimeDataRepo;
   const numbUserInfo = Symbol();
   let fakeHttpService;
+  let eventEmitter;
 
   beforeEach(() => {
     const workflowDefinitionRepo = new FakeWorkflowDefinitionRepo();
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
 
-    const webhookConfig = new ProcessEnvWebhookConfig({
-      WEBHOOK_URL: 'example.com',
-      NODE_ENV: 'some_node_env',
-    });
+    eventEmitter = {
+      emitted: Array<any>(),
 
-    fakeHttpService = {
-      requests: Array<any>(),
-
-      post(url, data) {
-        this.requests.push({ url, data });
+      emit(name, args) {
+        this.emitted.push(args);
       },
     };
-
-    const eventEmitter = new EventEmitter();
-    const documentIdentifier = doc => doc.testId;
-    const contextChangedWebhookCaller = new ContextChangedWebookCaller(
-      eventEmitter,
-      webhookConfig,
-      fakeHttpService,
-      documentIdentifier,
-    );
 
     service = new WorkflowService(
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
       {} as any,
       {} as any,
-      eventEmitter,
-      webhookConfig,
+      eventEmitter as any,
     );
   });
 
@@ -150,7 +130,7 @@ describe('WorkflowService', () => {
   });
 
   describe('.updateWorkflowRuntimeData', () => {
-    it('sends a non blocking webhook when decision has changed', async () => {
+    it('emits an event when context has changed', async () => {
       const initialRuntimeData = {
         id: '2',
         workflowDefinitionId: '2',
@@ -175,60 +155,36 @@ describe('WorkflowService', () => {
         data: initialRuntimeData,
       });
 
-      await service.createWorkflowDefinition(buildWorkflowDeifintion(2));
-      await service.updateWorkflowRuntimeData('2', {
-        context: {
-          documents: [
-            {
-              testId: 2,
-              decision: {
-                status: 'decided',
-              },
-            },
-            {
-              testId: 3,
-              decision: {
-                status: 'undecided',
-              },
-            },
-          ],
-        },
-      });
-
-      expect(fakeHttpService.requests).toEqual([]);
-      await sleep(1);
-      expect(fakeHttpService.requests).toEqual([
-        {
-          url: 'example.com',
-          data: {
-            id: expect.stringMatching(/^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/),
-            eventName: 'workflow.context.document.changed',
-            apiVersion: 1,
-            timestamp: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d*Z$/),
-            workflowRuntimeId: '2',
-            environment: 'some_node_env',
-            data: {
-              documents: [
-                {
-                  testId: 2,
-                  decision: {
-                    status: 'decided',
-                  },
-                },
-                {
-                  testId: 3,
-                  decision: {
-                    status: 'undecided',
-                  },
-                },
-              ],
+      const newContext = {
+        documents: [
+          {
+            testId: 2,
+            decision: {
+              status: 'decided',
             },
           },
+          {
+            testId: 3,
+            decision: {
+              status: 'undecided',
+            },
+          },
+        ],
+      };
+
+      await service.createWorkflowDefinition(buildWorkflowDeifintion(2));
+      await service.updateWorkflowRuntimeData('2', { context: newContext });
+
+      expect(eventEmitter.emitted).toEqual([
+        {
+          context: newContext,
+          runtimeData: initialRuntimeData,
+          state: undefined,
         },
       ]);
     });
 
-    it('does not send webhook when decision has not changed', async () => {
+    it('does not emit an event when context has changed', async () => {
       const initialRuntimeData = {
         id: '2',
         workflowDefinitionId: '2',
@@ -258,23 +214,22 @@ describe('WorkflowService', () => {
         context: {
           documents: [
             {
-              testId: 2,
+              testId: 1,
               decision: {
                 status: 'undecided',
               },
             },
             {
-              testId: 3,
+              testId: 2,
               decision: {
-                status: 'decided',
+                status: 'undecided',
               },
             },
           ],
         },
       });
 
-      await sleep(1);
-      expect(fakeHttpService.requests).toEqual([]);
+      expect(eventEmitter.emitted).toEqual([]);
     });
   });
 });

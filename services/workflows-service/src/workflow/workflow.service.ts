@@ -19,7 +19,7 @@ import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
-import { EventEmitter } from './event-emitter';
+import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
 
 export const ResubmissionReason = {
@@ -60,8 +60,7 @@ export class WorkflowService {
     private workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     private endUserRepository: EndUserRepository,
     private businessRepository: BusinessRepository,
-    private eventEmitter: EventEmitter,
-    private contextChangedSubscriber: any,
+    private workflowEventEmitter: WorkflowEventEmitterService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -168,10 +167,10 @@ export class WorkflowService {
     });
 
     if (contextHasChanged) {
-      this.eventEmitter.emit('workflow.context.changed', {
+      this.workflowEventEmitter.emit('workflow.context.changed', {
         runtimeData,
         state: currentState as string,
-        newContext: mergedContext as any,
+        context: mergedContext as any,
       });
     }
 

@@ -5,7 +5,7 @@ import { WorkflowRuntimeData } from '@prisma/client';
 export interface WorkflowEventRawData {
   runtimeData: WorkflowRuntimeData;
   state: string;
-  context: unknown;
+  context: any;
 }
 
 export interface WorkflowEventData {
@@ -15,25 +15,20 @@ export interface WorkflowEventData {
   workflowDefinitionVersion: number;
   state: string;
   result: unknown;
-  context: unknown;
+  context: any;
 }
 
 @Injectable()
 export class WorkflowEventEmitterService {
   constructor(private eventEmitter: EventEmitter2) {}
 
-  emit(eventName: string, { runtimeData, state, context }: WorkflowEventRawData) {
+  emit(eventName: string, runtimeRawData: WorkflowEventRawData) {
     if (!eventName) {
       throw new Error('Event name is required');
     }
 
     this.eventEmitter.emit(eventName, {
-      context,
-      entityId: runtimeData.endUserId, // TODO: rename to entityId
-      workflowDefinitionId: runtimeData.workflowDefinitionId,
-      workflowDefinitionVersion: runtimeData.workflowDefinitionVersion,
-      state,
-      result: context, // TODO: final result should be a subset of context, should be defined as part of the workflow definition
+      ...runtimeRawData,
     });
   }
 }

@@ -10,6 +10,7 @@ import { AclValidateRequestInterceptor } from '../access-control/interceptors/ac
 
 import { WorkflowControllerExternal } from './workflow.controller.external';
 import { WorkflowService } from './workflow.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CompleteWorkflowData } from './types';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 
@@ -41,7 +42,7 @@ const aclValidateRequestInterceptor = {
   },
 };
 
-describe.skip('Workflow (external)', () => {
+describe('Workflow (external)', () => {
   let app: INestApplication;
   let moduleRef: TestingModule;
   let wfService: WorkflowService;
@@ -58,6 +59,10 @@ describe.skip('Workflow (external)', () => {
         {
           provide: WorkflowService,
           useValue: wfService,
+        },
+        {
+          provide: EventEmitter2,
+          useValue: {} as EventEmitter2,
         },
       ],
       controllers: [WorkflowControllerExternal],
