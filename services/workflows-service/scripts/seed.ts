@@ -75,7 +75,7 @@ async function seed(bcryptSalt: Salt) {
     const correlationId = faker.datatype.uuid();
     let mockData = {
       entity: {
-        type: 'business', //changed from entityType
+        type: 'business',
         data: {
           companyName: faker.company.companyName(),
           registrationNumber: faker.finance.account(9),
@@ -89,10 +89,6 @@ async function seed(bcryptSalt: Salt) {
           industry: faker.company.catchPhrase(),
           taxIdentificationNumber: faker.finance.account(12),
           vatNumber: faker.finance.account(9),
-          shareholderStructure: JSON.stringify({
-            shareholders: ['Shareholder 1', 'Shareholder 2'],
-            ownershipPercentages: ['40%', '60%'],
-          }),
           numberOfEmployees: faker.datatype.number(1000),
           businessPurpose: faker.company.catchPhraseDescriptor(),
           approvalState: 'NEW',
@@ -104,7 +100,7 @@ async function seed(bcryptSalt: Salt) {
       documents: [
         {
           category: 'ID',
-          type: 'photo', //changed from type
+          type: 'photo',
           issuer: {
             type: 'government',
             name: 'Government',
@@ -144,23 +140,14 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            fullName: {
-              type: 'string', //changed from type
-              value: faker.name.findName(),
-            },
-            dateOfBirth: {
-              type: 'date', //changed from type
-              value: faker.date.past(30).toISOString().split('T')[0],
-            },
-            nationality: {
-              type: 'string', //changed from type
-              value: faker.address.country(),
-            },
+            fullName: faker.name.findName(),
+            dateOfBirth: faker.date.past(30).toISOString().split('T')[0],
+            nationality: faker.address.country(),
           },
         },
         {
           category: 'incorporation',
-          type: 'certificate', //changed from type
+          type: 'certificate',
           issuer: {
             type: 'government',
             name: 'Government',
@@ -186,26 +173,11 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            companyName: {
-              type: 'string', //changed from type
-              value: faker.company.companyName(),
-            },
-            registrationNumber: {
-              type: 'string', //changed from type
-              value: faker.finance.account(9),
-            },
-            issueDate: {
-              type: 'date', //changed from type
-              value: faker.date.past(20).toISOString().split('T')[0],
-            },
-            registeredAddress: {
-              type: 'string', //changed from type
-              value: faker.address.streetAddress(),
-            },
-            businessType: {
-              type: 'string', //changed from type
-              value: faker.company.bs(),
-            },
+            companyName: faker.company.companyName(),
+            registrationNumber: faker.finance.account(9),
+            issueDate: faker.date.past(20).toISOString().split('T')[0],
+            registeredAddress: faker.address.streetAddress(),
+            businessType: faker.company.bs(),
           },
         },
       ],
