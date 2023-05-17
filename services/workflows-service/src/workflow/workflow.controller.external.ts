@@ -45,11 +45,15 @@ export class WorkflowControllerExternal {
   ) {
     const webhookConfig = new ProcessEnvWebhookConfig(process.env);
     const eventEmitter = new EventEmitter();
+    const documentIdentifier = (doc: any) => {
+      return `${doc.category as string}$${doc.type as string}$${doc.issuer.country as string}`;
+    };
 
     const contextChangedWebhookCaller = new ContextChangedWebookCaller(
       eventEmitter,
       webhookConfig,
       HttpService,
+      documentIdentifier,
     );
 
     this.#__service = new WorkflowService(

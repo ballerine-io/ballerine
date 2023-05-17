@@ -77,10 +77,12 @@ describe('WorkflowService', () => {
     };
 
     const eventEmitter = new EventEmitter();
+    const documentIdentifier = doc => doc.testId;
     const contextChangedWebhookCaller = new ContextChangedWebookCaller(
       eventEmitter,
       webhookConfig,
       fakeHttpService,
+      documentIdentifier,
     );
 
     service = new WorkflowService(
@@ -155,13 +157,15 @@ describe('WorkflowService', () => {
         context: {
           documents: [
             {
+              testId: 1,
               decision: {
-                status: 'undecided 1',
+                status: 'undecided',
               },
             },
             {
+              testId: 2,
               decision: {
-                status: 'undecided 2',
+                status: 'undecided',
               },
             },
           ],
@@ -176,13 +180,15 @@ describe('WorkflowService', () => {
         context: {
           documents: [
             {
+              testId: 2,
               decision: {
-                status: 'undecided 1',
+                status: 'decided',
               },
             },
             {
+              testId: 3,
               decision: {
-                status: 'decided 2',
+                status: 'undecided',
               },
             },
           ],
@@ -204,13 +210,15 @@ describe('WorkflowService', () => {
             data: {
               documents: [
                 {
+                  testId: 2,
                   decision: {
-                    status: 'undecided 1',
+                    status: 'decided',
                   },
                 },
                 {
+                  testId: 3,
                   decision: {
-                    status: 'decided 2',
+                    status: 'undecided',
                   },
                 },
               ],
@@ -227,8 +235,15 @@ describe('WorkflowService', () => {
         context: {
           documents: [
             {
+              testId: 1,
               decision: {
-                status: 'undecided 1',
+                status: 'undecided',
+              },
+            },
+            {
+              testId: 2,
+              decision: {
+                status: 'undecided',
               },
             },
           ],
@@ -243,8 +258,15 @@ describe('WorkflowService', () => {
         context: {
           documents: [
             {
+              testId: 2,
               decision: {
-                status: 'undecided 1',
+                status: 'undecided',
+              },
+            },
+            {
+              testId: 3,
+              decision: {
+                status: 'decided',
               },
             },
           ],
