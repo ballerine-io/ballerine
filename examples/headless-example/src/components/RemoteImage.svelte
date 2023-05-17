@@ -27,7 +27,7 @@
   onMount(async () => {
     if (!id) return;
 
-    const response = await fetch(`http://localhost:3000/api/external/storage/${id}`);
+    const response = await fetch(`http://localhost:3000/api/v1/external/storage/${id}`);
     if (!response.ok) {
       throw new Error(`Error fetching fileInfo: ${response.statusText}`);
     }
@@ -37,7 +37,7 @@
       src = fileInfo.uri;
     } else {
       const streamedFile = await fetchBlob<Blob>(
-        `http://localhost:3000/api/external/storage/content/${id}`,
+        `http://localhost:3000/api/v1/external/storage/content/${id}`,
       );
 
       const base64 = await blobToBase64(streamedFile);
