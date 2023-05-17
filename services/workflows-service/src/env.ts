@@ -22,6 +22,7 @@ export const env = createEnv({
     SESSION_SECRET: z.string(),
     BACKOFFICE_CORS_ORIGIN: z.string().url(),
     HEADLESS_EXAMPLE_CORS_ORIGIN: z.string().url(),
+    API_KEY: z.string(),
   },
   client: {},
   /**
@@ -29,4 +30,5 @@ export const env = createEnv({
    * Often `process.env` or `import.meta.env`
    */
   runtimeEnv: process.env,
+  skipValidation: !!process.env.CI,
 });
