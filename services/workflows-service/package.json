@@ -28,6 +28,7 @@
     "docker:build": "docker build .",
     "compose:up": "docker compose up -d",
     "compose:down": "docker compose down --volumes",
+    "upload-sourcemaps": "ts-node scripts/upload-sourcemaps.ts",
     "prepare": "npm run prisma:generate"
   },
   "dependencies": {
