@@ -63,7 +63,7 @@ export const makeWorkflow = (data: {
       state: workflowRuntimeData?.state ?? definition?.initial,
     },
     backend: {
-      baseUrl: 'http://localhost:3000/api/external',
+      baseUrl: 'http://localhost:3000/api/v1/external',
     },
   };
 };

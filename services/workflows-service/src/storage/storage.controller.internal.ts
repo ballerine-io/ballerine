@@ -4,12 +4,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { Response } from 'express';
-import { diskStorage } from 'multer';
 import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
 import { fileFilter } from './file-filter';
-import { getFileName } from './get-file-name';
 import {
   downloadFileFromS3,
   fetchDefaultBucketName,
@@ -26,7 +24,7 @@ export class StorageControllerInternal {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
 
-  // curl -v -F "file=@a.jpg" http://localhost:3000/api/storage
+  // curl -v -F "file=@a.jpg" http://localhost:3000/api/v1/storage
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
@@ -58,7 +56,7 @@ export class StorageControllerInternal {
     return { id };
   }
 
-  // curl -v http://localhost:3000/api/storage/content/1679322938093
+  // curl -v http://localhost:3000/api/v1/storage/content/1679322938093
   @common.Get('/content/:id')
   async fetchFileContent(@Param('id') id: string, @Res() res: Response) {
     // currently ignoring user id due to no user info

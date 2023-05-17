@@ -1,12 +1,12 @@
 import * as common from '@nestjs/common';
-import { Post, UseInterceptors, UploadedFile, Param, Res } from '@nestjs/common';
+import { Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { Response } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
-import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { fileFilter } from './file-filter';
 import {
   downloadFileFromS3,
@@ -55,7 +55,7 @@ export class StorageControllerExternal {
     return { id };
   }
 
-  // curl -v http://localhost:3000/api/storage/1679322938093
+  // curl -v http://localhost:3000/api/v1/storage/1679322938093
   @common.Get('/:id')
   async getFileById(@Param('id') id: string, @Res() res: Response) {
     // currently ignoring user id due to no user info
@@ -70,7 +70,7 @@ export class StorageControllerExternal {
     return res.send(persistedFile);
   }
 
-  // curl -v http://localhost:3000/api/storage/content/1679322938093
+  // curl -v http://localhost:3000/api/v1/storage/content/1679322938093
   @common.Get('/content/:id')
   async fetchFileContent(@Param('id') id: string, @Res() res: Response) {
     // currently ignoring user id due to no user info
