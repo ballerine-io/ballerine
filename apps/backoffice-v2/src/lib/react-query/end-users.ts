@@ -6,8 +6,8 @@ export const endUsers = createQueryKeys('end-users', {
     queryKey: [{ filterId }],
     queryFn: () => api.endUsers.list(filterId),
   }),
-  byId: (endUserId: string) => ({
-    queryKey: [endUserId],
-    queryFn: () => api.endUsers.byId(endUserId),
+  byId: (endUserId: string, filterId: string) => ({
+    queryKey: [{ endUserId, filterId }],
+    queryFn: () => api.endUsers.byId({ endUserId, filterId }),
   }),
 });

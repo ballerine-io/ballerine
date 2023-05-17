@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.4.11
+
+### Patch Changes
+
+- 25f6da9: add workflow-runner tests + fix transition plugin call time
+
 ## 0.4.10
 
 ### Patch Changes

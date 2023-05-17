@@ -1,6 +1,7 @@
 {
   "RESOURCE": {
-    "END_USER": "user"
+    "END_USER": "user",
+    "ASSIGNMENT": ""
   },
   "RESULT": {
     "SUCCEEDED": "Action succeeded:",
@@ -11,7 +12,9 @@
     "REJECT": "reject",
     "RESUBMIT": "resubmit",
     "SIGN_IN": "sign in",
-    "SIGN_OUT": "sign out"
+    "SIGN_OUT": "sign out",
+    "ASSIGNED_TO_ME": "Case Assigned to Me",
+    "ASSIGNED_TO_OTHER": "Case Assigned"
   },
   "EVENT": "{{result}} {{action}} {{resource}}"
 }

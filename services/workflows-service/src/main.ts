@@ -2,15 +2,16 @@ import passport from 'passport';
 import session from 'express-session';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
-import { HttpExceptionFilter } from './filters/HttpExceptions.filter';
+import { HttpExceptionFilter } from '@/common/filters/HttpExceptions.filter';
 import { AppModule } from './app.module';
 import { swaggerDocumentOptions, swaggerPath, swaggerSetupOptions } from './swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - there is an issue with helemet types
 import helmet from 'helmet';
 import { env } from '@/env';
+import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
 
 async function main() {
   const app = await NestFactory.create(AppModule, {
@@ -46,6 +47,10 @@ async function main() {
       transform: true,
     }),
   );
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
 
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
 
@@ -61,6 +66,7 @@ async function main() {
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
   const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
 
   void app.listen(env.PORT);

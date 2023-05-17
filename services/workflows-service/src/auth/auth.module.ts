@@ -6,7 +6,6 @@ import { BasicStrategy } from './basic/basic.strategy';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { PasswordService } from './password/password.service';
 import { TokenService } from './token/token.service';
-
 // eslint-disable-next-line import/no-cycle
 import { UserModule } from '../user/user.module';
 import { LocalStrategy } from '@/auth/local/local.strategy';

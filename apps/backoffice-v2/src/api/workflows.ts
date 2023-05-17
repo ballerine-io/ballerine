@@ -7,13 +7,21 @@ import { apiClient } from './api-client';
 import { handleZodError } from '../utils/handle-zod-error/handle-zod-error';
 import { z } from 'zod';
 import { IWorkflowId } from './interfaces';
+import { ObjectWithIdSchema } from '../lib/zod/utils/object-with-id';
 
 export const workflows = {
   list: async () => {
     const [workflows, error] = await apiClient({
       endpoint: endpoints.workflows.list.endpoint(),
       method: endpoints.workflows.list.method,
-      schema: z.any(),
+      schema: z.array(
+        ObjectWithIdSchema.extend({
+          state: z.string().nullable(),
+          endUserId: z.string().nullable(),
+          businessId: z.string().nullable(),
+          assigneeId: z.string().nullable(),
+        }),
+      ),
     });
 
     return handleZodError(error, workflows);
