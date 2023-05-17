@@ -20,9 +20,10 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { FilterModule } from '@/filter/filter.module';
 import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
+import { VersionController } from './version/version.controller';
 
 @Module({
-  controllers: [],
+  controllers: [VersionController],
   imports: [
     MulterModule.register({
       dest: './upload',
