@@ -32,7 +32,7 @@ import { PassportModule } from '@nestjs/passport';
       imports: [SecretsManagerModule],
       inject: [SecretsManagerService, ConfigService],
       useFactory: async (secretsService: SecretsManagerService, configService: ConfigService) => {
-        const secret = await secretsService.getSecret<string>(INJECTION_TOKEN_JWT_SECRET_KEY);
+        const secret = await secretsService.fetchSecret<string>(INJECTION_TOKEN_JWT_SECRET_KEY);
         const expiresIn = configService.get<string>(JWT_EXPIRATION);
         if (!secret) {
           throw new Error("Didn't get a valid jwt secret");

@@ -175,6 +175,8 @@ model File {
   id             String   @id @default(cuid())
   userId         String
   fileNameOnDisk String
+  uri            String
+  fileNameInBucket      String?
   createdAt      DateTime @default(now())
   createdBy      String   @default("SYSTEM")
 
