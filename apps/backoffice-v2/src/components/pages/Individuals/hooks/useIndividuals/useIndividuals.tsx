@@ -11,8 +11,6 @@ import { individualsRoute } from 'components/pages/Individuals/Individuals.route
 import { individualsIndexRoute } from 'components/pages/Individuals/IndividualsIndex.route';
 import { individualRoute } from 'components/pages/Individual/Individual.route';
 import { useEndUsersWithWorkflowsQuery } from '../../../../../lib/react-query/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
-import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
-import { useConsole } from 'hooks/useConsole/useConsole';
 import { useUsersQuery } from '../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
 import { useSort } from 'hooks/useSort/useSort';
 
@@ -24,7 +22,6 @@ export const useIndividuals = () => {
   const routeId: TRouteId = isIndividuals ? individualsRoute.id : individualRoute.id;
   const { data: users } = useUsersQuery();
   const { data: subjects, isLoading } = useEndUsersWithWorkflowsQuery(users);
-  useConsole(subjects);
   const { searched, onSearch, search } = useSearch({
     routeId,
     data: subjects,

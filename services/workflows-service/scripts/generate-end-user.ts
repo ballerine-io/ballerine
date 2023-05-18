@@ -86,6 +86,7 @@ export const generateBusiness = ({
         workflowDefinitionVersion,
         context,
         workflowDefinitionId,
+        createdAt: faker.date.recent(2),
       },
     },
   };
@@ -125,6 +126,7 @@ export const generateEndUser = ({
           workflowDefinitionVersion,
           context,
           workflowDefinitionId,
+          createdAt: faker.date.recent(2),
         },
       },
     };

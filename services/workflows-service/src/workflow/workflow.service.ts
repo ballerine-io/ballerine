@@ -3,13 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {
-  ApprovalState,
-  Business,
-  Prisma,
-  WorkflowDefinition,
-  WorkflowRuntimeData,
-} from '@prisma/client';
+import { ApprovalState, Prisma, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';

@@ -1,6 +1,7 @@
 import { IFetcher } from './interfaces';
 import { handlePromise } from '../handle-promise/handle-promise';
 import { isZodError } from '../is-zod-error/is-zod-error';
+import { HttpError } from '../../errors/http-error';
 
 export const fetcher: IFetcher = async ({
   url,
@@ -41,7 +42,7 @@ export const fetcher: IFetcher = async ({
 
     console.error(message);
 
-    throw new Error(message);
+    throw new HttpError(res.status, message);
   }
 
   const [data, jsonError] = isBlob
