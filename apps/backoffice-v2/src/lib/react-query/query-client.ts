@@ -78,7 +78,7 @@ export const queryClient = new QueryClient({
             })
           : t('RESULT.FAILED').replace(':', '');
 
-      toast.error(message);
+      toast.error(`${message}\n ${error.message}`);
     },
   }),
 });

@@ -67,10 +67,9 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     caseState,
     authenticatedUser,
     assignees,
+    isActionButtonDisabled,
+    onTriggerAssignToMe,
   } = useActions({ endUserId: id, fullName });
-
-  const actionButtonDisabled = !caseState.actionButtonsEnabled;
-  const isAssignedToMe = true;
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-4`}>
@@ -85,7 +84,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, isAssignedToMe);
+            onMutateAssignWorkflow(id, onTriggerAssignToMe);
           }}
           buttonType={'Assign'}
         />
@@ -94,7 +93,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, !isAssignedToMe);
+            onMutateAssignWorkflow(id, !onTriggerAssignToMe);
           }}
           buttonType={'Re-Assign'}
         />
@@ -190,7 +189,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                         key={reason}
                         value={reason}
                         disabled={
-                          actionButtonDisabled && reason !== ResubmissionReason.BLURRY_IMAGE
+                          isActionButtonDisabled && reason !== ResubmissionReason.BLURRY_IMAGE
                         }
                       >
                         {capitalizedReason}
@@ -209,7 +208,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                       documentToResubmit,
                       resubmissionReason,
                     })}
-                    disabled={actionButtonDisabled && !resubmissionReason}
+                    disabled={isActionButtonDisabled && !resubmissionReason}
                   >
                     Confirm
                   </button>

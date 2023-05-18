@@ -97,6 +97,8 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
     (value: string) => setResubmissionReason(value as keyof typeof ResubmissionReason),
     [setResubmissionReason],
   );
+  const isActionButtonDisabled = !caseState.actionButtonsEnabled;
+  const onTriggerAssignToMe = true;
 
   useDocumentListener('keydown', event => {
     if (!event.ctrlKey || document.activeElement !== document.body) return;
@@ -123,6 +125,8 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
   });
 
   return {
+    onTriggerAssignToMe,
+    isActionButtonDisabled,
     onMutateApproveEndUser,
     onMutateRejectEndUser,
     onMutateAssignWorkflow,

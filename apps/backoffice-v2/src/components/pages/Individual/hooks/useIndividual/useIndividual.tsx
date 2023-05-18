@@ -37,6 +37,8 @@ import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
 import { Form } from 'components/organisms/Form/Form';
 import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/useStorageFilesQuery/useStorageFilesQuery';
 import toast from 'react-hot-toast';
+import { useCaseState } from 'components/organisms/Subject/hooks/useCaseState/useCaseState';
+import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -136,6 +138,7 @@ export const useIndividual = () => {
                   // loading: debouncedIsLoadingRejectEndUser,
                 })}
                 // disabled={isLoading || !canReject}
+                disabled={!caseState.actionButtonsEnabled}
               >
                 {value}
               </Button>
@@ -217,7 +220,9 @@ export const useIndividual = () => {
           className={ctw({
             loading: isLoadingUpdateWorkflowById,
           })}
-          disabled={isLoadingUpdateWorkflowById || isApprovedTask}
+          disabled={
+            isLoadingUpdateWorkflowById || isApprovedTask || !caseState.actionButtonsEnabled
+          }
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
             approvalStatus: data?.approvalStatus,
@@ -317,6 +322,8 @@ export const useIndividual = () => {
       );
     },
   };
+  const { data: session } = useGetSessionQuery();
+  const caseState = useCaseState(session?.user, endUser?.workflow);
   const tasks = endUser?.workflow?.workflowContext?.machineContext?.entity
     ? [
         [
@@ -382,13 +389,13 @@ export const useIndividual = () => {
                       id,
                       title: category,
                       data: Object.entries(propertiesSchema?.properties ?? {})?.map(
-                        ([title, { type, format, pattern, isEditable }]) => ({
+                        ([title, { type, format, pattern, isEditable = true }]) => ({
                           title,
                           value: properties?.[title] ?? '',
                           type,
                           format,
                           pattern,
-                          isEditable: true,
+                          isEditable: caseState.writeEnabled && isEditable,
                         }),
                       ),
                     },

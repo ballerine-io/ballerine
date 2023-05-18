@@ -142,7 +142,13 @@ export class WorkflowService {
     const isValidContextSchema = validateContextSchema(context);
 
     if (!isValidContextSchema) {
-      throw new BadRequestException(validateContextSchema.errors);
+      throw new BadRequestException(
+        validateContextSchema.errors?.map(({ instancePath, message, ...rest }) => ({
+          ...rest,
+          instancePath,
+          message: `${instancePath} ${message}`,
+        })),
+      );
     }
 
     // @ts-ignore
@@ -151,12 +157,18 @@ export class WorkflowService {
       const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
       if (!isValidPropertiesSchema) {
-        throw new BadRequestException(validatePropertiesSchema.errors);
+        throw new BadRequestException(
+          validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
+            ...rest,
+            message: `${instancePath} ${message}`,
+            instancePath,
+          })),
+        );
       }
     });
 
     this.logger.log(
-      `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
+      `Context update received from client: [${runtimeData.state} -> ${data.state} ]`,
     );
 
     // in case current state is a final state, we want to create another machine, of type manual review.
