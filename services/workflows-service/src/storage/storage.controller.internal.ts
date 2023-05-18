@@ -4,12 +4,15 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { Response } from 'express';
-import { diskStorage } from 'multer';
 import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
 import { fileFilter } from './file-filter';
-import { getFileName } from './get-file-name';
+import {
+  downloadFileFromS3,
+  fetchDefaultBucketName,
+  manageFileByProvider,
+} from '@/storage/get-file-storage-manager';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -21,14 +24,11 @@ export class StorageControllerInternal {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
 
-  // curl -v -F "file=@a.jpg" http://localhost:3000/api/storage
+  // curl -v -F "file=@a.jpg" http://localhost:3000/api/v1/storage
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './upload',
-        filename: getFileName,
-      }),
+      storage: manageFileByProvider(process.env),
       fileFilter,
     }),
   )
@@ -44,9 +44,11 @@ export class StorageControllerInternal {
       },
     },
   })
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(@UploadedFile() file: Partial<Express.MulterS3.File>) {
     const id = await this.service.createFileLink({
-      fileNameOnDisk: file.filename,
+      uri: file.location || String(file.path),
+      fileNameOnDisk: String(file.path),
+      fileNameInBucket: file.key,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
     });
@@ -54,19 +56,26 @@ export class StorageControllerInternal {
     return { id };
   }
 
-  // curl -v http://localhost:3000/api/storage/1679322938093
-  @common.Get('/:id')
-  async getFileById(@Param('id') id: string, @Res() res: Response) {
+  // curl -v http://localhost:3000/api/v1/storage/content/1679322938093
+  @common.Get('/content/:id')
+  async fetchFileContent(@Param('id') id: string, @Res() res: Response) {
     // currently ignoring user id due to no user info
-    const fileNameOnDisk = await this.service.getFileNameById({
+    const persistedFile = await this.service.getFileNameById({
       id,
       userId: '',
     });
-
-    if (!fileNameOnDisk) {
+    if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }
 
-    return res.sendFile(fileNameOnDisk, { root: './upload' });
+    if (persistedFile.fileNameInBucket) {
+      const localFilePath = await downloadFileFromS3(
+        fetchDefaultBucketName(process.env),
+        persistedFile.fileNameInBucket,
+      );
+      return res.sendFile(localFilePath, { root: '/' });
+    } else {
+      return res.sendFile(persistedFile.fileNameOnDisk, { root: './upload' });
+    }
   }
 }

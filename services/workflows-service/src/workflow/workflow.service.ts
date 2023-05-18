@@ -3,15 +3,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
-import { ApprovalState, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import { ApprovalState, Prisma, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { merge, isEqual } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
@@ -21,6 +19,14 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+import { DefaultContextSchema } from './schemas/context';
+
+const ajv = new Ajv({
+  strict: false,
+});
+addFormats(ajv, { formats: ['email', 'uri'] });
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -88,6 +94,13 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.findById(id, args);
   }
 
+  async getWorkflowRuntimeDataByCorrelationId(
+    id: string,
+    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+  ) {
+    return await this.workflowRuntimeDataRepository.findById(id, args);
+  }
+
   async getWorkflowDefinitionById(
     id: string,
     args?: Parameters<WorkflowDefinitionRepository['findById']>[1],
@@ -101,6 +114,7 @@ export class WorkflowService {
         state: true,
         endUserId: true,
         businessId: true,
+        assigneeId: true,
         id: true,
       },
     });
@@ -177,6 +191,8 @@ export class WorkflowService {
     // TODO: Move to a separate method
     if (data.state) {
       if (isFinal && workflow.reviewMachineId) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await this.handleRuntimeFinalState(runtimeData, data.context, workflow);
       }
     }
@@ -280,6 +296,7 @@ export class WorkflowService {
       status: 'completed',
     });
   }
+
   async resolveIntent(
     intent: string,
     entityId: string,
@@ -289,11 +306,73 @@ export class WorkflowService {
 
     // TODO: implement logic for multiple workflows
     const { workflowDefinitionId } = workflowDefinitionResolver()[0];
+    const context: DefaultContextSchema = {
+      entity: { ballerineEntityId: entityId, entityType: tempEntityType },
+      documents: [],
+    };
+    return this.createWorkflowRuntime({ workflowDefinitionId, context });
+  }
+
+  async createWorkflowRuntime({
+    workflowDefinitionId,
+    context,
+  }: {
+    workflowDefinitionId: string;
+    context: DefaultContextSchema;
+  }): Promise<RunnableWorkflowData[]> {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
+    if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema!).length) {
+      const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
+      const validationResult = validate(context);
+      console.log('validationResult', validationResult);
+
+      if (!validationResult) {
+        console.log(validate.errors);
+        throw new BadRequestException('Invalid context', JSON.stringify(validate.errors));
+      }
+    }
+    const { entity } = context;
+
+    // extract this logic into entity service
+    let entityId: string | null;
+    if (entity.ballerineEntityId) {
+      entityId = entity.ballerineEntityId as string;
+    } else {
+      if (entity.type === 'business') {
+        const res = await this.businessRepository.findByCorrelationId(entity.id as string);
+        entityId = res && (res.id as string);
+      } else {
+        const res = await this.endUserRepository.findByCorrelationId(entity.id as string);
+        entityId = res && res.id;
+      }
+    }
+
+    if (!entityId) {
+      if (!entity.data) throw new BadRequestException('Entity data is required');
+      // TODO: run validation on entity data
+      if (entity.type === 'business') {
+        const { id } = await this.businessRepository.create({
+          data: {
+            correlationId: entity.id,
+            ...(context.entity.data as object),
+          } as Prisma.BusinessCreateInput,
+        });
+        entityId = id;
+      } else {
+        const { id } = await this.endUserRepository.create({
+          data: {
+            correlationId: entity.id,
+            ...(context.entity.data as object),
+          } as Prisma.EndUserCreateInput,
+        });
+        entityId = id;
+      }
+    }
+
     const entityConnect: any = {} as any;
-    if (tempEntityType === 'endUser') {
+    if (entity.type === 'individual') {
       entityConnect.endUser = {
         connect: {
           id: entityId,
@@ -328,6 +407,7 @@ export class WorkflowService {
       {
         workflowDefinition,
         workflowRuntimeData,
+        ballerineEntityId: entityId,
       },
     ];
   }

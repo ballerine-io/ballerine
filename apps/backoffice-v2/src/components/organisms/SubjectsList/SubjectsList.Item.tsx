@@ -8,6 +8,7 @@ import { Link } from '@tanstack/react-router';
 import { createInitials } from '../../../utils/create-initials/create-initials';
 import { ctw } from '../../../utils/ctw/ctw';
 import { useEllipsesWithTitle } from 'hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { SubjectsList } from './SubjectsList';
 
 /**
  * @description To be used by {@link SubjectsList}, and be wrapped by {@link SubjectsList.List}. Uses an li element with default styling to display a single subject's data. Navigates to the selected end user on click by setting the end user id into the path param.
@@ -29,12 +30,13 @@ export const Item: FunctionComponent<IItemProps> = ({
   id,
   fullName,
   createdAt,
-  assignedTo,
+  assigneeId,
+  assigneeFullName,
   avatarUrl,
   status,
 }) => {
   const timePast = getTimePastFromNow(new Date(createdAt));
-  const initials = createInitials(fullName);
+  const initials = createInitials(assigneeFullName);
   const { ref, styles } = useEllipsesWithTitle();
 
   return (
@@ -47,7 +49,7 @@ export const Item: FunctionComponent<IItemProps> = ({
         }}
         preload={'intent'}
         activeProps={{
-          className: `bg-slate-200 shadow border border-slate-300`,
+          className: `bg-muted`,
         }}
         className={`flex items-center gap-x-4 rounded-md outline-none`}
       >
@@ -82,14 +84,14 @@ export const Item: FunctionComponent<IItemProps> = ({
           <div className={`text-sm`}>Waiting {timePast}</div>
         </div>
         <div className={`ml-auto mr-1 flex -space-x-2 overflow-hidden`}>
-          {!!assignedTo && (
+          {!!assigneeId && (
             <Avatar
-              key={assignedTo}
+              key={assigneeId}
               // src={assignedTo}
               src={''}
-              placeholder={'O'}
-              alt={`Operator's avatar`}
-              className={`h-4 w-4 text-[0.6rem]`}
+              placeholder={initials}
+              alt={`assigned to: ${assigneeFullName}`}
+              className={`h-6 w-6 pt-1 text-[0.6rem]`}
             />
           )}
         </div>

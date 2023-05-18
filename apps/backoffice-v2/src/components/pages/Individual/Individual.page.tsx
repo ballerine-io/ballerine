@@ -1,6 +1,7 @@
 import { Subject } from 'components/organisms/Subject/Subject';
 import { useIndividual } from 'components/pages/Individual/hooks/useIndividual/useIndividual';
 import { ctw } from '../../../utils/ctw/ctw';
+import { Card, CardContent } from 'components/atoms/Card/card';
 
 export const Individual = () => {
   const { selectedEndUser, tasks, components } = useIndividual();
@@ -15,16 +16,23 @@ export const Individual = () => {
         avatarUrl={selectedEndUser.avatarUrl}
       />
       <Subject.Content>
-        {tasks?.map((task, index) => (
-          <div
-            className={ctw('grid gap-2 rounded border border-slate-300 bg-slate-200 p-1 shadow', {
-              'grid-cols-2': task?.some(field => field?.type === 'multiDocuments'),
-            })}
-            key={index}
-          >
-            {task?.map(field => components[field.type]?.(field))}
-          </div>
-        ))}
+        {Array.isArray(tasks) && tasks?.length > 0
+          ? tasks?.map((task, index) => (
+              <Card key={index}>
+                <CardContent
+                  className={ctw('grid gap-2', {
+                    'grid-cols-2': task?.some(field => field?.type === 'multiDocuments'),
+                  })}
+                >
+                  {task?.map((field, index) => {
+                    const Cell = components[field?.type];
+
+                    return <Cell key={index} {...field} />;
+                  })}
+                </CardContent>
+              </Card>
+            ))
+          : null}
       </Subject.Content>
     </Subject>
   );

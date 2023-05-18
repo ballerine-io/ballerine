@@ -30,6 +30,16 @@ export class BusinessRepository {
     });
   }
 
+  async findByCorrelationId<T extends Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>(
+    id: string,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>,
+  ) {
+    return await this.prisma.business.findUnique({
+      where: { correlationId: id },
+      ...args,
+    });
+  }
+
   async updateById<T extends Omit<Prisma.BusinessUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.BusinessUpdateArgs, 'where'>>,

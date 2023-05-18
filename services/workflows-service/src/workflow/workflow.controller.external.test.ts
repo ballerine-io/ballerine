@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus, ExecutionContext, CallHandler } from '@nestjs/common';
+import { CallHandler, ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { MorganModule } from 'nest-morgan';
 import { ACGuard } from 'nest-access-control';
 import { DefaultAuthGuard } from '../auth/default-auth.guard';
-import { ACLModule } from '../access-control/acl.module';
-import { AclFilterResponseInterceptor } from '../access-control/interceptors/acl-filter-response.interceptor';
-import { AclValidateRequestInterceptor } from '../access-control/interceptors/acl-validate-request.interceptor';
+import { ACLModule } from '@/common/access-control/acl.module';
+import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
+import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
 
 import { WorkflowControllerExternal } from './workflow.controller.external';
 import { WorkflowService } from './workflow.service';

@@ -1,4 +1,4 @@
-import { StringFilter } from '@/query-filters/string-filter';
+import { StringFilter } from '@/common/query-filters/string-filter';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApprovalState } from '@prisma/client';
 import { Type } from 'class-transformer';
@@ -23,7 +23,7 @@ export class BusinessModel {
     type: StringFilter,
   })
   @Type(() => StringFilter)
-  registrationNumber!: string;
+  registrationNumber?: string | null;
 
   @ApiProperty({
     required: false,
