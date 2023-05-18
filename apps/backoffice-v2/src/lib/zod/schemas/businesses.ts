@@ -15,6 +15,7 @@ export const BusinessesListSchema = z
         workflows => workflows?.[0],
         ObjectWithIdSchema.extend({
           assigneeId: z.string().nullable().optional(),
+          createdAt: z.string().datetime(),
         }).optional(),
       ),
     }),

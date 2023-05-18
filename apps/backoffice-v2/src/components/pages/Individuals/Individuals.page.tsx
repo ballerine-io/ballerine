@@ -46,7 +46,7 @@ export const Individuals = () => {
                     id,
                     firstName,
                     lastName,
-                    createdAt,
+                    caseCreatedAt,
                     companyName,
                     assigneeId,
                     assigneeFullName,
@@ -58,7 +58,7 @@ export const Individuals = () => {
                       id={id}
                       fullName={entity !== 'businesses' ? `${firstName} ${lastName}` : companyName}
                       avatarUrl={avatarUrl}
-                      createdAt={createdAt}
+                      createdAt={caseCreatedAt}
                       assigneeId={assigneeId}
                       assigneeFullName={assigneeFullName}
                       status={approvalState}

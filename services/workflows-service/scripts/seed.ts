@@ -44,6 +44,13 @@ async function seed(bcryptSalt: Salt) {
       password: await hash('admin3', bcryptSalt),
       roles: ['user'],
     },
+    {
+      email: 'q@q.q',
+      firstName: 'Alon',
+      lastName: 'MAMI',
+      password: await hash('q', bcryptSalt),
+      roles: ['user'],
+    },
   ];
   for (const user of users) {
     await client.user.upsert({
@@ -140,9 +147,12 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            fullName: faker.name.findName(),
-            dateOfBirth: faker.date.past(30).toISOString().split('T')[0],
-            nationality: faker.address.country(),
+            userNationalId: faker.datatype.uuid(),
+            docNumber: faker.finance.account(9),
+            userAddress: faker.address.streetAddress(),
+            website: faker.internet.url(),
+            expiryDate: faker.date.future(10).toISOString().split('T')[0],
+            email: faker.internet.email(),
           },
         },
         {
@@ -173,11 +183,12 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            companyName: faker.company.companyName(),
-            registrationNumber: faker.finance.account(9),
-            issueDate: faker.date.past(20).toISOString().split('T')[0],
-            registeredAddress: faker.address.streetAddress(),
-            businessType: faker.company.bs(),
+            userNationalId: faker.datatype.uuid(),
+            docNumber: faker.finance.account(9),
+            userAddress: faker.address.streetAddress(),
+            website: faker.internet.url(),
+            expiryDate: faker.date.future(10).toISOString().split('T')[0],
+            email: faker.internet.email(),
           },
         },
       ],
@@ -463,6 +474,7 @@ async function seed(bcryptSalt: Salt) {
               id: true,
               status: true,
               assigneeId: true,
+              createdAt: true,
               workflowDefinition: {
                 select: {
                   id: true,
@@ -516,6 +528,7 @@ async function seed(bcryptSalt: Salt) {
               id: true,
               status: true,
               assigneeId: true,
+              createdAt: true,
               workflowDefinition: {
                 select: {
                   id: true,
@@ -564,17 +577,19 @@ async function seed(bcryptSalt: Salt) {
         workflowDefinitionId: onboardingMachineKybId,
         workflowDefinitionVersion: manualMachineVersion,
         context: {},
+        createdAt: faker.date.recent(2),
       };
       const riskWf = () => ({
         workflowDefinitionId: riskScoreMachineKybId,
         workflowDefinitionVersion: 1,
         context: createMockContextData(),
+        createdAt: faker.date.recent(2),
       });
 
       return client.business.create({
         data: generateBusiness({
           id,
-          workflow: Math.random() > 0.5 ? riskWf() : exampleWf,
+          workflow: Math.random() > 0.6 ? riskWf() : exampleWf,
         }),
       });
     }),

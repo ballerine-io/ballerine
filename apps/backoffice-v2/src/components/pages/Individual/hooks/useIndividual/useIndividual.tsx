@@ -336,7 +336,7 @@ export const useIndividual = () => {
           },
         ],
         ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
-          ({ type, category, issuer, properties }, index) => {
+          ({ type, category, issuer, properties, propertiesSchema }, index) => {
             const id = `${type}${category}${issuer?.country ?? ''}`;
 
             return [
@@ -367,11 +367,13 @@ export const useIndividual = () => {
                 value: {
                   id,
                   title: category,
-                  data: Object.entries(properties ?? {}).map(
-                    ([title, { value, type, isEditable }]) => ({
+                  data: Object.entries(propertiesSchema?.properties ?? {}).map(
+                    ([title, { type, format, pattern, isEditable }]) => ({
                       title,
-                      value,
+                      value: properties?.[title] ?? '',
                       type,
+                      format,
+                      pattern,
                       isEditable,
                     }),
                   ),

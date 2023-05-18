@@ -20,10 +20,11 @@ export class BusinessModel {
   companyName!: string | null;
 
   @ApiProperty({
+    required: false,
     type: StringFilter,
   })
   @Type(() => StringFilter)
-  registrationNumber!: string | null;
+  registrationNumber?: string | null;
 
   @ApiProperty({
     required: false,

@@ -5,12 +5,13 @@ export const useEndUsersWithWorkflowsQuery = (users: TUsers) => {
   return useEndUsersQuery({
     select: endUsers =>
       endUsers.map(endUser => {
-        const assigneeId = endUser.workflowRuntimeData?.assigneeId;
-
+        const assigneeId = endUser?.workflowRuntimeData?.assigneeId;
+        console.log(endUser?.workflowRuntimeData);
         return {
           ...endUser,
-          assigneeId: assigneeId,
-          assigneeFullName: users?.find(user => user.id == assigneeId)?.fullName,
+          assigneeId,
+          assigneeFullName: users?.find(user => user?.id === assigneeId)?.fullName,
+          caseCreatedAt: endUser?.workflowRuntimeData?.createdAt,
         };
       }),
   });
