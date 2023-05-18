@@ -81,7 +81,7 @@ const rulesSetSchema = {
         status: { type: 'string' },
         fidoScore: { type: 'string' },
       },
-      required: ['status', 'fidoScore'],
+      required: ['status', 'riskScore'],
     },
   },
   required: ['rules', 'result'],

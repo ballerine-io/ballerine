@@ -21,9 +21,8 @@ export const enrichWorkflowRuntimeData = (workflowRuntimeData: WorkflowRuntimeDa
       return { ...document, propertiesSchema };
     });
 
-    return {
-      ...workflowRuntimeData,
-      documents: result,
-    };
+    workflowRuntimeData.context.documents = result;
   }
+
+  return workflowRuntimeData;
 };
