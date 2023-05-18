@@ -1,10 +1,7 @@
 declare module '@prisma/client' {
-  import type { User as PrismaUser } from '@prisma/client/index';
+  import type { WorkflowRuntimeData as _WorkflowRuntimeData } from '@prisma/client/index';
   export * from '@prisma/client/index';
-
-  namespace Prisma {
-    type JsonValue = unknown;
-  }
+  export type WorkflowRuntimeData = Omit<_WorkflowRuntimeData, 'context'> & { context: any };
 }
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
