@@ -60,6 +60,7 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
         message: message,
         statusCode: statusCode,
       };
+      console.error('HTTP exception filter:', errorResponse);
       response.status(statusCode).send(errorResponse);
     }
     return new HttpException({ statusCode, message }, statusCode);

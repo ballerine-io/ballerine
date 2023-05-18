@@ -68,6 +68,7 @@ describe('WorkflowControllerInternal', () => {
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
       {} as any,
+      {} as any,
       eventEmitterSpy,
     );
 

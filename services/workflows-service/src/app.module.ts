@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, Scope } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod, Scope } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MorganInterceptor, MorganModule } from 'nest-morgan';
 import { UserModule } from './user/user.module';
@@ -7,7 +7,6 @@ import { ACLModule } from '@/common/access-control/acl.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { SecretsManagerModule } from '@/common/providers/secrets/secrets-manager.module';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ServeStaticOptionsService } from './serve-static-options.service';
@@ -16,14 +15,16 @@ import { BusinessModule } from './business/business.module';
 import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { FilterModule } from '@/filter/filter.module';
 import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
+import { env } from '@/env';
+import { SentryModule } from '@/sentry/sentry.module';
 
 @Module({
   controllers: [],
   imports: [
+    SentryModule,
     MulterModule.register({
       dest: './upload',
       limits: {
@@ -32,9 +33,9 @@ import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
     }),
     EventEmitterModule.forRoot(),
     WebhooksModule,
-    DevtoolsModule.register({
-      http: process.env.NODE_ENV !== 'production',
-    }),
+    // DevtoolsModule.register({
+    //   http: process.env.NODE_ENV !== 'production',
+    // }),
     UserModule,
     WorkflowModule,
     StorageModule,
@@ -45,9 +46,11 @@ import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
     AuthModule,
     HealthModule,
     PrismaModule,
-    SecretsManagerModule,
     MorganModule,
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: process.env.ENV_FILE_NAME || '.env' }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: env.ENV_FILE_NAME ?? '.env',
+    }),
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),
@@ -62,6 +65,9 @@ import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SessionAuthMiddleware).forRoutes('internal/*');
+    consumer.apply(SessionAuthMiddleware).forRoutes({
+      path: 'v(\\d)+/internal/*',
+      method: RequestMethod.ALL,
+    });
   }
 }
