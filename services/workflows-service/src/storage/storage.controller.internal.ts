@@ -13,7 +13,6 @@ import {
   fetchDefaultBucketName,
   manageFileByProvider,
 } from '@/storage/get-file-storage-manager';
-import console from 'console';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')

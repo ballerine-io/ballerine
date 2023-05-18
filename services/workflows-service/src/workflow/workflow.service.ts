@@ -30,13 +30,14 @@ import { FileService } from '@/providers/file/file.service';
 import * as process from 'process';
 import { generateAwsConfig } from '@/storage/get-file-storage-manager';
 import * as crypto from 'crypto';
+import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-page-schema';
+import { env } from '@/env';
+
 type TEntityId = string;
 const ajv = new Ajv({
   strict: false,
 });
-import { env } from '@/env';
 addFormats(ajv, { formats: ['email', 'uri'] });
-type TDefaultSchemaDocumentPage = DefaultContextSchema['documents'][number]['pages'][number];
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
   CUT_IMAGE: 'CUT_IMAGE',
@@ -357,38 +358,48 @@ export class WorkflowService {
   ) {
     return await Promise.all(
       document.pages.map(async documentPage => {
-        const id = `${document?.category}-${document?.type}-${document?.issuer?.country}`;
-
-        const documentContext =
-          `${document?.category}-${document?.type}-${document?.issuer?.country}`.toLowerCase();
-        const documentName = `${entityId}/${documentContext}_${crypto.randomUUID()}.${
-          documentPage.type
-        }`;
-
-        const { fromServiceProvider, fromRemoteFileConfig } =
-          this.__fetchFromServiceProviders(documentPage);
-        const { toServiceProvider, toRemoteFileConfig, remoteFileName } =
-          this.__fetchToServiceProviders(documentName);
-
-        const remoteFilePath = await this.fileService.copyFileFromSourceToSource(
-          fromServiceProvider,
-          fromRemoteFileConfig,
-          toServiceProvider,
-          toRemoteFileConfig,
-        );
-        const fileNameInBucket =
-          typeof remoteFilePath != 'string' ? remoteFilePath.fileNameInBucket : undefined;
-        const userId = entityId;
-        const ballerineFileId = await this.storageService.createFileLink({
-          uri: remoteFileName,
-          fileNameOnDisk: remoteFileName,
-          userId,
-          fileNameInBucket,
-        });
+        const ballerineFileId =
+          documentPage.ballerineFileId ||
+          (await this.__copyFileToDestinationAndCraeteFile(document, entityId, documentPage));
 
         return { ...documentPage, ballerineFileId };
       }),
     );
+  }
+
+  private async __copyFileToDestinationAndCraeteFile(
+    document: DefaultContextSchema['documents'][number],
+    entityId: string,
+    documentPage: TDefaultSchemaDocumentPage,
+  ) {
+    const documentContext =
+      `${document?.category}-${document?.type}-${document?.issuer?.country}`.toLowerCase();
+    const documentName = `${entityId}/${documentContext}_${crypto.randomUUID()}.${
+      documentPage.type
+    }`;
+
+    console.log(`UPloading ${documentName} upload to S3`);
+    const { fromServiceProvider, fromRemoteFileConfig } =
+      this.__fetchFromServiceProviders(documentPage);
+    const { toServiceProvider, toRemoteFileConfig, remoteFileName } =
+      this.__fetchToServiceProviders(documentName);
+
+    const remoteFilePath = await this.fileService.copyFileFromSourceToDestination(
+      fromServiceProvider,
+      fromRemoteFileConfig,
+      toServiceProvider,
+      toRemoteFileConfig,
+    );
+    const fileNameInBucket =
+      typeof remoteFilePath != 'string' ? remoteFilePath.fileNameInBucket : undefined;
+    const userId = entityId;
+    const ballerineFileId = await this.storageService.createFileLink({
+      uri: remoteFileName,
+      fileNameOnDisk: remoteFileName,
+      userId,
+      fileNameInBucket,
+    });
+    return ballerineFileId;
   }
 
   private async __findOrPersistEntityInformation(context: DefaultContextSchema) {
