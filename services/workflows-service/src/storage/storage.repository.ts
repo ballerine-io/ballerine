@@ -20,21 +20,18 @@ export class FileRepository {
   }
 
   async findById<T extends Omit<Prisma.FileFindFirstArgs, 'where'>>(
-    { id, userId }: IFileIds,
+    { id }: IFileIds,
     args?: Prisma.SelectSubset<T, Omit<Prisma.FileFindFirstArgs, 'where'>>,
   ): Promise<File | null> {
     return await this.prisma.file.findFirst({
-      where: { id, userId },
+      where: { id },
       ...args,
     });
   }
 
-  async findNameById({ id, userId }: IFileIds) {
+  async findNameById({ id }: IFileIds) {
     return await this.findById(
-      {
-        userId,
-        id,
-      },
+      { id },
       {
         select: {
           fileNameOnDisk: true,

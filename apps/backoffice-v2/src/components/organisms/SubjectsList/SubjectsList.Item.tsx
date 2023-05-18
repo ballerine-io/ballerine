@@ -36,7 +36,8 @@ export const Item: FunctionComponent<IItemProps> = ({
   status,
 }) => {
   const timePast = getTimePastFromNow(new Date(createdAt));
-  const initials = createInitials(assigneeFullName);
+  const assigneeInitials = createInitials(assigneeFullName);
+  const entityInitials = createInitials(fullName);
   const { ref, styles } = useEllipsesWithTitle();
 
   return (
@@ -70,9 +71,9 @@ export const Item: FunctionComponent<IItemProps> = ({
           </motion.div>
           <Avatar
             src={avatarUrl}
-            placeholder={!avatarUrl ? initials : undefined}
+            placeholder={!avatarUrl ? entityInitials : undefined}
             alt={`${fullName}'s avatar`}
-            className={`d-9`}
+            className={`pt-1.5 d-9`}
           />
         </div>
         <div>
@@ -89,7 +90,7 @@ export const Item: FunctionComponent<IItemProps> = ({
               key={assigneeId}
               // src={assignedTo}
               src={''}
-              placeholder={initials}
+              placeholder={assigneeInitials}
               alt={`assigned to: ${assigneeFullName}`}
               className={`h-6 w-6 pt-1 text-[0.6rem]`}
             />

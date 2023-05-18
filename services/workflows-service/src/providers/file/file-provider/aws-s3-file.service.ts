@@ -144,18 +144,17 @@ export class AwsS3FileService implements IStreamableFileProvider {
   ) {
     const s3FileConfig = remoteFileConfig;
     const getObjectCommandInput = this._fetchBucketPath(s3FileConfig);
-    const remoteFileName = path.parse(fileName).base;
     const isPrivate = s3FileConfig.private;
 
     const putObjectParams = {
       ...getObjectCommandInput,
       Body: readableStream,
-      Key: remoteFileName,
+      Key: fileName,
     };
 
     const putObjectCommand = new PutObjectCommand(putObjectParams);
 
-    return { remoteFileName, isPrivate, putObjectCommand };
+    return { remoteFileName: fileName, isPrivate, putObjectCommand };
   }
 
   private _fetchBucketPath(remoteFileConfig: TS3BucketConfig) {

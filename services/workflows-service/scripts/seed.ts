@@ -1,6 +1,5 @@
 import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker';
-
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
