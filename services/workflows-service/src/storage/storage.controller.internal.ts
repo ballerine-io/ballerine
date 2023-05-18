@@ -8,11 +8,8 @@ import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
 import { fileFilter } from './file-filter';
-import {
-  downloadFileFromS3,
-  fetchDefaultBucketName,
-  manageFileByProvider,
-} from '@/storage/get-file-storage-manager';
+import { downloadFileFromS3, manageFileByProvider } from '@/storage/get-file-storage-manager';
+import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -84,7 +81,7 @@ export class StorageControllerInternal {
 
     if (persistedFile.fileNameInBucket) {
       const localFilePath = await downloadFileFromS3(
-        fetchDefaultBucketName(process.env),
+        AwsS3FileConfig.fetchBucketName(process.env) as string,
         persistedFile.fileNameInBucket,
       );
       return res.sendFile(localFilePath, { root: '/' });

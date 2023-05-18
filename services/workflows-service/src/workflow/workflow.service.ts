@@ -28,10 +28,11 @@ import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.ser
 import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
 import * as process from 'process';
-import { generateAwsConfig } from '@/storage/get-file-storage-manager';
 import * as crypto from 'crypto';
 import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-page-schema';
 import { env } from '@/env';
+import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
+import { S3Client } from '@aws-sdk/client-s3';
 
 type TEntityId = string;
 const ajv = new Ajv({
@@ -589,7 +590,7 @@ export class WorkflowService {
     }
     if (document.provider == 'aws_s3' && z.string().parse(document.uri)) {
       const prefixConfigName = `REMOTE`;
-      const s3ClientConfig = generateAwsConfig(process.env, prefixConfigName);
+      const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env, prefixConfigName);
       const s3BucketConfig = this.__fetchAwsConfigFor(document.uri);
 
       return {
@@ -606,8 +607,8 @@ export class WorkflowService {
     toRemoteFileConfig: TRemoteFileConfig;
     remoteFileName: string;
   } {
-    if (this.__fetchBucketName(env, false)) {
-      const s3ClientConfig = generateAwsConfig(process.env);
+    if (this.__fetchBucketName(process.env, false)) {
+      const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
       const awsConfigForClient = this.__fetchAwsConfigFor(fileName);
       return {
         toServiceProvider: new AwsS3FileService(s3ClientConfig),
@@ -624,7 +625,7 @@ export class WorkflowService {
   }
 
   private __fetchAwsConfigFor(fileNameInBucket: string): TS3BucketConfig {
-    const bucketName = this.__fetchBucketName(env, true) as string;
+    const bucketName = this.__fetchBucketName(process.env, true) as string;
 
     return {
       bucketName: bucketName,
@@ -633,8 +634,8 @@ export class WorkflowService {
     };
   }
 
-  private __fetchBucketName(processEnv: typeof env, isThrowOnMissing = true) {
-    const bucketName = processEnv.AWS_S3_BUCKET_NAME;
+  private __fetchBucketName(processEnv: NodeJS.ProcessEnv, isThrowOnMissing = true) {
+    const bucketName = AwsS3FileConfig.fetchBucketName(processEnv);
 
     if (isThrowOnMissing && !bucketName) {
       throw new Error(`S3 Bucket name is not set`);

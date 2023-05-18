@@ -22,7 +22,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { KeyAuthGuard } from '@/auth/key-auth.guard';
-import console from "console";
+import console from 'console';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
