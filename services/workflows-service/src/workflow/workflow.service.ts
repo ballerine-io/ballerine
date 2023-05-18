@@ -167,6 +167,8 @@ export class WorkflowService {
     // TODO: Move to a separate method
     if (data.state) {
       if (isFinal && workflow.reviewMachineId) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await this.handleRuntimeFinalState(runtimeData, data.context, workflow);
       }
     }
@@ -282,6 +284,7 @@ export class WorkflowService {
     const { workflowDefinitionId } = workflowDefinitionResolver()[0];
     const context: DefaultContextSchema = {
       entity: { ballerineEntityId: entityId, entityType: tempEntityType },
+      documents: [],
     };
     return this.createWorkflowRuntime({ workflowDefinitionId, context });
   }
