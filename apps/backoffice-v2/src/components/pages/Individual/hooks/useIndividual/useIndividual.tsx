@@ -339,7 +339,7 @@ export const useIndividual = () => {
           },
         ],
         ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
-          ({ type, category, issuer, properties, propertiesSchema }, index) => {
+          ({ type, category, issuer, properties, propertiesSchema, decision }, index) => {
             const id = `${type}${category}${issuer?.country ?? ''}`;
 
             return [
@@ -376,21 +376,38 @@ export const useIndividual = () => {
                 ],
               },
               {
-                type: 'details',
-                value: {
-                  id,
-                  title: category,
-                  data: Object.entries(propertiesSchema?.properties ?? {}).map(
-                    ([title, { type, format, pattern, isEditable }]) => ({
-                      title,
-                      value: properties?.[title] ?? '',
-                      type,
-                      format,
-                      pattern,
-                      isEditable,
-                    }),
-                  ),
-                },
+                type: 'container',
+                value: [
+                  {
+                    id: 'decision',
+                    type: 'details',
+                    value: {
+                      id,
+                      title: category,
+                      data: Object.entries(propertiesSchema?.properties ?? {})?.map(
+                        ([title, { type, format, pattern, isEditable }]) => ({
+                          title,
+                          value: properties?.[title] ?? '',
+                          type,
+                          format,
+                          pattern,
+                          isEditable,
+                        }),
+                      ),
+                    },
+                  },
+                  {
+                    type: 'details',
+                    value: {
+                      id,
+                      title: 'Decision',
+                      data: Object.entries(decision ?? {}).map(([title, value]) => ({
+                        title,
+                        value,
+                      })),
+                    },
+                  },
+                ],
               },
               {
                 type: 'multiDocuments',
