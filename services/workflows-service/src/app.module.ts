@@ -19,10 +19,12 @@ import { WebhooksModule } from './webhooks/webhooks.module';
 import { FilterModule } from '@/filter/filter.module';
 import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
 import { env } from '@/env';
+import { SentryModule } from '@/sentry/sentry.module';
 
 @Module({
   controllers: [],
   imports: [
+    SentryModule,
     MulterModule.register({
       dest: './upload',
       limits: {
