@@ -22,7 +22,7 @@
           "type": "string"
         }
       },
-      "oneOf": [
+      "anyOf": [
         {
           "required": ["id", "type"]
         },
@@ -62,7 +62,7 @@
                 "type": "object"
               }
             },
-            "required": ["type", "name", "country", "city"],
+            "required": ["country"],
             "additionalProperties": false
           },
           "issuingVersion": {
@@ -174,10 +174,11 @@
               }
             }
           }
-        }
-      },
-      "required": ["category", "type", "issuer", "version", "pages", "properties"],
-      "additionalProperties": false
+        },
+        "required": ["category", "type", "issuer", "pages", "properties"],
+        "additionalProperties": false
+      }
     }
-  }
+  },
+  "required": ["entity", "documents"]
 }
