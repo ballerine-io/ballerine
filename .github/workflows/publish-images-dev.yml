@@ -66,4 +66,4 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_WORKFLOWS_SERVICE_PROJECT }}
-          SENTRY_RELEASE: ${{ steps.get_version.outputs.version }}-${{ github.sha }}
+          SENTRY_RELEASE: ${{ steps.get_version.outputs.version }}-dev-${{ github.sha }}
