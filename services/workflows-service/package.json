@@ -34,7 +34,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.325.0",
     "@aws-sdk/lib-storage": "3.325.0",
-    "@ballerine/common": "0.4.4",
+    "@ballerine/common": "^0.4.4",
     "@ballerine/workflow-node-sdk": "^0.4.2",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
@@ -66,7 +66,7 @@
     "helmet": "^6.0.1",
     "lodash": "^4.17.21",
     "multer-s3": "3.0.1",
-    "nest-access-control": "2.2.0",
+    "nest-access-control": "2.0.3",
     "nest-morgan": "1.0.1",
     "nestjs-prisma": "0.20.0",
     "passport": "0.6.0",
@@ -112,6 +112,6 @@
     "supertest": "4.0.2",
     "ts-jest": "27.0.3",
     "type-fest": "0.11.0",
-    "typescript": "4.2.3"
+    "typescript": "4.7.2"
   }
 }
