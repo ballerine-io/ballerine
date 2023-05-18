@@ -297,6 +297,7 @@ export class WorkflowService {
     const { workflowDefinitionId } = workflowDefinitionResolver()[0];
     const context: DefaultContextSchema = {
       entity: { ballerineEntityId: entityId, entityType: tempEntityType },
+      documents: [],
     };
     return this.createWorkflowRuntime({ workflowDefinitionId, context });
   }
@@ -589,10 +590,10 @@ export class WorkflowService {
     }
   }
 
-  private fetchBucketName(processEnv: typeof env, isStrict = true) {
+  private fetchBucketName(processEnv: typeof env, isThrowOnMissing = true) {
     const bucketName = processEnv.AWS_S3_BUCKET_NAME
 
-   if (isStrict && !bucketName) {
+   if (isThrowOnMissing && !bucketName) {
      throw new Error(`S3 Bucket name is not set`)
    }
 
