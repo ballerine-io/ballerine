@@ -379,7 +379,6 @@ export class WorkflowService {
       documentPage.type
     }`;
 
-    console.log(`UPloading ${documentName} upload to S3`);
     const { fromServiceProvider, fromRemoteFileConfig } =
       this.__fetchFromServiceProviders(documentPage);
     const { toServiceProvider, toRemoteFileConfig, remoteFileName } =
