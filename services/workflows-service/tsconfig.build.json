@@ -1,4 +1,5 @@
 {
   "extends": "./tsconfig.json",
+  "sourceRoot": "/", // Shortens file paths on Sentry
   "exclude": ["node_modules", "prisma", "test", "dist", "**/*.test.ts", "**/*spec.ts", "admin"]
 }
