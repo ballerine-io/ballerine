@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install jq    
+      - name: Install jq
         run: sudo apt-get install jq
 
       - name: Check if the tag name contains "workflows-service"
@@ -28,7 +28,7 @@ jobs:
           if [[ "$TAG_NAME" != *"workflows-service"* ]]; then
             echo "Release tag does not contain 'workflows-service'. Skipping this workflow."
             exit 1
-          fi  
+          fi
         continue-on-error: false
 
       - name: Log in to the Container registry
@@ -62,3 +62,14 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Build
+        run: pnpm build
+
+      - name: Upload sourcemaps
+        run: pnpm upload-sourcemaps
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_WORKFLOWS_SERVICE_PROJECT }}
+          SENTRY_RELEASE: ${{ steps.get_version.outputs.version }}-${{ github.sha }}
