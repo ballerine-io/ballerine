@@ -147,9 +147,12 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            fullName: faker.name.findName(),
-            dateOfBirth: faker.date.past(30).toISOString().split('T')[0],
-            nationality: faker.address.country(),
+            userNationalId: faker.datatype.uuid(),
+            docNumber: faker.finance.account(9),
+            userAddress: faker.address.streetAddress(),
+            website: faker.internet.url(),
+            expiryDate: faker.date.future(10).toISOString().split('T')[0],
+            email: faker.internet.email(),
           },
         },
         {
@@ -180,11 +183,12 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            companyName: faker.company.companyName(),
-            registrationNumber: faker.finance.account(9),
-            issueDate: faker.date.past(20).toISOString().split('T')[0],
-            registeredAddress: faker.address.streetAddress(),
-            businessType: faker.company.bs(),
+            userNationalId: faker.datatype.uuid(),
+            docNumber: faker.finance.account(9),
+            userAddress: faker.address.streetAddress(),
+            website: faker.internet.url(),
+            expiryDate: faker.date.future(10).toISOString().split('T')[0],
+            email: faker.internet.email(),
           },
         },
       ],
@@ -192,149 +196,6 @@ async function seed(bcryptSalt: Salt) {
 
     return mockData;
   }
-
-  const riskScoreWorkflowContext = {
-    entity: {
-      entityType: 'business',
-      entityData: {
-        name: 'Tech Solutions Inc.',
-        businessNumber: '123456789',
-        registeredAddress: '123 Tech Lane, Techville, USA',
-      },
-      additionalDetails: {
-        businessType: 'IT Solutions',
-        numberOfEmployees: '100',
-      },
-      ballerineEntityId: 'B123456',
-      id: 'T123456',
-    },
-    documents: [
-      {
-        category: 'Identification Document',
-        type: 'ID Card',
-        issuer: {
-          type: 'Government',
-          name: 'Techville City Council',
-          country: 'USA',
-          city: 'Techville',
-          additionalDetails: {
-            department: 'Identification and Passport Services',
-          },
-        },
-        issuingVersion: 1,
-        decision: {
-          status: 'revision',
-          rejectionReason: '',
-          revisionReason: 'Blurry image',
-        },
-        version: 1,
-        pages: [
-          {
-            ballerineFileId: 'BF123456',
-            provider: 'http',
-            uri: 'http://example.com/id_front.jpg',
-            type: 'jpg',
-            data: '',
-            metadata: {
-              side: 'front',
-              pageNumber: '1',
-            },
-          },
-          {
-            ballerineFileId: 'BF123457',
-            provider: 'http',
-            uri: 'http://example.com/id_back.jpg',
-            type: 'jpg',
-            data: '',
-            metadata: {
-              side: 'back',
-              pageNumber: '2',
-            },
-          },
-        ],
-        properties: {
-          cardNumber: {
-            type: 'string',
-            value: 'ID987654321',
-          },
-          issueDate: {
-            type: 'date',
-            value: '2020-01-01',
-          },
-          expiryDate: {
-            type: 'date',
-            value: '2030-12-31',
-          },
-          name: {
-            type: 'string',
-            value: 'John Doe',
-          },
-          address: {
-            type: 'string',
-            value: '123 Tech Lane, Techville',
-          },
-          dateOfBirth: {
-            type: 'date',
-            value: '1980-01-01',
-          },
-        },
-      },
-      {
-        category: 'Registration Document',
-        type: 'Certificate of Incorporation',
-        issuer: {
-          type: 'Government',
-          name: 'Techville City Council',
-          country: 'USA',
-          city: 'Techville',
-          additionalDetails: {
-            department: 'Business Registration',
-          },
-        },
-        issuingVersion: 1,
-        decision: {
-          status: 'approved',
-          rejectionReason: '',
-          revisionReason: '',
-        },
-        version: 1,
-        pages: [
-          {
-            ballerineFileId: 'BF123458',
-            provider: 'http',
-            uri: 'http://example.com/certificate.pdf',
-            type: 'pdf',
-            data: '',
-            metadata: {
-              pageNumber: '1',
-            },
-          },
-        ],
-        properties: {
-          companyName: {
-            type: 'string',
-            value: 'Tech Solutions Inc.',
-          },
-          registrationNumber: {
-            type: 'string',
-            value: '123456789',
-          },
-          issueDate: {
-            type: 'date',
-            value: '2000-01-01',
-          },
-          registeredAddress: {
-            type: 'string',
-            value: '123 Tech Lane, Techville',
-          },
-          businessType: {
-            type: 'string',
-            value: 'IT Solutions',
-          },
-        },
-      },
-    ],
-  };
 
   // Risk score improvment
   await client.workflowDefinition.create({
@@ -364,12 +225,14 @@ async function seed(bcryptSalt: Salt) {
               },
             },
           },
+          idle: {},
           approved: {
             type: 'final',
           },
           rejected: {
             type: 'final',
           },
+          revision: {},
         },
       },
     },
@@ -611,6 +474,7 @@ async function seed(bcryptSalt: Salt) {
               id: true,
               status: true,
               assigneeId: true,
+              createdAt: true,
               workflowDefinition: {
                 select: {
                   id: true,
@@ -638,7 +502,7 @@ async function seed(bcryptSalt: Salt) {
   await client.filter.create({
     data: {
       entity: 'businesses',
-      name: 'Businesses',
+      name: 'Risk Score Improvement',
       query: {
         select: {
           id: true,
@@ -664,6 +528,7 @@ async function seed(bcryptSalt: Salt) {
               id: true,
               status: true,
               assigneeId: true,
+              createdAt: true,
               workflowDefinition: {
                 select: {
                   id: true,
@@ -680,7 +545,7 @@ async function seed(bcryptSalt: Salt) {
             some: {
               workflowDefinition: {
                 is: {
-                  id: manualMachineId,
+                  id: riskScoreMachineKybId,
                 },
               },
             },
@@ -712,17 +577,19 @@ async function seed(bcryptSalt: Salt) {
         workflowDefinitionId: onboardingMachineKybId,
         workflowDefinitionVersion: manualMachineVersion,
         context: {},
+        createdAt: faker.date.recent(2),
       };
       const riskWf = () => ({
         workflowDefinitionId: riskScoreMachineKybId,
         workflowDefinitionVersion: 1,
         context: createMockContextData(),
+        createdAt: faker.date.recent(2),
       });
 
       return client.business.create({
         data: generateBusiness({
           id,
-          workflow: Math.random() > 0.5 ? riskWf() : exampleWf,
+          workflow: Math.random() > 0.6 ? riskWf() : exampleWf,
         }),
       });
     }),

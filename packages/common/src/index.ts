@@ -3,6 +3,7 @@ export {
   isEmptyObject,
   isErrorWithMessage,
   isErrorWithName,
+  isErrorWithCode,
   isFunction,
   isNullish,
   isObject,
