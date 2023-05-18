@@ -23,6 +23,7 @@ export const env = createEnv({
     BACKOFFICE_CORS_ORIGIN: z.string().url(),
     HEADLESS_EXAMPLE_CORS_ORIGIN: z.string().url(),
     API_KEY: z.string(),
+    SENTRY_DSN: z.string().url().nullish().optional(),
   },
   client: {},
   /**
