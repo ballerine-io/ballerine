@@ -20,6 +20,7 @@ import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
+import { enrichWorkflowRuntimeData } from './enrich-workflow-runtime-data';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -127,10 +128,9 @@ export class WorkflowControllerInternal {
     const workflowDefinition = await this.service.getWorkflowDefinitionById(
       workflowRuntimeData.workflowDefinitionId,
     );
-
     return {
       workflowDefinition,
-      workflowRuntimeData,
+      workflowRuntimeData: enrichWorkflowRuntimeData(workflowRuntimeData),
     };
   }
 
