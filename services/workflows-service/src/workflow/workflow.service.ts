@@ -22,8 +22,9 @@ import { DefaultContextSchema } from './schemas/context';
 
 const ajv = new Ajv({
   strict: false,
+  coerceTypes: true,
 });
-addFormats(ajv, { formats: ['email', 'uri'] });
+addFormats(ajv, { formats: ['email', 'uri', 'date'] });
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -126,7 +127,7 @@ export class WorkflowService {
     const workflow = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
     );
-    const validate = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
+    const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
 
     data.context = merge(runtimeData.context, data.context);
 
@@ -138,11 +139,21 @@ export class WorkflowService {
         ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
       ),
     };
-    const isValid = validate(context);
+    const isValidContextSchema = validateContextSchema(context);
 
-    if (!isValid) {
-      throw new BadRequestException(validate.errors);
+    if (!isValidContextSchema) {
+      throw new BadRequestException(validateContextSchema.errors);
     }
+
+    // @ts-ignore
+    data?.context?.documents?.forEach(({ propertiesSchema, id: _id, ...document }) => {
+      const validatePropertiesSchema = ajv.compile(propertiesSchema);
+      const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
+
+      if (!isValidPropertiesSchema) {
+        throw new BadRequestException(validatePropertiesSchema.errors);
+      }
+    });
 
     this.logger.log(
       `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,

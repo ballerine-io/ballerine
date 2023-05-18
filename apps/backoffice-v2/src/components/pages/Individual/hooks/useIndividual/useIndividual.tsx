@@ -290,6 +290,7 @@ export const useIndividual = () => {
                           'rounded border border-border p-1': isEditable,
                         })}
                         pattern={pattern}
+                        autoComplete={'off'}
                       />
                     </div>
                   ))}
