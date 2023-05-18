@@ -144,7 +144,7 @@ export class WorkflowService {
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
-    // const ajv = new Ajv();
+    const ajv = new Ajv();
     // const validate = ajv.compile(runtimeData.contextSchema);
 
     data.context = merge(runtimeData.context, data.context);
@@ -182,6 +182,8 @@ export class WorkflowService {
     // TODO: Move to a separate method
     if (data.state) {
       if (isFinal && workflow.reviewMachineId) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await this.handleRuntimeFinalState(runtimeData, data.context, workflow);
       }
     }
