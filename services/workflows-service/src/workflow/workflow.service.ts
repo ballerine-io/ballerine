@@ -167,6 +167,8 @@ export class WorkflowService {
     // TODO: Move to a separate method
     if (data.state) {
       if (isFinal && workflow.reviewMachineId) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await this.handleRuntimeFinalState(runtimeData, data.context, workflow);
       }
     }
@@ -345,6 +347,9 @@ export class WorkflowService {
       }
     }
 
+
+    // ballerineEntityID
+
     const entityConnect: any = {} as any;
     if (entity.type === 'individual') {
       entityConnect.endUser = {
@@ -359,6 +364,11 @@ export class WorkflowService {
         },
       };
     }
+    // if there is already active worfklow runtime
+    // merge , update
+
+    // upload file to s3
+    
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
       data: {
         ...entityConnect,
