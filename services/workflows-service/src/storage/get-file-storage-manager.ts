@@ -15,15 +15,24 @@ export const S3StorageEnvSchema = z.object({
   AWS_S3_BUCKET_KEY: z.string(),
 });
 
-const __generateAwsConfig = (processEnv: NodeJS.ProcessEnv): S3ClientConfig => {
-  const { AWS_REGION, AWS_S3_BUCKET_KEY, AWS_S3_BUCKET_SECRET } =
-    S3StorageEnvSchema.parse(processEnv);
+export const generateAwsConfig = (processEnv: NodeJS.ProcessEnv, prefixConfigName?: string): S3ClientConfig => {
+  const { AWS_REGION, AWS_S3_BUCKET_KEY, AWS_S3_BUCKET_SECRET } = S3StorageEnvSchema.parse(processEnv);
+  if (!prefixConfigName) {
+    return {
+      region: AWS_REGION,
+      credentials: {
+        accessKeyId: AWS_S3_BUCKET_KEY,
+        secretAccessKey: AWS_S3_BUCKET_SECRET,
+      },
+    };
+  }
 
+  const upcasedCustomerName = prefixConfigName.toUpperCase();
   return {
-    region: AWS_REGION,
+    region: z.string().default(AWS_REGION).parse(processEnv[`${upcasedCustomerName}_AWS_REGION`]),
     credentials: {
-      accessKeyId: AWS_S3_BUCKET_KEY,
-      secretAccessKey: AWS_S3_BUCKET_SECRET,
+      accessKeyId: z.string().parse(processEnv[`${upcasedCustomerName}_AWS_S3_BUCKET_KEY`]),
+      secretAccessKey: z.string().parse(processEnv[`${upcasedCustomerName}_AWS_S3_BUCKET_SECRET`]),
     },
   };
 };
@@ -39,7 +48,7 @@ export const fetchDefaultBucketName = (processEnv: NodeJS.ProcessEnv) => {
 export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
   if (__isS3BucketConfigured(processEnv)) {
     return multerS3({
-      s3: new S3Client(__generateAwsConfig(processEnv)),
+      s3: new S3Client(generateAwsConfig(processEnv)),
       acl: 'private',
       bucket: fetchDefaultBucketName(processEnv),
     });
@@ -57,7 +66,7 @@ export const downloadFileFromS3 = async (
 ): Promise<TLocalFile> => {
   try {
     const getObjectCommand = new GetObjectCommand({ Bucket: bucketName, Key: fileNameInBucket });
-    const s3Client = new S3Client(__generateAwsConfig(process.env));
+    const s3Client = new S3Client(generateAwsConfig(process.env));
     const response = await s3Client.send(getObjectCommand);
     const readableStream = response.Body as Readable;
     const tmpFile = tmp.fileSync();

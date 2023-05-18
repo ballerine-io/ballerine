@@ -9,14 +9,14 @@ export interface DefaultContextSchema {
   entity: {
     [k: string]: unknown;
   };
-  documents?: {
+  documents: {
     category: string;
     type: string;
     issuer: {
-      type: string;
-      name: string;
+      type?: string;
+      name?: string;
       country: string;
-      city: string;
+      city?: string;
       additionalDetails?: {
         [k: string]: unknown;
       };
@@ -25,23 +25,32 @@ export interface DefaultContextSchema {
     decision?: {
       status?: 'new' | 'pending' | 'revision' | 'approved' | 'rejected';
       rejectionReason?:
-        | 'Suspicious document'
-        | 'Document does not match customer profile'
-        | 'Potential identity theft'
-        | 'Fake or altered document'
-        | 'Document on watchlist or blacklist';
+        | string
+        | (
+            | 'Suspicious document'
+            | 'Document does not match customer profile'
+            | 'Potential identity theft'
+            | 'Fake or altered document'
+            | 'Document on watchlist or blacklist'
+          );
       revisionReason?:
-        | 'Blurry image'
-        | 'Missing page'
-        | 'Invalid document'
-        | 'Expired document'
-        | 'Unreadable document';
+        | string
+        | (
+            | 'Blurry image'
+            | 'Missing page'
+            | 'Invalid document'
+            | 'Expired document'
+            | 'Unreadable document'
+          );
     };
-    version: number;
+    version?: number;
     pages: {
       ballerineFileId?: string;
-      provider: 'gcs' | 'http' | 'stream' | 'base64' | 'ftp';
+      provider: 'gcs' | 'http' | 'stream' | 'base64' | 'ftp' | 'aws_s3';
       uri: string;
+      /**
+       * Whether an effect is positive or negative
+       */
       type: 'pdf' | 'png' | 'jpg';
       data?: string;
       metadata?: {
@@ -50,12 +59,10 @@ export interface DefaultContextSchema {
       };
     }[];
     properties: {
-      [k: string]:
-        | string
-        | {
-            type: 'date';
-            value: string;
-          };
+      [k: string]: {
+        [k: string]: unknown;
+      };
     };
   }[];
+  [k: string]: unknown;
 }

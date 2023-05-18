@@ -24,19 +24,26 @@ import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import { DefaultContextSchema } from './schemas/context';
+import {DefaultContextSchema} from './schemas/context';
 import {FileService} from "@/providers/file/file.service";
 import * as console from "console";
-import {TFileServiceProvider, TRemoteFileConfig} from "@/providers/file/types";
+import {TFileServiceProvider, TRemoteFileConfig, TS3BucketConfig} from "@/providers/file/types";
 import {HttpFileService} from "@/providers/file/file-provider/http-file.service";
 import {z} from "zod";
 import {LocalFileService} from "@/providers/file/file-provider/local-file.service";
+import {AwsS3FileService} from "@/providers/file/file-provider/aws-s3-file.service";
+import * as process from "process";
+import {generateAwsConfig} from "@/storage/get-file-storage-manager";
+import * as crypto from "crypto";
+import {FileRepository} from "@/storage/storage.repository";
+import {StorageService} from "@/storage/storage.service";
 type TEntityId = string;
 const ajv = new Ajv({
   strict: false,
 });
+import { env } from '@/env';
 addFormats(ajv, { formats: ['email', 'uri'] });
-
+export type TDefaultSchemaDocumentPage = DefaultContextSchema['documents'][number]['pages'][number]
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
   CUT_IMAGE: 'CUT_IMAGE',
@@ -75,6 +82,7 @@ export class WorkflowService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
     protected readonly businessRepository: BusinessRepository,
+    protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
     private workflowEventEmitter: WorkflowEventEmitterService,
   ) {}
@@ -307,7 +315,8 @@ export class WorkflowService {
     );
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const {entityId, entityConnect} = await this.__findOrPersistEntityInformation(context);
-    const ballerineFileIds = this.__copyFileAndPersist(context);
+    const contextWithPersistedFileIds = await this.__copyFileAndPersist(context, entityId);
+    console.log(contextWithPersistedFileIds)
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
       data: {
         ...entityConnect,
@@ -334,12 +343,42 @@ export class WorkflowService {
       },
     ];
   }
+  private async __copyFileAndPersist(context: DefaultContextSchema, entityId: TEntityId ): Promise<DefaultContextSchema> {
+    const documentsWithPersistedImages = await Promise.all(context.documents.map(async document => ({
+      ...document,
+      pages: await this.__persistDocumentPagesFiles(document, entityId)
+    })));
 
-  private __copyFileAndPersist(context: DefaultContextSchema): string[] {
-    return context.documents?.map(document => {
-      {fromServiceProvider, fromRemoteFileConfig} = this.__fetchReceivingServiceProviders(document)
-      this.fileService.copyThruLocalFile()
-    })
+    return {...context, documents: documentsWithPersistedImages}
+  }
+
+  private async __persistDocumentPagesFiles(document: DefaultContextSchema["documents"][number], entityId: string) {
+    return await Promise.all(document.pages.map(async documentPage => {
+      const documentContext = `${document?.category}-${document?.issuer?.country}-${document?.type}`;
+      const documentName = `${crypto.randomUUID()}${documentContext}`;
+
+      const {
+        fromServiceProvider,
+        fromRemoteFileConfig
+      } = this.__fetchFromServiceProviders(documentPage);
+      const {
+        toServiceProvider,
+        toRemoteFileConfig,
+        remoteFileName
+      } = this.__fetchToServiceProviders(documentName);
+
+      const remoteFilePath = await this.fileService.copyFileFromSourceToSource(fromServiceProvider, fromRemoteFileConfig, toServiceProvider, toRemoteFileConfig);
+      const fileNameInBucket = typeof remoteFilePath != 'string' ? remoteFilePath.fileNameInBucket : undefined;
+      const userId = entityId
+      const ballerineFileId = await this.storageService.createFileLink({
+        uri: remoteFileName,
+        fileNameOnDisk: remoteFileName,
+        userId,
+        fileNameInBucket
+      })
+
+      return {...documentPage, ballerineFileId}
+    }));
   }
 
   private async __findOrPersistEntityInformation(context: DefaultContextSchema) {
@@ -350,21 +389,26 @@ export class WorkflowService {
       if (!entity.data) throw new BadRequestException('Entity data is required');
     }
 
+    let persistedEntityId = entityId;
     const entityConnect: any = {} as any;
     if (entity.type === 'individual') {
+      persistedEntityId = persistedEntityId || await this.__persistEndUserInfo(entity, context);
+
       entityConnect.endUser = {
         connect: {
-          id: entityId || await this.__persistEndUserInfo(entity, context),
+          id: persistedEntityId,
         },
       };
     } else {
+      persistedEntityId = persistedEntityId ||  await this.__persistBusinessInformation(entity, context);
+
       entityConnect.business = {
         connect: {
-          id: entityId || await this.__persistBusinessInformation(entity, context),
+          id: persistedEntityId,
         },
       };
     }
-    return {entityId, entityConnect};
+    return {entityId: persistedEntityId, entityConnect};
   }
 
   private async __persistEndUserInfo(entity: { [p: string]: unknown }, context: DefaultContextSchema) {
@@ -505,11 +549,53 @@ export class WorkflowService {
       }));
   }
 
-  private __fetchReceivingServiceProviders(document: DefaultContextSchema['documents']): {fromServiceProvider: TFileServiceProvider, fromRemoteFileConfig: TRemoteFileConfig} {
+  private __fetchFromServiceProviders(document: TDefaultSchemaDocumentPage): {fromServiceProvider: TFileServiceProvider, fromRemoteFileConfig: TRemoteFileConfig} {
     if (document.provider == 'http' && z.string().parse(document.uri)){
       return {fromServiceProvider: new HttpFileService(), fromRemoteFileConfig: document.uri};
     }
+    if (document.provider == 'aws_s3' && z.string().parse(document.uri)){
+      const prefixConfigName = `REMOTE`;
+      const s3ClientConfig = generateAwsConfig(process.env, prefixConfigName)
+      const s3BucketConfig = this.__fetchAwsConfigFor(document.uri);
+
+      return {fromServiceProvider: new AwsS3FileService(s3ClientConfig), fromRemoteFileConfig: s3BucketConfig};
+    }
 
     return {fromServiceProvider: new LocalFileService(), fromRemoteFileConfig: document.uri}
+  }
+
+  private __fetchToServiceProviders(fileName: string): {
+    toServiceProvider: TFileServiceProvider,
+    toRemoteFileConfig: TRemoteFileConfig,
+    remoteFileName: string
+  } {
+    if (this.fetchBucketName(env, false)){
+      const s3ClientConfig = generateAwsConfig(process.env)
+      const awsConfigForClient = this.__fetchAwsConfigFor(fileName);
+      return {toServiceProvider: new AwsS3FileService(s3ClientConfig), toRemoteFileConfig: awsConfigForClient, remoteFileName: awsConfigForClient.fileNameInBucket};
+    }
+
+    return {toServiceProvider: new LocalFileService(), toRemoteFileConfig: fileName, remoteFileName: fileName }
+
+  }
+
+  private __fetchAwsConfigFor(fileNameInBucket: string) : TS3BucketConfig {
+    const bucketName = this.fetchBucketName(env, true) as string;
+
+    return {
+      bucketName: bucketName,
+      fileNameInBucket: fileNameInBucket,
+      private: true
+    }
+  }
+
+  private fetchBucketName(processEnv: typeof env, isStrict = true) {
+    const bucketName = processEnv.AWS_S3_BUCKET_NAME
+
+   if (isStrict && !bucketName) {
+     throw new Error(`S3 Bucket name is not set`)
+   }
+
+    return bucketName;
   }
 }
