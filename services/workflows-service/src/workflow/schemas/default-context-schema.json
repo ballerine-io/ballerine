@@ -76,7 +76,7 @@
                 "enum": ["new", "pending", "revision", "approved", "rejected"]
               },
               "rejectionReason": {
-                "oneOf": [
+                "anyOf": [
                   {
                     "description": "Whether an effect is positive or negative",
                     "type": "string"
