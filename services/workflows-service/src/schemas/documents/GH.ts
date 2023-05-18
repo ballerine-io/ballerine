@@ -1,4 +1,4 @@
-const certificateOfResidenceGH = {
+export const certificateOfResidenceGH = {
   category: 'POR',
   type: 'certificateOfResidence',
   issuer: {
