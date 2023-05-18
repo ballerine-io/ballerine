@@ -2,9 +2,8 @@ import { Module, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { SentryInterceptor } from '@/sentry/sentry.interceptor';
-import process from 'process';
 import { RewriteFrames } from '@sentry/integrations';
-import { PrismaService } from '@/prisma/prisma.service';
+import { env } from '@/env';
 
 @Module({
   providers: [
@@ -16,14 +15,14 @@ import { PrismaService } from '@/prisma/prisma.service';
 })
 export class SentryModule implements OnModuleInit, OnModuleDestroy {
   onModuleInit() {
-    if (!process.env.SENTRY_DSN) {
+    if (!env.SENTRY_DSN) {
       return;
     }
 
     Sentry.init({
-      dsn: process.env.SENTRY_DSN,
-      debug: process.env.NODE_ENV !== 'production',
-      environment: process.env.NODE_ENV,
+      dsn: env.SENTRY_DSN,
+      debug: env.NODE_ENV !== 'production',
+      environment: env.NODE_ENV,
       integrations: [
         new RewriteFrames({
           root: global.__rootdir__,
@@ -33,7 +32,7 @@ export class SentryModule implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleDestroy() {
-    if (!process.env.SENTRY_DSN) {
+    if (!env.SENTRY_DSN) {
       return;
     }
 

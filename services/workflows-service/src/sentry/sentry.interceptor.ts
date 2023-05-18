@@ -39,6 +39,7 @@ export class SentryInterceptor implements NestInterceptor {
     exception: HttpException,
   ): void {
     // @TODO: Add more information to the scope
+
     if (request.user) {
       scope.setUser({ id: request.user.id });
     }
