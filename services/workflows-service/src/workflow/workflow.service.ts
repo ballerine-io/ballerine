@@ -347,9 +347,6 @@ export class WorkflowService {
       }
     }
 
-
-    // ballerineEntityID
-
     const entityConnect: any = {} as any;
     if (entity.type === 'individual') {
       entityConnect.endUser = {
@@ -364,11 +361,6 @@ export class WorkflowService {
         },
       };
     }
-    // if there is already active worfklow runtime
-    // merge , update
-
-    // upload file to s3
-    
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
       data: {
         ...entityConnect,

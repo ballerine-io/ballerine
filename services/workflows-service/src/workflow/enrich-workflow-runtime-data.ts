@@ -11,10 +11,7 @@ const getDocumentId = (document: Document) => {
 };
 
 export const enrichWorkflowRuntimeData = (workflowRuntimeData: WorkflowRuntimeData) => {
-  if (
-    workflowRuntimeData?.context?.documents &&
-    workflowRuntimeData?.context?.documents.length > 0
-  ) {
+  if (workflowRuntimeData?.context?.documents?.length) {
     const documents = workflowRuntimeData?.context?.documents as DefaultContextSchema['documents'];
     const result = documents.map(document => {
       const id = getDocumentId(document);
