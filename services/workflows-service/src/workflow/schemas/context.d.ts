@@ -46,7 +46,7 @@ export interface DefaultContextSchema {
     version?: number;
     pages: {
       ballerineFileId?: string;
-      provider: 'gcs' | 'http' | 'stream' | 'base64' | 'ftp';
+      provider: 'gcs' | 'http' | 'stream' | 'base64' | 'ftp' | 'aws_s3';
       uri: string;
       /**
        * Whether an effect is positive or negative
