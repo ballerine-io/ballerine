@@ -404,7 +404,7 @@ export class WorkflowService {
 
   private async __findOrPersistEntityInformation(context: DefaultContextSchema) {
     const { entity } = context;
-    const entityId = await this.__tryToFetchExistingEntityIc(entity);
+    const entityId = await this.__tryToFetchExistingEntityId(entity);
 
     if (!entityId) {
       if (!entity.data) throw new BadRequestException('Entity data is required');
@@ -460,7 +460,7 @@ export class WorkflowService {
     return id;
   }
 
-  private async __tryToFetchExistingEntityIc(entity: {
+  private async __tryToFetchExistingEntityId(entity: {
     [p: string]: unknown;
   }): Promise<TEntityId | null> {
     if (entity.ballerineEntityId) {
