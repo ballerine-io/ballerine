@@ -13,13 +13,13 @@ export const MotionScrollArea: FunctionComponent<TMotionScrollAreaProps> &
         {children}
       </ScrollArea.Viewport>
       <ScrollArea.Scrollbar
-        className="flex touch-none select-none bg-base-300 p-0.5 transition-[background] duration-[160] ease-out data-[orientation=horizontal]:h-3 data-[orientation=vertical]:w-3 data-[orientation=horizontal]:flex-col theme-dark:bg-neutral"
+        className="duration-[160] flex touch-none select-none bg-base-300 p-0.5 transition-[background] ease-out data-[orientation=horizontal]:h-3 data-[orientation=vertical]:w-3 data-[orientation=horizontal]:flex-col theme-dark:bg-neutral"
         orientation="vertical"
       >
         <ScrollArea.Thumb className="before:-translate-1/2 before:d-full before:top-left-1/2 relative flex-1 rounded-md bg-primary/30 before:absolute before:min-h-[44px] before:min-w-[44px] before:content-['']" />
       </ScrollArea.Scrollbar>
       <ScrollArea.Scrollbar
-        className="flex touch-none select-none bg-base-300 p-0.5 transition-[background] duration-[160] ease-out data-[orientation=horizontal]:h-3 data-[orientation=vertical]:w-3 data-[orientation=horizontal]:flex-col theme-dark:bg-neutral"
+        className="duration-[160] flex touch-none select-none bg-base-300 p-0.5 transition-[background] ease-out data-[orientation=horizontal]:h-3 data-[orientation=vertical]:w-3 data-[orientation=horizontal]:flex-col theme-dark:bg-neutral"
         orientation="horizontal"
       >
         <ScrollArea.Thumb className="relative flex-1 rounded-md bg-primary/30" />

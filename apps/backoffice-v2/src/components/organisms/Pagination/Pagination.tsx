@@ -1,43 +1,57 @@
 import { FunctionComponent } from 'react';
-import { ChevronLeftSvg, ChevronRightSvg } from 'components/atoms/icons';
-import { ctw } from '../../../utils/ctw/ctw';
 import { IPaginationProps } from 'components/organisms/Pagination/interfaces';
+import { Button } from 'components/atoms/Button/button';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 export const Pagination: FunctionComponent<IPaginationProps> = ({
   onPaginate,
   page,
-  pages,
   totalPages,
 }) => {
   return (
-    <nav className={`btn-group flex justify-center`}>
-      <button
-        className={'btn focus:outline-primary'}
-        onClick={onPaginate(page - 1)}
-        disabled={page === 1}
-      >
-        <ChevronLeftSvg />
-      </button>
-
-      {pages?.map(num => (
-        <button
-          onClick={onPaginate(num)}
-          className={ctw('btn focus:outline-primary', {
-            'btn-active': num === page,
-          })}
-          key={`pagination-item-${num}`}
+    <div className={`mt-3 flex items-center space-x-2 px-1`}>
+      <span className={`w-full text-sm font-bold`}>
+        Page {page} of {totalPages}
+      </span>
+      <nav className={`flex justify-center space-x-2`}>
+        <Button
+          className={`px-2`}
+          size={`sm`}
+          variant={`outline`}
+          onClick={onPaginate(1)}
+          disabled={page === 1}
         >
-          {num}
-        </button>
-      ))}
+          <ChevronsLeft size={21} />
+        </Button>
+        <Button
+          size={`sm`}
+          variant={`outline`}
+          onClick={onPaginate(page - 1)}
+          disabled={page === 1}
+          className={`px-2`}
+        >
+          <ChevronLeft size={21} />
+        </Button>
 
-      <button
-        className={'btn focus:outline-primary'}
-        onClick={onPaginate(page + 1)}
-        disabled={page === totalPages}
-      >
-        <ChevronRightSvg />
-      </button>
-    </nav>
+        <Button
+          size={`sm`}
+          variant={`outline`}
+          onClick={onPaginate(page + 1)}
+          disabled={page === totalPages}
+          className={`px-2`}
+        >
+          <ChevronRight size={21} />
+        </Button>
+        <Button
+          size={`sm`}
+          variant={`outline`}
+          onClick={onPaginate(totalPages)}
+          disabled={page === totalPages}
+          className={`px-2`}
+        >
+          <ChevronsRight size={21} />
+        </Button>
+      </nav>
+    </div>
   );
 };

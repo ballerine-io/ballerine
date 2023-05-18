@@ -24,7 +24,7 @@ export const NavItem: FunctionComponentWithChildren<TNavItemProps> = ({
       <Link
         to={href}
         activeProps={{
-          className: `active`,
+          className: `font-bold bg-muted`,
         }}
         className={ctw(`flex gap-x-2 rounded-md`, className)}
         {...props}

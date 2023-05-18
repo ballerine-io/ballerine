@@ -83,12 +83,21 @@ importers:
       '@radix-ui/react-select':
         specifier: ^1.2.1
         version: 1.2.1(@types/react@18.0.35)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-separator':
+        specifier: ^1.0.2
+        version: 1.0.2(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-slot':
+        specifier: ^1.0.1
+        version: 1.0.1(react@18.2.0)
       '@tanstack/react-query':
         specifier: ^4.19.1
         version: 4.29.1(react-dom@18.2.0)(react@18.2.0)
       '@tanstack/react-router':
         specifier: 0.0.1-beta.83
         version: 0.0.1-beta.83(react-dom@18.2.0)(react@18.2.0)
+      class-variance-authority:
+        specifier: ^0.6.0
+        version: 0.6.0(typescript@4.9.5)
       clsx:
         specifier: ^1.2.1
         version: 1.2.1
@@ -141,8 +150,11 @@ importers:
         specifier: ^10.0.9
         version: 10.0.9(react@18.2.0)
       tailwind-merge:
-        specifier: ^1.8.1
+        specifier: ^1.10.0
         version: 1.12.0
+      tailwindcss-animate:
+        specifier: ^1.0.5
+        version: 1.0.5(tailwindcss@3.3.1)
       tesseract.js:
         specifier: ^4.0.1
         version: 4.0.3(eslint@8.22.0)
@@ -7401,6 +7413,18 @@ packages:
       - '@types/react'
     dev: false
 
+  /@radix-ui/react-separator@1.0.2(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-lZoAG/rS2jzb/OSvyBrpN3dmikw20ewmWx1GkM1VldbDyD0DACCbH9LIXSrqyS/2mE1VYKOHmyq5W90Dx4ryqA==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@radix-ui/react-primitive': 1.0.2(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /@radix-ui/react-slot@1.0.1(react@18.2.0):
     resolution: {integrity: sha512-avutXAFL1ehGvAXtPquu0YK5oz6ctS474iM3vNGQIkswrVhdrS52e3uoMQBzZhNRAIE0jBnUyXWNmSjGHhCFcw==}
     peerDependencies:
@@ -11810,6 +11834,18 @@ packages:
       '@types/validator': 13.7.14
       libphonenumber-js: 1.10.26
       validator: 13.9.0
+
+  /class-variance-authority@0.6.0(typescript@4.9.5):
+    resolution: {integrity: sha512-qdRDgfjx3GRb9fpwpSvn+YaidnT7IUJNe4wt5/SWwM+PmUwJUhQRk/8zAyNro0PmVfmen2635UboTjIBXXxy5A==}
+    peerDependencies:
+      typescript: '>= 4.5.5 < 6'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      clsx: 1.2.1
+      typescript: 4.9.5
+    dev: false
 
   /clean-css@5.3.2:
     resolution: {integrity: sha512-JVJbM+f3d3Q704rF4bqQ5UUyTtuJ0JRKNbTKVEeujCCBoMdkEi+V+e8oktO9qGQNSvHrFTM6JZRXrUvGR1czww==}
@@ -21222,6 +21258,14 @@ packages:
 
   /tailwind-merge@1.12.0:
     resolution: {integrity: sha512-Y17eDp7FtN1+JJ4OY0Bqv9OA41O+MS8c1Iyr3T6JFLnOgLg3EvcyMKZAnQ8AGyvB5Nxm3t9Xb5Mhe139m8QT/g==}
+    dev: false
+
+  /tailwindcss-animate@1.0.5(tailwindcss@3.3.1):
+    resolution: {integrity: sha512-UU3qrOJ4lFQABY+MVADmBm+0KW3xZyhMdRvejwtXqYOL7YjHYxmuREFAZdmVG5LPe5E9CAst846SLC4j5I3dcw==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders'
+    dependencies:
+      tailwindcss: 3.3.1(postcss@8.4.21)(ts-node@10.9.1)
     dev: false
 
   /tailwindcss@3.3.1(postcss@8.4.21)(ts-node@10.9.1):

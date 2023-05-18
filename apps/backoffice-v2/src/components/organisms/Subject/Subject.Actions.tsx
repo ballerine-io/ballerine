@@ -6,7 +6,6 @@ import {
   useActions,
 } from 'components/organisms/Subject/hooks/useActions/useActions';
 import { motion } from 'framer-motion';
-import * as HoverCard from '@radix-ui/react-hover-card';
 import { ctw } from '../../../utils/ctw/ctw';
 import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
 import { DropdownMenuTrigger } from 'components/molecules/DropdownMenu/DropdownMenu.Trigger';
@@ -31,8 +30,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from 'components/atoms/Select/Select';
-import AssignButton, { Assignee } from 'components/atoms/AssignButton/AssignButton';
-import { useGetSessionQuery } from '../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
+import { AssignButton, Assignee } from 'components/atoms/AssignButton/AssignButton';
+import * as HoverCard from '@radix-ui/react-hover-card';
+import { Button } from 'components/atoms/Button/button';
 
 /**
  * @description To be used by {@link Subject}. Displays the end user's full name, avatar, and handles the reject/approve mutation.
@@ -73,7 +73,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
   const isAssignedToMe = true;
 
   return (
-    <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-2`}>
+    <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-4`}>
       <div className={`flex flex-row space-x-3.5`}>
         <AssignButton
           assignees={[
@@ -99,7 +99,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           buttonType={'Re-Assign'}
         />
       </div>
-      <div className={`flex h-[7.75rem] justify-between`}>
+      <div className={`flex h-20 justify-between`}>
         <motion.div
           // Animate when the user changes.
           key={id}
@@ -115,7 +115,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           transition={{ duration: 0.4 }}
         >
           <h2
-            className={ctw(`text-2xl`, {
+            className={ctw(`text-2xl font-bold`, {
               'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
                 isLoadingEndUser,
             })}
@@ -124,31 +124,28 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           </h2>
         </motion.div>
         <div className={`flex items-center space-x-6`}>
-          <button
-            className={ctw(
-              `btn-info btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-              {
-                loading: debouncedIsLoadingRejectEndUser,
-              },
-            )}
-            disabled={actionButtonDisabled}
+          <Button
+            className={ctw({
+              // loading: debouncedIsLoadingRejectEndUser,
+            })}
+            // disabled={actionButtonDisabled}
+            disabled
           >
             Execute Tasks
-          </button>
+          </Button>
           <Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button
-                  className={ctw(
-                    `btn-error btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-                    {
-                      loading: debouncedIsLoadingRejectEndUser,
-                    },
-                  )}
-                  disabled={isLoading || !canReject}
+                <Button
+                  variant={`destructive`}
+                  className={ctw({
+                    // loading: debouncedIsLoadingRejectEndUser,
+                  })}
+                  // disabled={isLoading || !canReject}
+                  disabled
                 >
                   Reject
-                </button>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className={`min-w-[16rem]`} align={`end`}>
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
@@ -222,18 +219,17 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           </Dialog>
           <HoverCard.Root openDelay={0} closeDelay={0}>
             <HoverCard.Trigger asChild>
-              <button
-                className={ctw(
-                  `btn-success btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-                  {
-                    loading: debouncedIsLoadingApproveEndUser,
-                  },
-                )}
-                disabled={isLoading || !canApprove}
+              <Button
+                className={ctw({
+                  // loading: debouncedIsLoadingApproveEndUser,
+                })}
+                variant={`success`}
+                // disabled={isLoading || !canApprove}
                 onClick={onMutateApproveEndUser}
+                disabled
               >
                 Approve
-              </button>
+              </Button>
             </HoverCard.Trigger>
             <HoverCard.Portal>
               <HoverCard.Content

@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { TAuthenticatedUser, TCaseManagementState } from '../../../api/types';
 import { CaseState } from '../../../enums';
-import { ctw } from '../../../utils/ctw/ctw';
-import styles from './AssignButton.module.css';
 import { DropdownMenuItem } from 'components/molecules/DropdownMenu/DropdownMenu.Item';
 import { DropdownMenuTrigger } from 'components/molecules/DropdownMenu/DropdownMenu.Trigger';
 import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
 import { DropdownMenuContent } from 'components/molecules/DropdownMenu/DropdownMenu.Content';
+import { Button } from 'components/atoms/Button/button';
 
 export type Assignee = {
   id: string;
@@ -31,38 +30,31 @@ interface IAssignButtonProps {
   onAssigneeSelect: (id: string) => void;
   authenticatedUser: TAuthenticatedUser;
 }
-const AssignButton: React.FC<IAssignButtonProps> = ({
+export const AssignButton: React.FC<IAssignButtonProps> = ({
   buttonType,
   assignees,
   onAssigneeSelect,
   caseState,
 }) => {
   const isAssignButtonType = buttonType === 'Assign';
-  const unassignEnabled = caseState !== CaseState.UNASSIGNED;
-  const buttonColorClass = isAssignButtonType ? 'bg-black' : 'bg-white border-gray-200';
+  const isUnassignEnabled = caseState !== CaseState.UNASSIGNED;
+  const onClick = () => (isAssignButtonType ? onAssigneeSelect(assignees[0].id) : undefined);
 
   return (
     <div>
       {isAssignButtonType ? (
-        <button
-          className={ctw(`btn-sm btn ${buttonColorClass}`)}
-          disabled={!caseState.assignToMeEnabled}
-          onClick={_event => (isAssignButtonType ? onAssigneeSelect(assignees[0].id) : undefined)}
-        >
+        <Button disabled={!caseState.assignToMeEnabled} onClick={onClick}>
           Assign Me
-        </button>
+        </Button>
       ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button
-              className={ctw(`btn-sm btn ${buttonColorClass}`)}
-              disabled={!caseState.assignToOtherEnabled}
-            >
+            <Button variant={`outline`} disabled={!caseState.assignToOtherEnabled}>
               {buttonType}
-            </button>
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className={`min-w-[16rem]`} align={'start'}>
-            {unassignEnabled ? (
+            {isUnassignEnabled ? (
               <DropdownMenuItem
                 className={`border-b-2 text-cyan-950`}
                 key={'unassigne'}
@@ -86,5 +78,3 @@ const AssignButton: React.FC<IAssignButtonProps> = ({
     </div>
   );
 };
-
-export default AssignButton;

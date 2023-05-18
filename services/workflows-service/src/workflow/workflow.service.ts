@@ -129,7 +129,7 @@ export class WorkflowService {
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
-    // const ajv = new Ajv();
+    const ajv = new Ajv();
     // const validate = ajv.compile(runtimeData.contextSchema);
 
     data.context = merge(runtimeData.context, data.context);

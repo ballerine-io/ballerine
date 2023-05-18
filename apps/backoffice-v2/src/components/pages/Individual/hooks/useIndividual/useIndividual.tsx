@@ -28,6 +28,9 @@ import { Dialog } from 'components/organisms/Dialog/Dialog';
 import React from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { Separator } from 'components/atoms/Separator/separator';
+import { Button } from 'components/atoms/Button/button';
+import { AlertTriangle, RotateCcw } from 'lucide-react';
 import { SubmitHandler } from 'react-hook-form';
 import { AnyRecord } from '../../../../../types';
 import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
@@ -57,7 +60,6 @@ export const useIndividual = () => {
   const onMutateUpdateWorkflowById =
     ({ id, approvalStatus }: { id: string; approvalStatus: 'rejected' | 'approved' }) =>
     () => {
-      const data = endUser?.workflow?.documents?.find(({ id: documentId }) => documentId === id);
       const decisions = [...(endUser?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
       const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
 
@@ -86,7 +88,7 @@ export const useIndividual = () => {
       context,
     });
   const components = {
-    heading: ({ value }) => <h2 className={`ml-2 p-2 text-2xl font-bold`}>{value}</h2>,
+    heading: ({ value }) => <h2 className={`ml-2 mt-6 p-2 text-2xl font-bold`}>{value}</h2>,
     alert: ({ value }) => (
       <WarningAlert isOpen className={`w-6/12 text-base-content theme-dark:text-base-100`}>
         {value}
@@ -96,23 +98,14 @@ export const useIndividual = () => {
       return (
         <div
           className={ctw({
-            'm-2 flex justify-end space-x-2 rounded border border-slate-300 p-2 text-slate-50':
-              id === 'actions',
-            'rounded border border-slate-300': id === 'alerts',
-            'col-span-full':
-              (id === 'actions' && value?.every(v => v?.type !== 'heading')) || id === 'alerts',
+            'm-2 mt-6 flex justify-end space-x-2 rounded p-2 text-slate-50': id === 'actions',
+            rounded: id === 'alerts',
+            'col-span-full': id === 'alerts' || id === 'details-container',
+            'grid grid-cols-2': id === 'details-container',
             'm-2 flex flex-col space-y-2 p-2': id === 'alerts',
           })}
         >
-          {id === 'alerts' && <h4 className={`mb-2 text-lg font-bold`}>Issues</h4>}
-          {id === 'actions' && (
-            <h4 className={`mb-2 mr-auto text-lg font-bold text-base-content`}>Actions</h4>
-          )}
-          {value?.map((cell, index) => {
-            const Cell = components[cell?.type];
-
-            return <Cell key={index} {...cell} />;
-          })}
+          {value?.map(cell => components[cell.type]?.(cell))}
         </div>
       );
     },
@@ -122,36 +115,38 @@ export const useIndividual = () => {
           taskId === data?.id && faceMatch === 'approved' && idVerification === 'approved',
       );
 
-      return value === 'Options' ? (
+      return value === 'Reject' ? (
         <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button
-                className={ctw(
-                  `btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-                  {
-                    // loading: debouncedIsLoadingRejectEndUser,
-                  },
-                )}
+              <Button
+                variant={`destructive`}
+                className={ctw({
+                  // loading: debouncedIsLoadingRejectEndUser,
+                })}
                 // disabled={isLoading || !canReject}
               >
-                Options
-              </button>
+                {value}
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className={`min-w-[16rem]`} align={`end`}>
-              <DropdownMenuLabel>Options</DropdownMenuLabel>
+              <DropdownMenuLabel>{value}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DialogTrigger asChild>
-                <DropdownMenuItem className={`cursor-pointer`}>Ask to re-submit</DropdownMenuItem>
+                <DropdownMenuItem className={`cursor-pointer gap-x-2`}>
+                  <RotateCcw size={18} />
+                  Ask to re-submit
+                </DropdownMenuItem>
               </DialogTrigger>
               <DropdownMenuItem
-                className={`cursor-pointer`}
+                className={`cursor-pointer gap-x-2 text-red-500`}
                 onClick={onMutateUpdateWorkflowById({
                   id: data?.id,
                   approvalStatus: 'rejected',
                 })}
               >
-                Reject
+                <AlertTriangle className={`text-red-500`} size={18} />
+                Block
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -206,13 +201,11 @@ export const useIndividual = () => {
           </DialogContent>
         </Dialog>
       ) : (
-        <button
-          className={ctw(
-            `btn-success btn justify-center before:mr-2 before:border-2 before:border-transparent before:content-[''] before:d-4 after:ml-2 after:border-2 after:border-transparent after:content-[''] after:d-4`,
-            {
-              loading: isLoadingUpdateWorkflowById,
-            },
-          )}
+        <Button
+          variant={`success`}
+          className={ctw({
+            loading: isLoadingUpdateWorkflowById,
+          })}
           disabled={isLoadingUpdateWorkflowById || isApprovedTask}
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
@@ -220,12 +213,12 @@ export const useIndividual = () => {
           })}
         >
           {value}
-        </button>
+        </Button>
       );
     },
     faceComparison: ({ value }) => (
-      <div className={`m-2 rounded border border-slate-300 p-1`}>
-        <h4 className={`mb-2 text-lg font-bold`}>Face Comparison</h4>
+      <div className={`m-2 rounded p-1`}>
+        <h4 className={`mb-2 text-lg`}>Face Comparison</h4>
         <Subject.FaceMatch faceAUrl={value.faceAUrl} faceBUrl={value.faceBUrl} />
       </div>
     ),
@@ -262,7 +255,7 @@ export const useIndividual = () => {
       if (!value.data?.length) return;
 
       return (
-        <div className={`m-2 rounded border border-slate-300 p-1`}>
+        <div className={`m-2 rounded p-1`}>
           <Form
             options={{
               defaultValues,
@@ -272,29 +265,33 @@ export const useIndividual = () => {
           >
             {methods => (
               <>
-                <legend>{value.title}</legend>
+                <legend className={`sr-only text-lg font-bold`}>{value.title}</legend>
                 <div className={`grid grid-cols-2 gap-2`}>
                   {value?.data?.map(({ title, isEditable, type }) => (
                     <div className={`flex flex-col`} key={title}>
-                      <label htmlFor={title}>{toStartCase(camelCaseToSpace(title))}</label>
+                      <label htmlFor={title} className={`font-bold`}>
+                        {toStartCase(camelCaseToSpace(title))}
+                      </label>
                       <input
                         {...methods.register(title)}
                         type={type === 'string' ? 'text' : type}
                         disabled={!isEditable}
+                        className={ctw(`disabled:bg-background`, {
+                          'rounded border border-border p-1': isEditable,
+                        })}
                       />
                     </div>
                   ))}
                 </div>
                 <div className={`ml-2 mt-auto flex justify-end`}>
                   {value?.data?.some(({ isEditable }) => isEditable) && (
-                    <button className={`btn`} type={'submit'}>
-                      Save
-                    </button>
+                    <Button type={'submit'}>Save</Button>
                   )}
                 </div>
               </>
             )}
           </Form>
+          <Separator className={`my-2`} />
         </div>
       );
     },
@@ -302,8 +299,7 @@ export const useIndividual = () => {
       const documents = value.data.filter(({ imageUrl }) => !!imageUrl);
 
       return (
-        <div className={`m-2 rounded border border-slate-300 p-1`}>
-          <h4 className={`mb-2 text-lg font-bold`}>Documents</h4>
+        <div className={`m-2 rounded p-1`}>
           <Subject.Documents documents={documents} />
         </div>
       );
@@ -329,24 +325,34 @@ export const useIndividual = () => {
         ],
         ...(endUser?.workflow?.context?.documents?.map(({ id, category, properties }, index) => [
           {
-            id: 'actions',
+            id: 'details-container',
             type: 'container',
             value: [
               {
-                type: 'callToAction',
-                value: 'Options',
-                data: {
-                  id,
-                  approvalStatus: 'rejected',
-                },
+                type: 'heading',
+                value: category,
               },
               {
-                type: 'callToAction',
-                value: 'Approve',
-                data: {
-                  id,
-                  approvalStatus: 'approved',
-                },
+                id: 'actions',
+                type: 'container',
+                value: [
+                  {
+                    type: 'callToAction',
+                    value: 'Reject',
+                    data: {
+                      id,
+                      approvalStatus: 'rejected',
+                    },
+                  },
+                  {
+                    type: 'callToAction',
+                    value: 'Approve',
+                    data: {
+                      id,
+                      approvalStatus: 'approved',
+                    },
+                  },
+                ],
               },
             ],
           },
