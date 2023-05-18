@@ -13,7 +13,6 @@ import { individualRoute } from 'components/pages/Individual/Individual.route';
 import { useEndUsersWithWorkflowsQuery } from '../../../../../lib/react-query/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
 import { useUsersQuery } from '../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
 import { useSort } from 'hooks/useSort/useSort';
-import { useSelectEntityFilterOnMount } from 'hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
 
 export const useIndividuals = () => {
   const matches = useMatches();
@@ -67,7 +66,6 @@ export const useIndividuals = () => {
   );
   const skeletons = createArrayOfNumbers(3);
 
-  useSelectEntityFilterOnMount();
   useSelectEndUserOnMount();
 
   return {

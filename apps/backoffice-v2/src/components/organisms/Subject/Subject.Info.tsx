@@ -126,7 +126,8 @@ export const Info: FunctionComponent<IInfoProps> = ({ info, whitelist, isLoading
                 /personal\sinfo/i.test(section?.title) && (
                   // Can use dialog here once browser support is better
                   <WarningAlert
-                    isOpen={isOcrMismatch}
+                    // isOpen={isOcrMismatch}
+                    isOpen={false}
                     className={`text-base-content theme-dark:text-base-100`}
                   >
                     <div className={`flex w-full justify-between`}>

@@ -1,9 +1,11 @@
 import { Header } from 'components/organisms/Header';
 import { FunctionComponentWithChildren } from '../../../types';
 import { useAuthenticatedLayout } from 'components/templates/AuthenticatedLayout/hooks/useAuthenticatedLayout/useAuthenticatedLayout';
+import { useSelectEntityFilterOnMount } from 'hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
 
 export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {
   useAuthenticatedLayout();
+  useSelectEntityFilterOnMount();
 
   return (
     <div className="drawer-mobile drawer">
