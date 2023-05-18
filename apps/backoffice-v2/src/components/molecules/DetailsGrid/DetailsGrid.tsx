@@ -77,7 +77,6 @@ export const DetailsGrid = <TRecord extends AnyRecord>({
           {!!footer && footer}
         </div>
       </details>
-      <div className={`divider`} />
     </>
   );
 };

@@ -1,6 +1,5 @@
 import { SubjectsList } from 'components/organisms/SubjectsList/SubjectsList';
 import { Outlet } from '@tanstack/react-router';
-
 import { Pagination } from 'components/organisms/Pagination/Pagination';
 import { useIndividuals } from 'components/pages/Individuals/hooks/useIndividuals/useIndividuals';
 import { Subject } from 'components/organisms/Subject/Subject';
@@ -18,7 +17,6 @@ export const Individuals = () => {
     subjects,
     isLoading,
     page,
-    pages,
     totalPages,
     skeletons,
     routerId,
@@ -68,7 +66,7 @@ export const Individuals = () => {
           </SubjectsList.List>
         </MotionScrollArea>
         <div className={`divider my-0 px-4`}></div>
-        <Pagination onPaginate={onPaginate} page={page} pages={pages} totalPages={totalPages} />
+        <Pagination onPaginate={onPaginate} page={page} totalPages={totalPages} />
       </SubjectsList>
       {/* Display skeleton individual when loading the end users list */}
       {isLoading && (
