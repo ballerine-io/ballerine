@@ -1,6 +1,7 @@
 import { WorkflowRuntimeData } from '@prisma/client';
 import { DefaultContextSchema } from './schemas/context';
 import { certificateOfResidenceGH } from '../schemas/documents/GH';
+import { Unpacked } from '@/types';
 
 type Document = NonNullable<Unpacked<DefaultContextSchema['documents']>>;
 
