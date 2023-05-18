@@ -13,6 +13,7 @@ import {
   fetchDefaultBucketName,
   manageFileByProvider,
 } from '@/storage/get-file-storage-manager';
+import console from 'console';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -56,14 +57,28 @@ export class StorageControllerInternal {
     return { id };
   }
 
+  // curl -v http://localhost:3000/api/v1/internal/storage/1679322938093
+  @common.Get('/:id')
+  async getFileById(@Param('id') id: string, @Res() res: Response) {
+    // currently ignoring user id due to no user info
+    const persistedFile = await this.service.getFileNameById({
+      id,
+    });
+    if (!persistedFile) {
+      throw new errors.NotFoundException('file not found');
+    }
+
+    return res.send(persistedFile);
+  }
+
   // curl -v http://localhost:3000/api/v1/storage/content/1679322938093
   @common.Get('/content/:id')
   async fetchFileContent(@Param('id') id: string, @Res() res: Response) {
     // currently ignoring user id due to no user info
     const persistedFile = await this.service.getFileNameById({
       id,
-      userId: '',
     });
+
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }

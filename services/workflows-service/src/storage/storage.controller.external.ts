@@ -61,7 +61,6 @@ export class StorageControllerExternal {
     // currently ignoring user id due to no user info
     const persistedFile = await this.service.getFileNameById({
       id,
-      userId: '',
     });
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
@@ -76,7 +75,6 @@ export class StorageControllerExternal {
     // currently ignoring user id due to no user info
     const persistedFile = await this.service.getFileNameById({
       id,
-      userId: '',
     });
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
