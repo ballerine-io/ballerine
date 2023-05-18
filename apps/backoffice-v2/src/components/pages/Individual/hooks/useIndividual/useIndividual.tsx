@@ -233,7 +233,7 @@ export const useIndividual = () => {
         <Subject.FaceMatch faceAUrl={value.faceAUrl} faceBUrl={value.faceBUrl} />
       </div>
     ),
-    details: ({ id, value }) => {
+    details: ({ value }) => {
       const defaultValues = value.data?.reduce((acc, curr) => {
         acc[curr.title] = curr.value;
 
