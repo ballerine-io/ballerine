@@ -18,7 +18,13 @@ export const useWorkflowQuery = ({ workflowId }: { workflowId: string }) => {
           context: workflowRuntimeData?.context,
         },
         workflowContext: {
-          machineContext: workflowRuntimeData?.context,
+          machineContext: {
+            ...workflowRuntimeData?.context,
+            documents: workflowRuntimeData?.context?.documents?.map(document => ({
+              ...document,
+              id: `${document?.category}-${document?.type}-${document?.issuer?.country}`.toLowerCase(),
+            })),
+          },
           state: workflowRuntimeData?.state ?? definition?.initial,
         },
       };

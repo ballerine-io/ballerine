@@ -7,8 +7,7 @@ import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListen
 import { useSelectNextEndUser } from 'hooks/useSelectNextEndUser/useSelectNextEndUser';
 import { createInitials } from '../../../../../utils/create-initials/create-initials';
 import { IUseActions } from './interfaces';
-import { Action, CaseState } from '../../../../../enums';
-import { TAuthenticatedUser, TCaseManagementState } from '../../../../../api/types';
+import { Action } from '../../../../../enums';
 import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 import { useCaseState } from 'components/organisms/Subject/hooks/useCaseState/useCaseState';
 import { useAssignWorkflowMutation } from '../../../../../lib/react-query/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
@@ -59,7 +58,7 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
   const authenticatedUser = user;
   const caseState = useCaseState(authenticatedUser, workflow);
   const { data: users } = useUsersQuery();
-  const assignees = users.filter(assignee => assignee.id !== authenticatedUser.id);
+  const assignees = users.filter(assignee => assignee?.id !== authenticatedUser?.id);
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
   const canReject =

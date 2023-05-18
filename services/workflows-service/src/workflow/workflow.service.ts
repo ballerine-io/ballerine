@@ -16,7 +16,7 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
-import Ajv from 'ajv';
+import Ajv, { Schema } from 'ajv';
 import addFormats from 'ajv-formats';
 import { DefaultContextSchema } from './schemas/context';
 
@@ -123,10 +123,26 @@ export class WorkflowService {
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
-    const ajv = new Ajv();
-    // const validate = ajv.compile(runtimeData.contextSchema);
+    const workflow = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+    );
+    const validate = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
 
     data.context = merge(runtimeData.context, data.context);
+
+    const context = {
+      ...data.context,
+      // @ts-ignore
+      documents: data.context?.documents?.map(
+        // @ts-ignore
+        ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
+      ),
+    };
+    const isValid = validate(context);
+
+    if (!isValid) {
+      throw new BadRequestException(validate.errors);
+    }
 
     this.logger.log(
       `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
@@ -135,9 +151,6 @@ export class WorkflowService {
     // in case current state is a final state, we want to create another machine, of type manual review.
     // assign runtime to user, copy the context.
     const currentState = data.state;
-    const workflow = await this.workflowDefinitionRepository.findById(
-      runtimeData.workflowDefinitionId,
-    );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

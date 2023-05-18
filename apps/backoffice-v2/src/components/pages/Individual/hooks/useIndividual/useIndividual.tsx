@@ -248,10 +248,7 @@ export const useIndividual = () => {
               return {
                 ...document,
                 properties: Object.keys(document?.properties).reduce((acc, curr) => {
-                  acc[curr] = {
-                    ...document?.properties?.[curr],
-                    value: data?.[curr],
-                  };
+                  acc[curr] = data?.[curr];
 
                   return acc;
                 }, {}),
@@ -278,20 +275,21 @@ export const useIndividual = () => {
           >
             {methods => (
               <>
-                <legend className={`sr-only text-lg font-bold`}>{value.title}</legend>
+                <legend className={`sr-only text-lg font-bold`}>{value?.title}</legend>
                 <div className={`grid grid-cols-2 gap-2`}>
-                  {value?.data?.map(({ title, isEditable, type }) => (
+                  {value?.data?.map(({ title, isEditable, type, format, pattern }) => (
                     <div className={`flex flex-col`} key={title}>
                       <label htmlFor={title} className={`font-bold`}>
                         {toStartCase(camelCaseToSpace(title))}
                       </label>
                       <input
                         {...methods.register(title)}
-                        type={type === 'string' ? 'text' : type}
+                        type={!format ? (type === 'string' ? 'text' : type) : format}
                         disabled={!isEditable}
                         className={ctw(`disabled:bg-background`, {
                           'rounded border border-border p-1': isEditable,
                         })}
+                        pattern={pattern}
                       />
                     </div>
                   ))}
@@ -339,9 +337,7 @@ export const useIndividual = () => {
           },
         ],
         ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
-          ({ type, category, issuer, properties, propertiesSchema, decision }, index) => {
-            const id = `${type}${category}${issuer?.country ?? ''}`;
-
+          ({ id, type, category, issuer, properties, propertiesSchema, decision }, index) => {
             return [
               {
                 id: 'header',
@@ -391,7 +387,7 @@ export const useIndividual = () => {
                           type,
                           format,
                           pattern,
-                          isEditable,
+                          isEditable: true,
                         }),
                       ),
                     },

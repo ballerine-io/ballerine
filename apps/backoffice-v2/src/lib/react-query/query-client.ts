@@ -23,7 +23,7 @@ export const queryClient = new QueryClient({
     queries: {
       // Otherwise a simple 'Unauthorized (401)' error could cause a retry
       // until the user signs in.
-      retry: 3,
+      retry: false,
       refetchInterval: env.VITE_POLLING_INTERVAL,
     },
   },
