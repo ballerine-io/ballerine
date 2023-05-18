@@ -1,4 +1,4 @@
-import { isErrorWithMessage, isObject } from '@ballerine/common';
+import { isErrorWithCode, isErrorWithMessage, isObject } from '@ballerine/common';
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { t } from 'i18next';
 import toast from 'react-hot-toast';
@@ -20,7 +20,8 @@ export const queryClient = new QueryClient({
   },
   queryCache: new QueryCache({
     onError: async error => {
-      if (isErrorWithMessage(error) && error.message === 'Unauthorized (401)') {
+      if (isErrorWithCode(error) && error.code === 401) {
+        queryClient.cancelQueries();
         queryClient.setQueryData(auth.getSession().queryKey, undefined);
         await queryClient.invalidateQueries(auth.getSession().queryKey);
       }
@@ -34,7 +35,9 @@ export const queryClient = new QueryClient({
       if (!isErrorWithMessage(error) || error.message === 'undefined' || error.message === 'null')
         return;
 
-      toast.error(error.message);
+      toast.error(error.message, {
+        id: error.message,
+      });
     },
   }),
   mutationCache: new MutationCache({

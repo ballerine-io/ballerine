@@ -23,7 +23,7 @@ export class BusinessModel {
     type: StringFilter,
   })
   @Type(() => StringFilter)
-  registrationNumber!: string;
+  registrationNumber!: string | null;
 
   @ApiProperty({
     required: false,
