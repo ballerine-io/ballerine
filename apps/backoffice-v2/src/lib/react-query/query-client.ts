@@ -7,6 +7,15 @@ import { isZodError } from '../../utils/is-zod-error/is-zod-error';
 import { auth } from './auth';
 import { env } from '../../env/env';
 
+interface IErrorWithCode {
+  code: number;
+}
+
+// Use from `@ballerine/common` when a new version is released.
+export const isErrorWithCode = (error: unknown): error is IErrorWithCode => {
+  return isObject(error) && 'code' in error && typeof error.code === 'number';
+};
+
 // TODO: Add i18n plurals
 // TODO: Make accessing translations typesafe (json properties)
 export const queryClient = new QueryClient({
@@ -20,7 +29,8 @@ export const queryClient = new QueryClient({
   },
   queryCache: new QueryCache({
     onError: async error => {
-      if (isErrorWithMessage(error) && error.message === 'Unauthorized (401)') {
+      if (isErrorWithCode(error) && error.code === 401) {
+        queryClient.cancelQueries();
         queryClient.setQueryData(auth.getSession().queryKey, undefined);
         await queryClient.invalidateQueries(auth.getSession().queryKey);
       }
@@ -34,7 +44,9 @@ export const queryClient = new QueryClient({
       if (!isErrorWithMessage(error) || error.message === 'undefined' || error.message === 'null')
         return;
 
-      toast.error(error.message);
+      toast.error(error.message, {
+        id: error.message,
+      });
     },
   }),
   mutationCache: new MutationCache({
