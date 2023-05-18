@@ -43,7 +43,7 @@ const ajv = new Ajv({
 });
 import { env } from '@/env';
 addFormats(ajv, { formats: ['email', 'uri'] });
-export type TDefaultSchemaDocumentPage = DefaultContextSchema['documents'][number]['pages'][number]
+type TDefaultSchemaDocumentPage = DefaultContextSchema['documents'][number]['pages'][number]
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
   CUT_IMAGE: 'CUT_IMAGE',
@@ -309,8 +309,6 @@ export class WorkflowService {
     workflowDefinitionId: string;
     context: DefaultContextSchema;
   }): Promise<RunnableWorkflowData[]> {
-    console.log(context)
-
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
@@ -448,11 +446,9 @@ export class WorkflowService {
   }
 
   private __validateWorkflowDefinitionContext(workflowDefinition: WorkflowDefinition, context: DefaultContextSchema) {
-    console.log(JSON.stringify(context))
     if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema!).length) {
       const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
       const validationResult = validate(context);
-      console.log('validationResult', validationResult);
 
       if (!validationResult) {
         console.log(validate.errors);
@@ -570,7 +566,7 @@ export class WorkflowService {
     toRemoteFileConfig: TRemoteFileConfig,
     remoteFileName: string
   } {
-    if (this.fetchBucketName(env, false)){
+    if (this.__fetchBucketName(env, false)){
       const s3ClientConfig = generateAwsConfig(process.env)
       const awsConfigForClient = this.__fetchAwsConfigFor(fileName);
       return {toServiceProvider: new AwsS3FileService(s3ClientConfig), toRemoteFileConfig: awsConfigForClient, remoteFileName: awsConfigForClient.fileNameInBucket};
@@ -581,7 +577,7 @@ export class WorkflowService {
   }
 
   private __fetchAwsConfigFor(fileNameInBucket: string) : TS3BucketConfig {
-    const bucketName = this.fetchBucketName(env, true) as string;
+    const bucketName = this.__fetchBucketName(env, true) as string;
 
     return {
       bucketName: bucketName,
@@ -590,7 +586,7 @@ export class WorkflowService {
     }
   }
 
-  private fetchBucketName(processEnv: typeof env, isThrowOnMissing = true) {
+  private __fetchBucketName(processEnv: typeof env, isThrowOnMissing = true) {
     const bucketName = processEnv.AWS_S3_BUCKET_NAME
 
    if (isThrowOnMissing && !bucketName) {
