@@ -27,12 +27,11 @@ export const generateAwsConfig = (processEnv: NodeJS.ProcessEnv, prefixConfigNam
     };
   }
 
-  const upcasedCustomerName = prefixConfigName.toUpperCase();
   return {
-    region: z.string().default(AWS_REGION).parse(processEnv[`${upcasedCustomerName}_AWS_REGION`]),
+    region: z.string().default(AWS_REGION).parse(processEnv[`${prefixConfigName}_AWS_REGION`]),
     credentials: {
-      accessKeyId: z.string().parse(processEnv[`${upcasedCustomerName}_AWS_S3_BUCKET_KEY`]),
-      secretAccessKey: z.string().parse(processEnv[`${upcasedCustomerName}_AWS_S3_BUCKET_SECRET`]),
+      accessKeyId: z.string().parse(processEnv[`${prefixConfigName}_AWS_S3_BUCKET_KEY`]),
+      secretAccessKey: z.string().parse(processEnv[`${prefixConfigName}_AWS_S3_BUCKET_SECRET`]),
     },
   };
 };
