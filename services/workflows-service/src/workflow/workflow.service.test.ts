@@ -71,6 +71,8 @@ describe('WorkflowService', () => {
       workflowRuntimeDataRepo,
       {} as any,
       {} as any,
+      {} as any,
+      {} as any,
       eventEmitter as any,
     );
   });
