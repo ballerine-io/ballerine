@@ -6,15 +6,16 @@ export const BusinessesListSchema = z
   .array(
     ObjectWithIdSchema.extend({
       companyName: z.string().default(''),
-      registrationNumber: z.string().default(''),
-      legalForm: z.string().default(''),
-      countryOfIncorporation: z.string().default(''),
+      registrationNumber: z.string().nullable().default(''),
+      legalForm: z.string().nullable().default(''),
+      countryOfIncorporation: z.string().nullable().default(''),
       createdAt: z.string().default(''),
       approvalState: z.enum(States).default(State.PROCESSING),
       workflowRuntimeData: z.preprocess(
         workflows => workflows?.[0],
         ObjectWithIdSchema.extend({
           assigneeId: z.string().nullable().optional(),
+          createdAt: z.string().datetime(),
         }).optional(),
       ),
     }),
@@ -24,14 +25,14 @@ export const BusinessesListSchema = z
 export const BusinessByIdSchema = ObjectWithIdSchema.extend({
   companyName: z.string().default(''),
   registrationNumber: z.string().default(''),
-  legalForm: z.string().default(''),
-  countryOfIncorporation: z.string().default(''),
+  legalForm: z.string().nullable().default(''),
+  countryOfIncorporation: z.string().nullable().default(''),
   dateOfIncorporation: z.string().nullable().default(''),
-  address: z.string().default(''),
+  address: z.string().nullable().default(''),
   phoneNumber: z.string().nullable().default(''),
   email: z.string().nullable().default(''),
   website: z.string().nullable().default(''),
-  industry: z.string().default(''),
+  industry: z.string().nullable().default(''),
   taxIdentificationNumber: z.string().nullable().default(''),
   vatNumber: z.string().nullable().default(''),
   shareholderStructure: z.string().nullable().default(''),

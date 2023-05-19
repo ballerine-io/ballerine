@@ -36,12 +36,13 @@ import { AnyRecord } from '../../../../../types';
 import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
 import { Form } from 'components/organisms/Form/Form';
 import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/useStorageFilesQuery/useStorageFilesQuery';
+import toast from 'react-hot-toast';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
   const { data: endUser, isLoading } = useEndUserWithWorkflowQuery(endUserId);
   const results = useStorageFilesQuery(
-    endUser?.workflow?.context?.documents?.flatMap(({ pages }) =>
+    endUser?.workflow?.workflowContext?.machineContext?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
@@ -60,6 +61,12 @@ export const useIndividual = () => {
   const onMutateUpdateWorkflowById =
     ({ id, approvalStatus }: { id: string; approvalStatus: 'rejected' | 'approved' }) =>
     () => {
+      if (!id) {
+        toast.error('Invalid task id');
+
+        return;
+      }
+
       const decisions = [...(endUser?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
       const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
 
@@ -100,12 +107,16 @@ export const useIndividual = () => {
           className={ctw({
             'm-2 mt-6 flex justify-end space-x-2 rounded p-2 text-slate-50': id === 'actions',
             rounded: id === 'alerts',
-            'col-span-full': id === 'alerts' || id === 'details-container',
-            'grid grid-cols-2': id === 'details-container',
+            'col-span-full': id === 'alerts' || id === 'header',
+            'grid grid-cols-2': id === 'header',
             'm-2 flex flex-col space-y-2 p-2': id === 'alerts',
           })}
         >
-          {value?.map(cell => components[cell.type]?.(cell))}
+          {value?.map((cell, index) => {
+            const Cell = components[cell?.type];
+
+            return <Cell key={index} {...cell} />;
+          })}
         </div>
       );
     },
@@ -230,21 +241,23 @@ export const useIndividual = () => {
       }, {});
       const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = data => {
         const context = {
-          documents: endUser?.workflow?.context?.documents?.map(document => {
-            if (document?.id !== value?.id) return document;
+          documents: endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
+            document => {
+              if (document?.id !== value?.id) return document;
 
-            return {
-              ...document,
-              properties: Object.keys(document?.properties).reduce((acc, curr) => {
-                acc[curr] = {
-                  ...document?.properties?.[curr],
-                  value: data?.[curr],
-                };
+              return {
+                ...document,
+                properties: Object.keys(document?.properties).reduce((acc, curr) => {
+                  acc[curr] = {
+                    ...document?.properties?.[curr],
+                    value: data?.[curr],
+                  };
 
-                return acc;
-              }, {}),
-            };
-          }),
+                  return acc;
+                }, {}),
+              };
+            },
+          ),
         };
 
         return onMutateTaskDecisionById({
@@ -305,88 +318,115 @@ export const useIndividual = () => {
       );
     },
   };
-  const tasks = endUser?.workflow?.context?.entity
+  const tasks = endUser?.workflow?.workflowContext?.machineContext?.entity
     ? [
         [
           {
             type: 'details',
             value: {
-              title: `${toStartCase(endUser?.workflow?.context?.entity?.type)} Information`,
-              data: Object.entries(endUser?.workflow?.context?.entity?.data ?? {})?.map(
-                ([title, value]) => ({
-                  title,
-                  value,
-                  type: 'string',
-                  isEditable: false,
-                }),
-              ),
+              title: `${toStartCase(
+                endUser?.workflow?.workflowContext?.machineContext?.entity?.type,
+              )} Information`,
+              data: Object.entries(
+                endUser?.workflow?.workflowContext?.machineContext?.entity?.data ?? {},
+              )?.map(([title, value]) => ({
+                title,
+                value,
+                type: 'string',
+                isEditable: false,
+              })),
             },
           },
         ],
-        ...(endUser?.workflow?.context?.documents?.map(({ id, category, properties }, index) => [
-          {
-            id: 'details-container',
-            type: 'container',
-            value: [
+        ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
+          ({ type, category, issuer, properties, propertiesSchema, decision }, index) => {
+            const id = `${type}${category}${issuer?.country ?? ''}`;
+
+            return [
               {
-                type: 'heading',
-                value: category,
-              },
-              {
-                id: 'actions',
+                id: 'header',
                 type: 'container',
                 value: [
                   {
-                    type: 'callToAction',
-                    value: 'Reject',
-                    data: {
+                    type: 'heading',
+                    value: category,
+                  },
+                  {
+                    id: 'actions',
+                    type: 'container',
+                    value: [
+                      {
+                        type: 'callToAction',
+                        value: 'Reject',
+                        data: {
+                          id,
+                          approvalStatus: 'rejected',
+                        },
+                      },
+                      {
+                        type: 'callToAction',
+                        value: 'Approve',
+                        data: {
+                          id,
+                          approvalStatus: 'approved',
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: 'container',
+                value: [
+                  {
+                    id: 'decision',
+                    type: 'details',
+                    value: {
                       id,
-                      approvalStatus: 'rejected',
+                      title: category,
+                      data: Object.entries(propertiesSchema?.properties ?? {})?.map(
+                        ([title, { type, format, pattern, isEditable }]) => ({
+                          title,
+                          value: properties?.[title] ?? '',
+                          type,
+                          format,
+                          pattern,
+                          isEditable,
+                        }),
+                      ),
                     },
                   },
                   {
-                    type: 'callToAction',
-                    value: 'Approve',
-                    data: {
+                    type: 'details',
+                    value: {
                       id,
-                      approvalStatus: 'approved',
+                      title: 'Decision',
+                      data: Object.entries(decision ?? {}).map(([title, value]) => ({
+                        title,
+                        value,
+                      })),
                     },
                   },
                 ],
               },
-            ],
+              {
+                type: 'multiDocuments',
+                value: {
+                  data:
+                    endUser?.workflow?.workflowContext?.machineContext?.documents?.[
+                      index
+                    ]?.pages?.map(({ type, metadata }, index) => ({
+                      title: metadata?.side ? `${category} ${metadata?.side}` : category,
+                      imageUrl:
+                        type === 'pdf'
+                          ? octetToFileType(results[index]?.data, type)
+                          : results[index]?.data,
+                    })) ?? [],
+                },
+              },
+            ];
           },
-          {
-            type: 'details',
-            value: {
-              id,
-              title: category,
-              data: Object.entries(properties ?? {}).map(
-                ([title, { value, type, isEditable }]) => ({
-                  title,
-                  value,
-                  type,
-                  isEditable,
-                }),
-              ),
-            },
-          },
-          {
-            type: 'multiDocuments',
-            value: {
-              data:
-                endUser?.workflow?.context?.documents?.[index]?.pages?.map(
-                  ({ type, metadata }, index) => ({
-                    title: metadata?.side ? `${category} ${metadata?.side}` : category,
-                    imageUrl:
-                      type === 'pdf'
-                        ? octetToFileType(results[index]?.data, type)
-                        : results[index]?.data,
-                  }),
-                ) ?? [],
-            },
-          },
-        ]) ?? []),
+        ) ?? []),
       ]
     : [];
 

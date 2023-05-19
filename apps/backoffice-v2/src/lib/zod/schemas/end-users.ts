@@ -19,6 +19,7 @@ export const EndUsersListSchema = z
         workflows => workflows?.[0],
         ObjectWithIdSchema.extend({
           assigneeId: z.string().nullable().optional(),
+          createdAt: z.string().datetime(),
         }).optional(),
       ),
     }).transform(({ firstName, lastName, ...rest }) => ({
