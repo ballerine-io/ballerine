@@ -12,7 +12,8 @@
     "astro": "astro",
     "format": "prettier --write --plugin-search-dir=. \"./**/*.{cjs,js,ts,tsx,ts,mts}\"",
     "format:check": "prettier --check --plugin-search-dir=. \"./**/*.{cjs,js,ts,tsx,ts,mts}\"",
-    "lint": "eslint . --fix"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "peerDependencies": {
     "vite": "~3.2.5"
