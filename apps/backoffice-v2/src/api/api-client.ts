@@ -1,4 +1,4 @@
-import { fetcher } from '../utils/fetcher/fetcher';
+import { fetcher } from '@ballerine/common/src/utils/fetcher';
 import { env } from '../env/env';
 import { IApiClient } from './interfaces';
 import { handlePromise } from '../utils/handle-promise/handle-promise';

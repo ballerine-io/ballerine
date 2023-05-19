@@ -1,6 +1,6 @@
-import { IFetcher } from './interfaces';
-import { handlePromise } from '../handle-promise/handle-promise';
-import { isZodError } from '../is-zod-error/is-zod-error';
+import { IFetcher } from '../../../../apps/backoffice-v2/src/utils/fetcher/interfaces';
+import { handlePromise } from '../../../../apps/backoffice-v2/src/utils/handle-promise/handle-promise';
+import { isZodError } from '../../../../apps/backoffice-v2/src/utils/is-zod-error/is-zod-error';
 
 export const fetcher: IFetcher = async ({
   url,
@@ -10,6 +10,14 @@ export const fetcher: IFetcher = async ({
   timeout = 5000,
   schema,
   isBlob = false,
+}: {
+  url: string;
+  method: 'GET' | 'DELETE' | 'POST' | 'PUT' | 'PATCH';
+  body?: any;
+  options?: Omit<RequestInit, 'body'> | undefined;
+  timeout?: number | undefined;
+  schema: any;
+  isBlob?: boolean | undefined;
 }) => {
   const controller = new AbortController();
   const { signal } = controller;
@@ -46,7 +54,7 @@ export const fetcher: IFetcher = async ({
 
   const [data, jsonError] = isBlob
     ? await handlePromise(res.blob())
-    : res.headers.get('content-length') > '0'
+    : res.headers.get('content-length')! > '0'
     ? await handlePromise(res.json())
     : [undefined, undefined];
 

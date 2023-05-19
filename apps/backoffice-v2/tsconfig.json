@@ -22,5 +22,5 @@
       "hooks/*": ["src/hooks/*"]
     }
   },
-  "include": ["src", "e2e"]
+  "include": ["src", "e2e", "../../packages/common/src/utils/fetcher.ts"]
 }
