@@ -64,7 +64,7 @@
     "ci": "pnpm build && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test"
   },
   "license": "ISC",
-  "devDependencies": {
+  "dependencies": {
     "@branchlint/cli": "^1.0.4",
     "@branchlint/default-config": "^1.0.2",
     "@changesets/changelog-git": "^0.1.14",
@@ -73,14 +73,12 @@
     "@commitlint/config-conventional": "^17.4.4",
     "@manypkg/cli": "^0.20.0",
     "commitizen": "^4.3.0",
+    "cross-env": "^7.0.3",
     "cz-conventional-changelog": "^3.3.0",
-    "editorconfig": "^1.0.2",
+    "editorconfig": "^1.0.1",
     "husky": "^8.0.3",
     "lint-staged": "^11.2.6",
     "nx": "15.0.2",
-    "prettier": "^2.8.7"
-  },
-  "dependencies": {
-    "cross-env": "^7.0.3"
+    "prettier": "^2.1.1"
   }
 }

@@ -32,7 +32,7 @@
   "dependencies": {
     "@ballerine/common": "^0.4.3",
     "@ballerine/workflow-core": "^0.4.9",
-    "xstate": "^4.37.0"
+    "xstate": "^4.35.2"
   },
   "devDependencies": {
     "@babel/core": "7.17.9",
