@@ -8,9 +8,12 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { merge } from 'lodash';
+import { merge, isEqual } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
+import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
+import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
+
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
@@ -79,11 +82,25 @@ export class WorkflowService {
     protected readonly businessRepository: BusinessRepository,
     protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
-    private workflowEventEmitter: WorkflowEventEmitterService,
+    protected readonly workflowEventEmitter: WorkflowEventEmitterService,
   ) {}
 
-  async createWorkflowDefinition(args: Parameters<WorkflowDefinitionRepository['create']>[0]) {
-    return await this.workflowDefinitionRepository.create(args);
+  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
+    const select = {
+      id: true,
+      name: true,
+      version: true,
+
+      definition: true,
+      definitionType: true,
+
+      backend: true,
+
+      extensions: true,
+      persistStates: true,
+      submitStates: true,
+    };
+    return await this.workflowDefinitionRepository.create({ data, select });
   }
 
   async getWorkflowRuntimeDataById(
@@ -133,16 +150,27 @@ export class WorkflowService {
     })) as CompleteWorkflowData[];
   }
 
-  async listWorkflowDefinitions(args?: Parameters<WorkflowDefinitionRepository['findMany']>[0]) {
-    return await this.workflowDefinitionRepository.findMany(args);
+  async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {
+    const select = {
+      id: true,
+      name: true,
+      version: true,
+      definition: true,
+      definitionType: true,
+
+      backend: true,
+
+      extensions: true,
+      persistStates: true,
+      submitStates: true,
+    };
+    return await this.workflowDefinitionRepository.findMany({ ...args, select });
   }
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
-    const ajv = new Ajv();
-    // const validate = ajv.compile(runtimeData.contextSchema);
-
-    data.context = merge(runtimeData.context, data.context);
+    const contextHasChanged = !isEqual(data.context, runtimeData.context);
+    const mergedContext = merge({}, runtimeData.context, data.context);
 
     this.logger.log(
       `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
@@ -159,18 +187,20 @@ export class WorkflowService {
     // @ts-ignore
     const isFinal = workflow.definition?.states?.[currentState]?.type === 'final';
 
+    data.context = mergedContext;
+
     const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
       data: {
         ...data,
-        resolvedAt: isFinal ? new Date() : undefined,
+        resolvedAt: isFinal ? new Date() : null,
       },
     });
 
-    if (isFinal) {
-      this.workflowEventEmitter.emit('workflow.completed', {
+    if (contextHasChanged) {
+      this.workflowEventEmitter.emit('workflow.context.changed', {
         runtimeData,
         state: currentState as string,
-        context: runtimeData.context, // TODO: final result should be a subset of context, should be defined as part of the workflow definition
+        context: mergedContext as any,
       });
     }
 
@@ -526,13 +556,6 @@ export class WorkflowService {
     this.logger.log(
       `Workflow ${workflow.name}-${id}-v${workflow.version} state transiation [${runtimeData.state} -> ${currentState}]`,
     );
-    if (isFinal) {
-      this.workflowEventEmitter.emit('workflow.completed', {
-        runtimeData,
-        state: currentState,
-        context, // TODO: final result should be a subset of context, should be defined as part of the workflow definition
-      });
-    }
 
     if (type === 'resubmit' && document) {
       switch (resubmissionReason) {

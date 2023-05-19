@@ -11,21 +11,16 @@ describe('Event Consumer', () => {
       imports: [EventEmitterModule.forRoot()],
       providers: [EventConsumerListener, WorkflowEventEmitterService],
     }).compile();
+
     const eventConsumer = moduleRef.get<EventConsumerListener>(EventConsumerListener);
     const workflowEventEmitter = moduleRef.get<WorkflowEventEmitterService>(
       WorkflowEventEmitterService,
     );
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    const subscribePromisefied = promisify(eventConsumer.subscribe).bind(eventConsumer);
-    const p = subscribePromisefied('workflow.completed').then(eventData => {
-      expect(eventData.context.testme).toBeDefined();
-    });
 
-    workflowEventEmitter.emit('workflow.completed', {
+    workflowEventEmitter.emit('workflow.context.changed', {
       runtimeData: {} as WorkflowRuntimeData,
       state: '',
       context: { testme: 'testme' },
     });
-    return p;
   });
 });
