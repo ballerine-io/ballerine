@@ -1,7 +1,7 @@
 import { SubjectsList } from 'components/organisms/SubjectsList/SubjectsList';
 import { Outlet } from '@tanstack/react-router';
 import { Pagination } from 'components/organisms/Pagination/Pagination';
-import { useIndividuals } from 'components/pages/Individuals/hooks/useIndividuals/useIndividuals';
+import { useIndividuals } from './hooks/useIndividuals/useIndividuals';
 import { Subject } from 'components/organisms/Subject/Subject';
 import { MotionScrollArea } from 'components/molecules/MotionScrollArea/MotionScrollArea';
 import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';

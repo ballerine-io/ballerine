@@ -7,10 +7,10 @@ import { TEndUser } from '../../../../../api/types';
 import { createArrayOfNumbers } from '../../../../../utils/create-array-of-numbers/create-array-of-numbers';
 import { TRouteId } from '../../../../../types';
 import { useSelectEndUserOnMount } from 'hooks/useSelectEndUserOnMount/useSelectEndUserOnMount';
-import { individualsRoute } from 'components/pages/Individuals/Individuals.route';
-import { individualsIndexRoute } from 'components/pages/Individuals/IndividualsIndex.route';
-import { individualRoute } from 'components/pages/Individual/Individual.route';
-import { useEndUsersWithWorkflowsQuery } from '../../../../../lib/react-query/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
+import { individualsRoute } from '../../Individuals.route';
+import { individualsIndexRoute } from '../../IndividualsIndex.route';
+import { individualRoute } from '../../../Individual/Individual.route';
+import { useEndUsersWithWorkflowsQuery } from '../../../../../individuals/hooks/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
 import { useUsersQuery } from '../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
 import { useSort } from 'hooks/useSort/useSort';
 

@@ -1,6 +1,6 @@
 import { useParams } from '@tanstack/react-router';
 import { camelCaseToSpace } from '../../../../../utils/camel-case-to-space/camel-case-to-space';
-import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
+import { useEndUserWithWorkflowQuery } from '../../../../../individuals/hooks/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
 import { Subject } from 'components/organisms/Subject/Subject';
 import { ctw } from '../../../../../utils/ctw/ctw';
 import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';

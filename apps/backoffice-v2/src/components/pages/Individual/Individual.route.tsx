@@ -1,8 +1,8 @@
 import { Route } from '@tanstack/react-router';
 import { queryClient } from '../../../lib/react-query/query-client';
-import { individualsRoute } from 'components/pages/Individuals/Individuals.route';
-import { Individual } from 'components/pages/Individual/Individual.page';
-import { queries } from '../../../lib/react-query/queries';
+import { individualsRoute } from '../Individuals/Individuals.route';
+import { Individual } from './Individual.page';
+import { queryKeys } from '../../../lib/react-query/query-keys';
 
 // @ts-ignore
 export const individualRoute = new Route({
@@ -10,7 +10,7 @@ export const individualRoute = new Route({
   path: '$endUserId',
   onLoad: async ({ params, search }) => {
     const { endUserId } = params;
-    const entityById = queries[search?.entity].byId(endUserId, search?.filterId);
+    const entityById = queryKeys[search?.entity].byId(endUserId, search?.filterId);
     // TODO: Add workflowId to params/searchParams
     // const workflowById = workflows.byId({ workflowId });
 

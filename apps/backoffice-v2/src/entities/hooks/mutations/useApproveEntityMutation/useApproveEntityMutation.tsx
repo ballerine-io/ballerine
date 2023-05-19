@@ -2,17 +2,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../../api/api';
 import { Action, Resource } from '../../../../enums';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
-import { queries } from '../../queries';
+import { queryKeys } from '../../../../lib/react-query/query-keys';
 import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 
-export const useApproveEndUserMutation = ({
-  endUserId,
+export const useApproveEntityMutation = ({
+  entityId,
   workflowId,
-  onSelectNextEndUser,
+  onSelectNextEntity,
 }: {
-  endUserId: string;
+  entityId: string;
   workflowId: string;
-  onSelectNextEndUser: VoidFunction;
+  onSelectNextEntity: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
@@ -31,14 +31,14 @@ export const useApproveEndUserMutation = ({
       action: Action.APPROVE,
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queries[entity].list(filterId).queryKey,
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys[entity as keyof typeof queryKeys].list(filterId).queryKey,
       });
-      queryClient.invalidateQueries({
-        queryKey: queries[entity].byId(endUserId, filterId).queryKey,
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys[entity as keyof typeof queryKeys].byId(entityId, filterId).queryKey,
       });
 
-      onSelectNextEndUser();
+      onSelectNextEntity();
     },
   });
 };

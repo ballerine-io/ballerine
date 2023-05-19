@@ -1,11 +1,11 @@
-import { caseManagementRoute } from 'components/pages/CaseManagement/CaseManagement.route';
+import { caseManagementRoute } from '../CaseManagement/CaseManagement.route';
 import { queryClient } from '../../../lib/react-query/query-client';
 import { z } from 'zod';
 import { Route } from '@tanstack/react-router';
-import { Individuals } from 'components/pages/Individuals/Individuals.page';
+import { Individuals } from './Individuals.page';
 import { States } from '../../../enums';
-import { queries } from '../../../lib/react-query/queries';
-import { preSearchFiltersByKind } from 'components/pages/Individuals/pre-search-filters';
+import { queryKeys } from '../../../lib/react-query/query-keys';
+import { preSearchFiltersByKind } from './pre-search-filters';
 import { users } from '../../../lib/react-query/users';
 
 const SearchSchema = z.object({
@@ -56,7 +56,7 @@ export const individualsRoute = new Route({
     }),
   ],
   onLoad: async ({ search }) => {
-    const entityList = queries[search?.entity].list(search?.filterId);
+    const entityList = queryKeys[search?.entity].list(search?.filterId);
     const usersList = users.list();
     await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
     await queryClient.ensureQueryData(usersList.queryKey, usersList.queryFn);

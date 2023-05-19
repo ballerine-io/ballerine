@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { useFirstEndUserIdQuery } from '../../lib/react-query/queries/useFirstEndUserIdQuery/useFirstEndUserIdQuery';
+import { useFirstEndUserIdQuery } from '../../individuals/hooks/queries/useFirstEndUserIdQuery/useFirstEndUserIdQuery';
 import { individualsRoute } from 'components/pages/Individuals/Individuals.route';
 import { useSelectEndUser } from 'hooks/useSelectEndUser/useSelectEndUser';
 import { useParams } from '@tanstack/react-router';
 import { env } from '../../env/env';
-import { useEndUsersWithWorkflowsQuery } from '../../lib/react-query/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
+import { useEndUsersWithWorkflowsQuery } from '../../individuals/hooks/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
 import { useUsersQuery } from '../../lib/react-query/queries/useUsersQuery/useUsersQuery';
 import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 

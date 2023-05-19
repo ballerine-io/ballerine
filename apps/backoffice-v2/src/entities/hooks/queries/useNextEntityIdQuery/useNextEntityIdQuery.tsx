@@ -2,20 +2,20 @@ import { useParams, useSearch as useTanStackSearch } from '@tanstack/react-route
 import { useCallback } from 'react';
 import { sort } from 'hooks/useSort/sort';
 import { TRouteId } from '../../../../types';
-import { TEndUsers } from '../../../../api/types';
-import { useSelectEndUsersQuery } from '../useSelectEndUsersQuery/useSelectEndUsersQuery';
+import { useSelectEntitiesQuery } from '../useSelectEntitiesQuery/useSelectEntitiesQuery';
+import { TEntities } from '../../../types';
 
-export const useNextEndUserIdQuery = <TId extends TRouteId>({
+export const useNextEntityIdQuery = <TId extends TRouteId>({
   initialState,
   routeId,
 }: {
   initialState: {
     sortDir?: 'asc' | 'desc';
-    sortBy: keyof TEndUsers[number];
+    sortBy: keyof TEntities[number];
   };
   routeId: TId;
 }) => {
-  const { endUserId } = useParams();
+  const { entityId } = useParams();
   const { sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' } =
     useTanStackSearch({
       from: routeId,
@@ -25,17 +25,17 @@ export const useNextEndUserIdQuery = <TId extends TRouteId>({
         sortDir: 'sortDir' in searchParams ? searchParams?.sortDir : undefined,
       }),
     });
-  const selectNextEndUserId = useCallback(
-    (data: TEndUsers) => {
-      if (!endUserId) return;
+  const selectNextEntityId = useCallback(
+    (data: TEntities) => {
+      if (!entityId) return;
 
       const sorted = sort({ data, sortBy, sortDir });
-      const nextEndUserIndex = sorted?.findIndex(endUser => endUser.id === endUserId) + 1;
+      const nextEntityIndex = sorted?.findIndex(entity => entity.id === entityId) + 1;
 
-      return sorted?.[nextEndUserIndex]?.id;
+      return sorted?.[nextEntityIndex]?.id;
     },
-    [endUserId, sortBy, sortDir],
+    [entityId, sortBy, sortDir],
   );
 
-  return useSelectEndUsersQuery(selectNextEndUserId);
+  return useSelectEntitiesQuery(selectNextEntityId);
 };

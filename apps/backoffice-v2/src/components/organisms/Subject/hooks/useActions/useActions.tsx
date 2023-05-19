@@ -1,14 +1,13 @@
 import { useCallback, useState } from 'react';
-import { useApproveEndUserMutation } from '../../../../../lib/react-query/mutations/useApproveEndUserMutation/useApproveEndUserMutation';
-import { useRejectEndUserMutation } from '../../../../../lib/react-query/mutations/useRejectEndUserMutation/useRejectEndUserMutation';
-import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
+import { useApproveEndUserMutation } from '../../../../../individuals/hooks/mutations/useApproveEndUserMutation/useApproveEndUserMutation';
+import { useRejectEndUserMutation } from '../../../../../individuals/hooks/mutations/useRejectEndUserMutation/useRejectEndUserMutation';
+import { useEndUserWithWorkflowQuery } from '../../../../../individuals/hooks/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
 import { useDebounce } from 'hooks/useDebounce/useDebounce';
 import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
 import { useSelectNextEndUser } from 'hooks/useSelectNextEndUser/useSelectNextEndUser';
 import { createInitials } from '../../../../../utils/create-initials/create-initials';
 import { IUseActions } from './interfaces';
-import { Action, CaseState } from '../../../../../enums';
-import { TAuthenticatedUser, TCaseManagementState } from '../../../../../api/types';
+import { Action } from '../../../../../enums';
 import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 import { useCaseState } from 'components/organisms/Subject/hooks/useCaseState/useCaseState';
 import { useAssignWorkflowMutation } from '../../../../../lib/react-query/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';

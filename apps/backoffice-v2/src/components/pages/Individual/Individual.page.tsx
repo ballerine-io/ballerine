@@ -1,5 +1,5 @@
 import { Subject } from 'components/organisms/Subject/Subject';
-import { useIndividual } from 'components/pages/Individual/hooks/useIndividual/useIndividual';
+import { useIndividual } from './hooks/useIndividual/useIndividual';
 import { ctw } from '../../../utils/ctw/ctw';
 import { Card, CardContent } from 'components/atoms/Card/card';
 
