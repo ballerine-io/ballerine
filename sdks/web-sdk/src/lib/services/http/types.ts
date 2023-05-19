@@ -1,5 +1,5 @@
-import { TDecisionStatus } from '../../contexts/app-state/types';
-import { TVerificationStatuses } from '../../utils/event-service/types';
+import type { TDecisionStatus } from '../../contexts/app-state/types';
+import type { TVerificationStatuses } from '../../utils/event-service/types';
 
 export interface ISendDocumentsResponse {
   status: 'success' | 'fail';

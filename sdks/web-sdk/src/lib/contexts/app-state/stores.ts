@@ -1,6 +1,6 @@
 import { derived, writable } from 'svelte/store';
 import { steps } from '../navigation';
-import { IAppState, IDocument, IDocumentInfo, ISelectedParams } from './types';
+import type { IAppState, IDocument, IDocumentInfo, ISelectedParams } from './types';
 
 // const STORAGE_SELFIE_KEY = "selfie";
 // const STORAGE_DOCUMENTS_KEY = "documents";

@@ -1,4 +1,4 @@
-import { ICSSProperties } from '../css-manager';
+import { type ICSSProperties } from '../css-manager';
 
 export const injectPrimaryIntoLayoutGradient = (
   layoutStyles: ICSSProperties,

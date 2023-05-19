@@ -1,6 +1,6 @@
-import { IAppConfiguration, IStepConfiguration } from '../contexts/configuration';
+import type { IAppConfiguration, IStepConfiguration } from '../contexts/configuration';
 import { injectPrimaryIntoLayoutGradient } from '../services/theme-manager';
-import { makeStylesFromConfiguration, ICSSProperties } from '../services/css-manager';
+import { type ICSSProperties, makeStylesFromConfiguration } from '../services/css-manager';
 import { getFlowName } from '../contexts/flows';
 
 export const getStepConfiguration = (configuration: IAppConfiguration, stepId: string) => {

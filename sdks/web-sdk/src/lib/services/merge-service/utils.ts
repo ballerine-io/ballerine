@@ -1,15 +1,15 @@
 import deepmerge from 'deepmerge';
 import merge from 'deepmerge';
-import { FlowsGeneralTheme, FlowsTranslations } from '../../../types/BallerineSDK';
-import {
+import type { FlowsGeneralTheme, FlowsTranslations } from '../../../types/BallerineSDK';
+import type {
   IAppConfiguration,
   IConfigurationComponents,
   IElement,
   IStepConfiguration,
 } from '../../contexts/configuration';
-import { IFlow } from '../../contexts/flows';
-import { TranslationType } from '../../contexts/translation';
-import { IUIPackTheme } from '../../ui-packs/types';
+import { type IFlow } from '../../contexts/flows';
+import { type TranslationType } from '../../contexts/translation';
+import { type IUIPackTheme } from '../../ui-packs/types';
 
 export const mergeStepConfig = (
   defaultConfig: IStepConfiguration,

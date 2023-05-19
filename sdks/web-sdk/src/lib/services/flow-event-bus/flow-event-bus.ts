@@ -1,7 +1,7 @@
 import { getFlowConfig } from '../../contexts/flows/hooks';
 import { get } from 'svelte/store';
 import { configuration } from '../../contexts/configuration';
-import { FlowEventBusFn } from './interfaces';
+import { type FlowEventBusFn } from './interfaces';
 import { FlowEventTypes } from './enums';
 
 export const flowEventBus: FlowEventBusFn = ({ type, payload }) => {

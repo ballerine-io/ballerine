@@ -1,6 +1,6 @@
-import { FlowsGeneralTheme } from '../../types/BallerineSDK';
-import { IConfigurationComponents, TStepsConfigurations } from '../contexts/configuration';
-import { ObjectValues } from '../contexts/app-state/types';
+import { type FlowsGeneralTheme } from '../../types/BallerineSDK';
+import type { IConfigurationComponents, TStepsConfigurations } from '../contexts/configuration';
+import { type ObjectValues } from '../contexts/app-state/types';
 
 export interface IUIPackTheme {
   general: FlowsGeneralTheme;

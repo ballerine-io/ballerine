@@ -1,11 +1,11 @@
 import {
   documents,
-  IDocument,
-  IStoreData,
+  type IDocument,
+  type IStoreData,
   selectedDocumentInfo,
   selfieUri,
 } from '../contexts/app-state';
-import { IAppConfiguration } from '../contexts/configuration';
+import { type IAppConfiguration } from '../contexts/configuration';
 import { verifyDocuments } from '../services/http';
 
 export const broofa = () => {

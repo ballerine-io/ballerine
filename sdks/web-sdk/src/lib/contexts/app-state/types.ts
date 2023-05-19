@@ -1,5 +1,5 @@
 import { SvelteComponent } from 'svelte';
-import { TSteps } from '../configuration/types';
+import { type TSteps } from '../configuration/types';
 
 export const DocumentType = {
   PASSPORT: 'passport', // CARD

@@ -1,4 +1,4 @@
-import { IDocument, IPageSide, TDocumentType } from './types';
+import type { IDocument, IPageSide, TDocumentType } from './types';
 import {
   currentParams,
   currentRoute,

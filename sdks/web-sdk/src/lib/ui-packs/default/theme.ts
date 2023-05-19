@@ -3,12 +3,12 @@ import { DocumentType } from '../../contexts/app-state';
 import { DocumentKind, DocumentVariant } from '../../contexts/app-state/types';
 import {
   Elements,
-  IAppConfigurationUI,
-  IElement,
+  type IAppConfigurationUI,
+  type IElement,
   Steps,
-  TStepsConfigurations,
+  type TStepsConfigurations,
 } from '../../contexts/configuration';
-import { IUIPackTheme } from '../types';
+import { type IUIPackTheme } from '../types';
 
 const backIconButton: IElement = {
   id: 'back-icon-button',

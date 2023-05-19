@@ -1,7 +1,7 @@
-import { DevMocks, ISelectedParams, IStoreData } from '../../contexts/app-state';
-import { IDocumentVerificationResponse, ISendDocumentsResponse } from './types';
+import type { DevMocks, ISelectedParams, IStoreData } from '../../contexts/app-state';
+import type { IDocumentVerificationResponse, ISendDocumentsResponse } from './types';
 import { getFlowConfig } from '../../contexts/flows/hooks';
-import { IAppConfiguration } from '../../contexts/configuration';
+import type { IAppConfiguration } from '../../contexts/configuration';
 import {
   getAuthorizationHeader,
   getIsDevelopment,
@@ -9,7 +9,7 @@ import {
   getVerificationStatusEndpoint,
 } from '../../contexts/configuration/getters';
 import { DecisionStatus } from '../../contexts/app-state/types';
-import { AnyRecord } from '../../../types';
+import { type AnyRecord } from '../../../types';
 
 const outerScopeContext = window.__blrn_context;
 const docTypeMapping = {

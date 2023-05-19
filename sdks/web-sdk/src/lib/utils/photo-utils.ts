@@ -1,8 +1,8 @@
-import { IAppConfiguration, IAppConfigurationUI } from '../contexts/configuration';
-import { IDocument, IDocumentPage } from '../contexts/app-state';
+import type { IAppConfiguration, IAppConfigurationUI } from '../contexts/configuration';
+import type { IDocument, IDocumentPage } from '../contexts/app-state';
 import Compressor from 'compressorjs';
-import { IDocumentOptions } from '../organisms/DocumentOptions';
-import { TDocumentType } from '../contexts/app-state/types';
+import { type IDocumentOptions } from '../organisms/DocumentOptions';
+import { type TDocumentType } from '../contexts/app-state/types';
 
 export type FileEventTarget = EventTarget & { files: FileList };
 export type ICameraEvent = Event & { currentTarget: EventTarget & HTMLInputElement };

@@ -1,23 +1,23 @@
-import {
+import type {
   FlowsEventsConfig,
   FlowsInitOptions,
   FlowsTranslations,
 } from '../../../types/BallerineSDK';
-import { TranslationType } from '../../contexts/translation';
+import { type TranslationType } from '../../contexts/translation';
 import translation from '../../configuration/translation.json';
 import { isUrl, mergeConfigurationWithUiPack, mergeTranslations } from '../merge-service';
 import {
   configuration as configurationStore,
-  IAppConfiguration,
-  IStepConfiguration,
+  type IAppConfiguration,
+  type IStepConfiguration,
   Steps,
 } from '../../contexts/configuration';
 import deepmerge from 'deepmerge';
 import { get } from 'svelte/store';
-import { IUIPackTheme, packs, uiPack as uiPackStore } from '../../ui-packs';
+import { type IUIPackTheme, packs, uiPack as uiPackStore } from '../../ui-packs';
 import { preloadStepImages } from '../preload-service/utils';
-import { IFlow } from '../../contexts/flows';
-import { TUIPackType, UIPackTypes } from '../../ui-packs/types';
+import { type IFlow } from '../../contexts/flows';
+import { type TUIPackType, UIPackTypes } from '../../ui-packs/types';
 
 export let texts: TranslationType = translation;
 

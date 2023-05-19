@@ -1,5 +1,5 @@
-import { IAppConfiguration, Steps } from '../contexts/configuration';
-import { IFlow } from '../contexts/flows';
+import { type IAppConfiguration, Steps } from '../contexts/configuration';
+import { type IFlow } from '../contexts/flows';
 
 // Config prioritiztion:
 // 3. Theme configuration
