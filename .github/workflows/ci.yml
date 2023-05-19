@@ -40,7 +40,7 @@ jobs:
         run: pnpm install
 
       - name: Build, lint, test, format, and type-check
-        run: pnpm ci
+        run: pnpm run ci
 
       - name: Check workspaces
         run: pnpm manypkg check
