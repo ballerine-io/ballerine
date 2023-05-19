@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { State, States } from '../../../enums';
-import { ObjectWithIdSchema } from '../utils/object-with-id';
+import { State, States } from '../enums';
+import { ObjectWithIdSchema } from '../lib/zod/utils/object-with-id';
 
-export const EndUsersListSchema = z
+export const IndividualsListSchema = z
   .array(
     ObjectWithIdSchema.extend({
       avatarUrl: z.string().nullable().default(''),
@@ -30,7 +30,7 @@ export const EndUsersListSchema = z
     })),
   )
   .default([]);
-export const EndUserByIdSchema = ObjectWithIdSchema.extend({
+export const IndividualByIdSchema = ObjectWithIdSchema.extend({
   avatarUrl: z.string().nullable().default(''),
   createdAt: z.string().default(''),
   firstName: z.string().nullable().default(''),

@@ -1,6 +1,6 @@
 import { endpoints } from './endpoints';
 import { apiClient } from './api-client';
-import { EndUserByIdSchema, EndUsersListSchema } from '../lib/zod/schemas/end-users';
+import { IndividualByIdSchema, IndividualsListSchema } from '../individuals/validation-schemas';
 import { handleZodError } from '../utils/handle-zod-error/handle-zod-error';
 import { env } from '../env/env';
 import { endUsers as endUsersApi } from '../lib/mock-service-worker/end-users/end-users.data';
@@ -10,7 +10,7 @@ export const endUsers = {
     const [endUsers, error] = await apiClient({
       endpoint: endpoints.endUsers.list.endpoint(filterId),
       method: endpoints.endUsers.list.method,
-      schema: EndUsersListSchema,
+      schema: IndividualsListSchema,
     });
 
     return handleZodError(error, endUsers);
@@ -26,7 +26,7 @@ export const endUsers = {
     const [endUser, error] = await apiClient({
       endpoint: endpoints.endUsers.byId.endpoint({ endUserId, filterId }),
       method: endpoints.endUsers.byId.method,
-      schema: EndUserByIdSchema,
+      schema: IndividualByIdSchema,
     });
 
     return handleZodError(error, endUser);
@@ -38,7 +38,7 @@ export const endUsers = {
       method: endpoints.endUsers.updateById.method,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       body,
-      schema: EndUserByIdSchema,
+      schema: IndividualByIdSchema,
     });
 
     return handleZodError(error, endUser);
