@@ -36,7 +36,8 @@
   "scripts": {
     "format": "prettier --plugin-search-dir=. --write .",
     "format:check": "prettier --plugin-search-dir=. --check .",
-    "lint": "eslint . --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "start": "vite",
     "dev": "vite",
     "build": "vite build",

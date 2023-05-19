@@ -1,48 +1,46 @@
 name: CI
 
 on:
+  pull_request:
+    branches: [ "*" ]
   push:
-    branches-ignore:
-      - main
-  workflow_call:
+    branches: ["main"]
+  merge_group:
 
 jobs:
-  lint:
+  build-lint-format-test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Lint
-        uses: ./.github/actions/lint-action
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
 
-  format:
-    runs-on: ubuntu-latest
+      - name: Setup Node 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-      - name: Format
-        uses: ./.github/actions/format-action
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
-  test:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
+      - name: Install deps (with cache)
+        run: pnpm install
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Build, lint, test, format, and type-check
+        run: pnpm ci
 
-      - name: Test
-        uses: ./.github/actions/test-action
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Build
-        uses: ./.github/actions/build-action
+      - name: Check workspaces
+        run: pnpm manypkg check
