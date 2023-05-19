@@ -1,4 +1,4 @@
-import { IElementProps } from '../../contexts/configuration';
+import { type IElementProps } from '../../contexts/configuration';
 
 export interface IList {
   titleProps?: IElementProps;
