@@ -60,8 +60,7 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "pnpm build && changeset publish",
-    "upload-sourcemaps": "nx run-many --target=upload-sourcemaps --all",
-    "ci": "nx run-many --targets=build,lint,format:check,typecheck,test --all"
+    "upload-sourcemaps": "nx run-many --target=upload-sourcemaps --all"
   },
   "license": "ISC",
   "dependencies": {
