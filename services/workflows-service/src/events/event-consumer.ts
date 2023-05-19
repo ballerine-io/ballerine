@@ -15,7 +15,7 @@ export class EventConsumerListener {
 
   @OnEvent('workflow.context.changed')
   handleWorkflowEvent(data: WorkflowEventRawData) {
-    const oldDocuments = (data.runtimeData.context as any)['documents'] || [];
+    const oldDocuments = data.runtimeData.context['documents'] || [];
     const newDocuments = data.context?.['documents'] || [];
 
     const documentIdentifier = (doc: any) => {

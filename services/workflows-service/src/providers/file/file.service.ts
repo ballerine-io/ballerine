@@ -1,11 +1,8 @@
-import {
-  TLocalFilePath,
-  TRemoteFileConfig,
-  TFileServiceProvider,
-  IStreamableFileProvider,
-} from './types';
+import { TLocalFilePath, TRemoteFileConfig } from './types/files-types';
 import * as tmp from 'tmp';
 import { Injectable } from '@nestjs/common';
+import { IStreamableFileProvider } from './types/interfaces';
+import { TFileServiceProvider } from './types';
 
 @Injectable()
 export class FileService {
