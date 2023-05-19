@@ -44,8 +44,8 @@ importers:
         specifier: ^11.2.6
         version: 11.2.6
       nx:
-        specifier: 15.0.2
-        version: 15.0.2
+        specifier: 15.4.0
+        version: 15.4.0
       prettier:
         specifier: ^2.1.1
         version: 2.8.7
@@ -6659,21 +6659,21 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
 
-  /@nrwl/cli@15.0.2:
-    resolution: {integrity: sha512-jpsAWpOGbO9UCt3d+ANBEc8efbWX08kANhsprL1shGuzETmxr2lcy9ULvOOaPzBLCx6zrQQMq/riwoQVGrVIDQ==}
+  /@nrwl/cli@15.4.0:
+    resolution: {integrity: sha512-19rP6GqlbLTLFJakhKcfHI8/TXTswnT4D6G4QgjbzKpSj4KRXTnOrv644bOouEsZJ7JIm+NaaJQCfEYpJ+7r1Q==}
     dependencies:
-      nx: 15.0.2
+      nx: 15.4.0
     transitivePeerDependencies:
       - '@swc-node/register'
       - '@swc/core'
       - debug
     dev: false
 
-  /@nrwl/tao@15.0.2:
-    resolution: {integrity: sha512-jH9fgS01rpBimESdtL0UDUD0pCOyeG+L0NE+o1n/cNo8qsfsbw0RwoINdd+FQf3oyD4EMm4bwv3CXQ/PhI0GJw==}
+  /@nrwl/tao@15.4.0:
+    resolution: {integrity: sha512-mwMmBYOCHe0yl8UrI8VRSplNxTPxrgOZA5OWRoRHLPLoHeyng2ZZxPnfxp3ZVLPFKCxwETHcBwNKKTlx+qUgFA==}
     hasBin: true
     dependencies:
-      nx: 15.0.2
+      nx: 15.4.0
     transitivePeerDependencies:
       - '@swc-node/register'
       - '@swc/core'
@@ -17924,8 +17924,8 @@ packages:
     resolution: {integrity: sha512-NHj4rzRo0tQdijE9ZqAx6kYDcoRwYwSYzCA8MY3JzfxlrvEU0jhnhJT9BhqhJs7I/dKcrDm6TyulaRqZPIhN5g==}
     dev: true
 
-  /nx@15.0.2:
-    resolution: {integrity: sha512-qAmSJ2AJG4BntcQJmPG6ykiSvWwYx09/VAynCuvhJkneZvDdGMYaRoNAVVJRhKUi4X+PXBCGfUII6G8tiXuMgg==}
+  /nx@15.4.0:
+    resolution: {integrity: sha512-6sS6a8q3Vb8W6ElDbhtLuzZcyPgsHC8Yx46tgVALMLzfcJMuUfPT/WYHkhc2/5VPoTvwOOMsuUnKILrApOydhg==}
     hasBin: true
     requiresBuild: true
     peerDependencies:
@@ -17937,8 +17937,8 @@ packages:
       '@swc/core':
         optional: true
     dependencies:
-      '@nrwl/cli': 15.0.2
-      '@nrwl/tao': 15.0.2
+      '@nrwl/cli': 15.4.0
+      '@nrwl/tao': 15.4.0
       '@parcel/watcher': 2.0.4
       '@yarnpkg/lockfile': 1.1.0
       '@yarnpkg/parsers': 3.0.0-rc.42
@@ -17971,7 +17971,7 @@ packages:
       tslib: 2.5.0
       v8-compile-cache: 2.3.0
       yargs: 17.7.1
-      yargs-parser: 21.0.1
+      yargs-parser: 21.1.1
     transitivePeerDependencies:
       - debug
     dev: false
@@ -22497,11 +22497,6 @@ packages:
   /yargs-parser@20.2.9:
     resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
     engines: {node: '>=10'}
-
-  /yargs-parser@21.0.1:
-    resolution: {integrity: sha512-9BK1jFpLzJROCI5TzwZL/TU4gqjK5xiHV/RfWLOahrjAko/e4DJkRDZQXfvqAsiZzzYhgAzbgz6lg48jcm4GLg==}
-    engines: {node: '>=12'}
-    dev: false
 
   /yargs-parser@21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}

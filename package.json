@@ -61,7 +61,7 @@
     "version-packages": "changeset version",
     "release": "pnpm build && changeset publish",
     "upload-sourcemaps": "nx run-many --target=upload-sourcemaps --all",
-    "ci": "nx run-many --all --target=build --target=lint --target=format:check --target=typecheck --target=test"
+    "ci": "nx run-many --targets=build,lint,format:check,typecheck,test --all"
   },
   "license": "ISC",
   "dependencies": {
@@ -78,7 +78,7 @@
     "editorconfig": "^1.0.1",
     "husky": "^8.0.3",
     "lint-staged": "^11.2.6",
-    "nx": "15.0.2",
+    "nx": "15.4.0",
     "prettier": "^2.1.1"
   }
 }
