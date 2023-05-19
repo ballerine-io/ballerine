@@ -1,4 +1,4 @@
-import { Languages, TranslationType } from '../../contexts/translation';
+import type { Languages, TranslationType } from '../../contexts/translation';
 import { texts } from '../../services/configuration-manager';
 
 export const getListLength = <
