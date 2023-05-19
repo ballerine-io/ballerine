@@ -1,5 +1,5 @@
 import { cssProperties, hexTransparencies } from './constants';
-import { ICSSProperties, IOpacityColor } from './types';
+import type { ICSSProperties, IOpacityColor } from './types';
 
 const setBackgroundWithOpacity = (
   style: IOpacityColor,

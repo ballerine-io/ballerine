@@ -1,4 +1,4 @@
-import { ICSSProperties } from './types';
+import { type ICSSProperties } from './types';
 
 export const cssProperties: (keyof ICSSProperties)[] = [
   'margin',

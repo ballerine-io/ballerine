@@ -1,6 +1,6 @@
-import { IInputAttributes } from '../atoms/Input';
-import { IStepConfiguration } from '../contexts/configuration';
-import { Elements, IFormProps } from '../contexts/configuration/types';
+import { type IInputAttributes } from '../atoms/Input';
+import { type IStepConfiguration } from '../contexts/configuration';
+import { Elements, type IFormProps } from '../contexts/configuration/types';
 
 const getValuesFromStore = (formProps: IFormProps) => {
   const storeKey = formProps.storeKey ?? '';

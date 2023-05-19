@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { IAppConfiguration } from './types';
+import { type IAppConfiguration } from './types';
 import { configuration as defaultConfiguration } from '../../configuration/configuration';
 
 export const configuration = writable<IAppConfiguration>(defaultConfiguration);

@@ -1,14 +1,19 @@
-import { appState, IAppState } from '../../contexts/app-state';
-import { currentLanguage, Languages } from '../../contexts/translation';
-import { EventTypes, IDocumentVerificationResponse, IOuterEvent, TActionNames } from './types';
+import { appState, type IAppState } from '../../contexts/app-state';
+import { currentLanguage, type Languages } from '../../contexts/translation';
+import {
+  EventTypes,
+  type IDocumentVerificationResponse,
+  type IOuterEvent,
+  type TActionNames,
+} from './types';
 import { get } from 'svelte/store';
 import { flowEventBus } from '../../services/flow-event-bus/flow-event-bus';
 import { FlowEventTypes } from '../../services/flow-event-bus/enums';
 import { BALLERINE_EVENT } from './constants';
-import { IEventOptions, IFlowErrorPayload } from '../../services/flow-event-bus/interfaces';
+import type { IEventOptions, IFlowErrorPayload } from '../../services/flow-event-bus/interfaces';
+import { type IFlowCompletePayload } from '../../services/flow-event-bus/interfaces';
 import { configuration } from '../../contexts/configuration';
 import { getFlowConfig } from '../../contexts/flows/hooks';
-import { IFlowCompletePayload } from '../../services/flow-event-bus/interfaces';
 
 export const subscribe = () => {
   window.addEventListener('message', e => {

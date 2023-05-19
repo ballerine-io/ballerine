@@ -1,7 +1,7 @@
 import { Steps } from './lib/contexts/configuration';
 import { flows } from './main';
 import { DocumentKind, DocumentType } from './lib/contexts/app-state';
-import { FlowsInitOptions } from './types/BallerineSDK';
+import { type FlowsInitOptions } from './types/BallerineSDK';
 
 const ballerineInitConfig: FlowsInitOptions = {
   endUserInfo: { id: 'test-id' },

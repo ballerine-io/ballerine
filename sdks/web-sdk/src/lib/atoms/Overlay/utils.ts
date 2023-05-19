@@ -1,5 +1,5 @@
 import { DocumentType } from '../../contexts/app-state';
-import { TDocumentType } from '../../contexts/app-state/types';
+import { type TDocumentType } from '../../contexts/app-state/types';
 
 export const getOverlayDocumentType = (
   documentType: TDocumentType,

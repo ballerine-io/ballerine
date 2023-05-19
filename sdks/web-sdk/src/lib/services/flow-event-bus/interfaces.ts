@@ -1,8 +1,8 @@
-import { IDocumentVerificationResponse } from '../../utils/event-service';
-import { FlowEventType } from './enums';
-import { AnyRecord } from '../../../types';
-import { TFlowEventBusPayload } from './types';
-import { TEventTypes } from '../../utils/event-service/types';
+import type { IDocumentVerificationResponse } from '../../utils/event-service';
+import type { FlowEventType } from './enums';
+import type { AnyRecord } from '../../../types';
+import type { TFlowEventBusPayload } from './types';
+import type { TEventTypes } from '../../utils/event-service/types';
 
 export interface IEventOptions {
   eventName: string;

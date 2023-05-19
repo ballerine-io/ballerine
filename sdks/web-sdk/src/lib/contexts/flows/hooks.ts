@@ -1,5 +1,5 @@
-import { IAppConfiguration } from '../configuration';
-import { IFlow } from './types';
+import { type IAppConfiguration } from '../configuration';
+import { type IFlow } from './types';
 
 const FLOW_STORE_KEY = 'flow';
 

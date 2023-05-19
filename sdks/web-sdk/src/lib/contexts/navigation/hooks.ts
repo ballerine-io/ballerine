@@ -1,7 +1,7 @@
-import { IAppConfiguration, IStepConfiguration } from '../configuration';
+import type { IAppConfiguration, IStepConfiguration } from '../configuration';
 import { steps } from './constants';
 import { getFlowName, getFlowOrders } from '../flows/hooks';
-import { Writable } from '../../../../node_modules/svelte/types/runtime/store/index';
+import { type Writable } from '../../../../node_modules/svelte/types/runtime/store/index';
 import { verifyDocumentsAndCloseFlow } from '../../utils/api-utils';
 import { sendFlowCompleteEvent } from '../../utils/event-service';
 import { sendFlowErrorEvent } from '../../utils/event-service/utils';

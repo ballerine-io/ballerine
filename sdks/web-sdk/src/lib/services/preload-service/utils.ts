@@ -1,5 +1,5 @@
-import { Writable } from 'svelte/store';
-import { IAppConfiguration, IStepConfiguration } from '../../contexts/configuration';
+import { type Writable } from 'svelte/store';
+import type { IAppConfiguration, IStepConfiguration } from '../../contexts/configuration';
 import { getFlowName } from '../../contexts/flows';
 import { getNextStepId } from '../../contexts/navigation';
 

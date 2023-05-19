@@ -1,16 +1,16 @@
-import { INavigationButtons } from '../../molecules/NavigationButtons';
-import { IDocumentOptions } from '../../organisms/DocumentOptions';
+import { type INavigationButtons } from '../../molecules/NavigationButtons';
+import { type IDocumentOptions } from '../../organisms/DocumentOptions';
 import type { CaptureConfigOption } from 'jslib-html5-camera-photo';
-import { IFlow } from '../flows';
-import {
+import { type IFlow } from '../flows';
+import type {
   EndUserInfo,
   FlowsBackendConfig,
   FlowsEventsConfig,
   FlowsGeneralTheme,
 } from '../../../types/BallerineSDK';
-import { ICSSProperties } from '../../services/css-manager';
-import { ObjectValues, TDocumentKind, TDocumentType } from '../app-state/types';
-import { MetricsConfig } from '../../../types/BallerineSDK';
+import { type MetricsConfig } from '../../../types/BallerineSDK';
+import { type ICSSProperties } from '../../services/css-manager';
+import type { ObjectValues, TDocumentKind, TDocumentType } from '../app-state/types';
 
 export const Steps = {
   Welcome: 'welcome',

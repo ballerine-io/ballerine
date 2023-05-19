@@ -1,4 +1,4 @@
-import { ObjectValues, TDecisionStatus } from '../../contexts/app-state/types';
+import type { ObjectValues, TDecisionStatus } from '../../contexts/app-state/types';
 
 export const EventTypes = {
   SYNC_FLOW_COMPLETE: 'sync_flow_complete',

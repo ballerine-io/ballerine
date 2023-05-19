@@ -1,10 +1,10 @@
-import { IStepConfiguration } from '../lib/contexts/configuration';
-import { ConfigSettings } from '../lib/contexts/configuration/types';
-import { TranslationType } from '../lib/contexts/translation';
-import { INavigationButtons } from '../lib/molecules/NavigationButtons';
-import { IDocumentOptions } from '../lib/organisms/DocumentOptions';
-import { ICSSProperties } from '../lib/services/css-manager';
-import {
+import { type IStepConfiguration } from '../lib/contexts/configuration';
+import { type ConfigSettings } from '../lib/contexts/configuration/types';
+import { type TranslationType } from '../lib/contexts/translation';
+import { type INavigationButtons } from '../lib/molecules/NavigationButtons';
+import { type IDocumentOptions } from '../lib/organisms/DocumentOptions';
+import { type ICSSProperties } from '../lib/services/css-manager';
+import type {
   IFlowCompletePayload,
   IFlowErrorPayload,
   IFlowExitPayload,

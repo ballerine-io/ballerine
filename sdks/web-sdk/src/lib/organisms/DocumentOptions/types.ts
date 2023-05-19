@@ -1,6 +1,6 @@
-import { IElementProps } from '../../contexts/configuration';
-import { IDocumentOption } from '../../molecules/DocumentOption';
-import { TDocumentType } from '../../contexts/app-state/types';
+import { type IElementProps } from '../../contexts/configuration';
+import { type IDocumentOption } from '../../molecules/DocumentOption';
+import { type TDocumentType } from '../../contexts/app-state/types';
 
 export type IDocumentOptionItem = { [key in TDocumentType]?: IDocumentOption };
 

@@ -1,5 +1,5 @@
-import { FlowsEventsConfig } from '../../../types/BallerineSDK';
-import { IStepConfiguration } from '../configuration';
+import { type FlowsEventsConfig } from '../../../types/BallerineSDK';
+import { type IStepConfiguration } from '../configuration';
 
 export interface IFlow {
   steps?: RecursivePartial<IStepConfiguration>[];
