@@ -61,7 +61,7 @@
     "version-packages": "changeset version",
     "release": "pnpm build && changeset publish",
     "upload-sourcemaps": "nx run-many --target=upload-sourcemaps --all",
-    "ci": "pnpm build && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test"
+    "ci": "nx run-many --all --target=build --target=lint --target=format:check --target=typecheck --target=test"
   },
   "license": "ISC",
   "dependencies": {
