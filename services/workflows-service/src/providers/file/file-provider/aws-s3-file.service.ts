@@ -1,9 +1,8 @@
 import {
-  IStreamableFileProvider,
   TLocalFilePath,
   TRemoteFileConfig,
   TS3BucketConfig,
-} from '@/providers/file/types';
+} from '@/providers/file/types/files-types';
 import {
   GetObjectCommand,
   HeadObjectCommand,
@@ -13,9 +12,9 @@ import {
 } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import fs, { createReadStream } from 'fs';
-import path from 'path';
 import { isErrorWithName } from '@ballerine/common';
 import { Upload } from '@aws-sdk/lib-storage';
+import { IStreamableFileProvider } from '../types/interfaces';
 
 export class AwsS3FileService implements IStreamableFileProvider {
   protected client;
@@ -33,6 +32,8 @@ export class AwsS3FileService implements IStreamableFileProvider {
     try {
       const getObjectCommand = new GetObjectCommand(getObjectParams);
       const response = await this.client.send(getObjectCommand);
+      // @daniel fix please
+      // eslint-disable-next-line @typescript-eslint/await-thenable
       const readableStream = (await response.Body) as Readable;
       const writableStream = fs.createWriteStream(localeFilePath);
 
@@ -90,6 +91,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     const getObjectCommand = new GetObjectCommand(fetchBucketConfig);
     const response = await this.client.send(getObjectCommand);
 
+    // eslint-disable-next-line @typescript-eslint/await-thenable
     return (await response.Body) as Readable;
   }
 

@@ -1,4 +1,3 @@
-import * as process from 'process';
 import { S3ClientConfig } from '@aws-sdk/client-s3';
 import { z } from 'zod';
 

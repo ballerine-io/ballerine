@@ -23,7 +23,7 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { DefaultContextSchema } from './schemas/context';
 import * as console from 'console';
-import { TFileServiceProvider, TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types';
+import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
 import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
@@ -36,6 +36,7 @@ import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-p
 import { env } from '@/env';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { S3Client } from '@aws-sdk/client-s3';
+import { TFileServiceProvider } from '@/providers/file/types';
 
 type TEntityId = string;
 const ajv = new Ajv({
@@ -200,7 +201,7 @@ export class WorkflowService {
       this.workflowEventEmitter.emit('workflow.context.changed', {
         runtimeData,
         state: currentState as string,
-        context: mergedContext as any,
+        context: mergedContext,
       });
     }
 
