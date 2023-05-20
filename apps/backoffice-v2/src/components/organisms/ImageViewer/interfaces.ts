@@ -16,7 +16,7 @@ export interface IZoomModalProps extends DivComponent {
 }
 
 export type TSelectedImageProps = ImgOrIframeComponentPropsWithRef & {
-  // The image to show before a selection is made by the end user.
+  // The image to show before a selection is made by the operator.
   initialImage: {
     imageUrl: string;
     fileType: string;

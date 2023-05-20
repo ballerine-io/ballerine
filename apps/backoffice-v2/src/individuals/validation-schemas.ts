@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { State, States } from '../enums';
-import { ObjectWithIdSchema } from '../lib/zod/utils/object-with-id';
+import { ObjectWithIdSchema } from '../lib/zod/utils/object-with-id/object-with-id';
 
 export const IndividualsListSchema = z
   .array(

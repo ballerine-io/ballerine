@@ -35,12 +35,12 @@ import * as HoverCard from '@radix-ui/react-hover-card';
 import { Button } from 'components/atoms/Button/button';
 
 /**
- * @description To be used by {@link Subject}. Displays the end user's full name, avatar, and handles the reject/approve mutation.
+ * @description To be used by {@link Subject}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
  *
  * @param props
- * @param props.id - The id of the end user, passed into the reject/approve mutation.
- * @param props.fullName - The full name of the end user.
- * @param props.avatarUrl - The end user's image url to pass into {@link Avatar}.
+ * @param props.id - The id of the entity, passed into the reject/approve mutation.
+ * @param props.fullName - The full name of the entity.
+ * @param props.avatarUrl - The entity's image url to pass into {@link Avatar}.
  *
  * @see {@link Subject}
  * @see {@link Avatar}
@@ -49,14 +49,14 @@ import { Button } from 'components/atoms/Button/button';
  */
 export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatarUrl }) => {
   const {
-    onMutateApproveEndUser,
-    onMutateRejectEndUser,
+    onMutateApproveEntity,
+    onMutateRejectEntity,
     onMutateAssignWorkflow,
-    debouncedIsLoadingApproveEndUser,
-    debouncedIsLoadingRejectEndUser,
-    debouncedIsLoadingAssignEndUser,
+    debouncedIsLoadingApproveEntity,
+    debouncedIsLoadingRejectEntity,
+    debouncedIsLoadingAssignEntity,
     isLoading,
-    isLoadingEndUser,
+    isLoadingEntity,
     initials,
     canApprove,
     canReject,
@@ -67,7 +67,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     caseState,
     authenticatedUser,
     assignees,
-  } = useActions({ endUserId: id, fullName });
+  } = useActions({ entityId: id, fullName });
 
   const actionButtonDisabled = !caseState.actionButtonsEnabled;
   const isAssignedToMe = true;
@@ -117,7 +117,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           <h2
             className={ctw(`text-2xl font-bold`, {
               'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
-                isLoadingEndUser,
+                isLoadingEntity,
             })}
           >
             {fullName}
@@ -126,7 +126,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
         <div className={`flex items-center space-x-6`}>
           <Button
             className={ctw({
-              // loading: debouncedIsLoadingRejectEndUser,
+              // loading: debouncedIsLoadingRejectEntity,
             })}
             // disabled={actionButtonDisabled}
             disabled
@@ -139,7 +139,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                 <Button
                   variant={`destructive`}
                   className={ctw({
-                    // loading: debouncedIsLoadingRejectEndUser,
+                    // loading: debouncedIsLoadingRejectEntity,
                   })}
                   // disabled={isLoading || !canReject}
                   disabled
@@ -152,7 +152,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className={`cursor-pointer`}
-                  onClick={onMutateRejectEndUser({
+                  onClick={onMutateRejectEntity({
                     action: Action.REJECT,
                   })}
                 >
@@ -203,7 +203,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
                 <DialogClose asChild>
                   <button
                     className={ctw(`btn-error btn justify-center`)}
-                    onClick={onMutateRejectEndUser({
+                    onClick={onMutateRejectEntity({
                       action: Action.RESUBMIT,
                       // Currently hardcoded to documentOne.
                       documentToResubmit,
@@ -221,11 +221,11 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
             <HoverCard.Trigger asChild>
               <Button
                 className={ctw({
-                  // loading: debouncedIsLoadingApproveEndUser,
+                  // loading: debouncedIsLoadingApproveEntity,
                 })}
                 variant={`success`}
                 // disabled={isLoading || !canApprove}
-                onClick={onMutateApproveEndUser}
+                onClick={onMutateApproveEntity}
                 disabled
               >
                 Approve

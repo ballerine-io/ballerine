@@ -5,5 +5,5 @@ import { storage } from '../../../../lib/react-query/storage';
 export const useStorageFileQuery = (fileId: string) =>
   useQuery({
     ...storage.fileById(fileId),
-    enabled: isString(fileId) && fileId.length > 0,
+    enabled: isString(fileId) && !!fileId.length,
   });

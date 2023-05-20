@@ -1,5 +1,3 @@
-import { TCaseManagementState } from './api/types';
-
 export const Method = {
   GET: 'GET',
   POST: 'POST',
@@ -27,14 +25,23 @@ export const Action = {
   SIGN_OUT: 'SIGN_OUT',
 } as const;
 export const Resource = {
-  END_USER: 'END_USER',
+  INDIVIDUAL: 'INDIVIDUAL',
   ASSIGNMENT: 'ASSIGNMENT',
 } as const;
 
-type TCaseStateEnum = {
-  [key: string]: TCaseManagementState;
-};
-export const CaseState: TCaseStateEnum = {
+interface ICaseStateEnum {
+  [key: string]: {
+    state: string;
+    readEnabled: boolean;
+    writeEnabled: boolean;
+    assignToMeEnabled: boolean;
+    assignToOtherEnabled: boolean;
+    unassignedEnabled?: boolean;
+    actionButtonsEnabled: boolean;
+  };
+}
+
+export const CaseState = {
   UNASSIGNED: {
     state: 'unassigned',
     readEnabled: true,
@@ -67,4 +74,4 @@ export const CaseState: TCaseStateEnum = {
     assignToOtherEnabled: false,
     actionButtonsEnabled: false,
   },
-} as const;
+} as const satisfies ICaseStateEnum;

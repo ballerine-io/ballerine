@@ -1,5 +1,5 @@
-import { TEndUser, TEndUsers } from '../api/types';
 import { TBusiness, TBusinesses } from '../businesses/types';
+import { TIndividual, TIndividuals } from '../individuals/types';
 
-export type TEntity = TEndUser | TBusiness;
-export type TEntities = TEndUsers | TBusinesses;
+export type TEntity = TIndividual | TBusiness;
+export type TEntities = TIndividuals | TBusinesses;

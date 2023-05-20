@@ -27,7 +27,7 @@ export const useUnauthenticatedLayout = () => {
     )
       return;
 
-    navigate({
+    void navigate({
       to: redirectAuthenticatedTo,
       replace: true,
       params: undefined,

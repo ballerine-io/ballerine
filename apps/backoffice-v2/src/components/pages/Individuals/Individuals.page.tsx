@@ -4,7 +4,7 @@ import { Pagination } from 'components/organisms/Pagination/Pagination';
 import { useIndividuals } from './hooks/useIndividuals/useIndividuals';
 import { Subject } from 'components/organisms/Subject/Subject';
 import { MotionScrollArea } from 'components/molecules/MotionScrollArea/MotionScrollArea';
-import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
+import { useFilterEntity } from '../../../entities/hooks/useFilterEntity/useFilterEntity';
 
 export const Individuals = () => {
   const {
@@ -68,7 +68,7 @@ export const Individuals = () => {
         <div className={`divider my-0 px-4`}></div>
         <Pagination onPaginate={onPaginate} page={page} totalPages={totalPages} />
       </SubjectsList>
-      {/* Display skeleton individual when loading the end users list */}
+      {/* Display skeleton individual when loading the entities list */}
       {isLoading && (
         <Subject>
           {/* Reject and approve header */}

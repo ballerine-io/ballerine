@@ -23,7 +23,7 @@ export const rootRoute = new RootRoute({
   beforeLoad: ({ router }) => {
     if (router.history.location.pathname.startsWith('/en')) return;
 
-    router.navigate({
+    void router.navigate({
       to: '/$locale',
       replace: true,
       params: {

@@ -8,8 +8,8 @@ import {
 } from 'components/organisms/SubjectsList/interfaces';
 import { Checkbox } from 'components/atoms/Checkbox/Checkbox';
 import { useSubjectsList } from 'components/organisms/SubjectsList/hooks/useSubjectsList/useSubjectsList';
-import { TEndUser } from '../../../api/types';
 import { SkeletonItem } from 'components/organisms/SubjectsList/SubjectsList.SkeletonItem';
+import { TIndividual } from '../../../individuals/types';
 
 /**
  * @description A vertical sidebar for the subjects list, with search, filter, and sort.
@@ -89,7 +89,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
                   key={label}
                   label={label}
                   values={filter?.[value]}
-                  onChange={onFilter(value as keyof TEndUser)}
+                  onChange={onFilter(value as keyof TIndividual)}
                   titleProps={{
                     className: `text-base-content`,
                   }}

@@ -2,19 +2,19 @@ import { useNavigate, useParams } from '@tanstack/react-router';
 import { useCallback } from 'react';
 import { individualRoute } from 'components/pages/Individual/Individual.route';
 
-export const useSelectEndUser = () => {
+export const useSelectEntity = () => {
   const navigate = useNavigate();
   const { locale = 'en' } = useParams();
 
   return useCallback(
-    (endUserId: string) => () => {
-      if (!endUserId) return;
+    (entityId: string) => () => {
+      if (!entityId) return;
 
-      navigate({
+      void navigate({
         replace: true,
         to: individualRoute.id,
         params: {
-          endUserId,
+          entityId,
           locale,
         },
         search: undefined,

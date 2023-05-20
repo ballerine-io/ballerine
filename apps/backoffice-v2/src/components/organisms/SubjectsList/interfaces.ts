@@ -2,8 +2,8 @@ import { Item } from './SubjectsList.Item';
 import { List } from './SubjectsList.List';
 import { DivComponent, TRouteId } from '../../../types';
 import { ChangeEventHandler } from 'react';
-import { TEndUser } from '../../../api/types';
 import { SkeletonItem } from 'components/organisms/SubjectsList/SubjectsList.SkeletonItem';
+import { TIndividual } from '../../../individuals/types';
 
 export interface ISubjectsListChildren {
   List: typeof List;
@@ -13,7 +13,7 @@ export interface ISubjectsListChildren {
 
 export interface ISubjectsListProps extends DivComponent {
   onSearch: ChangeEventHandler<HTMLInputElement>;
-  onFilter: (filterBy: keyof TEndUser) => (filters: Array<string>) => void;
+  onFilter: (filterBy: keyof TIndividual) => (filters: Array<string>) => void;
   onSortBy: ChangeEventHandler<HTMLSelectElement>;
   onSortDir: () => void;
   routerId: TRouteId;

@@ -31,22 +31,6 @@ export const endpoints = {
       method: Method.GET,
     },
   },
-  endUsers: {
-    list: {
-      endpoint: (filterId: string) => `end-users?filterId=${filterId ?? ''}`,
-      method: Method.GET,
-    },
-    byId: {
-      endpoint: ({ endUserId, filterId }: { endUserId: string; filterId: string }) =>
-        `end-users/${endUserId}?filterId=${filterId ?? ''}`,
-      method: Method.GET,
-    },
-    // Unused
-    updateById: {
-      endpoint: (endUserId: string) => `end-users/${endUserId}`,
-      method: Method.PATCH,
-    },
-  },
   users: {
     list: {
       endpoint: () => `users`,

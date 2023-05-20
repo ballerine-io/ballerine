@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { isString } from '../../../../utils/is-string/is-string';
 import { queryKeys } from '../../../../lib/react-query/query-keys';
-import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
+import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
 import { TEntity } from '../../../types';
 
@@ -17,7 +17,7 @@ export const useEntityQuery = <TQueryFnData = TEntity,>({
 
   return useQuery({
     ...queryKeys[entity as keyof typeof queryKeys].byId(entityId, filterId),
-    enabled: isString(entityId) && entityId?.length,
+    enabled: isString(entityId) && !!entityId?.length,
     select,
   });
 };

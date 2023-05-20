@@ -2,7 +2,7 @@ import { rest } from 'msw';
 import { env } from '../../../env/env';
 import { workflows } from './workflows.data';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
-import { endUsers } from '../end-users/end-users.data';
+import { individuals } from '../../../individuals/mock-service-worker/individuals.data';
 
 export const workflowsController = [
   // List
@@ -76,8 +76,8 @@ export const workflowsController = [
       return res(ctx.status(400));
     }
 
-    const endUserId = req.url.searchParams.get('endUserId');
-    const endUser = endUsers.findById(endUserId);
+    const entityId = req.url.searchParams.get('entityId');
+    const endUser = individuals.findById(entityId);
     const workflow = endUser?.workflows?.find(workflow => workflow.id === id);
 
     if (!workflow) {
@@ -91,7 +91,7 @@ export const workflowsController = [
     const snapshot = workflowService.runner.getSnapshot();
     const state = snapshot.value;
 
-    endUsers.updateById(endUserId, {
+    individuals.updateById(entityId, {
       approvalState: state === 'APPROVE' ? 'approved' : 'rejected',
       workflows: endUser?.workflows?.map(workflow => {
         if (workflow.id !== id) return workflow;

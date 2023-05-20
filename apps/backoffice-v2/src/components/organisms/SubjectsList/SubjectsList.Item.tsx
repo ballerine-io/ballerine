@@ -11,18 +11,18 @@ import { useEllipsesWithTitle } from 'hooks/useEllipsesWithTitle/useEllipsesWith
 import { SubjectsList } from './SubjectsList';
 
 /**
- * @description To be used by {@link SubjectsList}, and be wrapped by {@link SubjectsList.List}. Uses an li element with default styling to display a single subject's data. Navigates to the selected end user on click by setting the end user id into the path param.
+ * @description To be used by {@link SubjectsList}, and be wrapped by {@link SubjectsList.List}. Uses an li element with default styling to display a single subject's data. Navigates to the selected entity on click by setting the entity id into the path param.
  *
  * @see {@link ImageViewer.List}
  * @see {@link BallerineImage}
  * @see {@link getTimePastFromNow} - receives createdAt.
  *
  * @param props
- * @param props.id - The id of the end user, passed into the url on click -> /case-management/individuals/:id.
- * @param props.fullName - The full name of the end user.
+ * @param props.id - The id of the entity, passed into the url on click -> /case-management/individuals/:id.
+ * @param props.fullName - The full name of the entity.
  * @param props.createdAt - Expects an ISO date string to calculate the waiting time using {@link getTimePastFromNow}.
- * @param props.operators - Which operators are now on the end user's case.
- * @param props.status - Whether the end user is approved or rejected.
+ * @param props.operators - Which operators are now on the entity's case.
+ * @param props.status - Whether the entity is approved or rejected.
  *
  * @constructor
  */
@@ -43,9 +43,9 @@ export const Item: FunctionComponent<IItemProps> = ({
   return (
     <li className={`rounded-md p-2 px-1`}>
       <Link
-        to={'/$locale/case-management/individuals/$endUserId'}
+        to={'/$locale/case-management/individuals/$entityId'}
         params={{
-          endUserId: id,
+          entityId: id,
           locale: 'en',
         }}
         preload={'intent'}

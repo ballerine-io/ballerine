@@ -7,10 +7,10 @@ import { queryKeys } from '../../../lib/react-query/query-keys';
 // @ts-ignore
 export const individualRoute = new Route({
   getParentRoute: () => individualsRoute,
-  path: '$endUserId',
+  path: '$entityId',
   onLoad: async ({ params, search }) => {
-    const { endUserId } = params;
-    const entityById = queryKeys[search?.entity].byId(endUserId, search?.filterId);
+    const { entityId } = params;
+    const entityById = queryKeys[search?.entity].byId(entityId, search?.filterId);
     // TODO: Add workflowId to params/searchParams
     // const workflowById = workflows.byId({ workflowId });
 

@@ -1,4 +1,4 @@
 export interface IUseActions {
-  endUserId: string;
+  entityId: string;
   fullName: string;
 }

@@ -1,4 +1,4 @@
-import { endUsersController } from './end-users/end-users.controller';
+import { individualsController } from '../../individuals/mock-service-worker/individuals.controller';
 import { authController } from './auth/auth.controller';
 import { workflowsController } from './workflows/workflows.controller';
 
@@ -7,7 +7,7 @@ export const handlers = [
   ...authController,
 
   // End Users
-  ...endUsersController,
+  ...individualsController,
 
   // Workflows
   ...workflowsController,

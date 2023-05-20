@@ -6,7 +6,7 @@ import { useFaceMatch } from 'components/organisms/Subject/hooks/useFaceMatch/us
 import { ctw } from '../../../utils/ctw/ctw';
 
 /**
- * @description To be used by {@link Subject}, and be wrapped by {@link Subject.Content}. Displays a single end user's face match photos and result using {@link BallerineImage}.
+ * @description To be used by {@link Subject}, and be wrapped by {@link Subject.Content}. Displays a single entity's face match photos and result using {@link BallerineImage}.
  *
  * @see {@link BallerineImage}
  *

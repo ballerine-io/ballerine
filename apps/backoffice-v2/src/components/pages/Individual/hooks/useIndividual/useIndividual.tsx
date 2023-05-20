@@ -1,6 +1,5 @@
 import { useParams } from '@tanstack/react-router';
 import { camelCaseToSpace } from '../../../../../utils/camel-case-to-space/camel-case-to-space';
-import { useEndUserWithWorkflowQuery } from '../../../../../individuals/hooks/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
 import { Subject } from 'components/organisms/Subject/Subject';
 import { ctw } from '../../../../../utils/ctw/ctw';
 import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
@@ -37,18 +36,19 @@ import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
 import { Form } from 'components/organisms/Form/Form';
 import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/useStorageFilesQuery/useStorageFilesQuery';
 import toast from 'react-hot-toast';
+import { useEntityWithWorkflowQuery } from '../../../../../entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
 
 export const useIndividual = () => {
-  const { endUserId } = useParams();
-  const { data: endUser, isLoading } = useEndUserWithWorkflowQuery(endUserId);
+  const { entityId } = useParams();
+  const { data: entity, isLoading } = useEntityWithWorkflowQuery(entityId);
   const results = useStorageFilesQuery(
-    endUser?.workflow?.workflowContext?.machineContext?.documents?.flatMap(({ pages }) =>
+    entity?.workflow?.workflowContext?.machineContext?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
-  const { fullName, avatarUrl } = endUser ?? {};
-  const selectedEndUser = {
-    id: endUserId,
+  const { fullName, avatarUrl } = entity ?? {};
+  const selectedEntity = {
+    id: entityId,
     fullName,
     avatarUrl,
   };
@@ -56,7 +56,7 @@ export const useIndividual = () => {
     base64?.replace(/application\/octet-stream/gi, fileType);
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
     useUpdateWorkflowByIdMutation({
-      workflowId: endUser?.workflow?.runtimeDataId,
+      workflowId: entity?.workflow?.runtimeDataId,
     });
   const onMutateUpdateWorkflowById =
     ({ id, approvalStatus }: { id: string; approvalStatus: 'rejected' | 'approved' }) =>
@@ -67,7 +67,7 @@ export const useIndividual = () => {
         return;
       }
 
-      const decisions = [...(endUser?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
+      const decisions = [...(entity?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
       const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
 
       if (indexOfTask < 0) {
@@ -121,7 +121,7 @@ export const useIndividual = () => {
       );
     },
     callToAction: ({ value, data }) => {
-      const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.decisions?.some(
+      const isApprovedTask = entity?.workflow?.workflowContext?.machineContext?.decisions?.some(
         ({ taskId, faceMatch, idVerification }) =>
           taskId === data?.id && faceMatch === 'approved' && idVerification === 'approved',
       );
@@ -133,7 +133,7 @@ export const useIndividual = () => {
               <Button
                 variant={`destructive`}
                 className={ctw({
-                  // loading: debouncedIsLoadingRejectEndUser,
+                  // loading: debouncedIsLoadingRejectEntity,
                 })}
                 // disabled={isLoading || !canReject}
               >
@@ -197,7 +197,7 @@ export const useIndividual = () => {
               <DialogClose asChild>
                 <button
                   className={ctw(`btn-error btn justify-center`)}
-                  // onClick={onMutateRejectEndUser({
+                  // onClick={onMutateRejectEntity({
                   //   action: Action.RESUBMIT,
                   // Currently hardcoded to documentOne.
                   // documentToResubmit,
@@ -241,23 +241,21 @@ export const useIndividual = () => {
       }, {});
       const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = data => {
         const context = {
-          documents: endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
-            document => {
-              if (document?.id !== value?.id) return document;
+          documents: entity?.workflow?.workflowContext?.machineContext?.documents?.map(document => {
+            if (document?.id !== value?.id) return document;
 
-              return {
-                ...document,
-                properties: Object.keys(document?.properties).reduce((acc, curr) => {
-                  acc[curr] = {
-                    ...document?.properties?.[curr],
-                    value: data?.[curr],
-                  };
+            return {
+              ...document,
+              properties: Object.keys(document?.properties).reduce((acc, curr) => {
+                acc[curr] = {
+                  ...document?.properties?.[curr],
+                  value: data?.[curr],
+                };
 
-                  return acc;
-                }, {}),
-              };
-            },
-          ),
+                return acc;
+              }, {}),
+            };
+          }),
         };
 
         return onMutateTaskDecisionById({
@@ -318,17 +316,17 @@ export const useIndividual = () => {
       );
     },
   };
-  const tasks = endUser?.workflow?.workflowContext?.machineContext?.entity
+  const tasks = entity?.workflow?.workflowContext?.machineContext?.entity
     ? [
         [
           {
             type: 'details',
             value: {
               title: `${toStartCase(
-                endUser?.workflow?.workflowContext?.machineContext?.entity?.type,
+                entity?.workflow?.workflowContext?.machineContext?.entity?.type,
               )} Information`,
               data: Object.entries(
-                endUser?.workflow?.workflowContext?.machineContext?.entity?.data ?? {},
+                entity?.workflow?.workflowContext?.machineContext?.entity?.data ?? {},
               )?.map(([title, value]) => ({
                 title,
                 value,
@@ -338,7 +336,7 @@ export const useIndividual = () => {
             },
           },
         ],
-        ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
+        ...(entity?.workflow?.workflowContext?.machineContext?.documents?.map(
           ({ type, category, issuer, properties, propertiesSchema, decision }, index) => {
             const id = `${type}${category}${issuer?.country ?? ''}`;
 
@@ -413,7 +411,7 @@ export const useIndividual = () => {
                 type: 'multiDocuments',
                 value: {
                   data:
-                    endUser?.workflow?.workflowContext?.machineContext?.documents?.[
+                    entity?.workflow?.workflowContext?.machineContext?.documents?.[
                       index
                     ]?.pages?.map(({ type, metadata }, index) => ({
                       title: metadata?.side ? `${category} ${metadata?.side}` : category,
@@ -431,7 +429,7 @@ export const useIndividual = () => {
     : [];
 
   return {
-    selectedEndUser,
+    selectedEntity: selectedEntity,
     components,
     tasks,
   };

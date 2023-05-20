@@ -7,7 +7,7 @@ export const useStorageFilesQuery = (fileIds: Array<string>) => {
     queries:
       fileIds?.map(fileId => ({
         ...storage.fileById(fileId),
-        enabled: isString(fileId) && fileId?.length > 0,
+        enabled: isString(fileId) && !!fileId?.length,
       })) ?? [],
   });
 };

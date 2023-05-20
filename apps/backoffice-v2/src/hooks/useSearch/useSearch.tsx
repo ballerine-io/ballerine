@@ -42,7 +42,7 @@ export const useSearch = <TArray extends AnyArray, TId extends TRouteId>({
 
   useEffect(() => {
     // @ts-ignore
-    navigate({
+    void navigate({
       // @ts-ignore
       search: prevState => ({
         ...prevState,

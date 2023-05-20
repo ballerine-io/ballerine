@@ -18,7 +18,7 @@ export const useSignInMutation = () => {
         body,
       }),
     onMutate: () => ({
-      resource: Resource.END_USER,
+      resource: Resource.INDIVIDUAL,
       action: Action.SIGN_IN,
     }),
     onSuccess: (data, { callbackUrl, redirect }) => {

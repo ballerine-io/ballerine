@@ -16,7 +16,7 @@ export const useSignOutMutation = () => {
         callbackUrl,
       }),
     onMutate: () => ({
-      resource: Resource.END_USER,
+      resource: Resource.INDIVIDUAL,
       action: Action.SIGN_OUT,
     }),
     onSuccess: (data, { callbackUrl, redirect }) => {

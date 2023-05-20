@@ -1,9 +1,9 @@
-import { endUsers } from '../end-users/end-users.data';
+import { individuals } from '../../../individuals/mock-service-worker/individuals.data';
 
 export const workflows = {
   __data: [
     {
-      endUserId: endUsers.__data[0].id,
+      endUserId: individuals.__data[0].id,
       id: 'clf5452ji000044wnul6bf8yr',
       version: '1.0.0',
       name: 'on-boarding',

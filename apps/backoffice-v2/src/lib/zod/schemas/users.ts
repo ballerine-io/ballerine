@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ObjectWithIdSchema } from '../utils/object-with-id';
+import { ObjectWithIdSchema } from '../utils/object-with-id/object-with-id';
 
 export const UsersListSchema = z
   .array(

@@ -19,7 +19,7 @@ const prepare = async () => {
   return Promise.resolve();
 };
 
-prepare().then(() => {
+void prepare().then(() => {
   if (!rootElement.innerHTML) {
     const root = createRoot(rootElement);
 

@@ -1,6 +1,6 @@
-import { useFiltersQuery } from '../../lib/react-query/queries/useFiltersQuery/useFiltersQuery';
+import { useFiltersQuery } from '../../../lib/react-query/queries/useFiltersQuery/useFiltersQuery';
 import { useNavigate } from '@tanstack/react-router';
-import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
+import { useFilterEntity } from '../useFilterEntity/useFilterEntity';
 import { useEffect } from 'react';
 
 export const useSelectEntityFilterOnMount = () => {
@@ -13,7 +13,7 @@ export const useSelectEntityFilterOnMount = () => {
 
     const [filter] = filters ?? [];
 
-    navigate({
+    void navigate({
       to: '/$locale/case-management/individuals',
       search: {
         entity: filter?.entity,

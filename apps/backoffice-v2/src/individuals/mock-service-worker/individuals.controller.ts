@@ -1,13 +1,13 @@
 import { rest } from 'msw';
-import { env } from '../../../env/env';
-import { endUsers } from './end-users.data';
+import { env } from '../../env/env';
+import { individuals } from './individuals.data';
 
-export const endUsersController = [
+export const individualsController = [
   // List
   rest.get(`${env.VITE_API_URL}/end-users`, (req, res, ctx) => {
     return res(
       ctx.json({
-        endUsers: endUsers.findAll(),
+        individuals: individuals.findAll(),
       }),
     );
   }),
@@ -19,15 +19,15 @@ export const endUsersController = [
       return res(ctx.status(400));
     }
 
-    const endUser = endUsers.findById(id);
+    const individual = individuals.findById(id);
 
-    if (!endUser) {
+    if (!individual) {
       return res(ctx.status(404));
     }
 
     return res(
       ctx.json({
-        endUser,
+        individual,
       }),
     );
   }),
@@ -44,23 +44,23 @@ export const endUsersController = [
       return res(ctx.status(400));
     }
 
-    const endUser = endUsers.findById(id);
+    const individual = individuals.findById(id);
 
-    if (!endUser) {
+    if (!individual) {
       return res(ctx.status(404));
     }
 
-    endUsers.updateById(id, {
+    individuals.updateById(id, {
       approvalState: body?.approvalState,
       checkResults: {
-        ...endUser?.checkResults,
+        ...individual?.checkResults,
         finalResult: body?.approvalState,
       },
     });
 
     return res(
       ctx.json({
-        endUsers: endUsers.findAll(),
+        individuals: individuals.findAll(),
       }),
     );
   }),

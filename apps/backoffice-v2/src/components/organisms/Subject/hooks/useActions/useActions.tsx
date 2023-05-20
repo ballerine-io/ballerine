@@ -1,10 +1,7 @@
 import { useCallback, useState } from 'react';
-import { useApproveEndUserMutation } from '../../../../../individuals/hooks/mutations/useApproveEndUserMutation/useApproveEndUserMutation';
-import { useRejectEndUserMutation } from '../../../../../individuals/hooks/mutations/useRejectEndUserMutation/useRejectEndUserMutation';
-import { useEndUserWithWorkflowQuery } from '../../../../../individuals/hooks/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
 import { useDebounce } from 'hooks/useDebounce/useDebounce';
 import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
-import { useSelectNextEndUser } from 'hooks/useSelectNextEndUser/useSelectNextEndUser';
+import { useSelectNextEntity } from '../../../../../entities/hooks/useSelectNextEntity/useSelectNextEntity';
 import { createInitials } from '../../../../../utils/create-initials/create-initials';
 import { IUseActions } from './interfaces';
 import { Action } from '../../../../../enums';
@@ -12,6 +9,9 @@ import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGe
 import { useCaseState } from 'components/organisms/Subject/hooks/useCaseState/useCaseState';
 import { useAssignWorkflowMutation } from '../../../../../lib/react-query/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
 import { useUsersQuery } from '../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
+import { useEntityWithWorkflowQuery } from '../../../../../entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
+import { useApproveEntityMutation } from '../../../../../entities/hooks/mutations/useApproveEntityMutation/useApproveEntityMutation';
+import { useRejectEntityMutation } from '../../../../../entities/hooks/mutations/useRejectEntityMutation/useRejectEntityMutation';
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -24,42 +24,37 @@ export const ResubmissionReason = {
   FACE_IS_NOT_MATCHING: 'FACE_IS_NOT_MATCHING',
 } as const;
 
-export const useActions = ({ endUserId, fullName }: IUseActions) => {
-  const onSelectNextEndUser = useSelectNextEndUser();
-  const { isLoading: isLoadingEndUser, data: endUser } = useEndUserWithWorkflowQuery(endUserId);
-  const { workflow } = endUser ?? {};
-  const { mutate: mutateApproveEndUser, isLoading: isLoadingApproveEndUser } =
-    useApproveEndUserMutation({
-      endUserId,
+export const useActions = ({ entityId, fullName }: IUseActions) => {
+  const onSelectNextEntity = useSelectNextEntity();
+  const { isLoading: isLoadingEntity, data: entity } = useEntityWithWorkflowQuery(entityId);
+  const { workflow } = entity ?? {};
+  const { mutate: mutateApproveEntity, isLoading: isLoadingApproveEntity } =
+    useApproveEntityMutation({
+      entityId,
       workflowId: workflow?.runtimeDataId,
-      onSelectNextEndUser,
+      onSelectNextEntity,
     });
-  const { mutate: mutateRejectEndUser, isLoading: isLoadingRejectEndUser } =
-    useRejectEndUserMutation({
-      endUserId,
-      workflowId: workflow?.runtimeDataId,
-      onSelectNextEndUser,
-    });
+  const { mutate: mutateRejectEntity, isLoading: isLoadingRejectEntity } = useRejectEntityMutation({
+    entityId,
+    workflowId: workflow?.runtimeDataId,
+    onSelectNextEntity,
+  });
 
   const { mutate: mutateAssignWorkflow, isLoading: isLoadingAssignWorkflow } =
     useAssignWorkflowMutation({ workflowRuntimeId: workflow?.runtimeDataId });
 
   const isLoading =
-    isLoadingApproveEndUser ||
-    isLoadingRejectEndUser ||
-    isLoadingEndUser ||
-    isLoadingAssignWorkflow;
+    isLoadingApproveEntity || isLoadingRejectEntity || isLoadingEntity || isLoadingAssignWorkflow;
   // Create initials from the first character of the first name, middle name, and last name.
   const initials = createInitials(fullName);
 
   const {
-    data: { user },
+    data: { user: authenticatedUser },
   } = useGetSessionQuery();
-  const authenticatedUser = user;
   const caseState = useCaseState(authenticatedUser, workflow);
   const { data: users } = useUsersQuery();
-  const assignees = users.filter(assignee => assignee.id !== authenticatedUser.id);
-  // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
+  const assignees = users.filter(assignee => assignee?.id !== authenticatedUser?.id);
+  // Disable the reject/approve buttons if the case is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
   const canReject =
     (workflow?.nextEvents.includes(Action.REJECT.toLowerCase()) as boolean) &&
@@ -69,15 +64,15 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
     caseState.actionButtonsEnabled;
 
   // Only display the button spinners if the request is longer than 300ms
-  const debouncedIsLoadingRejectEndUser = useDebounce(isLoadingRejectEndUser, 300);
-  const debouncedIsLoadingApproveEndUser = useDebounce(isLoadingApproveEndUser, 300);
-  const debouncedIsLoadingAssignEndUser = useDebounce(isLoadingAssignWorkflow, 300);
+  const debouncedIsLoadingRejectEntity = useDebounce(isLoadingRejectEntity, 300);
+  const debouncedIsLoadingApproveEntity = useDebounce(isLoadingApproveEntity, 300);
+  const debouncedIsLoadingAssignEntity = useDebounce(isLoadingAssignWorkflow, 300);
 
   // Avoid passing the onClick event to mutate
-  const onMutateApproveEndUser = useCallback(() => mutateApproveEndUser(), [mutateApproveEndUser]);
-  const onMutateRejectEndUser = useCallback(
-    (payload: Parameters<typeof mutateRejectEndUser>[0]) => () => mutateRejectEndUser(payload),
-    [mutateRejectEndUser],
+  const onMutateApproveEntity = useCallback(() => mutateApproveEntity(), [mutateApproveEntity]);
+  const onMutateRejectEntity = useCallback(
+    (payload: Parameters<typeof mutateRejectEntity>[0]) => () => mutateRejectEntity(payload),
+    [mutateRejectEntity],
   );
   const onMutateAssignWorkflow = useCallback(
     (assigneeId: string, isAssignedToMe: boolean) =>
@@ -105,17 +100,17 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
 
     switch (event.key) {
       case 'ArrowDown':
-        onSelectNextEndUser();
+        onSelectNextEntity();
         break;
 
-      // Approve end user on 'Ctrl + A'
+      // Approve case on 'Ctrl + A'
       case 'a':
-        onMutateApproveEndUser();
+        onMutateApproveEntity();
         break;
 
-      // Reject end user on 'Ctrl + J'
+      // Reject case on 'Ctrl + J'
       case 'j':
-        onMutateRejectEndUser({
+        onMutateRejectEntity({
           action: Action.REJECT,
         });
         break;
@@ -123,14 +118,14 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
   });
 
   return {
-    onMutateApproveEndUser,
-    onMutateRejectEndUser,
+    onMutateApproveEntity,
+    onMutateRejectEntity,
     onMutateAssignWorkflow,
-    debouncedIsLoadingRejectEndUser,
-    debouncedIsLoadingApproveEndUser,
-    debouncedIsLoadingAssignEndUser,
+    debouncedIsLoadingRejectEntity,
+    debouncedIsLoadingApproveEntity,
+    debouncedIsLoadingAssignEntity,
     isLoading,
-    isLoadingEndUser,
+    isLoadingEntity,
     initials,
     canReject,
     canApprove,

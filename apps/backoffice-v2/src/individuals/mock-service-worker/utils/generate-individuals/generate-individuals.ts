@@ -4,7 +4,7 @@ export const clientId = crypto.randomUUID();
 export const avatarUrl = faker.image.avatar();
 export const assignedTo = faker.image.avatar();
 
-export const generateEndUsers = (length: number) => {
+export const generateIndividuals = (length: number) => {
   return Array.from({ length }, _ => {
     const generateState = ({
       withNew = false,

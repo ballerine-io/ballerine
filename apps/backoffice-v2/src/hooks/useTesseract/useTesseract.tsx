@@ -12,7 +12,7 @@ export const useTesseract = () => {
 
     const result = await worker.recognize(image);
 
-    worker.terminate();
+    void worker.terminate();
 
     // Recognize the image, return the result, and then terminate the worker
     return result;

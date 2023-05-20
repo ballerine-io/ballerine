@@ -4,16 +4,16 @@ import { ctw } from '../../../utils/ctw/ctw';
 import { Card, CardContent } from 'components/atoms/Card/card';
 
 export const Individual = () => {
-  const { selectedEndUser, tasks, components } = useIndividual();
+  const { selectedEntity, tasks, components } = useIndividual();
 
-  // Selected end user
+  // Selected entity
   return (
     <Subject>
       {/* Reject and approve header */}
       <Subject.Actions
-        id={selectedEndUser.id}
-        fullName={selectedEndUser.fullName}
-        avatarUrl={selectedEndUser.avatarUrl}
+        id={selectedEntity.id}
+        fullName={selectedEntity.fullName}
+        avatarUrl={selectedEntity.avatarUrl}
       />
       <Subject.Content>
         {Array.isArray(tasks) && tasks?.length > 0

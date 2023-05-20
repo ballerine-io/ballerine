@@ -8,7 +8,7 @@ import { ctw } from '../../../utils/ctw/ctw';
 import ReactCrop from 'react-image-crop';
 
 /**
- * @description To be used by {@link Subject}, and be wrapped by {@link Subject.Content}. Displays a single end user's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
+ * @description To be used by {@link Subject}, and be wrapped by {@link Subject.Content}. Displays a single entity's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
  *
  * @param props
  * @param props.documents - An array of objects containing the document's image URL and caption to pass into {@link ImageViewer.Item}.

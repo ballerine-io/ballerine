@@ -3,7 +3,7 @@ import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListen
 import { useCallback, useRef } from 'react';
 import { TRouteId } from '../../../../../types';
 import { useUsersQuery } from '../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
-import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
+import { useFilterEntity } from '../../../../../entities/hooks/useFilterEntity/useFilterEntity';
 
 export const useSubjectsList = (routerId: TRouteId) => {
   const { filter, sortBy } = useSearch({ from: routerId, strict: false });

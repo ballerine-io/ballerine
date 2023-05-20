@@ -8,12 +8,12 @@ import { useParams } from '@tanstack/react-router';
  */
 export const useSelectedImage = (initialImage: { imageUrl: string; fileType: string }) => {
   const { onSelectImage, selectedImage, toggleOnIsZoomModalOpen } = useImageViewerContext();
-  const { endUserId } = useParams();
+  const { individualId } = useParams();
 
-  // Re-pick the initial image when the end user changes.
+  // Re-pick the initial image when the entity changes.
   useEffect(() => {
     onSelectImage(initialImage)();
-  }, [endUserId]);
+  }, [individualId]);
 
   // If no image was selected yet, select the initial image.
   useEffect(() => {

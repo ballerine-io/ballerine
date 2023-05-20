@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '../../../../lib/react-query/query-keys';
-import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
+import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
 import { TEntities } from '../../../types';
 

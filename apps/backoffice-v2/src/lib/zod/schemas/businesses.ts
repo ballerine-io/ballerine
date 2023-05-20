@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { State, States } from '../../../enums';
-import { ObjectWithIdSchema } from '../utils/object-with-id';
+import { ObjectWithIdSchema } from '../utils/object-with-id/object-with-id';
 
 export const BusinessesListSchema = z
   .array(

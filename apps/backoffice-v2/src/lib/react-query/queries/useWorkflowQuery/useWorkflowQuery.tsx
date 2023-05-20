@@ -6,7 +6,7 @@ import { isString } from '../../../../utils/is-string/is-string';
 export const useWorkflowQuery = ({ workflowId }: { workflowId: string }) => {
   return useQuery({
     ...workflows.byId({ workflowId }),
-    enabled: isString(workflowId) && workflowId.length > 0,
+    enabled: isString(workflowId) && !!workflowId.length,
     select: ({ workflowDefinition, workflowRuntimeData }) => {
       const { definition, definitionType, ...rest } = workflowDefinition;
       const workflow = {

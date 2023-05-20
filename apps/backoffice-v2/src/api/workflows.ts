@@ -1,13 +1,9 @@
 import { endpoints } from './endpoints';
 import { apiClient } from './api-client';
-// import {
-//   WorkflowByIdSchema,
-//   WorkflowsListSchema,
-// } from '../lib/zod/schemas/workflows';
 import { handleZodError } from '../utils/handle-zod-error/handle-zod-error';
 import { z } from 'zod';
 import { IWorkflowId } from './interfaces';
-import { ObjectWithIdSchema } from '../lib/zod/utils/object-with-id';
+import { ObjectWithIdSchema } from '../lib/zod/utils/object-with-id/object-with-id';
 
 export const workflows = {
   list: async () => {

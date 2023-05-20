@@ -74,7 +74,7 @@ export const useInfo = ({
 };
 
 /**
- * @description To be used by {@link Subject}, and be wrapped by {@link Subject.Content}. Displays a single end user's personal information and verification status using {@link DetailsGrid} and {@link DataField}.
+ * @description To be used by {@link Subject}, and be wrapped by {@link Subject.Content}. Displays a single entity's personal information and verification status using {@link DetailsGrid} and {@link DataField}.
  *
  * @see {@link DetailsGrid}
  * @see {@link DataField}
@@ -82,7 +82,7 @@ export const useInfo = ({
  * @param props
  * @param props.personalInfo - Information such as first name, email, phone.
  * @param props.passportInfo - Contains the passport type, issue date, etc.
- * @param props.checkResults - The verification status of the end user (i.e rejected, approved, processing).
+ * @param props.checkResults - The verification status of the entity (i.e. rejected, approved, processing).
  *
  * @constructor
  */

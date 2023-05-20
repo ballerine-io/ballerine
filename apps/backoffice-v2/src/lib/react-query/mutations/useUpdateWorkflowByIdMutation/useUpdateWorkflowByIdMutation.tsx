@@ -14,7 +14,7 @@ export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: stri
         },
       }),
     onMutate: () => ({
-      resource: Resource.END_USER,
+      resource: Resource.INDIVIDUAL,
       action: Action.APPROVE,
     }),
     onSuccess: () => {

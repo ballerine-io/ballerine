@@ -3,7 +3,7 @@ import { api } from '../../../../api/api';
 import { Action, Resource } from '../../../../enums';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
 import { queryKeys } from '../../../../lib/react-query/query-keys';
-import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
+import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 
 export const useRejectEntityMutation = ({
   workflowId,
@@ -43,7 +43,7 @@ export const useRejectEntityMutation = ({
         },
       }),
     onMutate: variables => ({
-      resource: Resource.END_USER,
+      resource: Resource.INDIVIDUAL,
       action: variables?.action,
     }),
     onSuccess: () => {

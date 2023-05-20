@@ -45,7 +45,7 @@ export const usePagination = <TArray extends AnyArray, TId extends TRouteId>({
   const onPaginate = useCallback(
     (page: number) => () => {
       // @ts-ignore
-      navigate({
+      void navigate({
         // @ts-ignore
         search: prevState => ({
           // @ts-ignore

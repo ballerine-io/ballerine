@@ -3,7 +3,7 @@ import { useFaceComparison } from 'hooks/useFaceComparison/useFaceComparison';
 import { useParams } from '@tanstack/react-router';
 
 export const useFaceMatch = (isLoading?: boolean) => {
-  const { endUserId } = useParams();
+  const { entityId } = useParams();
   const { faceARef, faceBRef, onCompareFaces, imagesLoaded, isComparing, faceSimilarity } =
     useFaceComparison();
   const imageQuality = 80;
@@ -16,7 +16,7 @@ export const useFaceMatch = (isLoading?: boolean) => {
     (async () => {
       await onCompareFaces();
     })();
-  }, [isLoading, imagesLoaded, onCompareFaces, endUserId]);
+  }, [isLoading, imagesLoaded, onCompareFaces, entityId]);
 
   return {
     faceARef,
