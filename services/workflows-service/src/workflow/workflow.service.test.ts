@@ -4,12 +4,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/require-await */
 
 import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-repository';
 
 import { WorkflowService } from './workflow.service';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
+import { EventConsumerListener } from '../events/event-consumer';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -52,19 +54,49 @@ describe('WorkflowService', () => {
   let workflowRuntimeDataRepo;
   const numbUserInfo = Symbol();
   let fakeHttpService;
-  let eventEmitter;
 
   beforeEach(() => {
     const workflowDefinitionRepo = new FakeWorkflowDefinitionRepo();
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
 
-    eventEmitter = {
-      emitted: Array<any>(),
+    fakeHttpService = {
+      requests: [],
 
-      emit(name, args) {
-        this.emitted.push(args);
+      axiosRef: {
+        async post(url, data, config) {
+          fakeHttpService.requests.push({ url, data, config });
+        },
       },
     };
+
+    const eventEmitter = {
+      __callbacks: {},
+
+      emit(name, args) {
+        this.__callbacks[name]?.forEach(cb => cb(args));
+      },
+
+      on(name, cb) {
+        this.__callbacks[name] ??= [];
+        this.__callbacks[name].push(cb);
+      },
+    };
+
+    const env = {
+      WEBHOOK_URL: 'https://example.com',
+      WEBHOOK_SECRET: 'some-secret',
+      NODE_ENV: 'some-node-env',
+
+      get<T>(name) {
+        return this[name];
+      },
+    };
+
+    const documentChangedWebhookCaller = new EventConsumerListener(
+      fakeHttpService,
+      eventEmitter as any,
+      env as any,
+    );
 
     service = new WorkflowService(
       workflowDefinitionRepo as any,
@@ -139,13 +171,13 @@ describe('WorkflowService', () => {
         context: {
           documents: [
             {
-              testId: 1,
+              category: 'a',
               decision: {
                 status: 'undecided',
               },
             },
             {
-              testId: 2,
+              category: 'b',
               decision: {
                 status: 'undecided',
               },
@@ -160,13 +192,13 @@ describe('WorkflowService', () => {
       const newContext = {
         documents: [
           {
-            testId: 2,
+            category: 'b',
             decision: {
               status: 'decided',
             },
           },
           {
-            testId: 3,
+            category: 'c',
             decision: {
               status: 'undecided',
             },
@@ -177,11 +209,38 @@ describe('WorkflowService', () => {
       await service.createWorkflowDefinition(buildWorkflowDeifintion(2));
       await service.updateWorkflowRuntimeData('2', { context: newContext });
 
-      expect(eventEmitter.emitted).toEqual([
+      expect(fakeHttpService.requests).toEqual([
         {
-          context: newContext,
-          runtimeData: initialRuntimeData,
-          state: undefined,
+          url: 'https://example.com',
+          data: {
+            id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
+            eventName: 'workflow.context.document.changed',
+            apiVersion: 1,
+            timestamp: expect.stringMatching(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/),
+            workflowRuntimeId: '2',
+            environment: 'some-node-env',
+            data: {
+              documents: [
+                {
+                  category: 'b',
+                  decision: {
+                    status: 'decided',
+                  },
+                },
+                {
+                  category: 'c',
+                  decision: {
+                    status: 'undecided',
+                  },
+                },
+              ],
+            },
+          },
+          config: {
+            headers: {
+              'X-Authorization': 'some-secret',
+            },
+          },
         },
       ]);
     });
@@ -193,13 +252,13 @@ describe('WorkflowService', () => {
         context: {
           documents: [
             {
-              testId: 1,
+              category: 'a',
               decision: {
                 status: 'undecided',
               },
             },
             {
-              testId: 2,
+              category: 'b',
               decision: {
                 status: 'undecided',
               },
@@ -216,13 +275,13 @@ describe('WorkflowService', () => {
         context: {
           documents: [
             {
-              testId: 1,
+              category: 'a',
               decision: {
                 status: 'undecided',
               },
             },
             {
-              testId: 2,
+              category: 'b',
               decision: {
                 status: 'undecided',
               },
@@ -231,7 +290,7 @@ describe('WorkflowService', () => {
         },
       });
 
-      expect(eventEmitter.emitted).toEqual([]);
+      expect(fakeHttpService.requests).toEqual([]);
     });
   });
 });
