@@ -69,27 +69,21 @@ export const useIndividual = () => {
         return;
       }
 
-      const decisions = [...(endUser?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
-      const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
+      const context = {
+        documents: endUser?.workflow?.workflowContext?.machineContext?.documents?.map(document => {
+          if (document?.id !== id) return document;
 
-      if (indexOfTask < 0) {
-        decisions.push({
-          taskId: id,
-          faceMatch: approvalStatus,
-          idVerification: approvalStatus,
-        });
-      } else {
-        decisions[indexOfTask] = {
-          taskId: id,
-          faceMatch: approvalStatus,
-          idVerification: approvalStatus,
-        };
-      }
-
+          return {
+            ...document,
+            decision: {
+              ...document?.decision,
+              status: approvalStatus,
+            },
+          };
+        }),
+      };
       return mutateUpdateWorkflowById({
-        context: {
-          decisions,
-        },
+        context,
       });
     };
   const onMutateTaskDecisionById = ({ context }: { context: AnyRecord }) =>
@@ -123,9 +117,8 @@ export const useIndividual = () => {
       );
     },
     callToAction: ({ value, data }) => {
-      const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.decisions?.some(
-        ({ taskId, faceMatch, idVerification }) =>
-          taskId === data?.id && faceMatch === 'approved' && idVerification === 'approved',
+      const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.documents?.some(
+        ({ id, decision }) => id === data?.id && decision?.status === 'approved',
       );
 
       return value === 'Reject' ? (
@@ -138,7 +131,7 @@ export const useIndividual = () => {
                   // loading: debouncedIsLoadingRejectEndUser,
                 })}
                 // disabled={isLoading || !canReject}
-                disabled={!caseState.actionButtonsEnabled}
+                // disabled={!caseState.actionButtonsEnabled}
               >
                 {value}
               </Button>
@@ -221,7 +214,8 @@ export const useIndividual = () => {
             loading: isLoadingUpdateWorkflowById,
           })}
           disabled={
-            isLoadingUpdateWorkflowById || isApprovedTask || !caseState.actionButtonsEnabled
+            isLoadingUpdateWorkflowById || isApprovedTask
+            // || !caseState.actionButtonsEnabled
           }
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
