@@ -9,7 +9,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class EventConsumerListener {
+export class DocumentChangedWebhookCaller {
   #__axios: any;
 
   constructor(

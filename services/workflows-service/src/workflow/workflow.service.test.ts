@@ -11,7 +11,7 @@ import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-reposit
 import { WorkflowService } from './workflow.service';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
-import { EventConsumerListener } from '../events/event-consumer';
+import { DocumentChangedWebhookCaller } from '../events/document-changed-webhook-caller';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -101,7 +101,7 @@ describe('WorkflowService', () => {
       },
     };
 
-    const documentChangedWebhookCaller = new EventConsumerListener(
+    const documentChangedWebhookCaller = new DocumentChangedWebhookCaller(
       fakeHttpService,
       eventEmitter as any,
       env as any,

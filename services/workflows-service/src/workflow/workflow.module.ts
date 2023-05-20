@@ -9,7 +9,7 @@ import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
-import { EventConsumerListener } from '@/events/event-consumer';
+import { DocumentChangedWebhookCaller } from '@/events/document-changed-webhook-caller';
 import { BusinessRepository } from '@/business/business.repository';
 import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
@@ -29,7 +29,7 @@ import { FileRepository } from '@/storage/storage.repository';
     WorkflowService,
     FileService,
     WorkflowEventEmitterService,
-    EventConsumerListener,
+    DocumentChangedWebhookCaller,
   ],
   exports: [WorkflowService, ACLModule, AuthModule, MorganModule, StorageService, FileRepository],
 })
