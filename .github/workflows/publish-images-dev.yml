@@ -56,21 +56,21 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
 
-      - name: Build
-        run: pnpm build
+      # - name: Install pnpm
+      #   uses: pnpm/action-setup@v2
+      #   id: pnpm-install
+      #   with:
+      #     version: 8
+      #     run_install: false
 
-      - name: Upload sourcemaps
-        run: pnpm upload-sourcemaps
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_WORKFLOWS_SERVICE_PROJECT }}
-          SENTRY_RELEASE: ${{ steps.get_version.outputs.version }}-dev-${{ github.sha }}
+      # - name: Build
+      #   run: pnpm build
+
+      # - name: Upload sourcemaps
+      #   run: pnpm upload-sourcemaps
+      #   env:
+      #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      #     SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      #     SENTRY_PROJECT: ${{ secrets.SENTRY_WORKFLOWS_SERVICE_PROJECT }}
+      #     SENTRY_RELEASE: ${{ steps.get_version.outputs.version }}-dev-${{ github.sha }}
