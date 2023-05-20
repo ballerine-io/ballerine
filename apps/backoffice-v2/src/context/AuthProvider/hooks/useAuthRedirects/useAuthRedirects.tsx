@@ -28,9 +28,9 @@ export const useAuthRedirects = ({
 
     if (!shouldRedirect) return;
 
-    // Navigate to the individuals page if the user is signed in.
+    // Navigate to the entities page if the user is signed in.
 
-    navigate({
+    void navigate({
       to: redirectAuthenticatedTo,
       replace: true,
       params: undefined,

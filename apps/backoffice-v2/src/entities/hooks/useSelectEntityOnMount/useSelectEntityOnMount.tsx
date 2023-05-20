@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { individualsRoute } from 'components/pages/Individuals/Individuals.route';
+import { entitiesRoute } from '../../../routes/Entities/Entities.route';
 import { useSelectEntity } from '../useSelectEntity/useSelectEntity';
 import { useFilterEntity } from '../useFilterEntity/useFilterEntity';
 import { useFirstEntityIdQuery } from '../queries/useFirstEntityIdQuery/useFirstEntityIdQuery';
@@ -13,7 +13,7 @@ export const useSelectEntityOnMount = () => {
     initialState: {
       sortBy: 'createdAt',
     },
-    routeId: individualsRoute.id,
+    routeId: entitiesRoute.id,
   });
   const onSelectEntity = useSelectEntity();
   const entity = useFilterEntity();

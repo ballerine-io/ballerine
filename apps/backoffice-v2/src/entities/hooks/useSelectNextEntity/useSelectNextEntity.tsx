@@ -1,6 +1,6 @@
 import { useSelectEntity } from '../useSelectEntity/useSelectEntity';
 import { useCallback } from 'react';
-import { individualsRoute } from 'components/pages/Individuals/Individuals.route';
+import { entitiesRoute } from '../../../routes/Entities/Entities.route';
 import { useNextEntityIdQuery } from '../queries/useNextEntityIdQuery/useNextEntityIdQuery';
 
 export const useSelectNextEntity = () => {
@@ -8,7 +8,7 @@ export const useSelectNextEntity = () => {
     initialState: {
       sortBy: 'createdAt',
     },
-    routeId: individualsRoute.fullPath,
+    routeId: entitiesRoute.fullPath,
   });
   const onSelectNextEntity = useSelectEntity();
 

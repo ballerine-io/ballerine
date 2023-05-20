@@ -1,0 +1,85 @@
+import { useMatches } from '@tanstack/react-router';
+import { useSearch } from 'hooks/useSearch/useSearch';
+import { useFilter } from 'hooks/useFilter/useFilter';
+import { usePagination } from 'hooks/usePagination/usePagination';
+import { ChangeEventHandler, useCallback } from 'react';
+import { createArrayOfNumbers } from '../../../../utils/create-array-of-numbers/create-array-of-numbers';
+import { TRouteId } from '../../../../types';
+import { useSelectEntityOnMount } from '../../../../entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
+import { entitiesRoute } from '../../Entities.route';
+import { entitiesIndexRoute } from '../../EntitiesIndex.route';
+import { entityRoute } from '../../../Entity/Entity.route';
+import { useUsersQuery } from '../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
+import { useSort } from 'hooks/useSort/useSort';
+import { useEntitiesWithWorkflowsQuery } from '../../../../entities/hooks/queries/useEntitiesWithWorkflowsQuery/useEntitiesWithWorkflowsQuery';
+import { TIndividual } from '../../../../individuals/types';
+
+export const useEntities = () => {
+  const matches = useMatches();
+  const lastMatchId = matches.at(-1)?.route?.id;
+  const isIndividuals = lastMatchId === entitiesRoute.id || lastMatchId === entitiesIndexRoute.id;
+  const routeId: TRouteId = isIndividuals ? entitiesRoute.id : entityRoute.id;
+  const { data: users } = useUsersQuery();
+  const { data: cases, isLoading } = useEntitiesWithWorkflowsQuery(users);
+  const { searched, onSearch, search } = useSearch({
+    routeId,
+    data: cases,
+    searchBy: ['firstName', 'lastName', 'email', 'phone'],
+  });
+  const { sorted, onSortBy, onSortDir } = useSort({
+    routeId,
+    data: searched,
+    initialState: {
+      sortBy: 'createdAt',
+    },
+  });
+  const { filtered, onFilter } = useFilter({
+    routeId,
+    data: sorted,
+  });
+  const { paginated, page, pages, totalPages, onPaginate } = usePagination({
+    routeId,
+    data: filtered,
+    initialPageSize: 10,
+    initialPage: 1,
+  });
+  const onSearchChange: ChangeEventHandler<HTMLInputElement> = useCallback(
+    event => {
+      onSearch(event.target.value);
+    },
+    [onSearch],
+  );
+  const onSortByChange: ChangeEventHandler<HTMLSelectElement> = useCallback(
+    event => {
+      onSortBy(event.target.value);
+    },
+    [onSortBy],
+  );
+  const onFilterChange = useCallback(
+    (key: keyof TIndividual) => (values: Array<string>) => {
+      onFilter({
+        [key]: values,
+      });
+    },
+    [onFilter],
+  );
+  const skeletonEntities = createArrayOfNumbers(3);
+
+  useSelectEntityOnMount();
+
+  return {
+    onPaginate,
+    onSearch: onSearchChange,
+    onFilter: onFilterChange,
+    onSortBy: onSortByChange,
+    onSortDir,
+    search,
+    cases: paginated,
+    isLoading,
+    page,
+    pages,
+    totalPages,
+    skeletonEntities,
+    routeId,
+  };
+};

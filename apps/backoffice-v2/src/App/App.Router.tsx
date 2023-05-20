@@ -1,13 +1,13 @@
 import { ReactRouter, RouterProvider } from '@tanstack/react-router';
 import React, { FunctionComponent } from 'react';
-import { rootRoute } from 'components/pages/Root/Root.route';
-import { caseManagementRoute } from 'components/pages/CaseManagement/CaseManagement.route';
-import { caseManagementIndexRoute } from 'components/pages/CaseManagement/CaseManagementIndex.route';
-import { individualsRoute } from 'components/pages/Individuals/Individuals.route';
-import { individualRoute } from 'components/pages/Individual/Individual.route';
-import { rootIndexRoute } from 'components/pages/Root/RootIndex.route';
-import { signInRoute } from 'components/pages/SignIn/SignIn.route';
-import { individualsIndexRoute } from 'components/pages/Individuals/IndividualsIndex.route';
+import { rootRoute } from '../routes/Root/Root.route';
+import { caseManagementRoute } from '../routes/CaseManagement/CaseManagement.route';
+import { caseManagementIndexRoute } from '../routes/CaseManagement/CaseManagementIndex.route';
+import { entitiesRoute } from '../routes/Entities/Entities.route';
+import { entityRoute } from '../routes/Entity/Entity.route';
+import { rootIndexRoute } from '../routes/Root/RootIndex.route';
+import { signInRoute } from '../routes/SignIn/SignIn.route';
+import { entitiesIndexRoute } from '../routes/Entities/EntitiesIndex.route';
 import { env } from '../env/env';
 
 declare module '@tanstack/react-router' {
@@ -22,7 +22,7 @@ const routes = [
   ...(env.VITE_AUTH_ENABLED ? [signInRoute] : []),
   caseManagementRoute.addChildren([
     caseManagementIndexRoute,
-    individualsRoute.addChildren([individualsIndexRoute, individualRoute]),
+    entitiesRoute.addChildren([entitiesIndexRoute, entityRoute]),
     // businessesRoute.addChildren([businessesIndexRoute]),
     // transactionsRoute.addChildren([transactionsIndexRoute]),
   ]),

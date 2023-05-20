@@ -15,11 +15,11 @@ export const Providers: FunctionComponent<PropsWithChildren> = ({ children }) =>
             '/en/case-management/',
           ] as const
         }
-        redirectAuthenticatedTo={'/en/case-management/individuals'}
+        redirectAuthenticatedTo={'/en/case-management/entities'}
         redirectUnauthenticatedTo={'/en/auth/sign-in'}
         signInOptions={{
           redirect: env.VITE_AUTH_ENABLED,
-          callbackUrl: '/en/case-management/individuals',
+          callbackUrl: '/en/case-management/entities',
         }}
         signOutOptions={{
           redirect: env.VITE_AUTH_ENABLED,

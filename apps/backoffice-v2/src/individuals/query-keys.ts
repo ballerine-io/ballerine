@@ -1,5 +1,5 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
-import { fetchIndividualById, fetchIndividuals } from './api';
+import { fetchIndividualById, fetchIndividuals } from './fetchers';
 
 export const individualsQueryKeys = createQueryKeys('individuals', {
   list: (filterId: string) => ({

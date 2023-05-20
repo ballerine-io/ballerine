@@ -52,7 +52,7 @@ export const Navbar: FunctionComponent = () => {
       <ul className={`menu menu-compact w-full space-y-2`}>
         {filters?.map(({ id, name, entity }) => (
           <NavItem
-            href={'/$locale/case-management/individuals'}
+            href={'/$locale/case-management/entities'}
             search={{
               entity,
               filterId: id,

@@ -1,6 +1,6 @@
 import React from 'react';
-import { TAuthenticatedUser, TCaseManagementState } from '../../../api/types';
-import { CaseState } from '../../../enums';
+import { TAuthenticatedUser } from '../../../api/types';
+import { CaseState, TCaseState } from '../../../enums';
 import { DropdownMenuItem } from 'components/molecules/DropdownMenu/DropdownMenu.Item';
 import { DropdownMenuTrigger } from 'components/molecules/DropdownMenu/DropdownMenu.Trigger';
 import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
@@ -24,7 +24,7 @@ const AssigneeItem: React.FC<IUserItemProps> = ({ assignee, onAssigneeSelect }) 
 );
 
 interface IAssignButtonProps {
-  caseState: TCaseManagementState;
+  caseState: TCaseState;
   buttonType: 'Assign' | 'Re-Assign';
   assignees: Assignee[];
   onAssigneeSelect: (id: string) => void;

@@ -17,7 +17,7 @@ export const useUnauthenticatedLayout = () => {
     // When loading the user could be signed in or signed out.
     if (isLoading || !env.VITE_AUTH_ENABLED) return;
 
-    // Navigate to the individuals page if the user is signed in.
+    // Navigate to the entities page if the user is signed in.
     if (
       // Implement authenticated layout before removing disableRedirect.
       disableRedirect ||

@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from '@tanstack/react-router';
 import { useCallback } from 'react';
-import { individualRoute } from 'components/pages/Individual/Individual.route';
+import { entityRoute } from '../../../routes/Entity/Entity.route';
 
 export const useSelectEntity = () => {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ export const useSelectEntity = () => {
 
       void navigate({
         replace: true,
-        to: individualRoute.id,
+        to: entityRoute.id,
         params: {
           entityId,
           locale,

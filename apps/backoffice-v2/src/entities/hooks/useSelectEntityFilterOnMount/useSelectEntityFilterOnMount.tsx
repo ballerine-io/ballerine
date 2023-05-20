@@ -14,7 +14,7 @@ export const useSelectEntityFilterOnMount = () => {
     const [filter] = filters ?? [];
 
     void navigate({
-      to: '/$locale/case-management/individuals',
+      to: '/$locale/case-management/entities',
       search: {
         entity: filter?.entity,
         filterId: filter?.id,

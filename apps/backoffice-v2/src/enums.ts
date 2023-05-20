@@ -1,3 +1,5 @@
+import { TObjectValues } from './types';
+
 export const Method = {
   GET: 'GET',
   POST: 'POST',
@@ -29,7 +31,7 @@ export const Resource = {
   ASSIGNMENT: 'ASSIGNMENT',
 } as const;
 
-interface ICaseStateEnum {
+export interface ICaseStateEnum {
   [key: string]: {
     state: string;
     readEnabled: boolean;
@@ -75,3 +77,5 @@ export const CaseState = {
     actionButtonsEnabled: false,
   },
 } as const satisfies ICaseStateEnum;
+
+export type TCaseState = TObjectValues<typeof CaseState>;
