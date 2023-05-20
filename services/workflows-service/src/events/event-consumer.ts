@@ -27,7 +27,9 @@ export class EventConsumerListener {
     const newDocuments = data.context?.['documents'] || [];
 
     const documentIdentifier = (doc: any) => {
-      return `${doc.category as string}$${doc.type as string}$${doc.issuer?.country as string}`;
+      return `${doc.category as string}$${doc.type as string}$${
+        doc.issuer?.country as string
+      }`.toLowerCase();
     };
 
     const newDocumentsByIdentifier = newDocuments.reduce((accumulator: any, doc: any) => {

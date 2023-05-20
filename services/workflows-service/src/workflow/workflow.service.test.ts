@@ -49,6 +49,15 @@ function buildWorkflowDeifintion(sequenceNum) {
   };
 }
 
+function buildDocument(category, status) {
+  return {
+    category: category,
+    decision: {
+      status: status,
+    },
+  };
+}
+
 describe('WorkflowService', () => {
   let service;
   let workflowRuntimeDataRepo;
@@ -164,25 +173,12 @@ describe('WorkflowService', () => {
   });
 
   describe('.updateWorkflowRuntimeData', () => {
-    it('emits an event when context has changed', async () => {
+    it('sends a webbhook only for changed documents', async () => {
       const initialRuntimeData = {
         id: '2',
         workflowDefinitionId: '2',
         context: {
-          documents: [
-            {
-              category: 'a',
-              decision: {
-                status: 'undecided',
-              },
-            },
-            {
-              category: 'b',
-              decision: {
-                status: 'undecided',
-              },
-            },
-          ],
+          documents: [buildDocument('willBeRemoved', 'pending'), buildDocument('a', 'pending')],
         },
       };
       await workflowRuntimeDataRepo.create({
@@ -190,20 +186,7 @@ describe('WorkflowService', () => {
       });
 
       const newContext = {
-        documents: [
-          {
-            category: 'b',
-            decision: {
-              status: 'decided',
-            },
-          },
-          {
-            category: 'c',
-            decision: {
-              status: 'undecided',
-            },
-          },
-        ],
+        documents: [buildDocument('a', 'approved'), buildDocument('added', 'pending')],
       };
 
       await service.createWorkflowDefinition(buildWorkflowDeifintion(2));
@@ -220,20 +203,7 @@ describe('WorkflowService', () => {
             workflowRuntimeId: '2',
             environment: 'some-node-env',
             data: {
-              documents: [
-                {
-                  category: 'b',
-                  decision: {
-                    status: 'decided',
-                  },
-                },
-                {
-                  category: 'c',
-                  decision: {
-                    status: 'undecided',
-                  },
-                },
-              ],
+              ...newContext,
             },
           },
           config: {
@@ -245,24 +215,56 @@ describe('WorkflowService', () => {
       ]);
     });
 
-    it('does not emit an event when context has changed', async () => {
+    it('sends a webbhook regardless regardless of case identifier case', async () => {
+      const initialRuntimeData = {
+        id: '2',
+        workflowDefinitionId: '2',
+        context: {
+          documents: [buildDocument('a', 'pending')],
+        },
+      };
+      await workflowRuntimeDataRepo.create({
+        data: initialRuntimeData,
+      });
+
+      const newContext = {
+        documents: [buildDocument('A', 'approved')],
+      };
+
+      await service.createWorkflowDefinition(buildWorkflowDeifintion(2));
+      await service.updateWorkflowRuntimeData('2', { context: newContext });
+
+      expect(fakeHttpService.requests).toEqual([
+        {
+          url: 'https://example.com',
+          data: {
+            id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
+            eventName: 'workflow.context.document.changed',
+            apiVersion: 1,
+            timestamp: expect.stringMatching(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/),
+            workflowRuntimeId: '2',
+            environment: 'some-node-env',
+            data: {
+              ...newContext,
+            },
+          },
+          config: {
+            headers: {
+              'X-Authorization': 'some-secret',
+            },
+          },
+        },
+      ]);
+    });
+    it('does not send a webhook if no documents have changed', async () => {
       const initialRuntimeData = {
         id: '2',
         workflowDefinitionId: '2',
         context: {
           documents: [
-            {
-              category: 'a',
-              decision: {
-                status: 'undecided',
-              },
-            },
-            {
-              category: 'b',
-              decision: {
-                status: 'undecided',
-              },
-            },
+            buildDocument('willBeRemoved', 'pending'),
+            buildDocument('a', 'pending'),
+            buildDocument('b', 'pending'),
           ],
         },
       };
@@ -274,18 +276,9 @@ describe('WorkflowService', () => {
       await service.updateWorkflowRuntimeData('2', {
         context: {
           documents: [
-            {
-              category: 'a',
-              decision: {
-                status: 'undecided',
-              },
-            },
-            {
-              category: 'b',
-              decision: {
-                status: 'undecided',
-              },
-            },
+            buildDocument('added', 'pending'),
+            buildDocument('a', 'pending'),
+            buildDocument('b', 'pending'),
           ],
         },
       });
