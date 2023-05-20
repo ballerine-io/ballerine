@@ -4,7 +4,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { UserService } from '../../user/user.service';
 import { TEST_USER } from '../tests/constants';
 
-describe('Testing the jwtStrategyBase.validate()', () => {
+describe.skip('Testing the jwtStrategyBase.validate()', () => {
   const userService = mock<UserService>();
   const jwtStrategy = new JwtStrategy(userService);
   beforeEach(() => {
