@@ -10,7 +10,7 @@ describe.skip('Testing the jwtStrategyBase.validate()', () => {
   beforeEach(() => {
     userService.getByEmail.mockClear();
   });
-  it('should throw UnauthorizedException where there is no user', async () => {
+  it.skip('should throw UnauthorizedException where there is no user', async () => {
     //ARRANGE
     userService.getByEmail.calledWith(TEST_USER.email).mockReturnValue(Promise.resolve(null));
     //ACT
