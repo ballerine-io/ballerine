@@ -1,3 +1,3 @@
-import { useGetSessionQuery } from '../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
+import { useAuthenticatedUserQuery } from '../../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 
-export const useIsAuthenticated = () => !!useGetSessionQuery()?.data?.user;
+export const useIsAuthenticated = () => !!useAuthenticatedUserQuery()?.data?.user;

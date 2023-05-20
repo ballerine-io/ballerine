@@ -5,7 +5,7 @@ import { useSelectNextEntity } from '../../../../../../entities/hooks/useSelectN
 import { createInitials } from '../../../../../../utils/create-initials/create-initials';
 import { IUseActions } from './interfaces';
 import { Action } from '../../../../../../enums';
-import { useGetSessionQuery } from '../../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
+import { useAuthenticatedUserQuery } from '../../../../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
 import { useAssignWorkflowMutation } from '../../../../../../lib/react-query/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
 import { useUsersQuery } from '../../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
@@ -50,7 +50,7 @@ export const useActions = ({ entityId, fullName }: IUseActions) => {
 
   const {
     data: { user: authenticatedUser },
-  } = useGetSessionQuery();
+  } = useAuthenticatedUserQuery();
   const caseState = useCaseState(authenticatedUser, workflow);
   const { data: users } = useUsersQuery();
   const assignees = users.filter(assignee => assignee?.id !== authenticatedUser?.id);

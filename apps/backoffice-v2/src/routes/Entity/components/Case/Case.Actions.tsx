@@ -75,8 +75,8 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
         <AssignButton
           assignees={[
             {
-              id: authenticatedUser.id,
-              fullName: authenticatedUser.fullName,
+              id: authenticatedUser?.id,
+              fullName: authenticatedUser?.fullName,
             },
           ]}
           authenticatedUser={authenticatedUser}

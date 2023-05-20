@@ -1,17 +1,20 @@
 import { RootRoute } from '@tanstack/react-router';
 import { queryClient } from '../../lib/react-query/query-client';
-import { auth } from '../../lib/react-query/auth';
 import { env } from '../../env/env';
 import { Root } from './Root.page';
 import { filters } from '../../lib/react-query/filters';
+import { authQueryKeys } from '../../auth/query-keys';
 
 // Layout and globals
 export const rootRoute = new RootRoute({
   onLoad: async () => {
     if (!env.VITE_AUTH_ENABLED) return {};
 
-    const getSession = auth.getSession();
-    const session = await queryClient.ensureQueryData(getSession.queryKey, getSession.queryFn);
+    const authenticatedUser = authQueryKeys.authenticatedUser();
+    const session = await queryClient.ensureQueryData(
+      authenticatedUser.queryKey,
+      authenticatedUser.queryFn,
+    );
 
     if (!session?.user) return;
 

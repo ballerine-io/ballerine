@@ -1,11 +1,11 @@
 import { LogOutSvg } from 'components/atoms/icons';
 import React, { useCallback, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
-import { useSignOutMutation } from '../../../lib/react-query/mutations/useSignOutMutation/useSignOutMutation';
+import { useSignOutMutation } from '../../../auth/hooks/mutations/useSignOutMutation/useSignOutMutation';
 import { useAuthContext } from '../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import packageJson from '../../../../package.json';
 import { Avatar } from 'components/atoms/Avatar';
-import { useGetSessionQuery } from '../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
+import { useAuthenticatedUserQuery } from '../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 
 export const BottomActions = () => {
   const [theme, setTheme] = useState(() => {
@@ -33,7 +33,7 @@ export const BottomActions = () => {
       }),
     [signOutOptions?.redirect, signOutOptions?.callbackUrl, signOut],
   );
-  const { data: session } = useGetSessionQuery();
+  const { data: session } = useAuthenticatedUserQuery();
 
   return (
     <div className={`mt-auto flex flex-col space-y-2`}>

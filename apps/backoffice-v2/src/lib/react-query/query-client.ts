@@ -4,8 +4,8 @@ import { t } from 'i18next';
 import toast from 'react-hot-toast';
 import { IGlobalToastContext } from '../../interfaces';
 import { isZodError } from '../../utils/is-zod-error/is-zod-error';
-import { auth } from './auth';
 import { env } from '../../env/env';
+import { authQueryKeys } from '../../auth/query-keys';
 
 interface IErrorWithCode {
   code: number;
@@ -30,9 +30,11 @@ export const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: async error => {
       if (isErrorWithCode(error) && error.code === 401) {
-        queryClient.cancelQueries();
-        queryClient.setQueryData(auth.getSession().queryKey, undefined);
-        await queryClient.invalidateQueries(auth.getSession().queryKey);
+        const authenticatedUser = authQueryKeys.authenticatedUser();
+
+        void queryClient.cancelQueries();
+        queryClient.setQueryData(authenticatedUser.queryKey, undefined);
+        await queryClient.invalidateQueries(authenticatedUser.queryKey);
       }
 
       if (isZodError(error)) {

@@ -18,8 +18,8 @@ interface IUserItemProps {
 }
 
 const AssigneeItem: React.FC<IUserItemProps> = ({ assignee, onAssigneeSelect }) => (
-  <DropdownMenuItem key={assignee.id} onClick={() => onAssigneeSelect(assignee.id)}>
-    {assignee.fullName}
+  <DropdownMenuItem key={assignee?.id} onClick={() => onAssigneeSelect(assignee?.id)}>
+    {assignee?.fullName}
   </DropdownMenuItem>
 );
 
@@ -38,7 +38,7 @@ export const AssignButton: React.FC<IAssignButtonProps> = ({
 }) => {
   const isAssignButtonType = buttonType === 'Assign';
   const isUnassignEnabled = caseState !== CaseState.UNASSIGNED;
-  const onClick = () => (isAssignButtonType ? onAssigneeSelect(assignees[0].id) : undefined);
+  const onClick = () => (isAssignButtonType ? onAssigneeSelect(assignees?.[0]?.id) : undefined);
 
   return (
     <div>
@@ -66,7 +66,7 @@ export const AssignButton: React.FC<IAssignButtonProps> = ({
             {Array.isArray(assignees)
               ? assignees.map(assignee => (
                   <AssigneeItem
-                    key={assignee.id}
+                    key={assignee?.id}
                     assignee={assignee}
                     onAssigneeSelect={id => onAssigneeSelect(id)}
                   />

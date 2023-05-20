@@ -11,26 +11,6 @@ export interface IFilterId {
  * @see {@link apiClient}
  */
 export const endpoints = {
-  auth: {
-    signIn: {
-      default: {
-        endpoint: () => `auth/login`,
-        method: Method.POST,
-      },
-      google: {
-        endpoint: () => `auth/sign-in/google`,
-        method: Method.POST,
-      },
-    },
-    signOut: {
-      endpoint: () => `auth/logout`,
-      method: Method.POST,
-    },
-    getSession: {
-      endpoint: () => `auth/session`,
-      method: Method.GET,
-    },
-  },
   users: {
     list: {
       endpoint: () => `users`,

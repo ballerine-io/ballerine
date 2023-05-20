@@ -2,7 +2,7 @@ import { FunctionComponentWithChildren } from '../../types';
 import { createContext, useMemo } from 'react';
 import { env } from '../../env/env';
 import { useAuthRedirects } from './hooks/useAuthRedirects/useAuthRedirects';
-import { useGetSessionQuery } from '../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
+import { useAuthenticatedUserQuery } from '../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 
 export const AuthContext = createContext(undefined);
 
@@ -59,7 +59,7 @@ export const AuthProvider: FunctionComponentWithChildren<{
   signInOptions,
   signOutOptions,
 }) => {
-  const { isLoading } = useGetSessionQuery();
+  const { isLoading } = useAuthenticatedUserQuery();
   const contextValues = useMemo(
     () => ({
       redirectAuthenticatedTo,

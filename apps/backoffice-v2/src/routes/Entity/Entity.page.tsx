@@ -11,9 +11,9 @@ export const Entity = () => {
     <Case>
       {/* Reject and approve header */}
       <Case.Actions
-        id={selectedEntity.id}
-        fullName={selectedEntity.fullName}
-        avatarUrl={selectedEntity.avatarUrl}
+        id={selectedEntity?.id}
+        fullName={selectedEntity?.fullName}
+        avatarUrl={selectedEntity?.avatarUrl}
       />
       <Case.Content>
         {Array.isArray(tasks) && tasks?.length > 0

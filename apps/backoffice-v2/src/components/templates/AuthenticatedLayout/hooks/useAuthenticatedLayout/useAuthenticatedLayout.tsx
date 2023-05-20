@@ -1,5 +1,5 @@
 import { useAuthContext } from '../../../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
-import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
+import { useAuthenticatedUserQuery } from '../../../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useIsAuthenticated } from '../../../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 import { useEffect } from 'react';
 import { env } from '../../../../../env/env';
@@ -7,7 +7,7 @@ import { useRouter } from '@tanstack/react-router';
 
 export const useAuthenticatedLayout = () => {
   const { redirectUnauthenticatedTo } = useAuthContext();
-  const { isLoading } = useGetSessionQuery();
+  const { isLoading } = useAuthenticatedUserQuery();
   const isAuthenticated = useIsAuthenticated();
   const { history, navigate } = useRouter();
   const { pathname } = history.location;

@@ -1,32 +1,30 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../../../../api/api';
-import { auth } from '../../auth';
 import { useNavigate } from '@tanstack/react-router';
 import { Action, Resource } from '../../../../enums';
-import { ISignInProps } from './interfaces';
+import { ISignInProps } from '../useSignInMutation/interfaces';
+import { authQueryKeys } from '../../../query-keys';
+import { signOut } from '../../../fetchers';
 
-export const useSignInMutation = () => {
+export const useSignOutMutation = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const getSession = auth.getSession();
+  const authenticatedUser = authQueryKeys.authenticatedUser();
 
   return useMutation({
-    mutationFn: ({ callbackUrl, provider = 'default', body }: ISignInProps) =>
-      api.auth.signIn({
+    mutationFn: ({ callbackUrl }: ISignInProps) =>
+      signOut({
         callbackUrl,
-        provider,
-        body,
       }),
     onMutate: () => ({
       resource: Resource.INDIVIDUAL,
-      action: Action.SIGN_IN,
+      action: Action.SIGN_OUT,
     }),
     onSuccess: (data, { callbackUrl, redirect }) => {
-      queryClient.setQueryData(getSession.queryKey, data);
+      queryClient.setQueryData(authenticatedUser.queryKey, undefined);
 
       if (!callbackUrl || !redirect) return;
 
-      navigate({
+      void navigate({
         to: callbackUrl,
         replace: true,
         search: undefined,
@@ -34,9 +32,7 @@ export const useSignInMutation = () => {
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: getSession.queryKey,
-      });
+      void queryClient.invalidateQueries({ queryKey: authenticatedUser.queryKey });
     },
   });
 };

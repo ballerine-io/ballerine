@@ -23,7 +23,6 @@ const routes = [
   caseManagementRoute.addChildren([
     caseManagementIndexRoute,
     entitiesRoute.addChildren([entitiesIndexRoute, entityRoute]),
-    // businessesRoute.addChildren([businessesIndexRoute]),
     // transactionsRoute.addChildren([transactionsIndexRoute]),
   ]),
 ];
