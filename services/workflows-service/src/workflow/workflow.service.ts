@@ -8,9 +8,12 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { merge } from 'lodash';
+import { merge, isEqual } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
+import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
+import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
+
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
@@ -19,13 +22,33 @@ import { BusinessRepository } from '@/business/business.repository';
 import Ajv, { Schema } from 'ajv';
 import addFormats from 'ajv-formats';
 import { DefaultContextSchema } from './schemas/context';
+import * as console from 'console';
+import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
+import { z } from 'zod';
+import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
+import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
+import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
+import { StorageService } from '@/storage/storage.service';
+import { FileService } from '@/providers/file/file.service';
+import * as process from 'process';
+import * as crypto from 'crypto';
+import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-page-schema';
+import { env } from '@/env';
+import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
+import { S3Client } from '@aws-sdk/client-s3';
+import { TFileServiceProvider } from '@/providers/file/types';
 
+type TEntityId = string;
 const ajv = new Ajv({
   strict: false,
   coerceTypes: true,
 });
+<<<<<<< HEAD
 addFormats(ajv, { formats: ['email', 'uri', 'date'] });
 
+=======
+addFormats(ajv, { formats: ['email', 'uri'] });
+>>>>>>> dev
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
   CUT_IMAGE: 'CUT_IMAGE',
@@ -64,11 +87,27 @@ export class WorkflowService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
     protected readonly businessRepository: BusinessRepository,
-    private workflowEventEmitter: WorkflowEventEmitterService,
+    protected readonly storageService: StorageService,
+    protected readonly fileService: FileService,
+    protected readonly workflowEventEmitter: WorkflowEventEmitterService,
   ) {}
 
-  async createWorkflowDefinition(args: Parameters<WorkflowDefinitionRepository['create']>[0]) {
-    return await this.workflowDefinitionRepository.create(args);
+  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
+    const select = {
+      id: true,
+      name: true,
+      version: true,
+
+      definition: true,
+      definitionType: true,
+
+      backend: true,
+
+      extensions: true,
+      persistStates: true,
+      submitStates: true,
+    };
+    return await this.workflowDefinitionRepository.create({ data, select });
   }
 
   async getWorkflowRuntimeDataById(
@@ -118,18 +157,27 @@ export class WorkflowService {
     })) as CompleteWorkflowData[];
   }
 
-  async listWorkflowDefinitions(args?: Parameters<WorkflowDefinitionRepository['findMany']>[0]) {
-    return await this.workflowDefinitionRepository.findMany(args);
+  async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {
+    const select = {
+      id: true,
+      name: true,
+      version: true,
+      definition: true,
+      definitionType: true,
+
+      backend: true,
+
+      extensions: true,
+      persistStates: true,
+      submitStates: true,
+    };
+    return await this.workflowDefinitionRepository.findMany({ ...args, select });
   }
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
-    const workflow = await this.workflowDefinitionRepository.findById(
-      runtimeData.workflowDefinitionId,
-    );
-    const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
-
-    data.context = merge(runtimeData.context, data.context);
+    const contextHasChanged = !isEqual(data.context, runtimeData.context);
+    const mergedContext = merge({}, runtimeData.context, data.context);
 
     const context = {
       ...data.context,
@@ -139,6 +187,10 @@ export class WorkflowService {
         ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
       ),
     };
+    const workflow = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+    );
+    const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
     const isValidContextSchema = validateContextSchema(context);
 
     if (!isValidContextSchema) {
@@ -179,18 +231,20 @@ export class WorkflowService {
     // @ts-ignore
     const isFinal = workflow.definition?.states?.[currentState]?.type === 'final';
 
+    data.context = mergedContext;
+
     const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
       data: {
         ...data,
-        resolvedAt: isFinal ? new Date() : undefined,
+        resolvedAt: isFinal ? new Date() : null,
       },
     });
 
-    if (isFinal) {
-      this.workflowEventEmitter.emit('workflow.completed', {
+    if (contextHasChanged) {
+      this.workflowEventEmitter.emit('workflow.context.changed', {
         runtimeData,
         state: currentState as string,
-        context: runtimeData.context, // TODO: final result should be a subset of context, should be defined as part of the workflow definition
+        context: mergedContext,
       });
     }
 
@@ -329,73 +383,15 @@ export class WorkflowService {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
-    if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema!).length) {
-      const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
-      const validationResult = validate(context);
-      console.log('validationResult', validationResult);
+    this.__validateWorkflowDefinitionContext(workflowDefinition, context);
+    const { entityId, entityConnect } = await this.__findOrPersistEntityInformation(context);
+    const contextWithPersistedFileIds = await this.__copyFileAndCreate(context, entityId);
 
-      if (!validationResult) {
-        console.log(validate.errors);
-        throw new BadRequestException('Invalid context', JSON.stringify(validate.errors));
-      }
-    }
-    const { entity } = context;
-
-    // extract this logic into entity service
-    let entityId: string | null;
-    if (entity.ballerineEntityId) {
-      entityId = entity.ballerineEntityId as string;
-    } else {
-      if (entity.type === 'business') {
-        const res = await this.businessRepository.findByCorrelationId(entity.id as string);
-        entityId = res && (res.id as string);
-      } else {
-        const res = await this.endUserRepository.findByCorrelationId(entity.id as string);
-        entityId = res && res.id;
-      }
-    }
-
-    if (!entityId) {
-      if (!entity.data) throw new BadRequestException('Entity data is required');
-      // TODO: run validation on entity data
-      if (entity.type === 'business') {
-        const { id } = await this.businessRepository.create({
-          data: {
-            correlationId: entity.id,
-            ...(context.entity.data as object),
-          } as Prisma.BusinessCreateInput,
-        });
-        entityId = id;
-      } else {
-        const { id } = await this.endUserRepository.create({
-          data: {
-            correlationId: entity.id,
-            ...(context.entity.data as object),
-          } as Prisma.EndUserCreateInput,
-        });
-        entityId = id;
-      }
-    }
-
-    const entityConnect: any = {} as any;
-    if (entity.type === 'individual') {
-      entityConnect.endUser = {
-        connect: {
-          id: entityId,
-        },
-      };
-    } else {
-      entityConnect.business = {
-        connect: {
-          id: entityId,
-        },
-      };
-    }
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
       data: {
         ...entityConnect,
         workflowDefinitionVersion: workflowDefinition.version,
-        context: {},
+        context: contextWithPersistedFileIds,
         status: 'created',
         workflowDefinition: {
           connect: {
@@ -416,6 +412,157 @@ export class WorkflowService {
         ballerineEntityId: entityId,
       },
     ];
+  }
+  private async __copyFileAndCreate(
+    context: DefaultContextSchema,
+    entityId: TEntityId,
+  ): Promise<DefaultContextSchema> {
+    const documentsWithPersistedImages = await Promise.all(
+      context.documents.map(async document => ({
+        ...document,
+        pages: await this.__persistDocumentPagesFiles(document, entityId),
+      })),
+    );
+
+    return { ...context, documents: documentsWithPersistedImages };
+  }
+
+  private async __persistDocumentPagesFiles(
+    document: DefaultContextSchema['documents'][number],
+    entityId: string,
+  ) {
+    return await Promise.all(
+      document.pages.map(async documentPage => {
+        const ballerineFileId =
+          documentPage.ballerineFileId ||
+          (await this.__copyFileToDestinationAndCraeteFile(document, entityId, documentPage));
+
+        return { ...documentPage, ballerineFileId };
+      }),
+    );
+  }
+
+  private async __copyFileToDestinationAndCraeteFile(
+    document: DefaultContextSchema['documents'][number],
+    entityId: string,
+    documentPage: TDefaultSchemaDocumentPage,
+  ) {
+    const documentContext =
+      `${document?.category}-${document?.type}-${document?.issuer?.country}`.toLowerCase();
+    const documentName = `${entityId}/${documentContext}_${crypto.randomUUID()}.${
+      documentPage.type
+    }`;
+
+    const { fromServiceProvider, fromRemoteFileConfig } =
+      this.__fetchFromServiceProviders(documentPage);
+    const { toServiceProvider, toRemoteFileConfig, remoteFileName } =
+      this.__fetchToServiceProviders(documentName);
+
+    const remoteFilePath = await this.fileService.copyFileFromSourceToDestination(
+      fromServiceProvider,
+      fromRemoteFileConfig,
+      toServiceProvider,
+      toRemoteFileConfig,
+    );
+    const fileNameInBucket =
+      typeof remoteFilePath != 'string' ? remoteFilePath.fileNameInBucket : undefined;
+    const userId = entityId;
+    const ballerineFileId = await this.storageService.createFileLink({
+      uri: remoteFileName,
+      fileNameOnDisk: remoteFileName,
+      userId,
+      fileNameInBucket,
+    });
+    return ballerineFileId;
+  }
+
+  private async __findOrPersistEntityInformation(context: DefaultContextSchema) {
+    const { entity } = context;
+    const entityId = await this.__tryToFetchExistingEntityId(entity);
+
+    if (!entityId) {
+      if (!entity.data) throw new BadRequestException('Entity data is required');
+    }
+
+    let persistedEntityId = entityId;
+    const entityConnect: any = {} as any;
+    if (entity.type === 'individual') {
+      persistedEntityId = persistedEntityId || (await this.__persistEndUserInfo(entity, context));
+
+      entityConnect.endUser = {
+        connect: {
+          id: persistedEntityId,
+        },
+      };
+    } else {
+      persistedEntityId =
+        persistedEntityId || (await this.__persistBusinessInformation(entity, context));
+
+      entityConnect.business = {
+        connect: {
+          id: persistedEntityId,
+        },
+      };
+    }
+    return { entityId: persistedEntityId, entityConnect };
+  }
+
+  private async __persistEndUserInfo(
+    entity: { [p: string]: unknown },
+    context: DefaultContextSchema,
+  ) {
+    const { id } = await this.endUserRepository.create({
+      data: {
+        correlationId: entity.id,
+        ...(context.entity.data as object),
+      } as Prisma.EndUserCreateInput,
+    });
+    return id;
+  }
+
+  private async __persistBusinessInformation(
+    entity: { [p: string]: unknown },
+    context: DefaultContextSchema,
+  ) {
+    const { id } = await this.businessRepository.create({
+      data: {
+        correlationId: entity.id,
+        ...(context.entity.data as object),
+      } as Prisma.BusinessCreateInput,
+    });
+
+    return id;
+  }
+
+  private async __tryToFetchExistingEntityId(entity: {
+    [p: string]: unknown;
+  }): Promise<TEntityId | null> {
+    if (entity.ballerineEntityId) {
+      return entity.ballerineEntityId as TEntityId;
+    } else {
+      if (entity.type === 'business') {
+        const res = await this.businessRepository.findByCorrelationId(entity.id as TEntityId);
+        return res && res.id;
+      } else {
+        const res = await this.endUserRepository.findByCorrelationId(entity.id as TEntityId);
+        return res && res.id;
+      }
+    }
+  }
+
+  private __validateWorkflowDefinitionContext(
+    workflowDefinition: WorkflowDefinition,
+    context: DefaultContextSchema,
+  ) {
+    if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema).length) {
+      const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
+      const validationResult = validate(context);
+
+      if (!validationResult) {
+        console.log(validate.errors);
+        throw new BadRequestException('Invalid context', JSON.stringify(validate.errors));
+      }
+    }
   }
 
   async event({
@@ -453,13 +600,6 @@ export class WorkflowService {
     this.logger.log(
       `Workflow ${workflow.name}-${id}-v${workflow.version} state transiation [${runtimeData.state} -> ${currentState}]`,
     );
-    if (isFinal) {
-      this.workflowEventEmitter.emit('workflow.completed', {
-        runtimeData,
-        state: currentState,
-        context, // TODO: final result should be a subset of context, should be defined as part of the workflow definition
-      });
-    }
 
     if (type === 'resubmit' && document) {
       switch (resubmissionReason) {
@@ -505,5 +645,68 @@ export class WorkflowService {
           approvalState: ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState],
         },
       }));
+  }
+
+  private __fetchFromServiceProviders(document: TDefaultSchemaDocumentPage): {
+    fromServiceProvider: TFileServiceProvider;
+    fromRemoteFileConfig: TRemoteFileConfig;
+  } {
+    if (document.provider == 'http' && z.string().parse(document.uri)) {
+      return { fromServiceProvider: new HttpFileService(), fromRemoteFileConfig: document.uri };
+    }
+    if (document.provider == 'aws_s3' && z.string().parse(document.uri)) {
+      const prefixConfigName = `REMOTE`;
+      const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env, prefixConfigName);
+      const s3BucketConfig = this.__fetchAwsConfigFor(document.uri);
+
+      return {
+        fromServiceProvider: new AwsS3FileService(s3ClientConfig),
+        fromRemoteFileConfig: s3BucketConfig,
+      };
+    }
+
+    return { fromServiceProvider: new LocalFileService(), fromRemoteFileConfig: document.uri };
+  }
+
+  private __fetchToServiceProviders(fileName: string): {
+    toServiceProvider: TFileServiceProvider;
+    toRemoteFileConfig: TRemoteFileConfig;
+    remoteFileName: string;
+  } {
+    if (this.__fetchBucketName(process.env, false)) {
+      const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
+      const awsConfigForClient = this.__fetchAwsConfigFor(fileName);
+      return {
+        toServiceProvider: new AwsS3FileService(s3ClientConfig),
+        toRemoteFileConfig: awsConfigForClient,
+        remoteFileName: awsConfigForClient.fileNameInBucket,
+      };
+    }
+
+    return {
+      toServiceProvider: new LocalFileService(),
+      toRemoteFileConfig: fileName,
+      remoteFileName: fileName,
+    };
+  }
+
+  private __fetchAwsConfigFor(fileNameInBucket: string): TS3BucketConfig {
+    const bucketName = this.__fetchBucketName(process.env, true) as string;
+
+    return {
+      bucketName: bucketName,
+      fileNameInBucket: fileNameInBucket,
+      private: true,
+    };
+  }
+
+  private __fetchBucketName(processEnv: NodeJS.ProcessEnv, isThrowOnMissing = true) {
+    const bucketName = AwsS3FileConfig.fetchBucketName(processEnv);
+
+    if (isThrowOnMissing && !bucketName) {
+      throw new Error(`S3 Bucket name is not set`);
+    }
+
+    return bucketName;
   }
 }

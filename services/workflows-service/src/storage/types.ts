@@ -1,4 +1,4 @@
 export interface IFileIds {
   id: string;
-  userId: string;
 }
+export type TLocalFile = string;

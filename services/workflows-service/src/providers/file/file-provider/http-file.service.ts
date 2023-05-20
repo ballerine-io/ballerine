@@ -1,12 +1,8 @@
-import {
-  IStreamableFileProvider,
-  TLocalFilePath,
-  TRemoteFileConfig,
-  TRemoteUri,
-} from '@/providers/file/types';
+import { TLocalFilePath, TRemoteFileConfig, TRemoteUri } from '@/providers/file/types/files-types';
 import { promises as fsPromises } from 'fs';
 import axios, { AxiosResponse } from 'axios';
 import { Readable } from 'stream';
+import { IStreamableFileProvider } from '../types/interfaces';
 
 export class HttpFileService implements IStreamableFileProvider {
   protected client;
@@ -46,6 +42,7 @@ export class HttpFileService implements IStreamableFileProvider {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async uploadFile(...any: any): Promise<TRemoteFileConfig> {
     throw new Error('Unable to use upload to uri client');
   }
@@ -60,6 +57,7 @@ export class HttpFileService implements IStreamableFileProvider {
     return response.data;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async uploadFileStream(
     fileStream: Readable,
     remoteFileConfig: TRemoteFileConfig,

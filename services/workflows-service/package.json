@@ -43,7 +43,7 @@
     "@nestjs/core": "^9.3.12",
     "@nestjs/devtools-integration": "^0.1.4",
     "@nestjs/event-emitter": "^1.4.1",
-    "@nestjs/graphql": "11.0.4",
+    "@nestjs/graphql": "^10.0.0",
     "@nestjs/jwt": "10.0.3",
     "@nestjs/passport": "9.0.3",
     "@nestjs/platform-express": "^9.3.12",
@@ -77,7 +77,6 @@
     "rxjs": "^7.8.0",
     "swagger-ui-express": "4.6.2",
     "tmp": "^0.2.1",
-    "ts-node": "9.1.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {
@@ -111,7 +110,8 @@
     "prisma": "4.13.0",
     "supertest": "4.0.2",
     "ts-jest": "27.0.3",
+    "ts-node": "^10.9.1",
     "type-fest": "0.11.0",
-    "typescript": "4.2.3"
+    "typescript": "^4.9.3"
   }
 }

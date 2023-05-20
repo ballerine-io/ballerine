@@ -28,10 +28,7 @@ export class StorageService {
     return file.id;
   }
 
-  async getFileNameById({ id, userId }: IFileIds) {
-    return await this.fileRepository.findNameById({
-      id,
-      userId,
-    });
+  async getFileNameById({ id }: IFileIds) {
+    return await this.fileRepository.findById({ id });
   }
 }
