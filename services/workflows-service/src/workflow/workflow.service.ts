@@ -43,12 +43,8 @@ const ajv = new Ajv({
   strict: false,
   coerceTypes: true,
 });
-<<<<<<< HEAD
 addFormats(ajv, { formats: ['email', 'uri', 'date'] });
 
-=======
-addFormats(ajv, { formats: ['email', 'uri'] });
->>>>>>> dev
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
   CUT_IMAGE: 'CUT_IMAGE',
