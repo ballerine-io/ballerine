@@ -1,7 +1,6 @@
 import { DefaultContextSchema } from '@/workflow/schemas/context';
 import { PartialDeep } from 'type-fest';
 import { updateDocuments } from '@/workflow/update-documents';
-import { partialUtil } from 'zod/lib/helpers/partialUtil';
 
 type Documents = DefaultContextSchema['documents'];
 
@@ -241,7 +240,6 @@ describe('Update documents', () => {
                 side: 'front',
                 pageNumber: '1',
               },
-              ballerineFileId: 'fa679251-d4c9-4b1e-b53a-7a5a98b84203',
               uri: 'http://extroverted-capon.biz',
               type: 'jpg',
               provider: 'http',
@@ -332,14 +330,23 @@ describe('Update documents', () => {
               provider: 'http',
               data: '',
             },
+            {
+              metadata: {
+                pageNumber: '2',
+              },
+              uri: 'http://extroverted-capon.biz',
+              type: 'jpg',
+              provider: 'http',
+              data: '',
+            },
           ],
         },
       ];
 
       const result = updateDocuments(documents, documentsToUpdate);
 
-      expect(result[0]?.pages).toHaveLength(1);
-      expect(result[0]?.pages[0]).toEqual(documentsToUpdate[0]?.pages?.[0]);
+      expect(result[0]?.pages).toHaveLength(2);
+      expect(result[0]?.pages).toEqual(documentsToUpdate[0]?.pages);
     });
   });
 
