@@ -220,6 +220,46 @@ export class WorkflowService {
       data.context = mergedContext;
     }
 
+    const context = {
+      ...data.context,
+      // @ts-ignore
+      documents: data.context?.documents?.map(
+        // @ts-ignore
+        ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
+      ),
+    };
+    const workflow = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+    );
+    const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
+    const isValidContextSchema = validateContextSchema(context);
+
+    if (!isValidContextSchema) {
+      throw new BadRequestException(
+        validateContextSchema.errors?.map(({ instancePath, message, ...rest }) => ({
+          ...rest,
+          instancePath,
+          message: `${instancePath} ${message}`,
+        })),
+      );
+    }
+
+    // @ts-ignore
+    data?.context?.documents?.forEach(({ propertiesSchema, id: _id, ...document }) => {
+      const validatePropertiesSchema = ajv.compile(propertiesSchema);
+      const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
+
+      if (!isValidPropertiesSchema) {
+        throw new BadRequestException(
+          validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
+            ...rest,
+            message: `${instancePath} ${message}`,
+            instancePath,
+          })),
+        );
+      }
+    });
+
     this.logger.log(
       `Context update received from client: [${runtimeData.state} -> ${data.state} ]`,
     );
