@@ -41,28 +41,6 @@ export const useSubjectsList = (routerId: TRouteId) => {
     entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions;
   const filterByOptions = [
     {
-      label: 'User status',
-      value: 'approvalState',
-      options: [
-        {
-          label: 'Rejected',
-          value: 'REJECTED',
-        },
-        {
-          label: 'Approved',
-          value: 'APPROVED',
-        },
-        {
-          label: 'Processing',
-          value: 'PROCESSING',
-        },
-        {
-          label: 'New',
-          value: 'NEW',
-        },
-      ],
-    },
-    {
       label: 'Assignee',
       value: 'assigneeId',
       options: [

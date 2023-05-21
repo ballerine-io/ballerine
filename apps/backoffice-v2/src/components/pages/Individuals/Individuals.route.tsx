@@ -34,7 +34,6 @@ const BusinessesSearchSchema = SearchSchema.extend({
   sortBy: z.enum(['caseCreatedAt', 'companyName']).optional().catch('caseCreatedAt'),
   filter: z
     .object({
-      approvalState: z.array(z.enum(States)).optional().catch([]),
       assigneeId: z.array(z.string().nullable()).optional().catch([]),
       // businessType: z.array(z.string()).optional().catch([]),
     })

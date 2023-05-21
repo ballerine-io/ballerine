@@ -12,7 +12,6 @@ export const preSearchFiltersByKind = {
     sortBy: 'caseCreatedAt' as const,
     entity: 'businesses' as const,
     filter: {
-      approvalState: [State.PROCESSING],
       assigneeId: [],
     },
     ...sharedPreSearchFilters,
