@@ -21,11 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from 'components/atoms/Select/Select';
-import { ResubmissionReason } from 'components/organisms/Subject/hooks/useActions/useActions';
 import { DialogFooter } from 'components/organisms/Dialog/Dialog.Footer';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { Dialog } from 'components/organisms/Dialog/Dialog';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { Separator } from 'components/atoms/Separator/separator';
@@ -61,9 +60,20 @@ export const useIndividual = () => {
       workflowId: endUser?.workflow?.runtimeDataId,
     });
   const onMutateUpdateWorkflowById =
-    ({ id, approvalStatus }: { id: string; approvalStatus: 'rejected' | 'approved' }) =>
+    (
+      payload:
+        | {
+            id: string;
+            approvalStatus: 'rejected' | 'approved';
+          }
+        | {
+            id: string;
+            approvalStatus: 'revision';
+            revisionReason: string;
+          },
+    ) =>
     () => {
-      if (!id) {
+      if (!payload?.id) {
         toast.error('Invalid task id');
 
         return;
@@ -71,16 +81,16 @@ export const useIndividual = () => {
 
       const context = {
         documents: endUser?.workflow?.workflowContext?.machineContext?.documents?.map(document => {
-          if (document?.id !== id) return document;
+          if (document?.id !== payload?.id) return document;
 
-          switch (approvalStatus) {
+          switch (payload?.approvalStatus) {
             case 'approved':
               return {
                 ...document,
                 decision: {
-                  rejectionReason: null,
                   revisionReason: null,
-                  status: approvalStatus,
+                  rejectionReason: null,
+                  status: payload?.approvalStatus,
                 },
               };
             case 'rejected':
@@ -90,7 +100,16 @@ export const useIndividual = () => {
                   revisionReason: null,
                   // Change when rejection reason is implemented.
                   rejectionReason: document?.decision?.rejectionReason ?? '',
-                  status: approvalStatus,
+                  status: payload?.approvalStatus,
+                },
+              };
+            case 'revision':
+              return {
+                ...document,
+                decision: {
+                  revisionReason: payload?.revisionReason,
+                  rejectionReason: null,
+                  status: payload?.approvalStatus,
                 },
               };
             default:
@@ -133,6 +152,15 @@ export const useIndividual = () => {
       );
     },
     callToAction: ({ value, data }) => {
+      const [revisionReason, setRevisionReason] = useState('');
+      const onRevisionReasonChange = useCallback(
+        (value: string) => setRevisionReason(value),
+        [setRevisionReason],
+      );
+      const revisionReasons =
+        endUser?.workflow?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+          ({ enum: enum_ }) => !!enum_,
+        )?.enum;
       const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.documents?.some(
         ({ id, decision }) => id === data?.id && decision?.status === 'approved',
       );
@@ -181,24 +209,18 @@ export const useIndividual = () => {
                 reason for requesting a document re-submission.
               </DialogDescription>
             </DialogHeader>
-            <Select
-            // onValueChange={onResubmissionReasonChange}
-            >
+            <Select onValueChange={onRevisionReasonChange}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Re-submission reason" />
               </SelectTrigger>
               <SelectContent>
-                {Object.values(ResubmissionReason).map(reason => {
-                  const reasonWithSpaceSpace = reason.replace(/_/g, ' ').toLowerCase();
+                {revisionReasons?.map(reason => {
+                  const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
                   const capitalizedReason =
-                    reasonWithSpaceSpace.charAt(0).toUpperCase() + reasonWithSpaceSpace.slice(1);
+                    reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
 
                   return (
-                    <SelectItem
-                      key={reason}
-                      value={reason}
-                      disabled={reason !== ResubmissionReason.BLURRY_IMAGE}
-                    >
+                    <SelectItem key={reason} value={reason}>
                       {capitalizedReason}
                     </SelectItem>
                   );
@@ -216,6 +238,11 @@ export const useIndividual = () => {
                   // resubmissionReason,
                   // })}
                   // disabled={!resubmissionReason}
+                  onClick={onMutateUpdateWorkflowById({
+                    id: data?.id,
+                    approvalStatus: 'revision',
+                    revisionReason,
+                  })}
                 >
                   Confirm
                 </button>
