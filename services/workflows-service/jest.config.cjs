@@ -5,6 +5,7 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     axios: 'axios/dist/node/axios.cjs',
+    '^lodash-es$': 'lodash',
   },
   globals: {
     'ts-jest': {
