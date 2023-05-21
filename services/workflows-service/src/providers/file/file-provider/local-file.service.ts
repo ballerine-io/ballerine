@@ -1,6 +1,7 @@
 import { TLocalFilePath, TRemoteFileConfig, TRemoteUri } from '@/providers/file/types/files-types';
 import fs from 'fs';
 import { IFileProvider } from '../types/interfaces';
+import * as os from 'os';
 
 export class LocalFileService implements IFileProvider {
   protected client;
@@ -45,6 +46,6 @@ export class LocalFileService implements IFileProvider {
   }
 
   generateRemoteFilePath(fileName: string, directory?: string): string {
-    return `/tmp/${fileName}`;
+    return `${os.tmpdir()}/${fileName}`;
   }
 }
