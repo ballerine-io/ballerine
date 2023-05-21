@@ -22,12 +22,13 @@
           "type": "string"
         }
       },
+      "required": ["type"],
       "anyOf": [
         {
-          "required": ["id", "type"]
+          "required": ["id"]
         },
         {
-          "required": ["ballerineEntityId", "type"]
+          "required": ["ballerineEntityId"]
         }
       ],
       "additionalProperties": false
@@ -159,7 +160,7 @@
           },
           "properties": {
             "type": "object",
-            "additionalProperties": {
+            "properties": {
               "email": {
                 "type": "string",
                 "format": "email"

@@ -46,7 +46,7 @@ export interface DefaultContextSchema {
     version?: number;
     pages: {
       ballerineFileId?: string;
-      provider: 'gcs' | 'http' | 'stream' | 'base64' | 'ftp' | 'aws_s3';
+      provider: 'gcs' | 'http' | 'stream' | 'base64' | 'ftp';
       uri: string;
       /**
        * Whether an effect is positive or negative
@@ -59,9 +59,10 @@ export interface DefaultContextSchema {
       };
     }[];
     properties: {
-      [k: string]: {
-        [k: string]: unknown;
-      };
+      email?: string;
+      expiryDate?: string;
+      idNumber?: string;
+      [k: string]: unknown;
     };
   }[];
   [k: string]: unknown;
