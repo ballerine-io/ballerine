@@ -18,13 +18,12 @@ const SearchSchema = z.object({
 
 const IndividualsSearchSchema = SearchSchema.extend({
   sortBy: z
-    .enum(['firstName', 'lastName', 'email', 'phone', 'createdAt', 'approvalState'])
+    .enum(['firstName', 'lastName', 'email', 'phone', 'caseCreatedAt', 'approvalState'])
     .optional()
-    .catch('createdAt'),
+    .catch('caseCreatedAt'),
   filter: z
     .object({
       approvalState: z.array(z.enum(States)).optional().catch([]),
-      endUserType: z.array(z.string()).optional().catch([]),
       assigneeId: z.array(z.string().nullable()).optional().catch([]),
     })
     .optional(),
@@ -32,10 +31,9 @@ const IndividualsSearchSchema = SearchSchema.extend({
 });
 
 const BusinessesSearchSchema = SearchSchema.extend({
-  sortBy: z.enum(['createdAt', 'companyName']).optional().catch('createdAt'),
+  sortBy: z.enum(['caseCreatedAt', 'companyName']).optional().catch('caseCreatedAt'),
   filter: z
     .object({
-      approvalState: z.array(z.enum(States)).optional().catch([]),
       assigneeId: z.array(z.string().nullable()).optional().catch([]),
       // businessType: z.array(z.string()).optional().catch([]),
     })
