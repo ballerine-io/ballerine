@@ -58,6 +58,7 @@ function buildDocument(category, status) {
     decision: {
       status: status,
     },
+    propertiesSchema: {},
   };
 }
 
