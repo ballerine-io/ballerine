@@ -131,7 +131,7 @@ export class WorkflowControllerExternal {
     if (!entity.id && !entity.ballerineEntityId)
       throw new common.BadRequestException('Entity id is required');
 
-    const actionResult = await this.service.createWorkflowRuntime({
+    const actionResult = await this.service.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowId,
       context,
     });

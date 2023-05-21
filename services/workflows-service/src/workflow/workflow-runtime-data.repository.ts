@@ -1,6 +1,7 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { Prisma, WorkflowRuntimeData } from '@prisma/client';
+import { Prisma, WorkflowRuntimeData, WorkflowRuntimeDataStatus } from '@prisma/client';
+import { TEntityType } from '@/workflow/types';
 
 @Injectable()
 export class WorkflowRuntimeDataRepository {
@@ -51,6 +52,28 @@ export class WorkflowRuntimeDataRepository {
     return await this.prisma.workflowRuntimeData.delete({
       where: { id },
       ...args,
+    });
+  }
+
+  async getActiveWorkflowByEntity({
+    entityId,
+    entityType,
+    workflowDefinitionId,
+  }: {
+    entityId: string;
+    entityType: TEntityType;
+    workflowDefinitionId: string;
+  }) {
+    return await this.findOne({
+      where: {
+        workflowDefinitionId,
+        [entityType]: {
+          id: entityId,
+        },
+        status: {
+          not: WorkflowRuntimeDataStatus.completed,
+        },
+      },
     });
   }
 }
