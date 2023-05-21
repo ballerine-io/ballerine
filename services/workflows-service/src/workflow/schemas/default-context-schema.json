@@ -6,7 +6,6 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "Whether an effect is positive or negative",
           "enum": ["individual", "business"]
         },
         "data": {
@@ -22,12 +21,13 @@
           "type": "string"
         }
       },
+      "required": ["type"],
       "anyOf": [
         {
-          "required": ["id", "type"]
+          "required": ["id"]
         },
         {
-          "required": ["ballerineEntityId", "type"]
+          "required": ["ballerineEntityId"]
         }
       ],
       "additionalProperties": false
@@ -78,7 +78,6 @@
               "rejectionReason": {
                 "anyOf": [
                   {
-                    "description": "Whether an effect is positive or negative",
                     "type": "string"
                   },
                   {
@@ -96,7 +95,6 @@
               "revisionReason": {
                 "anyOf": [
                   {
-                    "description": "Whether an effect is positive or negative",
                     "type": "string"
                   },
                   {
@@ -134,7 +132,6 @@
                   "format": "uri"
                 },
                 "type": {
-                  "description": "Whether an effect is positive or negative",
                   "enum": ["pdf", "png", "jpg"]
                 },
                 "data": {
@@ -159,7 +156,7 @@
           },
           "properties": {
             "type": "object",
-            "additionalProperties": {
+            "properties": {
               "email": {
                 "type": "string",
                 "format": "email"

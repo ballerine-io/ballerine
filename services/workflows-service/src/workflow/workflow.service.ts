@@ -15,7 +15,7 @@ import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
-import { IObjectWithId } from '@/types';
+import { InputJsonValue, IObjectWithId } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
 import Ajv, { Schema } from 'ajv';
@@ -34,10 +34,11 @@ import * as crypto from 'crypto';
 import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-page-schema';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
-import { getDocumentId } from '@/workflow/enrich-workflow-runtime-data';
+import { updateDocuments } from '@/workflow/update-documents';
 import { isErrorWithMessage } from '@ballerine/common';
 
 type TEntityId = string;
+
 const ajv = new Ajv({
   strict: false,
   coerceTypes: true,
@@ -367,10 +368,10 @@ export class WorkflowService {
       entity: { ballerineEntityId: entityId, entityType: tempEntityType },
       documents: [],
     };
-    return this.createWorkflowRuntime({ workflowDefinitionId, context });
+    return this.createOrUpdateWorkflowRuntime({ workflowDefinitionId, context });
   }
 
-  async createWorkflowRuntime({
+  async createOrUpdateWorkflowRuntime({
     workflowDefinitionId,
     context,
   }: {
@@ -381,26 +382,66 @@ export class WorkflowService {
       workflowDefinitionId,
     );
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
-    const { entityId, entityConnect } = await this.__findOrPersistEntityInformation(context);
-    const contextWithPersistedFileIds = await this.__copyFileAndCreate(context, entityId);
+    const entityId = await this.__findOrPersistEntityInformation(context);
+    const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
 
-    const workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
-      data: {
-        ...entityConnect,
-        workflowDefinitionVersion: workflowDefinition.version,
-        context: contextWithPersistedFileIds,
-        status: 'created',
-        workflowDefinition: {
-          connect: {
-            id: workflowDefinitionId,
+    const existingWorkflowRuntimeData =
+      await this.workflowRuntimeDataRepository.getActiveWorkflowByEntity({
+        entityId,
+        entityType,
+        workflowDefinitionId: workflowDefinition.id,
+      });
+
+    let contextToInsert = structuredClone(context);
+
+    if (existingWorkflowRuntimeData) {
+      contextToInsert.documents = updateDocuments(
+        existingWorkflowRuntimeData.context.documents,
+        context.documents,
+      );
+    }
+
+    contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+
+    const entityConnect = {
+      [entityType]: {
+        connect: { id: entityId },
+      },
+    };
+
+    let workflowRuntimeData: WorkflowRuntimeData;
+
+    if (!existingWorkflowRuntimeData) {
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
+        data: {
+          ...entityConnect,
+          workflowDefinitionVersion: workflowDefinition.version,
+          context: contextToInsert as InputJsonValue,
+          status: 'created',
+          workflowDefinition: {
+            connect: {
+              id: workflowDefinition.id,
+            },
           },
         },
-      },
-    });
+      });
+    } else {
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
+        existingWorkflowRuntimeData.id,
+        {
+          data: {
+            ...entityConnect,
+            context: contextToInsert as InputJsonValue,
+          },
+        },
+      );
+    }
 
-    this.logger.log(
-      `Created workflow runtime data ${workflowRuntimeData.id}, for user ${entityId}, with workflow ${workflowDefinitionId}, version ${workflowDefinition.version}`,
-    );
+    this.logger.log(`WorkflowRuntimeData ${existingWorkflowRuntimeData ? 'created' : 'updated'}`, {
+      workflowRuntimeDataId: workflowRuntimeData.id,
+      entityId,
+      entityType,
+    });
 
     return [
       {
@@ -501,31 +542,19 @@ export class WorkflowService {
     const { entity } = context;
     const entityId = await this.__tryToFetchExistingEntityId(entity);
 
-    if (!entityId) {
-      if (!entity.data) throw new BadRequestException('Entity data is required');
+    if (entityId) {
+      return entityId;
     }
 
-    let persistedEntityId = entityId;
-    const entityConnect: any = {} as any;
+    if (!entity.data) {
+      throw new BadRequestException('Entity data is required');
+    }
+
     if (entity.type === 'individual') {
-      persistedEntityId = persistedEntityId || (await this.__persistEndUserInfo(entity, context));
-
-      entityConnect.endUser = {
-        connect: {
-          id: persistedEntityId,
-        },
-      };
+      return await this.__persistEndUserInfo(entity, context);
     } else {
-      persistedEntityId =
-        persistedEntityId || (await this.__persistBusinessInformation(entity, context));
-
-      entityConnect.business = {
-        connect: {
-          id: persistedEntityId,
-        },
-      };
+      return await this.__persistBusinessInformation(entity, context);
     }
-    return { entityId: persistedEntityId, entityConnect };
   }
 
   private async __persistEndUserInfo(
@@ -729,6 +758,7 @@ export class WorkflowService {
 
   private __fetchBucketName(processEnv: NodeJS.ProcessEnv, isThrowOnMissing = true) {
     const bucketName = AwsS3FileConfig.fetchBucketName(processEnv);
+
     if (isThrowOnMissing && !bucketName) {
       throw new Error(`S3 Bucket name is not set`);
     }

@@ -57,7 +57,6 @@ export const AssignButton: React.FC<IAssignButtonProps> = ({
             {isUnassignEnabled ? (
               <DropdownMenuItem
                 className={`text-cyan-950 border-b-2`}
-                key={'unassigne'}
                 onClick={() => onAssigneeSelect(null)}
               >
                 Unassign

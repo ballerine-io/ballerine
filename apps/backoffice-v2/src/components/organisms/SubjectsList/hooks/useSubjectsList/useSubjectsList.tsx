@@ -83,6 +83,7 @@ export const useSubjectsList = (routerId: TRouteId) => {
         ...users.map(({ id, fullName }) => ({
           label: fullName,
           value: id,
+          key: id,
         })),
         {
           label: 'Unassigned',
@@ -135,6 +136,7 @@ export const useSubjectsList = (routerId: TRouteId) => {
   });
 
   return {
+    entity,
     sortByOptions,
     filterByOptions,
     filter,
