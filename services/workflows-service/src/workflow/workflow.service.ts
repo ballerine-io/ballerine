@@ -36,6 +36,7 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
 import { isErrorWithMessage } from '@ballerine/common';
+import { getDocumentId } from '@/workflow/utils';
 
 type TEntityId = string;
 
