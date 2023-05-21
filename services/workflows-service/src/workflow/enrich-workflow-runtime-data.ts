@@ -1,14 +1,7 @@
 import { WorkflowRuntimeData } from '@prisma/client';
 import { DefaultContextSchema } from './schemas/context';
 import { certificateOfResidenceGH } from '../schemas/documents/GH';
-import { Unpacked } from '@/types';
-
-type Document = NonNullable<Unpacked<DefaultContextSchema['documents']>>;
-
-const getDocumentId = (document: Document) => {
-  const id = `${document?.category}-${document?.type}-${document?.issuer?.country}`;
-  return id;
-};
+import { getDocumentId } from '@/workflow/utils';
 
 export const enrichWorkflowRuntimeData = (workflowRuntimeData: WorkflowRuntimeData) => {
   if (workflowRuntimeData?.context?.documents?.length) {
