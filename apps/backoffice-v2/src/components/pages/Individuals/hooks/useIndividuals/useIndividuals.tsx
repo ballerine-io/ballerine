@@ -31,7 +31,7 @@ export const useIndividuals = () => {
     routeId,
     data: searched,
     initialState: {
-      sortBy: 'createdAt',
+      sortBy: 'caseCreatedAt',
     },
   });
   const { filtered, onFilter } = useFilter({

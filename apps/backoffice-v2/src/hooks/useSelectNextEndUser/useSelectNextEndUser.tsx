@@ -6,7 +6,7 @@ import { individualsRoute } from 'components/pages/Individuals/Individuals.route
 export const useSelectNextEndUser = () => {
   const { data: nextId } = useNextEndUserIdQuery({
     initialState: {
-      sortBy: 'createdAt',
+      sortBy: 'caseCreatedAt',
     },
     routeId: individualsRoute.fullPath,
   });
