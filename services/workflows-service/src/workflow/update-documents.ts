@@ -1,7 +1,7 @@
 import { DefaultContextSchema } from '@/workflow/schemas/context';
 import { PartialDeep } from 'type-fest';
 import { getDocumentId } from '@/workflow/utils';
-import { merge } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 
 type Documents = DefaultContextSchema['documents'];
 type Document = Documents[number];
@@ -11,7 +11,7 @@ const toDocumentsMap = <T extends PartialDeep<Documents>>(documents: T) => {
   return documents.reduce((map, document) => {
     const documentId = getDocumentId(document as Document);
 
-    map[documentId] = structuredClone(document);
+    map[documentId] = cloneDeep(document);
     delete map[documentId]?.pages;
 
     return map;
@@ -45,7 +45,7 @@ const toDocumentPagesMap = (documents: Documents) => {
   return documents.reduce((documentPagesMap, document) => {
     const documentId = getDocumentId(document);
 
-    documentPagesMap[documentId] = structuredClone(document.pages || []);
+    documentPagesMap[documentId] = cloneDeep(document.pages || []);
 
     return documentPagesMap;
   }, {} as Record<string, Pages>);
