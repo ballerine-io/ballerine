@@ -1,7 +1,7 @@
 import { DefaultContextSchema } from '@/workflow/schemas/context';
 import { PartialDeep } from 'type-fest';
 import { getDocumentId } from '@/workflow/utils';
-import { merge } from 'lodash-es';
+import { merge } from 'lodash';
 
 type Documents = DefaultContextSchema['documents'];
 type Document = Documents[number];

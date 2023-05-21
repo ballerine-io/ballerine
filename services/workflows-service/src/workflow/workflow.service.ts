@@ -8,7 +8,7 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { merge, isEqual } from 'lodash-es';
+import { isEqual, merge } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
@@ -402,13 +402,39 @@ export class WorkflowService {
 
     contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
 
-    const workflowRuntimeData = await this.__createOrUpdateWorkflowRuntimeData({
-      entityId,
-      entityType,
-      workflowDefinition,
-      context: contextToInsert,
-      existingWorkflowRuntimeData,
-    });
+    const entityConnect = {
+      [entityType]: {
+        connect: { id: entityId },
+      },
+    };
+
+    let workflowRuntimeData: WorkflowRuntimeData;
+
+    if (!existingWorkflowRuntimeData) {
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
+        data: {
+          ...entityConnect,
+          workflowDefinitionVersion: workflowDefinition.version,
+          context: context as InputJsonValue,
+          status: 'created',
+          workflowDefinition: {
+            connect: {
+              id: workflowDefinition.id,
+            },
+          },
+        },
+      });
+    } else {
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
+        existingWorkflowRuntimeData.id,
+        {
+          data: {
+            ...entityConnect,
+            context: context as InputJsonValue,
+          },
+        },
+      );
+    }
 
     this.logger.log(`WorkflowRuntimeData ${existingWorkflowRuntimeData ? 'created' : 'updated'}`, {
       workflowRuntimeDataId: workflowRuntimeData.id,
@@ -438,22 +464,6 @@ export class WorkflowService {
     return { ...context, documents: documentsWithPersistedImages };
   }
 
-  private async __tryToFetchExistingEntityIc(entity: {
-    [p: string]: unknown;
-  }): Promise<TEntityId | null> {
-    if (entity.ballerineEntityId) {
-      return entity.ballerineEntityId as TEntityId;
-    } else {
-      if (entity.type === 'business') {
-        const res = await this.businessRepository.findByCorrelationId(entity.id as TEntityId);
-        return res && res.id;
-      } else {
-        const res = await this.endUserRepository.findByCorrelationId(entity.id as TEntityId);
-        return res && res.id;
-      }
-    }
-  }
-
   private async __createOrUpdateWorkflowRuntimeData({
     entityId,
     entityType,
@@ -466,34 +476,7 @@ export class WorkflowService {
     workflowDefinition: WorkflowDefinition;
     context: DefaultContextSchema;
     existingWorkflowRuntimeData?: WorkflowRuntimeData | null;
-  }) {
-    if (!existingWorkflowRuntimeData) {
-      return await this.workflowRuntimeDataRepository.create({
-        data: {
-          [entityType]: {
-            connect: { id: entityId },
-          },
-          workflowDefinitionVersion: workflowDefinition.version,
-          context: context as InputJsonValue,
-          status: 'created',
-          workflowDefinition: {
-            connect: {
-              id: workflowDefinition.id,
-            },
-          },
-        },
-      });
-    }
-
-    return await this.workflowRuntimeDataRepository.updateById(existingWorkflowRuntimeData.id, {
-      data: {
-        [entityType]: {
-          connect: { id: entityId },
-        },
-        context: context as InputJsonValue,
-      },
-    });
-  }
+  }) {}
 
   private async __persistDocumentPagesFiles(
     document: DefaultContextSchema['documents'][number],
@@ -546,7 +529,7 @@ export class WorkflowService {
 
   private async __findOrPersistEntityInformation(context: DefaultContextSchema) {
     const { entity } = context;
-    const entityId = await this.__tryToFetchExistingEntityIc(entity);
+    const entityId = await this.__tryToFetchExistingEntityId(entity);
 
     if (entityId) {
       return entityId;

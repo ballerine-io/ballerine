@@ -1135,7 +1135,7 @@ importers:
       helmet:
         specifier: ^6.0.1
         version: 6.1.5
-      lodash-es:
+      lodash:
         specifier: ^4.17.21
         version: 4.17.21
       multer-s3:
@@ -1196,9 +1196,9 @@ importers:
       '@types/jest':
         specifier: ^26.0.19
         version: 26.0.24
-      '@types/lodash-es':
-        specifier: ^4.17.7
-        version: 4.17.7
+      '@types/lodash':
+        specifier: ^4.14.191
+        version: 4.14.192
       '@types/multer':
         specifier: ^1.4.7
         version: 1.4.7
@@ -9610,12 +9610,6 @@ packages:
     dependencies:
       '@types/node': 18.15.11
 
-  /@types/lodash-es@4.17.7:
-    resolution: {integrity: sha512-z0ptr6UI10VlU6l5MYhGwS4mC8DZyYer2mCoyysZtSF7p26zOX8UpbrV0YpNYLGS8K4PUFIyEr62IMFFjveSiQ==}
-    dependencies:
-      '@types/lodash': 4.14.192
-    dev: true
-
   /@types/lodash.keyby@4.6.7:
     resolution: {integrity: sha512-3qSHbbxLfXlARIKsaijZPb/5ZHDajv1vRg7OlAOuBNwN29PESS3sEOPfG1s2kzSuZnKtxtXZd1lvGj5JasN91w==}
     dependencies:
@@ -17006,10 +17000,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       p-locate: 5.0.0
-
-  /lodash-es@4.17.21:
-    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-    dev: false
 
   /lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
