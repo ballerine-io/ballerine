@@ -6,7 +6,6 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "Whether an effect is positive or negative",
           "enum": ["individual", "business"]
         },
         "data": {
@@ -79,7 +78,6 @@
               "rejectionReason": {
                 "anyOf": [
                   {
-                    "description": "Whether an effect is positive or negative",
                     "type": "string"
                   },
                   {
@@ -97,7 +95,6 @@
               "revisionReason": {
                 "anyOf": [
                   {
-                    "description": "Whether an effect is positive or negative",
                     "type": "string"
                   },
                   {
@@ -135,7 +132,6 @@
                   "format": "uri"
                 },
                 "type": {
-                  "description": "Whether an effect is positive or negative",
                   "enum": ["pdf", "png", "jpg"]
                 },
                 "data": {

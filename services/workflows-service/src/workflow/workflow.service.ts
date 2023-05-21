@@ -382,7 +382,7 @@ export class WorkflowService {
     );
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(context);
-    const entityType = context.entity.entityType as TEntityType;
+    const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
 
     const existingWorkflowRuntimeData =
       await this.workflowRuntimeDataRepository.getActiveWorkflowByEntity({
@@ -415,7 +415,7 @@ export class WorkflowService {
         data: {
           ...entityConnect,
           workflowDefinitionVersion: workflowDefinition.version,
-          context: context as InputJsonValue,
+          context: contextToInsert as InputJsonValue,
           status: 'created',
           workflowDefinition: {
             connect: {
@@ -430,7 +430,7 @@ export class WorkflowService {
         {
           data: {
             ...entityConnect,
-            context: context as InputJsonValue,
+            context: contextToInsert as InputJsonValue,
           },
         },
       );
@@ -463,20 +463,6 @@ export class WorkflowService {
 
     return { ...context, documents: documentsWithPersistedImages };
   }
-
-  private async __createOrUpdateWorkflowRuntimeData({
-    entityId,
-    entityType,
-    workflowDefinition,
-    context,
-    existingWorkflowRuntimeData,
-  }: {
-    entityId: string;
-    entityType: TEntityType;
-    workflowDefinition: WorkflowDefinition;
-    context: DefaultContextSchema;
-    existingWorkflowRuntimeData?: WorkflowRuntimeData | null;
-  }) {}
 
   private async __persistDocumentPagesFiles(
     document: DefaultContextSchema['documents'][number],

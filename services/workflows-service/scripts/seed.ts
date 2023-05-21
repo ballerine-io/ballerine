@@ -78,7 +78,7 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  function createMockContextData() {
+  function createMockContextData(businessId: string) {
     const correlationId = faker.datatype.uuid();
     let mockData = {
       entity: {
@@ -101,7 +101,7 @@ async function seed(bcryptSalt: Salt) {
           approvalState: 'NEW',
         },
         additionalDetails: {},
-        ballerineEntityId: faker.datatype.uuid(),
+        ballerineEntityId: businessId,
         id: correlationId,
       },
       documents: [
@@ -582,7 +582,7 @@ async function seed(bcryptSalt: Salt) {
       const riskWf = () => ({
         workflowDefinitionId: riskScoreMachineKybId,
         workflowDefinitionVersion: 1,
-        context: createMockContextData(),
+        context: createMockContextData(id),
         createdAt: faker.date.recent(2),
       });
 
