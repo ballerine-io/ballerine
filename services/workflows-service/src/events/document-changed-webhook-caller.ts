@@ -41,6 +41,7 @@ export class DocumentChangedWebhookCaller {
     const anyDocumentStatusChanged = (oldDocuments as Array<any>).some(oldDocument => {
       const id = documentIdentifier(oldDocument);
       return (
+        oldDocument.decision && 
         oldDocument.decision.status &&
         id in newDocumentsByIdentifier &&
         oldDocument.decision.status !== newDocumentsByIdentifier[id].decision.status

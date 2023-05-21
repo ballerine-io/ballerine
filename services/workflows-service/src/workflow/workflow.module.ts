@@ -15,9 +15,10 @@ import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import { StorageModule } from '@/storage/storage.module';
 import { FileRepository } from '@/storage/storage.repository';
+import { HttpModule, HttpService } from '@nestjs/axios';
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule, HttpModule],
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
   providers: [
     WorkflowDefinitionRepository,
