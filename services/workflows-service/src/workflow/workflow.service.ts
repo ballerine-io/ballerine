@@ -8,7 +8,7 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { merge, isEqual } from 'lodash';
+import { isEqual, merge } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
@@ -33,9 +33,7 @@ import { FileService } from '@/providers/file/file.service';
 import * as process from 'process';
 import * as crypto from 'crypto';
 import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-page-schema';
-import { env } from '@/env';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
-import { S3Client } from '@aws-sdk/client-s3';
 import { TFileServiceProvider } from '@/providers/file/types';
 
 type TEntityId = string;
@@ -172,42 +170,24 @@ export class WorkflowService {
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-    const contextHasChanged = !isEqual(data.context, runtimeData.context);
-    const mergedContext = merge({}, runtimeData.context, data.context);
-=======
->>>>>>> Stashed changes
     const workflow = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
     );
     let contextHasChanged, mergedContext;
     if (data.context) {
       contextHasChanged = !isEqual(data.context, runtimeData.context);
-<<<<<<< Updated upstream
       mergedContext = merge({}, runtimeData.context, data.context);
 
-=======
->>>>>>> Stashed changes
       const context = {
-        ...data.context,
+        ...mergedContext,
         // @ts-ignore
-        documents: data.context?.documents?.map(
+        documents: mergedContext?.documents?.map(
           // @ts-ignore
           ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
         ),
       };
-<<<<<<< Updated upstream
-
       const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
       const isValidContextSchema = validateContextSchema(context);
-=======
-      mergedContext = merge({}, runtimeData.context, context);
-
-      const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
-      const isValidContextSchema = validateContextSchema(mergedContext);
->>>>>>> Stashed changes
 
       if (!isValidContextSchema) {
         throw new BadRequestException(
@@ -236,50 +216,6 @@ export class WorkflowService {
       });
       data.context = mergedContext;
     }
-<<<<<<< Updated upstream
-
-    const context = {
-      ...data.context,
-      // @ts-ignore
-      documents: data.context?.documents?.map(
-        // @ts-ignore
-        ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
-      ),
-    };
-    const workflow = await this.workflowDefinitionRepository.findById(
-      runtimeData.workflowDefinitionId,
-    );
-    const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
-    const isValidContextSchema = validateContextSchema(context);
-
-    if (!isValidContextSchema) {
-      throw new BadRequestException(
-        validateContextSchema.errors?.map(({ instancePath, message, ...rest }) => ({
-          ...rest,
-          instancePath,
-          message: `${instancePath} ${message}`,
-        })),
-      );
-    }
-
-    // @ts-ignore
-    data?.context?.documents?.forEach(({ propertiesSchema, id: _id, ...document }) => {
-      const validatePropertiesSchema = ajv.compile(propertiesSchema);
-      const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
-
-      if (!isValidPropertiesSchema) {
-        throw new BadRequestException(
-          validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
-            ...rest,
-            message: `${instancePath} ${message}`,
-            instancePath,
-          })),
-        );
-      }
-    });
-=======
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 
     this.logger.log(
       `Context update received from client: [${runtimeData.state} -> ${data.state} ]`,

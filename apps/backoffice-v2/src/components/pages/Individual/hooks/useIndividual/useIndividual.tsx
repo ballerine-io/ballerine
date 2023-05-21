@@ -78,6 +78,8 @@ export const useIndividual = () => {
               return {
                 ...document,
                 decision: {
+                  rejectionReason: null,
+                  revisionReason: null,
                   status: approvalStatus,
                 },
               };
@@ -85,6 +87,7 @@ export const useIndividual = () => {
               return {
                 ...document,
                 decision: {
+                  revisionReason: null,
                   // Change when rejection reason is implemented.
                   rejectionReason: document?.decision?.rejectionReason ?? '',
                   status: approvalStatus,
