@@ -25,7 +25,7 @@ import { ResubmissionReason } from 'components/organisms/Subject/hooks/useAction
 import { DialogFooter } from 'components/organisms/Dialog/Dialog.Footer';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { Dialog } from 'components/organisms/Dialog/Dialog';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { Separator } from 'components/atoms/Separator/separator';
@@ -60,8 +60,25 @@ export const useIndividual = () => {
     useUpdateWorkflowByIdMutation({
       workflowId: endUser?.workflow?.runtimeDataId,
     });
+  const [revisionReason, setRevisionReason] = useState<keyof typeof ResubmissionReason>();
+  const onRevisionReasonChange = useCallback(
+    (value: string) => setRevisionReason(value as keyof typeof ResubmissionReason),
+    [setRevisionReason],
+  );
   const onMutateUpdateWorkflowById =
-    ({ id, approvalStatus }: { id: string; approvalStatus: 'rejected' | 'approved' }) =>
+    ({
+      id,
+      approvalStatus,
+    }:
+      | {
+          id: string;
+          approvalStatus: 'rejected' | 'approved';
+        }
+      | {
+          id: string;
+          approvalStatus: 'revision';
+          revisionReason: keyof typeof ResubmissionReason;
+        }) =>
     () => {
       if (!id) {
         toast.error('Invalid task id');
@@ -78,8 +95,8 @@ export const useIndividual = () => {
               return {
                 ...document,
                 decision: {
-                  rejectionReason: null,
                   revisionReason: null,
+                  rejectionReason: null,
                   status: approvalStatus,
                 },
               };
@@ -90,6 +107,15 @@ export const useIndividual = () => {
                   revisionReason: null,
                   // Change when rejection reason is implemented.
                   rejectionReason: document?.decision?.rejectionReason ?? '',
+                  status: approvalStatus,
+                },
+              };
+            case 'revision':
+              return {
+                ...document,
+                decision: {
+                  revisionReason,
+                  rejectionReason: null,
                   status: approvalStatus,
                 },
               };
@@ -181,9 +207,7 @@ export const useIndividual = () => {
                 reason for requesting a document re-submission.
               </DialogDescription>
             </DialogHeader>
-            <Select
-            // onValueChange={onResubmissionReasonChange}
-            >
+            <Select onValueChange={onRevisionReasonChange}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Re-submission reason" />
               </SelectTrigger>
@@ -216,6 +240,11 @@ export const useIndividual = () => {
                   // resubmissionReason,
                   // })}
                   // disabled={!resubmissionReason}
+                  onClick={onMutateUpdateWorkflowById({
+                    id: data?.id,
+                    approvalStatus: 'revision',
+                    revisionReason,
+                  })}
                 >
                   Confirm
                 </button>

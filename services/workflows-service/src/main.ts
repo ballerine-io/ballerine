@@ -1,4 +1,3 @@
-//
 import passport from 'passport';
 import session from 'express-session';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
