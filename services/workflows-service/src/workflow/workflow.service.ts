@@ -13,7 +13,6 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
-
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { InputJsonValue, IObjectWithId } from '@/types';
@@ -23,27 +22,26 @@ import Ajv, { Schema } from 'ajv';
 import addFormats from 'ajv-formats';
 import { DefaultContextSchema } from './schemas/context';
 import * as console from 'console';
+import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
 import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
 import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
 import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
+import * as process from 'process';
+import * as crypto from 'crypto';
 import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-page-schema';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
+import { updateDocuments } from '@/workflow/update-documents';
 
 type TEntityId = string;
-import * as process from 'process';
-import * as crypto from 'crypto';
-import { updateDocuments } from '@/workflow/update-documents';
-import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
 
 const ajv = new Ajv({
   strict: false,
   coerceTypes: true,
 });
-
 addFormats(ajv, { formats: ['email', 'uri', 'date'] });
 
 export const ResubmissionReason = {
@@ -84,9 +82,9 @@ export class WorkflowService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
     protected readonly businessRepository: BusinessRepository,
-    protected readonly workflowEventEmitter: WorkflowEventEmitterService,
     protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
+    protected readonly workflowEventEmitter: WorkflowEventEmitterService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -179,18 +177,18 @@ export class WorkflowService {
     let contextHasChanged, mergedContext;
     if (data.context) {
       contextHasChanged = !isEqual(data.context, runtimeData.context);
+      mergedContext = merge({}, runtimeData.context, data.context);
       const context = {
-        ...data.context,
+        ...mergedContext,
         // @ts-ignore
-        documents: data.context?.documents?.map(
+        documents: mergedContext?.documents?.map(
           // @ts-ignore
           ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
         ),
       };
-      mergedContext = merge({}, runtimeData.context, context);
 
       const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
-      const isValidContextSchema = validateContextSchema(mergedContext);
+      const isValidContextSchema = validateContextSchema(context);
 
       if (!isValidContextSchema) {
         throw new BadRequestException(
@@ -219,44 +217,6 @@ export class WorkflowService {
       });
       data.context = mergedContext;
     }
-
-    const context = {
-      ...data.context,
-      // @ts-ignore
-      documents: data.context?.documents?.map(
-        // @ts-ignore
-        ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
-      ),
-    };
-
-    const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
-    const isValidContextSchema = validateContextSchema(context);
-
-    if (!isValidContextSchema) {
-      throw new BadRequestException(
-        validateContextSchema.errors?.map(({ instancePath, message, ...rest }) => ({
-          ...rest,
-          instancePath,
-          message: `${instancePath} ${message}`,
-        })),
-      );
-    }
-
-    // @ts-ignore
-    data?.context?.documents?.forEach(({ propertiesSchema, id: _id, ...document }) => {
-      const validatePropertiesSchema = ajv.compile(propertiesSchema);
-      const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
-
-      if (!isValidPropertiesSchema) {
-        throw new BadRequestException(
-          validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
-            ...rest,
-            message: `${instancePath} ${message}`,
-            instancePath,
-          })),
-        );
-      }
-    });
 
     this.logger.log(
       `Context update received from client: [${runtimeData.state} -> ${data.state} ]`,
@@ -333,18 +293,18 @@ export class WorkflowService {
     // will throw exception if review machine def is missing
     await this.workflowDefinitionRepository.findById(workflow.reviewMachineId);
 
-    const entitySerach: { businessId?: string; endUserId?: string } = {};
+    const entitySearch: { businessId?: string; endUserId?: string } = {};
 
     if (businessId) {
-      entitySerach.businessId = runtime.businessId as string;
+      entitySearch.businessId = runtime.businessId as string;
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      entitySerach.endUserId = runtime.endUserId as string;
+      entitySearch.endUserId = runtime.endUserId as string;
     }
 
     const workflowRuntimeDataExists = await this.workflowRuntimeDataRepository.findOne({
       where: {
-        ...entitySerach,
+        ...entitySearch,
         context: {
           path: ['parentMachine', 'id'],
           equals: runtime.id,
@@ -355,7 +315,7 @@ export class WorkflowService {
     if (!workflowRuntimeDataExists) {
       await this.workflowRuntimeDataRepository.create({
         data: {
-          ...entitySerach,
+          ...entitySearch,
           workflowDefinitionVersion: workflow.version,
           workflowDefinitionId: workflow.reviewMachineId,
           context: {
@@ -379,7 +339,7 @@ export class WorkflowService {
     await this.updateWorkflowRuntimeData(runtime.id, {
       ...((runtime.context as { resubmissionReason: string })?.resubmissionReason
         ? {
-            ...entitySerach,
+            ...entitySearch,
             workflowDefinitionVersion: workflow.version,
             workflowDefinitionId: workflow.reviewMachineId,
             context: {
@@ -478,52 +438,6 @@ export class WorkflowService {
     return { ...context, documents: documentsWithPersistedImages };
   }
 
-  private async __findOrPersistEntityInformation(context: DefaultContextSchema) {
-    const { entity } = context;
-    const entityId = await this.__tryToFetchExistingEntityIc(entity);
-
-    if (entityId) {
-      return entityId;
-    }
-
-    if (!entity.data) {
-      throw new BadRequestException('Entity data is required');
-    }
-
-    if (entity.type === 'individual') {
-      return await this.__persistEndUserInfo(entity, context);
-    } else {
-      return await this.__persistBusinessInformation(entity, context);
-    }
-  }
-
-  private async __persistEndUserInfo(
-    entity: { [p: string]: unknown },
-    context: DefaultContextSchema,
-  ) {
-    const { id } = await this.endUserRepository.create({
-      data: {
-        correlationId: entity.id,
-        ...(context.entity.data as object),
-      } as Prisma.EndUserCreateInput,
-    });
-    return id;
-  }
-
-  private async __persistBusinessInformation(
-    entity: { [p: string]: unknown },
-    context: DefaultContextSchema,
-  ) {
-    const { id } = await this.businessRepository.create({
-      data: {
-        correlationId: entity.id,
-        ...(context.entity.data as object),
-      } as Prisma.BusinessCreateInput,
-    });
-
-    return id;
-  }
-
   private async __tryToFetchExistingEntityIc(entity: {
     [p: string]: unknown;
   }): Promise<TEntityId | null> {
@@ -536,21 +450,6 @@ export class WorkflowService {
       } else {
         const res = await this.endUserRepository.findByCorrelationId(entity.id as TEntityId);
         return res && res.id;
-      }
-    }
-  }
-
-  private __validateWorkflowDefinitionContext(
-    workflowDefinition: WorkflowDefinition,
-    context: DefaultContextSchema,
-  ) {
-    if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema).length) {
-      const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
-      const validationResult = validate(context);
-
-      if (!validationResult) {
-        console.log(validate.errors);
-        throw new BadRequestException('Invalid context', JSON.stringify(validate.errors));
       }
     }
   }
@@ -645,6 +544,52 @@ export class WorkflowService {
     return ballerineFileId;
   }
 
+  private async __findOrPersistEntityInformation(context: DefaultContextSchema) {
+    const { entity } = context;
+    const entityId = await this.__tryToFetchExistingEntityIc(entity);
+
+    if (entityId) {
+      return entityId;
+    }
+
+    if (!entity.data) {
+      throw new BadRequestException('Entity data is required');
+    }
+
+    if (entity.type === 'individual') {
+      return await this.__persistEndUserInfo(entity, context);
+    } else {
+      return await this.__persistBusinessInformation(entity, context);
+    }
+  }
+
+  private async __persistEndUserInfo(
+    entity: { [p: string]: unknown },
+    context: DefaultContextSchema,
+  ) {
+    const { id } = await this.endUserRepository.create({
+      data: {
+        correlationId: entity.id,
+        ...(context.entity.data as object),
+      } as Prisma.EndUserCreateInput,
+    });
+    return id;
+  }
+
+  private async __persistBusinessInformation(
+    entity: { [p: string]: unknown },
+    context: DefaultContextSchema,
+  ) {
+    const { id } = await this.businessRepository.create({
+      data: {
+        correlationId: entity.id,
+        ...(context.entity.data as object),
+      } as Prisma.BusinessCreateInput,
+    });
+
+    return id;
+  }
+
   private async __tryToFetchExistingEntityId(entity: {
     [p: string]: unknown;
   }): Promise<TEntityId | null> {
@@ -657,6 +602,21 @@ export class WorkflowService {
       } else {
         const res = await this.endUserRepository.findByCorrelationId(entity.id as TEntityId);
         return res && res.id;
+      }
+    }
+  }
+
+  private __validateWorkflowDefinitionContext(
+    workflowDefinition: WorkflowDefinition,
+    context: DefaultContextSchema,
+  ) {
+    if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema).length) {
+      const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
+      const validationResult = validate(context);
+
+      if (!validationResult) {
+        console.log(validate.errors);
+        throw new BadRequestException('Invalid context', JSON.stringify(validate.errors));
       }
     }
   }
