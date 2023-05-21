@@ -73,13 +73,29 @@ export const useIndividual = () => {
         documents: endUser?.workflow?.workflowContext?.machineContext?.documents?.map(document => {
           if (document?.id !== id) return document;
 
-          return {
-            ...document,
-            decision: {
-              ...document?.decision,
-              status: approvalStatus,
-            },
-          };
+          switch (approvalStatus) {
+            case 'approved':
+              return {
+                ...document,
+                decision: {
+                  rejectionReason: null,
+                  revisionReason: null,
+                  status: approvalStatus,
+                },
+              };
+            case 'rejected':
+              return {
+                ...document,
+                decision: {
+                  revisionReason: null,
+                  // Change when rejection reason is implemented.
+                  rejectionReason: document?.decision?.rejectionReason ?? '',
+                  status: approvalStatus,
+                },
+              };
+            default:
+              return document;
+          }
         }),
       };
       return mutateUpdateWorkflowById({
@@ -131,7 +147,7 @@ export const useIndividual = () => {
                   // loading: debouncedIsLoadingRejectEndUser,
                 })}
                 // disabled={isLoading || !canReject}
-                // disabled={!caseState.actionButtonsEnabled}
+                disabled={!caseState.actionButtonsEnabled}
               >
                 {value}
               </Button>
@@ -214,8 +230,7 @@ export const useIndividual = () => {
             loading: isLoadingUpdateWorkflowById,
           })}
           disabled={
-            isLoadingUpdateWorkflowById || isApprovedTask
-            // || !caseState.actionButtonsEnabled
+            isLoadingUpdateWorkflowById || isApprovedTask || !caseState.actionButtonsEnabled
           }
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
