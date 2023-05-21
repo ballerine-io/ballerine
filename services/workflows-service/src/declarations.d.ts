@@ -1,5 +1,4 @@
 import { UserInfo } from '@/user/user-info';
-import { TEntityType } from '@/workflow/types';
 
 declare global {
   // eslint-disable-next-line no-var

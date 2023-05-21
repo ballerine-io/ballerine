@@ -18,11 +18,34 @@ const toDocumentsMap = <T extends PartialDeep<Documents>>(documents: T) => {
   }, {} as Record<string, T[number]>);
 };
 
+function updatePages(oldPages: Pages, newPages: Pages) {
+  const doesntHaveChanges = !newPages.length;
+
+  if (doesntHaveChanges) {
+    return Object.values(oldPages);
+  }
+
+  const hasNewPages = newPages.some(page => !page.ballerineFileId);
+
+  if (hasNewPages) {
+    return newPages;
+  }
+
+  return [
+    ...oldPages.map(oldPage => {
+      const newPage = newPages.find(newPage => newPage.ballerineFileId === oldPage.ballerineFileId);
+
+      return newPage ? merge(oldPage, newPage) : oldPage;
+    }),
+    ...newPages.filter(newPage => !newPage.ballerineFileId),
+  ];
+}
+
 const toDocumentPagesMap = (documents: Documents) => {
   return documents.reduce((documentPagesMap, document) => {
     const documentId = getDocumentId(document);
 
-    documentPagesMap[documentId] = structuredClone(document.pages);
+    documentPagesMap[documentId] = structuredClone(document.pages || []);
 
     return documentPagesMap;
   }, {} as Record<string, Pages>);
@@ -33,7 +56,6 @@ export function updateDocuments(
   documentsToUpdate: PartialDeep<Documents>,
 ): Documents {
   const documentsMap = toDocumentsMap(documents);
-
   const documentsToUpdateMap = toDocumentsMap(documentsToUpdate as Documents);
 
   merge(documentsMap, documentsToUpdateMap);
@@ -45,36 +67,10 @@ export function updateDocuments(
 
   updatedDocuments.forEach(document => {
     const documentId = getDocumentId(document);
-
     const oldPages = pagesMap[documentId] || [];
     const newPages = pagesToUpdateMap[documentId] || [];
 
-    const doesntHaveChanges = !newPages.length;
-
-    if (doesntHaveChanges) {
-      document.pages = Object.values(oldPages);
-
-      return;
-    }
-
-    const hasNewPages = newPages.some(page => !page.ballerineFileId);
-
-    if (hasNewPages) {
-      document.pages = newPages;
-
-      return;
-    }
-
-    document.pages = [
-      ...oldPages.map(oldPage => {
-        const newPage = newPages.find(
-          newPage => newPage.ballerineFileId === oldPage.ballerineFileId,
-        );
-
-        return newPage ? merge(oldPage, newPage) : oldPage;
-      }),
-      ...newPages.filter(newPage => !newPage.ballerineFileId),
-    ];
+    document.pages = updatePages(oldPages, newPages);
   });
 
   return updatedDocuments;
