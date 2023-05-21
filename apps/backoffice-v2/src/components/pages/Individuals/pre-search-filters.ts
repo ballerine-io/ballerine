@@ -22,7 +22,6 @@ export const preSearchFiltersByKind = {
     entity: 'individuals' as const,
     filter: {
       approvalState: [State.PROCESSING],
-      endUserType: [],
       assigneeId: [],
     },
     ...sharedPreSearchFilters,

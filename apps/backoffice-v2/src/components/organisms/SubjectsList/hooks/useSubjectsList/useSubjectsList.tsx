@@ -63,20 +63,6 @@ export const useSubjectsList = (routerId: TRouteId) => {
       ],
     },
     {
-      label: 'User type',
-      value: 'endUserType',
-      options: [
-        {
-          label: 'Individual',
-          value: 'individual',
-        },
-        {
-          label: 'Business',
-          value: 'business',
-        },
-      ],
-    },
-    {
       label: 'Assignee',
       value: 'assigneeId',
       options: [

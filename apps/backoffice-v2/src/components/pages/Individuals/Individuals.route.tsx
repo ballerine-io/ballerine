@@ -24,7 +24,6 @@ const IndividualsSearchSchema = SearchSchema.extend({
   filter: z
     .object({
       approvalState: z.array(z.enum(States)).optional().catch([]),
-      endUserType: z.array(z.string()).optional().catch([]),
       assigneeId: z.array(z.string().nullable()).optional().catch([]),
     })
     .optional(),
