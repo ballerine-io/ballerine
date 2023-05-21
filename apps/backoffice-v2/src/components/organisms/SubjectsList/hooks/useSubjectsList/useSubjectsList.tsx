@@ -11,7 +11,7 @@ export const useSubjectsList = (routerId: TRouteId) => {
   const sharedSortByOptions = [
     {
       label: 'Created At',
-      value: 'createdAt',
+      value: 'caseCreatedAt',
     },
   ];
   const individualsSortByOptions = [
