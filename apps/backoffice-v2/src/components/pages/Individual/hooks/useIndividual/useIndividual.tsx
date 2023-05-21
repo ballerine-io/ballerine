@@ -147,7 +147,7 @@ export const useIndividual = () => {
                   // loading: debouncedIsLoadingRejectEndUser,
                 })}
                 // disabled={isLoading || !canReject}
-                // disabled={!caseState.actionButtonsEnabled}
+                disabled={!caseState.actionButtonsEnabled}
               >
                 {value}
               </Button>
@@ -230,8 +230,7 @@ export const useIndividual = () => {
             loading: isLoadingUpdateWorkflowById,
           })}
           disabled={
-            isLoadingUpdateWorkflowById || isApprovedTask
-            // || !caseState.actionButtonsEnabled
+            isLoadingUpdateWorkflowById || isApprovedTask || !caseState.actionButtonsEnabled
           }
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
