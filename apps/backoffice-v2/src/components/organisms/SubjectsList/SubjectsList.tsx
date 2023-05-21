@@ -84,36 +84,36 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
             <div
               className={`dropdown-content space-y-2 rounded-md  border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
             >
-              {filterByOptions.map(({ label, value, options }) => {
-                console.log({ value, filter, filterValue: filter?.[value] });
-                return (
-                  <Checkbox.Group
-                    key={label}
-                    label={label}
-                    values={filter?.[value]}
-                    onChange={onFilter(value as keyof TEndUser)}
-                    titleProps={{
-                      className: `text-base-content`,
-                    }}
-                    innerContainerProps={{
-                      className: `w-96 flex-wrap`,
-                    }}
-                  >
-                    {options.map(({ label, value }) => (
-                      <Checkbox.Item
-                        key={label}
-                        value={value}
-                        className={`text-sm  text-base-content`}
-                        checkboxProps={{
-                          className: 'd-4',
-                        }}
-                      >
-                        {label}
-                      </Checkbox.Item>
-                    ))}
-                  </Checkbox.Group>
-                );
-              })}
+              {filter &&
+                filterByOptions.map(({ label, value, options }) => {
+                  return (
+                    <Checkbox.Group
+                      key={label}
+                      label={label}
+                      values={filter?.[value]}
+                      onChange={onFilter(value as keyof TEndUser)}
+                      titleProps={{
+                        className: `text-base-content`,
+                      }}
+                      innerContainerProps={{
+                        className: `w-96 flex-wrap`,
+                      }}
+                    >
+                      {options.map(({ label, value, key }) => (
+                        <Checkbox.Item
+                          key={`${label}${key ?? ''}`}
+                          value={value}
+                          className={`text-sm  text-base-content`}
+                          checkboxProps={{
+                            className: 'd-4',
+                          }}
+                        >
+                          {label}
+                        </Checkbox.Item>
+                      ))}
+                    </Checkbox.Group>
+                  );
+                })}
             </div>
           </div>
           <div
