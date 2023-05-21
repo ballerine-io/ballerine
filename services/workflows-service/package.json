@@ -86,7 +86,6 @@
     "@types/express": "4.17.9",
     "@types/express-session": "^1.17.7",
     "@types/jest": "^26.0.19",
-    "@types/lodash": "^4.14.191",
     "@types/lodash-es": "^4.17.7",
     "@types/multer": "^1.4.7",
     "@types/multer-s3": "^3.0.0",

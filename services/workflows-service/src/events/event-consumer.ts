@@ -7,7 +7,6 @@ import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';
 import { ListenerFn } from './types';
 import axios from 'axios';
 import { randomUUID } from 'crypto';
-import { sortBy } from 'lodash';
 
 @Injectable()
 export class EventConsumerListener {

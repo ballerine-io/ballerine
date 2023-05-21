@@ -11,10 +11,4 @@ declare global {
   }
 }
 
-interface DefaultContextSchema {
-  entity: {
-    type: TEntityType;
-  };
-}
-
 export {};

@@ -1196,9 +1196,6 @@ importers:
       '@types/jest':
         specifier: ^26.0.19
         version: 26.0.24
-      '@types/lodash':
-        specifier: ^4.14.191
-        version: 4.14.192
       '@types/lodash-es':
         specifier: ^4.17.7
         version: 4.17.7
