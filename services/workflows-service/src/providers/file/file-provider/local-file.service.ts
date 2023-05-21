@@ -43,4 +43,8 @@ export class LocalFileService implements IFileProvider {
 
     return Promise.resolve(toLocalFilePAth);
   }
+
+  generateRemoteFilePath(fileName: string, directory?: string): string {
+    return `/tmp/${fileName}`;
+  }
 }

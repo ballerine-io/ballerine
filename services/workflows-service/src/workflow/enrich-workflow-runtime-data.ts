@@ -5,7 +5,7 @@ import { Unpacked } from '@/types';
 
 type Document = NonNullable<Unpacked<DefaultContextSchema['documents']>>;
 
-const getDocumentId = (document: Document) => {
+export const getDocumentId = (document: Document) => {
   const id = `${document?.category}-${document?.type}-${document?.issuer?.country}`;
   return id;
 };
