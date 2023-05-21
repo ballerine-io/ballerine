@@ -37,6 +37,8 @@ import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
 import { Form } from 'components/organisms/Form/Form';
 import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/useStorageFilesQuery/useStorageFilesQuery';
 import toast from 'react-hot-toast';
+import { useCaseState } from 'components/organisms/Subject/hooks/useCaseState/useCaseState';
+import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -67,27 +69,21 @@ export const useIndividual = () => {
         return;
       }
 
-      const decisions = [...(endUser?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
-      const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
+      const context = {
+        documents: endUser?.workflow?.workflowContext?.machineContext?.documents?.map(document => {
+          if (document?.id !== id) return document;
 
-      if (indexOfTask < 0) {
-        decisions.push({
-          taskId: id,
-          faceMatch: approvalStatus,
-          idVerification: approvalStatus,
-        });
-      } else {
-        decisions[indexOfTask] = {
-          taskId: id,
-          faceMatch: approvalStatus,
-          idVerification: approvalStatus,
-        };
-      }
-
+          return {
+            ...document,
+            decision: {
+              ...document?.decision,
+              status: approvalStatus,
+            },
+          };
+        }),
+      };
       return mutateUpdateWorkflowById({
-        context: {
-          decisions,
-        },
+        context,
       });
     };
   const onMutateTaskDecisionById = ({ context }: { context: AnyRecord }) =>
@@ -121,9 +117,8 @@ export const useIndividual = () => {
       );
     },
     callToAction: ({ value, data }) => {
-      const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.decisions?.some(
-        ({ taskId, faceMatch, idVerification }) =>
-          taskId === data?.id && faceMatch === 'approved' && idVerification === 'approved',
+      const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.documents?.some(
+        ({ id, decision }) => id === data?.id && decision?.status === 'approved',
       );
 
       return value === 'Reject' ? (
@@ -136,6 +131,7 @@ export const useIndividual = () => {
                   // loading: debouncedIsLoadingRejectEndUser,
                 })}
                 // disabled={isLoading || !canReject}
+                // disabled={!caseState.actionButtonsEnabled}
               >
                 {value}
               </Button>
@@ -217,7 +213,10 @@ export const useIndividual = () => {
           className={ctw({
             loading: isLoadingUpdateWorkflowById,
           })}
-          disabled={isLoadingUpdateWorkflowById || isApprovedTask}
+          disabled={
+            isLoadingUpdateWorkflowById || isApprovedTask
+            // || !caseState.actionButtonsEnabled
+          }
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
             approvalStatus: data?.approvalStatus,
@@ -248,10 +247,7 @@ export const useIndividual = () => {
               return {
                 ...document,
                 properties: Object.keys(document?.properties).reduce((acc, curr) => {
-                  acc[curr] = {
-                    ...document?.properties?.[curr],
-                    value: data?.[curr],
-                  };
+                  acc[curr] = data?.[curr];
 
                   return acc;
                 }, {}),
@@ -278,20 +274,22 @@ export const useIndividual = () => {
           >
             {methods => (
               <>
-                <legend className={`sr-only text-lg font-bold`}>{value.title}</legend>
+                <legend className={`sr-only text-lg font-bold`}>{value?.title}</legend>
                 <div className={`grid grid-cols-2 gap-2`}>
-                  {value?.data?.map(({ title, isEditable, type }) => (
+                  {value?.data?.map(({ title, isEditable, type, format, pattern }) => (
                     <div className={`flex flex-col`} key={title}>
                       <label htmlFor={title} className={`font-bold`}>
                         {toStartCase(camelCaseToSpace(title))}
                       </label>
                       <input
                         {...methods.register(title)}
-                        type={type === 'string' ? 'text' : type}
+                        type={!format ? (type === 'string' ? 'text' : type) : format}
                         disabled={!isEditable}
                         className={ctw(`disabled:bg-background`, {
                           'rounded border border-border p-1': isEditable,
                         })}
+                        pattern={pattern}
+                        autoComplete={'off'}
                       />
                     </div>
                   ))}
@@ -318,6 +316,8 @@ export const useIndividual = () => {
       );
     },
   };
+  const { data: session } = useGetSessionQuery();
+  const caseState = useCaseState(session?.user, endUser?.workflow);
   const tasks = endUser?.workflow?.workflowContext?.machineContext?.entity
     ? [
         [
@@ -339,9 +339,7 @@ export const useIndividual = () => {
           },
         ],
         ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
-          ({ type, category, issuer, properties, propertiesSchema }, index) => {
-            const id = `${type}${category}${issuer?.country ?? ''}`;
-
+          ({ id, type, category, issuer, properties, propertiesSchema, decision }, index) => {
             return [
               {
                 id: 'header',
@@ -376,21 +374,38 @@ export const useIndividual = () => {
                 ],
               },
               {
-                type: 'details',
-                value: {
-                  id,
-                  title: category,
-                  data: Object.entries(propertiesSchema?.properties ?? {}).map(
-                    ([title, { type, format, pattern, isEditable }]) => ({
-                      title,
-                      value: properties?.[title] ?? '',
-                      type,
-                      format,
-                      pattern,
-                      isEditable,
-                    }),
-                  ),
-                },
+                type: 'container',
+                value: [
+                  {
+                    id: 'decision',
+                    type: 'details',
+                    value: {
+                      id,
+                      title: category,
+                      data: Object.entries(propertiesSchema?.properties ?? {})?.map(
+                        ([title, { type, format, pattern, isEditable = true }]) => ({
+                          title,
+                          value: properties?.[title] ?? '',
+                          type,
+                          format,
+                          pattern,
+                          isEditable: caseState.writeEnabled && isEditable,
+                        }),
+                      ),
+                    },
+                  },
+                  {
+                    type: 'details',
+                    value: {
+                      id,
+                      title: 'Decision',
+                      data: Object.entries(decision ?? {}).map(([title, value]) => ({
+                        title,
+                        value,
+                      })),
+                    },
+                  },
+                ],
               },
               {
                 type: 'multiDocuments',

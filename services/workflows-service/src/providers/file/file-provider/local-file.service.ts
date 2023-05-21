@@ -1,10 +1,6 @@
-import {
-  IFileProvider,
-  TLocalFilePath,
-  TRemoteFileConfig,
-  TRemoteUri,
-} from '@/providers/file/types';
+import { TLocalFilePath, TRemoteFileConfig, TRemoteUri } from '@/providers/file/types/files-types';
 import fs from 'fs';
+import { IFileProvider } from '../types/interfaces';
 
 export class LocalFileService implements IFileProvider {
   protected client;
@@ -19,6 +15,7 @@ export class LocalFileService implements IFileProvider {
     return await this.copyFile(remoteFileConfig as TRemoteUri, localFilePath);
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async isRemoteFileExists(remoteFileConfig: TLocalFilePath): Promise<boolean> {
     const localFilePath = remoteFileConfig;
 
@@ -29,6 +26,7 @@ export class LocalFileService implements IFileProvider {
     fromFilePath: TLocalFilePath,
     toFilePath: TLocalFilePath,
   ): Promise<TLocalFilePath> {
+    // eslint-disable-next-line @typescript-eslint/await-thenable
     await this.client.copyFileSync(fromFilePath, toFilePath);
 
     return toFilePath;
