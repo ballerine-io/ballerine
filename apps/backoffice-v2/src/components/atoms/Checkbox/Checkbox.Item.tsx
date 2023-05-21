@@ -9,14 +9,10 @@ export const Item: FunctionComponent<
   }
 > = ({ children, value, ...props }) => {
   const { values, onChange } = useCheckboxGroupContext();
+  const isChecked = values?.some(item => item === value);
 
   return (
-    <Checkbox
-      checked={values?.some(item => item === value)}
-      onChange={onChange}
-      value={value}
-      {...props}
-    >
+    <Checkbox checked={isChecked} onChange={onChange} value={value} {...props}>
       {children}
     </Checkbox>
   );

@@ -30,7 +30,6 @@ export const useAuthenticatedLayout = () => {
       to: redirectUnauthenticatedTo,
       replace: true,
       params: undefined,
-      search: undefined,
     });
   }, [isLoading, isAuthenticated, navigate, pathname, redirectUnauthenticatedTo]);
 };
