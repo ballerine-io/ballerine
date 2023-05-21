@@ -5,7 +5,7 @@ import {
   IStreamableFileProvider,
 } from './types';
 import * as tmp from 'tmp';
-import {Injectable} from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class FileService {

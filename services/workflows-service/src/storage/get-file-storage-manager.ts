@@ -15,8 +15,12 @@ export const S3StorageEnvSchema = z.object({
   AWS_S3_BUCKET_KEY: z.string(),
 });
 
-export const generateAwsConfig = (processEnv: NodeJS.ProcessEnv, prefixConfigName?: string): S3ClientConfig => {
-  const { AWS_REGION, AWS_S3_BUCKET_KEY, AWS_S3_BUCKET_SECRET } = S3StorageEnvSchema.parse(processEnv);
+export const generateAwsConfig = (
+  processEnv: NodeJS.ProcessEnv,
+  prefixConfigName?: string,
+): S3ClientConfig => {
+  const { AWS_REGION, AWS_S3_BUCKET_KEY, AWS_S3_BUCKET_SECRET } =
+    S3StorageEnvSchema.parse(processEnv);
   if (!prefixConfigName) {
     return {
       region: AWS_REGION,
