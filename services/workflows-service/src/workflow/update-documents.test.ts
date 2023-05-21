@@ -4,161 +4,10 @@ import { updateDocuments } from '@/workflow/update-documents';
 
 type Documents = DefaultContextSchema['documents'];
 
-const documents: Documents = [
-  {
-    version: 1,
-    decision: {
-      revisionReason: 'Blurry image',
-      status: 'revision',
-      rejectionReason: '',
-    },
-    issuingVersion: 1,
-    type: 'photo',
-    category: 'ID',
-    pages: [
-      {
-        metadata: {
-          pageNumber: '1',
-        },
-        ballerineFileId: 'fa679251-d4c9-4b1e-b53a-7a5a98b8420a',
-        uri: 'http://extroverted-capon.biz',
-        type: 'jpg',
-        provider: 'http',
-        data: '',
-      },
-      {
-        metadata: {
-          pageNumber: '2',
-        },
-        ballerineFileId: 'f14717de-5f61-4732-9e01-46667098616d',
-        uri: 'https://bubbly-software.name',
-        type: 'jpg',
-        provider: 'http',
-        data: '',
-      },
-      {
-        metadata: {
-          pageNumber: '3',
-        },
-        ballerineFileId: 'f14717de-5f61-4732-9e01-466670986162',
-        uri: 'https://bubbly-software.name',
-        type: 'jpg',
-        provider: 'http',
-        data: '',
-      },
-    ],
-    issuer: {
-      city: 'Rowland Heights',
-      type: 'government',
-      name: 'Government',
-      additionalDetails: {},
-      country: 'Grenada',
-    },
-    properties: {
-      nationality: 'Panama',
-      fullName: 'Constance Kuvalis',
-      dateOfBirth: '2002-04-03',
-    },
-  },
-  {
-    version: 1,
-    decision: {
-      revisionReason: 'Blurry image',
-      status: 'revision',
-      rejectionReason: '',
-    },
-    issuingVersion: 1,
-    type: 'photo',
-    category: 'driving_license',
-    pages: [
-      {
-        metadata: {
-          side: 'front',
-          pageNumber: '1',
-        },
-        ballerineFileId: 'fa679251-d4c9-4b1e-b53a-7a5a98b84202',
-        uri: 'http://extroverted-capon.biz',
-        type: 'jpg',
-        provider: 'http',
-        data: '',
-      },
-      {
-        metadata: {
-          side: 'back',
-          pageNumber: '1',
-        },
-        ballerineFileId: 'f14717de-5f61-4732-9e01-466670986162',
-        uri: 'https://bubbly-software.name',
-        type: 'jpg',
-        provider: 'http',
-        data: '',
-      },
-    ],
-    issuer: {
-      city: 'Rowland Heights',
-      type: 'government',
-      name: 'Government',
-      additionalDetails: {},
-      country: 'Grenada',
-    },
-    properties: {
-      nationality: 'Panama',
-      fullName: 'Constance Kuvalis',
-      dateOfBirth: '2002-04-03',
-    },
-  },
-  {
-    version: 1,
-    decision: {
-      revisionReason: 'Blurry image',
-      status: 'revision',
-      rejectionReason: '',
-    },
-    issuingVersion: 1,
-    type: 'photo',
-    category: 'selfie',
-    pages: [
-      {
-        metadata: {
-          side: 'front',
-          pageNumber: '1',
-        },
-        ballerineFileId: 'fa679251-d4c9-4b1e-b53a-7a5a98b84203',
-        uri: 'http://extroverted-capon.biz',
-        type: 'jpg',
-        provider: 'http',
-        data: '',
-      },
-      {
-        metadata: {
-          side: 'back',
-          pageNumber: '1',
-        },
-        ballerineFileId: 'f14717de-5f61-4732-9e01-466670986163',
-        uri: 'https://bubbly-software.name',
-        type: 'jpg',
-        provider: 'http',
-        data: '',
-      },
-    ],
-    issuer: {
-      city: 'Rowland Heights',
-      type: 'government',
-      name: 'Government',
-      additionalDetails: {},
-      country: 'Grenada',
-    },
-    properties: {
-      nationality: 'Panama',
-      fullName: 'Constance Kuvalis',
-      dateOfBirth: '2002-04-03',
-    },
-  },
-];
-
 describe('Update documents', () => {
   describe('When there are multiple documents and some of them are updated', () => {
     it('Should return the existing documents with the updated ones', () => {
+      const documents = getMockDocuments();
       const documentsToUpdate: PartialDeep<Documents> = [
         {
           type: 'photo',
@@ -223,6 +72,7 @@ describe('Update documents', () => {
 
   describe('When there are multiple documents and new documents are added', () => {
     it('Should return the existing documents with the new ones', () => {
+      const documents = getMockDocuments();
       const documentsToUpdate: PartialDeep<Documents> = [
         {
           version: 1,
@@ -270,6 +120,7 @@ describe('Update documents', () => {
 
   describe('When there are multiple documents and none are updated', () => {
     it('Should return the documents without changes', () => {
+      const documents = getMockDocuments();
       const documentsToUpdate: PartialDeep<Documents> = [];
 
       const result = updateDocuments(documents, documentsToUpdate);
@@ -280,6 +131,7 @@ describe('Update documents', () => {
 
   describe('When there are multiple pages and some of them are updated', () => {
     it('Should update only the given pages', () => {
+      const documents = getMockDocuments();
       const documentsToUpdate: PartialDeep<Documents> = [
         {
           type: 'photo',
@@ -313,6 +165,7 @@ describe('Update documents', () => {
 
   describe('When there are multiple pages and new pages are added', () => {
     it('Should add the new pages and drop the old ones', () => {
+      const documents = getMockDocuments();
       const documentsToUpdate: PartialDeep<Documents> = [
         {
           type: 'photo',
@@ -352,6 +205,7 @@ describe('Update documents', () => {
 
   describe('When there are multiple pages and none are updated', () => {
     it('Should return the pages without changes', () => {
+      const documents = getMockDocuments();
       const documentsToUpdate: PartialDeep<Documents> = [
         {
           type: 'photo',
@@ -369,3 +223,157 @@ describe('Update documents', () => {
     });
   });
 });
+
+function getMockDocuments(): Documents {
+  return [
+    {
+      version: 1,
+      decision: {
+        revisionReason: 'Blurry image',
+        status: 'revision',
+        rejectionReason: '',
+      },
+      issuingVersion: 1,
+      type: 'photo',
+      category: 'ID',
+      pages: [
+        {
+          metadata: {
+            pageNumber: '1',
+          },
+          ballerineFileId: 'fa679251-d4c9-4b1e-b53a-7a5a98b8420a',
+          uri: 'http://extroverted-capon.biz',
+          type: 'jpg',
+          provider: 'http',
+          data: '',
+        },
+        {
+          metadata: {
+            pageNumber: '2',
+          },
+          ballerineFileId: 'f14717de-5f61-4732-9e01-46667098616d',
+          uri: 'https://bubbly-software.name',
+          type: 'jpg',
+          provider: 'http',
+          data: '',
+        },
+        {
+          metadata: {
+            pageNumber: '3',
+          },
+          ballerineFileId: 'f14717de-5f61-4732-9e01-466670986162',
+          uri: 'https://bubbly-software.name',
+          type: 'jpg',
+          provider: 'http',
+          data: '',
+        },
+      ],
+      issuer: {
+        city: 'Rowland Heights',
+        type: 'government',
+        name: 'Government',
+        additionalDetails: {},
+        country: 'Grenada',
+      },
+      properties: {
+        nationality: 'Panama',
+        fullName: 'Constance Kuvalis',
+        dateOfBirth: '2002-04-03',
+      },
+    },
+    {
+      version: 1,
+      decision: {
+        revisionReason: 'Blurry image',
+        status: 'revision',
+        rejectionReason: '',
+      },
+      issuingVersion: 1,
+      type: 'photo',
+      category: 'driving_license',
+      pages: [
+        {
+          metadata: {
+            side: 'front',
+            pageNumber: '1',
+          },
+          ballerineFileId: 'fa679251-d4c9-4b1e-b53a-7a5a98b84202',
+          uri: 'http://extroverted-capon.biz',
+          type: 'jpg',
+          provider: 'http',
+          data: '',
+        },
+        {
+          metadata: {
+            side: 'back',
+            pageNumber: '1',
+          },
+          ballerineFileId: 'f14717de-5f61-4732-9e01-466670986162',
+          uri: 'https://bubbly-software.name',
+          type: 'jpg',
+          provider: 'http',
+          data: '',
+        },
+      ],
+      issuer: {
+        city: 'Rowland Heights',
+        type: 'government',
+        name: 'Government',
+        additionalDetails: {},
+        country: 'Grenada',
+      },
+      properties: {
+        nationality: 'Panama',
+        fullName: 'Constance Kuvalis',
+        dateOfBirth: '2002-04-03',
+      },
+    },
+    {
+      version: 1,
+      decision: {
+        revisionReason: 'Blurry image',
+        status: 'revision',
+        rejectionReason: '',
+      },
+      issuingVersion: 1,
+      type: 'photo',
+      category: 'selfie',
+      pages: [
+        {
+          metadata: {
+            side: 'front',
+            pageNumber: '1',
+          },
+          ballerineFileId: 'fa679251-d4c9-4b1e-b53a-7a5a98b84203',
+          uri: 'http://extroverted-capon.biz',
+          type: 'jpg',
+          provider: 'http',
+          data: '',
+        },
+        {
+          metadata: {
+            side: 'back',
+            pageNumber: '1',
+          },
+          ballerineFileId: 'f14717de-5f61-4732-9e01-466670986163',
+          uri: 'https://bubbly-software.name',
+          type: 'jpg',
+          provider: 'http',
+          data: '',
+        },
+      ],
+      issuer: {
+        city: 'Rowland Heights',
+        type: 'government',
+        name: 'Government',
+        additionalDetails: {},
+        country: 'Grenada',
+      },
+      properties: {
+        nationality: 'Panama',
+        fullName: 'Constance Kuvalis',
+        dateOfBirth: '2002-04-03',
+      },
+    },
+  ];
+}

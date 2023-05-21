@@ -18,7 +18,7 @@ const toDocumentsMap = <T extends PartialDeep<Documents>>(documents: T) => {
   }, {} as Record<string, T[number]>);
 };
 
-function updatePages(oldPages: Pages, newPages: Pages) {
+const updatePages = (oldPages: Pages, newPages: Pages) => {
   const doesntHaveChanges = !newPages.length;
 
   if (doesntHaveChanges) {
@@ -39,7 +39,7 @@ function updatePages(oldPages: Pages, newPages: Pages) {
     }),
     ...newPages.filter(newPage => !newPage.ballerineFileId),
   ];
-}
+};
 
 const toDocumentPagesMap = (documents: Documents) => {
   return documents.reduce((documentPagesMap, document) => {
@@ -51,10 +51,10 @@ const toDocumentPagesMap = (documents: Documents) => {
   }, {} as Record<string, Pages>);
 };
 
-export function updateDocuments(
+export const updateDocuments = (
   documents: Documents,
   documentsToUpdate: PartialDeep<Documents>,
-): Documents {
+): Documents => {
   const documentsMap = toDocumentsMap(documents);
   const documentsToUpdateMap = toDocumentsMap(documentsToUpdate as Documents);
 
@@ -74,4 +74,4 @@ export function updateDocuments(
   });
 
   return updatedDocuments;
-}
+};
