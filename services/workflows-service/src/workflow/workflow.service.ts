@@ -172,14 +172,24 @@ export class WorkflowService {
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+    const contextHasChanged = !isEqual(data.context, runtimeData.context);
+    const mergedContext = merge({}, runtimeData.context, data.context);
+=======
+>>>>>>> Stashed changes
     const workflow = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
     );
     let contextHasChanged, mergedContext;
     if (data.context) {
       contextHasChanged = !isEqual(data.context, runtimeData.context);
+<<<<<<< Updated upstream
       mergedContext = merge({}, runtimeData.context, data.context);
 
+=======
+>>>>>>> Stashed changes
       const context = {
         ...data.context,
         // @ts-ignore
@@ -188,9 +198,16 @@ export class WorkflowService {
           ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
         ),
       };
+<<<<<<< Updated upstream
 
       const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
       const isValidContextSchema = validateContextSchema(context);
+=======
+      mergedContext = merge({}, runtimeData.context, context);
+
+      const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
+      const isValidContextSchema = validateContextSchema(mergedContext);
+>>>>>>> Stashed changes
 
       if (!isValidContextSchema) {
         throw new BadRequestException(
@@ -219,6 +236,7 @@ export class WorkflowService {
       });
       data.context = mergedContext;
     }
+<<<<<<< Updated upstream
 
     const context = {
       ...data.context,
@@ -259,6 +277,9 @@ export class WorkflowService {
         );
       }
     });
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
     this.logger.log(
       `Context update received from client: [${runtimeData.state} -> ${data.state} ]`,
