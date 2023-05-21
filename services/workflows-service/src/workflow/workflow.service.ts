@@ -196,8 +196,6 @@ export class WorkflowService {
     let contextHasChanged, mergedContext;
     if (data.context) {
       contextHasChanged = !isEqual(data.context, runtimeData.context);
-      mergedContext = merge({}, runtimeData.context, data.context);
-
       const context = {
         ...data.context,
         // @ts-ignore
@@ -206,9 +204,10 @@ export class WorkflowService {
           ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
         ),
       };
+      mergedContext = merge({}, runtimeData.context, context);
 
       const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
-      const isValidContextSchema = validateContextSchema(context);
+      const isValidContextSchema = validateContextSchema(mergedContext);
 
       if (!isValidContextSchema) {
         throw new BadRequestException(
@@ -246,9 +245,7 @@ export class WorkflowService {
         ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
       ),
     };
-    const workflow = await this.workflowDefinitionRepository.findById(
-      runtimeData.workflowDefinitionId,
-    );
+
     const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
     const isValidContextSchema = validateContextSchema(context);
 
