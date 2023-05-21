@@ -13,7 +13,6 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
-
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
@@ -177,7 +176,6 @@ export class WorkflowService {
     if (data.context) {
       contextHasChanged = !isEqual(data.context, runtimeData.context);
       mergedContext = merge({}, runtimeData.context, data.context);
-
       const context = {
         ...mergedContext,
         // @ts-ignore
@@ -186,6 +184,7 @@ export class WorkflowService {
           ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
         ),
       };
+
       const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
       const isValidContextSchema = validateContextSchema(context);
 
@@ -292,18 +291,18 @@ export class WorkflowService {
     // will throw exception if review machine def is missing
     await this.workflowDefinitionRepository.findById(workflow.reviewMachineId);
 
-    const entitySerach: { businessId?: string; endUserId?: string } = {};
+    const entitySearch: { businessId?: string; endUserId?: string } = {};
 
     if (businessId) {
-      entitySerach.businessId = runtime.businessId as string;
+      entitySearch.businessId = runtime.businessId as string;
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      entitySerach.endUserId = runtime.endUserId as string;
+      entitySearch.endUserId = runtime.endUserId as string;
     }
 
     const workflowRuntimeDataExists = await this.workflowRuntimeDataRepository.findOne({
       where: {
-        ...entitySerach,
+        ...entitySearch,
         context: {
           path: ['parentMachine', 'id'],
           equals: runtime.id,
@@ -314,7 +313,7 @@ export class WorkflowService {
     if (!workflowRuntimeDataExists) {
       await this.workflowRuntimeDataRepository.create({
         data: {
-          ...entitySerach,
+          ...entitySearch,
           workflowDefinitionVersion: workflow.version,
           workflowDefinitionId: workflow.reviewMachineId,
           context: {
@@ -338,7 +337,7 @@ export class WorkflowService {
     await this.updateWorkflowRuntimeData(runtime.id, {
       ...((runtime.context as { resubmissionReason: string })?.resubmissionReason
         ? {
-            ...entitySerach,
+            ...entitySearch,
             workflowDefinitionVersion: workflow.version,
             workflowDefinitionId: workflow.reviewMachineId,
             context: {
