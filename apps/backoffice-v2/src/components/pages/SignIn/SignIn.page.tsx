@@ -1,10 +1,33 @@
 import { useSignInMutation } from '../../../lib/react-query/mutations/useSignInMutation/useSignInMutation';
-import { FormEventHandler, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useAuthContext } from '../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import { useIsAuthenticated } from '../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
-import { isErrorWithMessage } from '@ballerine/common';
+import { z } from 'zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from 'components/organisms/_Form/_Form';
+import { Button } from 'components/atoms/Button/button';
+import { Input } from 'components/atoms/Input/Input';
+import { Card, CardContent, CardHeader } from 'components/atoms/Card/card';
+import { BallerineLogo } from 'components/atoms/icons';
+import { Alert } from 'components/atoms/Alert/Alert';
+import { isErrorWithCode } from '../../../lib/react-query/query-client';
+import { AlertCircle } from 'lucide-react';
+import { AlertDescription } from 'components/atoms/Alert/Alert.Description';
+import { AlertTitle } from 'components/atoms/Alert/Alert.Title';
 
 export const SignIn = () => {
+  const SignInSchema = z.object({
+    email: z.string().email(),
+    password: z.string(),
+  });
   const { mutate: signIn, error } = useSignInMutation();
   const { signInOptions } = useAuthContext();
   const onSignIn = useCallback(
@@ -17,74 +40,71 @@ export const SignIn = () => {
     },
     [signInOptions?.redirect, signInOptions?.callbackUrl, signIn],
   );
-  const onSubmit: FormEventHandler<HTMLFormElement> = useCallback(
-    e => {
-      e.preventDefault();
-      const formData = Object.fromEntries(new FormData(e.currentTarget).entries());
-
-      return onSignIn(formData);
+  const onSubmit: SubmitHandler<z.infer<typeof SignInSchema>> = useCallback(
+    data => {
+      return onSignIn(data);
     },
     [onSignIn],
   );
   const isAuthenticated = useIsAuthenticated();
+  const signInForm = useForm<z.infer<typeof SignInSchema>>({
+    resolver: zodResolver(SignInSchema),
+  });
 
   if (isAuthenticated) return null;
 
   return (
     <section className={`flex h-full flex-col items-center justify-center`}>
-      <div
-        className={`card min-h-[60vh] w-full max-w-lg border border-neutral/10 bg-base-100 shadow-xl theme-dark:border-neutral/60`}
-      >
-        <form className={`card-body`} onSubmit={onSubmit}>
-          <fieldset>
-            <legend className={`card-title mb-8 block text-center text-4xl`}>Sign In</legend>
-            {isErrorWithMessage(error) && error?.message === 'Unauthorized (401)' && (
-              <div className={`alert alert-error mb-8`}>Invalid credentials</div>
-            )}
-            <div className="form-control w-full">
-              <label htmlFor="email" className="label">
-                <span className="label-text">Email</span>
-              </label>
-              <input
-                name={'email'}
-                autoComplete={`off`}
-                type="email"
-                required
-                id={'email'}
-                className={`peer input-bordered input focus:invalid:input-error`}
-              />
-              <span
-                className={`label-text-alt invisible pt-2 text-error peer-focus:peer-invalid:visible`}
-              >
-                Email must be a valid email address.
-              </span>
-            </div>
-            <div className="form-control w-full">
-              <label htmlFor="password" className="label">
-                <span className="label-text">Password</span>
-              </label>
-              <input
-                name={'password'}
-                type={'password'}
-                id={'password'}
-                autoComplete={`off`}
-                className={`peer input-bordered input focus:invalid:input-error`}
-                required
-              />
-              <span
-                className={`label-text-alt invisible pt-2 text-error peer-focus:peer-invalid:visible`}
-              >
-                Password is a required field.
-              </span>
-            </div>
-          </fieldset>
-          <div className={`card-actions mt-auto self-end`}>
-            <button className={`btn-primary btn`} type={'submit'}>
-              Sign In
-            </button>
-          </div>
-        </form>
+      <div className={`mb-16`}>
+        <BallerineLogo />
       </div>
+      <Card className={`w-full max-w-lg`}>
+        <CardHeader className={`mb-2 text-center text-4xl font-bold`}>Sign In</CardHeader>
+        <CardContent>
+          {isErrorWithCode(error) && error?.code === 401 && (
+            <Alert className={`mb-8`} variant={`destructive`}>
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>Invalid credentials</AlertDescription>
+            </Alert>
+          )}
+          <Form {...signInForm}>
+            <form onSubmit={signInForm.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={signInForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input required type={'email'} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={signInForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input required type={'password'} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className={`flex justify-end`}>
+                <Button type="submit" className={`ms-auto mt-3`}>
+                  Sign In
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </section>
   );
 };
