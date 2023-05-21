@@ -10,7 +10,6 @@ import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-reposit
 
 import { WorkflowService } from './workflow.service';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
-import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { DocumentChangedWebhookCaller } from '../events/document-changed-webhook-caller';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
@@ -46,6 +45,10 @@ function buildWorkflowDeifintion(sequenceNum) {
     definitionType: `definitionType ${sequenceNum}`,
     createdAt: new Date(),
     updatedAt: new Date(),
+    contextSchema: {
+      type: 'json-schema',
+      schema: {},
+    },
   };
 }
 

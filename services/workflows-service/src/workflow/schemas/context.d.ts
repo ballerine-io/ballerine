@@ -59,9 +59,10 @@ export interface DefaultContextSchema {
       };
     }[];
     properties: {
-      [k: string]: {
-        [k: string]: unknown;
-      };
+      email?: string;
+      expiryDate?: string;
+      idNumber?: string;
+      [k: string]: unknown;
     };
   }[];
   [k: string]: unknown;

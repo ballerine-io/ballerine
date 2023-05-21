@@ -21,11 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from 'components/atoms/Select/Select';
-import { ResubmissionReason } from 'components/organisms/Subject/hooks/useActions/useActions';
 import { DialogFooter } from 'components/organisms/Dialog/Dialog.Footer';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { Dialog } from 'components/organisms/Dialog/Dialog';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { Separator } from 'components/atoms/Separator/separator';
@@ -37,6 +36,8 @@ import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
 import { Form } from 'components/organisms/Form/Form';
 import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/useStorageFilesQuery/useStorageFilesQuery';
 import toast from 'react-hot-toast';
+import { useCaseState } from 'components/organisms/Subject/hooks/useCaseState/useCaseState';
+import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -59,35 +60,65 @@ export const useIndividual = () => {
       workflowId: endUser?.workflow?.runtimeDataId,
     });
   const onMutateUpdateWorkflowById =
-    ({ id, approvalStatus }: { id: string; approvalStatus: 'rejected' | 'approved' }) =>
+    (
+      payload:
+        | {
+            id: string;
+            approvalStatus: 'rejected' | 'approved';
+          }
+        | {
+            id: string;
+            approvalStatus: 'revision';
+            revisionReason: string;
+          },
+    ) =>
     () => {
-      if (!id) {
+      if (!payload?.id) {
         toast.error('Invalid task id');
 
         return;
       }
 
-      const decisions = [...(endUser?.workflow?.workflowContext?.machineContext?.decisions ?? [])];
-      const indexOfTask = decisions?.findIndex(({ taskId }) => taskId === id);
+      const context = {
+        documents: endUser?.workflow?.workflowContext?.machineContext?.documents?.map(document => {
+          if (document?.id !== payload?.id) return document;
 
-      if (indexOfTask < 0) {
-        decisions.push({
-          taskId: id,
-          faceMatch: approvalStatus,
-          idVerification: approvalStatus,
-        });
-      } else {
-        decisions[indexOfTask] = {
-          taskId: id,
-          faceMatch: approvalStatus,
-          idVerification: approvalStatus,
-        };
-      }
-
+          switch (payload?.approvalStatus) {
+            case 'approved':
+              return {
+                ...document,
+                decision: {
+                  revisionReason: null,
+                  rejectionReason: null,
+                  status: payload?.approvalStatus,
+                },
+              };
+            case 'rejected':
+              return {
+                ...document,
+                decision: {
+                  revisionReason: null,
+                  // Change when rejection reason is implemented.
+                  rejectionReason: document?.decision?.rejectionReason ?? '',
+                  status: payload?.approvalStatus,
+                },
+              };
+            case 'revision':
+              return {
+                ...document,
+                decision: {
+                  revisionReason: payload?.revisionReason,
+                  rejectionReason: null,
+                  status: payload?.approvalStatus,
+                },
+              };
+            default:
+              return document;
+          }
+        }),
+      };
       return mutateUpdateWorkflowById({
-        context: {
-          decisions,
-        },
+        context,
       });
     };
   const onMutateTaskDecisionById = ({ context }: { context: AnyRecord }) =>
@@ -121,9 +152,17 @@ export const useIndividual = () => {
       );
     },
     callToAction: ({ value, data }) => {
-      const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.decisions?.some(
-        ({ taskId, faceMatch, idVerification }) =>
-          taskId === data?.id && faceMatch === 'approved' && idVerification === 'approved',
+      const [revisionReason, setRevisionReason] = useState('');
+      const onRevisionReasonChange = useCallback(
+        (value: string) => setRevisionReason(value),
+        [setRevisionReason],
+      );
+      const revisionReasons =
+        endUser?.workflow?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+          ({ enum: enum_ }) => !!enum_,
+        )?.enum;
+      const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.documents?.some(
+        ({ id, decision }) => id === data?.id && decision?.status === 'approved',
       );
 
       return value === 'Reject' ? (
@@ -136,6 +175,7 @@ export const useIndividual = () => {
                   // loading: debouncedIsLoadingRejectEndUser,
                 })}
                 // disabled={isLoading || !canReject}
+                disabled={!caseState.actionButtonsEnabled}
               >
                 {value}
               </Button>
@@ -169,24 +209,18 @@ export const useIndividual = () => {
                 reason for requesting a document re-submission.
               </DialogDescription>
             </DialogHeader>
-            <Select
-            // onValueChange={onResubmissionReasonChange}
-            >
+            <Select onValueChange={onRevisionReasonChange}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Re-submission reason" />
               </SelectTrigger>
               <SelectContent>
-                {Object.values(ResubmissionReason).map(reason => {
-                  const reasonWithSpaceSpace = reason.replace(/_/g, ' ').toLowerCase();
+                {revisionReasons?.map(reason => {
+                  const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
                   const capitalizedReason =
-                    reasonWithSpaceSpace.charAt(0).toUpperCase() + reasonWithSpaceSpace.slice(1);
+                    reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
 
                   return (
-                    <SelectItem
-                      key={reason}
-                      value={reason}
-                      disabled={reason !== ResubmissionReason.BLURRY_IMAGE}
-                    >
+                    <SelectItem key={reason} value={reason}>
                       {capitalizedReason}
                     </SelectItem>
                   );
@@ -204,6 +238,11 @@ export const useIndividual = () => {
                   // resubmissionReason,
                   // })}
                   // disabled={!resubmissionReason}
+                  onClick={onMutateUpdateWorkflowById({
+                    id: data?.id,
+                    approvalStatus: 'revision',
+                    revisionReason,
+                  })}
                 >
                   Confirm
                 </button>
@@ -217,7 +256,9 @@ export const useIndividual = () => {
           className={ctw({
             loading: isLoadingUpdateWorkflowById,
           })}
-          disabled={isLoadingUpdateWorkflowById || isApprovedTask}
+          disabled={
+            isLoadingUpdateWorkflowById || isApprovedTask || !caseState.actionButtonsEnabled
+          }
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
             approvalStatus: data?.approvalStatus,
@@ -248,10 +289,7 @@ export const useIndividual = () => {
               return {
                 ...document,
                 properties: Object.keys(document?.properties).reduce((acc, curr) => {
-                  acc[curr] = {
-                    ...document?.properties?.[curr],
-                    value: data?.[curr],
-                  };
+                  acc[curr] = data?.[curr];
 
                   return acc;
                 }, {}),
@@ -278,20 +316,22 @@ export const useIndividual = () => {
           >
             {methods => (
               <>
-                <legend className={`sr-only text-lg font-bold`}>{value.title}</legend>
+                <legend className={`sr-only text-lg font-bold`}>{value?.title}</legend>
                 <div className={`grid grid-cols-2 gap-2`}>
-                  {value?.data?.map(({ title, isEditable, type }) => (
+                  {value?.data?.map(({ title, isEditable, type, format, pattern }) => (
                     <div className={`flex flex-col`} key={title}>
                       <label htmlFor={title} className={`font-bold`}>
                         {toStartCase(camelCaseToSpace(title))}
                       </label>
                       <input
                         {...methods.register(title)}
-                        type={type === 'string' ? 'text' : type}
+                        type={!format ? (type === 'string' ? 'text' : type) : format}
                         disabled={!isEditable}
                         className={ctw(`disabled:bg-background`, {
                           'rounded border border-border p-1': isEditable,
                         })}
+                        pattern={pattern}
+                        autoComplete={'off'}
                       />
                     </div>
                   ))}
@@ -318,6 +358,8 @@ export const useIndividual = () => {
       );
     },
   };
+  const { data: session } = useGetSessionQuery();
+  const caseState = useCaseState(session?.user, endUser?.workflow);
   const tasks = endUser?.workflow?.workflowContext?.machineContext?.entity
     ? [
         [
@@ -339,9 +381,7 @@ export const useIndividual = () => {
           },
         ],
         ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
-          ({ type, category, issuer, properties, propertiesSchema, decision }, index) => {
-            const id = `${type}${category}${issuer?.country ?? ''}`;
-
+          ({ id, type, category, issuer, properties, propertiesSchema, decision }, index) => {
             return [
               {
                 id: 'header',
@@ -385,13 +425,13 @@ export const useIndividual = () => {
                       id,
                       title: category,
                       data: Object.entries(propertiesSchema?.properties ?? {})?.map(
-                        ([title, { type, format, pattern, isEditable }]) => ({
+                        ([title, { type, format, pattern, isEditable = true }]) => ({
                           title,
                           value: properties?.[title] ?? '',
                           type,
                           format,
                           pattern,
-                          isEditable,
+                          isEditable: caseState.writeEnabled && isEditable,
                         }),
                       ),
                     },

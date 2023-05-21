@@ -7,6 +7,7 @@ import { businessIds, endUserIds, generateBusiness, generateEndUser } from './ge
 import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
+import { generateUserNationalId } from './generate-user-national-id';
 
 if (require.main === module) {
   dotenv.config();
@@ -77,7 +78,7 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  function createMockContextData() {
+  function createMockContextData(businessId: string) {
     const correlationId = faker.datatype.uuid();
     let mockData = {
       entity: {
@@ -100,7 +101,7 @@ async function seed(bcryptSalt: Salt) {
           approvalState: 'NEW',
         },
         additionalDetails: {},
-        ballerineEntityId: faker.datatype.uuid(),
+        ballerineEntityId: businessId,
         id: correlationId,
       },
       documents: [
@@ -146,7 +147,7 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            userNationalId: faker.datatype.uuid(),
+            userNationalId: generateUserNationalId(),
             docNumber: faker.finance.account(9),
             userAddress: faker.address.streetAddress(),
             website: faker.internet.url(),
@@ -182,7 +183,7 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            userNationalId: faker.datatype.uuid(),
+            userNationalId: generateUserNationalId(),
             docNumber: faker.finance.account(9),
             userAddress: faker.address.streetAddress(),
             website: faker.internet.url(),
@@ -581,7 +582,7 @@ async function seed(bcryptSalt: Salt) {
       const riskWf = () => ({
         workflowDefinitionId: riskScoreMachineKybId,
         workflowDefinitionVersion: 1,
-        context: createMockContextData(),
+        context: createMockContextData(id),
         createdAt: faker.date.recent(2),
       });
 
