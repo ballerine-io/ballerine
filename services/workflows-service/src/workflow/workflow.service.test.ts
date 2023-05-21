@@ -9,7 +9,6 @@ import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-reposit
 
 import { WorkflowService } from './workflow.service';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
-import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -44,6 +43,10 @@ function buildWorkflowDeifintion(sequenceNum) {
     definitionType: `definitionType ${sequenceNum}`,
     createdAt: new Date(),
     updatedAt: new Date(),
+    contextSchema: {
+      type: 'json-schema',
+      schema: {},
+    },
   };
 }
 
@@ -164,12 +167,14 @@ describe('WorkflowService', () => {
             decision: {
               status: 'decided',
             },
+            propertiesSchema: {},
           },
           {
             testId: 3,
             decision: {
               status: 'undecided',
             },
+            propertiesSchema: {},
           },
         ],
       };
@@ -197,12 +202,14 @@ describe('WorkflowService', () => {
               decision: {
                 status: 'undecided',
               },
+              propertiesSchema: {},
             },
             {
               testId: 2,
               decision: {
                 status: 'undecided',
               },
+              propertiesSchema: {},
             },
           ],
         },
@@ -220,12 +227,14 @@ describe('WorkflowService', () => {
               decision: {
                 status: 'undecided',
               },
+              propertiesSchema: {},
             },
             {
               testId: 2,
               decision: {
                 status: 'undecided',
               },
+              propertiesSchema: {},
             },
           ],
         },

@@ -9,7 +9,6 @@ import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-reposit
 import { WorkflowControllerInternal } from './workflow.controller.internal';
 import { WorkflowService } from './workflow.service';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
-import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -44,6 +43,10 @@ function buildWorkflowDeifintion(sequenceNum) {
     definitionType: `definitionType ${sequenceNum}`,
     createdAt: new Date(),
     updatedAt: new Date(),
+    contextSchema: {
+      type: 'json-schema',
+      schema: {},
+    },
   };
 }
 

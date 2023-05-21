@@ -19,7 +19,7 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
 import { IObjectWithId } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
-import Ajv from 'ajv';
+import Ajv, { Schema } from 'ajv';
 import addFormats from 'ajv-formats';
 import { DefaultContextSchema } from './schemas/context';
 import * as console from 'console';
@@ -41,8 +41,10 @@ import { TFileServiceProvider } from '@/providers/file/types';
 type TEntityId = string;
 const ajv = new Ajv({
   strict: false,
+  coerceTypes: true,
 });
-addFormats(ajv, { formats: ['email', 'uri'] });
+addFormats(ajv, { formats: ['email', 'uri', 'date'] });
+
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
   CUT_IMAGE: 'CUT_IMAGE',
@@ -173,16 +175,53 @@ export class WorkflowService {
     const contextHasChanged = !isEqual(data.context, runtimeData.context);
     const mergedContext = merge({}, runtimeData.context, data.context);
 
+    const context = {
+      ...data.context,
+      // @ts-ignore
+      documents: data.context?.documents?.map(
+        // @ts-ignore
+        ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
+      ),
+    };
+    const workflow = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+    );
+    const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
+    const isValidContextSchema = validateContextSchema(context);
+
+    if (!isValidContextSchema) {
+      throw new BadRequestException(
+        validateContextSchema.errors?.map(({ instancePath, message, ...rest }) => ({
+          ...rest,
+          instancePath,
+          message: `${instancePath} ${message}`,
+        })),
+      );
+    }
+
+    // @ts-ignore
+    data?.context?.documents?.forEach(({ propertiesSchema, id: _id, ...document }) => {
+      const validatePropertiesSchema = ajv.compile(propertiesSchema);
+      const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
+
+      if (!isValidPropertiesSchema) {
+        throw new BadRequestException(
+          validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
+            ...rest,
+            message: `${instancePath} ${message}`,
+            instancePath,
+          })),
+        );
+      }
+    });
+
     this.logger.log(
-      `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
+      `Context update received from client: [${runtimeData.state} -> ${data.state} ]`,
     );
 
     // in case current state is a final state, we want to create another machine, of type manual review.
     // assign runtime to user, copy the context.
     const currentState = data.state;
-    const workflow = await this.workflowDefinitionRepository.findById(
-      runtimeData.workflowDefinitionId,
-    );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

@@ -7,6 +7,7 @@ import { businessIds, endUserIds, generateBusiness, generateEndUser } from './ge
 import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
+import { generateUserNationalId } from './generate-user-national-id';
 
 if (require.main === module) {
   dotenv.config();
@@ -146,7 +147,7 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            userNationalId: faker.datatype.uuid(),
+            userNationalId: generateUserNationalId(),
             docNumber: faker.finance.account(9),
             userAddress: faker.address.streetAddress(),
             website: faker.internet.url(),
@@ -182,7 +183,7 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            userNationalId: faker.datatype.uuid(),
+            userNationalId: generateUserNationalId(),
             docNumber: faker.finance.account(9),
             userAddress: faker.address.streetAddress(),
             website: faker.internet.url(),
