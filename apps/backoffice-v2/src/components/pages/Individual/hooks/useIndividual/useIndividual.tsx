@@ -73,13 +73,26 @@ export const useIndividual = () => {
         documents: endUser?.workflow?.workflowContext?.machineContext?.documents?.map(document => {
           if (document?.id !== id) return document;
 
-          return {
-            ...document,
-            decision: {
-              ...document?.decision,
-              status: approvalStatus,
-            },
-          };
+          switch (approvalStatus) {
+            case 'approved':
+              return {
+                ...document,
+                decision: {
+                  status: approvalStatus,
+                },
+              };
+            case 'rejected':
+              return {
+                ...document,
+                decision: {
+                  // Change when rejection reason is implemented.
+                  rejectionReason: document?.decision?.rejectionReason ?? '',
+                  status: approvalStatus,
+                },
+              };
+            default:
+              return document;
+          }
         }),
       };
       return mutateUpdateWorkflowById({
