@@ -119,10 +119,6 @@ To set up a local environment, follow these steps:
    ```
 
 3. #### Run examples
-   	- **KYB Back Office** Example:
-   ```sh
-   pnpm kyb-manual-review-example
-   ```
 	-  **KYC flow + Manual Review** Workflow Example:
    ```sh
    pnpm kyc-manual-review-example
