@@ -119,12 +119,31 @@ To set up a local environment, follow these steps:
    ```
 
 3. #### Run examples
+
 	-  **KYC flow + Manual Review** Workflow Example:
+
    ```sh
    pnpm kyc-manual-review-example
    ```
 
+Once the process is complete,  _2 tabs_   will open in your browser:
 
+1. http://localhost:5173/ - for the _document collection flow_
+2. http://localhost:5137/ - for the  _backffice_ 
+
+(It's recommended to have them positioned side-by-side).
+
+<sub>If the tabs have not opened automatically, please use the links provided above.</sub>
+
+**Steps to go over the flow:**
+
+1.  On the KYC UI, click the "Start KYC" button
+2.  Go through and complete the flow
+3.  Go to the backoffice tab to review the new user that was created
+4.  Approve/reject/ask to resubmit
+5.  Get back to the KYC UI to see the result
+
+*Note: some components are currently in beta, if you run into an issue please ping us on Slack
 <br/>
 
 
@@ -190,7 +209,8 @@ To start using the paid version or if you need any assistance, reach out to us a
 - [x] Re-submission flows
 ...
 
-We will soon release our full long term roadmap to the public.
+We will soon release our full long-term roadmap to the public.
+Follow this project to stay informed about when we provide updates.
 
 
 
