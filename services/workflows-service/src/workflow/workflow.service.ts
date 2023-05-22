@@ -726,10 +726,11 @@ export class WorkflowService {
     }
 
     const localFileService = new LocalFileService();
+    const toFileStoragePath = localFileService.generateRemoteFilePath(fileName);
     return {
       toServiceProvider: localFileService,
-      toRemoteFileConfig: fileName,
-      remoteFileNameInDirectory: localFileService.generateRemoteFilePath(fileName),
+      toRemoteFileConfig: toFileStoragePath,
+      remoteFileNameInDirectory: toFileStoragePath,
     };
   }
 
