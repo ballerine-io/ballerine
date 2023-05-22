@@ -87,7 +87,7 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
       }),
     [mutateAssignWorkflow],
   );
-  const [documentToResubmit, setDocumentToResubmit] = useState('documentOne');
+  const [documentToResubmit, setDocumentToResubmit] = useState('id');
   const onDocumentToResubmitChange = useCallback(
     (value: string) => setDocumentToResubmit(value),
     [setDocumentToResubmit],
