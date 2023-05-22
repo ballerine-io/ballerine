@@ -334,7 +334,7 @@ export const useIndividual = () => {
             {methods => (
               <>
                 <legend className={`sr-only text-lg font-bold`}>{value?.title}</legend>
-                <div className={`grid grid-cols-2 gap-2`}>
+                <div className={`grid grid-cols-2 gap-4`}>
                   {value?.data?.map(({ title, isEditable, type, format, pattern }) => (
                     <div className={`flex flex-col`} key={title}>
                       <label htmlFor={title} className={`font-bold`}>
@@ -353,7 +353,7 @@ export const useIndividual = () => {
                     </div>
                   ))}
                 </div>
-                <div className={`mt-2 flex justify-end`}>
+                <div className={`mt-4 flex justify-end`}>
                   {value?.data?.some(({ isEditable }) => isEditable) && (
                     <Button type={'submit'}>Save</Button>
                   )}
