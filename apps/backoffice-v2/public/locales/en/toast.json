@@ -26,5 +26,13 @@
   "update_document_properties": {
     "success": "The document has been updated successfully.",
     "error": "Error occurred while updating the document."
+  },
+  "assign_case": {
+    "success": "The case has been assigned to {{assignee}} successfully.",
+    "error": "Error occurred while assigning the case to {{assignee}}."
+  },
+  "unassign_case": {
+    "success": "The case has been unassigned successfully.",
+    "error": "Error occurred while unassigning the case."
   }
 }

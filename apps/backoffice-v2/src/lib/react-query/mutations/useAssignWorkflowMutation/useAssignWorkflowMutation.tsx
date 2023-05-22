@@ -1,23 +1,66 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../../api/api';
-import { Action, Resource } from '../../../../enums';
+import toast from 'react-hot-toast';
+import { t } from 'i18next';
+import { useUsersQuery } from '../../queries/useUsersQuery/useUsersQuery';
 
 export const useAssignWorkflowMutation = ({ workflowRuntimeId }: { workflowRuntimeId: string }) => {
   const queryClient = useQueryClient();
+  const { data: users } = useUsersQuery();
+
   return useMutation({
-    mutationFn: ({ assigneeId, isAssignedToMe }: { assigneeId: string; isAssignedToMe: boolean }) =>
+    mutationFn: ({ assigneeId }: { assigneeId: string | null; isAssignedToMe: boolean }) =>
       api.workflows.updateById({
         workflowId: workflowRuntimeId,
         body: {
           assigneeId,
         },
       }),
-    onMutate: ({ isAssignedToMe }) => ({
-      resource: Resource.ASSIGNMENT,
-      action: isAssignedToMe ? Action.ASSIGNED_TO_ME : Action.ASSIGNED_TO_OTHER,
-    }),
-    onSuccess: () => {
+    onMutate: ({ assigneeId }) => {
+      const assigneeName = assigneeId
+        ? users?.find(({ id }) => id === assigneeId).fullName ?? ''
+        : '';
+
+      return { assigneeName };
+    },
+    onSuccess: (data, { assigneeId, isAssignedToMe }, { assigneeName }) => {
       queryClient.invalidateQueries();
+
+      const { action, context } = getToastActionAndContext({
+        assigneeId,
+        assigneeName,
+        isAssignedToMe,
+      });
+
+      toast.success(t(`toast:${action}.success`, context));
+    },
+    onError: (error, { assigneeId, isAssignedToMe }, { assigneeName }) => {
+      const { action, context } = getToastActionAndContext({
+        assigneeId,
+        assigneeName,
+        isAssignedToMe,
+      });
+
+      toast.error(t(`toast:${action}.error`, context));
     },
   });
 };
+
+function getToastActionAndContext({
+  assigneeId,
+  assigneeName,
+  isAssignedToMe,
+}: {
+  assigneeId: string | null;
+  assigneeName: string | null;
+  isAssignedToMe: boolean;
+}) {
+  const action = assigneeId ? 'assign_case' : 'unassign_case';
+  const context = assigneeId
+    ? {
+        assignee: isAssignedToMe ? 'me' : assigneeName,
+      }
+    : {};
+
+  return { action, context } as const;
+}
