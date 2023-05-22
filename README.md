@@ -97,6 +97,22 @@ We believe in enabling companies to manage user  identity  and risk according to
 
 ## Try Ballerine Now
 
+**Demo video**
+
+Watch a video how the demo works, with explainations:
+[Watch now](https://youtu.be/EzBXhUM7gb8)
+
+<br/>
+
+<a href="https://youtu.be/EzBXhUM7gb8" title="Ballerine Demo">
+    <img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646b32fd3d69c9698cd511a1_vid%20thumbnail.png" alt="Demo video">
+</a>
+
+<br/>
+<br/>
+
+**Getting started**
+
 To set up a local environment, follow these steps:
 
 1. #### Install prerequisites:
@@ -120,8 +136,11 @@ To set up a local environment, follow these steps:
 
 3. #### Run examples
 
+   	- **KYB Back Office** Example:
+   ```sh
+   pnpm kyb-manual-review-example
+   ```
 	-  **KYC flow + Manual Review** Workflow Example:
-
    ```sh
    pnpm kyc-manual-review-example
    ```
@@ -130,9 +149,7 @@ Once the process is complete,  _2 tabs_   will open in your browser:
 
 1. http://localhost:5173/ - for the _document collection flow_
 2. http://localhost:5137/ - for the  _backffice_ 
-
 (It's recommended to have them positioned side-by-side).
-
 <sub>If the tabs have not opened automatically, please use the links provided above.</sub>
 
 **Steps to go over the flow:**
