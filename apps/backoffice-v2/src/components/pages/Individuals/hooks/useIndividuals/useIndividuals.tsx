@@ -13,6 +13,7 @@ import { individualRoute } from 'components/pages/Individual/Individual.route';
 import { useEndUsersWithWorkflowsQuery } from '../../../../../lib/react-query/queries/useEndUsersWithWorkflowsQuery/useEndUsersWithWorkflowsQuery';
 import { useUsersQuery } from '../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
 import { useSort } from 'hooks/useSort/useSort';
+import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 
 export const useIndividuals = () => {
   const matches = useMatches();
@@ -22,16 +23,24 @@ export const useIndividuals = () => {
   const routeId: TRouteId = isIndividuals ? individualsRoute.id : individualRoute.id;
   const { data: users } = useUsersQuery();
   const { data: subjects, isLoading } = useEndUsersWithWorkflowsQuery(users);
+  const entity = useFilterEntity();
+  const individualsSearchOptions = ['firstName', 'lastName', 'email', 'phone'];
+  const businessesSearchOptions = [
+    'companyName',
+    'registrationNumber',
+    'legalForm',
+    'countryOfIncorporation',
+  ];
   const { searched, onSearch, search } = useSearch({
     routeId,
     data: subjects,
-    searchBy: ['firstName', 'lastName', 'email', 'phone'],
+    searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
   });
   const { sorted, onSortBy, onSortDir } = useSort({
     routeId,
     data: searched,
     initialState: {
-      sortBy: 'createdAt',
+      sortBy: 'caseCreatedAt',
     },
   });
   const { filtered, onFilter } = useFilter({

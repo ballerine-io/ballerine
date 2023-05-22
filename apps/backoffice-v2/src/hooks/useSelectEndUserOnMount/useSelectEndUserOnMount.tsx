@@ -17,7 +17,7 @@ export const useSelectEndUserOnMount = () => {
   const { data: endUsers } = useEndUsersWithWorkflowsQuery(users);
   const { data: firstEndUserId } = useFirstEndUserIdQuery({
     initialState: {
-      sortBy: 'createdAt',
+      sortBy: 'caseCreatedAt',
     },
     routeId: individualsRoute.id,
   });

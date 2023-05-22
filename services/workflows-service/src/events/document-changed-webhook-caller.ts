@@ -3,23 +3,33 @@
 
 import { WorkflowEventRawData } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
-import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';
-import { ListenerFn } from './types';
-import axios from 'axios';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { randomUUID } from 'crypto';
-import { sortBy } from 'lodash';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class EventConsumerListener {
-  constructor(private eventEmitter: EventEmitter2) {}
+export class DocumentChangedWebhookCaller {
+  #__axios: any;
 
-  @OnEvent('workflow.context.changed')
+  constructor(
+    private httpService: HttpService,
+    private eventEmitter: EventEmitter2,
+    private configService: ConfigService,
+  ) {
+    this.#__axios = this.httpService.axiosRef;
+
+    eventEmitter.on('workflow.context.changed', this.handleWorkflowEvent.bind(this));
+  }
+
   handleWorkflowEvent(data: WorkflowEventRawData) {
     const oldDocuments = data.runtimeData.context['documents'] || [];
     const newDocuments = data.context?.['documents'] || [];
 
     const documentIdentifier = (doc: any) => {
-      return `${doc.category as string}$${doc.type as string}$${doc.issuer?.country as string}`;
+      return `${doc.category as string}$${doc.type as string}$${
+        doc.issuer?.country as string
+      }`.toLowerCase();
     };
 
     const newDocumentsByIdentifier = newDocuments.reduce((accumulator: any, doc: any) => {
@@ -31,6 +41,7 @@ export class EventConsumerListener {
     const anyDocumentStatusChanged = (oldDocuments as Array<any>).some(oldDocument => {
       const id = documentIdentifier(oldDocument);
       return (
+        oldDocument.decision &&
         oldDocument.decision.status &&
         id in newDocumentsByIdentifier &&
         oldDocument.decision.status !== newDocumentsByIdentifier[id].decision.status
@@ -38,14 +49,14 @@ export class EventConsumerListener {
     });
 
     const id = randomUUID();
-    const url = process.env.WEBHOOK_URL as string;
-    const environment = process.env.NODE_ENV;
-    const authSecret = process.env.WEBHOOK_SECRET as string;
+    const environment = this.configService.get<string>('NODE_ENV');
+    const url = this.configService.get<string>('WEBHOOK_URL');
+    const authSecret = this.configService.get<string>('WEBHOOK_SECRET');
 
     if (anyDocumentStatusChanged) {
       console.log(`sending request id: ${id}`);
 
-      axios
+      this.#__axios
         .post(
           url,
           {
@@ -58,13 +69,12 @@ export class EventConsumerListener {
             data: data.context,
           },
           {
-            auth: {
-              username: 'TBD',
-              password: authSecret,
+            headers: {
+              'X-Authorization': authSecret,
             },
           },
         )
-        .catch(err => {
+        .catch((err: Error) => {
           console.log(`failed to send request id: ${id}`, err);
         });
     }

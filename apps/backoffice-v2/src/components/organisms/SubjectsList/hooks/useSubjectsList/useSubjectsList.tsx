@@ -11,7 +11,7 @@ export const useSubjectsList = (routerId: TRouteId) => {
   const sharedSortByOptions = [
     {
       label: 'Created At',
-      value: 'createdAt',
+      value: 'caseCreatedAt',
     },
   ];
   const individualsSortByOptions = [
@@ -40,42 +40,6 @@ export const useSubjectsList = (routerId: TRouteId) => {
   const sortByOptions =
     entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions;
   const filterByOptions = [
-    {
-      label: 'User status',
-      value: 'approvalState',
-      options: [
-        {
-          label: 'Rejected',
-          value: 'REJECTED',
-        },
-        {
-          label: 'Approved',
-          value: 'APPROVED',
-        },
-        {
-          label: 'Processing',
-          value: 'PROCESSING',
-        },
-        {
-          label: 'New',
-          value: 'NEW',
-        },
-      ],
-    },
-    {
-      label: 'User type',
-      value: 'endUserType',
-      options: [
-        {
-          label: 'Individual',
-          value: 'individual',
-        },
-        {
-          label: 'Business',
-          value: 'business',
-        },
-      ],
-    },
     {
       label: 'Assignee',
       value: 'assigneeId',

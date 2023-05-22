@@ -353,7 +353,10 @@ export const useIndividual = () => {
 
       return (
         <div className={`m-2 rounded p-1`}>
-          <Subject.Documents documents={documents} />
+          <Subject.Documents
+            documents={documents}
+            isLoading={results.some(({ isFetching }) => isFetching)}
+          />
         </div>
       );
     },
