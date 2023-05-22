@@ -1,4 +1,5 @@
 
+
 <div>
 
 <a href="https://ballerine.com" title="Ballerine - Open-source Infrastructure for Identity and Risk management.">
@@ -88,10 +89,11 @@ Open cases in the backoffice by sending API requests to the workflow service.
    ```sh
    pnpm run api-manual-review-example
    ```
-_Now the backoffice will run on (localhost....), and the workflow service will accept calls at localhost:300_
+ _Now the backoffice will run on (localhost....), and the workflow service will accept calls at localhost:300_
 
-7. 
-you can use the following postman collection or curl command to insert a case into the backoffice
+7. Send manual review cases into the back office.
+
+Use the following postman collection or curl command to insert a case into the backoffice:
 
 <details>
 <summary>Click to see CURL command</summary>
@@ -260,6 +262,11 @@ curl --location 'http://localhost:3000/api/v1/external/workflows/run' \
 ```
 
 </details>
+
+Once done, you should see that a case was added to the back office, with the information that was sent, broken down into the different UI components for an easy review process.
+
+Any action preformed in the backoffice will dispatch an event you can get through webhooks.  
+checkout the  **environment variables** (workflows-service/.env) to setup the webhook url and secret.
 
 ## Back Office High Level Roadmap
 
