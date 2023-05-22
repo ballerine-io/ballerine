@@ -192,6 +192,9 @@ async function seed(bcryptSalt: Salt) {
       name: 'risk-score-improvement',
       version: 1,
       definitionType: 'statechart-json',
+      config: {
+        completedWhenTasksResolved: true,
+      },
       contextSchema: {
         type: 'json-schema',
         schema: defaultContextSchema,
