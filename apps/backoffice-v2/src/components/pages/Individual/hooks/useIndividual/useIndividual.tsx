@@ -383,24 +383,6 @@ export const useIndividual = () => {
   const caseState = useCaseState(session?.user, endUser?.workflow);
   const tasks = endUser?.workflow?.workflowContext?.machineContext?.entity
     ? [
-        [
-          {
-            type: 'details',
-            value: {
-              title: `${toStartCase(
-                endUser?.workflow?.workflowContext?.machineContext?.entity?.type,
-              )} Information`,
-              data: Object.entries(
-                endUser?.workflow?.workflowContext?.machineContext?.entity?.data ?? {},
-              )?.map(([title, value]) => ({
-                title,
-                value,
-                type: 'string',
-                isEditable: false,
-              })),
-            },
-          },
-        ],
         ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
           ({ id, type, category, issuer, properties, propertiesSchema, decision }, index) => {
             return [
@@ -488,6 +470,24 @@ export const useIndividual = () => {
             ];
           },
         ) ?? []),
+        [
+          {
+            type: 'details',
+            value: {
+              title: `${toStartCase(
+                endUser?.workflow?.workflowContext?.machineContext?.entity?.type,
+              )} Information`,
+              data: Object.entries(
+                endUser?.workflow?.workflowContext?.machineContext?.entity?.data ?? {},
+              )?.map(([title, value]) => ({
+                title,
+                value,
+                type: 'string',
+                isEditable: false,
+              })),
+            },
+          },
+        ],
       ]
     : [];
 
