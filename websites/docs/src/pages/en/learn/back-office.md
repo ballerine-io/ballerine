@@ -89,11 +89,11 @@ Open cases in the backoffice by sending API requests to the workflow service.
    ```sh
    pnpm run api-manual-review-example
    ```
- _Now the backoffice will run on (localhost....), and the workflow service will accept calls at localhost:300_
+ _Now the backoffice will run on http://localhost:5137/, and the workflow service will accept calls at http://localhost:3000/_
 
 7. Send manual review cases into the back office.
 
-Use the following postman collection or curl command to insert a case into the backoffice:
+Use the following Postman collection or CURL command to insert a case into the backoffice:
 
 <details>
 <summary>Click to see CURL command</summary>
