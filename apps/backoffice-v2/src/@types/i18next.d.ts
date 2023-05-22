@@ -6,7 +6,7 @@ interface TranslationOptions {
 
   resources: {
     translation: typeof translationI18nNamespace;
-    toasts: typeof toastI18nNamespace;
+    toast: typeof toastI18nNamespace;
   };
 }
 

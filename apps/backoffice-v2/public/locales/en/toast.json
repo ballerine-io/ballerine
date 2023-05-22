@@ -1,5 +1,22 @@
 {
-  "test": {
-    "hello": "world"
+  "approve_case": {
+    "success": "The case has been approved successfully.",
+    "error": "Error occurred while approving the case."
+  },
+  "approve_document": {
+    "success": "The document has been approved successfully.",
+    "error": "Error occurred while approving the document."
+  },
+  "reject_document": {
+    "success": "The document has been rejected successfully.",
+    "error": "Error occurred while rejecting the document."
+  },
+  "ask_resubmit_document": {
+    "success": "The document has been asked for resubmission successfully.",
+    "error": "Error occurred while asking for resubmission of the document."
+  },
+  "update_document_properties": {
+    "success": "The document has been updated successfully.",
+    "error": "Error occurred while updating the document."
   }
 }
