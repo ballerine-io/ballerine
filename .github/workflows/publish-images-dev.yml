@@ -3,7 +3,7 @@ name: Publish workflow-service image - dev
 on:
   push:
     branches:
-      - dev
+      - matan-yadaev/fix/sentry-sourcemaps
 
 env:
   REGISTRY: ghcr.io
