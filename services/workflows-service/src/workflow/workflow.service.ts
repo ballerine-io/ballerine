@@ -35,6 +35,8 @@ import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-p
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
+import { isErrorWithMessage } from '@ballerine/common';
+import { getDocumentId } from '@/workflow/utils';
 
 type TEntityId = string;
 
@@ -172,7 +174,7 @@ export class WorkflowService {
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
-    const workflow = await this.workflowDefinitionRepository.findById(
+    const workflowDef = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
     );
     let contextHasChanged, mergedContext;
@@ -188,7 +190,9 @@ export class WorkflowService {
         ),
       };
 
-      const validateContextSchema = ajv.compile((workflow?.contextSchema as any)?.schema as Schema);
+      const validateContextSchema = ajv.compile(
+        (workflowDef?.contextSchema as any)?.schema as Schema,
+      );
       const isValidContextSchema = validateContextSchema(context);
 
       if (!isValidContextSchema) {
@@ -229,7 +233,19 @@ export class WorkflowService {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const isFinal = workflow.definition?.states?.[currentState]?.type === 'final';
+    const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
+    if (
+      ['active'].includes(data.status! || runtimeData.status) &&
+      workflowDef.config?.completedWhenTasksResolved
+    ) {
+      const allDocumentsResolved = data.context?.documents?.every(
+        (document: DefaultContextSchema['documents'][number]) => {
+          return ['approved', 'rejected'].includes(document?.decision?.status as string);
+        },
+      );
+
+      data.status = allDocumentsResolved ? 'completed' : data.status! || runtimeData.status;
+    }
 
     const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
       data: {
@@ -248,10 +264,10 @@ export class WorkflowService {
 
     // TODO: Move to a separate method
     if (data.state) {
-      if (isFinal && workflow.reviewMachineId) {
+      if (isFinal && workflowDef.reviewMachineId) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        await this.handleRuntimeFinalState(runtimeData, data.context, workflow);
+        await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
       }
     }
 
@@ -325,7 +341,7 @@ export class WorkflowService {
               id: runtime.id,
             },
           },
-          status: 'created',
+          status: 'active',
         },
       });
     } else {
@@ -417,7 +433,7 @@ export class WorkflowService {
           ...entityConnect,
           workflowDefinitionVersion: workflowDefinition.version,
           context: contextToInsert as InputJsonValue,
-          status: 'created',
+          status: 'active',
           workflowDefinition: {
             connect: {
               id: workflowDefinition.id,
@@ -485,32 +501,28 @@ export class WorkflowService {
     entityId: string,
     documentPage: TDefaultSchemaDocumentPage,
   ) {
-    const documentContext =
-      `${document?.category}-${document?.type}-${document?.issuer?.country}`.toLowerCase();
-    const documentName = `${entityId}/${documentContext}_${crypto.randomUUID()}.${
-      documentPage.type
-    }`;
+    const documentContext = getDocumentId(document).toLowerCase();
+    const remoteFileName = `${documentContext}_${crypto.randomUUID()}.${documentPage.type}`;
 
     const { fromServiceProvider, fromRemoteFileConfig } =
       this.__fetchFromServiceProviders(documentPage);
-    const { toServiceProvider, toRemoteFileConfig, remoteFileName } =
-      this.__fetchToServiceProviders(documentName);
-
-    const remoteFilePath = await this.fileService.copyFileFromSourceToDestination(
-      fromServiceProvider,
-      fromRemoteFileConfig,
-      toServiceProvider,
-      toRemoteFileConfig,
-    );
-    const fileNameInBucket =
-      typeof remoteFilePath != 'string' ? remoteFilePath.fileNameInBucket : undefined;
+    const { toServiceProvider, toRemoteFileConfig, remoteFileNameInDirectory } =
+      this.__fetchToServiceProviders(entityId, remoteFileName);
+    const { remoteFilePath, fileNameInBucket } =
+      await this.fileService.copyFileFromSourceToDestination(
+        fromServiceProvider,
+        fromRemoteFileConfig,
+        toServiceProvider,
+        toRemoteFileConfig,
+      );
     const userId = entityId;
     const ballerineFileId = await this.storageService.createFileLink({
-      uri: remoteFileName,
-      fileNameOnDisk: remoteFileName,
+      uri: remoteFileNameInDirectory,
+      fileNameOnDisk: remoteFileNameInDirectory,
       userId,
       fileNameInBucket,
     });
+
     return ballerineFileId;
   }
 
@@ -636,7 +648,7 @@ export class WorkflowService {
             {
               data: {
                 state: 'document_photo',
-                status: 'created',
+                status: 'active',
                 context: {
                   ...context,
                   [document]: {
@@ -694,25 +706,31 @@ export class WorkflowService {
     return { fromServiceProvider: new LocalFileService(), fromRemoteFileConfig: document.uri };
   }
 
-  private __fetchToServiceProviders(fileName: string): {
+  private __fetchToServiceProviders(
+    entityId: string,
+    fileName: string,
+  ): {
     toServiceProvider: TFileServiceProvider;
     toRemoteFileConfig: TRemoteFileConfig;
-    remoteFileName: string;
+    remoteFileNameInDirectory: string;
   } {
     if (this.__fetchBucketName(process.env, false)) {
       const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
-      const awsConfigForClient = this.__fetchAwsConfigFor(fileName);
+      const awsFileService = new AwsS3FileService(s3ClientConfig);
+      const remoteFileNameInDocument = awsFileService.generateRemoteFilePath(fileName, entityId);
+      const awsConfigForClient = this.__fetchAwsConfigFor(remoteFileNameInDocument);
       return {
-        toServiceProvider: new AwsS3FileService(s3ClientConfig),
+        toServiceProvider: awsFileService,
         toRemoteFileConfig: awsConfigForClient,
-        remoteFileName: awsConfigForClient.fileNameInBucket,
+        remoteFileNameInDirectory: awsConfigForClient.fileNameInBucket,
       };
     }
 
+    const localFileService = new LocalFileService();
     return {
-      toServiceProvider: new LocalFileService(),
+      toServiceProvider: localFileService,
       toRemoteFileConfig: fileName,
-      remoteFileName: fileName,
+      remoteFileNameInDirectory: localFileService.generateRemoteFilePath(fileName),
     };
   }
 

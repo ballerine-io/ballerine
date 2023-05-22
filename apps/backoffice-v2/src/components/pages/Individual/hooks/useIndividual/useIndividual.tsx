@@ -79,6 +79,14 @@ export const useIndividual = () => {
         return;
       }
 
+      const action = (
+        {
+          approved: 'approve_document',
+          rejected: 'reject_document',
+          revision: 'ask_resubmit_document',
+        } as const
+      )[payload.approvalStatus];
+
       const context = {
         documents: endUser?.workflow?.workflowContext?.machineContext?.documents?.map(document => {
           if (document?.id !== payload?.id) return document;
@@ -119,11 +127,19 @@ export const useIndividual = () => {
       };
       return mutateUpdateWorkflowById({
         context,
+        action,
       });
     };
-  const onMutateTaskDecisionById = ({ context }: { context: AnyRecord }) =>
+  const onMutateTaskDecisionById = ({
+    context,
+    action,
+  }: {
+    context: AnyRecord;
+    action: Parameters<typeof mutateUpdateWorkflowById>[0]['action'];
+  }) =>
     mutateUpdateWorkflowById({
       context,
+      action,
     });
   const components = {
     heading: ({ value }) => <h2 className={`ml-2 mt-6 p-2 text-2xl font-bold`}>{value}</h2>,
@@ -300,6 +316,7 @@ export const useIndividual = () => {
 
         return onMutateTaskDecisionById({
           context,
+          action: 'update_document_properties',
         });
       };
 
@@ -317,7 +334,7 @@ export const useIndividual = () => {
             {methods => (
               <>
                 <legend className={`sr-only text-lg font-bold`}>{value?.title}</legend>
-                <div className={`grid grid-cols-2 gap-2`}>
+                <div className={`grid grid-cols-2 gap-4`}>
                   {value?.data?.map(({ title, isEditable, type, format, pattern }) => (
                     <div className={`flex flex-col`} key={title}>
                       <label htmlFor={title} className={`font-bold`}>
@@ -336,7 +353,7 @@ export const useIndividual = () => {
                     </div>
                   ))}
                 </div>
-                <div className={`ml-2 mt-auto flex justify-end`}>
+                <div className={`mt-4 flex justify-end`}>
                   {value?.data?.some(({ isEditable }) => isEditable) && (
                     <Button type={'submit'}>Save</Button>
                   )}

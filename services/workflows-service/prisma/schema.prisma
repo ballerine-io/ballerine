@@ -126,6 +126,7 @@ model WorkflowDefinition {
   definitionType     String
   definition         Json
   contextSchema      Json?
+  config             Json?
   supportedPlatforms Json?
   extensions         Json?
 
@@ -140,8 +141,9 @@ model WorkflowDefinition {
 }
 
 enum WorkflowRuntimeDataStatus {
-  created
+  active
   completed
+  failed
 }
 
 model WorkflowRuntimeData {
@@ -158,7 +160,7 @@ model WorkflowRuntimeData {
   context                   Json
   // history
   state                     String?
-  status                    WorkflowRuntimeDataStatus @default(created)
+  status                    WorkflowRuntimeDataStatus @default(active)
   createdAt                 DateTime                  @default(now())
   updatedAt                 DateTime                  @updatedAt
   createdBy                 String                    @default("SYSTEM")

@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { sort } from 'hooks/useSort/sort';
 import { TEndUsers } from '../../../../api/types';
 import { useSelectEndUsersQuery } from '../useSelectEndUsersQuery/useSelectEndUsersQuery';
+import { useUsersQuery } from '../useUsersQuery/useUsersQuery';
 
 export const useFirstEndUserIdQuery = <TId extends TRouteId>({
   initialState,
@@ -24,14 +25,25 @@ export const useFirstEndUserIdQuery = <TId extends TRouteId>({
         sortDir: 'sortDir' in searchParams ? searchParams?.sortDir : undefined,
       }),
     });
+  const { data: users } = useUsersQuery();
   const selectFirstEndUserId = useCallback(
-    (data: TEndUsers) =>
-      sort({
-        data,
+    (endUsers: TEndUsers) => {
+      return sort({
+        data: endUsers.map(endUser => {
+          const assigneeId = endUser?.workflowRuntimeData?.assigneeId;
+
+          return {
+            ...endUser,
+            assigneeId,
+            assigneeFullName: users?.find(user => user?.id === assigneeId)?.fullName,
+            caseCreatedAt: endUser?.workflowRuntimeData?.createdAt,
+          };
+        }),
         sortBy,
         sortDir,
-      })?.[0]?.id,
-    [sortDir, sortBy],
+      })?.[0]?.id;
+    },
+    [sortDir, sortBy, users],
   );
 
   return useSelectEndUsersQuery(selectFirstEndUserId);
