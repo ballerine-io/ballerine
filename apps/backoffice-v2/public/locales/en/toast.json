@@ -3,6 +3,14 @@
     "success": "The case has been approved successfully.",
     "error": "Error occurred while approving the case."
   },
+  "reject_case": {
+    "success": "The case has been rejected successfully.",
+    "error": "Error occurred while rejecting the case."
+  },
+  "ask_resubmit_case": {
+    "success": "The case has been asked for resubmission successfully.",
+    "error": "Error occurred while asking for resubmission of the case."
+  },
   "approve_document": {
     "success": "The document has been approved successfully.",
     "error": "Error occurred while approving the document."
