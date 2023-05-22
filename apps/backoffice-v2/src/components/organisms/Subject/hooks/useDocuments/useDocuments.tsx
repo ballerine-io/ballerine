@@ -41,7 +41,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
 
       await navigator.clipboard.writeText(text);
 
-      toast.success(t('toast:copy_to_clipboard'));
+      toast.success(t('toast:copy_to_clipboard', text));
     } catch (err) {
       console.error(err);
 

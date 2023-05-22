@@ -35,7 +35,7 @@
     "success": "The case has been unassigned successfully.",
     "error": "Error occurred while unassigning the case."
   },
-  "copy_to_clipboard": "Copied to clipboard",
+  "copy_to_clipboard": "Copied to clipboard: {{text}}",
   "ocr_document_error": "Error occurred while performing OCR on the document.",
   "validation_error": "❌ Validation error"
 }

@@ -18,7 +18,7 @@ export const useAssignWorkflowMutation = ({ workflowRuntimeId }: { workflowRunti
       }),
     onMutate: ({ assigneeId }) => {
       const assigneeName = assigneeId
-        ? users?.find(({ id }) => id === assigneeId).fullName ?? ''
+        ? users?.find(({ id }) => id === assigneeId)?.fullName ?? ''
         : '';
 
       return { assigneeName };
