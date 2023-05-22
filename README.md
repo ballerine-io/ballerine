@@ -1,14 +1,18 @@
+<div align="right">
 
-
-
+<img  src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/6463b137c0fec38f87389eb6_star_AdobeExpress%20(2).gif"  alt="Alt Text"  style="width: 100%; height: auto;">
+</div>
 
 <div align="center">
 
 <a href="https://ballerine.com" title="Ballerine - Open-source Infrastructure for Identity and Risk management.">
-    <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/git-header-black.png" alt="Ballerine's website">
+    <img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646372b198f456345c69339c_logo%20github.png" alt="Ballerine's website">
 </a>
 
-## Open-Source Rules & Workflow Engine for User Identity and Risk Decisioning
+## Open-Source Infrastructure for User Risk Decisioning
+
+
+
 
 </br>
   <!-- Nav header - Start -->
@@ -16,6 +20,8 @@
    <a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw">Slack</a>
     ·
     <a href="https://www.ballerine.com/">Website</a>
+    ·
+    <a href="#contact-ballerine">Contact</a>
     ·
     <a href="https://github.com/ballerine-io/ballerine/issues">Issues</a>
 
@@ -35,48 +41,70 @@
 [![GitHub release](https://img.shields.io/github/v/release/ballerine-io/ballerine?label=last-release&style=flat-square)](https://github.com/ballerine-io/ballerine/releases)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ballerine-io/ballerine/ci.yml?label=CI&style=flat-square)](https://github.com/ballerine-io/ballerine/actions/workflows/ci.yml)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ballerine-io/ballerine/release.yml?label=Release&style=flat-square)](https://github.com/ballerine-io/ballerine/actions/workflows/release.yml)
+
 </p>
 <!-- Badges - END -->
 
 
+
+
+
+
 </div>
 
+Ballerine is an open-source user risk decisioning infrastructure that helps companies automate their decisions for customer and business account-opening (KYC, KYB), underwriting, and transaction monitoring, using a flexible rules & workflow engine, 3rd party plugin system, manual review back office, and document & information collection frontend flows.
 
-## Description
-Ballerine's flexible open-source rules & workflow engine helps companies automate their decisions on which customer to serve and how.
+<br/>
 
-With Ballerine you can build custom account-opening, underwriting, and transaction monitoring decisioning processes, using a flexible open-source rules & workflow engine that can control real-time changes in your user experience, enrich data using 3rd parties, call custom APIs, escalate tasks to your back-office, and more.
+<div align="center">
 
-### What you can find in this project
+<img  src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646375ed9f42af409c55f316_main%20gif%20optimized.gif"  alt="Alt Text"  style="width: 100%; height: auto;">
+</div>
 
-*  :twisted_rightwards_arrows:   **Workflow engine** - :white_check_mark:  Public beta
-   - Automate decisions based on user data, 3rd party input and rules.
+<br/>
 
-* :scroll: **Rule engine** - :male_detective: Private Beta (collaborators)
-   - Use different rule types to determine when and how to serve customers.
 
-* :electric_plug:  **Plugin system** - :closed_lock_with_key: Private Alpha
-   - Utilize our plugin system and unified API to connect to 3rd party vendors, custom APIs and databases.
+## Features
+View each component's current state in the [roadmap](#roadmap) below.
+####  Released  - 🎉
+- **Back office** - Case management dashboard for manual decision-making.
 
-* :video_game:  **Frontend headless SDK** - :white_check_mark:  Public beta
-   1. Control the journey of your users in real-time, based on their updating attributes.
-     1. Onboarding building blocks (community-driven kit) - [Go to directory](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md)
-        * KYC/KYB/doc collection flows and UI via Mobile & web SDK
-        * Case management dashboard for users approval
-    </br>
+- **Workflow engine** - Orchestrates and automates the different system's parts.
 
-## Getting started
+####  In Development/testing - 🔨
+- **Plugin system** - Integrates with 3rd-party vendors, APIs, and databases.
 
-Set up an onboarding decisioning workflow using Ballerine's pre-built building blocks. Collect data from users, process it with third-party vendors, automate decisions, or send them for manual review in the back office.
+- **Rule engine** - Leverage various rule types to ensure user compliance with your risk policy.
 
-### Local Environment Setup
+####   Planned on roadmap - 📌
+- **Frontend headless SDK**- Real-time modification of KYC/KYB frontend user journeys. 
 
-#### Prerequisites:
-* Install Node.js ([Install NVM](https://github.com/nvm-sh/nvm))
-* Install the latest PNPM version ([Install PNPM](https://pnpm.io/installation))
-* Install docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
+#### Community driven building blocks - 🌍
+- [**User flows UX/UI**](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md) - KYC/KYB/Document collection flows and UI via mobile & web SDK.
 
-#### Install:
+
+## Why Open Source?
+
+We believe in enabling companies to manage user  identity  and risk according to their unique  and evolving requirements. Ballerine empowers you to  create decisioning processes that are  right  for you. It is flexible, future-proof, easy to implement, secure, and supported by a robust community.
+
+#### Explore What You Can Do With Ballerine
+
+- **Dynamic Experience:** Adaptive user journeys that modify in real-time based on the user's risk.
+- **Data Ownership:** Self-host on-premise to keep sensitive data within your infrastructure.
+- **Global Orchestration:** Add/change vendors to cater to users from multiple countries.
+- **Cost Reduction:** Retain control over vendor relationships, costs, and communication.
+- And More.
+
+## Try Ballerine Now
+
+To set up a local environment, follow these steps:
+
+1. #### Install prerequisites:
+   - Node.js ([Install NVM](https://github.com/nvm-sh/nvm))
+   - Latest PNPM version ([Install PNPM](https://pnpm.io/installation))
+   - Docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
+   
+2. #### Clone and install the project:
    1. Clone the project:  
    ```sh
    git clone https://github.com/ballerine-io/ballerine.git
@@ -89,17 +117,20 @@ Set up an onboarding decisioning workflow using Ballerine's pre-built building b
    ```sh
    pnpm monorepo:init
    ```
-  
-#### Run Examples:
 
-##### KYC Manual Review Workflow: 
-The following command will run the workflow's backend (workflow service API), the backoffice, and UI example using the headless web SDK:
-```sh
-pnpm kyc-manual-review-example
-```
+3. #### Run examples
 
-Once the process is complete, *2 tabs* will open in your browser:
-the *backffice* and the *example KYC UI*
+	-  **KYC flow + Manual Review** Workflow Example:
+
+   ```sh
+   pnpm kyc-manual-review-example
+   ```
+
+Once the process is complete,  _2 tabs_   will open in your browser:
+
+1. http://localhost:5173/ - for the _document collection flow_
+2. http://localhost:5137/ - for the  _backffice_ 
+
 (It's recommended to have them positioned side-by-side).
 
 ##### KYB Manual Review Workflow: 
@@ -107,141 +138,89 @@ The following command will run the workflow's backend (workflow service API), th
 ```sh
 pnpm kyb-manual-review-example
 ```
+<sub>If the tabs have not opened automatically, please use the links provided above.</sub>
 
 **Steps to go over the flow:**
 
-1. On the KYC UI, click the "Start KYC" button
-2. Go through and complete the flow
-3. Go to the backoffice tab to review the new user that was created
-4. Approve/reject/ask to resubmit
-5. Get back to the KYC UI to see the result
+1.  On the KYC UI, click the "Start KYC" button
+2.  Go through and complete the flow
+3.  Go to the backoffice tab to review the new user that was created
+4.  Approve/reject/ask to resubmit
+5.  Get back to the KYC UI to see the result
 
-
-*Note: most components are currently in beta, if you run into an issue please ping us on [Slack]([https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw))
-  
-#### Development mode:
-   - *Run in development mode* - runs all the projects in dev mode: 
- ```sh
- pnpm dev
- ```
----
-
-
-
-Join our mailing list so you know whenever we release new products and features.
-
-<a href="https://www.ballerine.com/" title="Ballerine - Request Access">
-    <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
-</a>
-
-____
-
-### Why Open Source Workflow Engine?
-
-Our goal is to enable companies to manage user identity and risk according to their unique and evolving requirements.
-With Ballerine's workflow engine you can create the decisioning processes right for you.
-
-*  **Flexible** - limitless building capabilities using code to address any use case.
-*  **Future proof** - adaptable to future needs using custom code, creating new features, and integrating external systems.
-*  **Short to Implement** - enables developers to easily integrate it into their existing tech stack independently.
-*  **Secure** - adhere to your security & privacy protocols through on-prem deployment, self-hosting, and data ownership.
-*  **Community** - use what others have built, contribute yourself, and leverage community maintenance.
-
-
-<details>
-
-<summary>Examples of what you can do with it:</summary>
-
-
-- Dynamic experience - build journeys that change mid-flow based on the current understanding of the user's risk.
-- Data ownership - run the process self-hosted on prem to keep sensitive data in-house
-- Global Orchestration  - change/add vendors easily to support users from multiple countries.
-- Cost reduction - leverage ownership of vendor relationships to maintain control over costs and communication.
-- And more.
-
-</details>
-
-
-
-
-# Rule & Workflow Engine
-
-
-Define and automate complex decisioning processes for your unique business needs, in a flexible and customizable dev-friendly infrastructure using Ballerine’s rules and workflow engine.
-
-* Trigger actions to enrich data and uncover risk, and streamline your team's decision-making process.
-* Visualize complex flows to provide observability of how things work to the rest of the company.
-* Improve compliance, reduce fraud, and increase conversion.
-
+*Note: some components are currently in beta, if you run into an issue please ping us on Slack
 <br/>
 
-<img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/rule%20engine.png">
 
-<br/>
-
-# Onboarding building blocks (community-driven kit)
-
-Use the community driven KYC/KYB process and back-office building blocks to form flows and start onboarding clients.
-
-What's included:
-- KYC/KYB flows and UI in Mobile & web SDK
-- Case management dashboard for users approval
-
-To get started go to [Onboarding building blocks](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md) directory.
-
-<sub>* Please note that, although we regularly update it, Ballerine's "build your own KYC process" is a community offering and not our core product or service.
-As such, we do not assume any responsibility for its use and do not consider it a part of our official services.</sub>
-</br>
-</br>
-</br>
-
-<p align="center">
-Mobile & web SDK
-<img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/phones.png">
-</p>
-</br>
-
-<p align="center">
-Case management dashboard
-</p>
-
-<p align="center">
-<img src="https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/dashboard.png">
-</a>
-</p>
+To start using the paid version or if you need any assistance, reach out to us at oss@ballerine.com. Join our [Discord Channel](https://discord.gg/e2rQE4YygA) and [Slack Channel](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw) to stay updated and engage with our community.
 
 
-Examples of what you can do with it:
-- Use different vendors for different audiences - all modules are 100% vendor agnostic.
-- Create your own low-cost KYC with AWS Rekognition, Google vision, and other ML tools.
-- Collect documents in a KYB flow.
-- Implement and modify a case management for user approval/rejection.
-- And more.
 
------
+## Roadmap
+### High level roadmap
+#### Back office
+- [x] View, approve, rejece pr ask for re-submittion
+	- [x] individuals
+	- [x] businesses (multiple documents and individuals)
+	- [x] Custom documents/information
+	- [ ] Transactions
+- [x] Process managment
+	- [x] Collect audit logs
+	- [x] Assign/re-assign agents
+	- [x] Decision results and reasons webhooks
+	- [ ] Analytics
+	- [ ] Enforce policy rules on approval
+	- [ ] Show a case's acceptance criteria
 
-#### Get to know whenever we release new stuff
+**Plugin system**
+
+- [x] Trigger a plugin using a workflow
+- [x] Create your own custom plugin API
+- [ ] Fetch information and pass to other parts
+- [ ] Unified schema
+- [x] Plugins
+	- [x] Identity verification providers
+	- [x] Business website's context
+	- [x] AI multilingual names matching
+	- [ ] Business data repositories
+	- [ ] Sanctions screening
+	- [ ] Fraud check
+
+**Workflow engine**
+- [x] Orchestrate all parts of the flow
+- [x] Visualize a workflow (using XState)
+- [ ] No code/Low code rules managmgnet UI for non technical team members
+- [ ] A/B test different vendors/rules/flows
+
+**Rule engine**
+- [x] Rule-sets in workflows
+- [x] Simple rule types ("if this than that" rules)
+- [ ] Advance rule types (Matrix, tables, etc.)
+- [x] JSON configuration ability
+- [ ] No code/Low code rules managmgnet UI for non technical team members
+
+**Frontend headless SDK**
+- [x] Get KYC/KYB steps from workflow
+- [x] Change steps dynamically during a flow
+- [ ] Load vendor SDK
 
 
-Leave us your email on our mailing list and we'll let you know whenever we release a feature or improvement.
+**User flows UX/UI**
+- [x] Mobile and desktop webview flow
+- [x] Collect images
+- [x] Collect selfies
+- [ ] Liveliness
+- [ ] Forms
+- [x] Re-submission flows
+...
 
-<a href="https://www.ballerine.com/" title="Ballerine - Request Access">
-    <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access">
-</a>
-</br>
+We will soon release our full long-term roadmap to the public.
+Follow this project to stay informed about when we provide updates.
 
-</br>
-Or join our community channels:
-</br>
-</br>
-<a href="https://discord.gg/e2rQE4YygA" title="Ballerine - Discord Channel">
-<img height="18px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/discord%20community.png" alt="Ballerine's Discord Channel"></a>
-</br>
-<a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw" title="Ballerine - Slack Channel">
-<img height="18px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/slack%20community.png" alt="Ballerine's Slack Channel"></a>
-</br>
 
-___
 
-<i>As you can see, most apps and packages are still private beta. We are working on migrating them to this monorepo.</i>\
-<i>If you already want to start using them or want to get involved - reach out to us at [oss@ballerine.com](mailto:oss@ballerine.com).</i>
+## Contact Ballerine
+
+To start using the paid version or if you need any assistance, reach out to us at oss@ballerine.com. Join our [Discord Channel](discord-link) and [Slack Channel](slack-link) to stay updated and engage with our community.
+
+

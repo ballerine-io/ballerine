@@ -1,0 +1,41 @@
+{
+  "approve_case": {
+    "success": "The case has been approved successfully.",
+    "error": "Error occurred while approving the case."
+  },
+  "reject_case": {
+    "success": "The case has been rejected successfully.",
+    "error": "Error occurred while rejecting the case."
+  },
+  "ask_resubmit_case": {
+    "success": "The case has been asked for resubmission successfully.",
+    "error": "Error occurred while asking for resubmission of the case."
+  },
+  "approve_document": {
+    "success": "The document has been approved successfully.",
+    "error": "Error occurred while approving the document."
+  },
+  "reject_document": {
+    "success": "The document has been rejected successfully.",
+    "error": "Error occurred while rejecting the document."
+  },
+  "ask_resubmit_document": {
+    "success": "The document has been asked for resubmission successfully.",
+    "error": "Error occurred while asking for resubmission of the document."
+  },
+  "update_document_properties": {
+    "success": "The document has been updated successfully.",
+    "error": "Error occurred while updating the document."
+  },
+  "assign_case": {
+    "success": "The case has been assigned to {{assignee}} successfully.",
+    "error": "Error occurred while assigning the case to {{assignee}}."
+  },
+  "unassign_case": {
+    "success": "The case has been unassigned successfully.",
+    "error": "Error occurred while unassigning the case."
+  },
+  "copy_to_clipboard": "Copied to clipboard: {{text}}",
+  "ocr_document_error": "Error occurred while performing OCR on the document.",
+  "validation_error": "❌ Validation error"
+}
