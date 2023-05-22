@@ -14,4 +14,13 @@ module.exports = {
     es6: true,
   },
   plugins: ['@typescript-eslint'],
+  rules: {
+    'import/no-cycle': [
+      'error',
+      {
+        maxDepth: 10,
+        ignoreExternal: true,
+      },
+    ],
+  },
 };

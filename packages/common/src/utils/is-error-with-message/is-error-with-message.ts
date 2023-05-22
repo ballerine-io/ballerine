@@ -1,4 +1,4 @@
-import { isObject } from '@/utils';
+import { isObject } from '@/utils/is-object';
 import { IErrorWithMessage } from './interfaces';
 
 export const isErrorWithMessage = (error: unknown): error is IErrorWithMessage => {
