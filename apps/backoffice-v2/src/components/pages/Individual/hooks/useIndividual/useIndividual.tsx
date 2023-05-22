@@ -38,6 +38,7 @@ import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/use
 import toast from 'react-hot-toast';
 import { useCaseState } from 'components/organisms/Subject/hooks/useCaseState/useCaseState';
 import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
+import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -47,11 +48,11 @@ export const useIndividual = () => {
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
-  const { fullName, avatarUrl } = endUser ?? {};
+  const entity = useFilterEntity();
   const selectedEndUser = {
     id: endUserId,
-    fullName,
-    avatarUrl,
+    fullName: entity === 'individuals' ? endUser?.fullName : endUser?.companyName,
+    avatarUrl: endUser?.avatarUrl,
   };
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
