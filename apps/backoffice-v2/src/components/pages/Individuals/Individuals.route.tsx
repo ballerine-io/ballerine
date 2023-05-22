@@ -3,7 +3,7 @@ import { queryClient } from '../../../lib/react-query/query-client';
 import { z } from 'zod';
 import { Route } from '@tanstack/react-router';
 import { Individuals } from 'components/pages/Individuals/Individuals.page';
-import { States } from '../../../enums';
+import { CaseStatuses, States } from '../../../enums';
 import { queries } from '../../../lib/react-query/queries';
 import { preSearchFiltersByKind } from 'components/pages/Individuals/pre-search-filters';
 import { users } from '../../../lib/react-query/users';
@@ -25,6 +25,7 @@ const IndividualsSearchSchema = SearchSchema.extend({
     .object({
       approvalState: z.array(z.enum(States)).optional().catch([]),
       assigneeId: z.array(z.string().nullable()).optional().catch([]),
+      caseStatus: z.array(z.enum(CaseStatuses)).optional().catch([]),
     })
     .optional(),
   entity: z.literal('individuals').catch('individuals'),
@@ -35,6 +36,7 @@ const BusinessesSearchSchema = SearchSchema.extend({
   filter: z
     .object({
       assigneeId: z.array(z.string().nullable()).optional().catch([]),
+      caseStatus: z.array(z.enum(CaseStatuses)).optional().catch([]),
       // businessType: z.array(z.string()).optional().catch([]),
     })
     .optional(),

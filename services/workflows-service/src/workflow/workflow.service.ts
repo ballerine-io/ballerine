@@ -136,6 +136,7 @@ export class WorkflowService {
         businessId: true,
         assigneeId: true,
         id: true,
+        status: true,
       },
     });
   }

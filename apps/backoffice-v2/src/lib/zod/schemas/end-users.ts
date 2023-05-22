@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { State, States } from '../../../enums';
+import { CaseStatuses, State, States } from '../../../enums';
 import { ObjectWithIdSchema } from '../utils/object-with-id';
 
 export const EndUsersListSchema = z
@@ -20,6 +20,7 @@ export const EndUsersListSchema = z
         ObjectWithIdSchema.extend({
           assigneeId: z.string().nullable().optional(),
           createdAt: z.string().datetime(),
+          status: z.enum(CaseStatuses),
         }).optional(),
       ),
     }).transform(({ firstName, lastName, ...rest }) => ({

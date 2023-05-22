@@ -12,6 +12,7 @@ export const useEndUsersWithWorkflowsQuery = (users: TUsers) => {
           assigneeId,
           assigneeFullName: users?.find(user => user?.id === assigneeId)?.fullName,
           caseCreatedAt: endUser?.workflowRuntimeData?.createdAt,
+          caseStatus: endUser?.workflowRuntimeData?.status,
         };
       }),
   });
