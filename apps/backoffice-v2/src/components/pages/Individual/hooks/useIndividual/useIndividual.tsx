@@ -321,6 +321,7 @@ export const useIndividual = () => {
       };
 
       if (!value.data?.length) return;
+      const isDesitionComponnt = value?.title == 'Decision';
 
       return (
         <div className={`m-2 rounded p-1`}>
@@ -333,8 +334,9 @@ export const useIndividual = () => {
           >
             {methods => (
               <>
-                <legend className={`sr-only text-lg font-bold`}>{value?.title}</legend>
+                <legend className={`sr-only text-lg font-bold text-red-500`}>{value?.title}</legend>
                 <div className={`grid grid-cols-2 gap-4`}>
+                  {console.log(JSON.stringify(value))}
                   {value?.data?.map(({ title, isEditable, type, format, pattern }) => (
                     <div className={`flex flex-col`} key={title}>
                       <label htmlFor={title} className={`font-bold`}>
