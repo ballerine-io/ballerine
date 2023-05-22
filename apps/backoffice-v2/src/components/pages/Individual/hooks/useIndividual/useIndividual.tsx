@@ -353,7 +353,7 @@ export const useIndividual = () => {
                     </div>
                   ))}
                 </div>
-                <div className={`ml-2 mt-auto flex justify-end`}>
+                <div className={`mt-2 flex justify-end`}>
                   {value?.data?.some(({ isEditable }) => isEditable) && (
                     <Button type={'submit'}>Save</Button>
                   )}
