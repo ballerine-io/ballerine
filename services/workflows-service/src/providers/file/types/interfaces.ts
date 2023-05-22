@@ -11,6 +11,7 @@ export interface IFileProvider {
     localFilePath: TLocalFilePath,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TRemoteFileConfig | TLocalFilePath | void>;
+  generateRemoteFilePath(fileName: string, directory?: string): string;
 }
 
 export interface IStreamableFileProvider extends IFileProvider {

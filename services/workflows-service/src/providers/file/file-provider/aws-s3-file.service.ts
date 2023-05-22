@@ -166,4 +166,8 @@ export class AwsS3FileService implements IStreamableFileProvider {
   private _generateAwsBucketUri(bucketName: string, fileName: string) {
     return `https://${bucketName}.s3.amazonaws.com/${fileName}`;
   }
+
+  generateRemoteFilePath(fileName: string, directory?: string): string {
+    return `${directory !== undefined ? `${directory}/` : ''}${fileName}`;
+  }
 }

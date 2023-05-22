@@ -1,8 +1,10 @@
 import { TLocalFilePath, TRemoteFileConfig } from './types/files-types';
 import * as tmp from 'tmp';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { IStreamableFileProvider } from './types/interfaces';
 import { TFileServiceProvider } from './types';
+import console from 'console';
+import { isErrorWithMessage } from '@ballerine/common';
 
 @Injectable()
 export class FileService {
@@ -12,21 +14,40 @@ export class FileService {
     toServiceProvider: TFileServiceProvider,
     toFileConfig: TRemoteFileConfig,
   ) {
-    if (this.isBothServicesSupportStream(fromServiceProvider, toServiceProvider)) {
-      return this.copyThruStream(
-        fromServiceProvider as IStreamableFileProvider,
-        fromRemoteFileConfig,
-        toServiceProvider as IStreamableFileProvider,
-        toFileConfig,
+    try {
+      const remoteFilePath = this.isBothServicesSupportStream(
+        fromServiceProvider,
+        toServiceProvider,
+      )
+        ? await this.copyThruStream(
+            fromServiceProvider as IStreamableFileProvider,
+            fromRemoteFileConfig,
+            toServiceProvider as IStreamableFileProvider,
+            toFileConfig,
+          )
+        : await this.copyThruLocalFile(
+            fromServiceProvider,
+            fromRemoteFileConfig,
+            toServiceProvider,
+            toFileConfig,
+          );
+
+      const fileNameInBucket =
+        typeof remoteFilePath !== 'string' ? remoteFilePath.fileNameInBucket : undefined;
+      return { remoteFilePath, fileNameInBucket };
+    } catch (ex) {
+      const remoteFileName =
+        typeof fromRemoteFileConfig !== 'string'
+          ? fromRemoteFileConfig.fileNameInBucket
+          : fromRemoteFileConfig;
+      console.warn(
+        `Unable to download file - ${remoteFileName} - ` +
+          (isErrorWithMessage(ex) ? ex.message : ''),
+      );
+      throw new BadRequestException(
+        `Unable to download file -  ${remoteFileName}, Please check the validity of the file path and access`,
       );
     }
-
-    return await this.copyThruLocalFile(
-      fromServiceProvider,
-      fromRemoteFileConfig,
-      toServiceProvider,
-      toFileConfig,
-    );
   }
 
   async copyThruStream(

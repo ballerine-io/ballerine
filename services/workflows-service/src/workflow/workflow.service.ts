@@ -35,6 +35,8 @@ import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-p
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
+import { isErrorWithMessage } from '@ballerine/common';
+import { getDocumentId } from '@/workflow/utils';
 
 type TEntityId = string;
 
@@ -484,32 +486,28 @@ export class WorkflowService {
     entityId: string,
     documentPage: TDefaultSchemaDocumentPage,
   ) {
-    const documentContext =
-      `${document?.category}-${document?.type}-${document?.issuer?.country}`.toLowerCase();
-    const documentName = `${entityId}/${documentContext}_${crypto.randomUUID()}.${
-      documentPage.type
-    }`;
+    const documentContext = getDocumentId(document).toLowerCase();
+    const remoteFileName = `${documentContext}_${crypto.randomUUID()}.${documentPage.type}`;
 
     const { fromServiceProvider, fromRemoteFileConfig } =
       this.__fetchFromServiceProviders(documentPage);
-    const { toServiceProvider, toRemoteFileConfig, remoteFileName } =
-      this.__fetchToServiceProviders(documentName);
-
-    const remoteFilePath = await this.fileService.copyFileFromSourceToDestination(
-      fromServiceProvider,
-      fromRemoteFileConfig,
-      toServiceProvider,
-      toRemoteFileConfig,
-    );
-    const fileNameInBucket =
-      typeof remoteFilePath != 'string' ? remoteFilePath.fileNameInBucket : undefined;
+    const { toServiceProvider, toRemoteFileConfig, remoteFileNameInDirectory } =
+      this.__fetchToServiceProviders(entityId, remoteFileName);
+    const { remoteFilePath, fileNameInBucket } =
+      await this.fileService.copyFileFromSourceToDestination(
+        fromServiceProvider,
+        fromRemoteFileConfig,
+        toServiceProvider,
+        toRemoteFileConfig,
+      );
     const userId = entityId;
     const ballerineFileId = await this.storageService.createFileLink({
-      uri: remoteFileName,
-      fileNameOnDisk: remoteFileName,
+      uri: remoteFileNameInDirectory,
+      fileNameOnDisk: remoteFileNameInDirectory,
       userId,
       fileNameInBucket,
     });
+
     return ballerineFileId;
   }
 
@@ -693,25 +691,31 @@ export class WorkflowService {
     return { fromServiceProvider: new LocalFileService(), fromRemoteFileConfig: document.uri };
   }
 
-  private __fetchToServiceProviders(fileName: string): {
+  private __fetchToServiceProviders(
+    entityId: string,
+    fileName: string,
+  ): {
     toServiceProvider: TFileServiceProvider;
     toRemoteFileConfig: TRemoteFileConfig;
-    remoteFileName: string;
+    remoteFileNameInDirectory: string;
   } {
     if (this.__fetchBucketName(process.env, false)) {
       const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
-      const awsConfigForClient = this.__fetchAwsConfigFor(fileName);
+      const awsFileService = new AwsS3FileService(s3ClientConfig);
+      const remoteFileNameInDocument = awsFileService.generateRemoteFilePath(fileName, entityId);
+      const awsConfigForClient = this.__fetchAwsConfigFor(remoteFileNameInDocument);
       return {
-        toServiceProvider: new AwsS3FileService(s3ClientConfig),
+        toServiceProvider: awsFileService,
         toRemoteFileConfig: awsConfigForClient,
-        remoteFileName: awsConfigForClient.fileNameInBucket,
+        remoteFileNameInDirectory: awsConfigForClient.fileNameInBucket,
       };
     }
 
+    const localFileService = new LocalFileService();
     return {
-      toServiceProvider: new LocalFileService(),
+      toServiceProvider: localFileService,
       toRemoteFileConfig: fileName,
-      remoteFileName: fileName,
+      remoteFileNameInDirectory: localFileService.generateRemoteFilePath(fileName),
     };
   }
 
