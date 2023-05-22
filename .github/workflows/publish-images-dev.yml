@@ -49,13 +49,13 @@ jobs:
             type=raw,value=commit-${{ github.sha }}-dev
             type=raw,value=${{ steps.get_version.outputs.version }}-dev
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: services/workflows-service
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+#      - name: Build and push Docker image
+#        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+#        with:
+#          context: services/workflows-service
+#          push: true
+#          tags: ${{ steps.meta.outputs.tags }}
+#          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
