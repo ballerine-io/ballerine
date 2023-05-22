@@ -15,6 +15,14 @@ export const State = {
   NEW: 'NEW',
 } as const;
 
+export const CaseStatus = {
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
+  FAILED: 'failed',
+} as const;
+
+export const CaseStatuses = [CaseStatus.ACTIVE, CaseStatus.COMPLETED, CaseStatus.FAILED] as const;
+
 export const States = [State.APPROVED, State.REJECTED, State.PROCESSING, State.NEW] as const;
 
 export const Action = {
