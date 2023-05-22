@@ -177,9 +177,7 @@ export const useIndividual = () => {
         endUser?.workflow?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
           ({ enum: enum_ }) => !!enum_,
         )?.enum;
-      const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.documents?.some(
-        ({ id, decision }) => id === data?.id && decision?.status === 'approved',
-      );
+      const isDisabled = data?.disabled || false;
 
       return value === 'Reject' ? (
         <Dialog>
@@ -191,7 +189,7 @@ export const useIndividual = () => {
                   // loading: debouncedIsLoadingRejectEndUser,
                 })}
                 // disabled={isLoading || !canReject}
-                disabled={!caseState.actionButtonsEnabled}
+                disabled={!caseState.actionButtonsEnabled || isDisabled}
               >
                 {value}
               </Button>
@@ -272,9 +270,7 @@ export const useIndividual = () => {
           className={ctw({
             loading: isLoadingUpdateWorkflowById,
           })}
-          disabled={
-            isLoadingUpdateWorkflowById || isApprovedTask || !caseState.actionButtonsEnabled
-          }
+          disabled={isLoadingUpdateWorkflowById || isDisabled || !caseState.actionButtonsEnabled}
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
             approvalStatus: data?.approvalStatus,
@@ -420,6 +416,7 @@ export const useIndividual = () => {
                         value: 'Reject',
                         data: {
                           id,
+                          disabled: Boolean(decision),
                           approvalStatus: 'rejected',
                         },
                       },
@@ -428,6 +425,7 @@ export const useIndividual = () => {
                         value: 'Approve',
                         data: {
                           id,
+                          disabled: Boolean(decision),
                           approvalStatus: 'approved',
                         },
                       },
