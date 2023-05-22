@@ -35,6 +35,10 @@ const BusinessesSearchSchema = SearchSchema.extend({
   filter: z
     .object({
       assigneeId: z.array(z.string().nullable()).optional().catch([]),
+      caseStatus: z
+        .array(z.enum(['active']))
+        .optional()
+        .catch([]),
       // businessType: z.array(z.string()).optional().catch([]),
     })
     .optional(),

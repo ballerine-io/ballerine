@@ -13,6 +13,7 @@ export const preSearchFiltersByKind = {
     entity: 'businesses' as const,
     filter: {
       assigneeId: [],
+      caseStatus: ['active'],
     },
     ...sharedPreSearchFilters,
   },
