@@ -4,6 +4,8 @@ import { Action, Resource } from '../../../../enums';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
 import { queries } from '../../queries';
 import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
+import toast from 'react-hot-toast';
+import { t } from 'i18next';
 
 export const useApproveEndUserMutation = ({
   endUserId,
@@ -26,10 +28,6 @@ export const useApproveEndUserMutation = ({
           name: 'approve',
         },
       }),
-    onMutate: () => ({
-      resource: Resource.END_USER,
-      action: Action.APPROVE,
-    }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queries[entity].list(filterId).queryKey,
@@ -38,7 +36,12 @@ export const useApproveEndUserMutation = ({
         queryKey: queries[entity].byId(endUserId, filterId).queryKey,
       });
 
+      toast.success(t('toast:approve_case.success'));
+
       onSelectNextEndUser();
+    },
+    onError: () => {
+      toast.error(t('toast:approve_case.error'));
     },
   });
 };

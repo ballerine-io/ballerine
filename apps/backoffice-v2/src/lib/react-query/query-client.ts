@@ -36,7 +36,7 @@ export const queryClient = new QueryClient({
       }
 
       if (isZodError(error)) {
-        toast.error('❌ Validation error');
+        toast.error(t('toast:validation_error'));
 
         return;
       }
@@ -47,38 +47,6 @@ export const queryClient = new QueryClient({
       toast.error(error.message, {
         id: error.message,
       });
-    },
-  }),
-  mutationCache: new MutationCache({
-    onSuccess: (data, variables, context) => {
-      if (!isObject<IGlobalToastContext>(context)) return;
-
-      // Format to 'Action [RESULT]: [ACTION] [RESOURCE]'
-      // i.e 'Action succeeded: reject user', fallbacks to 'Action [RESULT]'
-      const message =
-        context?.resource && context?.action
-          ? t('EVENT', {
-              resource: t(`RESOURCE.${context.resource}`),
-              action: t(`ACTION.${context.action}`),
-              result: t('RESULT.SUCCEEDED'),
-            })
-          : t('RESULT.SUCCEEDED').replace(':', '');
-
-      toast.success(message);
-    },
-    onError: (error, variables, context) => {
-      if (!isObject<IGlobalToastContext>(context) || !isErrorWithMessage(error)) return;
-
-      const message =
-        context?.resource && context?.action
-          ? t('EVENT', {
-              resource: t(`RESOURCE.${context.resource}`),
-              action: t(`ACTION.${context.action}`),
-              result: t('RESULT.FAILED'),
-            })
-          : t('RESULT.FAILED').replace(':', '');
-
-      toast.error(`${message}\n ${error.message}`);
     },
   }),
 });

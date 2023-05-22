@@ -4,6 +4,8 @@ import { Action, Resource } from '../../../../enums';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
 import { queries } from '../../queries';
 import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
+import toast from 'react-hot-toast';
+import { t } from 'i18next';
 
 export const useRejectEndUserMutation = ({
   workflowId,
@@ -42,17 +44,22 @@ export const useRejectEndUserMutation = ({
             : {}),
         },
       }),
-    onMutate: variables => ({
-      resource: Resource.END_USER,
-      action: variables?.action,
-    }),
-    onSuccess: () => {
+    onSuccess: (data, payload) => {
       queryClient.invalidateQueries({ queryKey: queries[entity].list(filterId).queryKey });
       queryClient.invalidateQueries({
         queryKey: queries[entity].byId(endUserId, filterId).queryKey,
       });
 
+      const action = payload.action === Action.REJECT ? 'reject_case' : 'ask_resubmit_case';
+
+      toast.success(t(`toast:${action}.success`));
+
       onSelectNextEndUser();
+    },
+    onError: (error, payload) => {
+      const action = payload.action === Action.REJECT ? 'reject_case' : 'ask_resubmit_case';
+
+      toast.error(t(`toast:${action}.error`));
     },
   });
 };
