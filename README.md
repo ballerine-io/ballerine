@@ -67,7 +67,7 @@ Ballerine is an open-source user risk decisioning infrastructure that helps comp
 ## Features
 View each component's current state in the [roadmap](#roadmap) below.
 ####  Released  - 🎉
-- **Back office** - Case management dashboard for manual decision-making.
+- [**Back office**](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/back-office.md) - Case management dashboard for manual decision-making.
 
 - **Workflow engine** - Orchestrates and automates the different system's parts.
 
@@ -97,6 +97,35 @@ We believe in enabling companies to manage user  identity  and risk according to
 
 ## Try Ballerine Now
 
+**In the following example you can test a simple form the following infrastructure capabilities**
+
+1. Document collection flow controlled by our **Headless SDK**.
+2. A manual review case management **Back Office**.
+3. Live communication between the parts using a **Workflow Engine**, that also defines the process steps.
+4. A simple JSON containing **Rules** that are checked during the flow.
+
+**Parts of the system you might look for but are not in THIS demo:**
+- Advanced Back Office - To try it out go to our [Case management back office page](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/back-office.md).
+- KYC/KYB UI flows - To try it out go to our  [Community driven building blocks page](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md).
+- Our Plugin System and Rule Engine are still under construction and will soon be released.
+
+
+**Demo example video**
+
+Watch a video of how the demo works, with explainations:
+[Watch now](https://youtu.be/EzBXhUM7gb8)
+
+<br/>
+
+<a href="https://youtu.be/EzBXhUM7gb8" title="Ballerine Demo">
+    <img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646b32fd3d69c9698cd511a1_vid%20thumbnail.png" alt="Demo video">
+</a>
+
+<br/>
+<br/>
+
+**Getting started**
+
 To set up a local environment, follow these steps:
 
 1. #### Install prerequisites:
@@ -118,9 +147,7 @@ To set up a local environment, follow these steps:
    pnpm monorepo:init
    ```
 
-3. #### Run examples
-
-	-  **KYC flow + Manual Review** Workflow Example:
+3. #### Run the example
 
    ```sh
    pnpm kyc-manual-review-example
@@ -130,7 +157,6 @@ Once the process is complete,  _2 tabs_   will open in your browser:
 
 1. http://localhost:5173/ - for the _document collection flow_
 2. http://localhost:5137/ - for the  _backffice_ 
-
 (It's recommended to have them positioned side-by-side).
 
 ##### KYB Manual Review Workflow: 
@@ -148,70 +174,80 @@ pnpm kyb-manual-review-example
 4.  Approve/reject/ask to resubmit
 5.  Get back to the KYC UI to see the result
 
+You can also configure simple rules in the workflow engine using the Rules JSON.
+You can find it by...@alon to add
+
 *Note: some components are currently in beta, if you run into an issue please ping us on Slack
 <br/>
 
 
 To start using the paid version or if you need any assistance, reach out to us at oss@ballerine.com. Join our [Discord Channel](https://discord.gg/e2rQE4YygA) and [Slack Channel](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw) to stay updated and engage with our community.
 
+## Contributing
 
+We appreciate all types of contributions and believe that an active community is the secret to a rich and stable oriduct.
+Here are some of the ways you can contribute:
+
+-   Give us feedback in our  [Slack community](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw)
+-   Help with bugs and features on [our Issues page](https://github.com/ballerine-io/ballerine/issues)
+-   Submit a  [feature request](https://github.com/ballerine-io/ballerine/issues/new?assignees=&labels=enhancement%2C+feature&template=feature_request.md)  or  [bug report](https://github.com/ballerine-io/ballerine/issues/new?assignees=&labels=bug&template=bug_report.md)
 
 ## Roadmap
 ### High level roadmap
 #### Back office
-- [x] View, approve, rejece pr ask for re-submittion
-	- [x] individuals
-	- [x] businesses (multiple documents and individuals)
-	- [x] Custom documents/information
+- [x] ~~View, approve, rejece pr ask for re-submittion~~
+	- [x] ~~individuals~~
+	- [x] ~~businesses (multiple documents and individuals)~~
+	- [x] ~~Custom documents/information~~
 	- [ ] Transactions
-- [x] Process managment
-	- [x] Collect audit logs
-	- [x] Assign/re-assign agents
-	- [x] Decision results and reasons webhooks
+- [x] ~~Process managment~~
+	- [x] ~~Collect audit logs~~
+	- [x] ~~Assign/re-assign agents~~
+	- [x] ~~Decision results and reasons webhooks~~
 	- [ ] Analytics
 	- [ ] Enforce policy rules on approval
 	- [ ] Show a case's acceptance criteria
 
 **Plugin system**
 
-- [x] Trigger a plugin using a workflow
-- [x] Create your own custom plugin API
+- [x] ~~Trigger a plugin using a workflow~~
+- [x] ~~Create your own custom plugin API~~
 - [ ] Fetch information and pass to other parts
 - [ ] Unified schema
-- [x] Plugins
-	- [x] Identity verification providers
-	- [x] Business website's context
-	- [x] AI multilingual names matching
+- [x] ~~Plugins~~
+	- [x] ~~Identity verification providers~~
+	- [x] ~~Business website's context~~
+	- [x] ~~AI multilingual names matching~~
 	- [ ] Business data repositories
 	- [ ] Sanctions screening
 	- [ ] Fraud check
 
 **Workflow engine**
-- [x] Orchestrate all parts of the flow
-- [x] Visualize a workflow (using XState)
+- [x] ~~Orchestrate all parts of the flow~~
+- [x] ~~Visualize a workflow (using XState)~~
 - [ ] No code/Low code rules managmgnet UI for non technical team members
 - [ ] A/B test different vendors/rules/flows
 
 **Rule engine**
-- [x] Rule-sets in workflows
-- [x] Simple rule types ("if this than that" rules)
+- [x] ~~Rule-sets in workflows~~
+- [x] ~~Simple rule types ("if this than that" rules)~~
 - [ ] Advance rule types (Matrix, tables, etc.)
-- [x] JSON configuration ability
+- [x] ~~JSON configuration ability~~
 - [ ] No code/Low code rules managmgnet UI for non technical team members
 
 **Frontend headless SDK**
-- [x] Get KYC/KYB steps from workflow
-- [x] Change steps dynamically during a flow
+- [x] ~~Get KYC/KYB steps from workflow~~
+- [x] ~~Change steps dynamically during a flow~~
 - [ ] Load vendor SDK
 
 
 **User flows UX/UI**
-- [x] Mobile and desktop webview flow
-- [x] Collect images
-- [x] Collect selfies
+- [x] ~~Mobile and desktop webview flow~~
+- [x] ~~Collect images~~
+- [x] ~~Collect selfies~~
 - [ ] Liveliness
 - [ ] Forms
-- [x] Re-submission flows
+- [x] ~~Re-submission flows~~
 ...
 
 We will soon release our full long-term roadmap to the public.
@@ -221,6 +257,6 @@ Follow this project to stay informed about when we provide updates.
 
 ## Contact Ballerine
 
-To start using the paid version or if you need any assistance, reach out to us at oss@ballerine.com. Join our [Discord Channel](discord-link) and [Slack Channel](slack-link) to stay updated and engage with our community.
+To start using the paid version or if you need any assistance, reach out to us at oss@ballerine.com. Join our [Discord Channel](discord-link) and [Slack Channel](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw) to stay updated and engage with our community.
 
 
