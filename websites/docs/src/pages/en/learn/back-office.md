@@ -1,4 +1,68 @@
 
+<div>
+
+<a href="https://ballerine.com" title="Ballerine - Open-source Infrastructure for Identity and Risk management.">
+    <img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646372b198f456345c69339c_logo%20github.png" alt="Ballerine's website">
+</a>
+
+
+# Case Management back office (for KYC/KYB and more)
+
+
+<br/>
+
+<img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646b8e8f87ac3f34a4880623_back%20office%20image.png">
+
+## Overview
+
+Give your operating team a case management back office so they can approve or reject users, initiate requests for document re-upload or escalate cases to others in the company.
+
+What can be done with the case managament back office?
+
+**General use**
+* Approve or reject customers, businesses, and documents manually.
+* Optimize manual work by customizing the layouts and information presented.
+* Enable teamwork in your review process (with assignment, roles, simultaneous work, and more)
+* Add 3rd party and custom data to your views, to help with taking decisions.
+* Monitor team productivity and efficiency
+
+**KYB**
+* Show a holistic view of a business, including multiple UBOs, documents, information collected and more.
+* Present data from various vendors, data repositories,
+* Manage back-and-forth communicaion with your customers regarding their application.
+
+**KYC**
+
+* Take decisions regarding clients quickly and efficiently. 
+
+**Document approval**
+
+* Use the case management to create review processes for when customers want to improve their status
+* (e.g. credit score, better loans, higher limits, less ristrictions)
+
+
+
+
+
+
+
+
+## Getting Started
+
+**Live demo:**
+<a href="https://www.backoffice-demo.ballerine.app/" target="_blank">Try now</a> - Old version example
+
+**Overview Video**
+
+<a href="https://youtu.be/xYQCIGuvhZU" target="_blank">Watch now</a>
+
+<a href="https://youtu.be/xYQCIGuvhZU" title="Ballerine Demo">
+    <img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646b8910a0b4433ebe079285_back%20office%20vid%20thumbnail.png" alt="Demo video">
+</a>
+
+**Getting started**
+To install the dev version use the following steps: 
+
 #### Use backoffice with through API
 
 Follow the steps below to run the backoffice app and the workflow service.
@@ -196,3 +260,24 @@ curl --location 'http://localhost:3000/api/v1/external/workflows/run' \
 ```
 
 </details>
+
+## Back Office High Level Roadmap
+
+- [x] ~~View, approve, rejece pr ask for re-submittion~~
+	- [x] ~~individuals~~
+	- [x] ~~businesses (multiple documents and individuals)~~
+	- [x] ~~Custom documents/information~~
+	- [ ] Transactions
+- [x] ~~Process managment~~
+	- [x] ~~Collect audit logs~~
+	- [x] ~~Assign/re-assign agents~~
+	- [x] ~~Decision results and reasons webhooks~~
+	- [ ] Analytics
+	- [ ] Enforce policy rules on approval
+	- [ ] Show a case's acceptance criteria
+	- [ ] RBAC
+	
+
+## Contact Ballerine
+
+To start using the paid version or if you need any assistance, reach out to us at oss@ballerine.com. Join our [Discord Channel](discord-link) and [Slack Channel](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw) to stay updated and engage with our community.
