@@ -79,6 +79,14 @@ export const useIndividual = () => {
         return;
       }
 
+      const action = (
+        {
+          approved: 'approve_document',
+          rejected: 'reject_document',
+          revision: 'ask_resubmit_document',
+        } as const
+      )[payload.approvalStatus];
+
       const context = {
         documents: endUser?.workflow?.workflowContext?.machineContext?.documents?.map(document => {
           if (document?.id !== payload?.id) return document;
@@ -119,11 +127,19 @@ export const useIndividual = () => {
       };
       return mutateUpdateWorkflowById({
         context,
+        action,
       });
     };
-  const onMutateTaskDecisionById = ({ context }: { context: AnyRecord }) =>
+  const onMutateTaskDecisionById = ({
+    context,
+    action,
+  }: {
+    context: AnyRecord;
+    action: Parameters<typeof mutateUpdateWorkflowById>[0]['action'];
+  }) =>
     mutateUpdateWorkflowById({
       context,
+      action,
     });
   const components = {
     heading: ({ value }) => <h2 className={`ml-2 mt-6 p-2 text-2xl font-bold`}>{value}</h2>,
@@ -300,6 +316,7 @@ export const useIndividual = () => {
 
         return onMutateTaskDecisionById({
           context,
+          action: 'update_document_properties',
         });
       };
 
