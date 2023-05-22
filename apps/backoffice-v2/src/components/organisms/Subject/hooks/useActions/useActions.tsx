@@ -3,7 +3,6 @@ import { useApproveEndUserMutation } from '../../../../../lib/react-query/mutati
 import { useRejectEndUserMutation } from '../../../../../lib/react-query/mutations/useRejectEndUserMutation/useRejectEndUserMutation';
 import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
 import { useDebounce } from 'hooks/useDebounce/useDebounce';
-import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
 import { useSelectNextEndUser } from 'hooks/useSelectNextEndUser/useSelectNextEndUser';
 import { createInitials } from '../../../../../utils/create-initials/create-initials';
 import { IUseActions } from './interfaces';
@@ -100,29 +99,29 @@ export const useActions = ({ endUserId, fullName }: IUseActions) => {
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
   const onTriggerAssignToMe = true;
 
-  useDocumentListener('keydown', event => {
-    if (!event.ctrlKey || document.activeElement !== document.body) return;
-
-    event.preventDefault();
-
-    switch (event.key) {
-      case 'ArrowDown':
-        onSelectNextEndUser();
-        break;
-
-      // Approve end user on 'Ctrl + A'
-      case 'a':
-        onMutateApproveEndUser();
-        break;
-
-      // Reject end user on 'Ctrl + J'
-      case 'j':
-        onMutateRejectEndUser({
-          action: Action.REJECT,
-        });
-        break;
-    }
-  });
+  // useDocumentListener('keydown', event => {
+  //   if (!event.ctrlKey || document.activeElement !== document.body) return;
+  //
+  //   event.preventDefault();
+  //
+  //   switch (event.key) {
+  //     case 'ArrowDown':
+  //       onSelectNextEndUser();
+  //       break;
+  //
+  //     // Approve end user on 'Ctrl + A'
+  //     case 'a':
+  //       onMutateApproveEndUser();
+  //       break;
+  //
+  //     // Reject end user on 'Ctrl + J'
+  //     case 'j':
+  //       onMutateRejectEndUser({
+  //         action: Action.REJECT,
+  //       });
+  //       break;
+  //   }
+  // });
 
   return {
     onTriggerAssignToMe,
