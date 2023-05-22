@@ -97,7 +97,7 @@ We believe in enabling companies to manage user  identity  and risk according to
 
 ## Try Ballerine Now
 
-**In the following example you can test a simple form the following infrastructure capabilities**
+**In the following example you can test a simple form of the following infrastructure capabilities**
 
 1. Document collection flow controlled by our **Headless SDK**.
 2. A manual review case management **Back Office**.
