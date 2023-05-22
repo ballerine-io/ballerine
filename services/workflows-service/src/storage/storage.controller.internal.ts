@@ -10,6 +10,8 @@ import * as errors from '../errors';
 import { fileFilter } from './file-filter';
 import { downloadFileFromS3, manageFileByProvider } from '@/storage/get-file-storage-manager';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
+import path from 'path';
+import os from 'os';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -86,7 +88,8 @@ export class StorageControllerInternal {
       );
       return res.sendFile(localFilePath, { root: '/' });
     } else {
-      return res.sendFile(persistedFile.fileNameOnDisk, { root: './upload' });
+      const root = path.parse(os.homedir()).root;
+      return res.sendFile(persistedFile.fileNameOnDisk, { root: root });
     }
   }
 }
