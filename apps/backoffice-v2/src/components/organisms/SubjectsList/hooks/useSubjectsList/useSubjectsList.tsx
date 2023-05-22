@@ -41,12 +41,20 @@ export const useSubjectsList = (routerId: TRouteId) => {
     entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions;
   const filterByOptions = [
     {
-      label: 'Status',
+      label: 'Case Status',
       value: 'caseStatus',
       options: [
         {
           label: 'Active',
           value: 'active',
+        },
+        {
+          label: 'Completed',
+          value: 'completed',
+        },
+        {
+          label: 'Failed',
+          value: 'failed',
         },
       ],
     },
