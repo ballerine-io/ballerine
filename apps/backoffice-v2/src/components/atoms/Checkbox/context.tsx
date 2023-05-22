@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import { TCheckboxGroupState } from './types';
 import { FunctionComponentWithChildren } from '../../../types';
 
@@ -21,11 +21,11 @@ export const Context = createContext<TCheckboxGroupState>(undefined);
  * @constructor
  */
 export const Provider: FunctionComponentWithChildren<IProviderProps> = ({
-  values = [],
+  values,
   onChange,
   children,
 }) => {
-  const [checked, setChecked] = useState(values);
+  const [checked, setChecked] = useState(values ?? []);
   const handleChange = useCallback(
     (value: unknown) => {
       const isChecked = checked.some(item => item === value);
@@ -40,6 +40,12 @@ export const Provider: FunctionComponentWithChildren<IProviderProps> = ({
     values: checked,
     onChange: handleChange,
   };
+
+  useEffect(() => {
+    if (!values) return;
+
+    setChecked(values);
+  }, [values]);
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };

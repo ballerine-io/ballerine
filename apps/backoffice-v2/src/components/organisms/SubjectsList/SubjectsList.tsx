@@ -55,7 +55,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
   return (
     <div id={`subjects-list`} {...props}>
       <div className={`border-neutral/10 p-4 theme-dark:border-neutral/60`}>
-        <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary focus-within:outline theme-dark:border-neutral/60">
+        <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60">
           <div className="input-group">
             <div className={`btn-ghost btn-square btn pointer-events-none`}>
               <MagnifyingGlassSvg className={`!d-5`} />
@@ -71,7 +71,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
           </div>
         </div>
         <div className={`flex items-center justify-between`}>
-          <div className="dropdown-hover dropdown-bottom dropdown z-[60]">
+          <div className="dropdown dropdown-bottom dropdown-hover z-[60]">
             <button
               className={`btn-ghost btn-sm btn h-[2.125rem] gap-2 border-neutral/10 text-xs focus-visible:outline-primary theme-dark:border-neutral/50`}
               tabIndex={0}
@@ -84,40 +84,39 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
             <div
               className={`dropdown-content space-y-2 rounded-md  border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
             >
-              {filter &&
-                filterByOptions.map(({ label, value, options }) => {
-                  return (
-                    <Checkbox.Group
-                      key={label}
-                      label={label}
-                      values={filter?.[value]}
-                      onChange={onFilter(value as keyof TEndUser)}
-                      titleProps={{
-                        className: `text-base-content`,
-                      }}
-                      innerContainerProps={{
-                        className: `w-96 flex-wrap`,
-                      }}
-                    >
-                      {options.map(({ label, value, key }) => (
-                        <Checkbox.Item
-                          key={`${label}${key ?? ''}`}
-                          value={value}
-                          className={`text-sm  text-base-content`}
-                          checkboxProps={{
-                            className: 'd-4',
-                          }}
-                        >
-                          {label}
-                        </Checkbox.Item>
-                      ))}
-                    </Checkbox.Group>
-                  );
-                })}
+              {filterByOptions.map(({ label, value, options }) => {
+                return (
+                  <Checkbox.Group
+                    key={label}
+                    label={label}
+                    values={filter?.[value]}
+                    onChange={onFilter(value as keyof TEndUser)}
+                    titleProps={{
+                      className: `text-base-content`,
+                    }}
+                    innerContainerProps={{
+                      className: `w-96 flex-wrap`,
+                    }}
+                  >
+                    {options.map(({ label, value, key }) => (
+                      <Checkbox.Item
+                        key={`${label}${key ?? ''}`}
+                        value={value}
+                        className={`text-sm  text-base-content`}
+                        checkboxProps={{
+                          className: 'd-4',
+                        }}
+                      >
+                        {label}
+                      </Checkbox.Item>
+                    ))}
+                  </Checkbox.Group>
+                );
+              })}
             </div>
           </div>
           <div
-            className={`form-control rounded-md border border-neutral/10 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary focus-within:outline theme-dark:border-neutral/60`}
+            className={`form-control rounded-md border border-neutral/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary theme-dark:border-neutral/60`}
           >
             <div className={`input-group flex items-center`}>
               <button
