@@ -493,12 +493,13 @@ export class WorkflowService {
       this.__fetchFromServiceProviders(documentPage);
     const { toServiceProvider, toRemoteFileConfig, remoteFileNameInDirectory } =
       this.__fetchToServiceProviders(entityId, remoteFileName);
-    const { fileNameInBucket, remoteFilePath } = await this.__copyFileFromSourceToDestination(
-      fromServiceProvider,
-      fromRemoteFileConfig,
-      toServiceProvider,
-      toRemoteFileConfig,
-    );
+    const { remoteFilePath, fileNameInBucket } =
+      await this.fileService.copyFileFromSourceToDestination(
+        fromServiceProvider,
+        fromRemoteFileConfig,
+        toServiceProvider,
+        toRemoteFileConfig,
+      );
     const userId = entityId;
     const ballerineFileId = await this.storageService.createFileLink({
       uri: remoteFileNameInDirectory,
@@ -508,35 +509,6 @@ export class WorkflowService {
     });
 
     return ballerineFileId;
-  }
-
-  private async __copyFileFromSourceToDestination(
-    fromServiceProvider: HttpFileService | AwsS3FileService | LocalFileService,
-    fromRemoteFileConfig: TS3BucketConfig | string,
-    toServiceProvider: HttpFileService | AwsS3FileService | LocalFileService,
-    toRemoteFileConfig: TS3BucketConfig | string,
-  ) {
-    try {
-      const remoteFilePath = await this.fileService.copyFileFromSourceToDestination(
-        fromServiceProvider,
-        fromRemoteFileConfig,
-        toServiceProvider,
-        toRemoteFileConfig,
-      );
-
-      const fileNameInBucket =
-        typeof remoteFilePath != 'string' ? remoteFilePath.fileNameInBucket : undefined;
-
-      return { fileNameInBucket, remoteFilePath };
-    } catch (ex) {
-      console.log(
-        `Unable to download file - ${fromRemoteFileConfig} - ` +
-          (isErrorWithMessage(ex) ? ex.message : ''),
-      );
-      throw new BadRequestException(
-        `Unable to download file -  ${fromRemoteFileConfig}, Please check the validity of the file path and access`,
-      );
-    }
   }
 
   private async __findOrPersistEntityInformation(context: DefaultContextSchema) {
