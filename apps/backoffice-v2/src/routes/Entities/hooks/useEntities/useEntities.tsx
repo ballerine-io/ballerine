@@ -9,7 +9,7 @@ import { useSelectEntityOnMount } from '../../../../entities/hooks/useSelectEnti
 import { entitiesRoute } from '../../Entities.route';
 import { entitiesIndexRoute } from '../../EntitiesIndex.route';
 import { entityRoute } from '../../../Entity/Entity.route';
-import { useUsersQuery } from '../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
+import { useUsersQuery } from '../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
 import { useSort } from 'hooks/useSort/useSort';
 import { useEntitiesWithWorkflowsQuery } from '../../../../entities/hooks/queries/useEntitiesWithWorkflowsQuery/useEntitiesWithWorkflowsQuery';
 import { TIndividual } from '../../../../individuals/types';

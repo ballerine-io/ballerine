@@ -2,7 +2,7 @@ import { useSearch } from '@tanstack/react-router';
 import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
 import { useCallback, useRef } from 'react';
 import { TRouteId } from '../../../../../../types';
-import { useUsersQuery } from '../../../../../../lib/react-query/queries/useUsersQuery/useUsersQuery';
+import { useUsersQuery } from '../../../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
 import { useFilterEntity } from '../../../../../../entities/hooks/useFilterEntity/useFilterEntity';
 
 export const useCases = (routerId: TRouteId) => {

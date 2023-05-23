@@ -6,7 +6,7 @@ import { Entities } from './Entities.page';
 import { States } from '../../enums';
 import { queryKeys } from '../../lib/react-query/query-keys';
 import { preSearchFiltersByKind } from './pre-search-filters';
-import { users } from '../../lib/react-query/users';
+import { usersQueryKeys } from '../../users/query-keys';
 
 const SearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).optional().catch('desc'),
@@ -57,7 +57,7 @@ export const entitiesRoute = new Route({
   ],
   onLoad: async ({ search }) => {
     const entityList = queryKeys[search?.entity].list(search?.filterId);
-    const usersList = users.list();
+    const usersList = usersQueryKeys.list();
     await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
     await queryClient.ensureQueryData(usersList.queryKey, usersList.queryFn);
 
