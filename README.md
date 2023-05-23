@@ -129,7 +129,7 @@ Watch a video of how the demo works, with explainations:
 To set up a local environment, follow these steps:
 
 1. #### Install prerequisites:
-   - Node.js (Minimum version 1.8) ([Install NVM](https://github.com/nvm-sh/nvm))
+   - Node.js (Minimum version 18) (you can install node via NVM: [Install NVM](https://github.com/nvm-sh/nvm))
    - Latest PNPM version (Minimum version 8.0) ([Install PNPM](https://pnpm.io/installation))
    - Docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
 
