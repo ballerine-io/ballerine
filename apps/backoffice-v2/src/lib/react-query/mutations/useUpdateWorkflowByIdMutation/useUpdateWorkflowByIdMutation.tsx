@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../../api/api';
-import { Action, Resource } from '../../../../enums';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
+import { workflows } from '../../workflows';
 
 export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: string }) => {
   const queryClient = useQueryClient();
+  const workflowById = workflows.byId({ workflowId });
 
   return useMutation({
     mutationFn: ({
@@ -24,12 +25,36 @@ export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: stri
           context,
         },
       }),
+    onMutate: async ({ context }) => {
+      await queryClient.cancelQueries({
+        queryKey: workflowById.queryKey,
+      });
+      const previousWorkflow = queryClient.getQueryData(workflowById.queryKey);
+
+      queryClient.setQueryData(workflowById.queryKey, oldWorkflow => {
+        return {
+          ...oldWorkflow,
+          workflowRuntimeData: {
+            ...oldWorkflow?.workflowRuntimeData,
+            context: {
+              ...oldWorkflow?.workflowRuntimeData?.context,
+              ...context,
+            },
+          },
+        };
+      });
+
+      return { previousWorkflow };
+    },
     onSuccess: (data, { action }) => {
-      void queryClient.invalidateQueries();
       toast.success(t(`toast:${action}.success`));
     },
-    onError: (error, { action }) => {
+    onError: (error, { action }, context) => {
       toast.error(t(`toast:${action}.error`));
+      queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries();
     },
   });
 };
