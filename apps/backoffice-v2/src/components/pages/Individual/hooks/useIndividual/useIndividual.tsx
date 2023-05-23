@@ -48,12 +48,12 @@ export const useIndividual = () => {
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
-  
-  endUser?.workflow?.workflowContext?.machineContext?.documents.forEach((document) => {
-    document?.pages.forEach((page) => {
+
+  endUser?.workflow?.workflowContext?.machineContext?.documents.forEach(document => {
+    document?.pages.forEach(page => {
       page.data = results.shift().data;
-    })
-  })
+    });
+  });
   const entity = useFilterEntity();
   const selectedEndUser = {
     id: endUserId,
@@ -150,16 +150,16 @@ export const useIndividual = () => {
       action,
     });
 
-  const POSITIVE_VALUE_INDECATOR = ['approved'];
-  const NEGATIVE_VALUE_INDECATOR = ['revision', 'rejected'];
-  const isDesitionPositive = (isDesitionComponnt: boolean, value) => {
+  const POSITIVE_VALUE_INDICATOR = ['approved'];
+  const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
+  const isDecisionPositive = (isDesitionComponnt: boolean, value) => {
     return (
-      isDesitionComponnt && value && POSITIVE_VALUE_INDECATOR.includes(String(value).toLowerCase())
+      isDesitionComponnt && value && POSITIVE_VALUE_INDICATOR.includes(String(value).toLowerCase())
     );
   };
-  const isDesitionNegative = (isDesitionComponet: boolean, value) => {
+  const isDecisionNegative = (isDesitionComponet: boolean, value) => {
     return (
-      isDesitionComponet && value && NEGATIVE_VALUE_INDECATOR.includes(String(value).toLowerCase())
+      isDesitionComponet && value && NEGATIVE_VALUE_INDICATOR.includes(String(value).toLowerCase())
     );
   };
 
@@ -376,8 +376,8 @@ export const useIndividual = () => {
                         disabled={!isEditable}
                         className={ctw(`disabled:bg-background`, {
                           'rounded border border-border p-1': isEditable,
-                          'font-bold text-success': isDesitionPositive(isDesitionComponnt, value),
-                          'font-bold text-red-500': isDesitionNegative(isDesitionComponnt, value),
+                          'font-bold text-success': isDecisionPositive(isDesitionComponnt, value),
+                          'font-bold text-red-500': isDecisionNegative(isDesitionComponnt, value),
                         })}
                         pattern={pattern}
                         autoComplete={'off'}
@@ -491,12 +491,9 @@ export const useIndividual = () => {
                   data:
                     endUser?.workflow?.workflowContext?.machineContext?.documents?.[
                       index
-                    ]?.pages?.map(({ type, metadata, data  }, index) => ({
+                    ]?.pages?.map(({ type, metadata, data }, index) => ({
                       title: metadata?.side ? `${category} ${metadata?.side}` : category,
-                      imageUrl:
-                        type === 'pdf'
-                          ? octetToFileType(data, type)
-                          : data,
+                      imageUrl: type === 'pdf' ? octetToFileType(data, type) : data,
                     })) ?? [],
                 },
               },
