@@ -1,7 +1,7 @@
 import { apiClient } from '../api/api-client';
-import { UsersListSchema } from '../lib/zod/schemas/users';
 import { handleZodError } from '../utils/handle-zod-error/handle-zod-error';
 import { Method } from '../enums';
+import { UsersListSchema } from './validation-schemas';
 
 export const fetchUsers = async () => {
   const [users, error] = await apiClient({
