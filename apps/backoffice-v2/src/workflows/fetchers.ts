@@ -48,7 +48,7 @@ export const fetchUpdateWorkflowById = async ({
   return handleZodError(error, workflow);
 };
 
-export const fetchEvent = async ({
+export const fetchWorkflowEvent = async ({
   workflowId,
   body,
 }: IWorkflowId & {

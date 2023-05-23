@@ -6,7 +6,7 @@ import { Method } from '../enums';
 import { AuthenticatedUserSchema } from './validation-schemas';
 
 export const fetchSignOut = async ({ callbackUrl }: ISignInProps) => {
-  const [data, error] = await apiClient({
+  const [session, error] = await apiClient({
     endpoint: `auth/logout`,
     method: Method.POST,
     schema: z.any(),
@@ -15,11 +15,11 @@ export const fetchSignOut = async ({ callbackUrl }: ISignInProps) => {
     },
   });
 
-  return handleZodError(error, data);
+  return handleZodError(error, session);
 };
 
 export const fetchSignIn = async ({ callbackUrl, body }: ISignInProps) => {
-  const [data, error] = await apiClient({
+  const [session, error] = await apiClient({
     endpoint: 'auth/login',
     method: Method.POST,
     schema: z.any(),
@@ -40,11 +40,11 @@ export const fetchSignIn = async ({ callbackUrl, body }: ISignInProps) => {
     },
   });
 
-  return handleZodError(error, data);
+  return handleZodError(error, session);
 };
 
 export const fetchAuthenticatedUser = async () => {
-  const [data, error] = await apiClient({
+  const [session, error] = await apiClient({
     endpoint: `auth/session`,
     method: Method.GET,
     schema: z.object({
@@ -52,5 +52,5 @@ export const fetchAuthenticatedUser = async () => {
     }),
   });
 
-  return handleZodError(error, data);
+  return handleZodError(error, session);
 };

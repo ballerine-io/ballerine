@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../../../../api/api';
 import { Action, Resource } from '../../../../enums';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
 import { queryKeys } from '../../../query-keys';
 import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
+import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
 
 export const useRejectEntityMutation = ({
   workflowId,
@@ -30,7 +30,7 @@ export const useRejectEntityMutation = ({
             resubmissionReason: string;
           },
     ) =>
-      api.workflows.event({
+      fetchWorkflowEvent({
         workflowId,
         body: {
           name: payload?.action?.toLowerCase(),

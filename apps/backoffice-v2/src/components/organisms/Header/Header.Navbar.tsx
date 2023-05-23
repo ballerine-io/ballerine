@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { NavItem } from './Header.NavItem';
-import { useFiltersQuery } from '../../../lib/react-query/queries/useFiltersQuery/useFiltersQuery';
+import { useFiltersQuery } from '../../../filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { useSearch } from '@tanstack/react-router';
 import { ctw } from '../../../utils/ctw/ctw';
 import { TRoutes } from '../../../App/types';

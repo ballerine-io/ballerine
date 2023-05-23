@@ -2,8 +2,8 @@ import { RootRoute } from '@tanstack/react-router';
 import { queryClient } from '../../lib/react-query/query-client';
 import { env } from '../../env/env';
 import { Root } from './Root.page';
-import { filters } from '../../lib/react-query/filters';
 import { authQueryKeys } from '../../auth/query-keys';
+import { filtersQueryKeys } from '../../filters/query-keys';
 
 // Layout and globals
 export const rootRoute = new RootRoute({
@@ -18,7 +18,7 @@ export const rootRoute = new RootRoute({
 
     if (!session?.user) return;
 
-    const filtersList = filters.list();
+    const filtersList = filtersQueryKeys.list();
     await queryClient.ensureQueryData(filtersList.queryKey, filtersList.queryFn);
 
     return {};

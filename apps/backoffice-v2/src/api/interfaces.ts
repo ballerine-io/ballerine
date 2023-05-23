@@ -1,4 +1,4 @@
-import { AnyArray, AnyRecord, TMethod } from '../types';
+import { AnyRecord } from '../types';
 import { Method } from '../enums';
 import { z, ZodSchema } from 'zod';
 
@@ -24,26 +24,6 @@ export interface IApiClient {
     schema: TZodSchema;
     isBlob?: boolean;
   }): Promise<[z.infer<TZodSchema>, undefined] | [undefined, Error]>;
-}
-
-export interface IEndpoint {
-  [key: string]: {
-    [key: string]:
-      | {
-          default: {
-            endpoint: (...args: AnyArray) => string;
-            method: TMethod;
-          };
-          [key: string]: {
-            endpoint: (...args: AnyArray) => string;
-            method: TMethod;
-          };
-        }
-      | {
-          endpoint: (...args: AnyArray) => string;
-          method: TMethod;
-        };
-  };
 }
 
 export interface IWorkflowId {

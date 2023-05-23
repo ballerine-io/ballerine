@@ -2,7 +2,6 @@ import { apiClient } from '../api/api-client';
 import { handleZodError } from '../utils/handle-zod-error/handle-zod-error';
 import { Method } from '../enums';
 import { BusinessByIdSchema, BusinessesListSchema } from './validation-schemas';
-import { endpoints } from '../api/endpoints';
 
 export const fetchBusinesses = async (filterId: string) => {
   const [businesses, error] = await apiClient({
@@ -22,11 +21,8 @@ export const fetchBusinessById = async ({
   filterId: string;
 }) => {
   const [business, error] = await apiClient({
-    endpoint: endpoints.businesses.byId.endpoint({
-      businessId,
-      filterId,
-    }),
-    method: endpoints.businesses.byId.method,
+    endpoint: `businesses/${businessId}?filterId=${filterId ?? ''}`,
+    method: Method.GET,
     schema: BusinessByIdSchema,
   });
 

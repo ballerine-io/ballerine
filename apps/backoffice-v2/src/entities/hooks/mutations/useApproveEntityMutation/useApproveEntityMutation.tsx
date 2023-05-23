@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../../../../api/api';
 import { Action, Resource } from '../../../../enums';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
 import { queryKeys } from '../../../query-keys';
 import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
+import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
 
 export const useApproveEntityMutation = ({
   entityId,
@@ -20,7 +20,7 @@ export const useApproveEntityMutation = ({
 
   return useMutation({
     mutationFn: () =>
-      api.workflows.event({
+      fetchWorkflowEvent({
         workflowId,
         body: {
           name: 'approve',

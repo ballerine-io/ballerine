@@ -1,4 +1,4 @@
-import { useFiltersQuery } from '../../../lib/react-query/queries/useFiltersQuery/useFiltersQuery';
+import { useFiltersQuery } from '../../../filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { useNavigate } from '@tanstack/react-router';
 import { useFilterEntity } from '../useFilterEntity/useFilterEntity';
 import { useEffect } from 'react';
