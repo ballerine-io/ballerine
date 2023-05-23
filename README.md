@@ -180,9 +180,6 @@ Once the process is complete,  _2 tabs_   will open in your browser:
 4.  Approve/reject/ask to resubmit
 5.  Get back to the KYC UI to see the result
 
-You can also configure simple rules in the workflow engine using the Rules JSON.
-You can find it by...@alon to add
-
 *Note: some components are currently in beta, if you run into an issue please ping us on Slack
 <br/>
 
