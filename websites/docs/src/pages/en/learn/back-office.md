@@ -73,11 +73,11 @@ Open cases in the backoffice by sending API requests to the workflow service.
    ```sh
    git clone https://github.com/ballerine-io/ballerine.git
    ```
-   2. Install npm depenencies: 
+   2. Checkout to `dev` branch:
    ```sh
    git checkout dev
    ```
-   3.  Checkout to `dev` branch:  
+   3.  Install npm depenencies:
   ```sh
    pnpm install
    ```
