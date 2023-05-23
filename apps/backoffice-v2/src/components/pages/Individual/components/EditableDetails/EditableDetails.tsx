@@ -12,15 +12,22 @@ import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
 import { camelCaseToSpace } from '../../../../../utils/camel-case-to-space/camel-case-to-space';
 import { Input } from 'components/atoms/Input/Input';
 import { Button } from 'components/atoms/Button/button';
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { AnyRecord } from '../../../../../types';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { IEditableDetails } from 'components/pages/Individual/components/EditableDetails/interfaces';
 
-export const EditableDetails = ({ data, valueId, id, documents, title, workflowId }) => {
-  const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
-    useUpdateWorkflowByIdMutation({
-      workflowId,
-    });
+export const EditableDetails: FunctionComponent<IEditableDetails> = ({
+  data,
+  valueId,
+  id,
+  documents,
+  title,
+  workflowId,
+}) => {
+  const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
+    workflowId,
+  });
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
   const isDecisionPositive = (isDecisionComponent: boolean, value) => {

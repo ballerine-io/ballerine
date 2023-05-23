@@ -42,9 +42,9 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
           <ReactCrop
             crop={crop}
             onChange={onCrop}
-            disabled={!isCropping || selectedImage?.fileType === 'application/pdf'}
+            disabled={!isCropping || selectedImage?.fileType === 'pdf'}
             className={ctw({
-              'd-full [&>div]:d-full': selectedImage?.fileType === 'application/pdf',
+              'd-full [&>div]:d-full': selectedImage?.fileType === 'pdf',
             })}
           >
             <ImageViewer.SelectedImage
@@ -55,7 +55,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
             />
           </ReactCrop>
           <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
-            {selectedImage?.fileType !== 'application/pdf' && (
+            {selectedImage?.fileType !== 'pdf' && (
               <>
                 <button
                   className={ctw(
