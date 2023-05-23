@@ -38,6 +38,7 @@ import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/use
 import toast from 'react-hot-toast';
 import { useCaseState } from 'components/organisms/Subject/hooks/useCaseState/useCaseState';
 import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
+import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -47,11 +48,11 @@ export const useIndividual = () => {
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
-  const { fullName, avatarUrl } = endUser ?? {};
+  const entity = useFilterEntity();
   const selectedEndUser = {
     id: endUserId,
-    fullName,
-    avatarUrl,
+    fullName: entity === 'individuals' ? endUser?.fullName : endUser?.companyName,
+    avatarUrl: endUser?.avatarUrl,
   };
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
@@ -177,9 +178,7 @@ export const useIndividual = () => {
         endUser?.workflow?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
           ({ enum: enum_ }) => !!enum_,
         )?.enum;
-      const isApprovedTask = endUser?.workflow?.workflowContext?.machineContext?.documents?.some(
-        ({ id, decision }) => id === data?.id && decision?.status === 'approved',
-      );
+      const isDisabled = data?.disabled || false;
 
       return value === 'Reject' ? (
         <Dialog>
@@ -191,7 +190,7 @@ export const useIndividual = () => {
                   // loading: debouncedIsLoadingRejectEndUser,
                 })}
                 // disabled={isLoading || !canReject}
-                disabled={!caseState.actionButtonsEnabled}
+                disabled={!caseState.actionButtonsEnabled || isDisabled}
               >
                 {value}
               </Button>
@@ -272,9 +271,7 @@ export const useIndividual = () => {
           className={ctw({
             loading: isLoadingUpdateWorkflowById,
           })}
-          disabled={
-            isLoadingUpdateWorkflowById || isApprovedTask || !caseState.actionButtonsEnabled
-          }
+          disabled={isLoadingUpdateWorkflowById || isDisabled || !caseState.actionButtonsEnabled}
           onClick={onMutateUpdateWorkflowById({
             id: data?.id,
             approvalStatus: data?.approvalStatus,
@@ -290,7 +287,7 @@ export const useIndividual = () => {
         <Subject.FaceMatch faceAUrl={value.faceAUrl} faceBUrl={value.faceBUrl} />
       </div>
     ),
-    details: ({ value }) => {
+    details: ({ id, value }) => {
       const defaultValues = value.data?.reduce((acc, curr) => {
         acc[curr.title] = curr.value;
 
@@ -324,7 +321,11 @@ export const useIndividual = () => {
       const isDesitionComponnt = value?.title == 'Decision';
 
       return (
-        <div className={`m-2 rounded p-1`}>
+        <div
+          className={ctw(`m-2 rounded p-1`, {
+            'pt-4': id === 'entity-details',
+          })}
+        >
           <Form
             options={{
               defaultValues,
@@ -334,9 +335,12 @@ export const useIndividual = () => {
           >
             {methods => (
               <>
-                <legend className={`sr-only text-lg font-bold text-red-500`}>{value?.title}</legend>
-                <div className={`grid grid-cols-2 gap-4`}>
-                  {console.log(JSON.stringify(value))}
+                <legend className={`sr-only text-lg font-bold`}>{value?.title}</legend>
+                <div
+                  className={ctw(`grid grid-cols-2 gap-4`, {
+                    'grid-cols-3': id === 'entity-details',
+                  })}
+                >
                   {value?.data?.map(({ title, isEditable, type, format, pattern }) => (
                     <div className={`flex flex-col`} key={title}>
                       <label htmlFor={title} className={`font-bold`}>
@@ -384,24 +388,6 @@ export const useIndividual = () => {
   const caseState = useCaseState(session?.user, endUser?.workflow);
   const tasks = endUser?.workflow?.workflowContext?.machineContext?.entity
     ? [
-        [
-          {
-            type: 'details',
-            value: {
-              title: `${toStartCase(
-                endUser?.workflow?.workflowContext?.machineContext?.entity?.type,
-              )} Information`,
-              data: Object.entries(
-                endUser?.workflow?.workflowContext?.machineContext?.entity?.data ?? {},
-              )?.map(([title, value]) => ({
-                title,
-                value,
-                type: 'string',
-                isEditable: false,
-              })),
-            },
-          },
-        ],
         ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
           ({ id, type, category, issuer, properties, propertiesSchema, decision }, index) => {
             return [
@@ -422,6 +408,7 @@ export const useIndividual = () => {
                         value: 'Reject',
                         data: {
                           id,
+                          disabled: Boolean(decision),
                           approvalStatus: 'rejected',
                         },
                       },
@@ -430,6 +417,7 @@ export const useIndividual = () => {
                         value: 'Approve',
                         data: {
                           id,
+                          disabled: Boolean(decision),
                           approvalStatus: 'approved',
                         },
                       },
@@ -489,6 +477,25 @@ export const useIndividual = () => {
             ];
           },
         ) ?? []),
+        [
+          {
+            id: 'entity-details',
+            type: 'details',
+            value: {
+              title: `${toStartCase(
+                endUser?.workflow?.workflowContext?.machineContext?.entity?.type,
+              )} Information`,
+              data: Object.entries(
+                endUser?.workflow?.workflowContext?.machineContext?.entity?.data ?? {},
+              )?.map(([title, value]) => ({
+                title,
+                value,
+                type: 'string',
+                isEditable: false,
+              })),
+            },
+          },
+        ],
       ]
     : [];
 

@@ -136,6 +136,7 @@ export class WorkflowService {
         businessId: true,
         assigneeId: true,
         id: true,
+        status: true,
       },
     });
   }
@@ -726,10 +727,11 @@ export class WorkflowService {
     }
 
     const localFileService = new LocalFileService();
+    const toFileStoragePath = localFileService.generateRemoteFilePath(fileName);
     return {
       toServiceProvider: localFileService,
-      toRemoteFileConfig: fileName,
-      remoteFileNameInDirectory: localFileService.generateRemoteFilePath(fileName),
+      toRemoteFileConfig: toFileStoragePath,
+      remoteFileNameInDirectory: toFileStoragePath,
     };
   }
 
