@@ -9,7 +9,7 @@
     <img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646372b198f456345c69339c_logo%20github.png" alt="Ballerine's website">
 </a>
 
-## Open-Source Infrastructure for User Risk Decisioning
+## Open-source infrastructure and data orchestration platform for risk decisioning
 
 
 
@@ -97,7 +97,7 @@ We believe in enabling companies to manage user  identity  and risk according to
 
 ## Try Ballerine Now
 
-**In the following example you can test a simple form the following infrastructure capabilities**
+**In the following example you can test a simple form of the following infrastructure capabilities**
 
 1. Document collection flow controlled by our **Headless SDK**.
 2. A manual review case management **Back Office**.
