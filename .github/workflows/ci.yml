@@ -28,8 +28,9 @@ jobs:
         uses: ./.github/actions/format-action
 
   test:
-    matrix:
-      os: [ubuntu-latest, windows-latest]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
 
@@ -40,8 +41,9 @@ jobs:
       - name: Test
         uses: ./.github/actions/test-action
   build:
-    matrix:
-      os: [ubuntu-latest, windows-latest]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
