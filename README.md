@@ -9,7 +9,7 @@
     <img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646372b198f456345c69339c_logo%20github.png" alt="Ballerine's website">
 </a>
 
-## Open-source infrastructure and data orchestration platform for risk decisioning
+## Open-Source Infrastructure for User Risk Decisioning
 
 
 
@@ -63,6 +63,18 @@ Ballerine is an open-source user risk decisioning infrastructure that helps comp
 
 <br/>
 
+## Our vision for this project
+
+Watch a brief video expalining what we're building.
+
+[Watch now](https://youtu.be/0SppYSZOatw)
+
+<br/>
+
+<a href="https://youtu.be/0SppYSZOatw" title="Ballerine Demo">
+    <img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646cb35bbee1708f66aa223a_vision%20thumbnail.png" alt="Demo video">
+</a>
+
 
 ## Features
 View each component's current state in the [roadmap](#roadmap) below.
@@ -72,7 +84,7 @@ View each component's current state in the [roadmap](#roadmap) below.
 - **Workflow engine** - Orchestrates and automates the different system's parts.
 
 ####  In Development/testing - 🔨
-- **Plugin system** - Integrates with 3rd-party vendors, APIs, and databases.
+- **Plugin system** - Integrates with 3rd-party vendors, APIs, and data sources.
 
 - **Rule engine** - Leverage various rule types to ensure user compliance with your risk policy.
 
@@ -91,7 +103,7 @@ We believe in enabling companies to manage user  identity  and risk according to
 
 - **Dynamic Experience:** Adaptive user journeys that modify in real-time based on the user's risk.
 - **Data Ownership:** Self-host on-premise to keep sensitive data within your infrastructure.
-- **Global Orchestration:** Add/change vendors to cater to users from multiple countries.
+- **Global Orchestration:** Add/change vendors and data sources to cater to users from multiple countries.
 - **Cost Reduction:** Retain control over vendor relationships, costs, and communication.
 - And More.
 
@@ -102,7 +114,7 @@ We believe in enabling companies to manage user  identity  and risk according to
 1. Document collection flow controlled by our **Headless SDK**.
 2. A manual review case management **Back Office**.
 3. Live communication between the parts using a **Workflow Engine**, that also defines the process steps.
-4. A simple JSON containing **Rules** that are checked during the flow.
+4. A simple JSON containing **Risk Rules** that are checked during the flow.
 
 **Parts of the system you might look for but are not in THIS demo:**
 - Advanced Back Office - To try it out go to our [Case management back office page](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/back-office.md).
