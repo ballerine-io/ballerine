@@ -71,7 +71,7 @@ Open cases in the backoffice by sending API requests to the workflow service.
 
    1. Clone the project:  
    ```sh
-   git clone https://github.com/ballerine-io/ballerine.git
+   git clone https://github.com/ballerine-io/ballerine.git && cd ballerine
    ```
    2. Checkout to `dev` branch:
    ```sh
