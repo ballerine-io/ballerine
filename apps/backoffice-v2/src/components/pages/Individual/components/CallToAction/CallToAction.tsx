@@ -40,7 +40,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     [setRevisionReason],
   );
   const { data: session } = useGetSessionQuery();
-  const caseState = useCaseState(session?.authenticatedUser, endUser?.workflow);
+  const caseState = useCaseState(session?.user, endUser?.workflow);
   const revisionReasons =
     endUser?.workflow?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
