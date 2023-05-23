@@ -43,15 +43,19 @@ import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 export const useIndividual = () => {
   const { endUserId } = useParams();
   const { data: endUser, isLoading } = useEndUserWithWorkflowQuery(endUserId);
-  const results = useStorageFilesQuery(
+  const docsData = useStorageFilesQuery(
     endUser?.workflow?.workflowContext?.machineContext?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
 
-  endUser?.workflow?.workflowContext?.machineContext?.documents.forEach(document => {
-    document?.pages.forEach(page => {
-      page.data = results.shift().data;
+  const results = [];
+  endUser?.workflow?.workflowContext?.machineContext?.documents.forEach((document, docIndex) => {
+    document?.pages.forEach((page, pageIndex) => {
+      if (!results[docIndex]) {
+        results[docIndex] = [];
+      }
+      results[docIndex][pageIndex] = docsData.shift().data;
     });
   });
   const entity = useFilterEntity();
@@ -415,7 +419,7 @@ export const useIndividual = () => {
   const tasks = endUser?.workflow?.workflowContext?.machineContext?.entity
     ? [
         ...(endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
-          ({ id, type, category, issuer, properties, propertiesSchema, decision }, index) => {
+          ({ id, type, category, issuer, properties, propertiesSchema, decision }, docIndex) => {
             return [
               {
                 id: 'header',
@@ -490,10 +494,13 @@ export const useIndividual = () => {
                 value: {
                   data:
                     endUser?.workflow?.workflowContext?.machineContext?.documents?.[
-                      index
-                    ]?.pages?.map(({ type, metadata, data }, index) => ({
+                      docIndex
+                    ]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
                       title: metadata?.side ? `${category} ${metadata?.side}` : category,
-                      imageUrl: type === 'pdf' ? octetToFileType(data, type) : data,
+                      imageUrl:
+                        type === 'pdf'
+                          ? octetToFileType(results[docIndex][pageIndex], type)
+                          : results[docIndex][pageIndex],
                     })) ?? [],
                 },
               },
