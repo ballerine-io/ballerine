@@ -1,5 +1,4 @@
 import { useParams } from '@tanstack/react-router';
-import { camelCaseToSpace } from '../../../../../utils/camel-case-to-space/camel-case-to-space';
 import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
 import { Subject } from 'components/organisms/Subject/Subject';
 import { ctw } from '../../../../../utils/ctw/ctw';
@@ -27,18 +26,16 @@ import { Dialog } from 'components/organisms/Dialog/Dialog';
 import React, { useCallback, useState } from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
-import { Separator } from 'components/atoms/Separator/separator';
 import { Button } from 'components/atoms/Button/button';
 import { AlertTriangle, RotateCcw } from 'lucide-react';
-import { SubmitHandler } from 'react-hook-form';
 import { AnyRecord } from '../../../../../types';
 import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
-import { Form } from 'components/organisms/Form/Form';
 import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/useStorageFilesQuery/useStorageFilesQuery';
 import toast from 'react-hot-toast';
 import { useCaseState } from 'components/organisms/Subject/hooks/useCaseState/useCaseState';
 import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
+import { Details } from 'components/pages/Individual/components/Details/Details';
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -48,12 +45,12 @@ export const useIndividual = () => {
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
-  
-  endUser?.workflow?.workflowContext?.machineContext?.documents.forEach((document) => {
-    document?.pages.forEach((page) => {
+
+  endUser?.workflow?.workflowContext?.machineContext?.documents.forEach(document => {
+    document?.pages.forEach(page => {
       page.data = results.shift().data;
-    })
-  })
+    });
+  });
   const entity = useFilterEntity();
   const selectedEndUser = {
     id: endUserId,
@@ -149,19 +146,6 @@ export const useIndividual = () => {
       context,
       action,
     });
-
-  const POSITIVE_VALUE_INDECATOR = ['approved'];
-  const NEGATIVE_VALUE_INDECATOR = ['revision', 'rejected'];
-  const isDesitionPositive = (isDesitionComponnt: boolean, value) => {
-    return (
-      isDesitionComponnt && value && POSITIVE_VALUE_INDECATOR.includes(String(value).toLowerCase())
-    );
-  };
-  const isDesitionNegative = (isDesitionComponet: boolean, value) => {
-    return (
-      isDesitionComponet && value && NEGATIVE_VALUE_INDECATOR.includes(String(value).toLowerCase())
-    );
-  };
 
   const components = {
     heading: ({ value }) => <h2 className={`ml-2 mt-6 p-2 text-2xl font-bold`}>{value}</h2>,
@@ -308,95 +292,7 @@ export const useIndividual = () => {
         <Subject.FaceMatch faceAUrl={value.faceAUrl} faceBUrl={value.faceBUrl} />
       </div>
     ),
-    details: ({ id, value }) => {
-      const defaultValues = value.data?.reduce((acc, curr) => {
-        acc[curr.title] = curr.value;
-
-        return acc;
-      }, {});
-      const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = data => {
-        const context = {
-          documents: endUser?.workflow?.workflowContext?.machineContext?.documents?.map(
-            document => {
-              if (document?.id !== value?.id) return document;
-
-              return {
-                ...document,
-                properties: Object.keys(document?.properties).reduce((acc, curr) => {
-                  acc[curr] = data?.[curr];
-
-                  return acc;
-                }, {}),
-              };
-            },
-          ),
-        };
-
-        return onMutateTaskDecisionById({
-          context,
-          action: 'update_document_properties',
-        });
-      };
-
-      if (!value.data?.length) return;
-      const isDesitionComponnt = value?.title == 'Decision';
-
-      return (
-        <div
-          className={ctw(`m-2 rounded p-1`, {
-            'pt-4': id === 'entity-details',
-          })}
-        >
-          <Form
-            options={{
-              defaultValues,
-            }}
-            onSubmit={onSubmit}
-            className={`flex h-full flex-col`}
-          >
-            {methods => (
-              <>
-                <legend className={`sr-only text-lg font-bold`}>{value?.title}</legend>
-                <div
-                  className={ctw(`grid grid-cols-2 gap-4`, {
-                    'grid-cols-3': id === 'entity-details',
-                  })}
-                >
-                  {value?.data?.map(({ title, isEditable, type, format, pattern, value }) => (
-                    <div
-                      className={`flex flex-col ${isDesitionComponnt && !value ? 'hidden' : ''}`}
-                      key={title}
-                    >
-                      <label htmlFor={title} className={`font-bold`}>
-                        {toStartCase(camelCaseToSpace(title))}
-                      </label>
-                      <input
-                        {...methods.register(title)}
-                        type={!format ? (type === 'string' ? 'text' : type) : format}
-                        disabled={!isEditable}
-                        className={ctw(`disabled:bg-background`, {
-                          'rounded border border-border p-1': isEditable,
-                          'font-bold text-success': isDesitionPositive(isDesitionComponnt, value),
-                          'font-bold text-red-500': isDesitionNegative(isDesitionComponnt, value),
-                        })}
-                        pattern={pattern}
-                        autoComplete={'off'}
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div className={`mt-4 flex justify-end`}>
-                  {value?.data?.some(({ isEditable }) => isEditable) && (
-                    <Button type={'submit'}>Save</Button>
-                  )}
-                </div>
-              </>
-            )}
-          </Form>
-          <Separator className={`my-2`} />
-        </div>
-      );
-    },
+    details: Details,
     multiDocuments: ({ value }) => {
       const documents = value.data.filter(({ imageUrl }) => !!imageUrl);
 
@@ -491,12 +387,9 @@ export const useIndividual = () => {
                   data:
                     endUser?.workflow?.workflowContext?.machineContext?.documents?.[
                       index
-                    ]?.pages?.map(({ type, metadata, data  }, index) => ({
+                    ]?.pages?.map(({ type, metadata, data }, index) => ({
                       title: metadata?.side ? `${category} ${metadata?.side}` : category,
-                      imageUrl:
-                        type === 'pdf'
-                          ? octetToFileType(data, type)
-                          : data,
+                      imageUrl: type === 'pdf' ? octetToFileType(data, type) : data,
                     })) ?? [],
                 },
               },
