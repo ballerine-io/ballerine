@@ -1,13 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../../../../api/api';
 import { Action, Resource } from '../../../../enums';
+import { fetchUpdateWorkflowById } from '../../../fetchers';
 
 export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: string }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ context }: { context: Record<PropertyKey, unknown> }) =>
-      api.workflows.updateById({
+      fetchUpdateWorkflowById({
         workflowId,
         body: {
           context,
@@ -18,7 +18,7 @@ export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: stri
       action: Action.APPROVE,
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      void queryClient.invalidateQueries();
     },
   });
 };

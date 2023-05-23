@@ -2,10 +2,10 @@ import { ISignInProps } from './hooks/mutations/useSignInMutation/interfaces';
 import { apiClient } from '../api/api-client';
 import { z } from 'zod';
 import { handleZodError } from '../utils/handle-zod-error/handle-zod-error';
-import { AuthenticatedUserSchema } from '../lib/zod/schemas/authenticated-user';
 import { Method } from '../enums';
+import { AuthenticatedUserSchema } from './validation-schemas';
 
-export const signOut = async ({ callbackUrl }: ISignInProps) => {
+export const fetchSignOut = async ({ callbackUrl }: ISignInProps) => {
   const [data, error] = await apiClient({
     endpoint: `auth/logout`,
     method: Method.POST,
@@ -18,7 +18,7 @@ export const signOut = async ({ callbackUrl }: ISignInProps) => {
   return handleZodError(error, data);
 };
 
-export const signIn = async ({ callbackUrl, body }: ISignInProps) => {
+export const fetchSignIn = async ({ callbackUrl, body }: ISignInProps) => {
   const [data, error] = await apiClient({
     endpoint: 'auth/login',
     method: Method.POST,

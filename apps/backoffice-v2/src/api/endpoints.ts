@@ -1,5 +1,5 @@
 import { Method } from '../enums';
-import { IEndpoint, IWorkflowId } from './interfaces';
+import { IEndpoint } from './interfaces';
 
 export interface IFilterId {
   filterId: string;
@@ -11,46 +11,6 @@ export interface IFilterId {
  * @see {@link apiClient}
  */
 export const endpoints = {
-  users: {
-    list: {
-      endpoint: () => `users`,
-      method: Method.GET,
-    },
-  },
-  businesses: {
-    list: {
-      endpoint: (filterId: string) => `businesses?filterId=${filterId ?? ''}`,
-      method: Method.GET,
-    },
-    byId: {
-      endpoint: ({ businessId, filterId }: { businessId: string; filterId: string }) =>
-        `businesses/${businessId}?filterId=${filterId ?? ''}`,
-      method: Method.GET,
-    },
-    // Unused
-    updateById: {
-      endpoint: (businessId: string) => `businesses/${businessId}`,
-      method: Method.PATCH,
-    },
-  },
-  workflows: {
-    list: {
-      endpoint: () => `workflows/active-states`,
-      method: Method.GET,
-    },
-    byId: {
-      endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}`,
-      method: Method.GET,
-    },
-    updateById: {
-      endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}`,
-      method: Method.PATCH,
-    },
-    event: {
-      endpoint: ({ workflowId }: IWorkflowId) => `workflows/${workflowId}/event`,
-      method: Method.POST,
-    },
-  },
   filters: {
     list: {
       endpoint: () => `filters`,

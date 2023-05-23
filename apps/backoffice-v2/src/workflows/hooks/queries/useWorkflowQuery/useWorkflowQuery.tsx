@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { workflows } from '../../workflows';
 import { createWorkflow } from '@ballerine/workflow-browser-sdk';
 import { isString } from '../../../../utils/is-string/is-string';
+import { workflowsQueryKeys } from '../../../query-keys';
 
 export const useWorkflowQuery = ({ workflowId }: { workflowId: string }) => {
   return useQuery({
-    ...workflows.byId({ workflowId }),
+    ...workflowsQueryKeys.byId({ workflowId }),
     enabled: isString(workflowId) && !!workflowId.length,
     select: ({ workflowDefinition, workflowRuntimeData }) => {
       const { definition, definitionType, ...rest } = workflowDefinition;

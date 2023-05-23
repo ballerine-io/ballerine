@@ -1,6 +1,6 @@
 import { useEntityQuery } from '../useEntityQuery/useEntityQuery';
-import { useWorkflowQuery } from '../../../../lib/react-query/queries/useWorkflowQuery/useWorkflowQuery';
-import { useWorkflowsQuery } from '../../../../lib/react-query/queries/useWorkflowsQuery/useWorkflowsQuery';
+import { useWorkflowQuery } from '../../../../workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowsQuery } from '../../../../workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
 import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 
 export const useEntityWithWorkflowQuery = (entityId: string) => {

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { Action, Resource } from '../../../../enums';
 import { ISignInProps } from './interfaces';
-import { signIn } from '../../../fetchers';
+import { fetchSignIn } from '../../../fetchers';
 import { authQueryKeys } from '../../../query-keys';
 
 export const useSignInMutation = () => {
@@ -12,7 +12,7 @@ export const useSignInMutation = () => {
 
   return useMutation({
     mutationFn: ({ callbackUrl, body }: ISignInProps) =>
-      signIn({
+      fetchSignIn({
         callbackUrl,
         body,
       }),

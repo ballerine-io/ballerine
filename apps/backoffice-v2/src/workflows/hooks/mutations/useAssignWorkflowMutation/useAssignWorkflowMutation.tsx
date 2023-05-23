@@ -1,12 +1,20 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../../../../api/api';
 import { Action, Resource } from '../../../../enums';
+import { fetchUpdateWorkflowById } from '../../../fetchers';
 
 export const useAssignWorkflowMutation = ({ workflowRuntimeId }: { workflowRuntimeId: string }) => {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: ({ assigneeId, isAssignedToMe }: { assigneeId: string; isAssignedToMe: boolean }) =>
-      api.workflows.updateById({
+    mutationFn: ({
+      assigneeId,
+      // isAssignedToMe is passed to mutationFn so it can be accessed in onMutate.
+      isAssignedToMe: _isAssignedToMe,
+    }: {
+      assigneeId: string;
+      isAssignedToMe: boolean;
+    }) =>
+      fetchUpdateWorkflowById({
         workflowId: workflowRuntimeId,
         body: {
           assigneeId,
@@ -17,7 +25,7 @@ export const useAssignWorkflowMutation = ({ workflowRuntimeId }: { workflowRunti
       action: isAssignedToMe ? Action.ASSIGNED_TO_ME : Action.ASSIGNED_TO_OTHER,
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      void queryClient.invalidateQueries();
     },
   });
 };

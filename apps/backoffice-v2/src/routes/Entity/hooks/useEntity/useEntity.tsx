@@ -26,7 +26,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { Dialog } from 'components/organisms/Dialog/Dialog';
 import React from 'react';
 import { WarningAlert } from 'components/atoms/WarningAlert';
-import { useUpdateWorkflowByIdMutation } from '../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { useUpdateWorkflowByIdMutation } from '../../../../workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { Separator } from 'components/atoms/Separator/separator';
 import { Button } from 'components/atoms/Button/button';
 import { AlertTriangle, RotateCcw } from 'lucide-react';

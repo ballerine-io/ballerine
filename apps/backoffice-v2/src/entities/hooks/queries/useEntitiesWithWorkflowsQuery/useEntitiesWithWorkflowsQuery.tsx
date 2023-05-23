@@ -1,5 +1,6 @@
 import { useEntitiesQuery } from '../useEntitiesQuery/useEntitiesQuery';
-import { TUsers } from '../../../../api/types';
+
+import { TUsers } from '../../../../users/types';
 
 export const useEntitiesWithWorkflowsQuery = (users: TUsers) => {
   return useEntitiesQuery({

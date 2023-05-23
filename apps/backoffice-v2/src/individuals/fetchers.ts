@@ -23,7 +23,7 @@ export const fetchIndividualById = async (individualId: string, filterId: string
   return handleZodError(error, individual);
 };
 
-export const updateIndividualById = async (
+export const fetchUpdateIndividualById = async (
   individualId: string,
   body: Record<PropertyKey, unknown>,
 ) => {

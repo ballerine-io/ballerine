@@ -7,7 +7,7 @@ import { IUseActions } from './interfaces';
 import { Action } from '../../../../../../enums';
 import { useAuthenticatedUserQuery } from '../../../../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
-import { useAssignWorkflowMutation } from '../../../../../../lib/react-query/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
+import { useAssignWorkflowMutation } from '../../../../../../workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
 import { useUsersQuery } from '../../../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
 import { useEntityWithWorkflowQuery } from '../../../../../../entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
 import { useApproveEntityMutation } from '../../../../../../entities/hooks/mutations/useApproveEntityMutation/useApproveEntityMutation';

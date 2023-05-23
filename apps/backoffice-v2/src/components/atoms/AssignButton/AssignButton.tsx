@@ -1,11 +1,11 @@
 import React from 'react';
-import { TAuthenticatedUser } from '../../../api/types';
 import { CaseState, TCaseState } from '../../../enums';
 import { DropdownMenuItem } from 'components/molecules/DropdownMenu/DropdownMenu.Item';
 import { DropdownMenuTrigger } from 'components/molecules/DropdownMenu/DropdownMenu.Trigger';
 import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
 import { DropdownMenuContent } from 'components/molecules/DropdownMenu/DropdownMenu.Content';
 import { Button } from 'components/atoms/Button/button';
+import { TAuthenticatedUser } from '../../../auth/types';
 
 export type Assignee = {
   id: string;
