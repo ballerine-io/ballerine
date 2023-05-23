@@ -71,7 +71,7 @@ export const SubjectsList: FunctionComponent<ISubjectsListProps> & ISubjectsList
           </div>
         </div>
         <div className={`flex items-center justify-between`}>
-          <div className="dropdown-hover dropdown dropdown-bottom z-[60]">
+          <div className="dropdown dropdown-bottom dropdown-hover z-[60]">
             <button
               className={`btn-ghost btn-sm btn h-[2.125rem] gap-2 border-neutral/10 text-xs focus-visible:outline-primary theme-dark:border-neutral/50`}
               tabIndex={0}

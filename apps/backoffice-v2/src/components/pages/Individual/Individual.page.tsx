@@ -11,12 +11,12 @@ export const Individual = () => {
     <Subject>
       {/* Reject and approve header */}
       <Subject.Actions
-        id={selectedEndUser.id}
-        fullName={selectedEndUser.fullName}
-        avatarUrl={selectedEndUser.avatarUrl}
+        id={selectedEndUser?.id}
+        fullName={selectedEndUser?.fullName}
+        avatarUrl={selectedEndUser?.avatarUrl}
         showResolutionButtons={selectedEndUser.workflow?.config?.workflowLevelResolution}
       />
-      <Subject.Content>
+      <Subject.Content key={selectedEndUser?.id}>
         {Array.isArray(tasks) && tasks?.length > 0
           ? tasks?.map((task, index) => (
               <Card key={index} className={`me-4`}>
