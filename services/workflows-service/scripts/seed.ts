@@ -194,6 +194,7 @@ async function seed(bcryptSalt: Salt) {
       definitionType: 'statechart-json',
       config: {
         completedWhenTasksResolved: true,
+        workflowLevelResolution: false,
       },
       contextSchema: {
         type: 'json-schema',
