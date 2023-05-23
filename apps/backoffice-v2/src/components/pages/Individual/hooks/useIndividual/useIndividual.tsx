@@ -150,16 +150,22 @@ export const useIndividual = () => {
       action,
     });
 
-  const POSITIVE_VALUE_INDICATOR = ['approved'];
-  const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
-  const isDecisionPositive = (isDesitionComponnt: boolean, value) => {
+  const APPROVE_VALUE_INDICATOR = ['approved'];
+  const REJECT_VALUE_INDICATOR = ['rejected'];
+  const REVISION_VALUE_INDICATOR = ['revision'];
+  const isDecisionApproved = (isDecisionComponent: boolean, value) => {
     return (
-      isDesitionComponnt && value && POSITIVE_VALUE_INDICATOR.includes(String(value).toLowerCase())
+      isDecisionComponent && value && APPROVE_VALUE_INDICATOR.includes(String(value).toLowerCase())
     );
   };
-  const isDecisionNegative = (isDesitionComponet: boolean, value) => {
+  const isDecisionRejected = (isDecisionComponent: boolean, value) => {
     return (
-      isDesitionComponet && value && NEGATIVE_VALUE_INDICATOR.includes(String(value).toLowerCase())
+      isDecisionComponent && value && REJECT_VALUE_INDICATOR.includes(String(value).toLowerCase())
+    );
+  };
+  const isDecisionRevision = (isDecisionComponent: boolean, value) => {
+    return (
+      isDecisionComponent && value && REVISION_VALUE_INDICATOR.includes(String(value).toLowerCase())
     );
   };
 
@@ -339,7 +345,7 @@ export const useIndividual = () => {
       };
 
       if (!value.data?.length) return;
-      const isDesitionComponnt = value?.title == 'Decision';
+      const isDecisionComponnt = value?.title == 'Decision';
 
       return (
         <div
@@ -365,7 +371,7 @@ export const useIndividual = () => {
                   {value?.data?.map(({ title, isEditable, type, format, pattern, value }) => (
                     <div
                       className={ctw('flex flex-col', {
-                        hidden: isDesitionComponnt && !value,
+                        hidden: isDecisionComponnt && !value,
                       })}
                       key={title}
                     >
@@ -378,12 +384,16 @@ export const useIndividual = () => {
                         disabled={!isEditable}
                         className={ctw(`disabled:bg-background`, {
                           'rounded border border-border p-1': isEditable,
-                          'font-bold uppercase text-success': isDecisionPositive(
-                            isDesitionComponnt,
+                          'font-bold uppercase text-success': isDecisionApproved(
+                            isDecisionComponnt,
                             value,
                           ),
-                          'font-bold uppercase text-destructive': isDecisionNegative(
-                            isDesitionComponnt,
+                          'font-bold uppercase text-destructive': isDecisionRejected(
+                            isDecisionComponnt,
+                            value,
+                          ),
+                          'font-bold uppercase text-orange-400': isDecisionRevision(
+                            isDecisionComponnt,
                             value,
                           ),
                         })}
