@@ -1,4 +1,4 @@
-import { BallerineSDKFlows, FlowsInitOptions } from '@ballerine/web-sdk/dist/types/BallerineSDK';
+import { BallerineSDKFlows, FlowsInitOptions } from '@ballerine/web-ui-sdk/dist/types/BallerineSDK';
 
 export const defaultInitConfig: FlowsInitOptions = {
   endUserInfo: { id: 'test-id' },

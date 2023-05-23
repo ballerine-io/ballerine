@@ -12,7 +12,7 @@ layout: ../../../../layouts/MainLayout.astro
 
 #### Defined in
 
-[BallerineSDK.ts:128](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-sdk/src/types/BallerineSDK.ts#L128)
+[BallerineSDK.ts:128](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L128)
 
 ---
 
@@ -22,4 +22,4 @@ layout: ../../../../layouts/MainLayout.astro
 
 #### Defined in
 
-[BallerineSDK.ts:129](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-sdk/src/types/BallerineSDK.ts#L129)
+[BallerineSDK.ts:129](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L129)
