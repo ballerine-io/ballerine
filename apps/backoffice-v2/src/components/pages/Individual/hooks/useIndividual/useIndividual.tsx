@@ -59,6 +59,7 @@ export const useIndividual = () => {
     id: endUserId,
     fullName: entity === 'individuals' ? endUser?.fullName : endUser?.companyName,
     avatarUrl: endUser?.avatarUrl,
+    workflow: endUser?.workflow,
   };
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
