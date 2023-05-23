@@ -94,6 +94,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
           {data?.map(({ title, isEditable, type, format, pattern, value }) =>
             isDecisionComponent && !value ? null : (
               <FormField
+                key={title}
                 control={form.control}
                 name={title}
                 render={({ field }) => (
