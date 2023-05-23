@@ -77,7 +77,7 @@ View each component's current state in the [roadmap](#roadmap) below.
 - **Rule engine** - Leverage various rule types to ensure user compliance with your risk policy.
 
 ####   Planned on roadmap - 📌
-- **Frontend headless SDK**- Real-time modification of KYC/KYB frontend user journeys. 
+- **Frontend headless SDK**- Real-time modification of KYC/KYB frontend user journeys.
 
 #### Community driven building blocks - 🌍
 - [**User flows UX/UI**](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md) - KYC/KYB/Document collection flows and UI via mobile & web SDK.
@@ -129,20 +129,20 @@ Watch a video of how the demo works, with explainations:
 To set up a local environment, follow these steps:
 
 1. #### Install prerequisites:
-   - Node.js ([Install NVM](https://github.com/nvm-sh/nvm))
-   - Latest PNPM version ([Install PNPM](https://pnpm.io/installation))
+   - Node.js (Minimum version 18) (you can install node via NVM: [Install NVM](https://github.com/nvm-sh/nvm))
+   - Latest PNPM version (Minimum version 8.0) ([Install PNPM](https://pnpm.io/installation))
    - Docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
-   
+
 2. #### Clone and install the project:
-   1. Clone the project:  
+   1. Clone the project:
    ```sh
    git clone https://github.com/ballerine-io/ballerine.git
    ```
-   2. Install npm depenencies: 
+   2. Install npm depenencies:
    ```sh
    pnpm install
    ```
-   3. Initilazie monorepo: 
+   3. Initilazie monorepo:
    ```sh
    pnpm monorepo:init
    ```
@@ -156,10 +156,10 @@ To set up a local environment, follow these steps:
 Once the process is complete,  _2 tabs_   will open in your browser:
 
 1. http://localhost:5173/ - for the _document collection flow_
-2. http://localhost:5137/ - for the  _backffice_ 
+2. http://localhost:5137/ - for the  _backffice_
 (It's recommended to have them positioned side-by-side).
 
-##### KYB Manual Review Workflow: 
+##### KYB Manual Review Workflow:
 The following command will run the workflow's backend (workflow service API), the backoffice, and UI example using the headless web SDK:
 ```sh
 pnpm kyb-manual-review-example
