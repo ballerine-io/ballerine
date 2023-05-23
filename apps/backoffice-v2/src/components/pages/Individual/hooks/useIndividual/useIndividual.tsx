@@ -48,12 +48,12 @@ export const useIndividual = () => {
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
-  
-  endUser?.workflow?.workflowContext?.machineContext?.documents.forEach((document) => {
-    document?.pages.forEach((page) => {
+
+  endUser?.workflow?.workflowContext?.machineContext?.documents.forEach(document => {
+    document?.pages.forEach(page => {
       page.data = results.shift().data;
-    })
-  })
+    });
+  });
   const entity = useFilterEntity();
   const selectedEndUser = {
     id: endUserId,
@@ -376,8 +376,14 @@ export const useIndividual = () => {
                         disabled={!isEditable}
                         className={ctw(`disabled:bg-background`, {
                           'rounded border border-border p-1': isEditable,
-                          'font-bold text-success': isDesitionPositive(isDesitionComponnt, value),
-                          'font-bold text-red-500': isDesitionNegative(isDesitionComponnt, value),
+                          'font-bold uppercase text-success': isDesitionPositive(
+                            isDesitionComponnt,
+                            value,
+                          ),
+                          'font-bold uppercase text-red-500': isDesitionNegative(
+                            isDesitionComponnt,
+                            value,
+                          ),
                         })}
                         pattern={pattern}
                         autoComplete={'off'}
@@ -491,12 +497,9 @@ export const useIndividual = () => {
                   data:
                     endUser?.workflow?.workflowContext?.machineContext?.documents?.[
                       index
-                    ]?.pages?.map(({ type, metadata, data  }, index) => ({
+                    ]?.pages?.map(({ type, metadata, data }, index) => ({
                       title: metadata?.side ? `${category} ${metadata?.side}` : category,
-                      imageUrl:
-                        type === 'pdf'
-                          ? octetToFileType(data, type)
-                          : data,
+                      imageUrl: type === 'pdf' ? octetToFileType(data, type) : data,
                     })) ?? [],
                 },
               },
