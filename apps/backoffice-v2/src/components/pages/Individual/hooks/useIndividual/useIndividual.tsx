@@ -364,7 +364,9 @@ export const useIndividual = () => {
                 >
                   {value?.data?.map(({ title, isEditable, type, format, pattern, value }) => (
                     <div
-                      className={`flex flex-col ${isDesitionComponnt && !value ? 'hidden' : ''}`}
+                      className={ctw('flex flex-col', {
+                        hidden: isDesitionComponnt && !value,
+                      })}
                       key={title}
                     >
                       <label htmlFor={title} className={`font-bold`}>
@@ -376,8 +378,14 @@ export const useIndividual = () => {
                         disabled={!isEditable}
                         className={ctw(`disabled:bg-background`, {
                           'rounded border border-border p-1': isEditable,
-                          'font-bold text-success': isDecisionPositive(isDesitionComponnt, value),
-                          'font-bold text-red-500': isDecisionNegative(isDesitionComponnt, value),
+                          'font-bold uppercase text-success': isDecisionPositive(
+                            isDesitionComponnt,
+                            value,
+                          ),
+                          'font-bold uppercase text-destructive': isDecisionNegative(
+                            isDesitionComponnt,
+                            value,
+                          ),
                         })}
                         pattern={pattern}
                         autoComplete={'off'}
