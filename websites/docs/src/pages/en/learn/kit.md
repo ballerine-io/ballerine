@@ -51,7 +51,8 @@ The SDK UI is embeddable inside existing apps or deployed as a web app.
 <a href="https://jsfiddle.net/ballerine/7d0g53xn" target="_blank">jsfiddle</a>
 
 **Overview Video**
-Soon
+<a href="" target="_blank">Watch</a>
+
 
 **Getting started:**
 [Click here](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk)
