@@ -12,18 +12,21 @@ import { components } from 'components/pages/Individual/hooks/useIndividual/comp
 export const useIndividual = () => {
   const { endUserId } = useParams();
   const { data: endUser, isLoading } = useEndUserWithWorkflowQuery(endUserId);
-  const results = useStorageFilesQuery(
+  const docsData = useStorageFilesQuery(
     endUser?.workflow?.workflowContext?.machineContext?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
 
-  endUser?.workflow?.workflowContext?.machineContext?.documents.forEach(document => {
-    document?.pages.forEach(page => {
-      page.data = results.shift().data;
+  const results = [];
+  endUser?.workflow?.workflowContext?.machineContext?.documents.forEach((document, docIndex) => {
+    document?.pages.forEach((page, pageIndex) => {
+      if (!results[docIndex]) {
+        results[docIndex] = [];
+      }
+      results[docIndex][pageIndex] = docsData.shift().data;
     });
   });
-
   const entity = useFilterEntity();
   const selectedEndUser = {
     id: endUserId,
@@ -44,7 +47,7 @@ export const useIndividual = () => {
   const tasks = contextEntity
     ? [
         ...(contextDocuments?.map(
-          ({ id, type, category, issuer, properties, propertiesSchema, decision }, index) => {
+          ({ id, type, category, issuer, properties, propertiesSchema, decision }, docIndex) => {
             return [
               {
                 id: 'header',
@@ -117,12 +120,18 @@ export const useIndividual = () => {
               {
                 type: 'multiDocuments',
                 value: {
+                  isLoading: docsData?.some(({ isLoading }) => isLoading),
                   data:
-                    contextDocuments?.[index]?.pages?.map(({ type, metadata, data }) => ({
-                      title: metadata?.side ? `${category} ${metadata?.side}` : category,
-                      imageUrl: type === 'pdf' ? octetToFileType(data, type) : data,
-                      fileType: type,
-                    })) ?? [],
+                    contextDocuments?.[docIndex]?.pages?.map(
+                      ({ type, metadata, data }, pageIndex) => ({
+                        title: metadata?.side ? `${category} ${metadata?.side}` : category,
+                        imageUrl:
+                          type === 'pdf'
+                            ? octetToFileType(results[docIndex][pageIndex], type)
+                            : results[docIndex][pageIndex],
+                        fileType: type,
+                      }),
+                    ) ?? [],
                 },
               },
             ];
