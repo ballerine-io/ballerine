@@ -48,6 +48,12 @@ export const useIndividual = () => {
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
+  
+  endUser?.workflow?.workflowContext?.machineContext?.documents.forEach((document) => {
+    document?.pages.forEach((page) => {
+      page.data = results.shift().data;
+    })
+  })
   const entity = useFilterEntity();
   const selectedEndUser = {
     id: endUserId,
@@ -464,12 +470,12 @@ export const useIndividual = () => {
                   data:
                     endUser?.workflow?.workflowContext?.machineContext?.documents?.[
                       index
-                    ]?.pages?.map(({ type, metadata }, index) => ({
+                    ]?.pages?.map(({ type, metadata, data  }, index) => ({
                       title: metadata?.side ? `${category} ${metadata?.side}` : category,
                       imageUrl:
                         type === 'pdf'
-                          ? octetToFileType(results[index]?.data, type)
-                          : results[index]?.data,
+                          ? octetToFileType(data, type)
+                          : data,
                     })) ?? [],
                 },
               },
