@@ -1,7 +1,7 @@
-import { useAuthenticatedUserQuery } from '../../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useAuthenticatedUserQuery } from '../../../../hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useRouter } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { env } from '../../../../env/env';
+import { env } from '../../../../../env/env';
 import { useIsAuthenticated } from '../useIsAuthenticated/useIsAuthenticated';
 
 export const useAuthRedirects = ({

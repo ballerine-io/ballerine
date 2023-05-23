@@ -1,5 +1,5 @@
+import { ObjectWithIdSchema } from '../lib/zod/utils/object-with-id/object-with-id';
 import { z } from 'zod';
-import { ObjectWithIdSchema } from '../utils/object-with-id/object-with-id';
 
 export const FileInfoSchema = ObjectWithIdSchema.extend({
   userId: z.string().nullable().default(''),

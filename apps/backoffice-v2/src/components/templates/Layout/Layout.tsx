@@ -1,7 +1,7 @@
 import { FunctionComponentWithChildren } from '../../../types';
-import { useIsAuthenticated } from '../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
-import { UnauthenticatedLayout } from 'components/templates/UnauthenticatedLayout/UnauthenticatedLayout.layout';
-import { AuthenticatedLayout } from 'components/templates/AuthenticatedLayout';
+import { useIsAuthenticated } from '../../../auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
+import { UnauthenticatedLayout } from '../../../auth/components/UnauthenticatedLayout';
+import { AuthenticatedLayout } from '../../../auth/components/AuthenticatedLayout';
 import React from 'react';
 import { env } from '../../../env/env';
 

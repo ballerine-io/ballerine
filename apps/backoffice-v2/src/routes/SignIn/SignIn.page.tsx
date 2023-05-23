@@ -1,7 +1,7 @@
 import { useSignInMutation } from '../../auth/hooks/mutations/useSignInMutation/useSignInMutation';
 import { FormEventHandler, useCallback } from 'react';
-import { useAuthContext } from '../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
-import { useIsAuthenticated } from '../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
+import { useAuthContext } from '../../auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
+import { useIsAuthenticated } from '../../auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 import { isErrorWithMessage } from '@ballerine/common';
 
 export const SignIn = () => {

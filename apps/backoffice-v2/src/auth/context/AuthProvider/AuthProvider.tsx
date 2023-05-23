@@ -1,8 +1,8 @@
-import { FunctionComponentWithChildren } from '../../types';
+import { FunctionComponentWithChildren } from '../../../types';
 import { createContext, useMemo } from 'react';
-import { env } from '../../env/env';
+import { env } from '../../../env/env';
 import { useAuthRedirects } from './hooks/useAuthRedirects/useAuthRedirects';
-import { useAuthenticatedUserQuery } from '../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useAuthenticatedUserQuery } from '../../hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 
 export const AuthContext = createContext(undefined);
 

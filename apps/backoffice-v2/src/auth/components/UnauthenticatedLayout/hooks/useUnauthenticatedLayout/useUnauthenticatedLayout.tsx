@@ -1,6 +1,6 @@
-import { useAuthenticatedUserQuery } from '../../../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useIsAuthenticated } from '../../../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
-import { useAuthContext } from '../../../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
+import { useAuthenticatedUserQuery } from '../../../../hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useIsAuthenticated } from '../../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
+import { useAuthContext } from '../../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import { useEffect } from 'react';
 import { env } from '../../../../../env/env';
 import { useRouter } from '@tanstack/react-router';

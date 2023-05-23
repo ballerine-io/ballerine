@@ -1,4 +1,4 @@
 import { z } from 'zod';
-import { FileInfoSchema } from '../lib/zod/schemas/file-info';
+import { FileInfoSchema } from './validation-schemas';
 
 export type TFileInfo = z.infer<typeof FileInfoSchema>;

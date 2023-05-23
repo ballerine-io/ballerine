@@ -34,7 +34,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { AnyRecord } from '../../../../types';
 import { toStartCase } from '../../../../utils/to-start-case/to-start-case';
 import { Form } from 'components/organisms/Form/Form';
-import { useStorageFilesQuery } from '../../../../lib/react-query/queries/useStorageFilesQuery/useStorageFilesQuery';
+import { useStorageFilesQuery } from '../../../../storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import toast from 'react-hot-toast';
 import { useEntityWithWorkflowQuery } from '../../../../entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
 

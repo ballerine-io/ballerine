@@ -1,6 +1,6 @@
 import { Header } from 'components/organisms/Header';
 import { FunctionComponentWithChildren } from '../../../types';
-import { useAuthenticatedLayout } from 'components/templates/AuthenticatedLayout/hooks/useAuthenticatedLayout/useAuthenticatedLayout';
+import { useAuthenticatedLayout } from './hooks/useAuthenticatedLayout/useAuthenticatedLayout';
 import { useSelectEntityFilterOnMount } from '../../../entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
 
 export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {

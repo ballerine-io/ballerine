@@ -21,14 +21,4 @@ export const endpoints = {
       method: Method.GET,
     },
   },
-  storage: {
-    fileById: {
-      endpoint: (fileId: string) => `storage/${fileId}`,
-      method: Method.GET,
-    },
-    fileContentById: {
-      endpoint: (fileId: string) => `storage/content/${fileId}`,
-      method: Method.GET,
-    },
-  },
 } as const satisfies IEndpoint;

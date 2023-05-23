@@ -2,7 +2,7 @@ import { LogOutSvg } from 'components/atoms/icons';
 import React, { useCallback, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
 import { useSignOutMutation } from '../../../auth/hooks/mutations/useSignOutMutation/useSignOutMutation';
-import { useAuthContext } from '../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
+import { useAuthContext } from '../../../auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import packageJson from '../../../../package.json';
 import { Avatar } from 'components/atoms/Avatar';
 import { useAuthenticatedUserQuery } from '../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
