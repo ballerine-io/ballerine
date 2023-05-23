@@ -142,6 +142,20 @@ export const useIndividual = () => {
       context,
       action,
     });
+
+  const POSITIVE_VALUE_INDECATOR = ['approved'];
+  const NEGATIVE_VALUE_INDECATOR = ['revision', 'rejected'];
+  const isDesitionPositive = (isDesitionComponnt: boolean, value) => {
+    return (
+      isDesitionComponnt && value && POSITIVE_VALUE_INDECATOR.includes(String(value).toLowerCase())
+    );
+  };
+  const isDesitionNegative = (isDesitionComponet: boolean, value) => {
+    return (
+      isDesitionComponet && value && NEGATIVE_VALUE_INDECATOR.includes(String(value).toLowerCase())
+    );
+  };
+
   const components = {
     heading: ({ value }) => <h2 className={`ml-2 mt-6 p-2 text-2xl font-bold`}>{value}</h2>,
     alert: ({ value }) => (
@@ -341,8 +355,11 @@ export const useIndividual = () => {
                     'grid-cols-3': id === 'entity-details',
                   })}
                 >
-                  {value?.data?.map(({ title, isEditable, type, format, pattern }) => (
-                    <div className={`flex flex-col`} key={title}>
+                  {value?.data?.map(({ title, isEditable, type, format, pattern, value }) => (
+                    <div
+                      className={`flex flex-col ${isDesitionComponnt && !value ? 'hidden' : ''}`}
+                      key={title}
+                    >
                       <label htmlFor={title} className={`font-bold`}>
                         {toStartCase(camelCaseToSpace(title))}
                       </label>
@@ -352,6 +369,8 @@ export const useIndividual = () => {
                         disabled={!isEditable}
                         className={ctw(`disabled:bg-background`, {
                           'rounded border border-border p-1': isEditable,
+                          'font-bold text-success': isDesitionPositive(isDesitionComponnt, value),
+                          'font-bold text-red-500': isDesitionNegative(isDesitionComponnt, value),
                         })}
                         pattern={pattern}
                         autoComplete={'off'}
