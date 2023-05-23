@@ -32,14 +32,14 @@ export const ZoomModal: FunctionComponent<IZoomModalProps> = ({
       hideTitle
       {...rest}
     >
-      {selectedImage?.fileType === 'application/pdf' && (
+      {selectedImage?.fileType === 'pdf' && (
         <iframe
           src={selectedImage?.imageUrl}
           className={ctw(`d-full`, imageClassName)}
           {...restImage}
         />
       )}
-      {selectedImage?.fileType !== 'application/pdf' && (
+      {selectedImage?.fileType !== 'pdf' && (
         <BallerineImage
           withPlaceholder
           src={selectedImage?.imageUrl}

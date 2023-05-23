@@ -12,7 +12,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from 'components/organisms/_Form/_Form';
+} from 'components/organisms/Form/Form';
 import { Button } from 'components/atoms/Button/button';
 import { Input } from 'components/atoms/Input/Input';
 import { Card, CardContent, CardHeader } from 'components/atoms/Card/card';
