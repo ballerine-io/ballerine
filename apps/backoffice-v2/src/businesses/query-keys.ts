@@ -1,15 +1,15 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
-import { api } from '../../api/api';
+import { fetchBusinessById, fetchBusinesses } from './fetchers';
 
-export const businesses = createQueryKeys('businesses', {
+export const businessesQueryKeys = createQueryKeys('businesses', {
   list: (filterId: string) => ({
     queryKey: [{ filterId }],
-    queryFn: () => api.businesses.list(filterId),
+    queryFn: () => fetchBusinesses(filterId),
   }),
   byId: (businessId: string, filterId: string) => ({
     queryKey: [{ businessId, filterId }],
     queryFn: () =>
-      api.businesses.byId({
+      fetchBusinessById({
         businessId,
         filterId,
       }),

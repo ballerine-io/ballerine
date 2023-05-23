@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../../api/api';
 import { Action, Resource } from '../../../../enums';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
-import { queryKeys } from '../../../../lib/react-query/query-keys';
+import { queryKeys } from '../../../query-keys';
 import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 
 export const useApproveEntityMutation = ({

@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Route } from '@tanstack/react-router';
 import { Entities } from './Entities.page';
 import { States } from '../../enums';
-import { queryKeys } from '../../lib/react-query/query-keys';
+import { queryKeys } from '../../entities/query-keys';
 import { preSearchFiltersByKind } from './pre-search-filters';
 import { usersQueryKeys } from '../../users/query-keys';
 
