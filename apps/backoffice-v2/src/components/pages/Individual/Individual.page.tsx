@@ -14,6 +14,7 @@ export const Individual = () => {
         id={selectedEndUser.id}
         fullName={selectedEndUser.fullName}
         avatarUrl={selectedEndUser.avatarUrl}
+        showResolutionButtons={selectedEndUser.workflow?.config?.workflowLevelResolution}
       />
       <Subject.Content>
         {Array.isArray(tasks) && tasks?.length > 0
