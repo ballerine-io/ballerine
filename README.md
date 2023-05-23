@@ -141,26 +141,25 @@ Watch a video of how the demo works, with explainations:
 To set up a local environment, follow these steps:
 
 1. #### Install prerequisites:
-   - Node.js ([Install NVM](https://github.com/nvm-sh/nvm))
-   - Latest PNPM version ([Install PNPM](https://pnpm.io/installation))
+   - Node.js (Minimum version 18) (you can install node via NVM: [Install NVM](https://github.com/nvm-sh/nvm))
+   - Latest PNPM version (Minimum version 8.0) ([Install PNPM](https://pnpm.io/installation))
    - Docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
-   
+
 2. #### Clone and install the project:
-   1. Clone the project:  
+   1. Clone the project:
    ```sh
    git clone https://github.com/ballerine-io/ballerine.git
    ```
-   2. Install npm depenencies: 
+   2. Install npm depenencies:
    ```sh
    pnpm install
    ```
-   3. Initilazie monorepo: 
+   3. Initilazie monorepo:
    ```sh
    pnpm monorepo:init
    ```
 
 3. #### Run the example
-
    ```sh
    pnpm kyc-manual-review-example
    ```
