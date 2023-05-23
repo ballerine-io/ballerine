@@ -1,17 +1,16 @@
 import { useCallback, useState } from 'react';
+import { useApproveEntityMutation } from '../../../../../../entities/hooks/mutations/useApproveEntityMutation/useApproveEntityMutation';
 import { useDebounce } from 'hooks/useDebounce/useDebounce';
-import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
-import { useSelectNextEntity } from '../../../../../../entities/hooks/useSelectNextEntity/useSelectNextEntity';
 import { createInitials } from '../../../../../../utils/create-initials/create-initials';
-import { IUseActions } from './interfaces';
 import { Action } from '../../../../../../enums';
+import { useEntityWithWorkflowQuery } from '../../../../../../entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
+import { IUseActions } from './interfaces';
 import { useAuthenticatedUserQuery } from '../../../../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
-import { useAssignWorkflowMutation } from '../../../../../../workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
 import { useUsersQuery } from '../../../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
-import { useEntityWithWorkflowQuery } from '../../../../../../entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
-import { useApproveEntityMutation } from '../../../../../../entities/hooks/mutations/useApproveEntityMutation/useApproveEntityMutation';
+import { useAssignWorkflowMutation } from '../../../../../../workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
 import { useRejectEntityMutation } from '../../../../../../entities/hooks/mutations/useRejectEntityMutation/useRejectEntityMutation';
+import { useSelectNextEntity } from '../../../../../../entities/hooks/useSelectNextEntity/useSelectNextEntity';
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -49,12 +48,13 @@ export const useActions = ({ entityId, fullName }: IUseActions) => {
   const initials = createInitials(fullName);
 
   const {
-    data: { user: authenticatedUser },
+    data: { user },
   } = useAuthenticatedUserQuery();
+  const authenticatedUser = user;
   const caseState = useCaseState(authenticatedUser, workflow);
   const { data: users } = useUsersQuery();
   const assignees = users.filter(assignee => assignee?.id !== authenticatedUser?.id);
-  // Disable the reject/approve buttons if the case is not ready to be rejected/approved.
+  // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
   const canReject =
     (workflow?.nextEvents.includes(Action.REJECT.toLowerCase()) as boolean) &&
@@ -82,7 +82,7 @@ export const useActions = ({ entityId, fullName }: IUseActions) => {
       }),
     [mutateAssignWorkflow],
   );
-  const [documentToResubmit, setDocumentToResubmit] = useState('documentOne');
+  const [documentToResubmit, setDocumentToResubmit] = useState('id');
   const onDocumentToResubmitChange = useCallback(
     (value: string) => setDocumentToResubmit(value),
     [setDocumentToResubmit],
@@ -92,32 +92,36 @@ export const useActions = ({ entityId, fullName }: IUseActions) => {
     (value: string) => setResubmissionReason(value as keyof typeof ResubmissionReason),
     [setResubmissionReason],
   );
+  const isActionButtonDisabled = !caseState.actionButtonsEnabled;
+  const onTriggerAssignToMe = true;
 
-  useDocumentListener('keydown', event => {
-    if (!event.ctrlKey || document.activeElement !== document.body) return;
-
-    event.preventDefault();
-
-    switch (event.key) {
-      case 'ArrowDown':
-        onSelectNextEntity();
-        break;
-
-      // Approve case on 'Ctrl + A'
-      case 'a':
-        onMutateApproveEntity();
-        break;
-
-      // Reject case on 'Ctrl + J'
-      case 'j':
-        onMutateRejectEntity({
-          action: Action.REJECT,
-        });
-        break;
-    }
-  });
+  // useDocumentListener('keydown', event => {
+  //   if (!event.ctrlKey || document.activeElement !== document.body) return;
+  //
+  //   event.preventDefault();
+  //
+  //   switch (event.key) {
+  //     case 'ArrowDown':
+  //       onSelectNextEntity();
+  //       break;
+  //
+  //     // Approve end user on 'Ctrl + A'
+  //     case 'a':
+  //       onMutateApproveEntity();
+  //       break;
+  //
+  //     // Reject end user on 'Ctrl + J'
+  //     case 'j':
+  //       onMutateRejectEntity({
+  //         action: Action.REJECT,
+  //       });
+  //       break;
+  //   }
+  // });
 
   return {
+    onTriggerAssignToMe,
+    isActionButtonDisabled,
     onMutateApproveEntity,
     onMutateRejectEntity,
     onMutateAssignWorkflow,

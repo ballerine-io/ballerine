@@ -11,7 +11,7 @@ export const useCases = (routerId: TRouteId) => {
   const sharedSortByOptions = [
     {
       label: 'Created At',
-      value: 'createdAt',
+      value: 'caseCreatedAt',
     },
   ];
   const individualsSortByOptions = [
@@ -41,38 +41,20 @@ export const useCases = (routerId: TRouteId) => {
     entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions;
   const filterByOptions = [
     {
-      label: 'User status',
-      value: 'approvalState',
+      label: 'Case Status',
+      value: 'caseStatus',
       options: [
         {
-          label: 'Rejected',
-          value: 'REJECTED',
+          label: 'Active',
+          value: 'active',
         },
         {
-          label: 'Approved',
-          value: 'APPROVED',
+          label: 'Completed',
+          value: 'completed',
         },
         {
-          label: 'Processing',
-          value: 'PROCESSING',
-        },
-        {
-          label: 'New',
-          value: 'NEW',
-        },
-      ],
-    },
-    {
-      label: 'User type',
-      value: 'endUserType',
-      options: [
-        {
-          label: 'Individual',
-          value: 'individual',
-        },
-        {
-          label: 'Business',
-          value: 'business',
+          label: 'Failed',
+          value: 'failed',
         },
       ],
     },
@@ -83,6 +65,7 @@ export const useCases = (routerId: TRouteId) => {
         ...users.map(({ id, fullName }) => ({
           label: fullName,
           value: id,
+          key: id,
         })),
         {
           label: 'Unassigned',
@@ -135,6 +118,7 @@ export const useCases = (routerId: TRouteId) => {
   });
 
   return {
+    entity,
     sortByOptions,
     filterByOptions,
     filter,

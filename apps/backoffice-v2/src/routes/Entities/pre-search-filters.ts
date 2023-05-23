@@ -1,4 +1,4 @@
-import { State } from '../../enums';
+import { CaseStatus, State } from '../../enums';
 
 const sharedPreSearchFilters = {
   sortDir: 'desc' as const,
@@ -9,21 +9,21 @@ const sharedPreSearchFilters = {
 
 export const preSearchFiltersByKind = {
   businesses: {
-    sortBy: 'createdAt' as const,
+    sortBy: 'caseCreatedAt' as const,
     entity: 'businesses' as const,
     filter: {
-      approvalState: [State.PROCESSING],
       assigneeId: [],
+      caseStatus: [CaseStatus.ACTIVE],
     },
     ...sharedPreSearchFilters,
   },
   individuals: {
-    sortBy: 'createdAt' as const,
+    sortBy: 'caseCreatedAt' as const,
     entity: 'individuals' as const,
     filter: {
       approvalState: [State.PROCESSING],
-      endUserType: [],
       assigneeId: [],
+      caseStatus: [CaseStatus.ACTIVE],
     },
     ...sharedPreSearchFilters,
   },

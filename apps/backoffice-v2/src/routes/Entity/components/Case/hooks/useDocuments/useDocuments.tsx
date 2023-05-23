@@ -41,17 +41,11 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
 
       await navigator.clipboard.writeText(text);
 
-      toast.success(`Copied to clipboard:\n ${text}`);
+      toast.success(t('toast:copy_to_clipboard', { text }));
     } catch (err) {
       console.error(err);
 
-      toast.error(
-        t('EVENT', {
-          resource: '',
-          action: 'document OCR',
-          result: t('RESULT.FAILED'),
-        }),
-      );
+      toast.error(t('toast:ocr_document_error'));
     }
 
     toggleOffIsLoadingOCR();

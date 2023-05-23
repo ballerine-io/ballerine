@@ -1,16 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Action, Resource } from '../../../../enums';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
-import { queryKeys } from '../../../query-keys';
+import toast from 'react-hot-toast';
+import { t } from 'i18next';
 import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
+import { queryKeys } from '../../../query-keys';
 import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
 
 export const useApproveEntityMutation = ({
-  entityId,
+  endUserId,
   workflowId,
   onSelectNextEntity,
 }: {
-  entityId: string;
+  endUserId: string;
   workflowId: string;
   onSelectNextEntity: VoidFunction;
 }) => {
@@ -26,19 +27,20 @@ export const useApproveEntityMutation = ({
           name: 'approve',
         },
       }),
-    onMutate: () => ({
-      resource: Resource.INDIVIDUAL,
-      action: Action.APPROVE,
-    }),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: queryKeys[entity as keyof typeof queryKeys].list(filterId).queryKey,
       });
       void queryClient.invalidateQueries({
-        queryKey: queryKeys[entity as keyof typeof queryKeys].byId(entityId, filterId).queryKey,
+        queryKey: queryKeys[entity as keyof typeof queryKeys].byId(endUserId, filterId).queryKey,
       });
 
+      toast.success(t('toast:approve_case.success'));
+
       onSelectNextEntity();
+    },
+    onError: () => {
+      toast.error(t('toast:approve_case.error'));
     },
   });
 };

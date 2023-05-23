@@ -14,11 +14,12 @@ export const Entity = () => {
         id={selectedEntity?.id}
         fullName={selectedEntity?.fullName}
         avatarUrl={selectedEntity?.avatarUrl}
+        showResolutionButtons={selectedEntity.workflow?.config?.workflowLevelResolution}
       />
-      <Case.Content>
+      <Case.Content key={selectedEntity?.id}>
         {Array.isArray(tasks) && tasks?.length > 0
           ? tasks?.map((task, index) => (
-              <Card key={index}>
+              <Card key={index} className={`me-4`}>
                 <CardContent
                   className={ctw('grid gap-2', {
                     'grid-cols-2': task?.some(field => field?.type === 'multiDocuments'),

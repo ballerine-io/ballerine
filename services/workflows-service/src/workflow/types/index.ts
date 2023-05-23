@@ -9,3 +9,5 @@ export interface RunnableWorkflowData {
 export type CompleteWorkflowData = WorkflowRuntimeData & {
   workflowDefinition: WorkflowDefinition;
 };
+
+export type TEntityType = 'endUser' | 'business';

@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Action, Resource } from '../../../../enums';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
-import { queryKeys } from '../../../query-keys';
+import toast from 'react-hot-toast';
+import { t } from 'i18next';
 import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
 
@@ -42,19 +43,22 @@ export const useRejectEntityMutation = ({
             : {}),
         },
       }),
-    onMutate: variables => ({
-      resource: Resource.INDIVIDUAL,
-      action: variables?.action,
-    }),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys[entity as keyof typeof queryKeys].list(filterId).queryKey,
-      });
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys[entity as keyof typeof queryKeys].byId(entityId, filterId).queryKey,
+    onSuccess: (data, payload) => {
+      queryClient.invalidateQueries({ queryKey: queries[entity].list(filterId).queryKey });
+      queryClient.invalidateQueries({
+        queryKey: queries[entity].byId(entityId, filterId).queryKey,
       });
 
+      const action = payload.action === Action.REJECT ? 'reject_case' : 'ask_resubmit_case';
+
+      toast.success(t(`toast:${action}.success`));
+
       onSelectNextEntity();
+    },
+    onError: (error, payload) => {
+      const action = payload.action === Action.REJECT ? 'reject_case' : 'ask_resubmit_case';
+
+      toast.error(t(`toast:${action}.error`));
     },
   });
 };

@@ -3,6 +3,8 @@ import { promises as fsPromises } from 'fs';
 import axios, { AxiosResponse } from 'axios';
 import { Readable } from 'stream';
 import { IStreamableFileProvider } from '../types/interfaces';
+import { isErrorWithMessage } from '@ballerine/common';
+import * as common from '@nestjs/common';
 
 export class HttpFileService implements IStreamableFileProvider {
   protected client;
@@ -53,7 +55,6 @@ export class HttpFileService implements IStreamableFileProvider {
     const response: AxiosResponse<Readable> = await axios.get(remoteUri, {
       responseType: 'stream',
     });
-
     return response.data;
   }
 
@@ -62,6 +63,10 @@ export class HttpFileService implements IStreamableFileProvider {
     fileStream: Readable,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TRemoteFileConfig> {
+    throw new Error('Unable to use upload to uri client');
+  }
+
+  generateRemoteFilePath(fileName: string, directory?: string): string {
     throw new Error('Unable to use upload to uri client');
   }
 }

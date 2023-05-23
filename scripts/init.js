@@ -11,7 +11,7 @@ const ensureEnvFileIsPresent = projectPath => {
   const envFile = path.join(projectPath, '.env');
   const envExampleFile = path.join(projectPath, '.env.example');
   if (fs.existsSync(envFile)) {
-    return;
+    fs.copyFileSync(envFile, `${envFile}-${new Date().toISOString()}.backup`);
   }
   fs.copyFileSync(envExampleFile, envFile);
 };

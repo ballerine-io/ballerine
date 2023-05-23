@@ -8,18 +8,17 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { merge, isEqual } from 'lodash';
+import { isEqual, merge } from 'lodash';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
-
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
-import { IObjectWithId } from '@/types';
+import { InputJsonValue, IObjectWithId } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
-import Ajv from 'ajv';
+import Ajv, { Schema } from 'ajv';
 import addFormats from 'ajv-formats';
 import { DefaultContextSchema } from './schemas/context';
 import * as console from 'console';
@@ -33,16 +32,20 @@ import { FileService } from '@/providers/file/file.service';
 import * as process from 'process';
 import * as crypto from 'crypto';
 import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-page-schema';
-import { env } from '@/env';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
-import { S3Client } from '@aws-sdk/client-s3';
 import { TFileServiceProvider } from '@/providers/file/types';
+import { updateDocuments } from '@/workflow/update-documents';
+import { isErrorWithMessage } from '@ballerine/common';
+import { getDocumentId } from '@/workflow/utils';
 
 type TEntityId = string;
+
 const ajv = new Ajv({
   strict: false,
+  coerceTypes: true,
 });
-addFormats(ajv, { formats: ['email', 'uri'] });
+addFormats(ajv, { formats: ['email', 'uri', 'date'] });
+
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
   CUT_IMAGE: 'CUT_IMAGE',
@@ -133,6 +136,7 @@ export class WorkflowService {
         businessId: true,
         assigneeId: true,
         id: true,
+        status: true,
       },
     });
   }
@@ -170,25 +174,78 @@ export class WorkflowService {
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
-    const contextHasChanged = !isEqual(data.context, runtimeData.context);
-    const mergedContext = merge({}, runtimeData.context, data.context);
+    const workflowDef = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+    );
+    let contextHasChanged, mergedContext;
+    if (data.context) {
+      contextHasChanged = !isEqual(data.context, runtimeData.context);
+      mergedContext = merge({}, runtimeData.context, data.context);
+      const context = {
+        ...mergedContext,
+        // @ts-ignore
+        documents: mergedContext?.documents?.map(
+          // @ts-ignore
+          ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
+        ),
+      };
+
+      const validateContextSchema = ajv.compile(
+        (workflowDef?.contextSchema as any)?.schema as Schema,
+      );
+      const isValidContextSchema = validateContextSchema(context);
+
+      if (!isValidContextSchema) {
+        throw new BadRequestException(
+          validateContextSchema.errors?.map(({ instancePath, message, ...rest }) => ({
+            ...rest,
+            instancePath,
+            message: `${instancePath} ${message}`,
+          })),
+        );
+      }
+
+      // @ts-ignore
+      data?.context?.documents?.forEach(({ propertiesSchema, id: _id, ...document }) => {
+        const validatePropertiesSchema = ajv.compile(propertiesSchema);
+        const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
+
+        if (!isValidPropertiesSchema) {
+          throw new BadRequestException(
+            validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
+              ...rest,
+              message: `${instancePath} ${message}`,
+              instancePath,
+            })),
+          );
+        }
+      });
+      data.context = mergedContext;
+    }
 
     this.logger.log(
-      `Context update receivied from client: [${runtimeData.state} -> ${data.state} ]`,
+      `Context update received from client: [${runtimeData.state} -> ${data.state} ]`,
     );
 
     // in case current state is a final state, we want to create another machine, of type manual review.
     // assign runtime to user, copy the context.
     const currentState = data.state;
-    const workflow = await this.workflowDefinitionRepository.findById(
-      runtimeData.workflowDefinitionId,
-    );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const isFinal = workflow.definition?.states?.[currentState]?.type === 'final';
+    const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
+    if (
+      ['active'].includes(data.status! || runtimeData.status) &&
+      workflowDef.config?.completedWhenTasksResolved
+    ) {
+      const allDocumentsResolved = data.context?.documents?.every(
+        (document: DefaultContextSchema['documents'][number]) => {
+          return ['approved', 'rejected'].includes(document?.decision?.status as string);
+        },
+      );
 
-    data.context = mergedContext;
+      data.status = allDocumentsResolved ? 'completed' : data.status! || runtimeData.status;
+    }
 
     const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
       data: {
@@ -207,10 +264,10 @@ export class WorkflowService {
 
     // TODO: Move to a separate method
     if (data.state) {
-      if (isFinal && workflow.reviewMachineId) {
+      if (isFinal && workflowDef.reviewMachineId) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        await this.handleRuntimeFinalState(runtimeData, data.context, workflow);
+        await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
       }
     }
 
@@ -253,18 +310,18 @@ export class WorkflowService {
     // will throw exception if review machine def is missing
     await this.workflowDefinitionRepository.findById(workflow.reviewMachineId);
 
-    const entitySerach: { businessId?: string; endUserId?: string } = {};
+    const entitySearch: { businessId?: string; endUserId?: string } = {};
 
     if (businessId) {
-      entitySerach.businessId = runtime.businessId as string;
+      entitySearch.businessId = runtime.businessId as string;
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      entitySerach.endUserId = runtime.endUserId as string;
+      entitySearch.endUserId = runtime.endUserId as string;
     }
 
     const workflowRuntimeDataExists = await this.workflowRuntimeDataRepository.findOne({
       where: {
-        ...entitySerach,
+        ...entitySearch,
         context: {
           path: ['parentMachine', 'id'],
           equals: runtime.id,
@@ -275,7 +332,7 @@ export class WorkflowService {
     if (!workflowRuntimeDataExists) {
       await this.workflowRuntimeDataRepository.create({
         data: {
-          ...entitySerach,
+          ...entitySearch,
           workflowDefinitionVersion: workflow.version,
           workflowDefinitionId: workflow.reviewMachineId,
           context: {
@@ -284,7 +341,7 @@ export class WorkflowService {
               id: runtime.id,
             },
           },
-          status: 'created',
+          status: 'active',
         },
       });
     } else {
@@ -299,7 +356,7 @@ export class WorkflowService {
     await this.updateWorkflowRuntimeData(runtime.id, {
       ...((runtime.context as { resubmissionReason: string })?.resubmissionReason
         ? {
-            ...entitySerach,
+            ...entitySearch,
             workflowDefinitionVersion: workflow.version,
             workflowDefinitionId: workflow.reviewMachineId,
             context: {
@@ -327,10 +384,10 @@ export class WorkflowService {
       entity: { ballerineEntityId: entityId, entityType: tempEntityType },
       documents: [],
     };
-    return this.createWorkflowRuntime({ workflowDefinitionId, context });
+    return this.createOrUpdateWorkflowRuntime({ workflowDefinitionId, context });
   }
 
-  async createWorkflowRuntime({
+  async createOrUpdateWorkflowRuntime({
     workflowDefinitionId,
     context,
   }: {
@@ -341,26 +398,66 @@ export class WorkflowService {
       workflowDefinitionId,
     );
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
-    const { entityId, entityConnect } = await this.__findOrPersistEntityInformation(context);
-    const contextWithPersistedFileIds = await this.__copyFileAndCreate(context, entityId);
+    const entityId = await this.__findOrPersistEntityInformation(context);
+    const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
 
-    const workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
-      data: {
-        ...entityConnect,
-        workflowDefinitionVersion: workflowDefinition.version,
-        context: contextWithPersistedFileIds,
-        status: 'created',
-        workflowDefinition: {
-          connect: {
-            id: workflowDefinitionId,
+    const existingWorkflowRuntimeData =
+      await this.workflowRuntimeDataRepository.getActiveWorkflowByEntity({
+        entityId,
+        entityType,
+        workflowDefinitionId: workflowDefinition.id,
+      });
+
+    let contextToInsert = structuredClone(context);
+
+    if (existingWorkflowRuntimeData) {
+      contextToInsert.documents = updateDocuments(
+        existingWorkflowRuntimeData.context.documents,
+        context.documents,
+      );
+    }
+
+    contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+
+    const entityConnect = {
+      [entityType]: {
+        connect: { id: entityId },
+      },
+    };
+
+    let workflowRuntimeData: WorkflowRuntimeData;
+
+    if (!existingWorkflowRuntimeData) {
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
+        data: {
+          ...entityConnect,
+          workflowDefinitionVersion: workflowDefinition.version,
+          context: contextToInsert as InputJsonValue,
+          status: 'active',
+          workflowDefinition: {
+            connect: {
+              id: workflowDefinition.id,
+            },
           },
         },
-      },
-    });
+      });
+    } else {
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
+        existingWorkflowRuntimeData.id,
+        {
+          data: {
+            ...entityConnect,
+            context: contextToInsert as InputJsonValue,
+          },
+        },
+      );
+    }
 
-    this.logger.log(
-      `Created workflow runtime data ${workflowRuntimeData.id}, for user ${entityId}, with workflow ${workflowDefinitionId}, version ${workflowDefinition.version}`,
-    );
+    this.logger.log(`WorkflowRuntimeData ${existingWorkflowRuntimeData ? 'created' : 'updated'}`, {
+      workflowRuntimeDataId: workflowRuntimeData.id,
+      entityId,
+      entityType,
+    });
 
     return [
       {
@@ -404,32 +501,28 @@ export class WorkflowService {
     entityId: string,
     documentPage: TDefaultSchemaDocumentPage,
   ) {
-    const documentContext =
-      `${document?.category}-${document?.type}-${document?.issuer?.country}`.toLowerCase();
-    const documentName = `${entityId}/${documentContext}_${crypto.randomUUID()}.${
-      documentPage.type
-    }`;
+    const documentContext = getDocumentId(document).toLowerCase();
+    const remoteFileName = `${documentContext}_${crypto.randomUUID()}.${documentPage.type}`;
 
     const { fromServiceProvider, fromRemoteFileConfig } =
       this.__fetchFromServiceProviders(documentPage);
-    const { toServiceProvider, toRemoteFileConfig, remoteFileName } =
-      this.__fetchToServiceProviders(documentName);
-
-    const remoteFilePath = await this.fileService.copyFileFromSourceToDestination(
-      fromServiceProvider,
-      fromRemoteFileConfig,
-      toServiceProvider,
-      toRemoteFileConfig,
-    );
-    const fileNameInBucket =
-      typeof remoteFilePath != 'string' ? remoteFilePath.fileNameInBucket : undefined;
+    const { toServiceProvider, toRemoteFileConfig, remoteFileNameInDirectory } =
+      this.__fetchToServiceProviders(entityId, remoteFileName);
+    const { remoteFilePath, fileNameInBucket } =
+      await this.fileService.copyFileFromSourceToDestination(
+        fromServiceProvider,
+        fromRemoteFileConfig,
+        toServiceProvider,
+        toRemoteFileConfig,
+      );
     const userId = entityId;
     const ballerineFileId = await this.storageService.createFileLink({
-      uri: remoteFileName,
-      fileNameOnDisk: remoteFileName,
+      uri: remoteFileNameInDirectory,
+      fileNameOnDisk: remoteFileNameInDirectory,
       userId,
       fileNameInBucket,
     });
+
     return ballerineFileId;
   }
 
@@ -437,31 +530,19 @@ export class WorkflowService {
     const { entity } = context;
     const entityId = await this.__tryToFetchExistingEntityId(entity);
 
-    if (!entityId) {
-      if (!entity.data) throw new BadRequestException('Entity data is required');
+    if (entityId) {
+      return entityId;
     }
 
-    let persistedEntityId = entityId;
-    const entityConnect: any = {} as any;
+    if (!entity.data) {
+      throw new BadRequestException('Entity data is required');
+    }
+
     if (entity.type === 'individual') {
-      persistedEntityId = persistedEntityId || (await this.__persistEndUserInfo(entity, context));
-
-      entityConnect.endUser = {
-        connect: {
-          id: persistedEntityId,
-        },
-      };
+      return await this.__persistEndUserInfo(entity, context);
     } else {
-      persistedEntityId =
-        persistedEntityId || (await this.__persistBusinessInformation(entity, context));
-
-      entityConnect.business = {
-        connect: {
-          id: persistedEntityId,
-        },
-      };
+      return await this.__persistBusinessInformation(entity, context);
     }
-    return { entityId: persistedEntityId, entityConnect };
   }
 
   private async __persistEndUserInfo(
@@ -567,7 +648,7 @@ export class WorkflowService {
             {
               data: {
                 state: 'document_photo',
-                status: 'created',
+                status: 'active',
                 context: {
                   ...context,
                   [document]: {
@@ -625,25 +706,32 @@ export class WorkflowService {
     return { fromServiceProvider: new LocalFileService(), fromRemoteFileConfig: document.uri };
   }
 
-  private __fetchToServiceProviders(fileName: string): {
+  private __fetchToServiceProviders(
+    entityId: string,
+    fileName: string,
+  ): {
     toServiceProvider: TFileServiceProvider;
     toRemoteFileConfig: TRemoteFileConfig;
-    remoteFileName: string;
+    remoteFileNameInDirectory: string;
   } {
     if (this.__fetchBucketName(process.env, false)) {
       const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
-      const awsConfigForClient = this.__fetchAwsConfigFor(fileName);
+      const awsFileService = new AwsS3FileService(s3ClientConfig);
+      const remoteFileNameInDocument = awsFileService.generateRemoteFilePath(fileName, entityId);
+      const awsConfigForClient = this.__fetchAwsConfigFor(remoteFileNameInDocument);
       return {
-        toServiceProvider: new AwsS3FileService(s3ClientConfig),
+        toServiceProvider: awsFileService,
         toRemoteFileConfig: awsConfigForClient,
-        remoteFileName: awsConfigForClient.fileNameInBucket,
+        remoteFileNameInDirectory: awsConfigForClient.fileNameInBucket,
       };
     }
 
+    const localFileService = new LocalFileService();
+    const toFileStoragePath = localFileService.generateRemoteFilePath(fileName);
     return {
-      toServiceProvider: new LocalFileService(),
-      toRemoteFileConfig: fileName,
-      remoteFileName: fileName,
+      toServiceProvider: localFileService,
+      toRemoteFileConfig: toFileStoragePath,
+      remoteFileNameInDirectory: toFileStoragePath,
     };
   }
 

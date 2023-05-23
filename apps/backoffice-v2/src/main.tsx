@@ -1,9 +1,8 @@
-//
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { App } from './App/App';
-import './i18';
+import './i18n';
 import { env } from './env/env';
 
 const rootElement = document.getElementById('root');

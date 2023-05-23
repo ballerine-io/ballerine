@@ -26,6 +26,7 @@ export interface IActionsProps {
   id: string;
   fullName: string;
   avatarUrl: string;
+  showResolutionButtons?: boolean;
 }
 
 export interface ICaseChildren {

@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { sort } from 'hooks/useSort/sort';
 import { useSelectEntitiesQuery } from '../useSelectEntitiesQuery/useSelectEntitiesQuery';
 import { TEntities } from '../../../types';
+import { useUsersQuery } from '../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
 
 export const useFirstEntityIdQuery = <TId extends TRouteId>({
   initialState,
@@ -24,14 +25,25 @@ export const useFirstEntityIdQuery = <TId extends TRouteId>({
         sortDir: 'sortDir' in searchParams ? searchParams?.sortDir : undefined,
       }),
     });
+  const { data: users } = useUsersQuery();
   const selectFirstEntityId = useCallback(
-    (data: TEntities) =>
-      sort({
-        data,
+    (entities: TEntities) => {
+      return sort({
+        data: entities.map(entity => {
+          const assigneeId = entity?.workflowRuntimeData?.assigneeId;
+
+          return {
+            ...entity,
+            assigneeId,
+            assigneeFullName: users?.find(user => user?.id === assigneeId)?.fullName,
+            caseCreatedAt: entity?.workflowRuntimeData?.createdAt,
+          };
+        }),
         sortBy,
         sortDir,
-      })?.[0]?.id,
-    [sortDir, sortBy],
+      })?.[0]?.id;
+    },
+    [sortDir, sortBy, users],
   );
 
   return useSelectEntitiesQuery(selectFirstEntityId);

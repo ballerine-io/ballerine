@@ -1,5 +1,4 @@
 import { useEntitiesQuery } from '../useEntitiesQuery/useEntitiesQuery';
-
 import { TUsers } from '../../../../users/types';
 
 export const useEntitiesWithWorkflowsQuery = (users: TUsers) => {
@@ -13,6 +12,7 @@ export const useEntitiesWithWorkflowsQuery = (users: TUsers) => {
           assigneeId,
           assigneeFullName: users?.find(user => user?.id === assigneeId)?.fullName,
           caseCreatedAt: entity?.workflowRuntimeData?.createdAt,
+          caseStatus: entity?.workflowRuntimeData?.status,
         };
       }),
   });

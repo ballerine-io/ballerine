@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import { CaseStatuses, State, States } from '../enums';
 import { ObjectWithIdSchema } from '../lib/zod/utils/object-with-id/object-with-id';
-import { State, States } from '../enums';
 
 export const BusinessesListSchema = z
   .array(
@@ -16,6 +16,7 @@ export const BusinessesListSchema = z
         ObjectWithIdSchema.extend({
           assigneeId: z.string().nullable().optional(),
           createdAt: z.string().datetime(),
+          status: z.enum(CaseStatuses),
         }).optional(),
       ),
     }),

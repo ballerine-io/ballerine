@@ -44,7 +44,11 @@ import { Button } from 'components/atoms/Button/button';
  *
  * @constructor
  */
-export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatarUrl }) => {
+export const Actions: FunctionComponent<IActionsProps> = ({
+  id,
+  fullName,
+  showResolutionButtons = true,
+}) => {
   const {
     onMutateApproveEntity,
     onMutateRejectEntity,
@@ -64,10 +68,10 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
     caseState,
     authenticatedUser,
     assignees,
+    isActionButtonDisabled,
+    onTriggerAssignToMe,
+    isAssignedToMe,
   } = useActions({ entityId: id, fullName });
-
-  const actionButtonDisabled = !caseState.actionButtonsEnabled;
-  const isAssignedToMe = true;
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-4`}>
@@ -82,7 +86,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, isAssignedToMe);
+            onMutateAssignWorkflow(id, onTriggerAssignToMe);
           }}
           buttonType={'Assign'}
         />
@@ -91,7 +95,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
           authenticatedUser={authenticatedUser}
           caseState={caseState}
           onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, !isAssignedToMe);
+            onMutateAssignWorkflow(id, !onTriggerAssignToMe);
           }}
           buttonType={'Re-Assign'}
         />
@@ -120,140 +124,142 @@ export const Actions: FunctionComponent<IActionsProps> = ({ id, fullName, avatar
             {fullName}
           </h2>
         </motion.div>
-        <div className={`flex items-center space-x-6`}>
-          <Button
-            className={ctw({
-              // loading: debouncedIsLoadingRejectEntity,
-            })}
-            // disabled={actionButtonDisabled}
-            disabled
-          >
-            Execute Tasks
-          </Button>
-          <Dialog>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+        {showResolutionButtons && (
+          <div className={`flex items-center space-x-6 pe-[3.35rem]`}>
+            <Button
+              className={ctw({
+                // loading: debouncedIsLoadingRejectEntity,
+              })}
+              // disabled={actionButtonDisabled}
+              disabled
+            >
+              Execute Tasks
+            </Button>
+            <Dialog>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant={`destructive`}
+                    className={ctw({
+                      // loading: debouncedIsLoadingRejectEntity,
+                    })}
+                    // disabled={isLoading || !canReject}
+                    disabled
+                  >
+                    Reject
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className={`min-w-[16rem]`} align={`end`}>
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className={`cursor-pointer`}
+                    onClick={onMutateRejectEntity({
+                      action: Action.REJECT,
+                    })}
+                  >
+                    Reject
+                    <DropdownMenuShortcut>Ctrl + J</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                  <DialogTrigger asChild>
+                    <DropdownMenuItem className={`cursor-pointer`}>
+                      Re-submit Document
+                      <DropdownMenuShortcut>Ctrl + R</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </DialogTrigger>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Request document re-submission</DialogTitle>
+                  <DialogDescription>
+                    This action will send a request to the user to re-submit their document. State
+                    the reason for requesting a document re-submission.
+                  </DialogDescription>
+                </DialogHeader>
+                <Select onValueChange={onResubmissionReasonChange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Re-submission reason" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.values(ResubmissionReason).map(reason => {
+                      const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
+                      const capitalizedReason =
+                        reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
+
+                      return (
+                        <SelectItem
+                          key={reason}
+                          value={reason}
+                          disabled={
+                            isActionButtonDisabled && reason !== ResubmissionReason.BLURRY_IMAGE
+                          }
+                        >
+                          {capitalizedReason}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <button
+                      className={ctw(`btn-error btn justify-center`)}
+                      onClick={onMutateRejectEntity({
+                        action: Action.RESUBMIT,
+                        // Currently hardcoded to documentOne.
+                        documentToResubmit,
+                        resubmissionReason,
+                      })}
+                      disabled={isActionButtonDisabled && !resubmissionReason}
+                    >
+                      Confirm
+                    </button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <HoverCard.Root openDelay={0} closeDelay={0}>
+              <HoverCard.Trigger asChild>
                 <Button
-                  variant={`destructive`}
                   className={ctw({
-                    // loading: debouncedIsLoadingRejectEntity,
+                    // loading: debouncedIsLoadingApproveEntity,
                   })}
-                  // disabled={isLoading || !canReject}
+                  variant={`success`}
+                  // disabled={isLoading || !canApprove}
+                  onClick={onMutateApproveEntity}
                   disabled
                 >
-                  Reject
+                  Approve
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className={`min-w-[16rem]`} align={`end`}>
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className={`cursor-pointer`}
-                  onClick={onMutateRejectEntity({
-                    action: Action.REJECT,
-                  })}
+              </HoverCard.Trigger>
+              <HoverCard.Portal>
+                <HoverCard.Content
+                  className={`card card-compact mt-2 rounded-md border-neutral/10 bg-base-100 p-2 shadow theme-dark:border-neutral/50`}
                 >
-                  Reject
-                  <DropdownMenuShortcut>Ctrl + J</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DialogTrigger asChild>
-                  <DropdownMenuItem className={`cursor-pointer`}>
-                    Re-submit Document
-                    <DropdownMenuShortcut>Ctrl + R</DropdownMenuShortcut>
-                  </DropdownMenuItem>
-                </DialogTrigger>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Request document re-submission</DialogTitle>
-                <DialogDescription>
-                  This action will send a request to the user to re-submit their document. State the
-                  reason for requesting a document re-submission.
-                </DialogDescription>
-              </DialogHeader>
-              <Select onValueChange={onResubmissionReasonChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Re-submission reason" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(ResubmissionReason).map(reason => {
-                    const reasonWithSpaceSpace = reason.replace(/_/g, ' ').toLowerCase();
-                    const capitalizedReason =
-                      reasonWithSpaceSpace.charAt(0).toUpperCase() + reasonWithSpaceSpace.slice(1);
-
-                    return (
-                      <SelectItem
-                        key={reason}
-                        value={reason}
-                        disabled={
-                          actionButtonDisabled && reason !== ResubmissionReason.BLURRY_IMAGE
-                        }
-                      >
-                        {capitalizedReason}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <button
-                    className={ctw(`btn-error btn justify-center`)}
-                    onClick={onMutateRejectEntity({
-                      action: Action.RESUBMIT,
-                      // Currently hardcoded to documentOne.
-                      documentToResubmit,
-                      resubmissionReason,
-                    })}
-                    disabled={actionButtonDisabled && !resubmissionReason}
-                  >
-                    Confirm
-                  </button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          <HoverCard.Root openDelay={0} closeDelay={0}>
-            <HoverCard.Trigger asChild>
-              <Button
-                className={ctw({
-                  // loading: debouncedIsLoadingApproveEntity,
-                })}
-                variant={`success`}
-                // disabled={isLoading || !canApprove}
-                onClick={onMutateApproveEntity}
-                disabled
-              >
-                Approve
-              </Button>
-            </HoverCard.Trigger>
-            <HoverCard.Portal>
-              <HoverCard.Content
-                className={`card card-compact mt-2 rounded-md border-neutral/10 bg-base-100 p-2 shadow theme-dark:border-neutral/50`}
-              >
-                <div className={`flex items-center space-x-2`}>
-                  <kbd className="kbd">Ctrl</kbd>
-                  <span>+</span>
-                  <kbd className="kbd">A</kbd>
-                </div>
-              </HoverCard.Content>
-            </HoverCard.Portal>
-          </HoverCard.Root>
-          {/*<div className="dropdown-hover dropdown dropdown-bottom dropdown-end">*/}
-          {/*  <EllipsisButton tabIndex={0} />*/}
-          {/*  <ul*/}
-          {/*    className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}*/}
-          {/*  >*/}
-          {/*    <li className={`disabled`}>*/}
-          {/*      <button disabled>Coming Soon</button>*/}
-          {/*    </li>*/}
-          {/*    <li className={`disabled`}>*/}
-          {/*      <button disabled>Coming Soon</button>*/}
-          {/*    </li>*/}
-          {/*  </ul>*/}
-          {/*</div>*/}
-        </div>
+                  <div className={`flex items-center space-x-2`}>
+                    <kbd className="kbd">Ctrl</kbd>
+                    <span>+</span>
+                    <kbd className="kbd">A</kbd>
+                  </div>
+                </HoverCard.Content>
+              </HoverCard.Portal>
+            </HoverCard.Root>
+            {/*<div className="dropdown-hover dropdown dropdown-bottom dropdown-end">*/}
+            {/*  <EllipsisButton tabIndex={0} />*/}
+            {/*  <ul*/}
+            {/*    className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}*/}
+            {/*  >*/}
+            {/*    <li className={`disabled`}>*/}
+            {/*      <button disabled>Coming Soon</button>*/}
+            {/*    </li>*/}
+            {/*    <li className={`disabled`}>*/}
+            {/*      <button disabled>Coming Soon</button>*/}
+            {/*    </li>*/}
+            {/*  </ul>*/}
+            {/*</div>*/}
+          </div>
+        )}
       </div>
     </div>
   );

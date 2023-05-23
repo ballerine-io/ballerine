@@ -2,8 +2,8 @@ import { caseManagementRoute } from '../CaseManagement/CaseManagement.route';
 import { queryClient } from '../../lib/react-query/query-client';
 import { z } from 'zod';
 import { Route } from '@tanstack/react-router';
+import { CaseStatuses, States } from '../../enums';
 import { Entities } from './Entities.page';
-import { States } from '../../enums';
 import { queryKeys } from '../../entities/query-keys';
 import { preSearchFiltersByKind } from './pre-search-filters';
 import { usersQueryKeys } from '../../users/query-keys';
@@ -18,25 +18,25 @@ const SearchSchema = z.object({
 
 const IndividualsSearchSchema = SearchSchema.extend({
   sortBy: z
-    .enum(['firstName', 'lastName', 'email', 'phone', 'createdAt', 'approvalState'])
+    .enum(['firstName', 'lastName', 'email', 'phone', 'caseCreatedAt', 'approvalState'])
     .optional()
-    .catch('createdAt'),
+    .catch('caseCreatedAt'),
   filter: z
     .object({
       approvalState: z.array(z.enum(States)).optional().catch([]),
-      endUserType: z.array(z.string()).optional().catch([]),
       assigneeId: z.array(z.string().nullable()).optional().catch([]),
+      caseStatus: z.array(z.enum(CaseStatuses)).optional().catch([]),
     })
     .optional(),
   entity: z.literal('individuals').catch('individuals'),
 });
 
 const BusinessesSearchSchema = SearchSchema.extend({
-  sortBy: z.enum(['createdAt', 'companyName']).optional().catch('createdAt'),
+  sortBy: z.enum(['caseCreatedAt', 'companyName']).optional().catch('caseCreatedAt'),
   filter: z
     .object({
-      approvalState: z.array(z.enum(States)).optional().catch([]),
       assigneeId: z.array(z.string().nullable()).optional().catch([]),
+      caseStatus: z.array(z.enum(CaseStatuses)).optional().catch([]),
       // businessType: z.array(z.string()).optional().catch([]),
     })
     .optional(),
