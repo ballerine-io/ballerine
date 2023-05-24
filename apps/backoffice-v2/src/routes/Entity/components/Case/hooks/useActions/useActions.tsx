@@ -1,16 +1,16 @@
 import { useCallback, useState } from 'react';
-import { useApproveEntityMutation } from '../../../../../../entities/hooks/mutations/useApproveEntityMutation/useApproveEntityMutation';
-import { useDebounce } from 'hooks/useDebounce/useDebounce';
-import { createInitials } from '../../../../../../utils/create-initials/create-initials';
-import { Action } from '../../../../../../enums';
-import { useEntityWithWorkflowQuery } from '../../../../../../entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
+import { useApproveEntityMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveEntityMutation/useApproveEntityMutation';
+import { useDebounce } from '../../../../../../common/hooks/useDebounce/useDebounce';
+import { createInitials } from '../../../../../../common/utils/create-initials/create-initials';
+import { Action } from '../../../../../../common/enums';
+import { useEntityWithWorkflowQuery } from '../../../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
 import { IUseActions } from './interfaces';
-import { useAuthenticatedUserQuery } from '../../../../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
-import { useUsersQuery } from '../../../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
-import { useAssignWorkflowMutation } from '../../../../../../workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
-import { useRejectEntityMutation } from '../../../../../../entities/hooks/mutations/useRejectEntityMutation/useRejectEntityMutation';
-import { useSelectNextEntity } from '../../../../../../entities/hooks/useSelectNextEntity/useSelectNextEntity';
+import { useUsersQuery } from '../../../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
+import { useAssignWorkflowMutation } from '../../../../../../domains/workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
+import { useRejectEntityMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectEntityMutation/useRejectEntityMutation';
+import { useSelectNextEntity } from '../../../../../../domains/entities/hooks/useSelectNextEntity/useSelectNextEntity';
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',

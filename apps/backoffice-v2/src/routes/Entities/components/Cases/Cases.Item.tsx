@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion';
 import { FunctionComponent } from 'react';
-import { getTimePastFromNow } from '../../../../utils/get-time-past-from-now';
-import { Avatar } from 'components/atoms/Avatar';
-import { ApprovedSvg, RejectedSvg } from 'components/atoms/icons';
+import { getTimePastFromNow } from '../../../../common/utils/get-time-past-from-now';
+import { Avatar } from '../../../../common/components/atoms/Avatar';
+import { ApprovedSvg, RejectedSvg } from '../../../../common/components/atoms/icons';
 import { IItemProps } from '../../../Entity/components/Case/interfaces';
 import { Link } from '@tanstack/react-router';
-import { createInitials } from '../../../../utils/create-initials/create-initials';
-import { ctw } from '../../../../utils/ctw/ctw';
-import { useEllipsesWithTitle } from 'hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { createInitials } from '../../../../common/utils/create-initials/create-initials';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { useEllipsesWithTitle } from '../../../../common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { Cases } from './Cases';
 
 /**

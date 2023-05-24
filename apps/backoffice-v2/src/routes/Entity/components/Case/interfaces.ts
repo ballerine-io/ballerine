@@ -3,7 +3,7 @@ import { Documents } from './Case.Documents';
 import { Info } from './Case.Info';
 import { Content } from './Case.Content';
 import { FaceMatch } from './Case.FaceMatch';
-import { TState } from '../../../../types';
+import { TState } from '../../../../common/types';
 import { ComponentProps } from 'react';
 
 export interface IItemProps {

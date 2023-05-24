@@ -2,7 +2,7 @@ import { Route } from '@tanstack/react-router';
 import { queryClient } from '../../lib/react-query/query-client';
 import { entitiesRoute } from '../Entities/Entities.route';
 import { Entity } from './Entity.page';
-import { queryKeys } from '../../entities/query-keys';
+import { queryKeys } from '../../domains/entities/query-keys';
 
 // @ts-ignore
 export const entityRoute = new Route({

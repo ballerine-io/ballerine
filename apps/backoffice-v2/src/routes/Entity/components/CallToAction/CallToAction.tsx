@@ -1,34 +1,34 @@
 import React, { FunctionComponent, useCallback, useState } from 'react';
-import { Dialog } from 'components/organisms/Dialog/Dialog';
-import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
-import { DropdownMenuTrigger } from 'components/molecules/DropdownMenu/DropdownMenu.Trigger';
-import { Button } from 'components/atoms/Button/button';
-import { ctw } from '../../../../utils/ctw/ctw';
-import { DropdownMenuContent } from 'components/molecules/DropdownMenu/DropdownMenu.Content';
-import { DropdownMenuLabel } from 'components/molecules/DropdownMenu/DropdownMenu.Label';
-import { DropdownMenuSeparator } from 'components/molecules/DropdownMenu/DropdownMenu.Separator';
-import { DialogTrigger } from 'components/organisms/Dialog/Dialog.Trigger';
-import { DropdownMenuItem } from 'components/molecules/DropdownMenu/DropdownMenu.Item';
+import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
+import { DropdownMenu } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu';
+import { DropdownMenuTrigger } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
+import { Button } from '../../../../common/components/atoms/Button/button';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { DropdownMenuContent } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Content';
+import { DropdownMenuLabel } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Label';
+import { DropdownMenuSeparator } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Separator';
+import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
+import { DropdownMenuItem } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Item';
 import { AlertTriangle, RotateCcw } from 'lucide-react';
-import { DialogContent } from 'components/organisms/Dialog/Dialog.Content';
-import { DialogHeader } from 'components/organisms/Dialog/Dialog.Header';
-import { DialogTitle } from 'components/organisms/Dialog/Dialog.Title';
-import { DialogDescription } from 'components/organisms/Dialog/Dialog.Description';
+import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
+import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
+import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
+import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'components/atoms/Select/Select';
-import { DialogFooter } from 'components/organisms/Dialog/Dialog.Footer';
+} from '../../../../common/components/atoms/Select/Select';
+import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useParams } from '@tanstack/react-router';
 import { ICallToActionProps } from './interfaces';
-import { useEntityWithWorkflowQuery } from '../../../../entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
-import { useAuthenticatedUserQuery } from '../../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
+import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../Case/hooks/useCaseState/useCaseState';
-import { useUpdateWorkflowByIdMutation } from '../../../../workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import toast from 'react-hot-toast';
 
 export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {

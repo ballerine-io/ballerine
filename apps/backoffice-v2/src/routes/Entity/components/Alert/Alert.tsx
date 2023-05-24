@@ -1,4 +1,4 @@
-import { WarningAlert } from 'components/atoms/WarningAlert';
+import { WarningAlert } from '../../../../common/components/atoms/WarningAlert';
 import React, { FunctionComponent } from 'react';
 import { IAlertProps } from './interfaces';
 

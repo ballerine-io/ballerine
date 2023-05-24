@@ -8,20 +8,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from 'components/organisms/Form/Form';
-import { Button } from 'components/atoms/Button/button';
-import { Input } from 'components/atoms/Input/Input';
-import { Card, CardContent, CardHeader } from 'components/atoms/Card/card';
-import { BallerineLogo } from 'components/atoms/icons';
-import { Alert } from 'components/atoms/Alert/Alert';
+} from '../../common/components/organisms/Form/Form';
+import { Button } from '../../common/components/atoms/Button/button';
+import { Input } from '../../common/components/atoms/Input/Input';
+import { Card, CardContent, CardHeader } from '../../common/components/atoms/Card/card';
+import { BallerineLogo } from '../../common/components/atoms/icons';
+import { Alert } from '../../common/components/atoms/Alert/Alert';
 import { AlertCircle } from 'lucide-react';
-import { AlertDescription } from 'components/atoms/Alert/Alert.Description';
-import { AlertTitle } from 'components/atoms/Alert/Alert.Title';
-import { useSignInMutation } from '../../auth/hooks/mutations/useSignInMutation/useSignInMutation';
-import { FormEventHandler, useCallback } from 'react';
-import { useAuthContext } from '../../auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
-import { useIsAuthenticated } from '../../auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
-import { isErrorWithMessage } from '@ballerine/common';
+import { AlertDescription } from '../../common/components/atoms/Alert/Alert.Description';
+import { AlertTitle } from '../../common/components/atoms/Alert/Alert.Title';
+import { useSignInMutation } from '../../domains/auth/hooks/mutations/useSignInMutation/useSignInMutation';
+import { useCallback } from 'react';
+import { useAuthContext } from '../../domains/auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
+import { useIsAuthenticated } from '../../domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 import { isErrorWithCode } from '../../lib/react-query/query-client';
 
 export const SignIn = () => {

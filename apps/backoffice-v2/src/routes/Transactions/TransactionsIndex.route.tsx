@@ -1,6 +1,6 @@
 import { Route } from '@tanstack/react-router';
 import { transactionsRoute } from './Transactions.route';
-import { ComingSoonPage } from 'components/templates/ComingSoonPage/ComingSoonPage';
+import { ComingSoonPage } from '../../common/components/templates/ComingSoonPage/ComingSoonPage';
 
 export const transactionsIndexRoute = new Route({
   getParentRoute: () => transactionsRoute,

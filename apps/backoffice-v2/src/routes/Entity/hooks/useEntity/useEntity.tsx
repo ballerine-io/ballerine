@@ -1,11 +1,11 @@
 import { useParams } from '@tanstack/react-router';
-import { useEntityWithWorkflowQuery } from '../../../../entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
-import { useStorageFilesQuery } from '../../../../storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { useFilterEntity } from '../../../../entities/hooks/useFilterEntity/useFilterEntity';
-import { useUpdateWorkflowByIdMutation } from '../../../../workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
+import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
+import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
+import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
-import { useAuthenticatedUserQuery } from '../../../../auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { toStartCase } from '../../../../utils/to-start-case/to-start-case';
+import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { components } from './components';
 
 export const useEntity = () => {

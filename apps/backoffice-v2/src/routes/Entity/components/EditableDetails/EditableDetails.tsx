@@ -6,16 +6,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from 'components/organisms/Form/Form';
-import { ctw } from '../../../../utils/ctw/ctw';
-import { toStartCase } from '../../../../utils/to-start-case/to-start-case';
-import { camelCaseToSpace } from '../../../../utils/camel-case-to-space/camel-case-to-space';
-import { Input } from 'components/atoms/Input/Input';
-import { Button } from 'components/atoms/Button/button';
+} from '../../../../common/components/organisms/Form/Form';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
+import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
+import { Input } from '../../../../common/components/atoms/Input/Input';
+import { Button } from '../../../../common/components/atoms/Button/button';
 import React, { FunctionComponent } from 'react';
-import { AnyRecord } from '../../../../types';
+import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
-import { useUpdateWorkflowByIdMutation } from '../../../../workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,

@@ -1,9 +1,9 @@
 import { FunctionComponent } from 'react';
 import { IFaceMatchProps } from './interfaces';
-import { BallerineImage } from 'components/atoms/BallerineImage';
-import { DataField } from 'components/molecules/DataField/DataField';
+import { BallerineImage } from '../../../../common/components/atoms/BallerineImage';
+import { DataField } from '../../../../common/components/molecules/DataField/DataField';
 import { useFaceMatch } from './hooks/useFaceMatch/useFaceMatch';
-import { ctw } from '../../../../utils/ctw/ctw';
+import { ctw } from '../../../../common/utils/ctw/ctw';
 
 /**
  * @description To be used by {@link Case}, and be wrapped by {@link Case.Content}. Displays a single entity's face match photos and result using {@link BallerineImage}.

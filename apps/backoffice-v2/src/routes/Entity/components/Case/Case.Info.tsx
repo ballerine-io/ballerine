@@ -1,18 +1,18 @@
 import { isNullish } from '@ballerine/common';
-import { WarningAlert } from 'components/atoms/WarningAlert';
-import { DataField } from 'components/molecules/DataField/DataField';
-import { DetailsGrid } from 'components/molecules/DetailsGrid/DetailsGrid';
-import { Modal } from 'components/organisms/Modal/Modal';
+import { WarningAlert } from '../../../../common/components/atoms/WarningAlert';
+import { DataField } from '../../../../common/components/molecules/DataField/DataField';
+import { DetailsGrid } from '../../../../common/components/molecules/DetailsGrid/DetailsGrid';
+import { Modal } from '../../../../common/components/organisms/Modal/Modal';
 import { IInfoProps } from './interfaces';
-import { useToggle } from 'hooks/useToggle/useToggle';
+import { useToggle } from '../../../../common/hooks/useToggle/useToggle';
 import { FunctionComponent, useCallback, useState } from 'react';
-import { State } from '../../../../enums';
-import { camelCaseToSpace } from '../../../../utils/camel-case-to-space/camel-case-to-space';
-import { createArrayOfNumbers } from '../../../../utils/create-array-of-numbers/create-array-of-numbers';
-import { ctw } from '../../../../utils/ctw/ctw';
-import { formatDate } from '../../../../utils/format-date';
-import { isValidDate } from '../../../../utils/is-valid-date';
-import { toStartCase } from '../../../../utils/to-start-case/to-start-case';
+import { State } from '../../../../common/enums';
+import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
+import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { formatDate } from '../../../../common/utils/format-date';
+import { isValidDate } from '../../../../common/utils/is-valid-date';
+import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 
 export const useInfo = ({
   whitelist = [],

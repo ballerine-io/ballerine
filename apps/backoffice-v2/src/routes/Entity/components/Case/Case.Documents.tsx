@@ -1,10 +1,10 @@
 import 'react-image-crop/dist/ReactCrop.css';
 import { FunctionComponent } from 'react';
-import { ImageViewer } from 'components/organisms/ImageViewer/ImageViewer';
+import { ImageViewer } from '../../../../common/components/organisms/ImageViewer/ImageViewer';
 import { IDocumentsProps } from './interfaces';
-import { CheckSvg, XMarkSvg } from 'components/atoms/icons';
+import { CheckSvg, XMarkSvg } from '../../../../common/components/atoms/icons';
 import { useDocuments } from './hooks/useDocuments/useDocuments';
-import { ctw } from '../../../../utils/ctw/ctw';
+import { ctw } from '../../../../common/utils/ctw/ctw';
 import ReactCrop from 'react-image-crop';
 
 /**

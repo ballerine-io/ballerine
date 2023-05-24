@@ -1,6 +1,6 @@
-import { Avatar } from 'components/atoms/Avatar';
+import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { FunctionComponent } from 'react';
-import { ctw } from '../../../../utils/ctw/ctw';
+import { ctw } from '../../../../common/utils/ctw/ctw';
 
 export const SkeletonItem: FunctionComponent = () => {
   return (

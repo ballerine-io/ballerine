@@ -1,10 +1,10 @@
-import { ctw } from '../../../../utils/ctw/ctw';
+import { ctw } from '../../../../common/utils/ctw/ctw';
 import { EditableDetails } from '../EditableDetails/EditableDetails';
-import { Separator } from 'components/atoms/Separator/separator';
+import { Separator } from '../../../../common/components/atoms/Separator/separator';
 import React, { FunctionComponent } from 'react';
 import { useParams } from '@tanstack/react-router';
 import { IDetailsProps } from './interfaces';
-import { useEntityWithWorkflowQuery } from '../../../../entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
+import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
 
 export const Details: FunctionComponent<IDetailsProps> = ({ id, value }) => {
   const { entityId } = useParams();

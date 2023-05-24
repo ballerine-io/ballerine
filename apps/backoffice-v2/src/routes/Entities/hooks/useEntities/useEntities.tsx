@@ -1,19 +1,19 @@
 import { useMatches } from '@tanstack/react-router';
-import { useSearch } from 'hooks/useSearch/useSearch';
-import { useFilter } from 'hooks/useFilter/useFilter';
-import { usePagination } from 'hooks/usePagination/usePagination';
+import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
+import { useFilter } from '../../../../common/hooks/useFilter/useFilter';
+import { usePagination } from '../../../../common/hooks/usePagination/usePagination';
 import { ChangeEventHandler, useCallback } from 'react';
-import { createArrayOfNumbers } from '../../../../utils/create-array-of-numbers/create-array-of-numbers';
-import { TRouteId } from '../../../../types';
-import { useSelectEntityOnMount } from '../../../../entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
+import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
+import { TRouteId } from '../../../../common/types';
+import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
 import { entitiesRoute } from '../../Entities.route';
 import { entitiesIndexRoute } from '../../EntitiesIndex.route';
 import { entityRoute } from '../../../Entity/Entity.route';
-import { useUsersQuery } from '../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
-import { useSort } from 'hooks/useSort/useSort';
-import { useEntitiesWithWorkflowsQuery } from '../../../../entities/hooks/queries/useEntitiesWithWorkflowsQuery/useEntitiesWithWorkflowsQuery';
-import { TIndividual } from '../../../../individuals/types';
-import { useFilterEntity } from '../../../../entities/hooks/useFilterEntity/useFilterEntity';
+import { useUsersQuery } from '../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
+import { useSort } from '../../../../common/hooks/useSort/useSort';
+import { useEntitiesWithWorkflowsQuery } from '../../../../domains/entities/hooks/queries/useEntitiesWithWorkflowsQuery/useEntitiesWithWorkflowsQuery';
+import { TIndividual } from '../../../../domains/individuals/types';
+import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
 
 export const useEntities = () => {
   const matches = useMatches();

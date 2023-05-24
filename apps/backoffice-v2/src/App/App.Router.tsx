@@ -8,7 +8,7 @@ import { entityRoute } from '../routes/Entity/Entity.route';
 import { rootIndexRoute } from '../routes/Root/RootIndex.route';
 import { signInRoute } from '../routes/SignIn/SignIn.route';
 import { entitiesIndexRoute } from '../routes/Entities/EntitiesIndex.route';
-import { env } from '../env/env';
+import { env } from '../common/env/env';
 
 declare module '@tanstack/react-router' {
   interface Register {

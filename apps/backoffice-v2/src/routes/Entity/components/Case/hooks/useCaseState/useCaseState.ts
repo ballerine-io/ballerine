@@ -1,5 +1,5 @@
-import { CaseState } from '../../../../../../enums';
-import { TAuthenticatedUser } from '../../../../../../auth/types';
+import { CaseState } from '../../../../../../common/enums';
+import { TAuthenticatedUser } from '../../../../../../domains/auth/types';
 
 export const useCaseState = (authenticatedUser: TAuthenticatedUser, workflow) => {
   if (!workflow) return CaseState.UNKNOWN;

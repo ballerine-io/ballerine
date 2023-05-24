@@ -2,9 +2,9 @@ import { isErrorWithMessage, isObject } from '@ballerine/common';
 import { QueryCache, QueryClient } from '@tanstack/react-query';
 import { t } from 'i18next';
 import toast from 'react-hot-toast';
-import { isZodError } from '../../utils/is-zod-error/is-zod-error';
-import { env } from '../../env/env';
-import { authQueryKeys } from '../../auth/query-keys';
+import { isZodError } from '../../common/utils/is-zod-error/is-zod-error';
+import { env } from '../../common/env/env';
+import { authQueryKeys } from '../../domains/auth/query-keys';
 
 interface IErrorWithCode {
   code: number;

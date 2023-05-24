@@ -1,10 +1,10 @@
 import { Cases } from './components/Cases/Cases';
 import { Outlet } from '@tanstack/react-router';
-import { Pagination } from 'components/organisms/Pagination/Pagination';
+import { Pagination } from '../../common/components/organisms/Pagination/Pagination';
 import { useEntities } from './hooks/useEntities/useEntities';
 import { Case } from '../Entity/components/Case/Case';
-import { MotionScrollArea } from 'components/molecules/MotionScrollArea/MotionScrollArea';
-import { useFilterEntity } from '../../entities/hooks/useFilterEntity/useFilterEntity';
+import { MotionScrollArea } from '../../common/components/molecules/MotionScrollArea/MotionScrollArea';
+import { useFilterEntity } from '../../domains/entities/hooks/useFilterEntity/useFilterEntity';
 
 export const Entities = () => {
   const {

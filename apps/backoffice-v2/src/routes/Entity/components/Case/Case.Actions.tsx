@@ -1,24 +1,24 @@
 import React, { FunctionComponent } from 'react';
-import { Avatar } from 'components/atoms/Avatar';
+import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { IActionsProps } from './interfaces';
 import { ResubmissionReason, useActions } from './hooks/useActions/useActions';
 import { motion } from 'framer-motion';
-import { ctw } from '../../../../utils/ctw/ctw';
-import { DropdownMenu } from 'components/molecules/DropdownMenu/DropdownMenu';
-import { DropdownMenuTrigger } from 'components/molecules/DropdownMenu/DropdownMenu.Trigger';
-import { DropdownMenuContent } from 'components/molecules/DropdownMenu/DropdownMenu.Content';
-import { DropdownMenuSeparator } from 'components/molecules/DropdownMenu/DropdownMenu.Separator';
-import { DropdownMenuLabel } from 'components/molecules/DropdownMenu/DropdownMenu.Label';
-import { DropdownMenuItem } from 'components/molecules/DropdownMenu/DropdownMenu.Item';
-import { DropdownMenuShortcut } from 'components/molecules/DropdownMenu/DropDownMenu.Shortcut';
-import { Action } from '../../../../enums';
-import { Dialog } from 'components/organisms/Dialog/Dialog';
-import { DialogFooter } from 'components/organisms/Dialog/Dialog.Footer';
-import { DialogContent } from 'components/organisms/Dialog/Dialog.Content';
-import { DialogTrigger } from 'components/organisms/Dialog/Dialog.Trigger';
-import { DialogTitle } from 'components/organisms/Dialog/Dialog.Title';
-import { DialogDescription } from 'components/organisms/Dialog/Dialog.Description';
-import { DialogHeader } from 'components/organisms/Dialog/Dialog.Header';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { DropdownMenu } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu';
+import { DropdownMenuTrigger } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
+import { DropdownMenuContent } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Content';
+import { DropdownMenuSeparator } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Separator';
+import { DropdownMenuLabel } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Label';
+import { DropdownMenuItem } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Item';
+import { DropdownMenuShortcut } from '../../../../common/components/molecules/DropdownMenu/DropDownMenu.Shortcut';
+import { Action } from '../../../../common/enums';
+import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
+import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
+import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
+import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
+import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
+import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
+import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
 import { DialogClose } from '@radix-ui/react-dialog';
 import {
   Select,
@@ -26,10 +26,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'components/atoms/Select/Select';
-import { AssignButton, Assignee } from 'components/atoms/AssignButton/AssignButton';
+} from '../../../../common/components/atoms/Select/Select';
+import {
+  AssignButton,
+  Assignee,
+} from '../../../../common/components/atoms/AssignButton/AssignButton';
 import * as HoverCard from '@radix-ui/react-hover-card';
-import { Button } from 'components/atoms/Button/button';
+import { Button } from '../../../../common/components/atoms/Button/button';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.

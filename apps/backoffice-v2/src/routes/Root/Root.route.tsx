@@ -1,9 +1,9 @@
 import { RootRoute } from '@tanstack/react-router';
 import { queryClient } from '../../lib/react-query/query-client';
-import { env } from '../../env/env';
+import { env } from '../../common/env/env';
 import { Root } from './Root.page';
-import { authQueryKeys } from '../../auth/query-keys';
-import { filtersQueryKeys } from '../../filters/query-keys';
+import { authQueryKeys } from '../../domains/auth/query-keys';
+import { filtersQueryKeys } from '../../domains/filters/query-keys';
 
 // Layout and globals
 export const rootRoute = new RootRoute({

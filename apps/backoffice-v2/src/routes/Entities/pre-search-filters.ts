@@ -1,4 +1,4 @@
-import { CaseStatus, State } from '../../enums';
+import { CaseStatus, State } from '../../common/enums';
 
 const sharedPreSearchFilters = {
   sortDir: 'desc' as const,

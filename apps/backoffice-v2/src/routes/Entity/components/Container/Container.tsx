@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { ctw } from '../../../../utils/ctw/ctw';
+import { ctw } from '../../../../common/utils/ctw/ctw';
 import { IContainerProps } from './interfaces';
 import { components } from '../../hooks/useEntity/components';
 

@@ -1,12 +1,12 @@
 import { FunctionComponent } from 'react';
-import { FilterSvg, MagnifyingGlassSvg, SortSvg } from 'components/atoms/icons';
+import { FilterSvg, MagnifyingGlassSvg, SortSvg } from '../../../../common/components/atoms/icons';
 import { Item } from './Cases.Item';
 import { List } from './Cases.List';
 import { ICasesChildren, ICasesProps } from './interfaces';
-import { Checkbox } from 'components/atoms/Checkbox/Checkbox';
+import { Checkbox } from '../../../../common/components/atoms/Checkbox/Checkbox';
 import { useCases } from './hooks/useCases/useCases';
 import { SkeletonItem } from './Cases.SkeletonItem';
-import { TIndividual } from '../../../../individuals/types';
+import { TIndividual } from '../../../../domains/individuals/types';
 
 /**
  * @description A vertical sidebar for the cases list, with search, filter, and sort.
@@ -68,7 +68,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
           </div>
         </div>
         <div className={`flex items-center justify-between`}>
-          <div className="dropdown dropdown-bottom dropdown-hover z-[60]">
+          <div className="dropdown-hover dropdown dropdown-bottom z-[60]">
             <button
               className={`btn-ghost btn-sm btn h-[2.125rem] gap-2 border-neutral/10 text-xs focus-visible:outline-primary theme-dark:border-neutral/50`}
               tabIndex={0}

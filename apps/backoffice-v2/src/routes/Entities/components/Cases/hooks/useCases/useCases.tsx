@@ -1,9 +1,9 @@
 import { useSearch } from '@tanstack/react-router';
-import { useDocumentListener } from 'hooks/useDocumentListener/useDocumentListener';
+import { useDocumentListener } from '../../../../../../common/hooks/useDocumentListener/useDocumentListener';
 import { useCallback, useRef } from 'react';
-import { TRouteId } from '../../../../../../types';
-import { useUsersQuery } from '../../../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
-import { useFilterEntity } from '../../../../../../entities/hooks/useFilterEntity/useFilterEntity';
+import { TRouteId } from '../../../../../../common/types';
+import { useUsersQuery } from '../../../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
+import { useFilterEntity } from '../../../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
 
 export const useCases = (routerId: TRouteId) => {
   const { filter, sortBy } = useSearch({ from: routerId, strict: false });

@@ -1,7 +1,7 @@
 import { Case } from './components/Case/Case';
 import { useEntity } from './hooks/useEntity/useEntity';
-import { ctw } from '../../utils/ctw/ctw';
-import { Card, CardContent } from 'components/atoms/Card/card';
+import { ctw } from '../../common/utils/ctw/ctw';
+import { Card, CardContent } from '../../common/components/atoms/Card/card';
 
 export const Entity = () => {
   const { selectedEntity, tasks, components } = useEntity();

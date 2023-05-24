@@ -1,9 +1,9 @@
 import { Item } from './Cases.Item';
 import { List } from './Cases.List';
-import { DivComponent, TRouteId } from '../../../../types';
+import { DivComponent, TRouteId } from '../../../../common/types';
 import { ChangeEventHandler } from 'react';
 import { SkeletonItem } from './Cases.SkeletonItem';
-import { TIndividual } from '../../../../individuals/types';
+import { TIndividual } from '../../../../domains/individuals/types';
 
 export interface ICasesChildren {
   List: typeof List;

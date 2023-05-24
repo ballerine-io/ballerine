@@ -2,11 +2,11 @@ import { caseManagementRoute } from '../CaseManagement/CaseManagement.route';
 import { queryClient } from '../../lib/react-query/query-client';
 import { z } from 'zod';
 import { Route } from '@tanstack/react-router';
-import { CaseStatuses, States } from '../../enums';
+import { CaseStatuses, States } from '../../common/enums';
 import { Entities } from './Entities.page';
-import { queryKeys } from '../../entities/query-keys';
+import { queryKeys } from '../../domains/entities/query-keys';
 import { preSearchFiltersByKind } from './pre-search-filters';
-import { usersQueryKeys } from '../../users/query-keys';
+import { usersQueryKeys } from '../../domains/users/query-keys';
 
 const SearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).optional().catch('desc'),
