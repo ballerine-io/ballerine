@@ -47,7 +47,7 @@ export const BottomActions = () => {
           className={`ml-4 mr-2 d-6`}
           isLoading={false}
         />
-        {session?.user?.email}
+        {session?.user?.firstName + ' ' + session?.user?.lastName}
       </div>
       <div className="dropdown dropdown-top dropdown-hover">
         <ul
