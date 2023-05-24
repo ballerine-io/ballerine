@@ -71,19 +71,19 @@ Open cases in the backoffice by sending API requests to the workflow service.
 
    1. Clone the project:  
    ```sh
-   git clone https://github.com/ballerine-io/ballerine.git
+   git clone https://github.com/ballerine-io/ballerine.git && cd ballerine
    ```
-   2. Install npm depenencies: 
+   2. Checkout to `dev` branch:
    ```sh
    git checkout dev
    ```
-   3.  Checkout to `dev` branch:  
+   3.  Install npm depenencies:
   ```sh
    pnpm install
    ```
    5. Init to monorepo (build packages): 
    ```sh
-   run monorepo:init
+   pnpm run monorepo:init
    ```
    6. Initilazie monorepo: 
    ```sh
