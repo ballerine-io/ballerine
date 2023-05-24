@@ -35,7 +35,6 @@ import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-p
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
-import { isErrorWithMessage } from '@ballerine/common';
 import { getDocumentId } from '@/workflow/utils';
 
 type TEntityId = string;
@@ -402,7 +401,7 @@ export class WorkflowService {
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
 
     const existingWorkflowRuntimeData =
-      await this.workflowRuntimeDataRepository.getActiveWorkflowByEntity({
+      await this.workflowRuntimeDataRepository.findActiveWorkflowByEntity({
         entityId,
         entityType,
         workflowDefinitionId: workflowDefinition.id,
@@ -753,5 +752,9 @@ export class WorkflowService {
     }
 
     return bucketName;
+  }
+
+  async getWorkflowRuntimeDataContext(id: string) {
+    return this.workflowRuntimeDataRepository.findContext(id);
   }
 }
