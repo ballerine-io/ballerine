@@ -34,7 +34,7 @@ What can be done with the case managament back office?
 
 **KYC**
 
-* Take decisions regarding clients quickly and efficiently. 
+* Take decisions regarding clients quickly and efficiently.
 
 **Document approval**
 
@@ -62,30 +62,30 @@ What can be done with the case managament back office?
 </a>
 
 **Getting started**
-To install the dev version use the following steps: 
+To install the dev version use the following steps:
 
 #### Use backoffice with through API
 
 Follow the steps below to run the backoffice app and the workflow service.
-Open cases in the backoffice by sending API requests to the workflow service. 
+Open cases in the backoffice by sending API requests to the workflow service.
 
-   1. Clone the project:  
+   1. Clone the project:
    ```sh
    git clone https://github.com/ballerine-io/ballerine.git && cd ballerine
    ```
-   2. Checkout to `dev` branch:
+   2. Install npm depenencies:
    ```sh
    git checkout dev
    ```
-   3.  Install npm depenencies:
+   3.  Checkout to `dev` branch:
   ```sh
    pnpm install
    ```
-   5. Init to monorepo (build packages): 
+   5. Init to monorepo (build packages):
    ```sh
    pnpm run monorepo:init
    ```
-   6. Initilazie monorepo: 
+   6. Initilazie monorepo:
    ```sh
    pnpm run api-manual-review-example
    ```
@@ -266,7 +266,7 @@ curl --location 'http://localhost:3000/api/v1/external/workflows/run' \
 
 Once done, you should see that a case was added to the back office, with the information that was sent, broken down into the different UI components for an easy review process.
 
-Any action preformed in the backoffice will dispatch an event you can get through webhooks.  
+Any action preformed in the backoffice will dispatch an event you can get through webhooks.
 checkout the  **environment variables** (workflows-service/.env) to setup the webhook url and secret.
 
 ## Back Office High Level Roadmap
@@ -284,7 +284,7 @@ checkout the  **environment variables** (workflows-service/.env) to setup the we
 	- [ ] Enforce policy rules on approval
 	- [ ] Show a case's acceptance criteria
 	- [ ] RBAC
-	
+
 
 ## Contact Ballerine
 

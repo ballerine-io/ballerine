@@ -12,6 +12,10 @@ import { downloadFileFromS3, manageFileByProvider } from '@/storage/get-file-sto
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import path from 'path';
 import os from 'os';
+import { File } from '@prisma/client';
+import { z } from 'zod';
+import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
+import { file } from 'tmp';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -80,6 +84,7 @@ export class StorageControllerInternal {
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }
+    const root = path.parse(os.homedir()).root;
 
     if (persistedFile.fileNameInBucket) {
       const localFilePath = await downloadFileFromS3(
@@ -87,9 +92,25 @@ export class StorageControllerInternal {
         persistedFile.fileNameInBucket,
       );
       return res.sendFile(localFilePath, { root: '/' });
+    } else if (this.__isImageUrl(persistedFile)) {
+      const downloadFilePath = await this.__downloadFileFromRemote(persistedFile);
+      return res.sendFile(downloadFilePath, { root: root });
     } else {
-      const root = path.parse(os.homedir()).root;
       return res.sendFile(persistedFile.fileNameOnDisk, { root: root });
     }
+  }
+
+  private async __downloadFileFromRemote(persistedFile: File) {
+    const localeFilePath = `${os.tmpdir()}/${persistedFile.id}`;
+    const downloadedFilePath = await new HttpFileService().downloadFile(
+      persistedFile.uri,
+      localeFilePath,
+    );
+
+    return downloadedFilePath;
+  }
+
+  __isImageUrl(persistedFile: File) {
+    return z.string().url().safeParse(persistedFile.uri).success;
   }
 }
