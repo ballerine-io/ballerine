@@ -3,7 +3,13 @@ import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
-import { businessIds, endUserIds, generateBusiness, generateEndUser } from './generate-end-user';
+import {
+  businessIds,
+  businessRiskIds,
+  endUserIds,
+  generateBusiness,
+  generateEndUser,
+} from './generate-end-user';
 import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
@@ -16,6 +22,26 @@ if (require.main === module) {
     console.error(error);
     process.exit(1);
   });
+}
+
+const persistImageFile = async (client: PrismaClient, uri: string) => {
+  const file = await client.file.create({
+    data: {
+      userId: '',
+      fileNameOnDisk: uri,
+      uri: uri,
+    },
+  });
+
+  return file.id;
+};
+
+function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number) {
+  if (countOfBusiness < 4) {
+    return `https://backoffice-demo.ballerine.app/images/mock-documents/${imageTemplate}`;
+  } else {
+    return faker.image.people(1000, 2000);
+  }
 }
 
 async function seed(bcryptSalt: Salt) {
@@ -77,8 +103,18 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  function createMockContextData(businessId: string) {
+  const createMockContextData = async (businessId: string, countOfBusiness: number) => {
     const correlationId = faker.datatype.uuid();
+    const imageUri1 = generateAvatarImageUri(
+      `set_${countOfBusiness}_doc_front.png`,
+      countOfBusiness,
+    );
+    const imageUri2 = generateAvatarImageUri(
+      `set_${countOfBusiness}_doc_face.png`,
+      countOfBusiness,
+    );
+    const imageUri3 = generateAvatarImageUri(`set_${countOfBusiness}_selfie.png`, countOfBusiness);
+
     let mockData = {
       entity: {
         type: 'business',
@@ -120,9 +156,10 @@ async function seed(bcryptSalt: Salt) {
           pages: [
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri1,
               type: 'jpg',
               data: '',
+              ballerineFileId: await persistImageFile(client, imageUri1),
               metadata: {
                 side: 'front',
                 pageNumber: '1',
@@ -130,9 +167,10 @@ async function seed(bcryptSalt: Salt) {
             },
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri2,
               type: 'jpg',
               data: '',
+              ballerineFileId: await persistImageFile(client, imageUri2),
               metadata: {
                 side: 'back',
                 pageNumber: '1',
@@ -164,8 +202,9 @@ async function seed(bcryptSalt: Salt) {
           pages: [
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri3,
               type: 'pdf',
+              ballerineFileId: await persistImageFile(client, imageUri3),
               data: '',
               metadata: {},
             },
@@ -183,7 +222,7 @@ async function seed(bcryptSalt: Salt) {
     };
 
     return mockData;
-  }
+  };
 
   // Risk score improvment
   await client.workflowDefinition.create({
@@ -563,29 +602,39 @@ async function seed(bcryptSalt: Salt) {
     ),
   );
 
-  await client.$transaction(
-    businessIds.map(id => {
-      const exampleWf = {
-        workflowDefinitionId: onboardingMachineKybId,
-        workflowDefinitionVersion: manualMachineVersion,
-        context: {},
-        createdAt: faker.date.recent(2),
-      };
-      const riskWf = () => ({
+  await client.$transaction(async tx => {
+    businessRiskIds.map(async (id, index) => {
+      const riskWf = async () => ({
         workflowDefinitionId: riskScoreMachineKybId,
         workflowDefinitionVersion: 1,
-        context: createMockContextData(id),
+        context: await createMockContextData(id, index + 1),
         createdAt: faker.date.recent(2),
       });
 
       return client.business.create({
         data: generateBusiness({
           id,
-          workflow: Math.random() > 0.6 ? riskWf() : exampleWf,
+          workflow: await riskWf(),
         }),
       });
-    }),
-  );
+    });
+
+    businessIds.map(async id => {
+      const exampleWf = {
+        workflowDefinitionId: onboardingMachineKybId,
+        workflowDefinitionVersion: manualMachineVersion,
+        context: {},
+        createdAt: faker.date.recent(2),
+      };
+
+      return client.business.create({
+        data: generateBusiness({
+          id,
+          workflow: exampleWf,
+        }),
+      });
+    });
+  });
 
   // TODO: create business with enduser attched to them
   // await client.business.create({

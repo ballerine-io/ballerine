@@ -49,6 +49,10 @@ export const SignIn = () => {
   const isAuthenticated = useIsAuthenticated();
   const signInForm = useForm<z.infer<typeof SignInSchema>>({
     resolver: zodResolver(SignInSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
   if (isAuthenticated) return null;
