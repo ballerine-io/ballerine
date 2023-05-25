@@ -15,10 +15,12 @@ export const endUserIds = [
   'ckkt3t2bw000aqxtt0hj4pw4c',
 ];
 
-export const businessIds = [
+export const businessRiskIds = [
   'ckkt3qnv41001qxtt7nmj9r26',
   'ckkt3r0v42002qxtt8sxk7fv9',
   'ckkt3rhxr3003qxtt5x6h5j18',
+];
+export const businessIds = [
   'ckkt3rv4z4004qxtte4vz9e97',
   'ckkt3s3ha5005qxttdz5yxg76',
   'ckkt3sc16006qxtt9e9u7y65',
