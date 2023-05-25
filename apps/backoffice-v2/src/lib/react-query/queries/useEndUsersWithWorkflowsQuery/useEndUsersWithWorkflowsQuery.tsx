@@ -15,5 +15,7 @@ export const useEndUsersWithWorkflowsQuery = (users: TUsers) => {
           caseStatus: endUser?.workflowRuntimeData?.status,
         };
       }),
+    // 1 second(s)
+    refetchInterval: 1 * 1000,
   });
 };
