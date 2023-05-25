@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker';
-import { PrismaClient } from '@prisma/client';
+import { Business, EndUser, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import { businessIds, endUserIds, generateBusiness, generateEndUser } from './generate-end-user';
@@ -77,9 +77,9 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  function createMockContextData(businessId: string) {
+  function createMockBusinessContextData(businessId: string) {
     const correlationId = faker.datatype.uuid();
-    let mockData = {
+    const mockData = {
       entity: {
         type: 'business',
         data: {
@@ -87,6 +87,7 @@ async function seed(bcryptSalt: Salt) {
           registrationNumber: faker.finance.account(9),
           legalForm: faker.company.bs(),
           countryOfIncorporation: faker.address.country(),
+          // @ts-expect-error - business type expects a date and not a string.
           dateOfIncorporation: faker.date.past(20).toISOString(),
           address: faker.address.streetAddress(),
           phoneNumber: faker.phone.phoneNumber(),
@@ -98,7 +99,7 @@ async function seed(bcryptSalt: Salt) {
           numberOfEmployees: faker.datatype.number(1000),
           businessPurpose: faker.company.catchPhraseDescriptor(),
           approvalState: 'NEW',
-        },
+        } satisfies Partial<Business>,
         additionalDetails: {},
         ballerineEntityId: businessId,
         id: correlationId,
@@ -185,7 +186,108 @@ async function seed(bcryptSalt: Salt) {
     return mockData;
   }
 
-  // Risk score improvment
+  function createMockEndUserContextData(endUserId: string) {
+    const correlationId = faker.datatype.uuid();
+    const mockData = {
+      entity: {
+        type: 'individual',
+        data: {
+          firstName: faker.name.firstName(),
+          lastName: faker.name.lastName(),
+          email: faker.internet.email(),
+          approvalState: 'NEW',
+          phone: faker.phone.number(),
+          stateReason: 'Poor quality of documents',
+          // @ts-expect-error - end user type expects a date and not a string.
+          dateOfBirth: faker.date.past(20).toISOString(),
+        } satisfies Partial<EndUser>,
+        additionalDetails: {},
+        ballerineEntityId: endUserId,
+        id: correlationId,
+      },
+      documents: [
+        {
+          category: 'ID',
+          type: 'photo',
+          issuer: {
+            type: 'government',
+            name: 'Government',
+            country: faker.address.country(),
+            city: faker.address.city(),
+            additionalDetails: {},
+          },
+          issuingVersion: 1,
+
+          version: 1,
+          pages: [
+            {
+              provider: 'http',
+              uri: faker.internet.url(),
+              type: 'jpg',
+              data: '',
+              metadata: {
+                side: 'front',
+                pageNumber: '1',
+              },
+            },
+            {
+              provider: 'http',
+              uri: faker.internet.url(),
+              type: 'jpg',
+              data: '',
+              metadata: {
+                side: 'back',
+                pageNumber: '1',
+              },
+            },
+          ],
+          properties: {
+            userNationalId: generateUserNationalId(),
+            docNumber: faker.finance.account(9),
+            userAddress: faker.address.streetAddress(),
+            website: faker.internet.url(),
+            expiryDate: faker.date.future(10).toISOString().split('T')[0],
+            email: faker.internet.email(),
+          },
+        },
+        {
+          category: 'selfie',
+          type: 'certificate',
+          issuer: {
+            type: 'government',
+            name: 'Government',
+            country: faker.address.country(),
+            city: faker.address.city(),
+            additionalDetails: {},
+          },
+          issuingVersion: 1,
+
+          version: 1,
+          pages: [
+            {
+              provider: 'http',
+              uri: faker.internet.url(),
+              type: 'pdf',
+              data: '',
+              metadata: {},
+            },
+          ],
+          properties: {
+            userNationalId: generateUserNationalId(),
+            docNumber: faker.finance.account(9),
+            userAddress: faker.address.streetAddress(),
+            website: faker.internet.url(),
+            expiryDate: faker.date.future(10).toISOString().split('T')[0],
+            email: faker.internet.email(),
+          },
+        },
+      ],
+    };
+
+    return mockData;
+  }
+
+  // Risk score improvement
   await client.workflowDefinition.create({
     data: {
       id: 'risk-score-improvement-dev', // should be auto generated normally
@@ -439,57 +541,57 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  // await client.filter.create({
-  //   data: {
-  //     entity: 'individuals',
-  //     name: 'Individuals',
-  //     query: {
-  //       select: {
-  //         id: true,
-  //         correlationId: true,
-  //         verificationId: true,
-  //         endUserType: true,
-  //         approvalState: true,
-  //         stateReason: true,
-  //         jsonData: true,
-  //         firstName: true,
-  //         lastName: true,
-  //         email: true,
-  //         phone: true,
-  //         dateOfBirth: true,
-  //         avatarUrl: true,
-  //         additionalInfo: true,
-  //         createdAt: true,
-  //         updatedAt: true,
-  //         workflowRuntimeData: {
-  //           select: {
-  //             id: true,
-  //             status: true,
-  //             assigneeId: true,
-  //             createdAt: true,
-  //             workflowDefinition: {
-  //               select: {
-  //                 id: true,
-  //                 name: true,
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //       where: {
-  //         workflowRuntimeData: {
-  //           some: {
-  //             workflowDefinition: {
-  //               is: {
-  //                 id: manualMachineId,
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  // });
+  await client.filter.create({
+    data: {
+      entity: 'individuals',
+      name: 'Individuals',
+      query: {
+        select: {
+          id: true,
+          correlationId: true,
+          verificationId: true,
+          endUserType: true,
+          approvalState: true,
+          stateReason: true,
+          jsonData: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          dateOfBirth: true,
+          avatarUrl: true,
+          additionalInfo: true,
+          createdAt: true,
+          updatedAt: true,
+          workflowRuntimeData: {
+            select: {
+              id: true,
+              status: true,
+              assigneeId: true,
+              createdAt: true,
+              workflowDefinition: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          workflowRuntimeData: {
+            some: {
+              workflowDefinition: {
+                is: {
+                  id: manualMachineId,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
 
   await client.filter.create({
     data: {
@@ -550,13 +652,13 @@ async function seed(bcryptSalt: Salt) {
   await client.$transaction(
     endUserIds.map(id =>
       client.endUser.create({
-        /// i tryed to fix that so i can run through ajv, currently it dosent like something in the schema (anyOf  )
+        /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
         data: generateEndUser({
           id,
           workflow: {
             workflowDefinitionId: manualMachineId,
             workflowDefinitionVersion: manualMachineVersion,
-            context: {},
+            context: createMockEndUserContextData(id),
           },
         }),
       }),
@@ -568,13 +670,14 @@ async function seed(bcryptSalt: Salt) {
       const exampleWf = {
         workflowDefinitionId: onboardingMachineKybId,
         workflowDefinitionVersion: manualMachineVersion,
+        // Would not display data in the backoffice UI
         context: {},
         createdAt: faker.date.recent(2),
       };
       const riskWf = () => ({
         workflowDefinitionId: riskScoreMachineKybId,
         workflowDefinitionVersion: 1,
-        context: createMockContextData(id),
+        context: createMockBusinessContextData(id),
         createdAt: faker.date.recent(2),
       });
 
