@@ -146,3 +146,11 @@ export const camelCaseToTitle = (str: string) =>
     .replace(/([A-Z])/g, ' $1')
     .replace(/^./, str => str.toUpperCase())
     .replace(/id/i, 'ID');
+
+export const getDocumentId = (document: {
+  category: string;
+  type: string;
+  issuer: {
+    country: string;
+  };
+}) => `${document.category}-${document.type}-${document.issuer.country}`.toLowerCase();

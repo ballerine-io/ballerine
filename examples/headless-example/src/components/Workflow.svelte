@@ -1,32 +1,11 @@
 <script lang="ts">
   import type { WorkflowOptionsBrowser } from '@ballerine/workflow-browser-sdk';
-  import DocumentPhoto from './DocumentPhoto.svelte';
-  import DocumentSelection from './DocumentSelection.svelte';
-  import ErrorComponent from './Error.svelte';
-  import Final from './Final.svelte';
-  import Resubmission from './Resubmission.svelte';
-  import Success from './Success.svelte';
   import { type ObjectValues, State } from '@/types';
-  import Welcome from './Welcome.svelte';
-  import { initWorkflowContext } from '@/utils';
-  import DocumentReview from './DocumentReview.svelte';
+  import { getDocumentId, initWorkflowContext } from '@/utils';
   import { createEventDispatcher } from 'svelte';
   import { DocumentId } from '@/constants';
+  import { Step } from '@/steps';
 
-  const Step = {
-    WELCOME: Welcome,
-    DOCUMENT_SELECTION: DocumentSelection,
-    DOCUMENT_PHOTO: DocumentPhoto,
-    DOCUMENT_REVIEW: DocumentReview,
-    CERTIFICATE_OF_INCORPORATION: DocumentPhoto,
-    CERTIFICATE_OF_INCORPORATION_REVIEW: DocumentReview,
-    SELFIE: DocumentPhoto,
-    SELFIE_REVIEW: DocumentReview,
-    FINAL: Final,
-    ERROR: ErrorComponent,
-    SUCCESS: Success,
-    RESUBMISSION: Resubmission,
-  } as const;
   export let workflow: WorkflowOptionsBrowser;
   const dispatch = createEventDispatcher();
   const workflowUpdated = (newWf: unknown) => dispatch('workflow-updated', newWf);
@@ -38,41 +17,93 @@
   let stateActionStatus: 'PENDING' | 'ERROR' | 'SUCCESS';
   let error: string;
 
+  const makeDocument = ({ id, payload }) => {
+    const [category, type, issuerCountry] = id?.split('-') ?? [];
+
+    return {
+      category,
+      type,
+      issuer: {
+        country: issuerCountry,
+      },
+      pages: [
+        {
+          ballerineFileId: payload?.id,
+          type: 'png',
+          provider: 'http',
+          uri: '',
+        },
+      ],
+    };
+  };
   const onPrev = (payload: Record<PropertyKey, any>) => () => {
     const context = workflowService.getSnapshot()?.context;
+    const documentId = Object.keys(payload ?? {})?.[0];
+    const newDocument = makeDocument({
+      id: documentId,
+      payload: payload[documentId],
+    });
+    const newDocuments = !context?.documents?.some(
+      document => getDocumentId(document) === documentId,
+    )
+      ? [...context?.documents, newDocument]
+      : context?.documents?.map(document => {
+          if (document.id !== documentId) return document;
+
+          return newDocument;
+        });
+    console.log('newDocuments', newDocuments);
 
     workflowService.sendEvent({
       type: 'USER_PREV_STEP',
       payload: {
         ...context,
-        documents: context?.documents?.map(document => {
-          if (document.id !== payload.id) return document;
-
-          return payload;
-        }),
+        documents: newDocuments,
       },
     });
   };
   const onSubmit = (payload: Record<PropertyKey, any>) => {
+    const context = workflowService.getSnapshot()?.context;
+    const documentId = Object.keys(payload ?? {})?.[0];
+    const newDocument = makeDocument({
+      id: documentId,
+      payload: payload[documentId],
+    });
+    const newDocuments = !context?.documents?.some(
+      document => getDocumentId(document) === documentId,
+    )
+      ? [...context?.documents, newDocument]
+      : context?.documents?.map(document => {
+          if (document.id !== documentId) return document;
+
+          return newDocument;
+        });
+
     workflowService.sendEvent({
       type: 'USER_NEXT_STEP',
-      payload,
+      payload: {
+        ...context,
+        documents: newDocuments,
+      },
     });
   };
+
+  const idCard = snapshot?.context?.documents?.find(
+    document => getDocumentId(document) === DocumentId.ID_CARD,
+  );
+  const selfie = snapshot?.context?.documents?.find(
+    document => getDocumentId(document) === DocumentId.SELFIE,
+  );
+  const certificateOfIncorporation = snapshot?.context?.documents?.find(
+    document => getDocumentId(document) === DocumentId.CERTIFICATE_OF_INCORPORATION,
+  );
+
   let initialValues = {
-    [DocumentId.ID_CARD]: {
-      type: snapshot?.context?.documents?.find(document => document.id === DocumentId.ID_CARD)
-        ?.type,
-    },
-    [DocumentId.SELFIE]: {
-      type: snapshot?.context?.documents?.find(document => document.id === DocumentId.SELFIE)?.type,
-    },
-    [DocumentId.CERTIFICATE_OF_INCORPORATION]: {
-      type: snapshot?.context?.documents?.find(
-        document => document.id === DocumentId.CERTIFICATE_OF_INCORPORATION,
-      )?.type,
-    },
+    [DocumentId.ID_CARD]: idCard,
+    [DocumentId.SELFIE]: selfie,
+    [DocumentId.CERTIFICATE_OF_INCORPORATION]: certificateOfIncorporation,
   };
+
   let documentId;
 
   workflowService.subscribe('USER_NEXT_STEP', async data => {
@@ -109,7 +140,7 @@
     snapshot = workflowService?.getSnapshot();
     workflowUpdated(snapshot);
     initialValues[DocumentId.ID_CARD].type = snapshot?.context?.documents?.find(
-      document => document?.id === DocumentId.ID_CARD,
+      document => getDocumentId(document) === DocumentId.ID_CARD,
     )?.type;
     initialValues[DocumentId.SELFIE].type = 'selfie';
     initialValues[DocumentId.CERTIFICATE_OF_INCORPORATION].type = 'certificate-of-incorporation';

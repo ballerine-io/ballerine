@@ -18,10 +18,9 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
 import { InputJsonValue, IObjectWithId } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
-import Ajv, { Schema } from 'ajv';
+import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { DefaultContextSchema } from './schemas/context';
-import * as console from 'console';
 import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
 import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
@@ -35,7 +34,6 @@ import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-p
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
-import { isErrorWithMessage } from '@ballerine/common';
 import { getDocumentId } from '@/workflow/utils';
 
 type TEntityId = string;
@@ -190,23 +188,12 @@ export class WorkflowService {
         ),
       };
 
-      const validateContextSchema = ajv.compile(
-        (workflowDef?.contextSchema as any)?.schema as Schema,
-      );
-      const isValidContextSchema = validateContextSchema(context);
-
-      if (!isValidContextSchema) {
-        throw new BadRequestException(
-          validateContextSchema.errors?.map(({ instancePath, message, ...rest }) => ({
-            ...rest,
-            instancePath,
-            message: `${instancePath} ${message}`,
-          })),
-        );
-      }
+      this.__validateWorkflowDefinitionContext(workflowDef, context);
 
       // @ts-ignore
       data?.context?.documents?.forEach(({ propertiesSchema, id: _id, ...document }) => {
+        if (!Object.keys(propertiesSchema ?? {})?.length) return;
+
         const validatePropertiesSchema = ajv.compile(propertiesSchema);
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
@@ -381,7 +368,7 @@ export class WorkflowService {
     // TODO: implement logic for multiple workflows
     const { workflowDefinitionId } = workflowDefinitionResolver()[0];
     const context: DefaultContextSchema = {
-      entity: { ballerineEntityId: entityId, entityType: tempEntityType },
+      entity: { ballerineEntityId: entityId, type: tempEntityType },
       documents: [],
     };
     return this.createOrUpdateWorkflowRuntime({ workflowDefinitionId, context });
@@ -592,15 +579,20 @@ export class WorkflowService {
     workflowDefinition: WorkflowDefinition,
     context: DefaultContextSchema,
   ) {
-    if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema).length) {
-      const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
-      const validationResult = validate(context);
+    if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
 
-      if (!validationResult) {
-        console.log(validate.errors);
-        throw new BadRequestException('Invalid context', JSON.stringify(validate.errors));
-      }
-    }
+    const validate = ajv.compile((workflowDefinition?.contextSchema as any)?.schema); // TODO: fix type
+    const isValid = validate(context);
+
+    if (isValid) return;
+
+    throw new BadRequestException(
+      validate.errors?.map(({ instancePath, message, ...rest }) => ({
+        ...rest,
+        instancePath,
+        message: `${instancePath} ${message}`,
+      })),
+    );
   }
 
   async event({

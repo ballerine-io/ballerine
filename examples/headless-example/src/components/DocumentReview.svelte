@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { camelCaseToTitle, createZodForm, getWorkflowContext } from '@/utils';
+  import { camelCaseToTitle, createZodForm, getDocumentId, getWorkflowContext } from '@/utils';
   import { z } from 'zod';
   import type { TOnPrev, TOnSubmit } from '@/types';
   import Form from '@/components/Form.svelte';
@@ -37,7 +37,7 @@
   $: {
     const document = workflowService
       .getSnapshot?.()
-      ?.context?.documents?.find(document => document.id === documentId);
+      ?.context?.documents?.find(document => getDocumentId(document) === documentId);
 
     title = camelCaseToTitle(documentId);
     id = document?.id;
