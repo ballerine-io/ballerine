@@ -11,6 +11,7 @@
   import { initWorkflowContext } from '@/utils';
   import DocumentReview from './DocumentReview.svelte';
   import { createEventDispatcher } from 'svelte';
+  import { DocumentId } from '@/constants';
 
   const Step = {
     WELCOME: Welcome,
@@ -44,19 +45,11 @@
       type: 'USER_PREV_STEP',
       payload: {
         ...context,
-        ...payload,
-        id: {
-          ...context?.id,
-          ...payload?.id,
-        },
-        selfie: {
-          ...context?.selfie,
-          ...payload?.selfie,
-        },
-        certificateOfIncorporation: {
-          ...context?.certificateOfIncorporation,
-          ...payload?.certificateOfIncorporation,
-        },
+        documents: context?.documents?.map(document => {
+          if (document.id !== payload.id) return document;
+
+          return payload;
+        }),
       },
     });
   };
@@ -67,17 +60,20 @@
     });
   };
   let initialValues = {
-    id: {
-      type: snapshot?.context?.id?.type,
+    [DocumentId.ID_CARD]: {
+      type: snapshot?.context?.documents?.find(document => document.id === DocumentId.ID_CARD)
+        ?.type,
     },
-    selfie: {
-      type: snapshot?.context?.selfie?.type,
+    [DocumentId.SELFIE]: {
+      type: snapshot?.context?.documents?.find(document => document.id === DocumentId.SELFIE)?.type,
     },
-    certificateOfIncorporation: {
-      type: snapshot?.context?.certificateOfIncorporation?.type,
+    [DocumentId.CERTIFICATE_OF_INCORPORATION]: {
+      type: snapshot?.context?.documents?.find(
+        document => document.id === DocumentId.CERTIFICATE_OF_INCORPORATION,
+      )?.type,
     },
   };
-  let documentName;
+  let documentId;
 
   workflowService.subscribe('USER_NEXT_STEP', async data => {
     currentStep = data.state;
@@ -112,22 +108,24 @@
     step = Step[currentStep.toUpperCase() as keyof typeof Step];
     snapshot = workflowService?.getSnapshot();
     workflowUpdated(snapshot);
-    initialValues.id.type = snapshot?.context?.id?.type;
-    initialValues.selfie.type = 'selfie';
-    initialValues.certificateOfIncorporation.type = 'certificateOfIncorporation';
+    initialValues[DocumentId.ID_CARD].type = snapshot?.context?.documents?.find(
+      document => document?.id === DocumentId.ID_CARD,
+    )?.type;
+    initialValues[DocumentId.SELFIE].type = 'selfie';
+    initialValues[DocumentId.CERTIFICATE_OF_INCORPORATION].type = 'certificate-of-incorporation';
 
     switch (currentStep) {
       case 'document_photo':
       case 'document_review':
-        documentName = 'id';
+        documentId = DocumentId.ID_CARD;
         break;
       case 'selfie':
       case 'selfie_review':
-        documentName = 'selfie';
+        documentId = DocumentId.SELFIE;
         break;
       case 'certificate_of_incorporation':
       case 'certificate_of_incorporation_review':
-        documentName = 'certificateOfIncorporation';
+        documentId = DocumentId.CERTIFICATE_OF_INCORPORATION;
         break;
       default:
         break;
@@ -149,4 +147,4 @@
   {/if}
 </span>
 
-<svelte:component this={step} {onPrev} {onSubmit} {initialValues} {documentName} />
+<svelte:component this={step} {onPrev} {onSubmit} {initialValues} {documentId} />

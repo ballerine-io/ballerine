@@ -5,9 +5,10 @@
   import Form from './Form.svelte';
   import type { TOnPrev, TOnSubmit } from '@/types';
   import DocumentType from '@/components/DocumentType.svelte';
+  import { DocumentId } from '@/constants';
 
   const schema = z.object({
-    id: z.object({
+    [DocumentId.ID_CARD]: z.object({
       type: z.union([z.literal('passport'), z.literal('idCard'), z.literal('driverLicense')]),
     }),
   });
@@ -18,8 +19,8 @@
 
   const zodForm = createZodForm(schema, {
     initialValues: {
-      id: {
-        type: initialValues.id.type,
+      [DocumentId.ID_CARD]: {
+        type: initialValues[DocumentId.ID_CARD].type,
       },
     },
     onSubmit,
@@ -33,17 +34,23 @@
     <DocumentType
       id="passport"
       label="Passport"
-      name="id.type"
+      name={`${DocumentId.ID_CARD}.type`}
       value="passport"
-      type={$data.id.type}
+      type={$data[DocumentId.ID_CARD].type}
     />
-    <DocumentType id="id-card" label="ID Card" name="id.type" value="idCard" type={$data.id.type} />
+    <DocumentType
+      id="id-card"
+      label="ID Card"
+      name={`${DocumentId.ID_CARD}.type`}
+      value="idCard"
+      type={$data[DocumentId.ID_CARD].type}
+    />
     <DocumentType
       id="driver-license"
       label="Driver License"
-      name="id.type"
+      name={`${DocumentId.ID_CARD}.type`}
       value="driverLicense"
-      type={$data.id.type}
+      type={$data[DocumentId.ID_CARD].type}
     />
   </fieldset>
   <ValidationMessage for="document" let:messages={message}>

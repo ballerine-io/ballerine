@@ -11,7 +11,7 @@
   export let initialValues: z.infer<typeof schema>;
   export let onSubmit: TOnSubmit<typeof schema>;
   export let onPrev: TOnPrev<typeof schema>;
-  export let documentName: string;
+  export let documentId: string;
 
   // Defaults to 'Next'
   const submitText = 'Looks Good';
@@ -24,7 +24,9 @@
     onSubmit(data, ctx) {
       return onSubmit(
         {
-          [documentName]: workflowService.getSnapshot?.()?.context?.[documentName],
+          [documentId]: workflowService
+            .getSnapshot?.()
+            ?.context?.documents?.find(document => document.id === documentId),
         },
         ctx,
       );
@@ -33,9 +35,11 @@
   const backText = 'Re-upload';
 
   $: {
-    const document = workflowService.getSnapshot?.()?.context?.[documentName];
+    const document = workflowService
+      .getSnapshot?.()
+      ?.context?.documents?.find(document => document.id === documentId);
 
-    title = camelCaseToTitle(documentName);
+    title = camelCaseToTitle(documentId);
     id = document?.id;
     fileType = document?.fileType;
   }
