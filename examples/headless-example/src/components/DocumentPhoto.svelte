@@ -115,7 +115,12 @@
       <button type="button" on:click={uploadFile}>Choose Document</button>
     </div>
   </fieldset>
+  <ValidationMessage for={`${documentId}.type`} let:messages={message}>
+    <div style="color: red; font-weight: bold;">
+      {message ? `Type ${message}: ${JSON.stringify(zodForm.data.type)}` : ''}
+    </div>
+  </ValidationMessage>
   <ValidationMessage for={`${documentId}.file`} let:messages={message}>
-    <div style="color: red; font-weight: bold;">{message || ''}</div>
+    <div style="color: red; font-weight: bold;">{message ? `File ${message}` : ''}</div>
   </ValidationMessage>
 </Form>

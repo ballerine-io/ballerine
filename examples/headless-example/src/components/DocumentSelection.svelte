@@ -53,7 +53,7 @@
       type={$data[DocumentId.ID_CARD].type}
     />
   </fieldset>
-  <ValidationMessage for="document" let:messages={message}>
-    <div style="color: red; font-weight: bold;">{message || ''}</div>
+  <ValidationMessage for={`${DocumentId.ID_CARD}.type`} let:messages={message}>
+    <div style="color: red; font-weight: bold;">{message ? `Type ${message}` : ''}</div>
   </ValidationMessage>
 </Form>
