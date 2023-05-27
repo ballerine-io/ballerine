@@ -20,7 +20,7 @@
   const zodForm = createZodForm(schema, {
     initialValues: {
       [DocumentId.ID_CARD]: {
-        type: initialValues[DocumentId.ID_CARD].type,
+        type: initialValues[DocumentId.ID_CARD]?.type,
       },
     },
     onSubmit,

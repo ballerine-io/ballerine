@@ -143,10 +143,12 @@ export const handlePromise = async <TData>(
 export const ctw = (...classNames: Array<ClassValue>) => twMerge(clsx(classNames));
 export const camelCaseToTitle = (str: string) =>
   str
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, str => str.toUpperCase())
-    .replace(/id/i, 'ID');
+    ?.replace(/([A-Z])/g, ' $1')
+    ?.replace(/^./, str => str?.toUpperCase())
+    ?.replace(/id/i, 'ID');
 
+export const getSnapshotContext = (workflowService: InstanceType<typeof WorkflowBrowserSDK>) =>
+  workflowService?.getSnapshot()?.context;
 export const getDocumentId = (document: {
   category: string;
   type: string;
@@ -154,3 +156,59 @@ export const getDocumentId = (document: {
     country: string;
   };
 }) => `${document.category}-${document.type}-${document.issuer.country}`.toLowerCase();
+export const makeDocument = ({
+  id,
+  payload,
+}: {
+  id: string;
+  payload: {
+    [key: string]: {
+      id: string;
+    };
+  };
+}) => {
+  const [category, type, issuerCountry] = id?.split('-') ?? [];
+
+  return {
+    category,
+    type,
+    issuer: {
+      country: issuerCountry,
+    },
+    pages: [
+      {
+        ballerineFileId: payload?.[id]?.id,
+        type: 'png',
+        provider: 'http',
+        uri: '',
+      },
+    ],
+    properties: {
+      userNationalId: `GHA-123456789-1`,
+      docNumber: '123456789',
+      userAddress: 'address',
+      website: 'http://localhost:3000',
+      expiryDate: '2021-12-31',
+      email: 'fake@fake.com',
+    },
+  };
+};
+// Update document if it exists, otherwise add a new document.
+export const upsertDocument = ({
+  documents,
+  document,
+}: {
+  documents: Array<any>;
+  document: any;
+}) => {
+  const documentId = getDocumentId(document);
+  const documentExists = documents?.some(document => getDocumentId(document) === documentId);
+
+  return !documentExists
+    ? [...documents, document]
+    : documents?.map(doc => {
+        if (getDocumentId(doc) !== documentId) return doc;
+
+        return document;
+      });
+};

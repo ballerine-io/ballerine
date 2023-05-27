@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { WorkflowOptionsBrowser } from '@ballerine/workflow-browser-sdk';
   import { type ObjectValues, State } from '@/types';
-  import { getDocumentId, initWorkflowContext } from '@/utils';
+  import { initWorkflowContext, makeDocument, upsertDocument } from '@/utils';
   import { createEventDispatcher } from 'svelte';
   import { DocumentId } from '@/constants';
   import { Step } from '@/steps';
@@ -17,91 +17,76 @@
   let stateActionStatus: 'PENDING' | 'ERROR' | 'SUCCESS';
   let error: string;
 
-  const makeDocument = ({ id, payload }) => {
-    const [category, type, issuerCountry] = id?.split('-') ?? [];
-
-    return {
-      category,
-      type,
-      issuer: {
-        country: issuerCountry,
-      },
-      pages: [
-        {
-          ballerineFileId: payload?.id,
-          type: 'png',
-          provider: 'http',
-          uri: '',
-        },
-      ],
-    };
-  };
   const onPrev = (payload: Record<PropertyKey, any>) => () => {
     const context = workflowService.getSnapshot()?.context;
-    const documentId = Object.keys(payload ?? {})?.[0];
-    const newDocument = makeDocument({
-      id: documentId,
-      payload: payload[documentId],
+    const document = makeDocument({
+      id: Object.keys(payload)[0],
+      payload,
     });
-    const newDocuments = !context?.documents?.some(
-      document => getDocumentId(document) === documentId,
-    )
-      ? [...context?.documents, newDocument]
-      : context?.documents?.map(document => {
-          if (document.id !== documentId) return document;
-
-          return newDocument;
-        });
-    console.log('newDocuments', newDocuments);
+    const updatedDocuments = upsertDocument({
+      documents: context?.documents,
+      document,
+    });
 
     workflowService.sendEvent({
       type: 'USER_PREV_STEP',
       payload: {
         ...context,
-        documents: newDocuments,
+        ...payload,
+        documents: updatedDocuments,
+        form: {
+          [DocumentId.ID_CARD]: {
+            ...context?.form?.[DocumentId.ID_CARD],
+            ...payload?.[DocumentId.ID_CARD],
+          },
+          [DocumentId.SELFIE]: {
+            ...context?.form?.[DocumentId.SELFIE],
+            ...payload?.[DocumentId.SELFIE],
+          },
+          [DocumentId.CERTIFICATE_OF_INCORPORATION]: {
+            ...context?.form?.[DocumentId.CERTIFICATE_OF_INCORPORATION],
+            ...payload?.[DocumentId.CERTIFICATE_OF_INCORPORATION],
+          },
+        },
       },
     });
   };
   const onSubmit = (payload: Record<PropertyKey, any>) => {
     const context = workflowService.getSnapshot()?.context;
     const documentId = Object.keys(payload ?? {})?.[0];
-    const newDocument = makeDocument({
+    const document = makeDocument({
       id: documentId,
-      payload: payload[documentId],
+      payload,
     });
-    const newDocuments = !context?.documents?.some(
-      document => getDocumentId(document) === documentId,
-    )
-      ? [...context?.documents, newDocument]
-      : context?.documents?.map(document => {
-          if (document.id !== documentId) return document;
-
-          return newDocument;
-        });
+    const newDocuments = upsertDocument({
+      documents: context?.documents,
+      document,
+    });
 
     workflowService.sendEvent({
       type: 'USER_NEXT_STEP',
       payload: {
-        ...context,
         documents: newDocuments,
+        form: {
+          ...context?.form,
+          [documentId]: {
+            ...context?.form?.[documentId],
+            ...payload?.[documentId],
+          },
+        },
       },
     });
   };
-
-  const idCard = snapshot?.context?.documents?.find(
-    document => getDocumentId(document) === DocumentId.ID_CARD,
-  );
-  const selfie = snapshot?.context?.documents?.find(
-    document => getDocumentId(document) === DocumentId.SELFIE,
-  );
-  const certificateOfIncorporation = snapshot?.context?.documents?.find(
-    document => getDocumentId(document) === DocumentId.CERTIFICATE_OF_INCORPORATION,
-  );
-
   let initialValues = {
-    [DocumentId.ID_CARD]: idCard,
-    [DocumentId.SELFIE]: selfie,
-    [DocumentId.CERTIFICATE_OF_INCORPORATION]: certificateOfIncorporation,
+    [DocumentId.ID_CARD]: {
+      type: snapshot?.context?.form?.[DocumentId.ID_CARD]?.type,
+    },
+    [DocumentId.SELFIE]: {
+      type: snapshot?.context?.form?.[DocumentId.SELFIE]?.type,
+    },
+    [DocumentId.CERTIFICATE_OF_INCORPORATION]: {
+      type: snapshot?.context?.form?.[DocumentId.CERTIFICATE_OF_INCORPORATION]?.type,
+    },
   };
 
   let documentId;
@@ -139,11 +124,9 @@
     step = Step[currentStep.toUpperCase() as keyof typeof Step];
     snapshot = workflowService?.getSnapshot();
     workflowUpdated(snapshot);
-    initialValues[DocumentId.ID_CARD].type = snapshot?.context?.documents?.find(
-      document => getDocumentId(document) === DocumentId.ID_CARD,
-    )?.type;
+    initialValues[DocumentId.ID_CARD].type = snapshot?.context?.form?.[DocumentId.ID_CARD]?.type;
     initialValues[DocumentId.SELFIE].type = 'selfie';
-    initialValues[DocumentId.CERTIFICATE_OF_INCORPORATION].type = 'certificate-of-incorporation';
+    initialValues[DocumentId.CERTIFICATE_OF_INCORPORATION].type = 'incorporation';
 
     switch (currentStep) {
       case 'document_photo':
