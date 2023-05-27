@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login';
 import { UserModel } from '@/user/user.model';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
 
 @ApiTags('auth')
@@ -22,14 +22,14 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(200)
-  logout(@Req() req: Request): { user: undefined } {
-    req.session.destroy(() => {
-      return;
-    });
-    req.logOut(() => {
-      return;
-    });
-
+  async logout(@Req() req: Request, res: Response): Promise<{ user: undefined }> {
+    // eslint-disable-next-line @typescript-eslint/await-thenable
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/await-thenable
+    await req.logout({}, console.log);
+    res.clearCookie('session', { path: '/', httpOnly: true });
+    res.clearCookie('session.sig', { path: '/', httpOnly: true });
+    // @ts-ignore
     return { user: undefined };
   }
 
