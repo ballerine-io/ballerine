@@ -47,7 +47,7 @@ async function getTypes(prisma: PrismaClient): Promise<string[]> {
     typname: string;
   }> = await prisma.$queryRaw`
  SELECT t.typname
- FROM pg_type t 
+ FROM pg_type t
  JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
  WHERE n.nspname = 'public';
  `;

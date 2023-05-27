@@ -20,7 +20,7 @@
         z.literal('idCard'),
         z.literal('driverLicense'),
         z.literal('selfie'),
-        z.literal('certificateOfIncorporation'),
+        z.literal('incorporation'),
       ]),
       file: z.custom<File>(v => v instanceof File),
     }),
@@ -29,7 +29,7 @@
   const zodForm = createZodForm(schema, {
     initialValues: {
       [documentId]: {
-        type: initialValues[documentId].type,
+        type: initialValues[documentId]?.type,
       },
     },
     async onSubmit(data, ctx) {
