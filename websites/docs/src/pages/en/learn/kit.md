@@ -6,7 +6,7 @@
 </a>
 
 # Onboarding building blocks (community-driven kit)
-  
+
 </div>
 
 Use the "community driven KYC/KYB process" to form flows and start onboarding clients.
