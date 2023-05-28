@@ -24,6 +24,8 @@ export class SessionSerializer extends PassportSerializer {
       return done(null, null);
     }
 
+    delete (userResult as Partial<User>).password;
+
     return done(null, userResult);
   }
 }

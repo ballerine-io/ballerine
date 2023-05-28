@@ -20779,7 +20779,7 @@ packages:
       gzip-size: 5.1.1
       minimatch: 3.1.2
       pretty-bytes: 5.6.0
-      size-plugin-store: 0.0.5
+      size-plugin-store: 0.0.5  
       util.promisify: 1.1.1
     transitivePeerDependencies:
       - supports-color

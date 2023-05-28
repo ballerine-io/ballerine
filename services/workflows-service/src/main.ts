@@ -39,6 +39,13 @@ async function main() {
       maxAge: 1000 * 60 * 60 * 1, // 1 hour(s)
     }),
   );
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (!req.session) return next();
+    
+    req.session.nowInMinutes = Math.floor(Date.now() / 60e3);
+    next();
+  });
+
   // register regenerate & save after the cookieSession middleware initialization
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.session && !req.session.regenerate) {
@@ -57,6 +64,17 @@ async function main() {
   });
   app.use(passport.initialize());
   app.use(passport.session());
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.session) {
+      console.log('Is session changed', req.session.isChanged);
+      console.log('Is session new', req.session.isNew);
+      console.log('Is session populated', req.session.isPopulated);
+    } else {
+      console.log('No session');
+    }
+
+    next();
+  });
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({
