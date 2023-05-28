@@ -15,6 +15,7 @@ COPY . .
 RUN npm run build
 
 FROM node:18.12.1 AS prod
+RUN apt-get install -y --no-install-recommends dumb-init
 
 WORKDIR /app
 
@@ -29,4 +30,4 @@ COPY --from=base /app/tsconfig* ./
 
 EXPOSE 3007
 
-CMD [ "node", "./dist/main"]
+CMD ["dumb-init", "node", "./dist/main"]
