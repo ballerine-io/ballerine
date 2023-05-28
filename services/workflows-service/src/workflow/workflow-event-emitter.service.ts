@@ -29,4 +29,12 @@ export class WorkflowEventEmitterService {
 
     this.eventEmitter.emit(eventName, eventData);
   }
+
+  on(eventName: string, listener: (eventData: WorkflowEventRawData) => void) {
+    if (!eventName) {
+      throw new Error('Event name is required');
+    }
+
+    this.eventEmitter.on(eventName, listener);
+  }
 }
