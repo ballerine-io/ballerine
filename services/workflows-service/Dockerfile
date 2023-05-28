@@ -1,5 +1,7 @@
 FROM node:18.12.1 AS base
 
+RUN apt-get update && apt-get install -y --no-install-recommends dumb-init
+
 WORKDIR /app
 
 COPY package.json ./
@@ -12,7 +14,6 @@ RUN npm run prisma:generate
 
 COPY . .
 
-RUN apt-get update && apt-get install -y --no-install-recommends dumb-init
 RUN npm run build
 
 FROM node:18.12.1 AS prod
