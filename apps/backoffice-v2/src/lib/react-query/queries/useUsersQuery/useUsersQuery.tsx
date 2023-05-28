@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { users } from '../../users';
+import { env } from '../../../../env/env';
 
 export const useUsersQuery = () => {
   return useQuery({
     ...users.list(),
-    // 1 second(s)
-    refetchInterval: 1 * 1000,
+    refetchInterval: env.VITE_ASSIGNMENT_POLLING_INTERVAL,
   });
 };

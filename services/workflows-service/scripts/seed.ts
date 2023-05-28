@@ -40,7 +40,7 @@ function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number) 
   if (countOfBusiness < 4) {
     return `https://backoffice-demo.ballerine.app/images/mock-documents/${imageTemplate}`;
   } else {
-    return faker.image.people(1000, 2000);
+    return faker.image.people(1000, 2000, true);
   }
 }
 
@@ -274,7 +274,7 @@ async function seed(bcryptSalt: Salt) {
           pages: [
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri1,
               type: 'jpg',
               data: '',
               ballerineFileId: await persistImageFile(client, imageUri1),
@@ -285,7 +285,7 @@ async function seed(bcryptSalt: Salt) {
             },
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri2,
               type: 'jpg',
               data: '',
               ballerineFileId: await persistImageFile(client, imageUri2),
@@ -320,7 +320,7 @@ async function seed(bcryptSalt: Salt) {
           pages: [
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri3,
               type: 'pdf',
               data: '',
               ballerineFileId: await persistImageFile(client, imageUri3),
