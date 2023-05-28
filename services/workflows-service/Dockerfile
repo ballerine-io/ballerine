@@ -15,7 +15,6 @@ COPY . .
 RUN npm run build
 
 FROM node:18.12.1 AS prod
-RUN apt-get install -y --no-install-recommends dumb-init
 
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_amd64.deb
 RUN dpkg -i dumb-init_*.deb
