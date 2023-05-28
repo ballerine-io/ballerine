@@ -50,11 +50,11 @@ Add this code to your index.html header
 <ins>Package Managers:</ins>
 ```javascript
 # NPM
-npm install --save @ballerine/web-sdk
+npm install --save @ballerine/web-ui-sdk
 # Yarn
-yarn add @ballerine/web-sdk
+yarn add @ballerine/web-ui-sdk
 # PNPM
-pnpm add @ballerine/web-sdk
+pnpm add @ballerine/web-ui-sdk
 ```
 
 #### Flows API
@@ -84,7 +84,7 @@ BallerineSDK.flows.on('finish', doSomethingFn)
 
 Package Manager:
 ```javascript
-import { flows as ballerineFlows } from '@ballerine/web-sdk';
+import { flows as ballerineFlows } from '@ballerine/web-ui-sdk';
 
 await ballerineFlows.init({...}).then(() => console.log('flows ready'));
 // 3. Mount selected flow on an element

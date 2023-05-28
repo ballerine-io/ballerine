@@ -16,7 +16,7 @@ The backend configuration object to change the backend's auth, base url, and end
 
 #### Defined in
 
-[BallerineSDK.ts:114](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-sdk/src/types/BallerineSDK.ts#L114)
+[BallerineSDK.ts:114](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L114)
 
 ---
 
@@ -30,7 +30,7 @@ The end user's personal information.
 
 #### Defined in
 
-[BallerineSDK.ts:110](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-sdk/src/types/BallerineSDK.ts#L110)
+[BallerineSDK.ts:110](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L110)
 
 ---
 
@@ -44,7 +44,7 @@ The translations to be used in the flow.
 
 #### Defined in
 
-[BallerineSDK.ts:118](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-sdk/src/types/BallerineSDK.ts#L118)
+[BallerineSDK.ts:118](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L118)
 
 ---
 
@@ -58,7 +58,7 @@ The UI configuration object to change the theme and components.
 
 #### Defined in
 
-[BallerineSDK.ts:106](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-sdk/src/types/BallerineSDK.ts#L106)
+[BallerineSDK.ts:106](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L106)
 
 ---
 
@@ -72,4 +72,4 @@ The flow version to be used.
 
 #### Defined in
 
-[BallerineSDK.ts:102](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-sdk/src/types/BallerineSDK.ts#L102)
+[BallerineSDK.ts:102](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L102)
