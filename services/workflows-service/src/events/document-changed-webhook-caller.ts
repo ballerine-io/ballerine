@@ -1,28 +1,35 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
-import { WorkflowEventRawData } from '@/workflow/workflow-event-emitter.service';
+import {
+  WorkflowEventEmitterService,
+  WorkflowEventRawData,
+} from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { randomUUID } from 'crypto';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
+import * as Sentry from '@sentry/node';
+import { AxiosInstance, isAxiosError } from 'axios';
 
 @Injectable()
 export class DocumentChangedWebhookCaller {
-  #__axios: any;
+  #__axios: AxiosInstance;
 
   constructor(
     private httpService: HttpService,
-    private eventEmitter: EventEmitter2,
+    private workflowEventEmitter: WorkflowEventEmitterService,
     private configService: ConfigService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
-    eventEmitter.on('workflow.context.changed', this.handleWorkflowEvent.bind(this));
+    workflowEventEmitter.on('workflow.context.changed', data => {
+      void this.handleWorkflowEvent(data);
+    });
   }
 
-  handleWorkflowEvent(data: WorkflowEventRawData) {
+  async handleWorkflowEvent(data: WorkflowEventRawData) {
     const oldDocuments = data.runtimeData.context['documents'] || [];
     const newDocuments = data.context?.['documents'] || [];
 
@@ -48,35 +55,47 @@ export class DocumentChangedWebhookCaller {
       );
     });
 
+    if (!anyDocumentStatusChanged) {
+      return;
+    }
+
     const id = randomUUID();
     const environment = this.configService.get<string>('NODE_ENV');
-    const url = this.configService.get<string>('WEBHOOK_URL');
+    const url = this.configService.get<string>('WEBHOOK_URL')!;
     const authSecret = this.configService.get<string>('WEBHOOK_SECRET');
 
-    if (anyDocumentStatusChanged) {
-      console.log(`sending request id: ${id}`);
+    console.log(`sending request id: ${id}`);
 
-      this.#__axios
-        .post(
-          url,
-          {
-            id,
-            eventName: 'workflow.context.document.changed',
-            apiVersion: 1,
-            timestamp: new Date().toISOString(),
-            workflowRuntimeId: data.runtimeData.id,
-            environment,
-            data: data.context,
+    try {
+      await this.#__axios.post(
+        url,
+        {
+          id,
+          eventName: 'workflow.context.document.changed',
+          apiVersion: 1,
+          timestamp: new Date().toISOString(),
+          workflowRuntimeId: data.runtimeData.id,
+          environment,
+          data: data.context,
+        },
+        {
+          headers: {
+            'X-Authorization': authSecret,
           },
-          {
-            headers: {
-              'X-Authorization': authSecret,
-            },
-          },
-        )
-        .catch((err: Error) => {
-          console.log(`failed to send request id: ${id}`, err);
-        });
+        },
+      );
+    } catch (error) {
+      console.log(`failed to send request id: ${id}`, error);
+      alertWebhookFailure(error);
     }
   }
+}
+
+function alertWebhookFailure(error: unknown) {
+  const errorToAlert = new Error(`Failed to send a webhook`, { cause: error });
+  const context = isAxiosError(error) ? { ...error } : {};
+
+  Sentry.captureException(errorToAlert, {
+    extra: context,
+  });
 }
