@@ -21,7 +21,7 @@ import { IntentResponse, WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
-import { KeyAuthGuard } from '@/auth/key-auth.guard';
+import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -33,13 +33,6 @@ export class WorkflowControllerExternal {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     private eventEmitter: EventEmitter2,
   ) {}
-
-  @common.Get('/test')
-  @common.HttpCode(200)
-  @UseGuards(KeyAuthGuard)
-  async test() {
-    return Promise.resolve({ success: true });
-  }
 
   // GET /workflows
   @common.Get()
@@ -118,7 +111,7 @@ export class WorkflowControllerExternal {
 
   @common.Post('/run')
   @swagger.ApiOkResponse()
-  @UseGuards(KeyAuthGuard)
+  @UseKeyAuthGuard()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createWorkflowRuntimeData(

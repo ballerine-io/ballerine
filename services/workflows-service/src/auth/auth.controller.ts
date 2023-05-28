@@ -7,7 +7,9 @@ import { LoginDto } from './dtos/login';
 import { UserModel } from '@/user/user.model';
 import { Request } from 'express';
 import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
+import { Public } from '@/common/decorators/public.decorator';
 
+@Public()
 @ApiTags('auth')
 @Controller('internal/auth')
 export class AuthController {
