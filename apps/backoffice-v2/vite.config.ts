@@ -15,6 +15,7 @@ export default defineConfig(configEnv => {
     plugins: [
       terminal({
         output: ['console', 'terminal'],
+        strip: false,
       }),
       react(),
     ],
