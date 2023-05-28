@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
-import { WorkflowEventRawData } from '@/workflow/workflow-event-emitter.service';
+import {
+  WorkflowEventEmitterService,
+  WorkflowEventRawData,
+} from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { randomUUID } from 'crypto';
@@ -16,12 +19,14 @@ export class DocumentChangedWebhookCaller {
 
   constructor(
     private httpService: HttpService,
-    private eventEmitter: EventEmitter2,
+    private workflowEventEmitter: WorkflowEventEmitterService,
     private configService: ConfigService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
-    eventEmitter.on('workflow.context.changed', this.handleWorkflowEvent.bind(this));
+    workflowEventEmitter.on('workflow.context.changed', data => {
+      void this.handleWorkflowEvent(data);
+    });
   }
 
   async handleWorkflowEvent(data: WorkflowEventRawData) {
