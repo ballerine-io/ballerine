@@ -1,4 +1,4 @@
-# web-sdk
+# web-ui-sdk
 
 ## 1.3.2
 
@@ -128,7 +128,7 @@
 
 ### Patch Changes
 
-- 615f3d0: renamed web-sdk to @ballerine/web-sdk
+- 615f3d0: renamed web-ui-sdk to @ballerine/web-ui-sdk
 
 ## 1.1.24
 

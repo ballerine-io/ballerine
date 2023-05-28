@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { flows } from '@ballerine/web-sdk';
+import { flows } from '@ballerine/web-ui-sdk';
 import { defaultInitConfig, defaultModalFlowConfig } from './configs/default-config';
 
 function App() {

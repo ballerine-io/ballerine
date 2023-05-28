@@ -21,7 +21,7 @@ providing a `translations` object to the [init](/en/api/sdk/flows-init-options) 
 The following API can be used to configure the SDK's [translations](#configuration) - [API reference](/en/api/sdk/flows-translations)
 
 ```typescript
-import {flows} from '@ballerine/web-sdk';
+import {flows} from '@ballerine/web-ui-sdk';
 
 await flows.init({
   // ...

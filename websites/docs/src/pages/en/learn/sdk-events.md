@@ -20,7 +20,7 @@ An SDK flow has a number of events that may occur such as flow error, or flow st
 The following API can be used to listen to the flow [events](#events) - [API reference](/en/api/sdk/flows-events-config)
 
 ```typescript
-import { flows } from '@ballerine/web-sdk';
+import { flows } from '@ballerine/web-ui-sdk';
 
 await flows.mount({
   // ...
