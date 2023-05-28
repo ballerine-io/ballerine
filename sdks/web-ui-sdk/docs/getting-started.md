@@ -38,7 +38,7 @@ pnpm dev
 ### Overview
 
 ```typescript
-// sdks/web-sdk/src/dev.ts
+// sdks/web-ui-sdk/src/dev.ts
 
 import { flows } from './main';
 
@@ -58,7 +58,7 @@ flows
 1. Let's start with adding an empty flow to our config
 
 ```typescript
-// sdks/web-sdk/src/dev.ts
+// sdks/web-ui-sdk/src/dev.ts
 
 import { flows } from './main';
 
@@ -84,7 +84,7 @@ flows
 2. The steps array
 
 ```typescript
-// sdks/web-sdk/src/dev.ts
+// sdks/web-ui-sdk/src/dev.ts
 
 import { flows } from './main';
 // An enum with the available steps.
@@ -123,7 +123,7 @@ flows
 3. Creating a full flow
 
 ```typescript
-// sdks/web-sdk/src/dev.ts
+// sdks/web-ui-sdk/src/dev.ts
 
 import { flows } from './main';
 // An enum with the available steps.
@@ -168,7 +168,7 @@ flows
 Now that we have know about flows and steps, let's create a flow that collects a document.
 
 ```typescript
-// sdks/web-sdk/src/dev.ts
+// sdks/web-ui-sdk/src/dev.ts
 
 import { flows } from './main';
 // An enum with the available steps.

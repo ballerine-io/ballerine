@@ -26,7 +26,7 @@ layout: ../../../../layouts/MainLayout.astro
 
 #### Defined in
 
-[BallerineSDK.ts:132](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-sdk/src/types/BallerineSDK.ts#L132)
+[BallerineSDK.ts:132](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L132)
 
 ---
 
@@ -50,7 +50,7 @@ layout: ../../../../layouts/MainLayout.astro
 
 #### Defined in
 
-[BallerineSDK.ts:133](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-sdk/src/types/BallerineSDK.ts#L133)
+[BallerineSDK.ts:133](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L133)
 
 ---
 
@@ -74,4 +74,4 @@ layout: ../../../../layouts/MainLayout.astro
 
 #### Defined in
 
-[BallerineSDK.ts:134](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-sdk/src/types/BallerineSDK.ts#L134)
+[BallerineSDK.ts:134](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L134)
