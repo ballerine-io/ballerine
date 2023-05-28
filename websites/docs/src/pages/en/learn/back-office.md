@@ -71,7 +71,7 @@ Open cases in the backoffice by sending API requests to the workflow service.
 
    1. Clone the project:  
    ```sh
-   git clone https://github.com/ballerine-io/ballerine.git
+   git clone https://github.com/ballerine-io/ballerine.git && cd ballerine
    ```
    2. Checkout to `dev` branch:
    ```sh
@@ -83,14 +83,17 @@ Open cases in the backoffice by sending API requests to the workflow service.
    ```
    5. Init to monorepo (build packages): 
    ```sh
-   run monorepo:init
+   pnpm run monorepo:init
    ```
    6. Initilazie monorepo: 
    ```sh
    pnpm run api-manual-review-example
    ```
  _Now the backoffice will run on http://localhost:5137/, and the workflow service will accept calls at http://localhost:3000/_
-
+ Default user name and password for the backoffice:
+    Username: admin@admin.com
+    Password: admin
+  
 7. Send manual review cases into the back office.
 
 Use the following Postman collection or CURL command to insert a case into the backoffice:
