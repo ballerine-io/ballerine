@@ -3,7 +3,6 @@ import { CallHandler, ExecutionContext, HttpStatus, INestApplication } from '@ne
 import request from 'supertest';
 import { MorganModule } from 'nest-morgan';
 import { ACGuard } from 'nest-access-control';
-import { DefaultAuthGuard } from '../auth/default-auth.guard';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
 import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
@@ -13,17 +12,6 @@ import { WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CompleteWorkflowData } from './types';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
-
-const basicAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const argumentHost = context.switchToHttp();
-    const request: { user: { roles: string[] } } = argumentHost.getRequest();
-    request.user = {
-      roles: ['operator'],
-    };
-    return true;
-  },
-};
 
 const acGuard = {
   canActivate: () => {
@@ -68,8 +56,6 @@ describe('Workflow (external)', () => {
       controllers: [WorkflowControllerExternal],
       imports: [MorganModule.forRoot(), ACLModule],
     })
-      .overrideGuard(DefaultAuthGuard)
-      .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
       .overrideInterceptor(AclFilterResponseInterceptor)

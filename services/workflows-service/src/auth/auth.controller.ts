@@ -8,7 +8,9 @@ import { UserModel } from '@/user/user.model';
 import { Request, Response } from 'express';
 import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
 import util from 'util';
+import { Public } from '@/common/decorators/public.decorator';
 
+@Public()
 @ApiTags('auth')
 @Controller('internal/auth')
 export class AuthController {
