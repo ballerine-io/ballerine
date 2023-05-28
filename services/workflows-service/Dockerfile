@@ -1,7 +1,5 @@
 FROM node:18.12.1 AS base
 
-RUN apt-get update && apt-get install -y --no-install-recommends dumb-init
-
 WORKDIR /app
 
 COPY package.json ./
@@ -17,6 +15,7 @@ COPY . .
 RUN npm run build
 
 FROM node:18.12.1 AS prod
+RUN apt-get install -y --no-install-recommends dumb-init
 
 WORKDIR /app
 
