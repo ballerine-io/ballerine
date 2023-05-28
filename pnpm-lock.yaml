@@ -170,6 +170,9 @@ importers:
       tesseract.js:
         specifier: ^4.0.1
         version: 4.0.3(eslint@8.22.0)
+      vite-plugin-terminal:
+        specifier: ^1.1.0
+        version: 1.1.0(vite@4.2.1)
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -7660,6 +7663,20 @@ packages:
       rollup: 2.70.2
     dev: true
 
+  /@rollup/plugin-strip@3.0.2:
+    resolution: {integrity: sha512-L8Whin/DB5XsLE586+xcud6yX/pMVUlfalA999uAsC+dtwmBHSiUwtAxMl3eVvykX3N5BhdeAjStqDlzMmfUXw==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 5.0.2(rollup@2.70.2)
+      estree-walker: 2.0.2
+      magic-string: 0.27.0
+    dev: false
+
   /@rollup/plugin-terser@0.4.1(rollup@2.70.2):
     resolution: {integrity: sha512-aKS32sw5a7hy+fEXVy+5T95aDIwjpGHCTv833HXVtyKMDoVS7pBr5K3L9hEQoNqbJFjfANPrNpIXlTQ7is00eA==}
     engines: {node: '>=14.0.0'}
@@ -9508,13 +9525,13 @@ packages:
     resolution: {integrity: sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA==}
     dependencies:
       '@types/eslint': 8.37.0
-      '@types/estree': 0.0.51
+      '@types/estree': 1.0.0
     dev: true
 
   /@types/eslint@8.37.0:
     resolution: {integrity: sha512-Piet7dG2JBuDIfohBngQ3rCt7MgO9xCO4xIMKxBThCq5PNRB91IjlJ10eJVwfoNtvTErmxLzwBZ7rHZtbOMmFQ==}
     dependencies:
-      '@types/estree': 0.0.51
+      '@types/estree': 1.0.0
       '@types/json-schema': 7.0.11
     dev: true
 
@@ -17066,7 +17083,6 @@ packages:
 
   /kolorist@1.7.0:
     resolution: {integrity: sha512-ymToLHqL02udwVdbkowNpzjFd6UzozMtshPQKVi5k1EjKRqKqBrOnE9QbLEb0/pV76SAiIT13hdL8R6suc+f3g==}
-    dev: true
 
   /lazy-universal-dotenv@4.0.0:
     resolution: {integrity: sha512-aXpZJRnTkpK6gQ/z4nk+ZBLd/Qdp118cvPruLSIQzQNRhKwEcdXCOzXuF55VDqIiuAaY3UGZ10DJtvZzDcvsxg==}
@@ -22113,7 +22129,6 @@ packages:
 
   /ufo@1.1.1:
     resolution: {integrity: sha512-MvlCc4GHrmZdAllBc0iUDowff36Q9Ndw/UzqmEKyrfSzokTd9ZCy1i+IIk5hrYKkjoYVQyNbrw7/F8XJ2rEwTg==}
-    dev: true
 
   /uglify-js@3.17.4:
     resolution: {integrity: sha512-T9q82TJI9e/C1TAxYvfb16xO120tMVFZrGA3f9/P4424DNu6ypK103y0GPFVa17yotwSyZW5iYXgjYHkGrJW/g==}
@@ -22591,6 +22606,23 @@ packages:
       pathe: 0.2.0
       vite: 4.0.3(@types/node@18.15.11)
     dev: true
+
+  /vite-plugin-terminal@1.1.0(vite@4.2.1):
+    resolution: {integrity: sha512-W550yBGApBSp67LgqCSSA9u3aMEFFHqTleYMxcVQFf5XCY973bGTSjHW7ZjUsJT3VkiW9mfmc+azhVHvsEMpcg==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      vite: ^2.0.0||^3.0.0||^4.0.0
+    dependencies:
+      '@rollup/plugin-strip': 3.0.2
+      debug: 4.3.4(supports-color@8.1.1)
+      kolorist: 1.7.0
+      sirv: 2.0.2
+      ufo: 1.1.1
+      vite: 4.2.1(@types/node@18.15.11)
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
+    dev: false
 
   /vite-tsconfig-paths@4.2.0(typescript@4.9.5)(vite@4.2.1):
     resolution: {integrity: sha512-jGpus0eUy5qbbMVGiTxCL1iB9ZGN6Bd37VGLJU39kTDD6ZfULTTb1bcc5IeTWqWJKiWV5YihCaibeASPiGi8kw==}

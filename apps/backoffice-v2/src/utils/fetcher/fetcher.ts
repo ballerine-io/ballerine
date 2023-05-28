@@ -2,6 +2,7 @@ import { IFetcher } from './interfaces';
 import { handlePromise } from '../handle-promise/handle-promise';
 import { isZodError } from '../is-zod-error/is-zod-error';
 import { HttpError } from '../../errors/http-error';
+import { terminal } from 'virtual:terminal';
 
 export const fetcher: IFetcher = async ({
   url,
@@ -72,7 +73,7 @@ export const fetcher: IFetcher = async ({
       ? validationError.errors.map(({ path, message }) => `${path.join('.')} (${message}),\n`)
       : [validationError];
 
-    console.error('❌ Validation error:\n', ...messages);
+    terminal.error('❌ Validation error:\n', ...messages);
 
     throw validationError;
   }
