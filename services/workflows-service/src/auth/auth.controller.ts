@@ -23,13 +23,16 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(200)
-  async logout(@Req() req: Request, @Res() res: Response): Promise<{ user: undefined }> {
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ user: undefined }> {
     const asyncLogout = util.promisify(req.logout.bind(req));
-    const logoutResult = await asyncLogout();
+    await asyncLogout();
     res.clearCookie('session', { path: '/', httpOnly: true });
     res.clearCookie('session.sig', { path: '/', httpOnly: true });
-    // @ts-ignore
-    return res.json({ user: undefined });
+
+    return { user: undefined };
   }
 
   @common.Get('session')

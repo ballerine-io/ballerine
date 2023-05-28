@@ -41,7 +41,7 @@ async function main() {
   );
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (!req.session) return next();
-    
+
     req.session.nowInMinutes = Math.floor(Date.now() / 60e3);
     next();
   });
@@ -64,17 +64,6 @@ async function main() {
   });
   app.use(passport.initialize());
   app.use(passport.session());
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    if (req.session) {
-      console.log('Is session changed', req.session.isChanged);
-      console.log('Is session new', req.session.isNew);
-      console.log('Is session populated', req.session.isPopulated);
-    } else {
-      console.log('No session');
-    }
-
-    next();
-  });
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({
