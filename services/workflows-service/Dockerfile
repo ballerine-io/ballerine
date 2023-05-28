@@ -16,6 +16,9 @@ RUN npm run build
 
 FROM node:18.12.1 AS prod
 
+RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_amd64.deb
+RUN dpkg -i dumb-init_*.deb
+
 WORKDIR /app
 
 COPY --from=base /app/node_modules/ ./node_modules
@@ -29,4 +32,4 @@ COPY --from=base /app/tsconfig* ./
 
 EXPOSE 3007
 
-CMD [ "node", "./dist/main"]
+CMD ["dumb-init", "node", "./dist/main" ]
