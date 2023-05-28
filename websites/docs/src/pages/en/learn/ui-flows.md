@@ -8,17 +8,17 @@ layout: ../../../layouts/MainLayout.astro
 
 ```bash
 # pnpm
-pnpm add @ballerine/web-sdk
+pnpm add @ballerine/web-ui-sdk
 
 # yarn
-yarn add @ballerine/web-sdk
+yarn add @ballerine/web-ui-sdk
 
 # npm
-npm install @ballerine/web-sdk
+npm install @ballerine/web-ui-sdk
 ```
 
 ```typescript
-import { flows } from '@ballerine/web-sdk';
+import { flows } from '@ballerine/web-ui-sdk';
 
 await flows.init({
   uiConfig: {

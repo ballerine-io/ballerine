@@ -661,7 +661,7 @@ importers:
         specifier: ^0.28.4
         version: 0.28.5(jsdom@20.0.3)
 
-  sdks/web-sdk:
+  sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
         specifier: 0.4.3

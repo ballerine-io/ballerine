@@ -55,7 +55,7 @@ The SDK UI is embeddable inside existing apps or deployed as a web app.
 
 
 **Getting started:**
-[Click here](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk)
+[Click here](https://github.com/ballerine-io/ballerine/tree/main/sdks/web-ui-sdk)
 
 
 <sub>Note - We don't store any data or documents that are being sent in the examples or demos</sub>
