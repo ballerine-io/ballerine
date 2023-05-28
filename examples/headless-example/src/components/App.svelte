@@ -20,6 +20,13 @@
   import DevSidebar from '@/visualiser/dev-sidebar.svelte';
 
   let noAuthUserId = sessionStorage.getItem(NO_AUTH_USER_KEY);
+  let nextWorkflow;
+  let shouldResubmit = false;
+  let documentsDecisionStatuses;
+  let isDecided;
+  let isApproved;
+  let isRejected;
+  let isRevision;
 
   const {
     fetchEndUser,
@@ -97,8 +104,8 @@
       },
       refetchInterval(data) {
         if (
-          entityState === 'REJECTED' ||
-          entityState === 'APPROVED' ||
+          isRejected ||
+          isApproved ||
           (entityState === 'NEW' && data?.workflowRuntimeData?.status === 'created') ||
           (isProcessing && data?.workflowRuntimeData?.status !== 'completed')
         ) {
@@ -176,13 +183,10 @@
     workflow.set(mergeWorkflow());
   };
 
-  let nextWorkflow;
-  let shouldResubmit = false;
   $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
   $: entityId = $entityQuery.data?.id;
   $: entityState = $entityQuery.data?.approvalState;
   $: isProcessing = entityState === 'PROCESSING';
-  $: isValidWorkflow = entityId && !isCompleted;
 
   $: {
     if (
@@ -206,22 +210,18 @@
     }
   }
 
-  let message;
-
   $: {
-    switch (entityState) {
-      case 'PROCESSING':
-        message = '';
-        break;
-      case 'REJECTED':
-        message = 'Your request was declined.';
-        break;
-      case 'APPROVED':
-        message = 'Your request was approved :)';
-        break;
-      default:
-        message = '';
-    }
+    documentsDecisionStatuses = $workflow?.workflowContext?.machineContext?.documents?.map(
+      ({ decision }) => decision?.status,
+    );
+
+    const hasDecisions = !!documentsDecisionStatuses?.length;
+
+    // In JavaScript `some` and `every` return true with empty arrays.
+    isApproved = hasDecisions && documentsDecisionStatuses?.every(status => status === 'approved');
+    isRejected = hasDecisions && documentsDecisionStatuses?.some(status => status === 'rejected');
+    isRevision = hasDecisions && documentsDecisionStatuses?.some(status => status === 'revision');
+    isDecided = isApproved || isRejected || isRevision;
   }
 </script>
 
@@ -238,24 +238,22 @@
       <Intent disabled={!entityId} refetch={$intentQuery.refetch} />
     {/if}
 
-    {#if entityId && isProcessing && isCompleted}
+    {#if entityId && isCompleted && !isDecided}
       <ThankYou />
     {/if}
 
-    {#if isValidWorkflow && shouldResubmit}
+    {#if isRevision}
       <Resubmission
         {handleResubmit}
-        reason={nextWorkflow?.definition?.context?.id?.resubmissionReason
-          ?.toLowerCase()
-          ?.replace(/_/g, ' ')}
+        reason={nextWorkflow?.definition?.context?.documents?.[0]?.decision?.revisionReason?.toLowerCase()}
       />
     {/if}
 
-    {#if entityState === 'REJECTED'}
+    {#if isRejected}
       <Rejected />
     {/if}
 
-    {#if entityState === 'APPROVED'}
+    {#if isApproved}
       <Approved />
     {/if}
   </main>

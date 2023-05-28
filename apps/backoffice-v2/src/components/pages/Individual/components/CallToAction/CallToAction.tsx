@@ -30,6 +30,7 @@ import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGe
 import toast from 'react-hot-toast';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { ICallToActionProps } from 'components/pages/Individual/components/CallToAction/interfaces';
+import { Input } from 'components/atoms/Input/Input';
 
 export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
   const { endUserId } = useParams();
@@ -165,24 +166,31 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
             reason for requesting a document re-submission.
           </DialogDescription>
         </DialogHeader>
-        <Select onValueChange={onRevisionReasonChange}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Re-submission reason" />
-          </SelectTrigger>
-          <SelectContent>
-            {revisionReasons?.map(reason => {
-              const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
-              const capitalizedReason =
-                reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
+        {!revisionReasons?.length ? (
+          <Input
+            placeholder={`Re-submission reason`}
+            onChange={event => onRevisionReasonChange(event.target.value)}
+          />
+        ) : (
+          <Select onValueChange={onRevisionReasonChange}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Re-submission reason" />
+            </SelectTrigger>
+            <SelectContent>
+              {revisionReasons?.map(reason => {
+                const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
+                const capitalizedReason =
+                  reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
 
-              return (
-                <SelectItem key={reason} value={reason}>
-                  {capitalizedReason}
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
+                return (
+                  <SelectItem key={reason} value={reason}>
+                    {capitalizedReason}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        )}
         <DialogFooter>
           <DialogClose asChild>
             <button
