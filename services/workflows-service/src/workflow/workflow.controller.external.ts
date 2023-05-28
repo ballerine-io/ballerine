@@ -5,7 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { Headers, NotFoundException, UseGuards, Res } from '@nestjs/common';
+import { Headers, NotFoundException, Res, UseGuards } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -157,5 +157,25 @@ export class WorkflowControllerExternal {
       ...data,
       id,
     });
+  }
+
+  // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
+  @common.Get('/:id/context')
+  @UseGuards(KeyAuthGuard)
+  @swagger.ApiOkResponse()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async getWorkflowRuntimeDataContext(@common.Param('id') id: string) {
+    try {
+      const context = await this.service.getWorkflowRuntimeDataContext(id);
+
+      return { context };
+    } catch (err) {
+      if (isRecordNotFoundError(err)) {
+        throw new NotFoundException(`No resource was found for ${JSON.stringify(id)}`);
+      }
+
+      throw err;
+    }
   }
 }
