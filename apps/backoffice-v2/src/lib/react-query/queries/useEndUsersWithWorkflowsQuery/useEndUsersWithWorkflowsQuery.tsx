@@ -1,5 +1,6 @@
 import { useEndUsersQuery } from '../useEndUsersQuery/useEndUsersQuery';
 import { TUsers } from '../../../../api/types';
+import { env } from '../../../../env/env';
 
 export const useEndUsersWithWorkflowsQuery = (users: TUsers) => {
   return useEndUsersQuery({
@@ -15,5 +16,6 @@ export const useEndUsersWithWorkflowsQuery = (users: TUsers) => {
           caseStatus: endUser?.workflowRuntimeData?.status,
         };
       }),
+    refetchInterval: env.VITE_ASSIGNMENT_POLLING_INTERVAL,
   });
 };

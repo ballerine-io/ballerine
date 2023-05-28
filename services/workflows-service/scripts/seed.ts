@@ -40,7 +40,7 @@ function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number) 
   if (countOfBusiness < 4) {
     return `https://backoffice-demo.ballerine.app/images/mock-documents/${imageTemplate}`;
   } else {
-    return faker.image.people(1000, 2000);
+    return faker.image.people(1000, 2000, true);
   }
 }
 
@@ -225,8 +225,21 @@ async function seed(bcryptSalt: Salt) {
     return mockData;
   };
 
-  function createMockEndUserContextData(endUserId: string) {
+  async function createMockEndUserContextData(endUserId: string, countOfIndividual: number) {
     const correlationId = faker.datatype.uuid();
+    const imageUri1 = generateAvatarImageUri(
+      `set_${countOfIndividual}_doc_front.png`,
+      countOfIndividual,
+    );
+    const imageUri2 = generateAvatarImageUri(
+      `set_${countOfIndividual}_doc_face.png`,
+      countOfIndividual,
+    );
+    const imageUri3 = generateAvatarImageUri(
+      `set_${countOfIndividual}_selfie.png`,
+      countOfIndividual,
+    );
+
     const mockData = {
       entity: {
         type: 'individual',
@@ -261,9 +274,10 @@ async function seed(bcryptSalt: Salt) {
           pages: [
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri1,
               type: 'jpg',
               data: '',
+              ballerineFileId: await persistImageFile(client, imageUri1),
               metadata: {
                 side: 'front',
                 pageNumber: '1',
@@ -271,9 +285,10 @@ async function seed(bcryptSalt: Salt) {
             },
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri2,
               type: 'jpg',
               data: '',
+              ballerineFileId: await persistImageFile(client, imageUri2),
               metadata: {
                 side: 'back',
                 pageNumber: '1',
@@ -305,9 +320,10 @@ async function seed(bcryptSalt: Salt) {
           pages: [
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri3,
               type: 'pdf',
               data: '',
+              ballerineFileId: await persistImageFile(client, imageUri3),
               metadata: {},
             },
           ],
@@ -580,57 +596,57 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  // await client.filter.create({
-  //   data: {
-  //     entity: 'individuals',
-  //     name: 'Individuals',
-  //     query: {
-  //       select: {
-  //         id: true,
-  //         correlationId: true,
-  //         verificationId: true,
-  //         endUserType: true,
-  //         approvalState: true,
-  //         stateReason: true,
-  //         jsonData: true,
-  //         firstName: true,
-  //         lastName: true,
-  //         email: true,
-  //         phone: true,
-  //         dateOfBirth: true,
-  //         avatarUrl: true,
-  //         additionalInfo: true,
-  //         createdAt: true,
-  //         updatedAt: true,
-  //         workflowRuntimeData: {
-  //           select: {
-  //             id: true,
-  //             status: true,
-  //             assigneeId: true,
-  //             createdAt: true,
-  //             workflowDefinition: {
-  //               select: {
-  //                 id: true,
-  //                 name: true,
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //       where: {
-  //         workflowRuntimeData: {
-  //           some: {
-  //             workflowDefinition: {
-  //               is: {
-  //                 id: manualMachineId,
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  // });
+  await client.filter.create({
+    data: {
+      entity: 'individuals',
+      name: 'Individuals',
+      query: {
+        select: {
+          id: true,
+          correlationId: true,
+          verificationId: true,
+          endUserType: true,
+          approvalState: true,
+          stateReason: true,
+          jsonData: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          dateOfBirth: true,
+          avatarUrl: true,
+          additionalInfo: true,
+          createdAt: true,
+          updatedAt: true,
+          workflowRuntimeData: {
+            select: {
+              id: true,
+              status: true,
+              assigneeId: true,
+              createdAt: true,
+              workflowDefinition: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          workflowRuntimeData: {
+            some: {
+              workflowDefinition: {
+                is: {
+                  id: manualMachineId,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
 
   await client.filter.create({
     data: {
@@ -688,8 +704,8 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  await client.$transaction(
-    endUserIds.map(id =>
+  await client.$transaction(async () =>
+    endUserIds.map(async (id, index) =>
       client.endUser.create({
         /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
         data: generateEndUser({
@@ -697,7 +713,7 @@ async function seed(bcryptSalt: Salt) {
           workflow: {
             workflowDefinitionId: manualMachineId,
             workflowDefinitionVersion: manualMachineVersion,
-            context: createMockEndUserContextData(id),
+            context: await createMockEndUserContextData(id, index + 1),
           },
         }),
       }),
