@@ -32,4 +32,4 @@ COPY --from=base /app/tsconfig* ./
 
 EXPOSE 3007
 
-CMD ["dumb-init", "node", "./dist/main" ]
+CMD [ "dumb-init", "npm", "run", "prod" ]
