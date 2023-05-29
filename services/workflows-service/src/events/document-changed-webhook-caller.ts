@@ -5,8 +5,7 @@ import {
   WorkflowEventEmitterService,
   WorkflowEventRawData,
 } from '@/workflow/workflow-event-emitter.service';
-import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
@@ -15,6 +14,8 @@ import { AxiosInstance, isAxiosError } from 'axios';
 
 @Injectable()
 export class DocumentChangedWebhookCaller {
+  private readonly logger = new Logger(DocumentChangedWebhookCaller.name);
+
   #__axios: AxiosInstance;
 
   constructor(
@@ -64,7 +65,7 @@ export class DocumentChangedWebhookCaller {
     const url = this.configService.get<string>('WEBHOOK_URL')!;
     const authSecret = this.configService.get<string>('WEBHOOK_SECRET');
 
-    console.log(`sending request id: ${id}`);
+    this.logger.log('Sending webhook', { id });
 
     try {
       await this.#__axios.post(
@@ -85,7 +86,7 @@ export class DocumentChangedWebhookCaller {
         },
       );
     } catch (error) {
-      console.log(`failed to send request id: ${id}`, error);
+      this.logger.error('Failed to send webhook', { id, error });
       alertWebhookFailure(error);
     }
   }
