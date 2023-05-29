@@ -21,6 +21,8 @@ import { Request } from 'express';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
 import { enrichWorkflowRuntimeData } from './enrich-workflow-runtime-data';
+import { UseGuards } from '@nestjs/common';
+import { AssigneeAsignedGuard } from '@/auth/assignee-asigned-guard.service';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -105,6 +107,7 @@ export class WorkflowControllerInternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(AssigneeAsignedGuard)
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
