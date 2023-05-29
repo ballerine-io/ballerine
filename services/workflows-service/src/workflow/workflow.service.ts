@@ -254,10 +254,16 @@ export class WorkflowService {
       data.status = allDocumentsResolved ? 'completed' : data.status! || runtimeData.status;
     }
 
+    const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
+
+    if (isResolved) {
+      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
+    }
+
     const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
       data: {
         ...data,
-        resolvedAt: isFinal ? new Date() : null,
+        resolvedAt: isResolved ? new Date() : null,
       },
     });
 
