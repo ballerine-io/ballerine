@@ -119,14 +119,14 @@ async function seed(bcryptSalt: Salt) {
       entity: {
         type: 'business',
         data: {
-          companyName: faker.company.companyName(),
+          companyName: faker.company.name(),
           registrationNumber: faker.finance.account(9),
           legalForm: faker.company.bs(),
           countryOfIncorporation: faker.address.country(),
           // @ts-expect-error - business type expects a date and not a string.
           dateOfIncorporation: faker.date.past(20).toISOString(),
           address: faker.address.streetAddress(),
-          phoneNumber: faker.phone.phoneNumber(),
+          phoneNumber: faker.phone.number(),
           email: faker.internet.email(),
           website: faker.internet.url(),
           industry: faker.company.catchPhrase(),
