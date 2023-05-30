@@ -2,6 +2,7 @@ import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserModel } from './user.model';
+import { UserRepository } from '@/user/user.repository';
 
 @swagger.ApiTags('internal/users')
 @common.Controller('internal/users')
@@ -23,5 +24,12 @@ export class UserControllerInternal {
         createdAt: true,
       },
     });
+  }
+
+  @common.Post()
+  @swagger.ApiCreatedResponse({ type: [UserModel] })
+  @swagger.ApiForbiddenResponse()
+  async create(args: Parameters<UserRepository['create']>[0]): Promise<UserModel> {
+    return this.service.create(args);
   }
 }
