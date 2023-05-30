@@ -42,13 +42,13 @@ export const generateBusiness = ({
   };
 }): Prisma.BusinessCreateInput => {
   const { workflowDefinitionId, workflowDefinitionVersion, context } = workflow;
-  const companyName = faker.company.companyName();
+  const companyName = faker.company.name();
   const registrationNumber = faker.datatype.uuid();
   const legalForm = faker.company.companySuffix();
   const countryOfIncorporation = faker.address.country();
   const dateOfIncorporation = faker.date.past(10);
   const address = faker.address.streetAddress();
-  const phoneNumber = faker.phone.phoneNumber('+##########');
+  const phoneNumber = faker.phone.number('+##########');
   const email = faker.internet.email();
   const website = faker.internet.url();
   const industry = faker.company.bs();
@@ -61,7 +61,7 @@ export const generateBusiness = ({
     financialStatement: faker.system.filePath(),
   });
   const shareholderStructure = JSON.stringify([
-    { name: faker.name.findName(), ownershipPercentage: faker.finance.amount(0, 100, 2) },
+    { name: faker.name.fullName(), ownershipPercentage: faker.finance.amount(0, 100, 2) },
   ]);
 
   return {
