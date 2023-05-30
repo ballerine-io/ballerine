@@ -50,6 +50,22 @@ export const workflows = {
 
     return handleZodError(error, workflow);
   },
+
+  assignWorkflowById: async ({
+    workflowId,
+    body,
+  }: IWorkflowId & {
+    body: Record<PropertyKey, unknown>;
+  }) => {
+    const [workflow, error] = await apiClient({
+      endpoint: endpoints.workflows.assignWorkflowById.endpoint({ workflowId }),
+      method: endpoints.workflows.assignWorkflowById.method,
+      body,
+      schema: z.any(),
+    });
+
+    return handleZodError(error, workflow);
+  },
   event: async ({
     workflowId,
     body,

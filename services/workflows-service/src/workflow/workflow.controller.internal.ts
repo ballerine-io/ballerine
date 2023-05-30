@@ -23,6 +23,7 @@ import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definiti
 import { enrichWorkflowRuntimeData } from './enrich-workflow-runtime-data';
 import { UseGuards } from '@nestjs/common';
 import { AssigneeAsignedGuard } from '@/auth/assignee-asigned-guard.service';
+import { WorkflowWhereAssignInput } from '@/workflow/dtos/workflow-where-assign-input';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -114,6 +115,25 @@ export class WorkflowControllerInternal {
   ): Promise<WorkflowRuntimeData> {
     try {
       return await this.service.updateWorkflowRuntimeData(params.id, data);
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
+  }
+
+  // PATCH /workflows/assign/:id
+  @common.Patch('/assign/:id')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async assignWorkflowById(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @common.Body() data: WorkflowWhereAssignInput,
+  ): Promise<WorkflowRuntimeData> {
+    try {
+      return await this.service.assignWorkflowToAssignee(params.id, data);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

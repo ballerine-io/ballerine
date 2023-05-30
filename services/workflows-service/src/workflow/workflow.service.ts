@@ -36,6 +36,7 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
 import { getDocumentId } from '@/workflow/utils';
+import { WorkflowWhereAssignInput } from '@/workflow/dtos/workflow-where-assign-input';
 
 type TEntityId = string;
 
@@ -271,6 +272,15 @@ export class WorkflowService {
     }
 
     return updateResult;
+  }
+
+  async assignWorkflowToAssignee(workflowRuntimeId: string, data: WorkflowWhereAssignInput) {
+    const updatedWorkflowRuntime = await this.workflowRuntimeDataRepository.updateById(
+      workflowRuntimeId,
+      { data: data },
+    );
+
+    return updatedWorkflowRuntime;
   }
 
   async deleteWorkflowDefinitionById(
