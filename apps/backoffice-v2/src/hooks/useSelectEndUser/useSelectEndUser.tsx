@@ -13,11 +13,11 @@ export const useSelectEndUser = () => {
       navigate({
         replace: true,
         to: individualRoute.id,
-        params: {
+        params: params => ({
+          ...params,
           endUserId,
           locale,
-        },
-        search: undefined,
+        }),
       });
     },
     [locale, navigate],

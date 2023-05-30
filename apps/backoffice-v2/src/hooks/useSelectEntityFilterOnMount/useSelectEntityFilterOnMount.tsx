@@ -23,11 +23,12 @@ export const useSelectEntityFilterOnMount = () => {
 
     navigate({
       to: '/$locale/case-management/individuals',
-      search: {
+      search: search => ({
+        ...search,
         entity: filter?.entity,
         filterId: filter?.id,
         filterName: filter?.name,
-      },
+      }),
     });
   }, [entity, filterId, filterName, filters, navigate]);
 };

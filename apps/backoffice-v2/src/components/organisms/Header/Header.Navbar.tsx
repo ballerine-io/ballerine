@@ -53,11 +53,12 @@ export const Navbar: FunctionComponent = () => {
         {filters?.map(({ id, name, entity }) => (
           <NavItem
             href={'/$locale/case-management/individuals'}
-            search={{
+            search={search => ({
+              ...search,
               entity,
               filterId: id,
               filterName: name,
-            }}
+            })}
             key={id}
             className={ctw(`capitalize`, {
               'bg-muted font-bold': name === search?.name,

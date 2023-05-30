@@ -22,14 +22,17 @@ export const rootRoute = new RootRoute({
     return {};
   },
   beforeLoad: ({ router }) => {
-    if (router.history.location.pathname.startsWith('/en')) return;
+    const pathname = router.state.latestLocation.pathname;
+
+    if (pathname.startsWith('/en')) return;
 
     router.navigate({
-      to: '/$locale',
+      to: `/$locale${pathname}`,
       replace: true,
-      params: {
+      params: params => ({
+        ...params,
         locale: 'en',
-      },
+      }),
     });
   },
   component: Root,
