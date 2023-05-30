@@ -18,10 +18,7 @@ export class UserService {
     return this.repository.findMany(args);
   }
 
-  async getById(
-    id: string,
-    args?: Parameters<UserRepository['findById']>[1],
-  ): Promise<User | null> {
+  async getById(id: string, args?: Parameters<UserRepository['findById']>[1]): Promise<User> {
     return this.repository.findById(id, args);
   }
 
