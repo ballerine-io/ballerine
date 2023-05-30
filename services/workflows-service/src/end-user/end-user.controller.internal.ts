@@ -1,6 +1,6 @@
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
-import { Logger, UsePipes } from '@nestjs/common';
+import { Body, Logger, Query, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import * as errors from '../errors';
 import { EndUserWhereUniqueInput } from './dtos/end-user-where-unique-input';
@@ -20,6 +20,11 @@ import { EndUserFilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
 import { JsonValue } from 'type-fest';
 import { EndUserFindUniqueArgs } from '@/end-user/dtos/end-user-find-unique-args';
 import { TEndUserFilter } from '@/end-user/types';
+import {
+  FindEndUsersListInternalDto,
+  FindEndUsersListInternalSchema,
+} from '@/end-user/dtos/find-end-users-list.internal.dto';
+import { toPrismaOrderBy } from '@/common/to-prisma-order-by';
 
 @swagger.ApiTags('internal/end-users')
 @common.Controller('internal/end-users')
@@ -36,20 +41,35 @@ export class EndUserControllerInternal {
   @common.Get()
   @swagger.ApiOkResponse({ type: [EndUserModel] })
   @swagger.ApiForbiddenResponse()
-  @ApiNestedQuery(EndUserFindManyArgs)
-  async list(@common.Req() request: Request): Promise<EndUserModel[]> {
-    const { filterId, ...args } = plainToClass(EndUserFindManyArgs, request.query);
-    let query: JsonValue = {};
+  @swagger.ApiBadRequestResponse()
+  @UsePipes(new ZodValidationPipe(FindEndUsersListInternalSchema))
+  @ApiNestedQuery(FindEndUsersListInternalDto)
+  async list(
+    @Query() findEndUsersListInternalDto: FindEndUsersListInternalDto,
+  ): Promise<EndUserModel[]> {
+    const {
+      filterId,
+      orderBy = 'createdAt',
+      page: { size, after },
+    } = findEndUsersListInternalDto;
 
-    if (filterId) {
-      const filter = await this.filterService.getById(filterId);
-      query = filter.query;
+    const filter = await this.filterService.getById(filterId);
+
+    if (filter.entity !== 'individuals') {
+      throw new errors.BadRequestException('Invalid filter');
     }
 
-    return this.service.list({
-      ...args,
-      ...(query as InputJsonValue),
-    });
+    const paginationOptions = after
+      ? { cursor: { id: after }, skip: 1, take: size }
+      : { take: size };
+
+    const query = {
+      ...(filter.query as InputJsonValue),
+      ...paginationOptions,
+      orderBy: toPrismaOrderBy(orderBy),
+    };
+
+    return this.service.list(query);
   }
 
   @common.Get(':id')
