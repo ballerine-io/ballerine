@@ -16,12 +16,20 @@ export class UserRepository {
   ): Promise<User> {
     return this.prisma.user.create<T>({
       ...args,
-
       data: {
         ...args.data,
         // Use Prisma middleware
         password: await this.passwordService.hash(args.data.password),
       },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        roles: true,
+        workflowRuntimeData: true
+      }
     });
   }
 
