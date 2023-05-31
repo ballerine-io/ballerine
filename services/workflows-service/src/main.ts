@@ -18,11 +18,16 @@ import { NextFunction, Request, Response } from 'express';
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
 global.__rootdir__ = __dirname || process.cwd();
 
+const corsOrigins =
+  env.NODE_ENV === 'production'
+    ? [env.BACKOFFICE_CORS_ORIGIN, /\.ballerine\.app$/]
+    : [env.BACKOFFICE_CORS_ORIGIN, env.HEADLESS_EXAMPLE_CORS_ORIGIN, /\.ballerine\.dev$/];
+
 async function main() {
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
     cors: {
-      origin: [env.BACKOFFICE_CORS_ORIGIN, env.HEADLESS_EXAMPLE_CORS_ORIGIN],
+      origin: corsOrigins,
       credentials: true,
     },
   });
