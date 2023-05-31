@@ -1,9 +1,15 @@
 import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker';
-import { PrismaClient } from '@prisma/client';
+import { Business, EndUser, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
-import { businessIds, endUserIds, generateBusiness, generateEndUser } from './generate-end-user';
+import {
+  businessIds,
+  businessRiskIds,
+  endUserIds,
+  generateBusiness,
+  generateEndUser,
+} from './generate-end-user';
 import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
@@ -16,6 +22,26 @@ if (require.main === module) {
     console.error(error);
     process.exit(1);
   });
+}
+
+const persistImageFile = async (client: PrismaClient, uri: string) => {
+  const file = await client.file.create({
+    data: {
+      userId: '',
+      fileNameOnDisk: uri,
+      uri: uri,
+    },
+  });
+
+  return file.id;
+};
+
+function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number) {
+  if (countOfBusiness < 4) {
+    return `https://backoffice-demo.ballerine.app/images/mock-documents/${imageTemplate}`;
+  } else {
+    return faker.image.people(1000, 2000, true);
+  }
 }
 
 async function seed(bcryptSalt: Salt) {
@@ -77,19 +103,30 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  function createMockContextData(businessId: string) {
+  const createMockBusinessContextData = async (businessId: string, countOfBusiness: number) => {
     const correlationId = faker.datatype.uuid();
-    let mockData = {
+    const imageUri1 = generateAvatarImageUri(
+      `set_${countOfBusiness}_doc_front.png`,
+      countOfBusiness,
+    );
+    const imageUri2 = generateAvatarImageUri(
+      `set_${countOfBusiness}_doc_face.png`,
+      countOfBusiness,
+    );
+    const imageUri3 = generateAvatarImageUri(`set_${countOfBusiness}_selfie.png`, countOfBusiness);
+
+    const mockData = {
       entity: {
         type: 'business',
         data: {
-          companyName: faker.company.companyName(),
+          companyName: faker.company.name(),
           registrationNumber: faker.finance.account(9),
           legalForm: faker.company.bs(),
           countryOfIncorporation: faker.address.country(),
+          // @ts-expect-error - business type expects a date and not a string.
           dateOfIncorporation: faker.date.past(20).toISOString(),
           address: faker.address.streetAddress(),
-          phoneNumber: faker.phone.phoneNumber(),
+          phoneNumber: faker.phone.number(),
           email: faker.internet.email(),
           website: faker.internet.url(),
           industry: faker.company.catchPhrase(),
@@ -98,7 +135,7 @@ async function seed(bcryptSalt: Salt) {
           numberOfEmployees: faker.datatype.number(1000),
           businessPurpose: faker.company.catchPhraseDescriptor(),
           approvalState: 'NEW',
-        },
+        } satisfies Partial<Business>,
         additionalDetails: {},
         ballerineEntityId: businessId,
         id: correlationId,
@@ -120,9 +157,10 @@ async function seed(bcryptSalt: Salt) {
           pages: [
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri1,
               type: 'jpg',
               data: '',
+              ballerineFileId: await persistImageFile(client, imageUri1),
               metadata: {
                 side: 'front',
                 pageNumber: '1',
@@ -130,9 +168,10 @@ async function seed(bcryptSalt: Salt) {
             },
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri2,
               type: 'jpg',
               data: '',
+              ballerineFileId: await persistImageFile(client, imageUri2),
               metadata: {
                 side: 'back',
                 pageNumber: '1',
@@ -164,9 +203,127 @@ async function seed(bcryptSalt: Salt) {
           pages: [
             {
               provider: 'http',
-              uri: faker.internet.url(),
+              uri: imageUri3,
+              type: 'pdf',
+              ballerineFileId: await persistImageFile(client, imageUri3),
+              data: '',
+              metadata: {},
+            },
+          ],
+          properties: {
+            userNationalId: generateUserNationalId(),
+            docNumber: faker.finance.account(9),
+            userAddress: faker.address.streetAddress(),
+            website: faker.internet.url(),
+            expiryDate: faker.date.future(10).toISOString().split('T')[0],
+            email: faker.internet.email(),
+          },
+        },
+      ],
+    };
+
+    return mockData;
+  };
+
+  async function createMockEndUserContextData(endUserId: string, countOfIndividual: number) {
+    const correlationId = faker.datatype.uuid();
+    const imageUri1 = generateAvatarImageUri(
+      `set_${countOfIndividual}_doc_front.png`,
+      countOfIndividual,
+    );
+    const imageUri2 = generateAvatarImageUri(
+      `set_${countOfIndividual}_doc_face.png`,
+      countOfIndividual,
+    );
+    const imageUri3 = generateAvatarImageUri(
+      `set_${countOfIndividual}_selfie.png`,
+      countOfIndividual,
+    );
+
+    const mockData = {
+      entity: {
+        type: 'individual',
+        data: {
+          firstName: faker.name.firstName(),
+          lastName: faker.name.lastName(),
+          email: faker.internet.email(),
+          approvalState: 'NEW',
+          phone: faker.phone.number(),
+          stateReason: 'Poor quality of documents',
+          // @ts-expect-error - end user type expects a date and not a string.
+          dateOfBirth: faker.date.past(20).toISOString(),
+        } satisfies Partial<EndUser>,
+        additionalDetails: {},
+        ballerineEntityId: endUserId,
+        id: correlationId,
+      },
+      documents: [
+        {
+          category: 'ID',
+          type: 'photo',
+          issuer: {
+            type: 'government',
+            name: 'Government',
+            country: faker.address.country(),
+            city: faker.address.city(),
+            additionalDetails: {},
+          },
+          issuingVersion: 1,
+
+          version: 1,
+          pages: [
+            {
+              provider: 'http',
+              uri: imageUri1,
+              type: 'jpg',
+              data: '',
+              ballerineFileId: await persistImageFile(client, imageUri1),
+              metadata: {
+                side: 'front',
+                pageNumber: '1',
+              },
+            },
+            {
+              provider: 'http',
+              uri: imageUri2,
+              type: 'jpg',
+              data: '',
+              ballerineFileId: await persistImageFile(client, imageUri2),
+              metadata: {
+                side: 'back',
+                pageNumber: '1',
+              },
+            },
+          ],
+          properties: {
+            userNationalId: generateUserNationalId(),
+            docNumber: faker.finance.account(9),
+            userAddress: faker.address.streetAddress(),
+            website: faker.internet.url(),
+            expiryDate: faker.date.future(10).toISOString().split('T')[0],
+            email: faker.internet.email(),
+          },
+        },
+        {
+          category: 'selfie',
+          type: 'certificate',
+          issuer: {
+            type: 'government',
+            name: 'Government',
+            country: faker.address.country(),
+            city: faker.address.city(),
+            additionalDetails: {},
+          },
+          issuingVersion: 1,
+
+          version: 1,
+          pages: [
+            {
+              provider: 'http',
+              uri: imageUri3,
               type: 'pdf',
               data: '',
+              ballerineFileId: await persistImageFile(client, imageUri3),
               metadata: {},
             },
           ],
@@ -185,7 +342,7 @@ async function seed(bcryptSalt: Salt) {
     return mockData;
   }
 
-  // Risk score improvment
+  // Risk score improvement
   await client.workflowDefinition.create({
     data: {
       id: 'risk-score-improvement-dev', // should be auto generated normally
@@ -439,57 +596,57 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  // await client.filter.create({
-  //   data: {
-  //     entity: 'individuals',
-  //     name: 'Individuals',
-  //     query: {
-  //       select: {
-  //         id: true,
-  //         correlationId: true,
-  //         verificationId: true,
-  //         endUserType: true,
-  //         approvalState: true,
-  //         stateReason: true,
-  //         jsonData: true,
-  //         firstName: true,
-  //         lastName: true,
-  //         email: true,
-  //         phone: true,
-  //         dateOfBirth: true,
-  //         avatarUrl: true,
-  //         additionalInfo: true,
-  //         createdAt: true,
-  //         updatedAt: true,
-  //         workflowRuntimeData: {
-  //           select: {
-  //             id: true,
-  //             status: true,
-  //             assigneeId: true,
-  //             createdAt: true,
-  //             workflowDefinition: {
-  //               select: {
-  //                 id: true,
-  //                 name: true,
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //       where: {
-  //         workflowRuntimeData: {
-  //           some: {
-  //             workflowDefinition: {
-  //               is: {
-  //                 id: manualMachineId,
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  // });
+  await client.filter.create({
+    data: {
+      entity: 'individuals',
+      name: 'Individuals',
+      query: {
+        select: {
+          id: true,
+          correlationId: true,
+          verificationId: true,
+          endUserType: true,
+          approvalState: true,
+          stateReason: true,
+          jsonData: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          dateOfBirth: true,
+          avatarUrl: true,
+          additionalInfo: true,
+          createdAt: true,
+          updatedAt: true,
+          workflowRuntimeData: {
+            select: {
+              id: true,
+              status: true,
+              assigneeId: true,
+              createdAt: true,
+              workflowDefinition: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          workflowRuntimeData: {
+            some: {
+              workflowDefinition: {
+                is: {
+                  id: manualMachineId,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
 
   await client.filter.create({
     data: {
@@ -547,45 +704,56 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  await client.$transaction(
-    endUserIds.map(id =>
+  await client.$transaction(async () =>
+    endUserIds.map(async (id, index) =>
       client.endUser.create({
-        /// i tryed to fix that so i can run through ajv, currently it dosent like something in the schema (anyOf  )
+        /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
         data: generateEndUser({
           id,
           workflow: {
             workflowDefinitionId: manualMachineId,
             workflowDefinitionVersion: manualMachineVersion,
-            context: {},
+            context: await createMockEndUserContextData(id, index + 1),
           },
         }),
       }),
     ),
   );
 
-  await client.$transaction(
-    businessIds.map(id => {
-      const exampleWf = {
-        workflowDefinitionId: onboardingMachineKybId,
-        workflowDefinitionVersion: manualMachineVersion,
-        context: {},
-        createdAt: faker.date.recent(2),
-      };
-      const riskWf = () => ({
+  await client.$transaction(async tx => {
+    businessRiskIds.map(async (id, index) => {
+      const riskWf = async () => ({
         workflowDefinitionId: riskScoreMachineKybId,
         workflowDefinitionVersion: 1,
-        context: createMockContextData(id),
+        context: await createMockBusinessContextData(id, index + 1),
         createdAt: faker.date.recent(2),
       });
 
       return client.business.create({
         data: generateBusiness({
           id,
-          workflow: Math.random() > 0.6 ? riskWf() : exampleWf,
+          workflow: await riskWf(),
         }),
       });
-    }),
-  );
+    });
+
+    businessIds.map(async id => {
+      const exampleWf = {
+        workflowDefinitionId: onboardingMachineKybId,
+        workflowDefinitionVersion: manualMachineVersion,
+        // Would not display data in the backoffice UI
+        context: {},
+        createdAt: faker.date.recent(2),
+      };
+
+      return client.business.create({
+        data: generateBusiness({
+          id,
+          workflow: exampleWf,
+        }),
+      });
+    });
+  });
 
   // TODO: create business with enduser attched to them
   // await client.business.create({

@@ -4,6 +4,7 @@ import { env } from '../../common/env/env';
 import { Root } from './Root.page';
 import { authQueryKeys } from '../../domains/auth/query-keys';
 import { filtersQueryKeys } from '../../domains/filters/query-keys';
+import { RootError } from './Root.error';
 
 // Layout and globals
 export const rootRoute = new RootRoute({
@@ -35,4 +36,5 @@ export const rootRoute = new RootRoute({
     });
   },
   component: Root,
+  errorComponent: RootError,
 });

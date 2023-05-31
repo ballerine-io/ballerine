@@ -20,19 +20,17 @@ import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dial
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
 import { DialogClose } from '@radix-ui/react-dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../../../common/components/atoms/Select/Select';
+import { Select } from '../../../../common/components/atoms/Select/Select';
 import {
   AssignButton,
   Assignee,
 } from '../../../../common/components/atoms/AssignButton/AssignButton';
 import * as HoverCard from '@radix-ui/react-hover-card';
-import { Button } from '../../../../common/components/atoms/Button/button';
+import { Button } from '../../../../common/components/atoms/Button/Button';
+import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
+import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
+import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
+import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.

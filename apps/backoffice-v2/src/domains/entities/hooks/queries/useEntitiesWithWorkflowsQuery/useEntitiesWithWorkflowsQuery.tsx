@@ -1,5 +1,6 @@
 import { useEntitiesQuery } from '../useEntitiesQuery/useEntitiesQuery';
 import { TUsers } from '../../../../users/types';
+import { env } from '../../../../../common/env/env';
 
 export const useEntitiesWithWorkflowsQuery = (users: TUsers) => {
   return useEntitiesQuery({
@@ -15,5 +16,6 @@ export const useEntitiesWithWorkflowsQuery = (users: TUsers) => {
           caseStatus: entity?.workflowRuntimeData?.status,
         };
       }),
+    refetchInterval: env.VITE_ASSIGNMENT_POLLING_INTERVAL,
   });
 };

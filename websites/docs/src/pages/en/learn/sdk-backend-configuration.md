@@ -19,7 +19,7 @@ While we offer our own backend for the Ballerine SDK as a default, you can also 
 The following API can be used to configure the backend [configuration](#configuration) - [API reference](/en/api/sdk/flows-backend-config)
 
 ```typescript
-import { flows } from '@ballerine/web-sdk';
+import { flows } from '@ballerine/web-ui-sdk';
 
 await flows.init({
   // ...

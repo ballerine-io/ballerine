@@ -85,7 +85,8 @@
     "tailwind-merge": "^1.10.0",
     "tailwindcss-animate": "^1.0.5",
     "tesseract.js": "^4.0.1",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "vite-plugin-terminal": "^1.1.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",

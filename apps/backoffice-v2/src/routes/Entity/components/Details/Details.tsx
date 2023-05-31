@@ -1,6 +1,6 @@
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { EditableDetails } from '../EditableDetails/EditableDetails';
-import { Separator } from '../../../../common/components/atoms/Separator/separator';
+import { Separator } from '../../../../common/components/atoms/Separator/Separator';
 import React, { FunctionComponent } from 'react';
 import { useParams } from '@tanstack/react-router';
 import { IDetailsProps } from './interfaces';

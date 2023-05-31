@@ -4,7 +4,7 @@ import { DropdownMenuItem } from '../../molecules/DropdownMenu/DropdownMenu.Item
 import { DropdownMenuTrigger } from '../../molecules/DropdownMenu/DropdownMenu.Trigger';
 import { DropdownMenu } from '../../molecules/DropdownMenu/DropdownMenu';
 import { DropdownMenuContent } from '../../molecules/DropdownMenu/DropdownMenu.Content';
-import { Button } from '../Button/button';
+import { Button } from '../Button/Button';
 import { TAuthenticatedUser } from '../../../../domains/auth/types';
 
 export type Assignee = {

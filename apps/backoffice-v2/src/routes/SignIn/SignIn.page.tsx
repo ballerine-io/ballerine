@@ -1,17 +1,10 @@
 import { z } from 'zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../../common/components/organisms/Form/Form';
-import { Button } from '../../common/components/atoms/Button/button';
+import { Form } from '../../common/components/organisms/Form/Form';
+import { Button } from '../../common/components/atoms/Button/Button';
 import { Input } from '../../common/components/atoms/Input/Input';
-import { Card, CardContent, CardHeader } from '../../common/components/atoms/Card/card';
+import { Card } from '../../common/components/atoms/Card/Card';
 import { BallerineLogo } from '../../common/components/atoms/icons';
 import { Alert } from '../../common/components/atoms/Alert/Alert';
 import { AlertCircle } from 'lucide-react';
@@ -22,6 +15,13 @@ import { useCallback } from 'react';
 import { useAuthContext } from '../../domains/auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import { useIsAuthenticated } from '../../domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 import { isErrorWithCode } from '../../lib/react-query/query-client';
+import { CardHeader } from '../../common/components/atoms/Card/Card.Header';
+import { CardContent } from '../../common/components/atoms/Card/Card.Content';
+import { FormField } from '../../common/components/organisms/Form/Form.Field';
+import { FormItem } from '../../common/components/organisms/Form/Form.Item';
+import { FormLabel } from '../../common/components/organisms/Form/Form.Label';
+import { FormControl } from '../../common/components/organisms/Form/Form.Control';
+import { FormMessage } from '../../common/components/organisms/Form/Form.Message';
 
 export const SignIn = () => {
   const SignInSchema = z.object({
@@ -49,6 +49,10 @@ export const SignIn = () => {
   const isAuthenticated = useIsAuthenticated();
   const signInForm = useForm<z.infer<typeof SignInSchema>>({
     resolver: zodResolver(SignInSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
   if (isAuthenticated) return null;

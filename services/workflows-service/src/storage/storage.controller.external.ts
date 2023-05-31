@@ -12,7 +12,6 @@ import { downloadFileFromS3, manageFileByProvider } from '@/storage/get-file-sto
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import * as os from 'os';
 import * as path from 'path';
-import console from 'console';
 
 // Temporarily identical to StorageControllerInternal
 @swagger.ApiTags('Storage')
@@ -46,7 +45,7 @@ export class StorageControllerExternal {
   async uploadFile(@UploadedFile() file: Partial<Express.MulterS3.File>) {
     const id = await this.service.createFileLink({
       uri: file.location || String(file.path),
-      fileNameOnDisk: String(file.location),
+      fileNameOnDisk: String(file.path),
       fileNameInBucket: file.key,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',

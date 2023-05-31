@@ -2,7 +2,7 @@ import React, { FunctionComponent, useCallback, useState } from 'react';
 import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
 import { DropdownMenu } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu';
 import { DropdownMenuTrigger } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
-import { Button } from '../../../../common/components/atoms/Button/button';
+import { Button } from '../../../../common/components/atoms/Button/Button';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { DropdownMenuContent } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Content';
 import { DropdownMenuLabel } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Label';
@@ -14,13 +14,7 @@ import { DialogContent } from '../../../../common/components/organisms/Dialog/Di
 import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
 import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../../../common/components/atoms/Select/Select';
+import { Select } from '../../../../common/components/atoms/Select/Select';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useParams } from '@tanstack/react-router';
@@ -30,6 +24,10 @@ import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/querie
 import { useCaseState } from '../Case/hooks/useCaseState/useCaseState';
 import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import toast from 'react-hot-toast';
+import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
+import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
+import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
+import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 
 export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
   const { entityId } = useParams();

@@ -21,7 +21,7 @@ export class ServeStaticOptionsService implements ServeStaticModuleOptionsFactor
     const serveStaticRootPath = this.configService.get(SERVE_STATIC_ROOT_PATH_VAR) as string;
     if (serveStaticRootPath) {
       const resolvedPath = path.resolve(serveStaticRootPath);
-      this.logger.log(`Serving static files from ${resolvedPath}`);
+      this.logger.log('Serving static files', { resolvedPath });
       return [
         ...DEFAULT_STATIC_MODULE_OPTIONS_LIST,
         {

@@ -15,10 +15,12 @@ export const endUserIds = [
   'ckkt3t2bw000aqxtt0hj4pw4c',
 ];
 
-export const businessIds = [
+export const businessRiskIds = [
   'ckkt3qnv41001qxtt7nmj9r26',
   'ckkt3r0v42002qxtt8sxk7fv9',
   'ckkt3rhxr3003qxtt5x6h5j18',
+];
+export const businessIds = [
   'ckkt3rv4z4004qxtte4vz9e97',
   'ckkt3s3ha5005qxttdz5yxg76',
   'ckkt3sc16006qxtt9e9u7y65',
@@ -40,13 +42,13 @@ export const generateBusiness = ({
   };
 }): Prisma.BusinessCreateInput => {
   const { workflowDefinitionId, workflowDefinitionVersion, context } = workflow;
-  const companyName = faker.company.companyName();
+  const companyName = faker.company.name();
   const registrationNumber = faker.datatype.uuid();
   const legalForm = faker.company.companySuffix();
   const countryOfIncorporation = faker.address.country();
   const dateOfIncorporation = faker.date.past(10);
   const address = faker.address.streetAddress();
-  const phoneNumber = faker.phone.phoneNumber('+##########');
+  const phoneNumber = faker.phone.number('+##########');
   const email = faker.internet.email();
   const website = faker.internet.url();
   const industry = faker.company.bs();
@@ -59,7 +61,7 @@ export const generateBusiness = ({
     financialStatement: faker.system.filePath(),
   });
   const shareholderStructure = JSON.stringify([
-    { name: faker.name.findName(), ownershipPercentage: faker.finance.amount(0, 100, 2) },
+    { name: faker.name.fullName(), ownershipPercentage: faker.finance.amount(0, 100, 2) },
   ]);
 
   return {

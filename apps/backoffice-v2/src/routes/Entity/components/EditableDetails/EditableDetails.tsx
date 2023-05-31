@@ -1,21 +1,19 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../../../../common/components/organisms/Form/Form';
+import { Form } from '../../../../common/components/organisms/Form/Form';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
-import { Button } from '../../../../common/components/atoms/Button/button';
+import { Button } from '../../../../common/components/atoms/Button/Button';
 import React, { FunctionComponent } from 'react';
 import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
 import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { FormField } from '../../../../common/components/organisms/Form/Form.Field';
+import { FormItem } from '../../../../common/components/organisms/Form/Form.Item';
+import { FormLabel } from '../../../../common/components/organisms/Form/Form.Label';
+import { FormControl } from '../../../../common/components/organisms/Form/Form.Control';
+import { FormMessage } from '../../../../common/components/organisms/Form/Form.Message';
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,

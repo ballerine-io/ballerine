@@ -22,7 +22,7 @@ BallerineSDK.flows.on('finish', doSomethingFn)
 Package Manager:
 
 ```javascript
-import { flows as ballerineFlows } from '@ballerine/web-sdk';
+import { flows as ballerineFlows } from '@ballerine/web-ui-sdk';
 
 await ballerineFlows.init({...}).then(() => console.log('flows ready'));
 // 3. Mount selected flow on an element

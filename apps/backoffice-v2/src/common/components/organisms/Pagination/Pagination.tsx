@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { IPaginationProps } from './interfaces';
-import { Button } from '../../atoms/Button/button';
+import { Button } from '../../atoms/Button/Button';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 export const Pagination: FunctionComponent<IPaginationProps> = ({
