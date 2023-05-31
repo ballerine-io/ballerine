@@ -1,4 +1,14 @@
-type OrderDirection = 'asc' | 'desc';
+type RemoveSortDirectionPrefix<T> = T extends `-${infer Y}` ? Y : T;
+type CommaSeparatedStringToUnion<TString> = TString extends `${infer First},${infer Rest}`
+  ? First | CommaSeparatedStringToUnion<Rest>
+  : TString;
+type ExtractOrderByColumns<TOrderBy extends string> = RemoveSortDirectionPrefix<
+  CommaSeparatedStringToUnion<TOrderBy>
+>;
+
+type ToPrismaOrderBy<TOrderBy extends string> = TOrderBy extends ''
+  ? never[]
+  : Record<ExtractOrderByColumns<TOrderBy>, 'asc' | 'desc'>[];
 
 /**
  * Converts `orderBy` string to Prisma `orderBy` object
@@ -6,8 +16,10 @@ type OrderDirection = 'asc' | 'desc';
  * @example toPrismaOrderBy('-createdAt,updatedAt') => [{ createdAt: 'desc' }, { updatedAt: 'asc' }]
  *
  * @param orderBy
+ *
+ * @returns Prisma `orderBy` object
  */
-export const toPrismaOrderBy = (orderBy: string): Record<string, OrderDirection>[] => {
+export const toPrismaOrderBy = <TOrderBy extends string>(orderBy: TOrderBy) => {
   if (orderBy === '') {
     return [];
   }
@@ -18,5 +30,5 @@ export const toPrismaOrderBy = (orderBy: string): Record<string, OrderDirection>
     }
 
     return { [item]: 'asc' };
-  });
+  }) as ToPrismaOrderBy<TOrderBy>;
 };

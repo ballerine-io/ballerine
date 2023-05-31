@@ -7,7 +7,7 @@ describe(toPrismaOrderBy.name, () => {
 
       const result = toPrismaOrderBy(orderBy);
 
-      expect(result).toEqual([]);
+      expect<never[]>(result).toEqual([]);
     });
   });
 
@@ -17,7 +17,7 @@ describe(toPrismaOrderBy.name, () => {
 
       const result = toPrismaOrderBy(orderBy);
 
-      expect(result).toEqual([{ createdAt: 'desc' }]);
+      expect<Record<'createdAt', 'asc' | 'desc'>[]>(result).toEqual([{ createdAt: 'desc' }]);
     });
   });
 
@@ -27,7 +27,7 @@ describe(toPrismaOrderBy.name, () => {
 
       const result = toPrismaOrderBy(orderBy);
 
-      expect(result).toEqual([{ createdAt: 'asc' }]);
+      expect<Record<'createdAt', 'asc' | 'desc'>[]>(result).toEqual([{ createdAt: 'asc' }]);
     });
   });
 
@@ -37,7 +37,10 @@ describe(toPrismaOrderBy.name, () => {
 
       const result = toPrismaOrderBy(orderBy);
 
-      expect(result).toEqual([{ createdAt: 'asc' }, { updatedAt: 'desc' }]);
+      expect<Record<'createdAt' | 'updatedAt', 'asc' | 'desc'>[]>(result).toEqual([
+        { createdAt: 'asc' },
+        { updatedAt: 'desc' },
+      ]);
     });
   });
 });
