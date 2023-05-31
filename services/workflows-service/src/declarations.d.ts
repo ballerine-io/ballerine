@@ -12,6 +12,11 @@ declare global {
       firstName: string;
       lastName: string;
     }
+
+    interface Request {
+      id: string;
+      startTime: number;
+    }
   }
 }
 

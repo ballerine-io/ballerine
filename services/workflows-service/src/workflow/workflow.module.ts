@@ -2,7 +2,6 @@ import { forwardRef, Module } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
 import { WorkflowControllerExternal } from './workflow.controller.external';
 import { WorkflowControllerInternal } from './workflow.controller.internal';
-import { MorganModule } from 'nest-morgan';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { AuthModule } from '../auth/auth.module';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
@@ -18,7 +17,7 @@ import { FileRepository } from '@/storage/storage.repository';
 import { HttpModule, HttpService } from '@nestjs/axios';
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule, HttpModule],
+  imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
   providers: [
     WorkflowDefinitionRepository,
@@ -32,6 +31,6 @@ import { HttpModule, HttpService } from '@nestjs/axios';
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
   ],
-  exports: [WorkflowService, ACLModule, AuthModule, MorganModule, StorageService, FileRepository],
+  exports: [WorkflowService, ACLModule, AuthModule, StorageService, FileRepository],
 })
 export class WorkflowModule {}

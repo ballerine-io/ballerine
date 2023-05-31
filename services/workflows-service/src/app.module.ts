@@ -1,6 +1,5 @@
-import { Module, Scope } from '@nestjs/common';
+import { MiddlewareConsumer, Module, Scope } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
-import { MorganInterceptor, MorganModule } from 'nest-morgan';
 import { UserModule } from './user/user.module';
 import { WorkflowModule } from './workflow/workflow.module';
 import { ACLModule } from '@/common/access-control/acl.module';
@@ -20,6 +19,8 @@ import { FilterModule } from '@/filter/filter.module';
 import { SessionAuthGuard } from '@/auth/session-auth.guard';
 import { env } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
+import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
+import { LogRequestInterceptor } from '@/common/interceptors/log-request.interceptor';
 
 @Module({
   controllers: [],
@@ -46,7 +47,6 @@ import { SentryModule } from '@/sentry/sentry.module';
     AuthModule,
     HealthModule,
     PrismaModule,
-    MorganModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: env.ENV_FILE_NAME ?? '.env',
@@ -58,8 +58,7 @@ import { SentryModule } from '@/sentry/sentry.module';
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      scope: Scope.REQUEST,
-      useClass: MorganInterceptor('combined'),
+      useClass: LogRequestInterceptor,
     },
     {
       provide: APP_GUARD,
@@ -67,4 +66,8 @@ import { SentryModule } from '@/sentry/sentry.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
+  }
+}

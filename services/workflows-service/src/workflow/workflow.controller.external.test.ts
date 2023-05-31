@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CallHandler, ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { MorganModule } from 'nest-morgan';
 import { ACGuard } from 'nest-access-control';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
@@ -54,7 +53,7 @@ describe('Workflow (external)', () => {
         },
       ],
       controllers: [WorkflowControllerExternal],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(ACGuard)
       .useValue(acGuard)
