@@ -12,7 +12,7 @@ layout: ../../../../layouts/MainLayout.astro
 
 #### Defined in
 
-[BallerineSDK.ts:120](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-sdk/src/types/BallerineSDK.ts#L120)
+[BallerineSDK.ts:120](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L120)
 
 ---
 
@@ -26,7 +26,7 @@ Required if useModal is not used or is set to false. The string id attribute of 
 
 #### Defined in
 
-[BallerineSDK.ts:119](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-sdk/src/types/BallerineSDK.ts#L119)
+[BallerineSDK.ts:119](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L119)
 
 ---
 
@@ -40,7 +40,7 @@ The object key of the flow to be rendered.
 
 #### Defined in
 
-[BallerineSDK.ts:109](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-sdk/src/types/BallerineSDK.ts#L109)
+[BallerineSDK.ts:109](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L109)
 
 ---
 
@@ -54,7 +54,7 @@ A JWT token to use in the Authorization header. Requires FlowsInitOptions.backen
 
 #### Defined in
 
-[BallerineSDK.ts:124](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-sdk/src/types/BallerineSDK.ts#L124)
+[BallerineSDK.ts:124](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L124)
 
 ---
 
@@ -72,4 +72,4 @@ false
 
 #### Defined in
 
-[BallerineSDK.ts:115](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-sdk/src/types/BallerineSDK.ts#L115)
+[BallerineSDK.ts:115](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L115)
