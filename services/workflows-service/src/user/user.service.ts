@@ -10,33 +10,33 @@ export class UserService {
     protected readonly passwordService: PasswordService,
   ) {}
 
-  async create(args: Parameters<UserRepository['create']>[0]): Promise<User> {
+  async create(args: Parameters<UserRepository['create']>[0]) {
     return this.repository.create(args);
   }
 
-  async list(args?: Parameters<UserRepository['findMany']>[0]): Promise<User[]> {
+  async list(args?: Parameters<UserRepository['findMany']>[0]) {
     return this.repository.findMany(args);
   }
 
   async getById(
     id: string,
     args?: Parameters<UserRepository['findById']>[1],
-  ): Promise<User | null> {
+  ) {
     return this.repository.findById(id, args);
   }
 
   async getByEmail(
     email: string,
     args?: Parameters<UserRepository['findByEmail']>[1],
-  ): Promise<User | null> {
+  ) {
     return this.repository.findByEmail(email, args);
   }
 
-  async updateById(id: string, args: Parameters<UserRepository['updateById']>[1]): Promise<User> {
+  async updateById(id: string, args: Parameters<UserRepository['updateById']>[1]) {
     return this.repository.updateById(id, args);
   }
 
-  async deleteById(id: string, args?: Parameters<UserRepository['deleteById']>[1]): Promise<User> {
+  async deleteById(id: string, args?: Parameters<UserRepository['deleteById']>[1]) {
     return this.repository.deleteById(id, args);
   }
 }
