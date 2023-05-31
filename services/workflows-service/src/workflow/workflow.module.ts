@@ -16,6 +16,7 @@ import { StorageService } from '@/storage/storage.service';
 import { StorageModule } from '@/storage/storage.module';
 import { FileRepository } from '@/storage/storage.repository';
 import { HttpModule, HttpService } from '@nestjs/axios';
+import { WorkflowGateway } from '@/workflow/workflow.gatway';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), MorganModule, HttpModule],
@@ -31,6 +32,7 @@ import { HttpModule, HttpService } from '@nestjs/axios';
     FileService,
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
+    WorkflowGateway,
   ],
   exports: [WorkflowService, ACLModule, AuthModule, MorganModule, StorageService, FileRepository],
 })

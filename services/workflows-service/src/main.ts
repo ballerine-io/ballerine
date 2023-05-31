@@ -12,6 +12,7 @@ import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.in
 import helmet from 'helmet';
 import { env } from '@/env';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
+import { WsAdapter } from '@nestjs/platform-ws';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
@@ -58,6 +59,7 @@ async function main() {
 
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
 
+  app.useWebSocketAdapter(new WsAdapter(app));
   /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
   Object.values(document.paths).forEach((path: PathItemObject) => {
     Object.values(path).forEach((method: { security: string[] | unknown }) => {
