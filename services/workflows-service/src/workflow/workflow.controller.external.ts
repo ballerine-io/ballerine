@@ -5,7 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { Headers, NotFoundException, Res, UseGuards } from '@nestjs/common';
+import { Headers, NotFoundException, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -154,7 +154,7 @@ export class WorkflowControllerExternal {
 
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')
-  @UseGuards(KeyAuthGuard)
+  @UseKeyAuthGuard()
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })

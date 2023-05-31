@@ -20,7 +20,8 @@
       "app/*": ["src/app/*"],
       "components/*": ["src/components/*"],
       "hooks/*": ["src/hooks/*"]
-    }
+    },
+    "types": ["vite-plugin-terminal/client"]
   },
   "include": ["src", "e2e"]
 }

@@ -11,4 +11,9 @@ export const EnvSchema = z.object({
     .transform(v => v * 1000)
     .or(z.literal(false))
     .catch(false),
+  VITE_ASSIGNMENT_POLLING_INTERVAL: z.coerce
+    .number()
+    .transform(v => v * 1000)
+    .or(z.literal(false))
+    .catch(undefined),
 });
