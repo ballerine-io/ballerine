@@ -54,17 +54,17 @@ Make sure you run the following command in the root of the project we've created
 
 <CodeBlock 
   lang="bash"
-  code={`pnpm add @ballerine/web-sdk`}
+  code={`pnpm add @ballerine/web-ui-sdk`}
 />
 
 <CodeBlock 
   lang="bash"
-  code={`yarn add @ballerine/web-sdk`}
+  code={`yarn add @ballerine/web-ui-sdk`}
 />
 
 <CodeBlock 
   lang="bash"
-  code={`npm install @ballerine/web-sdk`}
+  code={`npm install @ballerine/web-ui-sdk`}
 />
 
 ## Creating a KYC flow
@@ -91,12 +91,12 @@ Now that we've created a new project and installed the Ballerine SDK, we can sta
 </html>`}
 />
 
-Next, we'll go to `src/main.ts`, import `flows` from `@ballerine/web-sdk`, create our flow, and mount it.
+Next, we'll go to `src/main.ts`, import `flows` from `@ballerine/web-ui-sdk`, create our flow, and mount it.
 
 <CodeBlock
   lang="ts"
   code={`// src/main.ts
-import { flows } from '@ballerine/web-sdk';
+import { flows } from '@ballerine/web-ui-sdk';
 
 flows
   .init({
@@ -177,7 +177,7 @@ Great! Now that we've created our flow, let's start personalizing it. `uiConfig`
 <CodeBlock
   lang="ts"
   code={`// src/main.ts
-import { flows } from '@ballerine/web-sdk';
+import { flows } from '@ballerine/web-ui-sdk';
 
 flows
   .init({
@@ -252,7 +252,7 @@ Now, what would we do if our product is used globally or English is not our own 
 <CodeBlock
   lang="ts"
   code={`// src/main.ts
-import { flows } from '@ballerine/web-sdk';
+import { flows } from '@ballerine/web-ui-sdk';
 
 flows
   .init({
@@ -371,5 +371,5 @@ Now that we've created our flow, let's deploy it to the web. For the purpose of 
 ## Where to go from here
 
 - [Flows documentation](/en/api/sdk/ballerine-sdk-flows)
-- <a href="https://github.com/ballerine-io/ballerine/tree/main/sdks/web-sdk" target="_blank">SDK source code</a>
+- <a href="https://github.com/ballerine-io/ballerine/tree/main/sdks/web-ui-sdk" target="_blank">SDK source code</a>
 - Need help or got a question? Join our [Discord](https://discord.gg/e2rQE4YygA)!

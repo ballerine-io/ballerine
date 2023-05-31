@@ -1,6 +1,7 @@
 import react from '@vitejs/plugin-react-swc';
 import { resolve } from 'path';
 import { defineConfig } from 'vitest/config';
+import terminal from 'vite-plugin-terminal';
 
 export default defineConfig(configEnv => {
   const isDevelopment = configEnv.mode === 'development';
@@ -11,7 +12,13 @@ export default defineConfig(configEnv => {
       host: true,
       port: 5137,
     },
-    plugins: [react()],
+    plugins: [
+      terminal({
+        output: ['console', 'terminal'],
+        strip: false,
+      }),
+      react(),
+    ],
     resolve: {
       alias: {
         app: resolve(__dirname, 'src', 'app'),
