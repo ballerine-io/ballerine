@@ -30,8 +30,19 @@ export class UserControllerInternal {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [UserModel] })
   @swagger.ApiForbiddenResponse()
-  async create(@common.Body() userCreatInfo: UserCreateDto): Promise<UserModel> {
+  async create(@common.Body() userCreatInfo: UserCreateDto) {
 
-    return this.service.create({data: userCreatInfo});
+    return this.service.create({
+      data: userCreatInfo,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        roles: true,
+        workflowRuntimeData: true
+      }
+    });
   }
 }

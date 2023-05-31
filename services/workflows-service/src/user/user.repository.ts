@@ -20,15 +20,6 @@ export class UserRepository {
         ...args.data,
         // Use Prisma middleware
         password: await this.passwordService.hash(args.data.password),
-      },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        phone: true,
-        roles: true,
-        workflowRuntimeData: true
       }
     });
   }
