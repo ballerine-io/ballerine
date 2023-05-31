@@ -1,6 +1,5 @@
 import { useParams } from '@tanstack/react-router';
 import { useEndUserWithWorkflowQuery } from '../../../../../lib/react-query/queries/useEndUserWithWorkflowQuery/useEndUserWithWorkflowQuery';
-import React from 'react';
 import { useUpdateWorkflowByIdMutation } from '../../../../../lib/react-query/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { toStartCase } from '../../../../../utils/to-start-case/to-start-case';
 import { useStorageFilesQuery } from '../../../../../lib/react-query/queries/useStorageFilesQuery/useStorageFilesQuery';
@@ -8,6 +7,12 @@ import { useCaseState } from 'components/organisms/Subject/hooks/useCaseState/us
 import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGetSessionQuery/useGetSessionQuery';
 import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 import { components } from 'components/pages/Individual/hooks/useIndividual/components';
+
+const prettifyString = (input: string): string => {
+  let words = input.split('_');
+  words = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+  return words.join(' ');
+};
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -47,7 +52,10 @@ export const useIndividual = () => {
   const tasks = contextEntity
     ? [
         ...(contextDocuments?.map(
-          ({ id, type, category, issuer, properties, propertiesSchema, decision }, docIndex) => {
+          (
+            { id, type: docType, category, issuer, properties, propertiesSchema, decision },
+            docIndex,
+          ) => {
             return [
               {
                 id: 'header',
@@ -55,7 +63,7 @@ export const useIndividual = () => {
                 value: [
                   {
                     type: 'heading',
-                    value: category,
+                    value: `${prettifyString(category)} - ${prettifyString(docType)}`,
                   },
                   {
                     id: 'actions',
@@ -91,7 +99,7 @@ export const useIndividual = () => {
                     type: 'details',
                     value: {
                       id,
-                      title: category,
+                      title: `${category} - ${docType}`,
                       data: Object.entries(propertiesSchema?.properties ?? {})?.map(
                         ([title, { type, format, pattern, isEditable = true }]) => ({
                           title,
@@ -124,7 +132,9 @@ export const useIndividual = () => {
                   data:
                     contextDocuments?.[docIndex]?.pages?.map(
                       ({ type, metadata, data }, pageIndex) => ({
-                        title: metadata?.side ? `${category} ${metadata?.side}` : category,
+                        title: `${category} - ${docType}${
+                          metadata?.side ? ` - ${metadata?.side}` : ''
+                        }`,
                         imageUrl:
                           type === 'pdf'
                             ? octetToFileType(results[docIndex][pageIndex], type)

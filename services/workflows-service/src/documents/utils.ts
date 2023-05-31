@@ -1,6 +1,9 @@
+import { DefaultContextSchema } from '@/workflow/schemas/context';
 import { Document } from './types';
 
-export const getDocumentId = (document: Document): string => {
+export const getDocumentId = (
+  document: Document | DefaultContextSchema['documents'][number],
+): string => {
   let id = `${document?.category}-${document?.type}-${document?.issuer?.country}`;
 
   if (document.version) {

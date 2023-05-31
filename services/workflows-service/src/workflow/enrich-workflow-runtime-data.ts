@@ -3,12 +3,15 @@ import { DefaultContextSchema } from './schemas/context';
 import { getDocumentId } from '@/documents/utils';
 import { getDocumentsByCountry } from '@/documents/schemas';
 import { Document } from '@/documents/types';
+import { countryCodes } from '@/common/countries';
 
 export const enrichWorkflowRuntimeData = (workflowRuntimeData: WorkflowRuntimeData) => {
   if (workflowRuntimeData?.context?.documents?.length) {
     const documents = workflowRuntimeData?.context?.documents as DefaultContextSchema['documents'];
     const result = documents.map(document => {
-      const documents = getDocumentsByCountry(document.issuer.country);
+      const documents = getDocumentsByCountry(
+        document.issuer.country as (typeof countryCodes)[number],
+      );
       const id = getDocumentId(document as unknown as Document);
       const documentSchema = documents[id];
 

@@ -1,30 +1,30 @@
 import { getDocumentId } from '@/documents/utils';
 import { ghanaDocuments } from './GH';
 import { Document } from '../types';
+import { countryCodes } from '@/common/countries';
 
 const convertToDictonary = (documents: Document[]) =>
   documents.reduce<Record<string, Document>>(
     // @ts-ignore
-    (document: Document, cur) => {
+    (curr, document: Document) => {
       const id = getDocumentId(document);
       // @ts-ignore
-      cur[id] = document;
-      return cur;
+      curr[id] = document;
+
+      return curr;
     },
     {} as Record<string, Document>,
   );
 
-const documentKeysByCountry = {
+const documentKeysByCountry: Partial<Record<(typeof countryCodes)[number], any>> = {
   GH: convertToDictonary(ghanaDocuments),
 };
 
-const addUnkownDocumentType = (documents: Record<string, Document>) => ({
-  ...documents,
-});
-
-export const getDocumentsByCountry = (country: string): Record<string, Document> => {
-  let documents = documentKeysByCountry[country];
+export const getDocumentsByCountry = (
+  countryCode: (typeof countryCodes)[number],
+): Record<string, Document> => {
+  const documents = documentKeysByCountry[countryCode];
   if (!documents) return {};
 
-  return addUnkownDocumentType(documents);
+  return documents;
 };
