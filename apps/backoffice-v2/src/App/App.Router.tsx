@@ -1,4 +1,4 @@
-import { ReactRouter, RouterProvider } from '@tanstack/react-router';
+import { ReactRouter as TanStackRouter, RouterProvider } from '@tanstack/react-router';
 import React, { FunctionComponent } from 'react';
 import { rootRoute } from '../routes/Root/Root.route';
 import { caseManagementRoute } from '../routes/CaseManagement/CaseManagement.route';
@@ -9,6 +9,7 @@ import { rootIndexRoute } from '../routes/Root/RootIndex.route';
 import { signInRoute } from '../routes/SignIn/SignIn.route';
 import { entitiesIndexRoute } from '../routes/Entities/EntitiesIndex.route';
 import { env } from '../common/env/env';
+import { createBrowserRouter, RouterProvider as ReactRouterProvider } from 'react-router-dom';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -31,7 +32,7 @@ const routes = [
 const routeTree = rootRoute.addChildren(routes);
 
 // Router to pass to the RouterProvider
-export const router = new ReactRouter({
+export const router = new TanStackRouter({
   routeTree,
   defaultPreload: 'intent',
 });
@@ -39,4 +40,15 @@ export const router = new ReactRouter({
 // Used by App, exported here in case we want to include more providers in App or run logic before the RouterProvider
 export const Router: FunctionComponent = () => {
   return <RouterProvider router={router} />;
+};
+
+const reactRouter = createBrowserRouter([
+  {
+    path: '/',
+    element: <div>Hello world!</div>,
+  },
+]);
+
+export const ReactRouter: FunctionComponent = () => {
+  return <ReactRouterProvider router={reactRouter} />;
 };
