@@ -16,7 +16,6 @@ export class UserRepository {
   ): Promise<User> {
     return this.prisma.user.create<T>({
       ...args,
-
       data: {
         ...args.data,
         // Use Prisma middleware
