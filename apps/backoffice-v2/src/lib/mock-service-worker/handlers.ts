@@ -1,13 +1,13 @@
-import { endUsersController } from './end-users/end-users.controller';
-import { authController } from './auth/auth.controller';
-import { workflowsController } from './workflows/workflows.controller';
+import { individualsController } from '../../domains/individuals/mock-service-worker/individuals.controller';
+import { authController } from '../../domains/auth/mock-service-worker/auth/auth.controller';
+import { workflowsController } from '../../domains/workflows/mock-service-worker/workflows/workflows.controller';
 
 export const handlers = [
   // Auth
   ...authController,
 
   // End Users
-  ...endUsersController,
+  ...individualsController,
 
   // Workflows
   ...workflowsController,
