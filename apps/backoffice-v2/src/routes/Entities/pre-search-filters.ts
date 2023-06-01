@@ -1,4 +1,6 @@
 import { CaseStatus, State } from '../../common/enums';
+import {TAuthenticatedUser} from "../../domains/auth/types";
+
 
 const sharedPreSearchFilters = {
   sortDir: 'desc' as const,
@@ -7,24 +9,26 @@ const sharedPreSearchFilters = {
   search: '',
 } as const;
 
-export const preSearchFiltersByKind = {
-  businesses: {
-    sortBy: 'caseCreatedAt' as const,
-    entity: 'businesses' as const,
-    filter: {
-      assigneeId: [],
-      caseStatus: [CaseStatus.ACTIVE],
-    },
-    ...sharedPreSearchFilters,
-  },
-  individuals: {
-    sortBy: 'caseCreatedAt' as const,
-    entity: 'individuals' as const,
-    filter: {
-      approvalState: [State.PROCESSING],
-      assigneeId: [],
-      caseStatus: [CaseStatus.ACTIVE],
-    },
-    ...sharedPreSearchFilters,
-  },
-} as const;
+export const preSearchFiltersByKind = async (authenticatedUser: TAuthenticatedUser) => {
+    return {
+      businesses: {
+        sortBy: 'caseCreatedAt' as const,
+        entity: 'businesses' as const,
+        filter: {
+          assigneeId: [null, authenticatedUser!.id],
+          caseStatus: [CaseStatus.ACTIVE],
+        },
+        ...sharedPreSearchFilters,
+      },
+      individuals: {
+        sortBy: 'caseCreatedAt' as const,
+        entity: 'individuals' as const,
+        filter: {
+          approvalState: [State.PROCESSING],
+          assigneeId: [null, authenticatedUser.id],
+          caseStatus: [CaseStatus.ACTIVE],
+        },
+        ...sharedPreSearchFilters,
+      },
+    }
+  };
