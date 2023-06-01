@@ -9,7 +9,11 @@ import { rootIndexRoute } from '../routes/Root/RootIndex.route';
 import { signInRoute } from '../routes/SignIn/SignIn.route';
 import { entitiesIndexRoute } from '../routes/Entities/EntitiesIndex.route';
 import { env } from '../common/env/env';
-import { createBrowserRouter, RouterProvider as ReactRouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  redirect,
+  RouterProvider as ReactRouterProvider,
+} from 'react-router-dom';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -46,6 +50,13 @@ const reactRouter = createBrowserRouter([
   {
     path: '/',
     element: <div>Hello world!</div>,
+    loader({ request }) {
+      const url = new URL(request.url);
+
+      if (url.pathname.startsWith('/en')) return;
+
+      return redirect(`/en${url.pathname}`);
+    },
   },
 ]);
 
