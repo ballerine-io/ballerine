@@ -18,17 +18,11 @@ export class UserService {
     return this.repository.findMany(args);
   }
 
-  async getById(
-    id: string,
-    args?: Parameters<UserRepository['findById']>[1],
-  ) {
+  async getById(id: string, args?: Parameters<UserRepository['findById']>[1]) {
     return this.repository.findById(id, args);
   }
 
-  async getByEmail(
-    email: string,
-    args?: Parameters<UserRepository['findByEmail']>[1],
-  ) {
+  async getByEmail(email: string, args?: Parameters<UserRepository['findByEmail']>[1]) {
     return this.repository.findByEmail(email, args);
   }
 

@@ -20,7 +20,7 @@ export class UserRepository {
         ...args.data,
         // Use Prisma middleware
         password: await this.passwordService.hash(args.data.password),
-      }
+      },
     });
   }
 
