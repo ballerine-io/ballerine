@@ -11,11 +11,15 @@ import { entitiesIndexRoute } from '../routes/Entities/EntitiesIndex.route';
 import { env } from '../common/env/env';
 import {
   createBrowserRouter,
+  Outlet,
   redirect,
   RouterProvider as ReactRouterProvider,
 } from 'react-router-dom';
 import { RootError } from '../routes/Root/Root.error';
 import { Root } from '../routes/Root/Root.page';
+import { authQueryKeys } from '../domains/auth/query-keys';
+import { queryClient } from '../lib/react-query/query-client';
+import { filtersQueryKeys } from '../domains/filters/query-keys';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -55,11 +59,31 @@ const reactRouter = createBrowserRouter([
     loader({ request }) {
       const url = new URL(request.url);
 
-      if (url.pathname.startsWith('/en')) return;
+      if (url.pathname.startsWith('/en')) return null;
 
       return redirect(`/en${url.pathname === '/' ? '' : url.pathname}`);
     },
     errorElement: <RootError />,
+  },
+  {
+    path: '/:locale',
+    element: <Outlet />,
+    async loader() {
+      if (!env.VITE_AUTH_ENABLED) return null;
+
+      const authenticatedUser = authQueryKeys.authenticatedUser();
+      const session = await queryClient.ensureQueryData(
+        authenticatedUser.queryKey,
+        authenticatedUser.queryFn,
+      );
+
+      if (!session?.user) return null;
+
+      const filtersList = filtersQueryKeys.list();
+      await queryClient.ensureQueryData(filtersList.queryKey, filtersList.queryFn);
+
+      return null;
+    },
   },
 ]);
 
