@@ -4,7 +4,7 @@ import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { TEntities } from '../../../types';
 
-export const useSelectEntitiesQuery = <TQueryFnData,>(
+export const useSelectEntitiesQuery = <TQueryFnData = TEntities,>(
   select: (data: TEntities) => TQueryFnData,
 ) => {
   const entity = useFilterEntity();

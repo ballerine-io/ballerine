@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { t } from 'i18next';
 import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
+import { queryKeys } from '../../../query-keys';
 
 export const useRejectEntityMutation = ({
   workflowId,
@@ -44,9 +45,9 @@ export const useRejectEntityMutation = ({
         },
       }),
     onSuccess: (data, payload) => {
-      queryClient.invalidateQueries({ queryKey: queries[entity].list(filterId).queryKey });
+      queryClient.invalidateQueries({ queryKey: queryKeys[entity].list(filterId).queryKey });
       queryClient.invalidateQueries({
-        queryKey: queries[entity].byId(entityId, filterId).queryKey,
+        queryKey: queryKeys[entity].byId(entityId, filterId).queryKey,
       });
 
       const action = payload.action === Action.REJECT ? 'reject_case' : 'ask_resubmit_case';

@@ -196,7 +196,7 @@ export class WorkflowService {
       };
 
       const validateContextSchema = ajv.compile(
-        (workflowDef?.contextSchema as any)?.schema as Schema,
+        ((workflowDef?.contextSchema as any)?.schema as Schema) ?? {},
       );
       const isValidContextSchema = validateContextSchema(context);
 
@@ -212,7 +212,7 @@ export class WorkflowService {
 
       // @ts-ignore
       data?.context?.documents?.forEach(({ propertiesSchema, id: _id, ...document }) => {
-        const validatePropertiesSchema = ajv.compile(propertiesSchema);
+        const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {});
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
         if (!isValidPropertiesSchema) {
