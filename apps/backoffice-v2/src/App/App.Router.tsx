@@ -64,26 +64,35 @@ const reactRouter = createBrowserRouter([
       return redirect(`/en${url.pathname === '/' ? '' : url.pathname}`);
     },
     errorElement: <RootError />,
-  },
-  {
-    path: '/:locale',
-    element: <Outlet />,
-    async loader() {
-      if (!env.VITE_AUTH_ENABLED) return null;
+    children: [
+      {
+        path: '/:locale',
+        element: <Outlet />,
+        async loader() {
+          if (!env.VITE_AUTH_ENABLED) return null;
 
-      const authenticatedUser = authQueryKeys.authenticatedUser();
-      const session = await queryClient.ensureQueryData(
-        authenticatedUser.queryKey,
-        authenticatedUser.queryFn,
-      );
+          const authenticatedUser = authQueryKeys.authenticatedUser();
+          const session = await queryClient.ensureQueryData(
+            authenticatedUser.queryKey,
+            authenticatedUser.queryFn,
+          );
 
-      if (!session?.user) return null;
+          if (!session?.user) return null;
 
-      const filtersList = filtersQueryKeys.list();
-      await queryClient.ensureQueryData(filtersList.queryKey, filtersList.queryFn);
+          const filtersList = filtersQueryKeys.list();
+          await queryClient.ensureQueryData(filtersList.queryKey, filtersList.queryFn);
 
-      return null;
-    },
+          return null;
+        },
+        children: [
+          {
+            path: '/:locale/case-management',
+            element: <Outlet />,
+            children: [],
+          },
+        ],
+      },
+    ],
   },
 ]);
 
