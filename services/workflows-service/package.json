@@ -69,7 +69,6 @@
     "lodash": "^4.17.21",
     "multer-s3": "3.0.1",
     "nest-access-control": "2.2.0",
-    "nest-morgan": "1.0.1",
     "nestjs-prisma": "0.20.0",
     "passport": "0.6.0",
     "passport-http": "0.3.0",
