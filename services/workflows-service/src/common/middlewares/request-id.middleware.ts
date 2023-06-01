@@ -10,15 +10,16 @@ export class RequestIdMiddleware implements NestMiddleware {
     request.id = randomUUID();
     request.startTime = Date.now();
 
-    const headersWithoutAuthorization = { ...request.headers };
-    delete headersWithoutAuthorization.authorization;
+    const cleanHeaders = { ...request.headers };
+    delete cleanHeaders.authorization;
+    delete cleanHeaders.cookie;
 
     this.logger.log(`Incoming request`, {
       request: {
         id: request.id,
         method: request.method,
         path: request.originalUrl,
-        headers: headersWithoutAuthorization,
+        headers: cleanHeaders,
       },
     });
 
