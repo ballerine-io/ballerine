@@ -5,8 +5,9 @@ import { useEntities } from './hooks/useEntities/useEntities';
 import { Case } from '../Entity/components/Case/Case';
 import { MotionScrollArea } from '../../common/components/molecules/MotionScrollArea/MotionScrollArea';
 import { useFilterEntity } from '../../domains/entities/hooks/useFilterEntity/useFilterEntity';
+import { FunctionComponent } from 'react';
 
-export const Entities = () => {
+export const Entities: FunctionComponent = () => {
   const {
     onPaginate,
     onSearch,
