@@ -4,7 +4,7 @@ import { ctw } from '../../../utils/ctw/ctw';
 import { Card, CardContent } from 'components/atoms/Card/card';
 
 export const Individual = () => {
-  const { selectedEndUser, tasks, components } = useIndividual();
+  const { selectedEndUser, tasks, components, isLoading } = useIndividual();
 
   // Selected end user
   return (
@@ -17,7 +17,8 @@ export const Individual = () => {
         showResolutionButtons={selectedEndUser.workflow?.config?.workflowLevelResolution}
       />
       <Subject.Content key={selectedEndUser?.id}>
-        {Array.isArray(tasks) && tasks?.length > 0 ? (
+        {Array.isArray(tasks) &&
+          tasks?.length > 0 &&
           tasks?.map((task, index) => (
             <Card key={index} className={`me-4`}>
               <CardContent
@@ -32,8 +33,8 @@ export const Individual = () => {
                 })}
               </CardContent>
             </Card>
-          ))
-        ) : (
+          ))}
+        {!isLoading && !tasks?.length && (
           <div className={`p-2`}>
             <h2 className={`mt-4 text-6xl`}>No tasks were found</h2>
           </div>

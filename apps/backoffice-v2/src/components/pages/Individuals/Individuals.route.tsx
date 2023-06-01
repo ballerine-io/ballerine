@@ -7,6 +7,11 @@ import { CaseStatuses, States } from '../../../enums';
 import { queries } from '../../../lib/react-query/queries';
 import { preSearchFiltersByKind } from 'components/pages/Individuals/pre-search-filters';
 import { users } from '../../../lib/react-query/users';
+import { auth } from '../../../lib/react-query/auth';
+import { Alert } from 'components/atoms/Alert/Alert';
+import { AlertCircle } from 'lucide-react';
+import { AlertTitle } from 'components/atoms/Alert/Alert.Title';
+import { AlertDescription } from 'components/atoms/Alert/Alert.Description';
 
 const SearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).optional().catch('desc'),
@@ -58,11 +63,30 @@ export const individualsRoute = new Route({
   onLoad: async ({ search }) => {
     const entityList = queries[search?.entity].list(search?.filterId);
     const usersList = users.list();
-    await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
+    const getSession = auth.getSession();
+    const session = queryClient.getQueryData<Awaited<ReturnType<typeof getSession.queryFn>>>(
+      getSession.queryKey,
+    );
+
+    if (!session?.user) return;
+
+    if (search?.filterId) {
+      await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
+    }
+
     await queryClient.ensureQueryData(usersList.queryKey, usersList.queryFn);
 
     return {};
   },
   path: 'individuals',
+  errorComponent: ({ error }) => (
+    <div className={`mt-3 p-1`}>
+      <Alert variant={`destructive`} className={`w-full max-w-lg`}>
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    </div>
+  ),
   component: Individuals,
 });

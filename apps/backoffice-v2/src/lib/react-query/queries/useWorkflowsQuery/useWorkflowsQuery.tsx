@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { workflows } from '../../workflows';
+import { useIsAuthenticated } from '../../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
 export const useWorkflowsQuery = () => {
-  return useQuery({ ...workflows.list() });
+  const isAuthenticated = useIsAuthenticated();
+
+  return useQuery({ ...workflows.list(), enabled: isAuthenticated });
 };

@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../../api/api';
 import { auth } from '../../auth';
 import { useNavigate } from '@tanstack/react-router';
-import { Action, Resource } from '../../../../enums';
 import { ISignInProps } from './interfaces';
 
 export const useSignInMutation = () => {
@@ -17,10 +16,9 @@ export const useSignInMutation = () => {
         provider,
         body,
       }),
-    onMutate: () => ({
-      resource: Resource.END_USER,
-      action: Action.SIGN_IN,
-    }),
+    onMutate: () => {
+      queryClient.cancelQueries();
+    },
     onSuccess: (data, { callbackUrl, redirect }) => {
       queryClient.setQueryData(getSession.queryKey, data);
 

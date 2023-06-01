@@ -4,6 +4,7 @@ import { TEndUser } from '../../../../api/types';
 import { queries } from '../../queries';
 import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 import { useFilterId } from 'hooks/useFilterId/useFilterId';
+import { useIsAuthenticated } from '../../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
 export const useEndUserQuery = ({
   endUserId,
@@ -14,10 +15,11 @@ export const useEndUserQuery = ({
 }) => {
   const entity = useFilterEntity();
   const filterId = useFilterId();
+  const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
     ...queries[entity].byId(endUserId, filterId),
-    enabled: isString(endUserId) && endUserId.length > 0,
+    enabled: isString(endUserId) && endUserId.length > 0 && !!filterId && isAuthenticated,
     select,
   });
 };

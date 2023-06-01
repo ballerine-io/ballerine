@@ -1,8 +1,11 @@
 import { useEndUsersQuery } from '../useEndUsersQuery/useEndUsersQuery';
 import { TUsers } from '../../../../api/types';
 import { env } from '../../../../env/env';
+import { useIsAuthenticated } from '../../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
 export const useEndUsersWithWorkflowsQuery = (users: TUsers) => {
+  const isAuthenticated = useIsAuthenticated();
+
   return useEndUsersQuery({
     select: endUsers =>
       endUsers.map(endUser => {
@@ -16,6 +19,7 @@ export const useEndUsersWithWorkflowsQuery = (users: TUsers) => {
           caseStatus: endUser?.workflowRuntimeData?.status,
         };
       }),
+    enabled: isAuthenticated,
     refetchInterval: env.VITE_ASSIGNMENT_POLLING_INTERVAL,
   });
 };

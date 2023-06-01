@@ -159,5 +159,6 @@ export const useIndividual = () => {
     selectedEndUser,
     components,
     tasks,
+    isLoading,
   };
 };
