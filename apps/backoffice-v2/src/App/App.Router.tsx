@@ -14,6 +14,7 @@ import {
   redirect,
   RouterProvider as ReactRouterProvider,
 } from 'react-router-dom';
+import { RootError } from '../routes/Root/Root.error';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -55,8 +56,9 @@ const reactRouter = createBrowserRouter([
 
       if (url.pathname.startsWith('/en')) return;
 
-      return redirect(`/en${url.pathname}`);
+      return redirect(`/en${url.pathname === '/' ? '' : url.pathname}`);
     },
+    errorElement: <RootError />,
   },
 ]);
 
