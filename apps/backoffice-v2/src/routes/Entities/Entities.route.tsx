@@ -2,13 +2,14 @@ import { caseManagementRoute } from '../CaseManagement/CaseManagement.route';
 import { queryClient } from '../../lib/react-query/query-client';
 import { z } from 'zod';
 import { Route } from '@tanstack/react-router';
-import {queryKeys} from "../../domains/entities/query-keys";
-import {usersQueryKeys} from "../../domains/users/query-keys";
-import {Entities} from "./Entities.page";
-import {auth} from "../../domains/auth/mock-service-worker/auth/auth.data";
-import {CaseStatuses, States} from "../../common/enums";
-import {TAuthenticatedUser} from "../../domains/auth/types";
-import {preSearchFiltersByKind} from "./pre-search-filters";
+import { queryKeys } from '../../domains/entities/query-keys';
+import { usersQueryKeys } from '../../domains/users/query-keys';
+import { Entities } from './Entities.page';
+import { CaseStatuses, States } from '../../common/enums';
+import { TAuthenticatedUser } from '../../domains/auth/types';
+import { generatePreSearchFiltersByEntity } from './pre-search-filters';
+import { authQueryKeys } from '../../domains/auth/query-keys';
+import { router } from '../../App/App.Router';
 
 const SearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).optional().catch('desc'),
@@ -52,30 +53,46 @@ function getSearchEntitySchema(search) {
 }
 
 async function generateDefaultSearchFilters(search, user: TAuthenticatedUser) {
+  const presearchFilter = await generatePreSearchFiltersByEntity(search?.entity, user);
+
   return {
-    ...(await preSearchFiltersByKind[search?.entity](user)),
+    ...presearchFilter,
     ...search,
   };
 }
 
+const isDefaultFiltersAlreadySet = (search: any) => {
+  return !!search?.[search.entity]?.filter?.assigneeId;
+};
+
+const navigateDefaultFilterParams = async (search, authenticatedUser) => {
+  const defaultFilters = await generateDefaultSearchFilters(search, authenticatedUser);
+
+  router.navigate({
+    search: {
+      ...defaultFilters,
+    },
+  });
+};
+
 export const entitiesRoute = new Route({
   getParentRoute: () => caseManagementRoute,
-  validateSearch: search =>
-    getSearchEntitySchema(search),
-  preSearchFilters: [
-    search => ( async () => {
-      console.log("filers setup")
-      const signedUser = auth.getSession();
-      const authenticatedUser = await queryClient.ensureQueryData(signedUser.queryKey, signedUser.queryFn) as TAuthenticatedUser;
-
-      return await generateDefaultSearchFilters(search, authenticatedUser)
-    }),
-  ],
+  validateSearch: search => getSearchEntitySchema(search),
   onLoad: async ({ search }) => {
     const entityList = queryKeys[search?.entity].list(search?.filterId);
     const usersList = usersQueryKeys.list();
     await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
     await queryClient.ensureQueryData(usersList.queryKey, usersList.queryFn);
+
+    if (!isDefaultFiltersAlreadySet(search)) {
+      const authenticatedUserKeys = authQueryKeys.authenticatedUser();
+      const { user: authenticatedUser } = await queryClient.ensureQueryData(
+        authenticatedUserKeys.queryKey,
+        authenticatedUserKeys.queryFn,
+      );
+
+      await navigateDefaultFilterParams(search, authenticatedUser);
+    }
 
     return {};
   },
