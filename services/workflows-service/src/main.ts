@@ -21,7 +21,12 @@ global.__rootdir__ = __dirname || process.cwd();
 const corsOrigins =
   env.NODE_ENV === 'production'
     ? [env.BACKOFFICE_CORS_ORIGIN, /\.ballerine\.app$/]
-    : [env.BACKOFFICE_CORS_ORIGIN, env.HEADLESS_EXAMPLE_CORS_ORIGIN, /\.ballerine\.dev$/];
+    : [
+        env.BACKOFFICE_CORS_ORIGIN,
+        env.HEADLESS_EXAMPLE_CORS_ORIGIN,
+        /\.ballerine\.dev$/,
+        /\.ballerine\.app$/,
+      ];
 
 async function main() {
   const app = await NestFactory.create(AppModule, {
