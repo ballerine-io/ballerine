@@ -1,3 +1,4 @@
+import qs from 'qs';
 import { ReactRouter, RouterProvider } from '@tanstack/react-router';
 import React, { FunctionComponent } from 'react';
 import { rootRoute } from '../routes/Root/Root.route';
@@ -34,6 +35,9 @@ const routeTree = rootRoute.addChildren(routes);
 export const router = new ReactRouter({
   routeTree,
   defaultPreload: 'intent',
+  parseSearch: str => qs.parse(str, { ignoreQueryPrefix: true }),
+  stringifySearch: queryParams =>
+    qs.stringify(queryParams, { encode: false, addQueryPrefix: true }),
 });
 
 // Used by App, exported here in case we want to include more providers in App or run logic before the RouterProvider
