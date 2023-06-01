@@ -65,9 +65,7 @@ const isDefaultFiltersAlreadySet = (search: any) => {
   return !!search?.[search.entity]?.filter?.assigneeId;
 };
 
-const navigateDefaultFilterParams = async (search, authenticatedUser) => {
-  const defaultFilters = await generateDefaultSearchFilters(search, authenticatedUser);
-
+const navigateDefaultFilterParams = async (search, authenticatedUser, defaultFilters) => {
   router.navigate({
     search: {
       ...defaultFilters,
@@ -90,8 +88,9 @@ export const entitiesRoute = new Route({
         authenticatedUserKeys.queryKey,
         authenticatedUserKeys.queryFn,
       );
+      const defaultFiltersSearchParams = await generateDefaultSearchFilters(search, authenticatedUser);
 
-      await navigateDefaultFilterParams(search, authenticatedUser);
+      await navigateDefaultFilterParams(search, authenticatedUser, defaultFiltersSearchParams);
     }
 
     return {};
