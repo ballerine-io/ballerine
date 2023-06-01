@@ -1,7 +1,7 @@
-import { useSearch } from '@tanstack/react-router';
+import { useSearchParams } from 'react-router-dom';
 
-export const useFilterEntity = (): string | undefined =>
-  useSearch({
-    strict: false,
-    track: ({ entity }) => entity,
-  })?.entity;
+export const useFilterEntity = (): string | undefined => {
+  const [searchParams] = useSearchParams();
+
+  return searchParams.get('entity');
+};

@@ -11,7 +11,7 @@ import { AlertCircle } from 'lucide-react';
 import { AlertDescription } from '../../common/components/atoms/Alert/Alert.Description';
 import { AlertTitle } from '../../common/components/atoms/Alert/Alert.Title';
 import { useSignInMutation } from '../../domains/auth/hooks/mutations/useSignInMutation/useSignInMutation';
-import { useCallback } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import { useAuthContext } from '../../domains/auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import { useIsAuthenticated } from '../../domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 import { isErrorWithCode } from '../../lib/react-query/query-client';
@@ -23,7 +23,7 @@ import { FormLabel } from '../../common/components/organisms/Form/Form.Label';
 import { FormControl } from '../../common/components/organisms/Form/Form.Control';
 import { FormMessage } from '../../common/components/organisms/Form/Form.Message';
 
-export const SignIn = () => {
+export const SignIn: FunctionComponent = () => {
   const SignInSchema = z.object({
     email: z.string().email(),
     password: z.string(),

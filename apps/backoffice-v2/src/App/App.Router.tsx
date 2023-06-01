@@ -20,6 +20,7 @@ import { Root } from '../routes/Root/Root.page';
 import { authQueryKeys } from '../domains/auth/query-keys';
 import { queryClient } from '../lib/react-query/query-client';
 import { filtersQueryKeys } from '../domains/filters/query-keys';
+import { SignIn } from '../routes/SignIn/SignIn.page';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -65,6 +66,14 @@ const reactRouter = createBrowserRouter([
     },
     errorElement: <RootError />,
     children: [
+      ...(env.VITE_AUTH_ENABLED
+        ? [
+            {
+              path: '/:locale/auth/sign-in',
+              element: <SignIn />,
+            },
+          ]
+        : []),
       {
         path: '/:locale',
         element: <Outlet />,
