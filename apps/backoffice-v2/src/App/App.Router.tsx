@@ -15,6 +15,7 @@ import {
   RouterProvider as ReactRouterProvider,
 } from 'react-router-dom';
 import { RootError } from '../routes/Root/Root.error';
+import { Root } from '../routes/Root/Root.page';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -50,7 +51,7 @@ export const Router: FunctionComponent = () => {
 const reactRouter = createBrowserRouter([
   {
     path: '/',
-    element: <div>Hello world!</div>,
+    element: <Root />,
     loader({ request }) {
       const url = new URL(request.url);
 
