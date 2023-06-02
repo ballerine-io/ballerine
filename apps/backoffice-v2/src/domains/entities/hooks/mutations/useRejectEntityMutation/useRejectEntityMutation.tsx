@@ -45,8 +45,8 @@ export const useRejectEntityMutation = ({
         },
       }),
     onSuccess: (data, payload) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys[entity].list(filterId).queryKey });
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({ queryKey: queryKeys[entity].list(filterId).queryKey });
+      void queryClient.invalidateQueries({
         queryKey: queryKeys[entity].byId(entityId, filterId).queryKey,
       });
 

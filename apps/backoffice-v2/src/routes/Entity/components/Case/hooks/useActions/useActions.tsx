@@ -48,9 +48,8 @@ export const useActions = ({ entityId, fullName }: IUseActions) => {
   const initials = createInitials(fullName);
 
   const {
-    data: { user },
+    data: { user: authenticatedUser },
   } = useAuthenticatedUserQuery();
-  const authenticatedUser = user;
   const caseState = useCaseState(authenticatedUser, workflow);
   const { data: users } = useUsersQuery();
   const assignees = users.filter(assignee => assignee?.id !== authenticatedUser?.id);

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from 'react-router-dom';
 import { Action, Resource } from '../../../../../common/enums';
 import { ISignInProps } from '../useSignInMutation/interfaces';
 import { authQueryKeys } from '../../../query-keys';
@@ -24,11 +24,8 @@ export const useSignOutMutation = () => {
 
       if (!callbackUrl || !redirect) return;
 
-      void navigate({
-        to: callbackUrl,
+      void navigate(callbackUrl, {
         replace: true,
-        search: undefined,
-        params: undefined,
       });
     },
     onSettled: () => {

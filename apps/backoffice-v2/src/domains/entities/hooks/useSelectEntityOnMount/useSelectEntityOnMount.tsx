@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useFirstEntityIdQuery } from '../queries/useFirstEntityIdQuery/useFirstEntityIdQuery';
-import { useParams } from '@tanstack/react-router';
+import { useParams } from 'react-router-dom';
 import { useSelectEntity } from '../useSelectEntity/useSelectEntity';
 import { useFilterEntity } from '../useFilterEntity/useFilterEntity';
 import { entitiesRoute } from '../../../../routes/Entities/Entities.route';

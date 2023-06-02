@@ -1,5 +1,5 @@
 import { Cases } from './components/Cases/Cases';
-import { Outlet } from '@tanstack/react-router';
+import { Outlet } from 'react-router-dom';
 import { Pagination } from '../../common/components/organisms/Pagination/Pagination';
 import { useEntities } from './hooks/useEntities/useEntities';
 import { Case } from '../Entity/components/Case/Case';
@@ -20,7 +20,6 @@ export const Entities: FunctionComponent = () => {
     page,
     totalPages,
     skeletonEntities,
-    routerId,
   } = useEntities();
   const entity = useFilterEntity();
 
@@ -32,7 +31,6 @@ export const Entities: FunctionComponent = () => {
         onSortBy={onSortBy}
         onSortDir={onSortDir}
         search={search}
-        routerId={routerId}
       >
         <MotionScrollArea className={`h-[calc(100vh-210px)]`}>
           <Cases.List>

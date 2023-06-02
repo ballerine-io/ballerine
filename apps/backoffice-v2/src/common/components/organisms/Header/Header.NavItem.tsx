@@ -1,5 +1,5 @@
 import { TNavItemProps } from './interfaces';
-import { Link } from '@tanstack/react-router';
+import { NavLink } from 'react-router-dom';
 import { FunctionComponentWithChildren } from '../../../types';
 import { ctw } from '../../../utils/ctw/ctw';
 
@@ -21,16 +21,9 @@ export const NavItem: FunctionComponentWithChildren<TNavItemProps> = ({
 }) => {
   return (
     <li>
-      <Link
-        to={href}
-        activeProps={{
-          className: `font-bold bg-muted`,
-        }}
-        className={ctw(`flex gap-x-2 rounded-md`, className)}
-        {...props}
-      >
+      <NavLink to={href} className={() => ctw(`flex gap-x-2 rounded-md`, className)} {...props}>
         {icon} {children}
-      </Link>
+      </NavLink>
     </li>
   );
 };

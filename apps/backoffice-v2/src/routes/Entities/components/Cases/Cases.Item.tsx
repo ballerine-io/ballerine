@@ -4,7 +4,7 @@ import { getTimePastFromNow } from '../../../../common/utils/get-time-past-from-
 import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { ApprovedSvg, RejectedSvg } from '../../../../common/components/atoms/icons';
 import { IItemProps } from '../../../Entity/components/Case/interfaces';
-import { Link } from '@tanstack/react-router';
+import { NavLink } from 'react-router-dom';
 import { createInitials } from '../../../../common/utils/create-initials/create-initials';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { useEllipsesWithTitle } from '../../../../common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
@@ -42,17 +42,11 @@ export const Item: FunctionComponent<IItemProps> = ({
 
   return (
     <li className={`rounded-md p-2 px-1`}>
-      <Link
-        to={'/$locale/case-management/entities/$entityId'}
-        params={{
-          entityId: id,
-          locale: 'en',
-        }}
-        preload={'intent'}
-        activeProps={{
-          className: `bg-muted`,
-        }}
-        className={`flex items-center gap-x-4 rounded-md outline-none`}
+      <NavLink
+        to={`/en/case-management/entities/${id}`}
+        className={({ isActive }) =>
+          ctw(`flex items-center gap-x-4 rounded-md outline-none`, { 'bg-muted': isActive })
+        }
       >
         <div className={`indicator`}>
           <motion.div
@@ -96,7 +90,7 @@ export const Item: FunctionComponent<IItemProps> = ({
             />
           )}
         </div>
-      </Link>
+      </NavLink>
     </li>
   );
 };

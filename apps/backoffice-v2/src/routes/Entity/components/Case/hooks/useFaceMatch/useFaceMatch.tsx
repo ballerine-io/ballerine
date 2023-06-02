@@ -1,6 +1,6 @@
 import { useLayoutEffect } from 'react';
 import { useFaceComparison } from '../../../../../../common/hooks/useFaceComparison/useFaceComparison';
-import { useParams } from '@tanstack/react-router';
+import { useParams } from 'react-router-dom';
 
 export const useFaceMatch = (isLoading?: boolean) => {
   const { entityId } = useParams();
