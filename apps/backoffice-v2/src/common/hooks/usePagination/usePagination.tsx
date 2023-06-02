@@ -26,8 +26,8 @@ export const usePagination = <TArray extends AnyArray>({
   const navigate = useNavigate();
   const [{ page = initialPage, pageSize = initialPageSize }] = useZodSearchParams(
     z.object({
-      page: z.coerce.number().int().positive(),
-      pageSize: z.coerce.number().int().positive(),
+      page: z.coerce.number().int().positive().catch(1),
+      pageSize: z.coerce.number().int().positive().catch(10),
     }),
   );
   const { totalItems, totalPages, pages, paginated } = useMemo(

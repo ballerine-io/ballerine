@@ -23,6 +23,8 @@ import { filtersQueryKeys } from '../domains/filters/query-keys';
 import { SignIn } from '../routes/SignIn/SignIn.page';
 import { usersQueryKeys } from '../domains/users/query-keys';
 import { Entities } from '../routes/Entities/Entities.page';
+import { Entity } from '../routes/Entity/Entity.page';
+import { queryKeys } from '../domains/entities/query-keys';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -79,9 +81,10 @@ const reactRouter = createBrowserRouter([
       {
         path: '/:locale',
         element: <Outlet />,
-        async loader() {
+        async loader({ request }) {
           if (!env.VITE_AUTH_ENABLED) return null;
 
+          const url = new URL(request.url);
           const authenticatedUser = authQueryKeys.authenticatedUser();
           const session = await queryClient.ensureQueryData(
             authenticatedUser.queryKey,
@@ -91,7 +94,16 @@ const reactRouter = createBrowserRouter([
           if (!session?.user) return null;
 
           const filtersList = filtersQueryKeys.list();
-          await queryClient.ensureQueryData(filtersList.queryKey, filtersList.queryFn);
+          const filters = await queryClient.ensureQueryData(
+            filtersList.queryKey,
+            filtersList.queryFn,
+          );
+
+          if (!url.searchParams.has('entity') && filters?.length) {
+            const [{ id, entity, name }] = filters;
+
+            return redirect(`${url.pathname}?filterId=${id}&entity=${entity}&filterName=${name}`);
+          }
 
           return null;
         },
@@ -102,17 +114,45 @@ const reactRouter = createBrowserRouter([
             children: [
               {
                 path: '/:locale/case-management/entities',
-                // element: <Outlet />,
                 element: <Entities />,
                 async loader({ request }) {
                   const url = new URL(request.url);
-                  // const entityList = queryKeys[url?.search?.entity].list(url?.search?.filterId);
+                  const entity = url?.searchParams?.get('entity');
+                  const filterId = url?.searchParams?.get('filterId');
+
+                  if (!entity || !filterId) return null;
+
+                  const entityList = queryKeys[entity].list(filterId);
                   const usersList = usersQueryKeys.list();
-                  // await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
+                  await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
                   await queryClient.ensureQueryData(usersList.queryKey, usersList.queryFn);
 
                   return null;
                 },
+                children: [
+                  {
+                    path: '/:locale/case-management/entities/:entityId',
+                    element: <Entity />,
+                    async loader({ params, request }) {
+                      const url = new URL(request.url);
+                      const { entityId } = params;
+                      const entity = url?.searchParams?.get('entity');
+                      const filterId = url?.searchParams?.get('filterId');
+
+                      if (entity || !filterId) return null;
+
+                      const entityById = queryKeys[entity].byId(entityId, filterId);
+                      // TODO: Add workflowId to params/searchParams
+                      // const workflowById = workflows.byId({ workflowId });
+
+                      await queryClient.ensureQueryData(entityById.queryKey, entityById.queryFn);
+
+                      // await queryClient.ensureQueryData(workflowById.queryKey, workflowById.queryFn);
+
+                      return null;
+                    },
+                  },
+                ],
               },
             ],
           },

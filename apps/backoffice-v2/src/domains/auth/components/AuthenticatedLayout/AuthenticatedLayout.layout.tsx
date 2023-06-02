@@ -1,11 +1,10 @@
 import { Header } from '../../../../common/components/organisms/Header';
 import { FunctionComponentWithChildren } from '../../../../common/types';
 import { useAuthenticatedLayout } from './hooks/useAuthenticatedLayout/useAuthenticatedLayout';
-import { useSelectEntityFilterOnMount } from '../../../entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
 
 export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {
   useAuthenticatedLayout();
-  useSelectEntityFilterOnMount();
+  // useSelectEntityFilterOnMount();
 
   return (
     <div className="drawer-mobile drawer">
