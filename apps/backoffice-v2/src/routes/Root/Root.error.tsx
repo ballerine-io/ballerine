@@ -1,9 +1,12 @@
 import { Button } from '../../common/components/atoms/Button/Button';
-import { Link } from 'react-router-dom';
+import { Link, useRouteError } from 'react-router-dom';
 import { BallerineLogo } from '../../common/components/atoms/icons';
 import { FunctionComponent } from 'react';
+import { useConsole } from '../../common/hooks/useConsole/useConsole';
 
 export const RootError: FunctionComponent = () => {
+  const error = useRouteError();
+  useConsole(error);
   return (
     <main className={`h-full p-4`}>
       <section className={`mx-auto mt-32 grid h-full w-full max-w-4xl grid-cols-2 flex-col`}>

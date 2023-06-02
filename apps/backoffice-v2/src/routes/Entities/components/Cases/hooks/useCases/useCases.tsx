@@ -1,12 +1,17 @@
-import { useSearch } from '@tanstack/react-router';
 import { useDocumentListener } from '../../../../../../common/hooks/useDocumentListener/useDocumentListener';
 import { useCallback, useRef } from 'react';
-import { TRouteId } from '../../../../../../common/types';
 import { useUsersQuery } from '../../../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
 import { useFilterEntity } from '../../../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
+import { z } from 'zod';
+import { useZodSearchParams } from '../../../../../../common/hooks/useZodSearchParams/useZodSearchParams';
 
-export const useCases = (routerId: TRouteId) => {
-  const { filter, sortBy } = useSearch({ from: routerId, strict: false });
+export const useCases = () => {
+  const [{ filter, sortBy }] = useZodSearchParams(
+    z.object({
+      filter: z.string().catch(''),
+      sortBy: z.string().catch(''),
+    }),
+  );
   const entity = useFilterEntity();
   const sharedSortByOptions = [
     {

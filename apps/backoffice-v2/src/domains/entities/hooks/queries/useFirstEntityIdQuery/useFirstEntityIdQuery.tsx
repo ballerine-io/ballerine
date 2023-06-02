@@ -1,30 +1,27 @@
 import { TRouteId } from '../../../../../common/types';
-import { useSearch as useTanStackSearch } from '@tanstack/react-router';
 import { useCallback } from 'react';
 import { sort } from '../../../../../common/hooks/useSort/sort';
 import { useSelectEntitiesQuery } from '../useSelectEntitiesQuery/useSelectEntitiesQuery';
 import { TEntities } from '../../../types';
 import { useUsersQuery } from '../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
+import { z } from 'zod';
+import { useZodSearchParams } from '../../../../../common/hooks/useZodSearchParams/useZodSearchParams';
 
 export const useFirstEntityIdQuery = <TId extends TRouteId>({
   initialState,
-  routeId,
 }: {
   initialState: {
     sortDir?: 'asc' | 'desc';
     sortBy: keyof TEntities[number];
   };
-  routeId: TId;
 }) => {
-  const { sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' } =
-    useTanStackSearch({
-      from: routeId,
-      strict: false,
-      track: searchParams => ({
-        sortBy: 'sortBy' in searchParams ? searchParams?.sortBy : undefined,
-        sortDir: 'sortDir' in searchParams ? searchParams?.sortDir : undefined,
+  const [{ sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' }] =
+    useZodSearchParams(
+      z.object({
+        sortBy: z.string().catch(''),
+        sortDir: z.union([z.literal('asc'), z.literal('desc')]).catch('desc'),
       }),
-    });
+    );
   const { data: users } = useUsersQuery();
   const selectFirstEntityId = useCallback(
     (entities: TEntities) => {

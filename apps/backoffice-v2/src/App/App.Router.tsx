@@ -21,6 +21,8 @@ import { authQueryKeys } from '../domains/auth/query-keys';
 import { queryClient } from '../lib/react-query/query-client';
 import { filtersQueryKeys } from '../domains/filters/query-keys';
 import { SignIn } from '../routes/SignIn/SignIn.page';
+import { usersQueryKeys } from '../domains/users/query-keys';
+import { Entities } from '../routes/Entities/Entities.page';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -97,7 +99,22 @@ const reactRouter = createBrowserRouter([
           {
             path: '/:locale/case-management',
             element: <Outlet />,
-            children: [],
+            children: [
+              {
+                path: '/:locale/case-management/entities',
+                // element: <Outlet />,
+                element: <Entities />,
+                async loader({ request }) {
+                  const url = new URL(request.url);
+                  // const entityList = queryKeys[url?.search?.entity].list(url?.search?.filterId);
+                  const usersList = usersQueryKeys.list();
+                  // await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
+                  await queryClient.ensureQueryData(usersList.queryKey, usersList.queryFn);
+
+                  return null;
+                },
+              },
+            ],
           },
         ],
       },

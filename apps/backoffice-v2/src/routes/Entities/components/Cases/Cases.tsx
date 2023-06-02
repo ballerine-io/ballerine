@@ -24,7 +24,6 @@ import { TIndividual } from '../../../../domains/individuals/types';
  * @param onFilter
  * @param onSortBy
  * @param onSortDir
- * @param routeId
  * @param props
  * @constructor
  */
@@ -35,7 +34,6 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
   onSortBy,
   onSortDir,
   search,
-  routerId,
   ...props
 }) => {
   const {
@@ -47,7 +45,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
     sortRef,
     filterRef,
     handleDropdown,
-  } = useCases(routerId);
+  } = useCases();
 
   return (
     <div id={`cases-list`} {...props}>

@@ -1,4 +1,4 @@
-import { useParams } from '@tanstack/react-router';
+import { useParams } from 'react-router-dom';
 import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';

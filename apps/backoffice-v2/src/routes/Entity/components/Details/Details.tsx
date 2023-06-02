@@ -2,7 +2,7 @@ import { ctw } from '../../../../common/utils/ctw/ctw';
 import { EditableDetails } from '../EditableDetails/EditableDetails';
 import { Separator } from '../../../../common/components/atoms/Separator/Separator';
 import React, { FunctionComponent } from 'react';
-import { useParams } from '@tanstack/react-router';
+import { useParams } from 'react-router-dom';
 import { IDetailsProps } from './interfaces';
 import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
 

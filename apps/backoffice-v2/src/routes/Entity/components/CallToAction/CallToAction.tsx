@@ -17,7 +17,7 @@ import { DialogDescription } from '../../../../common/components/organisms/Dialo
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { DialogClose } from '@radix-ui/react-dialog';
-import { useParams } from '@tanstack/react-router';
+import { useParams } from 'react-router-dom';
 import { ICallToActionProps } from './interfaces';
 import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
