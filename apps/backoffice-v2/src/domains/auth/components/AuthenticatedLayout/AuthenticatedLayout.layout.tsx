@@ -1,9 +1,8 @@
 import { Header } from '../../../../common/components/organisms/Header';
 import { FunctionComponentWithChildren } from '../../../../common/types';
-import { useAuthenticatedLayout } from './hooks/useAuthenticatedLayout/useAuthenticatedLayout';
 
 export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {
-  useAuthenticatedLayout();
+  // useAuthenticatedLayout();
 
   return (
     <div className="drawer-mobile drawer">
