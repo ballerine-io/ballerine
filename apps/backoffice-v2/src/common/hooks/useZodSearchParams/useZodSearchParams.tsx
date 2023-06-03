@@ -1,6 +1,6 @@
 import { z, ZodSchema } from 'zod';
 import { useSearchParams } from 'react-router-dom';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { IUseZodSearchParams } from './interfaces';
 import { defaultDeserializer } from './utils/default-deserializer';
 import { defaultSerializer } from './utils/default-serializer';
@@ -33,6 +33,10 @@ export const useZodSearchParams = <TSchema extends ZodSchema>(
     },
     [parsedSearchParams, serializer, setSearchParams],
   );
+
+  useEffect(() => {
+    onSetSearchParams(parsedSearchParams as Record<string, unknown>);
+  }, []);
 
   return [parsedSearchParams as z.output<TSchema>, onSetSearchParams] as const;
 };
