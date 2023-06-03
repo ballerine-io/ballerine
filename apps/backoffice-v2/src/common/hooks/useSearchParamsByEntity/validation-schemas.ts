@@ -18,8 +18,8 @@ export const IndividualsSearchSchema = (authenticatedUserId: string) =>
     filter: z
       .object({
         approvalState: z.array(z.enum(States)).catch([]),
-        assigneeId: z.array(z.string().nullable()).catch([authenticatedUserId, null]),
-        caseStatus: z.array(z.enum(CaseStatuses)).catch([CaseStatus.ACTIVE]),
+        assigneeId: z.array(z.string().nullable()).optional().catch([authenticatedUserId, null]),
+        caseStatus: z.array(z.enum(CaseStatuses)).optional().catch([CaseStatus.ACTIVE]),
       })
       .catch({
         approvalState: [],
@@ -29,11 +29,11 @@ export const IndividualsSearchSchema = (authenticatedUserId: string) =>
   });
 export const BusinessesSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
-    sortBy: z.enum(['caseCreatedAt', 'companyName']).optional().catch('caseCreatedAt'),
+    sortBy: z.enum(['caseCreatedAt', 'companyName']).catch('caseCreatedAt'),
     filter: z
       .object({
-        assigneeId: z.array(z.string().nullable()).catch([authenticatedUserId, null]),
-        caseStatus: z.array(z.enum(CaseStatuses)).catch([CaseStatus.ACTIVE]),
+        assigneeId: z.array(z.string().nullable()).optional().catch([authenticatedUserId, null]),
+        caseStatus: z.array(z.enum(CaseStatuses)).optional().catch([CaseStatus.ACTIVE]),
       })
       .catch({
         assigneeId: [authenticatedUserId, null],
