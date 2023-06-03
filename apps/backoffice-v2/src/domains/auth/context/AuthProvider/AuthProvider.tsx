@@ -1,8 +1,8 @@
 import { FunctionComponentWithChildren } from '../../../../common/types';
 import { createContext, useMemo } from 'react';
 import { env } from '../../../../common/env/env';
-import { useAuthRedirects } from './hooks/useAuthRedirects/useAuthRedirects';
 import { useAuthenticatedUserQuery } from '../../hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useAuthRedirects } from './hooks/useAuthRedirects/useAuthRedirects';
 
 export const AuthContext = createContext<{
   redirectAuthenticatedTo?: string;
@@ -16,39 +16,6 @@ export const AuthContext = createContext<{
     callbackUrl: string;
   };
 }>(undefined);
-
-// Remove underscore once @tanstack/react-router layouts are fixed.
-// Navigate based on if the user is signed in or signed out and the current page.
-export const _AuthProvider: FunctionComponentWithChildren<{
-  redirectAuthenticatedTo?: string;
-  redirectUnauthenticatedTo?: string;
-  signInOptions?: {
-    redirect: boolean;
-    callbackUrl: string;
-  };
-  signOutOptions?: {
-    redirect: boolean;
-    callbackUrl: string;
-  };
-}> = ({
-  children,
-  redirectAuthenticatedTo,
-  redirectUnauthenticatedTo,
-  signInOptions,
-  signOutOptions,
-}) => {
-  const contextValues = useMemo(
-    () => ({
-      redirectAuthenticatedTo,
-      redirectUnauthenticatedTo,
-      signInOptions,
-      signOutOptions,
-    }),
-    [redirectAuthenticatedTo, redirectUnauthenticatedTo, signInOptions, signOutOptions],
-  );
-
-  return <AuthContext.Provider value={contextValues}>{children}</AuthContext.Provider>;
-};
 
 export const AuthProvider: FunctionComponentWithChildren<{
   protectedRoutes?: readonly string[];

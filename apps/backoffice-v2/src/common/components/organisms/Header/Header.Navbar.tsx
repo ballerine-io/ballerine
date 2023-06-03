@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 import { NavItem } from './Header.NavItem';
 import { useFiltersQuery } from '../../../../domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { ctw } from '../../../utils/ctw/ctw';
-import { TRoutes } from '../../../../App/types';
+import { TRoutes } from '../../../../Router/types';
 import { CheckSquare } from 'lucide-react';
 import { useSearchParamsByEntity } from '../../../hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';

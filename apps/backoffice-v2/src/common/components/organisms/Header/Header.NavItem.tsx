@@ -4,7 +4,7 @@ import { FunctionComponentWithChildren } from '../../../types';
 import { ctw } from '../../../utils/ctw/ctw';
 
 /**
- * @description Wraps a {@link Link} @tanstack/react-router component with an li, accepts an optional icon, and handles the link's active state based on current route.
+ * @description Wraps a {@link Link} react-router-dom component with an li, accepts an optional icon, and handles the link's active state based on current route.
  *
  * @param children
  * @param icon - An optional icon to display to the left of the text, expects a format of "icon={<Icon/>}".

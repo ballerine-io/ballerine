@@ -8,6 +8,7 @@ import { useSort } from '../../../../common/hooks/useSort/useSort';
 import { useEntitiesWithWorkflowsQuery } from '../../../../domains/entities/hooks/queries/useEntitiesWithWorkflowsQuery/useEntitiesWithWorkflowsQuery';
 import { TIndividual } from '../../../../domains/individuals/types';
 import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
+import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
 
 export const useEntities = () => {
   const { data: users } = useUsersQuery();
@@ -60,7 +61,7 @@ export const useEntities = () => {
   );
   const skeletonEntities = createArrayOfNumbers(3);
 
-  // useSelectEntityOnMount();
+  useSelectEntityOnMount();
 
   return {
     onPaginate,

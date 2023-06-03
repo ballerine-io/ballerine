@@ -1,6 +1,5 @@
 import { ComponentProps, FunctionComponent, PropsWithChildren } from 'react';
 import { Action, Method, Resource, State } from './enums';
-import { RegisteredRoutesInfo } from '@tanstack/react-router';
 
 export type WithRequired<TObject, TKey extends keyof TObject> = TObject & {
   [TProperty in TKey]-?: TObject[TProperty];
@@ -34,8 +33,5 @@ export type TMethod = TObjectValues<typeof Method>;
 export type TResource = TObjectValues<typeof Resource>;
 
 export type TAction = TObjectValues<typeof Action>;
-
-// @ts-ignore
-export type TRouteId = keyof RegisteredRoutesInfo['routeInfoById'];
 
 export type TKeyofArrayElement<TArray extends AnyArray> = keyof TArray[number];
