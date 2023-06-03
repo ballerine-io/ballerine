@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Action, Resource } from '../../../../../common/enums';
 import { ISignInProps } from './interfaces';
 import { fetchSignIn } from '../../../fetchers';
 import { authQueryKeys } from '../../../query-keys';
@@ -16,10 +15,9 @@ export const useSignInMutation = () => {
         callbackUrl,
         body,
       }),
-    onMutate: () => ({
-      resource: Resource.INDIVIDUAL,
-      action: Action.SIGN_IN,
-    }),
+    onMutate: () => {
+      void queryClient.cancelQueries();
+    },
     onSuccess: (data, { callbackUrl, redirect }) => {
       queryClient.setQueryData(getSession.queryKey, data);
 
