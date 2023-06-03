@@ -1,12 +1,7 @@
-import { z } from 'zod';
-import { useZodSearchParams } from '../useZodSearchParams/useZodSearchParams';
+import { useSearchParamsByEntity } from '../useSearchParamsByEntity/useSearchParamsByEntity';
 
 export const useFilterId = (): string | undefined => {
-  const [{ filterId }] = useZodSearchParams(
-    z.object({
-      filterId: z.string().catch(''),
-    }),
-  );
+  const [{ filterId }] = useSearchParamsByEntity();
 
   return filterId;
 };

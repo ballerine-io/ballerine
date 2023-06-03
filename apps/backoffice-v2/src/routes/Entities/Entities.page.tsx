@@ -4,7 +4,6 @@ import { Pagination } from '../../common/components/organisms/Pagination/Paginat
 import { useEntities } from './hooks/useEntities/useEntities';
 import { Case } from '../Entity/components/Case/Case';
 import { MotionScrollArea } from '../../common/components/molecules/MotionScrollArea/MotionScrollArea';
-import { useFilterEntity } from '../../domains/entities/hooks/useFilterEntity/useFilterEntity';
 import { FunctionComponent } from 'react';
 
 export const Entities: FunctionComponent = () => {
@@ -20,8 +19,8 @@ export const Entities: FunctionComponent = () => {
     page,
     totalPages,
     skeletonEntities,
+    entity,
   } = useEntities();
-  const entity = useFilterEntity();
 
   return (
     <>
@@ -82,7 +81,7 @@ export const Entities: FunctionComponent = () => {
           </Case.Content>
         </Case>
       )}
-      {!cases.length && !isLoading ? (
+      {!cases?.length && !isLoading ? (
         <div className={`p-2`}>
           <h2 className={`mt-4 text-6xl`}>No cases were found</h2>
         </div>

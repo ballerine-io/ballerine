@@ -18,7 +18,7 @@ export const useEntity = () => {
   );
 
   const results = [];
-  entity?.workflow?.workflowContext?.machineContext?.documents.forEach((document, docIndex) => {
+  entity?.workflow?.workflowContext?.machineContext?.documents?.forEach((document, docIndex) => {
     document?.pages.forEach((page, pageIndex) => {
       if (!results[docIndex]) {
         results[docIndex] = [];

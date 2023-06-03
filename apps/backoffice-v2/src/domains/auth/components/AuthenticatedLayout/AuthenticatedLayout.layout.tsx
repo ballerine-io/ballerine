@@ -4,7 +4,6 @@ import { useAuthenticatedLayout } from './hooks/useAuthenticatedLayout/useAuthen
 
 export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {
   useAuthenticatedLayout();
-  // useSelectEntityFilterOnMount();
 
   return (
     <div className="drawer-mobile drawer">

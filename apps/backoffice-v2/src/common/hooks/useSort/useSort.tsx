@@ -1,9 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { AnyArray, TKeyofArrayElement } from '../../types';
 import { sort } from './sort';
-import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-import { useZodSearchParams } from '../useZodSearchParams/useZodSearchParams';
+import { useSearchParamsByEntity } from '../useSearchParamsByEntity/useSearchParamsByEntity';
 
 /**
  * @description A hook to easily sort an array of objects by key, and change sort direction or the sort by key.
@@ -21,14 +19,10 @@ export const useSort = <TArray extends AnyArray>({
     sortBy: TKeyofArrayElement<TArray>;
   };
 }) => {
-  const [{ sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' }] =
-    useZodSearchParams(
-      z.object({
-        sortBy: z.string().catch(''),
-        sortDir: z.string().catch(''),
-      }),
-    );
-  const navigate = useNavigate();
+  const [
+    { sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' },
+    setSearchParams,
+  ] = useSearchParamsByEntity();
   // Sort
   const sorted = useMemo(
     () =>
@@ -40,29 +34,17 @@ export const useSort = <TArray extends AnyArray>({
     [data, sortDir, sortBy],
   );
   const onSortDir = useCallback(() => {
-    // @ts-ignore
-    // navigate({
-    // @ts-ignore
-    // search: prevState => ({
-    // @ts-ignore
-    // ...prevState,
-    // sortDir: sortDir === 'asc' ? 'desc' : 'asc',
-    // }),
-    // });
-  }, [navigate, sortDir]);
+    setSearchParams({
+      sortDir: sortDir === 'asc' ? 'desc' : 'asc',
+    });
+  }, [setSearchParams, sortDir]);
   const onSortBy = useCallback(
     (sortBy: string) => {
-      // @ts-ignore
-      // navigate({
-      // @ts-ignore
-      // search: prevState => ({
-      // @ts-ignore
-      // ...prevState,
-      // sortBy,
-      // }),
-      // });
+      setSearchParams({
+        sortBy,
+      });
     },
-    [navigate],
+    [setSearchParams],
   );
 
   return {

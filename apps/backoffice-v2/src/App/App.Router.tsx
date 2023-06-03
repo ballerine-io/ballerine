@@ -17,14 +17,15 @@ import {
 } from 'react-router-dom';
 import { RootError } from '../routes/Root/Root.error';
 import { Root } from '../routes/Root/Root.page';
+import { SignIn } from '../routes/SignIn/SignIn.page';
 import { authQueryKeys } from '../domains/auth/query-keys';
 import { queryClient } from '../lib/react-query/query-client';
 import { filtersQueryKeys } from '../domains/filters/query-keys';
-import { SignIn } from '../routes/SignIn/SignIn.page';
-import { usersQueryKeys } from '../domains/users/query-keys';
-import { Entities } from '../routes/Entities/Entities.page';
 import { Entity } from '../routes/Entity/Entity.page';
+import { Entities } from '../routes/Entities/Entities.page';
 import { queryKeys } from '../domains/entities/query-keys';
+import { usersQueryKeys } from '../domains/users/query-keys';
+import { searchParamsToObject } from '../common/hooks/useZodSearchParams/utils/search-params-to-object';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -81,10 +82,9 @@ const reactRouter = createBrowserRouter([
       {
         path: '/:locale',
         element: <Outlet />,
-        async loader({ request }) {
+        async loader() {
           if (!env.VITE_AUTH_ENABLED) return null;
 
-          const url = new URL(request.url);
           const authenticatedUser = authQueryKeys.authenticatedUser();
           const session = await queryClient.ensureQueryData(
             authenticatedUser.queryKey,
@@ -94,16 +94,7 @@ const reactRouter = createBrowserRouter([
           if (!session?.user) return null;
 
           const filtersList = filtersQueryKeys.list();
-          const filters = await queryClient.ensureQueryData(
-            filtersList.queryKey,
-            filtersList.queryFn,
-          );
-
-          if (!url.searchParams.has('entity') && filters?.length) {
-            const [{ id, entity, name }] = filters;
-
-            return redirect(`${url.pathname}?filterId=${id}&entity=${entity}&filterName=${name}`);
-          }
+          await queryClient.ensureQueryData(filtersList.queryKey, filtersList.queryFn);
 
           return null;
         },
@@ -117,8 +108,7 @@ const reactRouter = createBrowserRouter([
                 element: <Entities />,
                 async loader({ request }) {
                   const url = new URL(request.url);
-                  const entity = url?.searchParams?.get('entity');
-                  const filterId = url?.searchParams?.get('filterId');
+                  const { entity, filterId } = searchParamsToObject(url.searchParams);
 
                   if (!entity || !filterId) return null;
 

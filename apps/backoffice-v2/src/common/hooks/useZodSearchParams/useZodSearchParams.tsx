@@ -1,22 +1,37 @@
 import { z, ZodSchema } from 'zod';
 import { useSearchParams } from 'react-router-dom';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+import { IUseZodSearchParams } from './interfaces';
+import { defaultDeserializer } from './utils/default-deserializer';
+import { defaultSerializer } from './utils/default-serializer';
 
-export const useZodSearchParams = <TSchema extends ZodSchema>(schema: TSchema) => {
+export const useZodSearchParams = <TSchema extends ZodSchema>(
+  schema: TSchema,
+  options: IUseZodSearchParams = {},
+) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchParamsAsObject = Object.fromEntries(searchParams.entries());
-  const parsedSearchParams = schema.parse(searchParamsAsObject);
+  const deserializer = options.deserializer ?? defaultDeserializer;
+  const serializer = options.serializer ?? defaultSerializer;
+  const searchParamsAsObject = useMemo(
+    () => deserializer(searchParams.toString()),
+    [deserializer, searchParams],
+  );
+  const parsedSearchParams = useMemo(
+    () => schema.parse(searchParamsAsObject),
+    [schema, searchParamsAsObject],
+  );
   const onSetSearchParams = useCallback(
     (searchParams: Record<string, unknown>) => {
-      const newSearchParams = new URLSearchParams();
-
-      Object.entries(searchParams).forEach(([key, value]) => {
-        newSearchParams.set(key, value?.toString());
-      });
-
-      setSearchParams(newSearchParams);
+      setSearchParams(
+        new URLSearchParams(
+          serializer({
+            ...parsedSearchParams,
+            ...searchParams,
+          }),
+        ),
+      );
     },
-    [setSearchParams],
+    [parsedSearchParams, serializer, setSearchParams],
   );
 
   return [parsedSearchParams as z.output<TSchema>, onSetSearchParams] as const;
