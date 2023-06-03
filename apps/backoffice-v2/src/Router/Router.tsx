@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { env } from '../common/env/env';
-import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { RootError } from '../routes/Root/Root.error';
 import { Root } from '../routes/Root/Root.page';
 import { SignIn } from '../routes/SignIn/SignIn.page';
@@ -12,6 +12,7 @@ import { rootLoader } from '../routes/Root/Root.loader';
 import { entityLoader } from '../routes/Entity/Entity.loader';
 import { entitiesLoader } from '../routes/Entities/Entities.loader';
 import { localeLoader } from '../routes/Locale/Locale.loader';
+import { Locale } from '../routes/Locale/Locale.page';
 
 const router = createBrowserRouter([
   {
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
         : []),
       {
         path: '/:locale',
-        element: <Outlet />,
+        element: <Locale />,
         loader: localeLoader,
         errorElement: <RouteError />,
         children: [
