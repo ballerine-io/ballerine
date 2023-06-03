@@ -18,7 +18,7 @@ async function clean() {
   const tables = await getTables(prisma);
   const types = await getTypes(prisma);
   await dropTables(prisma, tables);
-  await dropTypes(prisma, types);
+  await dropTypes(prisma, types.sort());
   console.info('Cleaned database successfully');
   await prisma.$disconnect();
 }
@@ -47,7 +47,7 @@ async function getTypes(prisma: PrismaClient): Promise<string[]> {
     typname: string;
   }> = await prisma.$queryRaw`
  SELECT t.typname
- FROM pg_type t 
+ FROM pg_type t
  JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
  WHERE n.nspname = 'public';
  `;
