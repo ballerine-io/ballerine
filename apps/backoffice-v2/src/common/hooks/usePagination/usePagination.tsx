@@ -1,9 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { AnyArray } from '../../types';
 import { pagination } from './pagination';
-import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-import { useZodSearchParams } from '../useZodSearchParams/useZodSearchParams';
+import { useSearchParamsByEntity } from '../useSearchParamsByEntity/useSearchParamsByEntity';
 
 /**
  * @description A hook to manage pagination state to be consumed by Mantine's Pagination component. Not using Mantine's usePagination hook since it doesn't support changing the number of items per page.
@@ -23,13 +21,8 @@ export const usePagination = <TArray extends AnyArray>({
   initialPageSize?: number;
   siblings?: number;
 }) => {
-  const navigate = useNavigate();
-  const [{ page = initialPage, pageSize = initialPageSize }] = useZodSearchParams(
-    z.object({
-      page: z.coerce.number().int().positive().catch(1),
-      pageSize: z.coerce.number().int().positive().catch(10),
-    }),
-  );
+  const [{ page = initialPage, pageSize = initialPageSize }, setSearchParams] =
+    useSearchParamsByEntity();
   const { totalItems, totalPages, pages, paginated } = useMemo(
     () =>
       pagination({
@@ -42,18 +35,12 @@ export const usePagination = <TArray extends AnyArray>({
   );
   const onPaginate = useCallback(
     (page: number) => () => {
-      // @ts-ignore
-      // void navigate({
-      // @ts-ignore
-      // search: prevState => ({
-      // @ts-ignore
-      // ...prevState,
-      // page,
-      // pageSize,
-      // }),
-      // });
+      setSearchParams({
+        page,
+        pageSize,
+      });
     },
-    [navigate, pageSize],
+    [pageSize, setSearchParams],
   );
 
   return {

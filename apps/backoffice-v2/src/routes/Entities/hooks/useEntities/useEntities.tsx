@@ -3,7 +3,6 @@ import { useFilter } from '../../../../common/hooks/useFilter/useFilter';
 import { usePagination } from '../../../../common/hooks/usePagination/usePagination';
 import { ChangeEventHandler, useCallback } from 'react';
 import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
-import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
 import { useUsersQuery } from '../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
 import { useSort } from '../../../../common/hooks/useSort/useSort';
 import { useEntitiesWithWorkflowsQuery } from '../../../../domains/entities/hooks/queries/useEntitiesWithWorkflowsQuery/useEntitiesWithWorkflowsQuery';
@@ -61,7 +60,7 @@ export const useEntities = () => {
   );
   const skeletonEntities = createArrayOfNumbers(3);
 
-  useSelectEntityOnMount();
+  // useSelectEntityOnMount();
 
   return {
     onPaginate,
@@ -76,5 +75,6 @@ export const useEntities = () => {
     pages,
     totalPages,
     skeletonEntities,
+    entity,
   };
 };

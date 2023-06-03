@@ -2,16 +2,10 @@ import { useDocumentListener } from '../../../../../../common/hooks/useDocumentL
 import { useCallback, useRef } from 'react';
 import { useUsersQuery } from '../../../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
 import { useFilterEntity } from '../../../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
-import { z } from 'zod';
-import { useZodSearchParams } from '../../../../../../common/hooks/useZodSearchParams/useZodSearchParams';
+import { useSearchParamsByEntity } from '../../../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 
 export const useCases = () => {
-  const [{ filter, sortBy }] = useZodSearchParams(
-    z.object({
-      filter: z.string().catch(''),
-      sortBy: z.string().catch(''),
-    }),
-  );
+  const [{ filter, sortBy }] = useSearchParamsByEntity();
   const entity = useFilterEntity();
   const sharedSortByOptions = [
     {
@@ -67,11 +61,11 @@ export const useCases = () => {
       label: 'Assignee',
       value: 'assigneeId',
       options: [
-        ...users.map(({ id, fullName }) => ({
+        ...(users?.map(({ id, fullName }) => ({
           label: fullName,
           value: id,
           key: id,
-        })),
+        })) ?? []),
         {
           label: 'Unassigned',
           value: null,

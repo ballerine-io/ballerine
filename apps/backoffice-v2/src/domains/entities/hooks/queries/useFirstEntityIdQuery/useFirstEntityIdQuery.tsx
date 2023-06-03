@@ -1,13 +1,11 @@
-import { TRouteId } from '../../../../../common/types';
 import { useCallback } from 'react';
 import { sort } from '../../../../../common/hooks/useSort/sort';
 import { useSelectEntitiesQuery } from '../useSelectEntitiesQuery/useSelectEntitiesQuery';
 import { TEntities } from '../../../types';
 import { useUsersQuery } from '../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
-import { z } from 'zod';
-import { useZodSearchParams } from '../../../../../common/hooks/useZodSearchParams/useZodSearchParams';
+import { useSearchParamsByEntity } from '../../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 
-export const useFirstEntityIdQuery = <TId extends TRouteId>({
+export const useFirstEntityIdQuery = ({
   initialState,
 }: {
   initialState: {
@@ -16,12 +14,7 @@ export const useFirstEntityIdQuery = <TId extends TRouteId>({
   };
 }) => {
   const [{ sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' }] =
-    useZodSearchParams(
-      z.object({
-        sortBy: z.string().catch(''),
-        sortDir: z.union([z.literal('asc'), z.literal('desc')]).catch('desc'),
-      }),
-    );
+    useSearchParamsByEntity();
   const { data: users } = useUsersQuery();
   const selectFirstEntityId = useCallback(
     (entities: TEntities) => {

@@ -4,8 +4,8 @@ import { useFiltersQuery } from '../../../../domains/filters/hooks/queries/useFi
 import { ctw } from '../../../utils/ctw/ctw';
 import { TRoutes } from '../../../../App/types';
 import { CheckSquare } from 'lucide-react';
-import { z } from 'zod';
-import { useZodSearchParams } from '../../../hooks/useZodSearchParams/useZodSearchParams';
+import { useSearchParamsByEntity } from '../../../hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
 
 /**
  * @description A nav element which wraps {@link NavItem} components of the app's routes. Supports nested routes.
@@ -16,11 +16,7 @@ import { useZodSearchParams } from '../../../hooks/useZodSearchParams/useZodSear
  */
 export const Navbar: FunctionComponent = () => {
   const { data: filters } = useFiltersQuery();
-  const [searchParams] = useZodSearchParams(
-    z.object({
-      filterName: z.string().catch(''),
-    }),
-  );
+  const [searchParams] = useSearchParamsByEntity();
   const navItems = [
     // {
     //   text: 'Home',
@@ -29,6 +25,8 @@ export const Navbar: FunctionComponent = () => {
     //   key: 'nav-item-home',
     // },
   ] satisfies TRoutes;
+
+  useSelectEntityFilterOnMount();
 
   return (
     <nav>

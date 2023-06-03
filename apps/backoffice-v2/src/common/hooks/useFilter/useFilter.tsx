@@ -1,9 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { AnyArray, TKeyofArrayElement } from '../../types';
 import { filter as onFilter } from './filter';
-import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-import { useZodSearchParams } from '../useZodSearchParams/useZodSearchParams';
+import { useSearchParamsByEntity } from '../useSearchParamsByEntity/useSearchParamsByEntity';
 
 /**
  * @description A hook to easily filter an array of objects by key using fuzzy search.
@@ -18,11 +16,7 @@ export const useFilter = <TArray extends AnyArray>({
   data: TArray;
   initialFilter?: Record<TKeyofArrayElement<TArray>, Array<string>>;
 }) => {
-  const [{ filter = initialFilter }] = useZodSearchParams(
-    z.object({
-      filter: z.string().catch(''),
-    }),
-  );
+  const [{ filter = initialFilter }, setSearchParams] = useSearchParamsByEntity();
   const filtered = useMemo(
     () =>
       onFilter({
@@ -31,26 +25,18 @@ export const useFilter = <TArray extends AnyArray>({
       }),
     [data, filter],
   );
-  const navigate = useNavigate();
   const onFilterChange = useCallback(
     (value: {
       [key in TKeyofArrayElement<TArray>]?: Array<string>;
     }) => {
-      // @ts-ignore
-      // navigate({
-      // @ts-ignore
-      // search: prevState => ({
-      // @ts-ignore
-      // ...prevState,
-      // filter: {
-      // @ts-ignore
-      // ...prevState?.filter,
-      // ...value,
-      // },
-      // }),
-      // });
+      setSearchParams({
+        filter: {
+          ...filter,
+          ...value,
+        },
+      });
     },
-    [navigate],
+    [filter, setSearchParams],
   );
 
   return {

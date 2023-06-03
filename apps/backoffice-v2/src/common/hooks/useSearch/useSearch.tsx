@@ -2,8 +2,7 @@ import { AnyArray, TKeyofArrayElement } from '../../types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '../useDebounce/useDebounce';
 import { search as onSearch } from './search';
-import { z } from 'zod';
-import { useZodSearchParams } from '../useZodSearchParams/useZodSearchParams';
+import { useSearchParamsByEntity } from '../useSearchParamsByEntity/useSearchParamsByEntity';
 
 export const useSearch = <TArray extends AnyArray>({
   data,
@@ -14,11 +13,7 @@ export const useSearch = <TArray extends AnyArray>({
   searchBy: Array<TKeyofArrayElement<TArray>>;
   initialSearch?: string;
 }) => {
-  const [{ search = initialSearch }, setSearchParams] = useZodSearchParams(
-    z.object({
-      search: z.string().catch(''),
-    }),
-  );
+  const [{ search = initialSearch }, setSearchParams] = useSearchParamsByEntity();
   const searched = useMemo(
     () =>
       onSearch({
