@@ -4,7 +4,7 @@ import { getTimePastFromNow } from '../../../../common/utils/get-time-past-from-
 import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { ApprovedSvg, RejectedSvg } from '../../../../common/components/atoms/icons';
 import { IItemProps } from '../../../Entity/components/Case/interfaces';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { createInitials } from '../../../../common/utils/create-initials/create-initials';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { useEllipsesWithTitle } from '../../../../common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
@@ -39,11 +39,12 @@ export const Item: FunctionComponent<IItemProps> = ({
   const assigneeInitials = createInitials(assigneeFullName);
   const entityInitials = createInitials(fullName);
   const { ref, styles } = useEllipsesWithTitle();
+  const { search } = useLocation();
 
   return (
     <li className={`rounded-md p-2 px-1`}>
       <NavLink
-        to={`/en/case-management/entities/${id}`}
+        to={`/en/case-management/entities/${id}${search}`}
         className={({ isActive }) =>
           ctw(`flex items-center gap-x-4 rounded-md outline-none`, { 'bg-muted': isActive })
         }

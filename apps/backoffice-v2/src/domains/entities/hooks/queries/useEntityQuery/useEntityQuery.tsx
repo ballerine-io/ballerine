@@ -16,8 +16,8 @@ export const useEntityQuery = <TQueryFnData = TEntity,>({
   const filterId = useFilterId();
 
   return useQuery({
-    ...queryKeys[entity as keyof typeof queryKeys].byId(entityId, filterId),
-    enabled: isString(entityId) && !!entityId?.length,
+    ...queryKeys[entity as keyof typeof queryKeys]?.byId?.(entityId, filterId),
+    enabled: isString(entityId) && !!entityId?.length && !!filterId,
     select,
   });
 };
