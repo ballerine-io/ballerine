@@ -4,6 +4,7 @@ import { queryKeys } from '../../../query-keys';
 import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { TEntity } from '../../../types';
+import { useIsAuthenticated } from '../../../../auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
 export const useEntityQuery = <TQueryFnData = TEntity,>({
   entityId,
@@ -14,10 +15,11 @@ export const useEntityQuery = <TQueryFnData = TEntity,>({
 }) => {
   const entity = useFilterEntity();
   const filterId = useFilterId();
+  const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
     ...queryKeys[entity as keyof typeof queryKeys]?.byId?.(entityId, filterId),
-    enabled: isString(entityId) && !!entityId?.length && !!filterId,
+    enabled: isString(entityId) && !!entityId?.length && !!filterId && isAuthenticated,
     select,
   });
 };
