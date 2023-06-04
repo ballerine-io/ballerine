@@ -194,10 +194,11 @@
       ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)
     ) {
       nextWorkflow = mergeWorkflow();
-
       if (
         nextWorkflow?.definition?.initial !== $workflow?.definition?.initial &&
-        nextWorkflow?.definition?.context?.id?.resubmissionReason
+        nextWorkflow?.definition?.context?.documents?.some(
+          ({ decision }) => decision?.status === 'revision',
+        )
       ) {
         shouldResubmit = true;
       } else {
@@ -211,9 +212,13 @@
   }
 
   $: {
-    documentsDecisionStatuses = $workflow?.workflowContext?.machineContext?.documents?.map(
-      ({ decision }) => decision?.status,
-    );
+    documentsDecisionStatuses = nextWorkflow
+      ? nextWorkflow?.workflowContext?.machineContext?.documents?.map(
+          ({ decision }) => decision?.status,
+        )
+      : $workflow?.workflowContext?.machineContext?.documents?.map(
+          ({ decision }) => decision?.status,
+        );
 
     const hasDecisions = !!documentsDecisionStatuses?.length;
 
@@ -245,7 +250,9 @@
     {#if isRevision}
       <Resubmission
         {handleResubmit}
-        reason={nextWorkflow?.definition?.context?.documents?.[0]?.decision?.revisionReason?.toLowerCase()}
+        reason={nextWorkflow?.definition?.context?.documents
+          ?.find(({ decision }) => decision?.status === 'revision')
+          ?.decision?.revisionReason?.toLowerCase()}
       />
     {/if}
 
