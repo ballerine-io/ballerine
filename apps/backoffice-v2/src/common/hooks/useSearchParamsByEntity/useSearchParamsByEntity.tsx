@@ -5,6 +5,7 @@ import { IUseZodSearchParams } from '../useZodSearchParams/interfaces';
 import { BusinessesSearchSchema, IndividualsSearchSchema } from './validation-schemas';
 import { useAuthenticatedUserQuery } from '../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useMemo } from 'react';
+import { CaseStatus } from '../../enums';
 
 export const useSearchParamsByEntity = <TSchema extends ZodSchema>(
   schema?: TSchema,
@@ -14,16 +15,20 @@ export const useSearchParamsByEntity = <TSchema extends ZodSchema>(
   const entity = searchParams.get('entity');
   const { data: session } = useAuthenticatedUserQuery();
   const EntitySearchSchema = useMemo(
-    () =>
-      entity === 'individuals'
-        ? IndividualsSearchSchema(session?.user?.id)
-        : BusinessesSearchSchema(session?.user?.id),
-    [entity, session?.user?.id],
+    () => (entity === 'individuals' ? IndividualsSearchSchema : BusinessesSearchSchema),
+    [entity],
   );
 
   return useZodSearchParams(
     // @ts-ignore
     schema ? EntitySearchSchema.merge(schema) : EntitySearchSchema,
+    {
+      filter: {
+        approvalState: [],
+        assigneeId: [session?.user?.id, null],
+        caseStatus: [CaseStatus.ACTIVE],
+      },
+    },
     options,
   );
 };
