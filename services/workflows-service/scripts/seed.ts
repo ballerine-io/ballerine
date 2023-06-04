@@ -774,7 +774,6 @@ async function seed(bcryptSalt: Salt) {
   //     },
   //   },
   // });
-
   void client.$disconnect();
 
   console.info('Seeding database with custom seed...');

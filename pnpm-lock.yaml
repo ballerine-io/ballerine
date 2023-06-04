@@ -1162,9 +1162,6 @@ importers:
       nest-access-control:
         specifier: 2.2.0
         version: 2.2.0(@nestjs/graphql@10.0.0)
-      nest-morgan:
-        specifier: 1.0.1
-        version: 1.0.1
       nestjs-prisma:
         specifier: 0.20.0
         version: 0.20.0(@nestjs/common@9.4.0)(@prisma/client@4.13.0)(prisma@4.13.0)
@@ -11361,13 +11358,6 @@ packages:
   /base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
-  /basic-auth@2.0.1:
-    resolution: {integrity: sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg==}
-    engines: {node: '>= 0.8'}
-    dependencies:
-      safe-buffer: 5.1.2
-    dev: false
-
   /batch-processor@1.0.0:
     resolution: {integrity: sha512-xoLQD8gmmR32MeuBHgH0Tzd5PuSZx71ZsbhVxOCRbgktZEPe4SQy7s9Z50uPp0F/f7iw2XmkHN2xkgbMfckMDA==}
     dev: true
@@ -18291,19 +18281,6 @@ packages:
       ufo: 1.1.1
     dev: true
 
-  /morgan@1.10.0:
-    resolution: {integrity: sha512-AbegBVI4sh6El+1gNwvD5YIck7nSA36weD7xvIxG4in80j/UoK8AEGaWnnz8v1GxonMCltmlNs5ZKbGvl9b1XQ==}
-    engines: {node: '>= 0.8.0'}
-    dependencies:
-      basic-auth: 2.0.1
-      debug: 2.6.9
-      depd: 2.0.0
-      on-finished: 2.3.0
-      on-headers: 1.0.2
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
   /mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -18427,15 +18404,6 @@ packages:
     dependencies:
       '@nestjs/graphql': 10.0.0(@nestjs/common@9.4.0)(@nestjs/core@9.4.0)(class-transformer@0.5.1)(class-validator@0.14.0)(graphql@16.6.0)(reflect-metadata@0.1.13)
       accesscontrol: 2.2.1
-    dev: false
-
-  /nest-morgan@1.0.1:
-    resolution: {integrity: sha512-ZuheiQzBWVSIcBzQs4ER0fSN9ezdWs6R08yO6RpiJ3ZUDMzeVN+OK9KvAf2NUtSU6IWldJbLCjkg4b99IgAq8g==}
-    deprecated: Deprecated and unmaintained. Check out nestjs-pino as alternative.
-    dependencies:
-      morgan: 1.10.0
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /nestjs-prisma@0.20.0(@nestjs/common@9.4.0)(@prisma/client@4.13.0)(prisma@4.13.0):
@@ -20795,7 +20763,7 @@ packages:
       gzip-size: 5.1.1
       minimatch: 3.1.2
       pretty-bytes: 5.6.0
-      size-plugin-store: 0.0.5  
+      size-plugin-store: 0.0.5
       util.promisify: 1.1.1
     transitivePeerDependencies:
       - supports-color
