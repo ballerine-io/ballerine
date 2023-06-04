@@ -3,7 +3,7 @@ import { Request } from 'express';
 import { WorkflowService } from '@/workflow/workflow.service';
 
 @Injectable()
-export class AssigneeAsignedGuard implements CanActivate {
+export class WorkflowAssigneeGuard implements CanActivate {
   constructor(private service: WorkflowService) {}
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<Request>();
