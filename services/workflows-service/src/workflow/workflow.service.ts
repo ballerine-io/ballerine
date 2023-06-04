@@ -146,6 +146,10 @@ export class WorkflowService {
     });
   }
 
+  async listWorkflowRuntimeData(args?: Parameters<WorkflowRuntimeDataRepository['findMany']>[0]) {
+    return await this.workflowRuntimeDataRepository.findMany(args);
+  }
+
   async listWorkflowRuntimeDataByUserId(userId: string) {
     return await this.workflowRuntimeDataRepository.findMany({
       where: { endUserId: userId },

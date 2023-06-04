@@ -13,20 +13,25 @@ import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import { Business, EndUser, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { RunnableWorkflowData } from './types';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
-import { plainToClass } from 'class-transformer';
-import { Request } from 'express';
-import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
 import { enrichWorkflowRuntimeData } from './enrich-workflow-runtime-data';
+import {
+  FindWorkflowsListDto,
+  FindWorkflowsListSchema,
+} from '@/workflow/dtos/find-workflows-list.dto';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import { UsePipes } from '@nestjs/common';
+import { FilterService } from '@/filter/filter.service';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
 export class WorkflowControllerInternal {
   constructor(
     protected readonly service: WorkflowService,
+    protected readonly filterService: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -41,17 +46,42 @@ export class WorkflowControllerInternal {
     return await this.service.createWorkflowDefinition(data);
   }
 
+  // @TODO: Refactor. Should return WorkflowRuntimeData. Should support filters.
   @common.Get()
-  @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
+  @swagger.ApiOkResponse() // @TODO: Swagger
   @swagger.ApiForbiddenResponse()
-  @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
-  async listWorkflowDefinitions(
-    @UserData() userInfo: UserInfo,
-    @common.Req() request: Request,
-  ): Promise<WorkflowDefinition[]> {
-    const args = plainToClass(WorkflowDefinitionFindManyArgs, request.query);
+  @ApiNestedQuery(FindWorkflowsListDto)
+  @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema))
+  async list(@common.Query() { filterId }: FindWorkflowsListDto) {
+    const filter = await this.filterService.getById(filterId);
 
-    return await this.service.listWorkflowDefinitions(args);
+    type WorkflowWithRelations = WorkflowRuntimeData & {
+      workflowDefinition: WorkflowDefinition;
+    } & ({ endUser: EndUser; business: null } | { business: Business; endUser: null });
+
+    const workflows = (await this.service.listWorkflowRuntimeData(
+      filter.query as any,
+    )) as WorkflowWithRelations[];
+
+    return workflows.map(workflow => {
+      const isIndividuals = workflow.endUser !== null;
+      return {
+        ...workflow,
+        entity: {
+          // @TODO: Make it a standalone function
+          id: isIndividuals ? workflow.endUser.id : workflow.business.id,
+          name: isIndividuals
+            ? `${String(workflow.endUser.firstName)} ${String(workflow.endUser.lastName)}`
+            : workflow.business.companyName,
+          avatarUrl: isIndividuals ? workflow.endUser.avatarUrl : null,
+          approvalState: isIndividuals
+            ? workflow.endUser.approvalState
+            : workflow.business.approvalState,
+        },
+        endUser: undefined,
+        business: undefined,
+      };
+    });
   }
 
   @common.Get('/active-states')

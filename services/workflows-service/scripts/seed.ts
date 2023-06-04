@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker';
-import { Business, EndUser, PrismaClient } from '@prisma/client';
+import { Business, EndUser, Prisma, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -342,6 +342,20 @@ async function seed(bcryptSalt: Salt) {
     return mockData;
   }
 
+  function createFilter(
+    name: string,
+    entity: 'individuals' | 'businesses',
+    query: Prisma.WorkflowRuntimeDataFindManyArgs,
+  ) {
+    return client.filter.create({
+      data: {
+        entity,
+        name,
+        query: query as any,
+      },
+    });
+  }
+
   // Risk score improvement
   await client.workflowDefinition.create({
     data: {
@@ -596,11 +610,21 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  await client.filter.create({
-    data: {
-      entity: 'individuals',
-      name: 'Individuals',
-      query: {
+  await createFilter('Individuals', 'individuals', {
+    select: {
+      id: true,
+      status: true,
+      assigneeId: true,
+      createdAt: true,
+      context: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+        },
+      },
+      endUser: {
         select: {
           id: true,
           correlationId: true,
@@ -618,41 +642,36 @@ async function seed(bcryptSalt: Salt) {
           additionalInfo: true,
           createdAt: true,
           updatedAt: true,
-          workflowRuntimeData: {
-            select: {
-              id: true,
-              status: true,
-              assigneeId: true,
-              createdAt: true,
-              workflowDefinition: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
         },
-        where: {
-          workflowRuntimeData: {
-            some: {
-              workflowDefinition: {
-                is: {
-                  id: manualMachineId,
-                },
-              },
-            },
-          },
+      },
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
         },
       },
     },
+    where: {
+      workflowDefinitionId: manualMachineId,
+    },
   });
 
-  await client.filter.create({
-    data: {
-      entity: 'businesses',
-      name: 'Risk Score Improvement',
-      query: {
+  await createFilter('Risk Score Improvement', 'businesses', {
+    select: {
+      id: true,
+      status: true,
+      assigneeId: true,
+      createdAt: true,
+      context: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+        },
+      },
+      business: {
         select: {
           id: true,
           companyName: true,
@@ -672,35 +691,20 @@ async function seed(bcryptSalt: Salt) {
           businessPurpose: true,
           documents: true,
           approvalState: true,
-          workflowRuntimeData: {
-            select: {
-              id: true,
-              status: true,
-              assigneeId: true,
-              createdAt: true,
-              workflowDefinition: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
           createdAt: true,
           updatedAt: true,
         },
-        where: {
-          workflowRuntimeData: {
-            some: {
-              workflowDefinition: {
-                is: {
-                  id: riskScoreMachineKybId,
-                },
-              },
-            },
-          },
+      },
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
         },
       },
+    },
+    where: {
+      workflowDefinitionId: riskScoreMachineKybId,
     },
   });
 
