@@ -62,11 +62,11 @@ export const useCases = (routerId: TRouteId) => {
       label: 'Assignee',
       value: 'assigneeId',
       options: [
-        ...users.map(({ id, fullName }) => ({
+        ...(users?.map(({ id, fullName }) => ({
           label: fullName,
           value: id,
           key: id,
-        })),
+        })) ?? []),
         {
           label: 'Unassigned',
           value: null,

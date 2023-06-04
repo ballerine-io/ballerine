@@ -2,7 +2,6 @@ import React, { FunctionComponent } from 'react';
 import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { IActionsProps } from './interfaces';
 import { ResubmissionReason, useActions } from './hooks/useActions/useActions';
-import { motion } from 'framer-motion';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { DropdownMenu } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu';
 import { DropdownMenuTrigger } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
@@ -102,20 +101,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         />
       </div>
       <div className={`flex h-20 justify-between`}>
-        <motion.div
-          // Animate when the user changes.
-          key={id}
-          className={`flex items-center space-x-8`}
-          initial={{
-            opacity: 0,
-            x: '-50px',
-          }}
-          animate={{
-            opacity: 1,
-            x: 0,
-          }}
-          transition={{ duration: 0.4 }}
-        >
+        <div className={`flex items-center space-x-8`}>
           <h2
             className={ctw(`text-2xl font-bold`, {
               'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
@@ -124,7 +110,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           >
             {fullName}
           </h2>
-        </motion.div>
+        </div>
         {showResolutionButtons && (
           <div className={`flex items-center space-x-6 pe-[3.35rem]`}>
             <Button
