@@ -7,7 +7,6 @@ import { defaultSerializer } from './utils/default-serializer';
 
 export const useZodSearchParams = <TSchema extends ZodSchema>(
   schema: TSchema,
-  defaultValues: z.infer<TSchema> = {},
   options: IUseZodSearchParams = {},
 ) => {
   const [_searchParams, setSearchParams] = useSearchParams();
@@ -33,10 +32,7 @@ export const useZodSearchParams = <TSchema extends ZodSchema>(
   );
 
   useEffect(() => {
-    onSetSearchParams({
-      ...parsedSearchParams,
-      ...defaultValues,
-    });
+    onSetSearchParams(parsedSearchParams);
   }, []);
 
   return [parsedSearchParams as z.output<TSchema>, onSetSearchParams] as const;
