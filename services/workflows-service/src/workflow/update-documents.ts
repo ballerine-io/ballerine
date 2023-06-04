@@ -1,5 +1,5 @@
 import { DefaultContextSchema } from '@/workflow/schemas/context';
-import { getDocumentId } from '@/workflow/utils';
+import { getDocumentId } from '@/documents/utils';
 
 type Documents = DefaultContextSchema['documents'];
 type Document = Documents[number];

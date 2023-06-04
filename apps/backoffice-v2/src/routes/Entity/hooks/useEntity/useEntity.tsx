@@ -8,6 +8,12 @@ import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/querie
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { components } from './components';
 
+const convertSnakeCaseToTitleCase = (input: string): string =>
+  input
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
 export const useEntity = () => {
   const { entityId } = useParams();
   const { data: entity, isLoading } = useEntityWithWorkflowQuery(entityId);
@@ -46,7 +52,10 @@ export const useEntity = () => {
   const tasks = contextEntity
     ? [
         ...(contextDocuments?.map(
-          ({ id, type, category, issuer, properties, propertiesSchema, decision }, docIndex) => {
+          (
+            { id, type: docType, category, issuer, properties, propertiesSchema, decision },
+            docIndex,
+          ) => {
             return [
               {
                 id: 'header',
@@ -54,7 +63,9 @@ export const useEntity = () => {
                 value: [
                   {
                     type: 'heading',
-                    value: category,
+                    value: `${convertSnakeCaseToTitleCase(
+                      category,
+                    )} - ${convertSnakeCaseToTitleCase(docType)}`,
                   },
                   {
                     id: 'actions',
@@ -90,7 +101,7 @@ export const useEntity = () => {
                     type: 'details',
                     value: {
                       id,
-                      title: category,
+                      title: `${category} - ${docType}`,
                       data: Object.entries(propertiesSchema?.properties ?? {})?.map(
                         ([title, { type, format, pattern, isEditable = true }]) => ({
                           title,
@@ -123,7 +134,9 @@ export const useEntity = () => {
                   data:
                     contextDocuments?.[docIndex]?.pages?.map(
                       ({ type, metadata, data }, pageIndex) => ({
-                        title: metadata?.side ? `${category} ${metadata?.side}` : category,
+                        title: `${category} - ${docType}${
+                          metadata?.side ? ` - ${metadata?.side}` : ''
+                        }`,
                         imageUrl:
                           type === 'pdf'
                             ? octetToFileType(results[docIndex][pageIndex], type)
