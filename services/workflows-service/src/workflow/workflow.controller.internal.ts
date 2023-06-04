@@ -133,7 +133,7 @@ export class WorkflowControllerInternal {
     @common.Body() data: WorkflowWhereAssignInput,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.assignWorkflowToAssignee(params.id, data);
+      return await this.service.assignWorkflowToUser(params.id, data);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

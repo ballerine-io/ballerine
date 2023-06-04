@@ -18,7 +18,7 @@ async function clean() {
   const tables = await getTables(prisma);
   const types = await getTypes(prisma);
   await dropTables(prisma, tables);
-  await dropTypes(prisma, types.sort());
+  await dropTypes(prisma, types);
   console.info('Cleaned database successfully');
   await prisma.$disconnect();
 }

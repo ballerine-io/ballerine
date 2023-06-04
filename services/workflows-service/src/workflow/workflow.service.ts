@@ -274,7 +274,7 @@ export class WorkflowService {
     return updateResult;
   }
 
-  async assignWorkflowToAssignee(workflowRuntimeId: string, data: WorkflowWhereAssignInput) {
+  async assignWorkflowToUser(workflowRuntimeId: string, data: WorkflowWhereAssignInput) {
     const updatedWorkflowRuntime = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
       { data: data },
