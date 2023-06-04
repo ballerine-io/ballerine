@@ -32,7 +32,9 @@ export const queryClient = new QueryClient({
         const authenticatedUser = authQueryKeys.authenticatedUser();
 
         void queryClient.cancelQueries();
-        queryClient.setQueryData(authenticatedUser.queryKey, undefined);
+        queryClient.setQueryData(authenticatedUser.queryKey, {
+          user: undefined,
+        });
         await queryClient.invalidateQueries(authenticatedUser.queryKey);
       }
 
