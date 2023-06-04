@@ -17,7 +17,7 @@ export const IndividualsSearchSchema = (authenticatedUserId: string) =>
       .catch('caseCreatedAt'),
     filter: z
       .object({
-        approvalState: z.array(z.enum(States)).catch([]),
+        approvalState: z.array(z.enum(States)).optional().catch([]),
         assigneeId: z.array(z.string().nullable()).optional().catch([authenticatedUserId, null]),
         caseStatus: z.array(z.enum(CaseStatuses)).optional().catch([CaseStatus.ACTIVE]),
       })
