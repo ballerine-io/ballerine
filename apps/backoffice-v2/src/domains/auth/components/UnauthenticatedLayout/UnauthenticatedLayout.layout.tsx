@@ -1,8 +1,8 @@
-import { useUnauthenticatedLayout } from './hooks/useUnauthenticatedLayout/useUnauthenticatedLayout';
 import { FunctionComponentWithChildren } from '../../../../common/types';
 
 export const UnauthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {
-  useUnauthenticatedLayout();
+  // Should only be uncommented once `useAuthRedirects` is no longer in use in `AuthProvider`
+  // useUnauthenticatedLayout();
 
   return (
     <main className={`h-full`}>
