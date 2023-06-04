@@ -50,7 +50,6 @@ export const workflows = {
 
     return handleZodError(error, workflow);
   },
-
   assignWorkflowById: async ({
     workflowId,
     body,
