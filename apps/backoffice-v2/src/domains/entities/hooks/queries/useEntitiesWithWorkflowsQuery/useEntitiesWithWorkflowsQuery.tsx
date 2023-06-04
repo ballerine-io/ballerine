@@ -1,8 +1,11 @@
 import { useEntitiesQuery } from '../useEntitiesQuery/useEntitiesQuery';
 import { TUsers } from '../../../../users/types';
 import { env } from '../../../../../common/env/env';
+import { useIsAuthenticated } from '../../../../auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
 export const useEntitiesWithWorkflowsQuery = (users: TUsers) => {
+  const isAuthenticated = useIsAuthenticated();
+
   return useEntitiesQuery({
     select: entities =>
       entities.map(entity => {
@@ -16,6 +19,7 @@ export const useEntitiesWithWorkflowsQuery = (users: TUsers) => {
           caseStatus: entity?.workflowRuntimeData?.status,
         };
       }),
+    enabled: isAuthenticated,
     refetchInterval: env.VITE_ASSIGNMENT_POLLING_INTERVAL,
   });
 };

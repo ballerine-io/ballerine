@@ -53,7 +53,7 @@ export const useActions = ({ entityId, fullName }: IUseActions) => {
   const authenticatedUser = user;
   const caseState = useCaseState(authenticatedUser, workflow);
   const { data: users } = useUsersQuery();
-  const assignees = users.filter(assignee => assignee?.id !== authenticatedUser?.id);
+  const assignees = users?.filter(assignee => assignee?.id !== authenticatedUser?.id);
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
   const canReject =

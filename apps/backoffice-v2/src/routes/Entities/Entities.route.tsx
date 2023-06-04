@@ -7,6 +7,11 @@ import { Entities } from './Entities.page';
 import { queryKeys } from '../../domains/entities/query-keys';
 import { preSearchFiltersByKind } from './pre-search-filters';
 import { usersQueryKeys } from '../../domains/users/query-keys';
+import { authQueryKeys } from '../../domains/auth/query-keys';
+import { Alert } from '../../common/components/atoms/Alert/Alert';
+import { AlertCircle } from 'lucide-react';
+import { AlertTitle } from '../../common/components/atoms/Alert/Alert.Title';
+import { AlertDescription } from '../../common/components/atoms/Alert/Alert.Description';
 
 const SearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).optional().catch('desc'),
@@ -58,11 +63,29 @@ export const entitiesRoute = new Route({
   onLoad: async ({ search }) => {
     const entityList = queryKeys[search?.entity].list(search?.filterId);
     const usersList = usersQueryKeys.list();
-    await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
+    const getSession = authQueryKeys.authenticatedUser();
+    const session = queryClient.getQueryData<Awaited<ReturnType<typeof getSession.queryFn>>>(
+      getSession.queryKey,
+    );
+
+    if (!session?.user) return;
+
+    if (search?.filterId) {
+      await queryClient.ensureQueryData(entityList.queryKey, entityList.queryFn);
+    }
     await queryClient.ensureQueryData(usersList.queryKey, usersList.queryFn);
 
     return {};
   },
   path: 'entities',
+  errorComponent: ({ error }) => (
+    <div className={`mt-3 p-1`}>
+      <Alert variant={`destructive`} className={`w-full max-w-lg`}>
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    </div>
+  ),
   component: Entities,
 });

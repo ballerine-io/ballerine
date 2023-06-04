@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { Action, Resource } from '../../../../../common/enums';
 import { ISignInProps } from '../useSignInMutation/interfaces';
 import { authQueryKeys } from '../../../query-keys';
 import { fetchSignOut } from '../../../fetchers';
@@ -15,10 +14,9 @@ export const useSignOutMutation = () => {
       fetchSignOut({
         callbackUrl,
       }),
-    onMutate: () => ({
-      resource: Resource.INDIVIDUAL,
-      action: Action.SIGN_OUT,
-    }),
+    onMutate: () => {
+      queryClient.cancelQueries();
+    },
     onSuccess: (data, { callbackUrl, redirect }) => {
       queryClient.setQueryData(authenticatedUser.queryKey, undefined);
 
