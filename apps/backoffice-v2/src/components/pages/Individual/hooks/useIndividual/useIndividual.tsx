@@ -8,11 +8,11 @@ import { useGetSessionQuery } from '../../../../../lib/react-query/queries/useGe
 import { useFilterEntity } from 'hooks/useFilterEntity/useFilterEntity';
 import { components } from 'components/pages/Individual/hooks/useIndividual/components';
 
-const prettifyString = (input: string): string => {
-  let words = input.split('_');
-  words = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
-  return words.join(' ');
-};
+const convertSnakeCaseToTitleCase = (input: string): string =>
+  input
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 
 export const useIndividual = () => {
   const { endUserId } = useParams();
@@ -63,7 +63,9 @@ export const useIndividual = () => {
                 value: [
                   {
                     type: 'heading',
-                    value: `${prettifyString(category)} - ${prettifyString(docType)}`,
+                    value: `${convertSnakeCaseToTitleCase(
+                      category,
+                    )} - ${convertSnakeCaseToTitleCase(docType)}`,
                   },
                   {
                     id: 'actions',
