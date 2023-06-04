@@ -13,11 +13,11 @@ export const useSelectEntity = () => {
       void navigate({
         replace: true,
         to: entityRoute.id,
-        params: {
+        params: params => ({
+          ...params,
           entityId,
           locale,
-        },
-        search: undefined,
+        }),
       });
     },
     [locale, navigate],

@@ -158,5 +158,6 @@ export const useEntity = () => {
     selectedEntity,
     components,
     tasks,
+    isLoading,
   };
 };
