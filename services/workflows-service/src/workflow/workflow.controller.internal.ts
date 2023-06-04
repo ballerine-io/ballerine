@@ -23,7 +23,7 @@ import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definiti
 import { enrichWorkflowRuntimeData } from './enrich-workflow-runtime-data';
 import { UseGuards } from '@nestjs/common';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
-import { WorkflowWhereAssignInput } from '@/workflow/dtos/workflow-where-assign-input';
+import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -130,7 +130,7 @@ export class WorkflowControllerInternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async assignWorkflowById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
-    @common.Body() data: WorkflowWhereAssignInput,
+    @common.Body() data: WorkflowAssigneeId,
   ): Promise<WorkflowRuntimeData> {
     try {
       return await this.service.assignWorkflowToUser(params.id, data);

@@ -36,7 +36,7 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
 import { getDocumentId } from '@/workflow/utils';
-import { WorkflowWhereAssignInput } from '@/workflow/dtos/workflow-where-assign-input';
+import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 
 type TEntityId = string;
 
@@ -274,10 +274,10 @@ export class WorkflowService {
     return updateResult;
   }
 
-  async assignWorkflowToUser(workflowRuntimeId: string, data: WorkflowWhereAssignInput) {
+  async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
     const updatedWorkflowRuntime = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
-      { data: data },
+      { data: { assigneeId: assigneeId } },
     );
 
     return updatedWorkflowRuntime;
