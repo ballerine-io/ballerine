@@ -1,10 +1,10 @@
 import { Header } from '../../../../common/components/organisms/Header';
 import { FunctionComponentWithChildren } from '../../../../common/types';
-import { useAuthenticatedLayout } from './hooks/useAuthenticatedLayout/useAuthenticatedLayout';
 import { useSelectEntityFilterOnMount } from '../../../entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
 
 export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {
-  useAuthenticatedLayout();
+  // Should only be uncommented once `useAuthRedirects` is no longer in use in `AuthProvider`
+  // useAuthenticatedLayout();
   useSelectEntityFilterOnMount();
 
   return (
