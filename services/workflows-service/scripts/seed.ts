@@ -142,12 +142,12 @@ async function seed(bcryptSalt: Salt) {
       },
       documents: [
         {
-          category: 'ID',
-          type: 'photo',
+          category: 'proof_of_employment',
+          type: 'payslip',
           issuer: {
             type: 'government',
             name: 'Government',
-            country: faker.address.country(),
+            country: 'GH',
             city: faker.address.city(),
             additionalDetails: {},
           },
@@ -188,12 +188,12 @@ async function seed(bcryptSalt: Salt) {
           },
         },
         {
-          category: 'incorporation',
-          type: 'certificate',
+          category: 'proof_of_address',
+          type: 'mortgage_statement',
           issuer: {
             type: 'government',
             name: 'Government',
-            country: faker.address.country(),
+            country: 'GH',
             city: faker.address.city(),
             additionalDetails: {},
           },

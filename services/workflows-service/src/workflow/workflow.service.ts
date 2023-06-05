@@ -43,9 +43,8 @@ import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-p
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
-import { getDocumentId } from '@/workflow/utils';
-import { User } from '@sentry/node';
-import { certificateOfResidenceGH } from '@/schemas/documents/GH';
+import { getDocumentId } from '@/documents/utils';
+import { certificateOfResidenceGH } from '@/documents/schemas/GH';
 
 type TEntityId = string;
 
