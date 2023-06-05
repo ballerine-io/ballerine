@@ -5,13 +5,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   ApprovalState,
+  Business,
+  EndUser,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { CompleteWorkflowData, RunnableWorkflowData } from './types';
+import { CompleteWorkflowData, RunnableWorkflowData, WorkflowWithRelations } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
@@ -42,6 +44,8 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
 import { getDocumentId } from '@/workflow/utils';
+import { User } from '@sentry/node';
+import { certificateOfResidenceGH } from '@/schemas/documents/GH';
 
 type TEntityId = string;
 
@@ -146,8 +150,44 @@ export class WorkflowService {
     });
   }
 
-  async listWorkflowRuntimeData(args?: Parameters<WorkflowRuntimeDataRepository['findMany']>[0]) {
-    return await this.workflowRuntimeDataRepository.findMany(args);
+  async listWorkflowRuntimeDataWithRelations(
+    args?: Parameters<WorkflowRuntimeDataRepository['findMany']>[0],
+  ) {
+    const workflows = (await this.workflowRuntimeDataRepository.findMany(
+      args,
+    )) as WorkflowWithRelations[];
+
+    return workflows.map(this.formatWorkflowRuntimeData.bind(this));
+  }
+
+  private formatWorkflowRuntimeData(workflow: WorkflowWithRelations) {
+    const isIndividual = 'endUser' in workflow;
+
+    return {
+      ...workflow,
+      context: {
+        ...workflow.context,
+        documents: workflow.context?.documents?.map(
+          (document: DefaultContextSchema['documents'][number]) => ({
+            ...document,
+            id: getDocumentId(document),
+            propertiesSchema: certificateOfResidenceGH.propertiesSchema,
+          }),
+        ),
+      },
+      entity: {
+        id: isIndividual ? workflow.endUser.id : workflow.business.id,
+        name: isIndividual
+          ? `${String(workflow.endUser.firstName)} ${String(workflow.endUser.lastName)}`
+          : workflow.business.companyName,
+        avatarUrl: isIndividual ? workflow.endUser.avatarUrl : null,
+        approvalState: isIndividual
+          ? workflow.endUser.approvalState
+          : workflow.business.approvalState,
+      },
+      endUser: undefined,
+      business: undefined,
+    };
   }
 
   async listWorkflowRuntimeDataByUserId(userId: string) {

@@ -1,4 +1,5 @@
-import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import { Business, EndUser, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import { User } from '@sentry/node';
 
 export interface RunnableWorkflowData {
   workflowDefinition: WorkflowDefinition;
@@ -11,3 +12,8 @@ export type CompleteWorkflowData = WorkflowRuntimeData & {
 };
 
 export type TEntityType = 'endUser' | 'business';
+
+export type WorkflowWithRelations = WorkflowRuntimeData & {
+  workflowDefinition: WorkflowDefinition;
+  assignee: User;
+} & ({ endUser: EndUser } | { business: Business });

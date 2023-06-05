@@ -58,44 +58,7 @@ export class WorkflowControllerInternal {
   async list(@common.Query() { filterId }: FindWorkflowsListDto) {
     const filter = await this.filterService.getById(filterId);
 
-    // @TODO: Move the logic to the service
-    type WorkflowWithRelations = WorkflowRuntimeData & {
-      workflowDefinition: WorkflowDefinition;
-    } & ({ endUser: EndUser } | { business: Business });
-
-    const workflows = (await this.service.listWorkflowRuntimeData(
-      filter.query as any,
-    )) as WorkflowWithRelations[];
-
-    return workflows.map(workflow => {
-      const isIndividuals = 'endUser' in workflow;
-
-      return {
-        ...workflow,
-        context: {
-          ...workflow.context,
-          documents: workflow.context?.documents?.map(
-            (document: DefaultContextSchema['documents'][number]) => ({
-              ...document,
-              id: getDocumentId(document),
-              propertiesSchema: certificateOfResidenceGH.propertiesSchema,
-            }),
-          ),
-        },
-        entity: {
-          id: isIndividuals ? workflow.endUser.id : workflow.business.id,
-          name: isIndividuals
-            ? `${String(workflow.endUser.firstName)} ${String(workflow.endUser.lastName)}`
-            : workflow.business.companyName,
-          avatarUrl: isIndividuals ? workflow.endUser.avatarUrl : null,
-          approvalState: isIndividuals
-            ? workflow.endUser.approvalState
-            : workflow.business.approvalState,
-        },
-        endUser: undefined,
-        business: undefined,
-      };
-    });
+    return await this.service.listWorkflowRuntimeDataWithRelations(filter.query as any);
   }
 
   @common.Get('/active-states')

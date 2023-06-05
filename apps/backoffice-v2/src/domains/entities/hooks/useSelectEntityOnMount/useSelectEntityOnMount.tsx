@@ -11,7 +11,7 @@ import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 export const useSelectEntityOnMount = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
-  const { data: workflows } = useWorkflowsQuery(filterId); // @TODO: Add filters, search, sort, pagination
+  const { data: workflows } = useWorkflowsQuery(filterId);
   const onSelectEntity = useSelectEntity();
   const entity = useFilterEntity();
   const firstCaseId = workflows?.[0]?.id;
