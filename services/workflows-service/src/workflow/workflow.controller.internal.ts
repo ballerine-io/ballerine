@@ -25,6 +25,9 @@ import {
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { UsePipes } from '@nestjs/common';
 import { FilterService } from '@/filter/filter.service';
+import { getDocumentId } from '@/workflow/utils';
+import { DefaultContextSchema } from '@/workflow/schemas/context';
+import { certificateOfResidenceGH } from '@/schemas/documents/GH';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -55,20 +58,31 @@ export class WorkflowControllerInternal {
   async list(@common.Query() { filterId }: FindWorkflowsListDto) {
     const filter = await this.filterService.getById(filterId);
 
+    // @TODO: Move the logic to the service
     type WorkflowWithRelations = WorkflowRuntimeData & {
       workflowDefinition: WorkflowDefinition;
-    } & ({ endUser: EndUser; business: null } | { business: Business; endUser: null });
+    } & ({ endUser: EndUser } | { business: Business });
 
     const workflows = (await this.service.listWorkflowRuntimeData(
       filter.query as any,
     )) as WorkflowWithRelations[];
 
     return workflows.map(workflow => {
-      const isIndividuals = workflow.endUser !== null;
+      const isIndividuals = 'endUser' in workflow;
+
       return {
         ...workflow,
+        context: {
+          ...workflow.context,
+          documents: workflow.context?.documents?.map(
+            (document: DefaultContextSchema['documents'][number]) => ({
+              ...document,
+              id: getDocumentId(document),
+              propertiesSchema: certificateOfResidenceGH.propertiesSchema,
+            }),
+          ),
+        },
         entity: {
-          // @TODO: Make it a standalone function
           id: isIndividuals ? workflow.endUser.id : workflow.business.id,
           name: isIndividuals
             ? `${String(workflow.endUser.firstName)} ${String(workflow.endUser.lastName)}`

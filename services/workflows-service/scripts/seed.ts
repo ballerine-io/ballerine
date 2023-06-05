@@ -622,6 +622,7 @@ async function seed(bcryptSalt: Salt) {
           id: true,
           name: true,
           contextSchema: true,
+          config: true,
         },
       },
       endUser: {
@@ -669,6 +670,7 @@ async function seed(bcryptSalt: Salt) {
           id: true,
           name: true,
           contextSchema: true,
+          config: true,
         },
       },
       business: {

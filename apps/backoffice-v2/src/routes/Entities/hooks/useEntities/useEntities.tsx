@@ -3,16 +3,16 @@ import { useFilter } from '../../../../common/hooks/useFilter/useFilter';
 import { usePagination } from '../../../../common/hooks/usePagination/usePagination';
 import { ChangeEventHandler, useCallback } from 'react';
 import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
-import { useUsersQuery } from '../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
 import { useSort } from '../../../../common/hooks/useSort/useSort';
-import { useEntitiesWithWorkflowsQuery } from '../../../../domains/entities/hooks/queries/useEntitiesWithWorkflowsQuery/useEntitiesWithWorkflowsQuery';
 import { TIndividual } from '../../../../domains/individuals/types';
 import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
 import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
+import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
+import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 
 export const useEntities = () => {
-  const { data: users } = useUsersQuery();
-  const { data: cases, isLoading } = useEntitiesWithWorkflowsQuery(users);
+  const filterId = useFilterId();
+  const { data: cases, isLoading } = useWorkflowsQuery(filterId);
   const entity = useFilterEntity();
   const individualsSearchOptions = ['firstName', 'lastName', 'email', 'phone'];
   const businessesSearchOptions = [
@@ -70,7 +70,7 @@ export const useEntities = () => {
     onSortBy: onSortByChange,
     onSortDir,
     search,
-    cases: paginated,
+    cases,
     isLoading,
     page,
     pages,

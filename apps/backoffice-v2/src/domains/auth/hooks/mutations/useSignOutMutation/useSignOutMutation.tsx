@@ -18,9 +18,7 @@ export const useSignOutMutation = () => {
       void queryClient.cancelQueries();
     },
     onSuccess: (data, { callbackUrl, redirect }) => {
-      queryClient.setQueryData(authenticatedUser.queryKey, {
-        user: undefined,
-      });
+      void queryClient.invalidateQueries();
 
       if (!callbackUrl || !redirect) return;
 

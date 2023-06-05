@@ -1,12 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { workflowsQueryKeys } from '../../../query-keys';
 import { fetchUpdateWorkflowById } from '../../../fetchers';
+import { useWorkflowQuery } from '../../queries/useWorkflowQuery/useWorkflowQuery';
+import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 
 export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: string }) => {
   const queryClient = useQueryClient();
-  const workflowById = workflowsQueryKeys.byId({ workflowId });
+  const filterId = useFilterId();
+  const { data: workflowById } = useWorkflowQuery({ workflowId, filterId });
 
   return useMutation({
     mutationFn: ({
