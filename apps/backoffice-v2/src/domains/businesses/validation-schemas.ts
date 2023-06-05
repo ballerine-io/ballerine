@@ -25,7 +25,7 @@ export const BusinessesListSchema = z
 
 export const BusinessByIdSchema = ObjectWithIdSchema.extend({
   companyName: z.string().default(''),
-  registrationNumber: z.string().default(''),
+  registrationNumber: z.string().nullable().default(''),
   legalForm: z.string().nullable().default(''),
   countryOfIncorporation: z.string().nullable().default(''),
   dateOfIncorporation: z.string().nullable().default(''),

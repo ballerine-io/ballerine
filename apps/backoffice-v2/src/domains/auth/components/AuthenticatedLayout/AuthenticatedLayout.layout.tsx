@@ -1,8 +1,11 @@
 import { Header } from '../../../../common/components/organisms/Header';
 import { FunctionComponentWithChildren } from '../../../../common/types';
+import { useSelectEntityFilterOnMount } from '../../../entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
 
 export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {
+  // Should only be uncommented once `useAuthRedirects` is no longer in use in `AuthProvider`
   // useAuthenticatedLayout();
+  useSelectEntityFilterOnMount();
 
   return (
     <div className="drawer-mobile drawer">
