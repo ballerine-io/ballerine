@@ -1,13 +1,16 @@
 import * as common from '@nestjs/common';
-import { Body, Controller, HttpCode, Post, Req } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Req, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login';
 import { UserModel } from '@/user/user.model';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
+import util from 'util';
+import { Public } from '@/common/decorators/public.decorator';
 
+@Public()
 @ApiTags('auth')
 @Controller('internal/auth')
 export class AuthController {
@@ -22,13 +25,14 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(200)
-  logout(@Req() req: Request): { user: undefined } {
-    req.session.destroy(() => {
-      return;
-    });
-    req.logOut(() => {
-      return;
-    });
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ user: undefined }> {
+    const asyncLogout = util.promisify(req.logout.bind(req));
+    await asyncLogout();
+    res.clearCookie('session', { path: '/', httpOnly: true });
+    res.clearCookie('session.sig', { path: '/', httpOnly: true });
 
     return { user: undefined };
   }

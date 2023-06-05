@@ -11,20 +11,20 @@ layout: ../../../layouts/MainLayout.astro
 ```bash
 
 # PNPM
-pnpm add @ballerine/web-sdk
+pnpm add @ballerine/web-ui-sdk
 
 # Yarn
-yarn add @ballerine/web-sdk
+yarn add @ballerine/web-ui-sdk
 
 # NPM
-npm install @ballerine/web-sdk
+npm install @ballerine/web-ui-sdk
 
 ```
 
 ### Initialization
 
 ```typescript
-import { flows as ballerineFlows } from '@ballerine/web-sdk';
+import { flows as ballerineFlows } from '@ballerine/web-ui-sdk';
 
 // 1. Initialize SDK
 await ballerineFlows

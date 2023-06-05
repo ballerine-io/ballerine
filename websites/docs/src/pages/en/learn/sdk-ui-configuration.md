@@ -14,7 +14,7 @@ section covers some of the available options.
 The `uiConfig.general` property allows changing the SDK's font, colors, and padding. - [API reference](/en/api/sdk/flows-init-options/#uiconfig)
 
 ```typescript
-import {flows} from '@ballerine/web-sdk';
+import {flows} from '@ballerine/web-ui-sdk';
 
 await flows.init({
   // ...
@@ -38,7 +38,7 @@ await flows.init({
 The `uiConfig.components` property allows changing the styling of specific UI components such as `button` or `title` using kebab-case CSS properties. - [API reference](/en/api/sdk/flows-init-options/#uiconfig)
 
 ```typescript
-import {flows} from '@ballerine/web-sdk';
+import {flows} from '@ballerine/web-ui-sdk';
 
 await flows.init({
   // ...
@@ -68,7 +68,7 @@ await flows.init({
 UI packs are a set of complete bundles of styles, assets and translations which can be supplied via a name or a URL. - [API reference](/en/api/sdk/flows-init-options/#uiconfig)
 
 ```typescript
-import {flows} from '@ballerine/web-sdk';
+import {flows} from '@ballerine/web-ui-sdk';
 
 await flows.init({
   // ...

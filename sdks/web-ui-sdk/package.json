@@ -1,0 +1,101 @@
+{
+  "author": "Ballerine <dev@ballerine.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ballerine-io/ballerine/tree/main/sdks/web-ui-sdk"
+  },
+  "description": "Ballerine is an open-source infrastructure for user identity and risk management. Compose verification processes for any vertical and geography using modular building blocks, components, and 3rd party integrations.",
+  "keywords": [
+    "ballerine",
+    "fintech",
+    "risk",
+    "verification",
+    "authentication",
+    "authorization",
+    "auth",
+    "service",
+    "identity",
+    "kyc",
+    "kyb"
+  ],
+  "types": "dist/index.d.ts",
+  "name": "@ballerine/web-ui-sdk",
+  "private": false,
+  "version": "1.3.2",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/ballerine-sdk.umd.cjs",
+  "module": "./dist/ballerine-sdk.js",
+  "exports": {
+    ".": {
+      "import": "./dist/ballerine-sdk.js",
+      "require": "./dist/ballerine-sdk.umd.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite -c vite.dev.config.ts",
+    "build": "vite build",
+    "deprecated:build:sdk": "rollup --config",
+    "start": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "playwright:install": "playwright install --with-deps",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "format": "prettier --write \"./**/*.{cjs,js,svelte,html,ts,mts}\"",
+    "format:check": "prettier --check \"./**/*.{cjs,js,svelte,html,ts,mts}\"",
+    "lint": "eslint \"./**/*.{cjs,js,ts,mts,svelte}\" --fix",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
+    "build:examples": "npm run build && for i in ./examples/sdk ./examples/standalone ./examples/standalone-future; do cp -R ./dist/ballerine-sdk.umd.cjs $i; done",
+    "example:sdk": "npm run build:examples && npx http-server ./examples/sdk -p 8081",
+    "example:standalone": "npm run build:examples && npx http-server ./examples/standalone -p 9090",
+    "example:standalone-future": "npm run build:examples && npx http-server ./examples/standalone-future -p 9090",
+    "deploy:cdn:cf": "vite build && aws s3 cp ./dist/ballerine-sdk.umd.cjs s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.cjs && aws s3 cp ./dist/ballerine-sdk.umd.cjs.map s3://blrn-cdn-prod/js/$npm_package_version/ballerine-sdk.umd.cjs.map",
+    "publish:patch": "vite build && npm version patch && npm publish && npm run deploy:cdn:cf"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.5",
+    "@playwright/test": "^1.27.1",
+    "@sveltejs/vite-plugin-svelte": "1.0.8",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/svelte": "^3.2.2",
+    "@tsconfig/svelte": "^2.0.1",
+    "@types/jslib-html5-camera-photo": "^3.1.2",
+    "@types/lodash.keyby": "^4.6.7",
+    "@types/node": "^18.11.9",
+    "@types/testing-library__jest-dom": "^5.14.5",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
+    "editorconfig": "^1.0.1",
+    "eslint": "8.22.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-storybook": "^0.6.6",
+    "eslint-plugin-svelte3": "^4.0.0",
+    "jsdom": "^20.0.2",
+    "postcss": "^8.4.18",
+    "prettier": "^2.7.1",
+    "prettier-plugin-svelte": "^2.8.0",
+    "rollup-plugin-visualizer": "^5.8.3",
+    "svelte": "^3.39.0",
+    "svelte-check": "^2.2.7",
+    "svelte-preprocess": "^4.9.8",
+    "typedoc": "^0.23.23",
+    "typedoc-plugin-markdown": "^3.14.0",
+    "typescript": "^4.5.4",
+    "vite": "4.0.3",
+    "vite-plugin-dts": "^1.6.6",
+    "vite-plugin-html": "^3.2.0",
+    "vitest": "^0.24.5"
+  },
+  "dependencies": {
+    "@ballerine/common": "0.4.3",
+    "@zerodevx/svelte-toast": "^0.8.0",
+    "compressorjs": "^1.1.1",
+    "deepmerge": "^4.3.0",
+    "dotenv": "^16.0.3",
+    "jslib-html5-camera-photo": "^3.3.3"
+  }
+}

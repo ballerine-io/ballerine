@@ -55,7 +55,7 @@ export class WorkflowRuntimeDataRepository {
     });
   }
 
-  async getActiveWorkflowByEntity({
+  async findActiveWorkflowByEntity({
     entityId,
     entityType,
     workflowDefinitionId,
@@ -75,5 +75,16 @@ export class WorkflowRuntimeDataRepository {
         },
       },
     });
+  }
+
+  async findContext(id: string) {
+    return (
+      await this.prisma.workflowRuntimeData.findUniqueOrThrow({
+        where: { id },
+        select: {
+          context: true,
+        },
+      })
+    )?.context;
   }
 }

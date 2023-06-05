@@ -3,7 +3,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { ApprovalState, Prisma, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import {
+  ApprovalState,
+  Prisma,
+  WorkflowDefinition,
+  WorkflowRuntimeData,
+  WorkflowRuntimeDataStatus,
+} from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { CompleteWorkflowData, RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
@@ -34,7 +40,7 @@ import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-p
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
-import { getDocumentId } from '@/workflow/utils';
+import { getDocumentId } from '@/documents/utils';
 
 type TEntityId = string;
 
@@ -194,7 +200,7 @@ export class WorkflowService {
       data?.context?.documents?.forEach(({ propertiesSchema, id: _id, ...document }) => {
         if (!Object.keys(propertiesSchema ?? {})?.length) return;
 
-        const validatePropertiesSchema = ajv.compile(propertiesSchema);
+        const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {});
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
         if (!isValidPropertiesSchema) {
@@ -210,9 +216,11 @@ export class WorkflowService {
       data.context = mergedContext;
     }
 
-    this.logger.log(
-      `Context update received from client: [${runtimeData.state} -> ${data.state} ]`,
-    );
+    this.logger.log('Workflow state transition', {
+      id: workflowRuntimeId,
+      from: runtimeData.state,
+      to: data.state,
+    });
 
     // in case current state is a final state, we want to create another machine, of type manual review.
     // assign runtime to user, copy the context.
@@ -234,10 +242,16 @@ export class WorkflowService {
       data.status = allDocumentsResolved ? 'completed' : data.status! || runtimeData.status;
     }
 
+    const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
+
+    if (isResolved) {
+      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
+    }
+
     const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
       data: {
         ...data,
-        resolvedAt: isFinal ? new Date() : null,
+        resolvedAt: isResolved ? new Date() : null,
       },
     });
 
@@ -292,7 +306,10 @@ export class WorkflowService {
         },
       }));
 
-    this.logger.log(`${businessId || endUserId} is now in state ${ApprovalState.PROCESSING}`);
+    this.logger.log(`Entity state updated to ${ApprovalState.PROCESSING}`, {
+      entityType: endUserId ? 'endUser' : 'business',
+      entityId: endUserId || businessId,
+    });
 
     // will throw exception if review machine def is missing
     await this.workflowDefinitionRepository.findById(workflow.reviewMachineId);
@@ -389,7 +406,7 @@ export class WorkflowService {
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
 
     const existingWorkflowRuntimeData =
-      await this.workflowRuntimeDataRepository.getActiveWorkflowByEntity({
+      await this.workflowRuntimeDataRepository.findActiveWorkflowByEntity({
         entityId,
         entityType,
         workflowDefinitionId: workflowDefinition.id,
@@ -440,7 +457,7 @@ export class WorkflowService {
       );
     }
 
-    this.logger.log(`WorkflowRuntimeData ${existingWorkflowRuntimeData ? 'created' : 'updated'}`, {
+    this.logger.log(existingWorkflowRuntimeData ? 'Workflow updated' : 'Workflow created', {
       workflowRuntimeDataId: workflowRuntimeData.id,
       entityId,
       entityType,
@@ -601,6 +618,7 @@ export class WorkflowService {
     resubmissionReason,
     id,
   }: WorkflowEventInput & IObjectWithId) {
+    this.logger.log('Workflow event received', { id, type });
     const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
     const workflow = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
@@ -626,10 +644,11 @@ export class WorkflowService {
     const context = snapshot.machine.context;
     const isFinal = snapshot.machine.states[currentState].type === 'final';
 
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    this.logger.log(
-      `Workflow ${workflow.name}-${id}-v${workflow.version} state transiation [${runtimeData.state} -> ${currentState}]`,
-    );
+    this.logger.log('Workflow state transition', {
+      id: id,
+      from: runtimeData.state,
+      to: currentState,
+    });
 
     if (type === 'resubmit' && document) {
       switch (resubmissionReason) {
@@ -745,5 +764,9 @@ export class WorkflowService {
     }
 
     return bucketName;
+  }
+
+  async getWorkflowRuntimeDataContext(id: string) {
+    return this.workflowRuntimeDataRepository.findContext(id);
   }
 }
