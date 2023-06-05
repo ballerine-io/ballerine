@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import console from 'console';
 const databaseHelper = new PrismaClient();
 const TEST_DATABASE_SCHEMA_NAME = process.env.DATABASE_SCHEMA_NAME || 'test';
 

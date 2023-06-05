@@ -11,7 +11,6 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
 import console from 'console';
-import { HttpAdapterHost } from '@nestjs/core';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;

@@ -79,7 +79,6 @@
     "reflect-metadata": "0.1.13",
     "rxjs": "^7.8.0",
     "swagger-ui-express": "4.6.2",
-    "testcontainers": "^9.8.0",
     "tmp": "^0.2.1",
     "zod": "^3.21.4"
   },
@@ -113,6 +112,7 @@
     "prettier": "^2.8.4",
     "prisma": "4.13.0",
     "supertest": "4.0.2",
+    "testcontainers": "^9.8.0",
     "ts-jest": "27.0.3",
     "ts-node": "^10.9.1",
     "type-fest": "0.11.0",

@@ -11,4 +11,6 @@ module.exports = {
       tsconfig: './tsconfig.test.json',
     },
   },
+  globalSetup: '<rootDir>/src/test/db-setup.ts',
+  globalTeardown: '<rootDir>/src/test/db-teardown.ts',
 };
