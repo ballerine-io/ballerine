@@ -13,7 +13,7 @@ import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { Business, EndUser, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import { WorkflowRuntimeData } from '@prisma/client';
 import { RunnableWorkflowData } from './types';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
@@ -25,9 +25,6 @@ import {
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { UsePipes } from '@nestjs/common';
 import { FilterService } from '@/filter/filter.service';
-import { getDocumentId } from '@/workflow/utils';
-import { DefaultContextSchema } from '@/workflow/schemas/context';
-import { certificateOfResidenceGH } from '@/schemas/documents/GH';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -49,10 +46,10 @@ export class WorkflowControllerInternal {
     return await this.service.createWorkflowDefinition(data);
   }
 
-  // @TODO: Refactor. Should return WorkflowRuntimeData. Should support filters.
   @common.Get()
-  @swagger.ApiOkResponse() // @TODO: Swagger
-  @swagger.ApiForbiddenResponse()
+  @swagger.ApiOkResponse()
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @ApiNestedQuery(FindWorkflowsListDto)
   @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema))
   async list(@common.Query() { filterId }: FindWorkflowsListDto) {
