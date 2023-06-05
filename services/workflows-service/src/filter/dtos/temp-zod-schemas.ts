@@ -185,26 +185,30 @@ export const BusinessRelationFilterSchema = z.object({
 
 // @ts-expect-error - It is expected for z.lazy to be any.
 export const WorkflowRuntimeDataWhereInputSchema = z.lazy(() =>
-  z.object({
-    id: zStringFilterStringUnion.optional(),
-    endUserId: zStringNullableFilterStringNullUnion.optional(),
-    businessId: zStringNullableFilterStringNullUnion.optional(),
-    workflowDefinitionId: zStringFilterStringUnion.optional(),
-    workflowDefinitionVersion: zStringFilterStringUnion.optional(),
-    context: z.unknown().optional(),
-    state: zStringNullableFilterStringNullUnion.optional(),
-    status: zStringFilterStringUnion.optional(),
-    createdAt: zDateTimeFilterDateStringUnion.optional(),
-    updatedAt: zDateTimeFilterDateStringUnion.optional(),
-    createdBy: zStringFilterStringUnion.optional(),
-    endUser: z.union([EndUserRelationFilterSchema, EndUserWhereInputSchema, z.null()]).optional(),
-    business: z
-      .union([BusinessRelationFilterSchema, BusinessWhereInputSchema, z.null()])
-      .optional(),
-    workflowDefinition: WorkflowDefinitionRelationFilterSchema.or(
-      WorkflowDefinitionWhereInputSchema,
-    ).optional(),
-  }),
+  z
+    .object({
+      id: zStringFilterStringUnion.optional(),
+      endUserId: zStringNullableFilterStringNullUnion.optional(),
+      businessId: zStringNullableFilterStringNullUnion.optional(),
+      workflowDefinitionId: zStringFilterStringUnion.optional(),
+      workflowDefinitionVersion: zStringFilterStringUnion.optional(),
+      context: z.unknown().optional(),
+      assigneeId: zStringNullableFilterStringNullUnion.optional(),
+      state: zStringNullableFilterStringNullUnion.optional(),
+      status: zStringFilterStringUnion.optional(),
+      createdAt: zDateTimeFilterDateStringUnion.optional(),
+      updatedAt: zDateTimeFilterDateStringUnion.optional(),
+      createdBy: zStringFilterStringUnion.optional(),
+      endUser: z.union([EndUserRelationFilterSchema, EndUserWhereInputSchema, z.null()]).optional(),
+      business: z
+        .union([BusinessRelationFilterSchema, BusinessWhereInputSchema, z.null()])
+        .optional(),
+      workflowDefinition: WorkflowDefinitionRelationFilterSchema.or(
+        WorkflowDefinitionWhereInputSchema,
+      ).optional(),
+      assignee: UserWhereInputSchema.or(UserRelationFilterSchema).optional(),
+    })
+    .strict(),
 );
 
 // @ts-ignore
@@ -288,6 +292,8 @@ export const WorkflowDefinitionSelectSchema = z.object({
   id: z.boolean().optional(),
   reviewMachineId: z.boolean().optional(),
   name: z.boolean().optional(),
+  config: z.boolean().optional(),
+  contextSchema: z.boolean().optional(),
   version: z.boolean().optional(),
   definitionType: z.boolean().optional(),
   definition: z.boolean().optional(),
@@ -312,11 +318,51 @@ export const WorkflowDefinitionSelectSchema = z.object({
     .optional(),
 });
 
+export const UserSelectSchema = z.object({
+  id: z.boolean().optional(),
+  firstName: z.boolean().optional(),
+  lastName: z.boolean().optional(),
+  email: z.boolean().optional(),
+  phone: z.boolean().optional(),
+  roles: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
+  workflowRuntimeData: z
+    .union([
+      z.boolean(),
+      z.object({
+        select: z
+          .lazy(() => WorkflowRuntimeDataSelectSchema)
+          .nullable()
+          .optional(),
+      }),
+    ])
+    .optional(),
+});
+
+export const UserWhereInputSchema = z.object({
+  id: zStringFilterStringUnion.optional(),
+  firstName: zStringFilterStringUnion.optional(),
+  lastName: zStringFilterStringUnion.optional(),
+  email: zStringFilterStringUnion.optional(),
+  phone: zStringFilterStringUnion.optional(),
+  roles: zStringFilterStringUnion.optional(),
+  createdAt: zDateTimeFilterDateStringUnion.optional(),
+  updatedAt: zDateTimeFilterDateStringUnion.optional(),
+  workflowRuntimeData: WorkflowRuntimeDataListRelationFilterSchema.optional(),
+});
+
+export const UserRelationFilterSchema = z.object({
+  is: UserWhereInputSchema.optional(),
+  isNot: UserWhereInputSchema.optional(),
+});
+
 // @ts-ignore
 export const WorkflowRuntimeDataSelectSchema = z.object({
   id: z.boolean().optional(),
   endUserId: z.boolean().optional(),
   businessId: z.boolean().optional(),
+  assigneeId: z.boolean().optional(),
   workflowDefinitionId: z.boolean().optional(),
   workflowDefinitionVersion: z.boolean().optional(),
   context: z.boolean().optional(),
@@ -359,6 +405,17 @@ export const WorkflowRuntimeDataSelectSchema = z.object({
       }),
     ])
     .optional(),
+  assignee: z
+    .union([
+      z.boolean(),
+      z.object({
+        select: z
+          .lazy(() => UserSelectSchema.strict())
+          .nullable()
+          .optional(),
+      }),
+    ])
+    .optional(),
 });
 
 // @ts-ignore
@@ -392,27 +449,6 @@ export const EndUserSelectSchema = z.object({
     .optional(),
   businesses: z.boolean().optional(),
   endUsersOnBusinesses: z.boolean().optional(),
-});
-
-export const EndUserFilterSchema = FilterSchema.extend({
-  query: z
-    .object({
-      select: EndUserSelectSchema.strict()
-        .refine(
-          (v: Record<PropertyKey, unknown>) => Object.keys(v).length > 0,
-          'At least one `select` field must be provided',
-        )
-        .optional(),
-      where: EndUserWhereInputSchema.strict().optional(),
-    })
-    .refine(v => v.select || v.where, 'At least `query.select` or `query.where` must be provided'),
-});
-
-export const EndUserFilterCreateSchema = EndUserFilterSchema.omit({
-  id: true,
-  entity: true,
-  createdAt: true,
-  updatedAt: true,
 });
 
 /* Businesses */
@@ -475,20 +511,20 @@ export const BusinessWhereInputSchema = z.object({
   updatedAt: zDateTimeFilterDateStringUnion.optional(),
 });
 
-export const BusinessFilterSchema = FilterSchema.extend({
-  query: z
-    .object({
-      select: BusinessSelectSchema.strict()
-        .refine(v => Object.keys(v).length > 0, 'At least one `select` field must be provided')
-        .optional(),
-      where: BusinessWhereInputSchema.strict().optional(),
-    })
-    .refine(v => v.select || v.where, 'At least `query.select` or `query.where` must be provided'),
-});
+const WorkflowRuntimeDataFilterQuerySchema = z
+  .object({
+    select: WorkflowRuntimeDataSelectSchema.strict()
+      .refine(
+        (v: Record<PropertyKey, unknown>) => Object.keys(v).length > 0,
+        'At least one `select` field must be provided',
+      )
+      .optional(),
+    where: WorkflowRuntimeDataWhereInputSchema.optional(),
+  })
+  .refine(v => v.select || v.where, 'At least `query.select` or `query.where` must be provided');
 
-export const BusinessFilterCreateSchema = BusinessFilterSchema.omit({
-  id: true,
-  entity: true,
-  createdAt: true,
-  updatedAt: true,
+export const FilterCreateSchema = z.object({
+  name: z.string(),
+  entity: z.enum(['individuals', 'businesses']),
+  query: WorkflowRuntimeDataFilterQuerySchema,
 });

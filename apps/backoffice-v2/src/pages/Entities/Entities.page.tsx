@@ -69,7 +69,7 @@ export const Entities: FunctionComponent = () => {
           </Case.Content>
         </Case>
       )}
-      {!cases && !isLoading ? (
+      {Array.isArray(cases) && !cases.length && !isLoading ? (
         <div className={`p-2`}>
           <h2 className={`mt-4 text-6xl`}>No cases were found</h2>
         </div>

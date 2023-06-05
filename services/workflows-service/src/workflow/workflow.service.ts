@@ -13,7 +13,7 @@ import {
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { CompleteWorkflowData, RunnableWorkflowData, WorkflowWithRelations } from './types';
+import { CompleteWorkflowData, RunnableWorkflowData, TWorkflowWithRelations } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
@@ -154,13 +154,22 @@ export class WorkflowService {
   ) {
     const workflows = (await this.workflowRuntimeDataRepository.findMany(
       args,
-    )) as WorkflowWithRelations[];
+    )) as TWorkflowWithRelations[];
 
     return workflows.map(this.formatWorkflowRuntimeData.bind(this));
   }
 
-  private formatWorkflowRuntimeData(workflow: WorkflowWithRelations) {
+  private formatWorkflowRuntimeData(workflow: TWorkflowWithRelations) {
     const isIndividual = 'endUser' in workflow;
+
+    const service = createWorkflow({
+      definition: workflow.workflowDefinition as any,
+      definitionType: workflow.workflowDefinition.definitionType as any,
+      workflowContext: {
+        machineContext: workflow.context,
+        state: workflow.state,
+      },
+    });
 
     return {
       ...workflow,
@@ -186,6 +195,7 @@ export class WorkflowService {
       },
       endUser: undefined,
       business: undefined,
+      nextEvents: service.getSnapshot().nextEvents,
     };
   }
 

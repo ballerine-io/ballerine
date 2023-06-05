@@ -46,13 +46,14 @@ export class WorkflowControllerInternal {
     return await this.service.createWorkflowDefinition(data);
   }
 
+  // @TODO: Refactor this endpoint to return as minimal data as possible, and make sure the data is enriched only in the `byId` endpoint
   @common.Get()
   @swagger.ApiOkResponse()
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @ApiNestedQuery(FindWorkflowsListDto)
   @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema))
-  async list(@common.Query() { filterId }: FindWorkflowsListDto) {
+  async listWorkflowRuntimeData(@common.Query() { filterId }: FindWorkflowsListDto) {
     const filter = await this.filterService.getById(filterId);
 
     return await this.service.listWorkflowRuntimeDataWithRelations(filter.query as any);

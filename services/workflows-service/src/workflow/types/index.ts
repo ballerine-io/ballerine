@@ -13,7 +13,7 @@ export type CompleteWorkflowData = WorkflowRuntimeData & {
 
 export type TEntityType = 'endUser' | 'business';
 
-export type WorkflowWithRelations = WorkflowRuntimeData & {
+export type TWorkflowWithRelations = WorkflowRuntimeData & {
   workflowDefinition: WorkflowDefinition;
   assignee: User;
 } & ({ endUser: EndUser } | { business: Business });

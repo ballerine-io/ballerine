@@ -12,12 +12,13 @@ export const fetchWorkflows = async (filterId: string) => {
     schema: z.array(
       z.object({
         id: z.string(),
+        status: z.string(),
+        nextEvents: z.array(z.any()),
         workflowDefinition: ObjectWithIdSchema.extend({
           name: z.string(),
           contextSchema: z.record(z.any(), z.any()).nullable(),
           config: z.record(z.any(), z.any()).nullable(),
         }),
-        status: z.string(),
         createdAt: z.string().datetime(),
         context: z.object({
           documents: z.array(z.any()),
