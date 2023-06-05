@@ -1,5 +1,5 @@
 import passport from 'passport';
-import session from 'express-session';
+import cookieSession from 'cookie-session';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from '@/common/filters/HttpExceptions.filter';
@@ -12,37 +12,66 @@ import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.in
 import helmet from 'helmet';
 import { env } from '@/env';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
+import { NextFunction, Request, Response } from 'express';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
 global.__rootdir__ = __dirname || process.cwd();
 
+const corsOrigins =
+  env.NODE_ENV === 'production'
+    ? [env.BACKOFFICE_CORS_ORIGIN, /\.ballerine\.app$/]
+    : [
+        env.BACKOFFICE_CORS_ORIGIN,
+        env.HEADLESS_EXAMPLE_CORS_ORIGIN,
+        /\.ballerine\.dev$/,
+        /\.ballerine\.app$/,
+      ];
+
 async function main() {
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
     cors: {
-      origin: [env.BACKOFFICE_CORS_ORIGIN, env.HEADLESS_EXAMPLE_CORS_ORIGIN],
+      origin: corsOrigins,
       credentials: true,
     },
   });
 
   app.use(helmet());
   app.use(
-    session({
+    cookieSession({
       name: 'session',
-      secret: env.SESSION_SECRET,
-      saveUninitialized: false,
-      resave: false,
-      rolling: true,
-      cookie: {
-        httpOnly: true,
-        domain: env.NODE_ENV === 'production' ? '.ballerine.app' : undefined,
-        secure: env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 1000 * 60 * 60 * 1, // 1 hour(s)
-      },
+      keys: [env.SESSION_SECRET],
+      httpOnly: true,
+      domain: env.NODE_ENV === 'production' ? '.ballerine.app' : undefined,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 1000 * 60 * 60 * 1, // 1 hour(s)
     }),
   );
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (!req.session) return next();
+
+    req.session.nowInMinutes = Math.floor(Date.now() / 60e3);
+    next();
+  });
+
+  // register regenerate & save after the cookieSession middleware initialization
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.session && !req.session.regenerate) {
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      req.session.regenerate = (cb: Function) => {
+        cb();
+      };
+    }
+    if (req.session && !req.session.save) {
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      req.session.save = (cb: Function) => {
+        cb();
+      };
+    }
+    next();
+  });
   app.use(passport.initialize());
   app.use(passport.session());
   app.setGlobalPrefix('api');

@@ -1,6 +1,5 @@
-import { MiddlewareConsumer, Module, RequestMethod, Scope } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { MorganInterceptor, MorganModule } from 'nest-morgan';
+import { MiddlewareConsumer, Module, Scope } from '@nestjs/common';
+import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { UserModule } from './user/user.module';
 import { WorkflowModule } from './workflow/workflow.module';
 import { ACLModule } from '@/common/access-control/acl.module';
@@ -17,9 +16,11 @@ import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { FilterModule } from '@/filter/filter.module';
-import { SessionAuthMiddleware } from '@/auth/session-auth.middleware';
+import { SessionAuthGuard } from '@/auth/session-auth.guard';
 import { env } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
+import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
+import { LogRequestInterceptor } from '@/common/interceptors/log-request.interceptor';
 
 @Module({
   controllers: [],
@@ -46,7 +47,6 @@ import { SentryModule } from '@/sentry/sentry.module';
     AuthModule,
     HealthModule,
     PrismaModule,
-    MorganModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: env.ENV_FILE_NAME ?? '.env',
@@ -58,16 +58,16 @@ import { SentryModule } from '@/sentry/sentry.module';
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      scope: Scope.REQUEST,
-      useClass: MorganInterceptor('combined'),
+      useClass: LogRequestInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: SessionAuthGuard,
     },
   ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SessionAuthMiddleware).forRoutes({
-      path: 'v(\\d)+/internal/*',
-      method: RequestMethod.ALL,
-    });
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
   }
 }

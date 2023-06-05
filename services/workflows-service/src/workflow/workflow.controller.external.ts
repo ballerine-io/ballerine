@@ -5,7 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { Headers, NotFoundException, UseGuards, Res } from '@nestjs/common';
+import { Headers, NotFoundException, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -21,7 +21,7 @@ import { IntentResponse, WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
-import { KeyAuthGuard } from '@/auth/key-auth.guard';
+import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -33,13 +33,6 @@ export class WorkflowControllerExternal {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     private eventEmitter: EventEmitter2,
   ) {}
-
-  @common.Get('/test')
-  @common.HttpCode(200)
-  @UseGuards(KeyAuthGuard)
-  async test() {
-    return Promise.resolve({ success: true });
-  }
 
   // GET /workflows
   @common.Get()
@@ -118,7 +111,7 @@ export class WorkflowControllerExternal {
 
   @common.Post('/run')
   @swagger.ApiOkResponse()
-  @UseGuards(KeyAuthGuard)
+  @UseKeyAuthGuard()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createWorkflowRuntimeData(
@@ -157,5 +150,25 @@ export class WorkflowControllerExternal {
       ...data,
       id,
     });
+  }
+
+  // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
+  @common.Get('/:id/context')
+  @UseKeyAuthGuard()
+  @swagger.ApiOkResponse()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async getWorkflowRuntimeDataContext(@common.Param('id') id: string) {
+    try {
+      const context = await this.service.getWorkflowRuntimeDataContext(id);
+
+      return { context };
+    } catch (err) {
+      if (isRecordNotFoundError(err)) {
+        throw new NotFoundException(`No resource was found for ${JSON.stringify(id)}`);
+      }
+
+      throw err;
+    }
   }
 }
