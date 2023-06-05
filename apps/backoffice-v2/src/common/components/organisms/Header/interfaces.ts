@@ -1,6 +1,6 @@
-import { LinkPropsOptions } from '@tanstack/react-router';
+import { NavLinkProps } from 'react-router-dom';
 
-export type TNavItemProps = LinkPropsOptions & {
+export type TNavItemProps = Omit<NavLinkProps, 'to'> & {
   href: string;
   icon?: JSX.Element;
   className?: string;

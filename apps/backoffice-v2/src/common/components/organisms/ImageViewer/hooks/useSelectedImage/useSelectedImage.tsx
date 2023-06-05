@@ -1,6 +1,6 @@
 import { useImageViewerContext } from '../useImageViewerContext/useImageViewerContext';
 import { useEffect } from 'react';
-import { useParams } from '@tanstack/react-router';
+import { useParams } from 'react-router-dom';
 
 /**
  * @description Encapsulates SelectedImage's state and logic in addition to setting the initial selected image on mount.
