@@ -1,18 +1,22 @@
 import { useAuthenticatedUserQuery } from '../../../../hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useRouter } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { env } from '../../../../../../common/env/env';
 import { useIsAuthenticated } from '../useIsAuthenticated/useIsAuthenticated';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export const useAuthRedirects = ({
   protectedRoutes,
   redirectAuthenticatedTo,
   redirectUnauthenticatedTo,
+}: {
+  protectedRoutes: ReadonlyArray<string>;
+  redirectAuthenticatedTo?: string;
+  redirectUnauthenticatedTo?: string;
 }) => {
   const { isLoading } = useAuthenticatedUserQuery();
   const isAuthenticated = useIsAuthenticated();
-  const { history, navigate } = useRouter();
-  const { pathname } = history.location;
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const shouldRedirect = [
@@ -30,11 +34,8 @@ export const useAuthRedirects = ({
 
     // Navigate to the entities page if the user is signed in.
 
-    void navigate({
-      to: redirectAuthenticatedTo,
+    void navigate(redirectAuthenticatedTo, {
       replace: true,
-      params: undefined,
-      search: undefined,
     });
   }, [isLoading, isAuthenticated, navigate, pathname, redirectAuthenticatedTo, protectedRoutes]);
 
@@ -50,11 +51,8 @@ export const useAuthRedirects = ({
     if (!shouldRedirect) return;
 
     // Navigate to the sign-in page if the user is signed out.
-    navigate({
-      to: redirectUnauthenticatedTo,
+    navigate(redirectUnauthenticatedTo, {
       replace: true,
-      params: undefined,
-      search: undefined,
     });
   }, [isLoading, isAuthenticated, navigate, pathname, redirectUnauthenticatedTo]);
 };
