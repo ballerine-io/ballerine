@@ -3,13 +3,13 @@ import { useIsAuthenticated } from '../../../../context/AuthProvider/hooks/useIs
 import { useAuthContext } from '../../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import { useEffect } from 'react';
 import { env } from '../../../../../../common/env/env';
-import { useRouter } from '@tanstack/react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export const useUnauthenticatedLayout = () => {
   const { isLoading } = useAuthenticatedUserQuery();
   const isAuthenticated = useIsAuthenticated();
-  const { history, navigate } = useRouter();
-  const { pathname } = history.location;
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { redirectAuthenticatedTo } = useAuthContext();
   const disableRedirect = true;
 
@@ -27,11 +27,8 @@ export const useUnauthenticatedLayout = () => {
     )
       return;
 
-    void navigate({
-      to: redirectAuthenticatedTo,
+    void navigate(redirectAuthenticatedTo, {
       replace: true,
-      params: undefined,
-      search: undefined,
     });
-  }, [isLoading, isAuthenticated, navigate, pathname, redirectAuthenticatedTo]);
+  }, [isLoading, isAuthenticated, navigate, pathname, redirectAuthenticatedTo, disableRedirect]);
 };
