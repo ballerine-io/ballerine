@@ -46,7 +46,7 @@ export const Item: FunctionComponent<IItemProps> = ({
       <NavLink
         to={`/en/case-management/entities/${id}${search}`}
         className={({ isActive }) =>
-          ctw(`flex items-center gap-x-4 rounded-md outline-none`, { 'bg-muted': isActive })
+          ctw(`flex items-center gap-x-4 rounded-md px-3 outline-none`, { 'bg-muted': isActive })
         }
       >
         <div className={`indicator`}>
