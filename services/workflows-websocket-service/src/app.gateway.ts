@@ -19,7 +19,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect() {
-    this.broadcast('disconnect', '');
+    this.logger.log('Client disconnected');
   }
 
   broadcast(event: string, message: string) {
