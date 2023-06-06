@@ -9,9 +9,8 @@ export const useWorkflowQuery = ({
   filterId: string;
 }) => {
   return useQuery({
-    ...workflowsQueryKeys.list(filterId),
+    ...workflowsQueryKeys.byId({ workflowId, filterId }),
     enabled: !!filterId,
     staleTime: 10_000,
-    select: workflows => workflows.find(workflow => workflow.id === workflowId),
   });
 };

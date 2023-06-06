@@ -27,6 +27,8 @@ export const useApproveEntityMutation = ({
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries(workflowsQueryKeys.list(filterId).queryKey);
+      const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
+      void queryClient.invalidateQueries(workflowById.queryKey);
 
       toast.success(t('toast:approve_case.success'));
 

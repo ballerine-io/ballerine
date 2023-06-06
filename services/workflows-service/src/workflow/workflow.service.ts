@@ -124,44 +124,19 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.findById(id, args);
   }
 
-  async getWorkflowRuntimeDataByCorrelationId(
+  async getWorkflowByIdWithRelations(
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
-    return await this.workflowRuntimeDataRepository.findById(id, args);
-  }
-
-  async getWorkflowDefinitionById(
-    id: string,
-    args?: Parameters<WorkflowDefinitionRepository['findById']>[1],
-  ) {
-    return await this.workflowDefinitionRepository.findById(id, args);
-  }
-
-  async listActiveWorkflowsRuntimeStates() {
-    return await this.workflowRuntimeDataRepository.findMany({
-      select: {
-        state: true,
-        endUserId: true,
-        businessId: true,
-        assigneeId: true,
-        id: true,
-        status: true,
-      },
-    });
-  }
-
-  async listWorkflowRuntimeDataWithRelations(
-    args?: Parameters<WorkflowRuntimeDataRepository['findMany']>[0],
-  ) {
-    const workflows = (await this.workflowRuntimeDataRepository.findMany(
+    const workflow = (await this.workflowRuntimeDataRepository.findById(
+      id,
       args,
-    )) as TWorkflowWithRelations[];
+    )) as TWorkflowWithRelations;
 
-    return workflows.map(this.formatWorkflowRuntimeData.bind(this));
+    return this.formatWorkflow(workflow);
   }
 
-  private formatWorkflowRuntimeData(workflow: TWorkflowWithRelations) {
+  private formatWorkflow(workflow: TWorkflowWithRelations) {
     const isIndividual = 'endUser' in workflow;
 
     const service = createWorkflow({
@@ -199,6 +174,72 @@ export class WorkflowService {
       business: undefined,
       nextEvents: service.getSnapshot().nextEvents,
     };
+  }
+
+  async getWorkflowRuntimeDataByCorrelationId(
+    id: string,
+    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+  ) {
+    return await this.workflowRuntimeDataRepository.findById(id, args);
+  }
+
+  async getWorkflowDefinitionById(
+    id: string,
+    args?: Parameters<WorkflowDefinitionRepository['findById']>[1],
+  ) {
+    return await this.workflowDefinitionRepository.findById(id, args);
+  }
+
+  async listActiveWorkflowsRuntimeStates() {
+    return await this.workflowRuntimeDataRepository.findMany({
+      select: {
+        state: true,
+        endUserId: true,
+        businessId: true,
+        assigneeId: true,
+        id: true,
+        status: true,
+      },
+    });
+  }
+
+  async listWorkflowRuntimeDataWithRelations(
+    args?: Parameters<WorkflowRuntimeDataRepository['findMany']>[0],
+  ) {
+    const workflows = (await this.workflowRuntimeDataRepository.findMany(
+      args,
+    )) as TWorkflowWithRelations[];
+
+    return this.formatWorkflowsRuntimeData(workflows);
+  }
+
+  private formatWorkflowsRuntimeData(workflows: TWorkflowWithRelations[]) {
+    return workflows.map(workflow => {
+      const isIndividual = 'endUser' in workflow;
+
+      return {
+        id: workflow.id,
+        status: workflow.status,
+        createdAt: workflow.createdAt,
+        entity: {
+          id: isIndividual ? workflow.endUser.id : workflow.business.id,
+          name: isIndividual
+            ? `${String(workflow.endUser.firstName)} ${String(workflow.endUser.lastName)}`
+            : workflow.business.companyName,
+          avatarUrl: isIndividual ? workflow.endUser.avatarUrl : null,
+          approvalState: isIndividual
+            ? workflow.endUser.approvalState
+            : workflow.business.approvalState,
+        },
+        assignee: workflow.assigneeId
+          ? {
+              id: workflow.assigneeId,
+              firstName: workflow.assignee?.firstName,
+              lastName: workflow.assignee?.lastName,
+            }
+          : null,
+      };
+    });
   }
 
   async listWorkflowRuntimeDataByUserId(userId: string) {

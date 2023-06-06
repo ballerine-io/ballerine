@@ -25,6 +25,11 @@ import {
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { UsePipes } from '@nestjs/common';
 import { FilterService } from '@/filter/filter.service';
+import {
+  FindWorkflowParamsDto,
+  FindWorkflowQueryDto,
+  FindWorkflowQuerySchema,
+} from '@/workflow/dtos/find-workflow.dto';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -52,11 +57,26 @@ export class WorkflowControllerInternal {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @ApiNestedQuery(FindWorkflowsListDto)
-  @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema))
+  @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema, 'query'))
   async listWorkflowRuntimeData(@common.Query() { filterId }: FindWorkflowsListDto) {
     const filter = await this.filterService.getById(filterId);
 
     return await this.service.listWorkflowRuntimeDataWithRelations(filter.query as any);
+  }
+
+  @common.Get('/:id')
+  @swagger.ApiOkResponse()
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiNestedQuery(FindWorkflowQueryDto)
+  @UsePipes(new ZodValidationPipe(FindWorkflowQuerySchema, 'query'))
+  async getRunnableWorkflowDataById(
+    @common.Param() { id }: FindWorkflowParamsDto,
+    @common.Query() { filterId }: FindWorkflowQueryDto,
+  ) {
+    const filter = await this.filterService.getById(filterId);
+
+    return await this.service.getWorkflowByIdWithRelations(id, filter.query as any);
   }
 
   @common.Get('/active-states')
@@ -86,23 +106,6 @@ export class WorkflowControllerInternal {
       ...data,
       id: params.id,
     });
-  }
-
-  @common.Get('/:id')
-  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async getRunnableWorkflowDataById(
-    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
-  ): Promise<RunnableWorkflowData | null> {
-    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(params.id);
-    const workflowDefinition = await this.service.getWorkflowDefinitionById(
-      workflowRuntimeData.workflowDefinitionId,
-    );
-    return {
-      workflowDefinition,
-      workflowRuntimeData: enrichWorkflowRuntimeData(workflowRuntimeData),
-    };
   }
 
   // PATCH /workflows/:id
