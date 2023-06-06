@@ -1,7 +1,7 @@
-import { useSearch } from '@tanstack/react-router';
+import { useSearchParamsByEntity } from '../useSearchParamsByEntity/useSearchParamsByEntity';
 
-export const useFilterId = (): string | undefined =>
-  useSearch({
-    strict: false,
-    track: ({ filterId }) => filterId,
-  })?.filterId;
+export const useFilterId = (): string | undefined => {
+  const [{ filterId }] = useSearchParamsByEntity();
+
+  return filterId;
+};

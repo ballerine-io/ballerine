@@ -1,30 +1,21 @@
-import { useParams, useSearch as useTanStackSearch } from '@tanstack/react-router';
+import { useParams } from 'react-router-dom';
 import { useCallback } from 'react';
 import { sort } from '../../../../../common/hooks/useSort/sort';
-import { TRouteId } from '../../../../../common/types';
 import { useSelectEntitiesQuery } from '../useSelectEntitiesQuery/useSelectEntitiesQuery';
 import { TEntities } from '../../../types';
+import { useSearchParamsByEntity } from '../../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 
-export const useNextEntityIdQuery = <TId extends TRouteId>({
+export const useNextEntityIdQuery = ({
   initialState,
-  routeId,
 }: {
   initialState: {
     sortDir?: 'asc' | 'desc';
     sortBy: keyof TEntities[number];
   };
-  routeId: TId;
 }) => {
   const { entityId } = useParams();
-  const { sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' } =
-    useTanStackSearch({
-      from: routeId,
-      strict: false,
-      track: searchParams => ({
-        sortBy: 'sortBy' in searchParams ? searchParams?.sortBy : undefined,
-        sortDir: 'sortDir' in searchParams ? searchParams?.sortDir : undefined,
-      }),
-    });
+  const [{ sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' }] =
+    useSearchParamsByEntity();
   const selectNextEntityId = useCallback(
     (data: TEntities) => {
       if (!entityId) return;

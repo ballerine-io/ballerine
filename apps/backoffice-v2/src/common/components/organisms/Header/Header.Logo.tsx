@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { BallerineLogo } from '../../atoms/icons';
-import { Link } from '@tanstack/react-router';
+import { Link } from 'react-router-dom';
 
 /**
  * @description {@link BallerineLogo} with navigation to "/" on click.
@@ -10,10 +10,7 @@ export const Logo: FunctionComponent = () => {
   return (
     <h1 className={`mb-16 flex`}>
       <Link
-        to="/$locale"
-        params={{
-          locale: 'en',
-        }}
+        to={`/en`}
         className={`btn-ghost btn flex gap-x-3 text-2xl  normal-case focus:outline-primary`}
       >
         <BallerineLogo />
