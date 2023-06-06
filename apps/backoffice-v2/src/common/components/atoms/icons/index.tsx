@@ -1,5 +1,7 @@
 import { FunctionComponent, SVGProps } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
+import { env } from '../../../env/env';
+import { Image } from 'lucide-react';
 
 /**
  * @description The Ballerine logo SVG found in Ballerine's Figma design.
