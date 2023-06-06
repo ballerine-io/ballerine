@@ -1,7 +1,11 @@
-export async function teardown() {
-  if (!global.__DB_CONTAINER__) return;
+import { TestGlobal } from '@/test/test-global';
 
-  await global.__DB_CONTAINER__.stop();
+export async function teardown() {
+  let globalThisTest = globalThis as TestGlobal;
+
+  if (!globalThisTest.__DB_CONTAINER__) return;
+
+  await globalThisTest.__DB_CONTAINER__.stop();
 }
 
 module.exports = teardown;

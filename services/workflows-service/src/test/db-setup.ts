@@ -1,13 +1,6 @@
-import { PostgreSqlContainer } from 'testcontainers';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from 'testcontainers';
 import console from 'console';
-// global.d.ts
-declare global {
-  namespace NodeJS {
-    interface Global {
-      __DB_CONTAINER__: typeof globalThis;
-    }
-  }
-}
+import { TestGlobal } from '@/test/test-global';
 
 module.exports = async () => {
   const container = await new PostgreSqlContainer().withDatabase('test').start();
@@ -17,7 +10,7 @@ module.exports = async () => {
 
   await runPrismaMigrations();
 
-  global.__DB_CONTAINER__ = container;
+  (globalThis as TestGlobal).__DB_CONTAINER__ = container;
 };
 
 const runPrismaMigrations = async () => {
