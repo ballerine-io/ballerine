@@ -44,16 +44,14 @@ enum ApprovalState {
 model EndUser {
   id String @id @default(cuid())
 
-  correlationId  String? @unique @db.VarChar
-  verificationId String? @db.VarChar
+  correlationId String? @unique @db.VarChar
 
   endUserType   String?
   approvalState ApprovalState @default(NEW)
   stateReason   String?       @db.VarChar
-  jsonData      Json?
 
-  firstName      String?   @db.VarChar
-  lastName       String?   @db.VarChar
+  firstName      String    @db.VarChar
+  lastName       String    @db.VarChar
   email          String?   @db.Text
   phone          String?   @db.VarChar
   dateOfBirth    DateTime?
@@ -106,6 +104,8 @@ model Business {
   numberOfEmployees       Int? // Number of employees working for the business entity
   businessPurpose         String? // Brief description of the business entity's purpose or main activities
   documents               Json? // Collection of documents required for the KYB process, e.g., registration documents, financial statements
+  avatarUrl               String?
+  additionalInfo          Json?
   approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
 
   workflowRuntimeData  WorkflowRuntimeData[]
@@ -158,7 +158,7 @@ model WorkflowRuntimeData {
   workflowDefinitionId      String
   workflowDefinitionVersion Int
   context                   Json
-  config                   Json?
+  config                    Json?
   // history
   state                     String?
   status                    WorkflowRuntimeDataStatus @default(active)
