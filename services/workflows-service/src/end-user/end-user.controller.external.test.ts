@@ -53,7 +53,7 @@ describe('#EndUserControllerExternal', () => {
           lastName: 'lastName',
         });
 
-      expect(response.status).toBe(201)
+      expect(response.status).toBe(201);
       const allEndUsers = await endUserService.list({});
       expect(allEndUsers[0]).toMatchObject({
         firstName: 'test',
