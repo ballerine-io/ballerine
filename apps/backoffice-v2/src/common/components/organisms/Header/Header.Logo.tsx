@@ -1,8 +1,6 @@
 import { FunctionComponent } from 'react';
 import { BallerineLogo } from '../../atoms/icons';
 import { Link } from 'react-router-dom';
-import * as process from 'process';
-import { Image } from 'lucide-react';
 import { env } from '../../../env/env';
 
 /**
