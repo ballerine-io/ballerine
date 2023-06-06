@@ -610,7 +610,7 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  await createFilter('Individuals', 'individuals', {
+  await createFilter('Risk Score Improvement - Individuals', 'individuals', {
     select: {
       id: true,
       status: true,
@@ -658,7 +658,7 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  await createFilter('Risk Score Improvement', 'businesses', {
+  await createFilter('Risk Score Improvement - Businesses', 'businesses', {
     select: {
       id: true,
       status: true,

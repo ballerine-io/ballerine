@@ -13,7 +13,7 @@ import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { WorkflowRuntimeData } from '@prisma/client';
+import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { RunnableWorkflowData } from './types';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
@@ -135,7 +135,7 @@ export class WorkflowControllerInternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async deleteWorkflowDefinitionById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
-  ): Promise<WorkflowDefinitionModel | null> {
+  ): Promise<WorkflowDefinition> {
     try {
       return await this.service.deleteWorkflowDefinitionById(params.id, {
         select: {

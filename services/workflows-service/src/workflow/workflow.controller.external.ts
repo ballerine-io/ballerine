@@ -118,7 +118,7 @@ export class WorkflowControllerExternal {
     @common.Body() body: WorkflowRunDto,
     @Res() res: Response,
   ): Promise<any> {
-    const { workflowId, context } = body;
+    const { workflowId, context, config } = body;
     const { entity } = context;
 
     if (!entity.id && !entity.ballerineEntityId)
@@ -127,6 +127,7 @@ export class WorkflowControllerExternal {
     const actionResult = await this.service.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowId,
       context,
+      config,
     });
 
     return res.json({

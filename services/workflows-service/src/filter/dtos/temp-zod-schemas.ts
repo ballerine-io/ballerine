@@ -177,7 +177,7 @@ const IntFilterSchema = z.lazy(() =>
     not: z.union([NestedIntFilterSchema, z.number()]).optional(),
   }),
 );
-
+// @ts-ignore
 export const BusinessRelationFilterSchema = z.object({
   is: z.lazy(() => BusinessWhereInputSchema).optional(),
   isNot: z.lazy(() => BusinessWhereInputSchema).optional(),
@@ -194,6 +194,7 @@ export const WorkflowRuntimeDataWhereInputSchema = z.lazy(() =>
       workflowDefinitionVersion: zStringFilterStringUnion.optional(),
       context: z.unknown().optional(),
       assigneeId: zStringNullableFilterStringNullUnion.optional(),
+      config: z.unknown().optional(),
       state: zStringNullableFilterStringNullUnion.optional(),
       status: zStringFilterStringUnion.optional(),
       createdAt: zDateTimeFilterDateStringUnion.optional(),
@@ -452,7 +453,7 @@ export const EndUserSelectSchema = z.object({
 });
 
 /* Businesses */
-
+// @ts-ignore
 export const BusinessSelectSchema = z.object({
   id: z.boolean().optional(),
   companyName: z.boolean().optional(),
@@ -488,7 +489,7 @@ export const BusinessSelectSchema = z.object({
   createdAt: z.boolean().optional(),
   updatedAt: z.boolean().optional(),
 });
-
+// @ts-ignore
 export const BusinessWhereInputSchema = z.object({
   id: zStringFilterStringUnion.optional(),
   companyName: zStringFilterStringUnion.optional(),
