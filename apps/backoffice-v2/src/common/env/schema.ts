@@ -16,5 +16,5 @@ export const EnvSchema = z.object({
     .transform(v => v * 1000)
     .or(z.literal(false))
     .catch(undefined),
-  IMAGE_LOGO_URL: z.string().default('https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/assets/fido_logo.svg'),
+  IMAGE_LOGO_URL: z.string()
 });
