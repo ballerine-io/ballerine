@@ -61,13 +61,17 @@
       },
       enabled: typeof id === 'string' && id.length > 0,
     });
-  const entity = import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'endUser' : 'business';
+  const entity = import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'endUser' : ('business' as const);
   const createWorkflowsQuery = (
     options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {},
   ) =>
     createQuery({
-      queryKey: ['workflows'],
-      queryFn: fetchWorkflows,
+      queryKey: ['workflows', { entity, entityId }],
+      queryFn: () =>
+        fetchWorkflows({
+          entity,
+          entityId,
+        }),
       enabled: typeof entityId === 'string' && entityId.length > 0,
       ...options,
     });
@@ -95,7 +99,7 @@
     });
   const createWorkflowQuery = (id: string) =>
     createQuery({
-      queryKey: ['workflows', { id }],
+      queryKey: ['workflows', { id, entity, entityId }],
       queryFn: async () => {
         const data = await fetchWorkflow(id);
 
@@ -159,7 +163,11 @@
     });
 
   const onSubmit = import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? onSubmitEnduser : onSubmitBusiness;
-
+  const clearUser = () => {
+    sessionStorage.removeItem(ENTITY_ID_STORAGE_KEY);
+    entityId = undefined;
+    queryClient.invalidateQueries();
+  };
   const workflow = writable<WorkflowOptionsBrowser | undefined>();
   const debugWf = writable<{ definition: unknown }>();
 
@@ -267,4 +275,7 @@
   {#if $debugWf}
     <DevSidebar workflowDefinition={$debugWf?.definition} />
   {/if}
+  <div class={'fixed left-2 top-2'}>
+    <button on:click={clearUser}> Clear User </button>
+  </div>
 </div>

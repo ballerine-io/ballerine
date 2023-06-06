@@ -3,5 +3,3 @@
   export let onSubmit = undefined;
   export let onPrev = undefined;
 </script>
-
-Final
