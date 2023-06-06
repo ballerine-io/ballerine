@@ -240,11 +240,11 @@ export class WorkflowService {
       ['active'].includes(data.status! || runtimeData.status) &&
       workflowDef.config?.completedWhenTasksResolved
     ) {
-      const allDocumentsResolved = data.context?.documents?.every(
-        (document: DefaultContextSchema['documents'][number]) => {
+      const allDocumentsResolved =
+        data.context?.documents?.length &&
+        data.context?.documents?.every((document: DefaultContextSchema['documents'][number]) => {
           return ['approved', 'rejected'].includes(document?.decision?.status as string);
-        },
-      );
+        });
 
       data.status = allDocumentsResolved ? 'completed' : data.status! || runtimeData.status;
     }

@@ -96,7 +96,7 @@
 
     if (currentStep !== 'final') return;
 
-    window.location.reload();
+    setTimeout(() => window.location.reload(), 240);
   });
 
   workflowService.subscribe('USER_PREV_STEP', data => {

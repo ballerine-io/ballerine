@@ -57,9 +57,9 @@
   });
 </script>
 
-{#if fileType === 'pdf'}
+{#if fileType === 'application/pdf'}
   <iframe class="rounded-lg" {src} {alt} />
 {/if}
-{#if fileType !== 'pdf'}
+{#if fileType !== 'application/pdf'}
   <img class="rounded-lg" {src} {alt} />
 {/if}

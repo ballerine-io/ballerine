@@ -11,7 +11,13 @@ export class BallerineBackOfficeService {
   fetchBusiness = async (id: string) => fetchJson(`${this.baseUrl}/businesses/${id}`);
 
   fetchWorkflow = async (id: string) => fetchJson(`${this.baseUrl}/workflows/${id}`);
-  fetchWorkflows = async () =>
+  fetchWorkflows = async ({
+    entity,
+    entityId,
+  }: {
+    entity: 'endUser' | 'business';
+    entityId: string;
+  }) =>
     fetchJson<
       Array<{
         workflowDefinition: {
@@ -23,11 +29,7 @@ export class BallerineBackOfficeService {
           status: string;
         };
       }>
-    >(
-      `${this.baseUrl}/workflows/${
-        import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'endUser' : 'business'
-      }/${sessionStorage.getItem(ENTITY_ID_STORAGE_KEY)}`,
-    );
+    >(`${this.baseUrl}/workflows/${entity}/${entityId}`);
   fetchIntent = async () =>
     fetchJson<Array<Record<string, unknown>>>(`${this.baseUrl}/workflows/intent`, {
       method: 'POST',
