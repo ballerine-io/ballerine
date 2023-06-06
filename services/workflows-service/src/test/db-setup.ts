@@ -1,10 +1,10 @@
 import { PostgreSqlContainer } from 'testcontainers';
 import console from 'console';
-
+// global.d.ts
 declare global {
   namespace NodeJS {
     interface Global {
-      __DB_CONTAINER__: any;
+      __DB_CONTAINER__: typeof globalThis;
     }
   }
 }
