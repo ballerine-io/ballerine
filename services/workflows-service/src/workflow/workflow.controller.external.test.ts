@@ -75,7 +75,7 @@ describe('Workflow (external)', () => {
           workflowDefinition: { id: 'a' },
           state: { id: 'b' } as unknown,
         },
-      ] as CompleteWorkflowData[]),
+      ] as unknown as CompleteWorkflowData[]),
     );
 
     await request(app.getHttpServer())
@@ -111,10 +111,10 @@ describe('Workflow (external)', () => {
     (wfService.getWorkflowRuntimeDataById as jest.Mock).mockReturnValue(
       Promise.resolve({
         state: { id: 'b' } as unknown,
-      } as WorkflowRuntimeData),
+      } as unknown as WorkflowRuntimeData),
     );
     (wfService.getWorkflowDefinitionById as jest.Mock).mockReturnValue(
-      Promise.resolve({ id: 'a' } as WorkflowDefinition),
+      Promise.resolve({ id: 'a' } as unknown as WorkflowDefinition),
     );
     await request(app.getHttpServer())
       .get(`${'/external/workflows'}/abcde`)

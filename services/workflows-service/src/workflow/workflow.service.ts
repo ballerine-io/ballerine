@@ -303,7 +303,9 @@ export class WorkflowService {
       correlationId = (await this.endUserRepository.getCorrelationIdById(runtimeData.endUserId))
         ?.correlationId as string;
     } else {
-      throw new Error('No entity Id found');
+      correlationId = '';
+      console.error('No entity Id found');
+      // throw new Error('No entity Id found');
     }
     return correlationId;
   }
