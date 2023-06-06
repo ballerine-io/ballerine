@@ -73,6 +73,14 @@ export class WorkflowDefinitionModel {
     required: false,
     type: 'object',
   })
+  @IsObject()
+  @IsOptional()
+  config?: JsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: 'object',
+  })
   @IsNotEmptyObject()
   @IsOptional()
   extensions?: JsonValue;
