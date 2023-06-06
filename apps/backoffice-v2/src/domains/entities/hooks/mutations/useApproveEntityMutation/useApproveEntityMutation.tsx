@@ -29,10 +29,10 @@ export const useApproveEntityMutation = ({
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({
-        queryKey: queryKeys[entity as keyof typeof queryKeys]?.list?.(filterId).queryKey,
+        queryKey: queryKeys[entity]?.list?.(filterId).queryKey,
       });
       void queryClient.invalidateQueries({
-        queryKey: queryKeys[entity as keyof typeof queryKeys]?.byId?.(endUserId, filterId).queryKey,
+        queryKey: queryKeys[entity]?.byId?.(endUserId, filterId).queryKey,
       });
 
       toast.success(t('toast:approve_case.success'));

@@ -1,7 +1,7 @@
-import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 
-export const useFilterEntity = (): string | undefined => {
-  const [{ entity }] = useSearchParamsByEntity();
+export const useFilterEntity = () => {
+  const entity = useEntityType();
 
   return entity;
 };

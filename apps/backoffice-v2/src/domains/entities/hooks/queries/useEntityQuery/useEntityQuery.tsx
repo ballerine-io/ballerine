@@ -18,7 +18,7 @@ export const useEntityQuery = <TQueryFnData = TEntity,>({
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...queryKeys[entity as keyof typeof queryKeys]?.byId?.(entityId, filterId),
+    ...queryKeys[entity]?.byId?.(entityId, filterId),
     enabled: isString(entityId) && !!entityId?.length && !!filterId && isAuthenticated,
     select,
   });
