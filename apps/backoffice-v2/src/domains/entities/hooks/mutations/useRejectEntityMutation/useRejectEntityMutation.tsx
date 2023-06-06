@@ -43,6 +43,8 @@ export const useRejectEntityMutation = ({
       }),
     onSuccess: (data, payload) => {
       void queryClient.invalidateQueries(workflowsQueryKeys.list(filterId).queryKey);
+      const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
+      void queryClient.invalidateQueries(workflowById.queryKey);
 
       const action = payload.action === Action.REJECT ? 'reject_case' : 'ask_resubmit_case';
 

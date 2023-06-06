@@ -57,7 +57,7 @@ export class FilterControllerExternal {
   @UseKeyAuthGuard()
   @swagger.ApiCreatedResponse({ type: FilterModel })
   @swagger.ApiForbiddenResponse()
-  @UsePipes(new ZodValidationPipe(FilterCreateSchema))
+  @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
   async createFilter(@common.Body() data: FilterCreateDto) {
     return await this.service.create({
       data: {

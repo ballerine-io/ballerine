@@ -12,6 +12,7 @@ import { rootLoader } from '../pages/Root/Root.loader';
 import { entitiesLoader } from '../pages/Entities/Entities.loader';
 import { localeLoader } from '../pages/Locale/Locale.loader';
 import { Locale } from '../pages/Locale/Locale.page';
+import { entityLoader } from '../pages/Entity/Entity.loader';
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,7 @@ const router = createBrowserRouter([
                   {
                     path: '/:locale/case-management/entities/:entityId',
                     element: <Entity />,
+                    loader: entityLoader,
                     errorElement: <RouteError />,
                   },
                 ],

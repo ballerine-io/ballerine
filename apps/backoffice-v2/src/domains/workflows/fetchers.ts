@@ -13,17 +13,7 @@ export const fetchWorkflows = async (filterId: string) => {
       z.object({
         id: z.string(),
         status: z.string(),
-        nextEvents: z.array(z.any()),
-        workflowDefinition: ObjectWithIdSchema.extend({
-          name: z.string(),
-          contextSchema: z.record(z.any(), z.any()).nullable(),
-          config: z.record(z.any(), z.any()).nullable(),
-        }),
         createdAt: z.string().datetime(),
-        context: z.object({
-          documents: z.array(z.any()),
-          entity: z.record(z.any(), z.any()),
-        }),
         entity: ObjectWithIdSchema.extend({
           name: z.string(),
           avatarUrl: z.string().nullable(),
@@ -40,11 +30,40 @@ export const fetchWorkflows = async (filterId: string) => {
   return handleZodError(error, workflows);
 };
 
-export const fetchWorkflowById = async ({ workflowId }: IWorkflowId) => {
+export const fetchWorkflowById = async ({
+  workflowId,
+  filterId,
+}: {
+  workflowId: string;
+  filterId: string;
+}) => {
   const [workflow, error] = await apiClient({
-    endpoint: `workflows/${workflowId}`,
+    endpoint: `workflows/${workflowId}?filterId=${filterId}`,
     method: Method.GET,
-    schema: z.any(),
+    schema: z.object({
+      id: z.string(),
+      status: z.string(),
+      nextEvents: z.array(z.any()),
+      workflowDefinition: ObjectWithIdSchema.extend({
+        name: z.string(),
+        contextSchema: z.record(z.any(), z.any()).nullable(),
+        config: z.record(z.any(), z.any()).nullable(),
+      }),
+      createdAt: z.string().datetime(),
+      context: z.object({
+        documents: z.array(z.any()),
+        entity: z.record(z.any(), z.any()),
+      }),
+      entity: ObjectWithIdSchema.extend({
+        name: z.string(),
+        avatarUrl: z.string().nullable(),
+        approvalState: z.enum(States),
+      }),
+      assignee: ObjectWithIdSchema.extend({
+        firstName: z.string(),
+        lastName: z.string(),
+      }).nullable(),
+    }),
   });
 
   return handleZodError(error, workflow);
