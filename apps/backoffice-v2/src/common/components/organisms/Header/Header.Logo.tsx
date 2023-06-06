@@ -1,6 +1,7 @@
 import { FunctionComponent } from 'react';
 import { BallerineLogo } from '../../atoms/icons';
 import { Link } from 'react-router-dom';
+import { env } from '../../../env/env';
 
 /**
  * @description {@link BallerineLogo} with navigation to "/" on click.
@@ -13,7 +14,11 @@ export const Logo: FunctionComponent = () => {
         to={`/en`}
         className={`btn-ghost btn flex gap-x-3 text-2xl  normal-case focus:outline-primary`}
       >
-        <BallerineLogo />
+        {!!env.IMAGE_LOGO_URL ? (
+          <img className={`h-20 w-40`} src={env.IMAGE_LOGO_URL} />
+        ) : (
+          <BallerineLogo />
+        )}
       </Link>
     </h1>
   );
