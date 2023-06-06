@@ -297,11 +297,13 @@ export class WorkflowService {
   private async getCorrelationIdFromWorkflow(runtimeData: WorkflowRuntimeData) {
     let correlationId: string;
     if (runtimeData.businessId) {
-      correlationId = (await this.businessRepository.getCorrelationIdById(runtimeData.businessId))
-        ?.correlationId as string;
+      correlationId = (await this.businessRepository.getCorrelationIdById(
+        runtimeData.businessId,
+      )) as string;
     } else if (runtimeData.endUserId) {
-      correlationId = (await this.endUserRepository.getCorrelationIdById(runtimeData.endUserId))
-        ?.correlationId as string;
+      correlationId = (await this.endUserRepository.getCorrelationIdById(
+        runtimeData.endUserId,
+      )) as string;
     } else {
       correlationId = '';
       console.error('No entity Id found');

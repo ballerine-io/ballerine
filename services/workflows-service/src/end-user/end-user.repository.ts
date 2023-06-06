@@ -49,10 +49,12 @@ export class EndUserRepository {
     });
   }
 
-  async getCorrelationIdById(id: string) {
-    return await this.prisma.endUser.findUnique({
-      where: { id },
-      select: { correlationId: true },
-    });
+  async getCorrelationIdById(id: string): Promise<string | null> {
+    return (
+      await this.prisma.endUser.findUniqueOrThrow({
+        where: { id },
+        select: { correlationId: true },
+      })
+    ).correlationId;
   }
 }
