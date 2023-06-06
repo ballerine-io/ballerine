@@ -1,25 +1,19 @@
-import { useNavigate, useParams } from '@tanstack/react-router';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useCallback } from 'react';
-import { entityRoute } from '../../../../routes/Entity/Entity.route';
 
 export const useSelectEntity = () => {
   const navigate = useNavigate();
   const { locale = 'en' } = useParams();
+  const { search } = useLocation();
 
   return useCallback(
     (entityId: string) => () => {
       if (!entityId) return;
 
-      void navigate({
+      void navigate(`/${locale}/case-management/entities/${entityId}${search}`, {
         replace: true,
-        to: entityRoute.id,
-        params: params => ({
-          ...params,
-          entityId,
-          locale,
-        }),
       });
     },
-    [locale, navigate],
+    [locale, navigate, search],
   );
 };

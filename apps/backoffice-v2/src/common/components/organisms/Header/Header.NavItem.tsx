@@ -1,10 +1,10 @@
 import { TNavItemProps } from './interfaces';
-import { Link } from '@tanstack/react-router';
+import { NavLink } from 'react-router-dom';
 import { FunctionComponentWithChildren } from '../../../types';
 import { ctw } from '../../../utils/ctw/ctw';
 
 /**
- * @description Wraps a {@link Link} @tanstack/react-router component with an li, accepts an optional icon, and handles the link's active state based on current route.
+ * @description Wraps a {@link Link} react-router-dom component with an li, accepts an optional icon, and handles the link's active state based on current route.
  *
  * @param children
  * @param icon - An optional icon to display to the left of the text, expects a format of "icon={<Icon/>}".
@@ -21,16 +21,9 @@ export const NavItem: FunctionComponentWithChildren<TNavItemProps> = ({
 }) => {
   return (
     <li>
-      <Link
-        to={href}
-        activeProps={{
-          className: `font-bold bg-muted`,
-        }}
-        className={ctw(`flex gap-x-2 rounded-md`, className)}
-        {...props}
-      >
+      <NavLink to={href} className={() => ctw(`flex gap-x-2 rounded-md`, className)} {...props}>
         {icon} {children}
-      </Link>
+      </NavLink>
     </li>
   );
 };
