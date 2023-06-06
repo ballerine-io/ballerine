@@ -11,7 +11,7 @@ import {
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { CompleteWorkflowData, RunnableWorkflowData } from './types';
+import { RunnableWorkflowData } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
@@ -151,12 +151,19 @@ export class WorkflowService {
     });
   }
 
-  async listFullWorkflowDataByUserId(userId: string): Promise<CompleteWorkflowData[]> {
-    return (await this.workflowRuntimeDataRepository.findMany({
-      // todo refactor
-      where: { businessId: userId },
+  async listFullWorkflowDataByUserId({
+    entityId,
+    entity,
+  }: {
+    entityId: string;
+    entity: TEntityType;
+  }) {
+    return await this.workflowRuntimeDataRepository.findMany({
+      where: {
+        [`${entity}Id`]: entityId,
+      },
       include: { workflowDefinition: true },
-    })) as CompleteWorkflowData[];
+    });
   }
 
   async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {

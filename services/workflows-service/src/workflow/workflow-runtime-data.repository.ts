@@ -15,7 +15,7 @@ export class WorkflowRuntimeDataRepository {
 
   async findMany<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
     args?: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindManyArgs>,
-  ): Promise<WorkflowRuntimeData[]> {
+  ) {
     return await this.prisma.workflowRuntimeData.findMany(args);
   }
 
