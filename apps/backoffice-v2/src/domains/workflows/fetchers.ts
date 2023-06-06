@@ -2,19 +2,37 @@ import { apiClient } from '../../common/api-client/api-client';
 import { z } from 'zod';
 import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-error';
 import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
-import { Method } from '../../common/enums';
+import { Method, States } from '../../common/enums';
 import { IWorkflowId } from './interfaces';
 
-export const fetchWorkflows = async () => {
+export const fetchWorkflows = async (filterId: string) => {
   const [workflows, error] = await apiClient({
-    endpoint: `workflows/active-states`,
+    endpoint: `workflows?filterId=${filterId}`,
     method: Method.GET,
     schema: z.array(
-      ObjectWithIdSchema.extend({
-        state: z.string().nullable(),
-        endUserId: z.string().nullable(),
-        businessId: z.string().nullable(),
-        assigneeId: z.string().nullable(),
+      z.object({
+        id: z.string(),
+        status: z.string(),
+        nextEvents: z.array(z.any()),
+        workflowDefinition: ObjectWithIdSchema.extend({
+          name: z.string(),
+          contextSchema: z.record(z.any(), z.any()).nullable(),
+          config: z.record(z.any(), z.any()).nullable(),
+        }),
+        createdAt: z.string().datetime(),
+        context: z.object({
+          documents: z.array(z.any()),
+          entity: z.record(z.any(), z.any()),
+        }),
+        entity: ObjectWithIdSchema.extend({
+          name: z.string(),
+          avatarUrl: z.string().nullable(),
+          approvalState: z.enum(States),
+        }),
+        assignee: ObjectWithIdSchema.extend({
+          firstName: z.string(),
+          lastName: z.string(),
+        }).nullable(),
       }),
     ),
   });

@@ -20,7 +20,7 @@ export const fetchFilters = async () => {
     method: Method.GET,
     schema: z.array(
       ObjectWithIdSchema.extend({
-        entity: z.string(),
+        entity: z.enum(['individuals', 'businesses']),
         name: z.string(),
       }),
     ),

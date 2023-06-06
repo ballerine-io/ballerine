@@ -94,42 +94,10 @@ describe('WorkflowControllerInternal', () => {
       {} as any,
       eventEmitterSpy,
     );
+    const filterService = {} as any;
+    const rolesBuilder = {} as any;
 
-    controller = new WorkflowControllerInternal(service, {} as any);
-  });
-
-  describe('.listWorkflowDefinitions', () => {
-    it('returns workflows by query', async () => {
-      await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(2));
-      await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(3));
-      await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(4));
-
-      const definitions = await controller.listWorkflowDefinitions(numbUserInfo, {
-        query: {
-          where: {
-            name: 'name 3',
-          },
-        },
-      });
-
-      expect(definitions).toHaveLength(1);
-      expect(definitions[0]).toMatchObject({ id: '3', name: 'name 3' });
-      expect(definitions[0]).not.toHaveProperty('updatedAt');
-    });
-
-    it('filters out certain fields', async () => {
-      await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(3));
-
-      const definitions = await controller.listWorkflowDefinitions(numbUserInfo, {
-        query: {
-          where: {
-            name: 'name 3',
-          },
-        },
-      });
-
-      expect(definitions[0]).not.toHaveProperty('updatedAt');
-    });
+    controller = new WorkflowControllerInternal(service, filterService, rolesBuilder);
   });
 
   describe('.event', () => {

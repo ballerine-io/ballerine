@@ -1,31 +1,29 @@
-import { StringFilter } from '@/common/query-filters/string-filter';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsObject, IsString } from 'class-validator';
+import { IsEnum, IsObject, IsString } from 'class-validator';
 import { JsonValue } from 'type-fest';
 
 export class FilterModel {
   @ApiProperty({
     required: true,
-    type: StringFilter,
+    type: String,
   })
-  @Type(() => StringFilter)
+  @Type(() => String)
   id!: string;
 
   @ApiProperty({
     required: true,
-    type: StringFilter,
+    type: String,
   })
-  @Type(() => StringFilter)
+  @Type(() => String)
   @IsString()
   name!: string;
 
   @ApiProperty({
     required: true,
-    type: StringFilter,
+    enum: ['individuals', 'businesses'],
   })
-  @Type(() => StringFilter)
-  @IsString()
+  @IsEnum(['individuals', 'businesses'])
   entity!: string;
 
   @ApiProperty({

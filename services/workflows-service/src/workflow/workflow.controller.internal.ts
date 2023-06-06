@@ -16,17 +16,22 @@ import { UserInfo } from '@/user/user-info';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { RunnableWorkflowData } from './types';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
-import { plainToClass } from 'class-transformer';
-import { Request } from 'express';
-import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
 import { enrichWorkflowRuntimeData } from './enrich-workflow-runtime-data';
+import {
+  FindWorkflowsListDto,
+  FindWorkflowsListSchema,
+} from '@/workflow/dtos/find-workflows-list.dto';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import { UsePipes } from '@nestjs/common';
+import { FilterService } from '@/filter/filter.service';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
 export class WorkflowControllerInternal {
   constructor(
     protected readonly service: WorkflowService,
+    protected readonly filterService: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -41,17 +46,17 @@ export class WorkflowControllerInternal {
     return await this.service.createWorkflowDefinition(data);
   }
 
+  // @TODO: Refactor this endpoint to return as minimal data as possible, and make sure the data is enriched only in the `byId` endpoint
   @common.Get()
-  @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
-  @swagger.ApiForbiddenResponse()
-  @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
-  async listWorkflowDefinitions(
-    @UserData() userInfo: UserInfo,
-    @common.Req() request: Request,
-  ): Promise<WorkflowDefinition[]> {
-    const args = plainToClass(WorkflowDefinitionFindManyArgs, request.query);
+  @swagger.ApiOkResponse()
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiNestedQuery(FindWorkflowsListDto)
+  @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema))
+  async listWorkflowRuntimeData(@common.Query() { filterId }: FindWorkflowsListDto) {
+    const filter = await this.filterService.getById(filterId);
 
-    return await this.service.listWorkflowDefinitions(args);
+    return await this.service.listWorkflowRuntimeDataWithRelations(filter.query as any);
   }
 
   @common.Get('/active-states')
