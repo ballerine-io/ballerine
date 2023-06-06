@@ -10,7 +10,6 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
 import { PrismaService } from '@/prisma/prisma.service';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
-import console from 'console';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -37,14 +36,6 @@ describe('#EndUserControllerExternal', () => {
     );
   });
 
-  describe('GET /end-user', () => {
-    it('it returns a list of end-users', async () => {
-      const response = await request(app.getHttpServer()).get('/external/end-users').send();
-
-      console.log(response.body);
-    });
-  });
-
   describe('POST /end-user', () => {
     it('it creates an end-user', async () => {
       expect(await endUserService.list({})).toHaveLength(0);
@@ -62,7 +53,8 @@ describe('#EndUserControllerExternal', () => {
           lastName: 'lastName',
         });
 
-      let allEndUsers = await endUserService.list({});
+      expect(response.status).toBe(201)
+      const allEndUsers = await endUserService.list({});
       expect(allEndUsers[0]).toMatchObject({
         firstName: 'test',
         lastName: 'lastName',

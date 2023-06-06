@@ -4,7 +4,7 @@ import console from 'console';
 declare global {
   namespace NodeJS {
     interface Global {
-      __CONTAINER__: any;
+      __DB_CONTAINER__: any;
     }
   }
 }
@@ -17,7 +17,7 @@ module.exports = async () => {
 
   await runPrismaMigrations();
 
-  global.__CONTAINER__ = container;
+  global.__DB_CONTAINER__ = container;
 };
 
 const runPrismaMigrations = async () => {

@@ -12,7 +12,7 @@ export const zQueryModeEnum = z.enum(['Default', 'Insensitive']);
 export const zEnumerable = <TSchema>(schema: ZodSchema<TSchema>) =>
   z.union([schema, schema.array()]);
 
-// @ts-ignore
+// @ts-expect-error - It is expected for z.lazy to be any.
 export const NestedIntFilterSchema = z.lazy(() =>
   z.object({
     equals: z.number().optional(),
@@ -107,7 +107,7 @@ export const zStringNullableFilterStringNullUnion = z.union([
   z.null(),
 ]);
 
-// @ts-ignore
+// @ts-expect-error - It is expected for z.lazy to be any.
 export const NestedIntNullableFilterSchema = z.lazy(() =>
   z
     .object({
@@ -142,7 +142,7 @@ export const IntNullableFilterSchema = z.lazy(() =>
 
 export const zApprovalStateEnum = z.enum(['APPROVED', 'REJECTED', 'PROCESSING', 'NEW']);
 
-// @ts-ignore
+// @ts-expect-error - It is expected for z.lazy to be any.
 export const NestedEnumApprovalStateFilter = z.lazy(() =>
   z.object({
     equals: zApprovalStateEnum.optional(),
@@ -151,7 +151,7 @@ export const NestedEnumApprovalStateFilter = z.lazy(() =>
     not: z.union([NestedEnumApprovalStateFilter, zApprovalStateEnum]).optional(),
   }),
 );
-// @ts-ignore
+// @ts-expect-error - It is expected for z.lazy to be any.
 const NestedIntFilterSchema = z.lazy(() =>
   z.object({
     equals: z.number().optional(),
@@ -183,7 +183,7 @@ export const BusinessRelationFilterSchema = z.object({
   isNot: z.lazy(() => BusinessWhereInputSchema).optional(),
 });
 
-// @ts-ignore
+// @ts-expect-error - It is expected for z.lazy to be any.
 export const WorkflowRuntimeDataWhereInputSchema = z.lazy(() =>
   z.object({
     id: zStringFilterStringUnion.optional(),

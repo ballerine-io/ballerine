@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import {z} from "zod";
 const databaseHelper = new PrismaClient();
 // should never be unset - default test in order not to delete default db
-const TEST_DATABASE_SCHEMA_NAME = z.string().parse(process.env.DATABASE_SCHEMA_NAME);
+const TEST_DATABASE_SCHEMA_NAME = z.string().default('test').parse(process.env.DATABASE_SCHEMA_NAME);
 
 //should be implemented in BeforeEach hook
 export const cleanupDatabase = async () => {
