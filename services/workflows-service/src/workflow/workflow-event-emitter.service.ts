@@ -5,7 +5,12 @@ import { WorkflowRuntimeData } from '@prisma/client';
 export interface WorkflowEventRawData {
   runtimeData: WorkflowRuntimeData;
   state: string;
-  context: any;
+  context: {
+    documents: any[];
+    entity: any;
+  };
+  entityId: string;
+  correlationId: string;
 }
 
 export interface WorkflowEventData {

@@ -1,30 +1,19 @@
-import { AnyArray, TKeyofArrayElement, TRouteId } from '../../types';
-import { useNavigate, useSearch as useTanStackSearch } from '@tanstack/react-router';
+import { AnyArray, TKeyofArrayElement } from '../../types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '../useDebounce/useDebounce';
 import { search as onSearch } from './search';
+import { useSearchParamsByEntity } from '../useSearchParamsByEntity/useSearchParamsByEntity';
 
-export const useSearch = <TArray extends AnyArray, TId extends TRouteId>({
-  routeId,
+export const useSearch = <TArray extends AnyArray>({
   data,
   searchBy,
   initialSearch = '',
 }: {
-  routeId: TId;
   data: TArray;
   searchBy: Array<TKeyofArrayElement<TArray>>;
   initialSearch?: string;
 }) => {
-  const navigate = useNavigate({
-    from: routeId,
-  });
-  const { search = initialSearch } = useTanStackSearch({
-    from: routeId,
-    strict: false,
-    track: searchParams => ({
-      search: 'search' in searchParams ? searchParams.search : undefined,
-    }),
-  });
+  const [{ search = initialSearch }, setSearchParams] = useSearchParamsByEntity();
   const searched = useMemo(
     () =>
       onSearch({
@@ -41,15 +30,10 @@ export const useSearch = <TArray extends AnyArray, TId extends TRouteId>({
   }, []);
 
   useEffect(() => {
-    // @ts-ignore
-    void navigate({
-      // @ts-ignore
-      search: prevState => ({
-        ...prevState,
-        search: debouncedSearch,
-      }),
+    setSearchParams({
+      search: debouncedSearch,
     });
-  }, [debouncedSearch]);
+  }, [debouncedSearch, setSearchParams]);
 
   return {
     searched,

@@ -1,4 +1,3 @@
-import { entitiesRoute } from '../../../../routes/Entities/Entities.route';
 import { useSelectEntity } from '../useSelectEntity/useSelectEntity';
 import { useNextEntityIdQuery } from '../queries/useNextEntityIdQuery/useNextEntityIdQuery';
 import { useCallback } from 'react';
@@ -8,7 +7,6 @@ export const useSelectNextEntity = () => {
     initialState: {
       sortBy: 'caseCreatedAt',
     },
-    routeId: entitiesRoute.fullPath,
   });
   const onSelectNextEntity = useSelectEntity();
 
