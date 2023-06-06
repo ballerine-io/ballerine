@@ -9,7 +9,6 @@ import { Entities } from '../pages/Entities/Entities.page';
 import { RouteError } from '../common/components/atoms/RouteError/RouteError';
 import { CaseManagement } from '../pages/CaseManagement/CaseManagement.page';
 import { rootLoader } from '../pages/Root/Root.loader';
-import { entityLoader } from '../pages/Entity/Entity.loader';
 import { entitiesLoader } from '../pages/Entities/Entities.loader';
 import { localeLoader } from '../pages/Locale/Locale.loader';
 import { Locale } from '../pages/Locale/Locale.page';
@@ -48,7 +47,6 @@ const router = createBrowserRouter([
                   {
                     path: '/:locale/case-management/entities/:entityId',
                     element: <Entity />,
-                    loader: entityLoader,
                     errorElement: <RouteError />,
                   },
                 ],

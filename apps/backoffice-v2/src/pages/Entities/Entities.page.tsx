@@ -37,30 +37,18 @@ export const Entities: FunctionComponent = () => {
               ? skeletonEntities.map(index => (
                   <Cases.SkeletonItem key={`cases-list-skeleton-${index}`} />
                 ))
-              : cases?.map(
-                  ({
-                    id,
-                    firstName,
-                    lastName,
-                    caseCreatedAt,
-                    companyName,
-                    assigneeId,
-                    assigneeFullName,
-                    avatarUrl,
-                    approvalState,
-                  }) => (
-                    <Cases.Item
-                      key={id}
-                      id={id}
-                      fullName={entity !== 'businesses' ? `${firstName} ${lastName}` : companyName}
-                      avatarUrl={avatarUrl}
-                      createdAt={caseCreatedAt}
-                      assigneeId={assigneeId}
-                      assigneeFullName={assigneeFullName}
-                      status={approvalState}
-                    />
-                  ),
-                )}
+              : cases?.map(case_ => (
+                  <Cases.Item
+                    key={case_.id}
+                    id={case_.id}
+                    fullName={case_.entity.name}
+                    avatarUrl={case_.entity.avatarUrl}
+                    createdAt={case_.createdAt}
+                    assigneeId={case_.assignee?.id}
+                    assigneeFullName={`${case_.assignee?.firstName} ${case_.assignee?.lastName}`}
+                    status={case_.entity.approvalState}
+                  />
+                ))}
           </Cases.List>
         </MotionScrollArea>
         <div className={`divider my-0 px-4`}></div>
@@ -81,7 +69,7 @@ export const Entities: FunctionComponent = () => {
           </Case.Content>
         </Case>
       )}
-      {!cases?.length && !isLoading ? (
+      {Array.isArray(cases) && !cases.length && !isLoading ? (
         <div className={`p-2`}>
           <h2 className={`mt-4 text-6xl`}>No cases were found</h2>
         </div>
