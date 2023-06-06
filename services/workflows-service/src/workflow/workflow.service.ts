@@ -42,7 +42,7 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
 import { getDocumentId } from '@/documents/utils';
-
+import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 
 type TEntityId = string;
@@ -292,6 +292,15 @@ export class WorkflowService {
     }
 
     return updateResult;
+  }
+
+  async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
+    const updatedWorkflowRuntime = await this.workflowRuntimeDataRepository.updateById(
+      workflowRuntimeId,
+      { data: { assigneeId: assigneeId } },
+    );
+
+    return updatedWorkflowRuntime;
   }
 
   private async getCorrelationIdFromWorkflow(runtimeData: WorkflowRuntimeData) {
