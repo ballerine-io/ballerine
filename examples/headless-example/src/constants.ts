@@ -1,4 +1,4 @@
-export const NO_AUTH_USER_KEY = 'no_auth_user_id' as const;
+export const ENTITY_ID_STORAGE_KEY = 'entityId' as const;
 
 export const Category = {
   ID_CARD: 'id',

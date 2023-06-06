@@ -11,6 +11,7 @@ import { BusinessModel } from './business.model';
 import { BusinessService } from './business.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 
 @swagger.ApiTags('external/businesses')
 @common.Controller('external/businesses')
@@ -24,6 +25,7 @@ export class BusinessControllerExternal {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [BusinessModel] })
   @swagger.ApiForbiddenResponse()
+  @UseKeyAuthInDevGuard()
   async create(
     @common.Body() data: BusinessCreateDto,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
@@ -57,6 +59,7 @@ export class BusinessControllerExternal {
   @swagger.ApiOkResponse({ type: BusinessModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
+  @UseKeyAuthInDevGuard()
   async getById(@common.Param() params: BusinessWhereUniqueInput): Promise<BusinessModel | null> {
     try {
       const business = await this.service.getById(params.id);

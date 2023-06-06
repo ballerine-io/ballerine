@@ -1,4 +1,5 @@
 import { fetchJson } from '@/utils';
+import { ENTITY_ID_STORAGE_KEY } from '@/constants';
 
 export type WorkServiceEndpoints = {
   base: string;
@@ -22,11 +23,18 @@ export class BallerineBackOfficeService {
           status: string;
         };
       }>
-    >(`${this.baseUrl}/workflows`);
+    >(
+      `${this.baseUrl}/workflows/${
+        import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'endUser' : 'business'
+      }/${sessionStorage.getItem(ENTITY_ID_STORAGE_KEY)}`,
+    );
   fetchIntent = async () =>
     fetchJson<Array<Record<string, unknown>>>(`${this.baseUrl}/workflows/intent`, {
       method: 'POST',
-      body: { intentName: import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'kycSignup' : 'kybSignup' },
+      body: {
+        intentName: import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'kycSignup' : 'kybSignup',
+        entityId: sessionStorage.getItem(ENTITY_ID_STORAGE_KEY),
+      },
     });
 
   fetchBusinessSignUp = async ({

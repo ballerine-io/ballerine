@@ -9,7 +9,6 @@ import { createForm } from 'felte';
 import { getContext, setContext } from 'svelte';
 import type { z, ZodSchema } from 'zod';
 import type { FetchInitWithJson, Serializable } from './types';
-import { NO_AUTH_USER_KEY } from './constants';
 
 export const setWorkflowContext = (service: InstanceType<typeof WorkflowBrowserSDK>) => {
   setContext('workflow', service);
@@ -64,6 +63,12 @@ export const makeWorkflow = (data: {
     },
     backend: {
       baseUrl: 'http://localhost:3000/api/v1/external',
+      headers: {
+        Authorization:
+          import.meta.env.MODE === 'development'
+            ? `Api-Key ${import.meta.env.VITE_API_KEY}`
+            : undefined,
+      },
     },
   };
 };
@@ -105,7 +110,7 @@ export const fetchJson = async <TData, TBody = Record<string, unknown>>(
     ...init,
     headers: {
       ...init?.headers,
-      no_auth_user_id: sessionStorage.getItem(NO_AUTH_USER_KEY) ?? '',
+      Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
     },
   });
   const data: TData = await res.json();
@@ -121,7 +126,7 @@ export const fetchBlob = async <TData, TBody = Record<string, unknown>>(
     ...init,
     headers: {
       ...init?.headers,
-      no_auth_user_id: sessionStorage.getItem(NO_AUTH_USER_KEY) ?? '',
+      Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
     },
   });
 
@@ -202,7 +207,10 @@ export const upsertDocument = ({
   document: any;
 }) => {
   const documentId = getDocumentId(document);
-  const documentExists = documents?.some(document => getDocumentId(document) === documentId);
+  const documentExists =
+    documents?.length && documents?.some(document => getDocumentId(document) === documentId);
+
+  if (!Array.isArray(documents) || !documents?.length) return [document];
 
   return !documentExists
     ? [...documents, document]

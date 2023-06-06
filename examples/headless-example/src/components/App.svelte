@@ -9,7 +9,7 @@
   import { makeWorkflow } from '@/utils';
   import SignUp from './SignUp.svelte';
   import Workflow from './Workflow.svelte';
-  import { NO_AUTH_USER_KEY } from '@/constants';
+  import { ENTITY_ID_STORAGE_KEY } from '@/constants';
   import { writable } from 'svelte/store';
   import Approved from '@/components/Approved.svelte';
   import Rejected from '@/components/Rejected.svelte';
@@ -19,7 +19,7 @@
   import { BallerineBackOfficeService } from '@/services/ballerine-backoffice.service';
   import DevSidebar from '@/visualiser/dev-sidebar.svelte';
 
-  let noAuthUserId = sessionStorage.getItem(NO_AUTH_USER_KEY);
+  let entityId = sessionStorage.getItem(ENTITY_ID_STORAGE_KEY);
   let nextWorkflow;
   let shouldResubmit = false;
   let documentsDecisionStatuses;
@@ -44,30 +44,31 @@
       queryFn: async () =>
         import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? fetchEndUser(id) : fetchBusiness(id),
       onSuccess(data) {
-        const cached = sessionStorage.getItem(NO_AUTH_USER_KEY);
+        const cached = sessionStorage.getItem(ENTITY_ID_STORAGE_KEY);
 
         if ((cached && cached === data?.id) || !data?.id) return;
 
-        noAuthUserId = data?.id;
-        sessionStorage.setItem(NO_AUTH_USER_KEY, noAuthUserId);
+        entityId = data?.id;
+        sessionStorage.setItem(ENTITY_ID_STORAGE_KEY, entityId);
       },
       onError(error) {
         if (error.message !== 'Not Found (404)') {
           throw error;
         }
 
-        sessionStorage.removeItem(NO_AUTH_USER_KEY);
-        noAuthUserId = undefined;
+        sessionStorage.removeItem(ENTITY_ID_STORAGE_KEY);
+        entityId = undefined;
       },
       enabled: typeof id === 'string' && id.length > 0,
     });
+  const entity = import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'endUser' : 'business';
   const createWorkflowsQuery = (
     options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {},
   ) =>
     createQuery({
       queryKey: ['workflows'],
       queryFn: fetchWorkflows,
-      enabled: typeof noAuthUserId === 'string' && noAuthUserId.length > 0,
+      enabled: typeof entityId === 'string' && entityId.length > 0,
       ...options,
     });
   const createIntentQuery = () =>
@@ -122,12 +123,12 @@
       mutationFn:
         import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? fetchEnduserSignUp : fetchBusinessSignUp,
       onSuccess: data => {
-        sessionStorage.setItem(NO_AUTH_USER_KEY, data?.id);
-        noAuthUserId = data?.id;
+        sessionStorage.setItem(ENTITY_ID_STORAGE_KEY, data?.id);
+        entityId = data?.id;
         queryClient.invalidateQueries();
       },
     });
-  $: entityQuery = createEntityQuery(noAuthUserId);
+  $: entityQuery = createEntityQuery(entityId);
   const firstWorkflowQuery = createFirstWorkflowQuery();
   $: workflowQuery = createWorkflowQuery($firstWorkflowQuery?.data?.workflowRuntimeData?.id);
   const intentQuery = createIntentQuery();
@@ -184,13 +185,12 @@
   };
 
   $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
-  $: entityId = $entityQuery.data?.id;
   $: entityState = $entityQuery.data?.approvalState;
   $: isProcessing = entityState === 'PROCESSING';
 
   $: {
     if (
-      entityId &&
+      $entityQuery.data?.id &&
       ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)
     ) {
       nextWorkflow = mergeWorkflow();
@@ -232,18 +232,18 @@
 
 <div class="flex h-full flex-row items-center justify-center">
   <main class="flex h-full w-full flex-col items-center justify-center p-6">
-    {#if !entityId}
+    {#if !$entityQuery.data?.id}
       <SignUp {onSubmit} />
     {/if}
     {#if $workflow && !isCompleted && !shouldResubmit}
       <Workflow workflow={$workflow} on:workflow-updated={workflowComponentStateUpdated} />
     {/if}
 
-    {#if entityId && !$workflow && !isProcessing}
-      <Intent disabled={!entityId} refetch={$intentQuery.refetch} />
+    {#if $entityQuery.data?.id && !$workflow && !isProcessing}
+      <Intent disabled={!$entityQuery.data?.id} refetch={$intentQuery.refetch} />
     {/if}
 
-    {#if entityId && isCompleted && !isDecided}
+    {#if $entityQuery.data?.id && isCompleted && !isDecided}
       <ThankYou />
     {/if}
 
