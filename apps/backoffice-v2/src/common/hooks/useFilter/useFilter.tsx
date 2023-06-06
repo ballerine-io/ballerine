@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
-import { useNavigate, useSearch } from '@tanstack/react-router';
-import { AnyArray, TKeyofArrayElement, TRouteId } from '../../types';
+import { AnyArray, TKeyofArrayElement } from '../../types';
 import { filter as onFilter } from './filter';
+import { useSearchParamsByEntity } from '../useSearchParamsByEntity/useSearchParamsByEntity';
 
 /**
  * @description A hook to easily filter an array of objects by key using fuzzy search.
@@ -9,16 +9,14 @@ import { filter as onFilter } from './filter';
  * @param props.data - The data to filter.
  * @param props.filter - The initial filter - defaults to empty string.
  */
-export const useFilter = <TArray extends AnyArray, TId extends TRouteId>({
-  routeId,
+export const useFilter = <TArray extends AnyArray>({
   data,
   initialFilter,
 }: {
-  routeId: TId;
   data: TArray;
   initialFilter?: Record<TKeyofArrayElement<TArray>, Array<string>>;
 }) => {
-  const { filter = initialFilter } = useSearch({ from: routeId, strict: false });
+  const [{ filter = initialFilter }, setSearchParams] = useSearchParamsByEntity();
   const filtered = useMemo(
     () =>
       onFilter({
@@ -27,26 +25,18 @@ export const useFilter = <TArray extends AnyArray, TId extends TRouteId>({
       }),
     [data, filter],
   );
-  const navigate = useNavigate({ from: routeId });
   const onFilterChange = useCallback(
     (value: {
       [key in TKeyofArrayElement<TArray>]?: Array<string>;
     }) => {
-      // @ts-ignore
-      navigate({
-        // @ts-ignore
-        search: prevState => ({
-          // @ts-ignore
-          ...prevState,
-          filter: {
-            // @ts-ignore
-            ...prevState?.filter,
-            ...value,
-          },
-        }),
+      setSearchParams({
+        filter: {
+          ...filter,
+          ...value,
+        },
       });
     },
-    [navigate],
+    [filter, setSearchParams],
   );
 
   return {

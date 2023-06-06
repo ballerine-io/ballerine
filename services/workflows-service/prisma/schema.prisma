@@ -158,6 +158,7 @@ model WorkflowRuntimeData {
   workflowDefinitionId      String
   workflowDefinitionVersion Int
   context                   Json
+  config                   Json?
   // history
   state                     String?
   status                    WorkflowRuntimeDataStatus @default(active)

@@ -21,7 +21,7 @@ export const preSearchFiltersByKind = {
     sortBy: 'caseCreatedAt' as const,
     entity: 'individuals' as const,
     filter: {
-      approvalState: [State.PROCESSING],
+      approvalState: [],
       assigneeId: [],
       caseStatus: [CaseStatus.ACTIVE],
     },

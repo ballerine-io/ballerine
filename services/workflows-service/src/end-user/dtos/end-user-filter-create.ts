@@ -10,12 +10,6 @@ export class EndUserFilterCreateDto {
 
   @ApiProperty({
     required: true,
-    type: String,
-  })
-  entity!: string;
-
-  @ApiProperty({
-    required: true,
     type: () => EndUserQueryDto,
   })
   query!: EndUserQueryDto;
