@@ -14,8 +14,8 @@ export const Logo: FunctionComponent = () => {
         to={`/en`}
         className={`btn-ghost btn flex gap-x-3 text-2xl  normal-case focus:outline-primary`}
       >
-        {!!env.IMAGE_LOGO_URL ? (
-          <img className={`h-20 w-40`} src={env.IMAGE_LOGO_URL} />
+        {!!env.VITE_IMAGE_LOGO_URL ? (
+          <img className={`h-20 w-40`} src={env.VITE_IMAGE_LOGO_URL} />
         ) : (
           <BallerineLogo />
         )}
