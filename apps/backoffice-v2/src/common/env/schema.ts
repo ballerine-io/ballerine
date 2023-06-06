@@ -16,5 +16,5 @@ export const EnvSchema = z.object({
     .transform(v => v * 1000)
     .or(z.literal(false))
     .catch(undefined),
-  IMAGE_LOGO_URL: z.string().optional()
+  VITE_IMAGE_LOGO_URL: z.string().optional()
 });
