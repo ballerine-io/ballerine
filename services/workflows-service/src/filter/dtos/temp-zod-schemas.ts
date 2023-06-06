@@ -480,11 +480,17 @@ export const BusinessFilterSchema = FilterSchema.extend({
   query: z
     .object({
       select: BusinessSelectSchema.strict()
-        .refine(v => Object.keys(v).length > 0, 'At least one `select` field must be provided')
+        .refine(
+          value => Object.keys(value).length > 0,
+          'At least one `select` field must be provided',
+        )
         .optional(),
       where: BusinessWhereInputSchema.strict().optional(),
     })
-    .refine(v => v.select || v.where, 'At least `query.select` or `query.where` must be provided'),
+    .refine(
+      value => value.select || value.where,
+      'At least `query.select` or `query.where` must be provided',
+    ),
 });
 
 export const BusinessFilterCreateSchema = BusinessFilterSchema.omit({

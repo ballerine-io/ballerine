@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import {updateWorkflowSetAssignById} from '../../../fetchers';
+import { updateWorkflowSetAssignById } from '../../../fetchers';
 import { useUsersQuery } from '../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
 
 const getToastActionAndContext = ({
@@ -28,7 +28,7 @@ export const useAssignWorkflowMutation = ({ workflowRuntimeId }: { workflowRunti
   const { data: users } = useUsersQuery();
 
   return useMutation({
-    mutationFn: ({ assigneeId }: { assigneeId: string | null, isAssignedToMe: boolean }) =>
+    mutationFn: ({ assigneeId }: { assigneeId: string | null; isAssignedToMe: boolean }) =>
       updateWorkflowSetAssignById({
         workflowId: workflowRuntimeId,
         body: {
