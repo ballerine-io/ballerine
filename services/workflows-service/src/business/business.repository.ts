@@ -40,6 +40,13 @@ export class BusinessRepository {
     });
   }
 
+  async getCorrelationIdById(id: string): Promise<{ correlationId: string | null } | null> {
+    return await this.prisma.business.findUnique({
+      where: { id },
+      select: { correlationId: true },
+    });
+  }
+
   async updateById<T extends Omit<Prisma.BusinessUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.BusinessUpdateArgs, 'where'>>,

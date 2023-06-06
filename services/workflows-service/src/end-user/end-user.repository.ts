@@ -48,4 +48,11 @@ export class EndUserRepository {
       ...args,
     });
   }
+
+  async getCorrelationIdById(id: string) {
+    return await this.prisma.endUser.findUnique({
+      where: { id },
+      select: { correlationId: true },
+    });
+  }
 }

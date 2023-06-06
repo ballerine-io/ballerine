@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DefaultContextSchema } from '../schemas/context';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsObject, IsOptional } from 'class-validator';
 
 export class WorkflowRunDto {
   @ApiProperty({
@@ -11,8 +11,18 @@ export class WorkflowRunDto {
 
   @ApiProperty({
     required: true,
-    type: Date,
+    type: 'object',
   })
   @IsNotEmpty()
+  @IsObject()
+  @IsOptional()
   context!: DefaultContextSchema;
+
+  @ApiProperty({
+    required: false,
+    type: 'object',
+  })
+  @IsObject()
+  @IsOptional()
+  config?: any;
 }
