@@ -97,7 +97,11 @@ export class DocumentChangedWebhookCaller {
         },
       );
 
-      console.log('Result webhook', res.status, res.statusText, res.data);
+      this.logger.log('Webhook Result:', {
+        status: res.status,
+        statusText: res.statusText,
+        data: res.data,
+      });
     } catch (error: Error | any) {
       this.logger.error('Failed to send webhook', { id, message: error?.message, error });
       alertWebhookFailure(error);
