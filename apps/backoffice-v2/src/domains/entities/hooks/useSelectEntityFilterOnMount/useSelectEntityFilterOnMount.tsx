@@ -1,34 +1,20 @@
-import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useFiltersQuery } from '../../../filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { useEffect } from 'react';
+import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export const useSelectEntityFilterOnMount = () => {
   const { data: filters } = useFiltersQuery();
+  const { locale } = useParams();
+  const [{ entity, filterId, filterName }, setSearchParams] = useSearchParamsByEntity();
   const navigate = useNavigate();
-  const { entity, filterId, filterName } = useSearch({
-    strict: false,
-    track({ entity, filterId, filterName }) {
-      return {
-        entity,
-        filterId,
-        filterName,
-      };
-    },
-  });
+  const [firstFilter] = filters ?? [];
 
   useEffect(() => {
-    if ((entity && filterId && filterName) || !filters?.length) return;
+    if ((entity && filterId && filterName) || !firstFilter) return;
 
-    const [filter] = filters;
-
-    void navigate({
-      to: '/$locale/case-management/entities',
-      search: search => ({
-        ...search,
-        entity: filter?.entity,
-        filterId: filter?.id,
-        filterName: filter?.name,
-      }),
-    });
-  }, [entity, filterId, filterName, filters, navigate]);
+    navigate(
+      `/${locale}/case-management/entities?entity=${firstFilter?.entity}&filterId=${firstFilter?.id}&filterName=${firstFilter?.name}`,
+    );
+  }, [entity, filterId, filterName, firstFilter, setSearchParams]);
 };

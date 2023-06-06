@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
-import { AnyArray, TKeyofArrayElement, TRouteId } from '../../types';
+import { AnyArray, TKeyofArrayElement } from '../../types';
 import { sort } from './sort';
-import { useNavigate, useSearch as useTanStackSearch } from '@tanstack/react-router';
+import { useSearchParamsByEntity } from '../useSearchParamsByEntity/useSearchParamsByEntity';
 
 /**
  * @description A hook to easily sort an array of objects by key, and change sort direction or the sort by key.
@@ -9,28 +9,20 @@ import { useNavigate, useSearch as useTanStackSearch } from '@tanstack/react-rou
  * @param props.data - The data to sort.
  * @param props.initialState - An object of the initial sorting direction and sort by state.
  */
-export const useSort = <TArray extends AnyArray, TId extends TRouteId>({
-  routeId,
+export const useSort = <TArray extends AnyArray>({
   data,
   initialState,
 }: {
-  routeId: TId;
   data: TArray;
   initialState: {
     sortDir?: 'asc' | 'desc';
     sortBy: TKeyofArrayElement<TArray>;
   };
 }) => {
-  const { sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' } =
-    useTanStackSearch({
-      from: routeId,
-      strict: false,
-      track: searchParams => ({
-        sortBy: 'sortBy' in searchParams ? searchParams?.sortBy : undefined,
-        sortDir: 'sortDir' in searchParams ? searchParams?.sortDir : undefined,
-      }),
-    });
-  const navigate = useNavigate({ from: routeId });
+  const [
+    { sortBy = initialState?.sortBy, sortDir = initialState?.sortDir ?? 'asc' },
+    setSearchParams,
+  ] = useSearchParamsByEntity();
   // Sort
   const sorted = useMemo(
     () =>
@@ -42,29 +34,17 @@ export const useSort = <TArray extends AnyArray, TId extends TRouteId>({
     [data, sortDir, sortBy],
   );
   const onSortDir = useCallback(() => {
-    // @ts-ignore
-    navigate({
-      // @ts-ignore
-      search: prevState => ({
-        // @ts-ignore
-        ...prevState,
-        sortDir: sortDir === 'asc' ? 'desc' : 'asc',
-      }),
+    setSearchParams({
+      sortDir: sortDir === 'asc' ? 'desc' : 'asc',
     });
-  }, [navigate, sortDir]);
+  }, [setSearchParams, sortDir]);
   const onSortBy = useCallback(
     (sortBy: string) => {
-      // @ts-ignore
-      navigate({
-        // @ts-ignore
-        search: prevState => ({
-          // @ts-ignore
-          ...prevState,
-          sortBy,
-        }),
+      setSearchParams({
+        sortBy,
       });
     },
-    [navigate],
+    [setSearchParams],
   );
 
   return {
