@@ -26,7 +26,7 @@ export const generatePreSearchFiltersByEntity = async (
       sortBy: 'caseCreatedAt' as const,
       entity: 'individuals' as const,
       filter: {
-        approvalState: [State.PROCESSING],
+        approvalState: [],
         assigneeId: [null, authenticatedUser.id],
         caseStatus: [CaseStatus.ACTIVE],
       },
