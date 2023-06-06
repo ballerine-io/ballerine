@@ -13,7 +13,7 @@ export const useSelectEntitiesQuery = <TQueryFnData = TEntities,>(
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...queryKeys[entity as keyof typeof queryKeys].list(filterId),
+    ...queryKeys[entity as keyof typeof queryKeys]?.list?.(filterId),
     enabled: !!filterId && isAuthenticated,
     select,
   });

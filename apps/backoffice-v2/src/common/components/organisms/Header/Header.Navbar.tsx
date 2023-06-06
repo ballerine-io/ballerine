@@ -1,10 +1,11 @@
 import { FunctionComponent } from 'react';
 import { NavItem } from './Header.NavItem';
 import { useFiltersQuery } from '../../../../domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
-import { useSearch } from '@tanstack/react-router';
 import { ctw } from '../../../utils/ctw/ctw';
-import { TRoutes } from '../../../../App/types';
+import { TRoutes } from '../../../../Router/types';
 import { CheckSquare } from 'lucide-react';
+import { useSearchParamsByEntity } from '../../../hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
 
 /**
  * @description A nav element which wraps {@link NavItem} components of the app's routes. Supports nested routes.
@@ -15,9 +16,7 @@ import { CheckSquare } from 'lucide-react';
  */
 export const Navbar: FunctionComponent = () => {
   const { data: filters } = useFiltersQuery();
-  const search = useSearch({
-    strict: false,
-  });
+  const [searchParams] = useSearchParamsByEntity();
   const navItems = [
     // {
     //   text: 'Home',
@@ -26,6 +25,8 @@ export const Navbar: FunctionComponent = () => {
     //   key: 'nav-item-home',
     // },
   ] satisfies TRoutes;
+
+  useSelectEntityFilterOnMount();
 
   return (
     <nav>
@@ -52,16 +53,10 @@ export const Navbar: FunctionComponent = () => {
       <ul className={`menu menu-compact w-full space-y-2`}>
         {filters?.map(({ id, name, entity }) => (
           <NavItem
-            href={'/$locale/case-management/entities'}
-            search={search => ({
-              ...search,
-              entity,
-              filterId: id,
-              filterName: name,
-            })}
+            href={`/en/case-management/entities?entity=${entity}&filterId=${id}&filterName=${name}`}
             key={id}
             className={ctw(`capitalize`, {
-              'bg-muted font-bold': name === search?.name,
+              'bg-muted font-bold': name === searchParams?.filterName,
             })}
           >
             <CheckSquare /> {name}
