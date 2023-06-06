@@ -24,5 +24,5 @@ export class WorkflowRunDto {
   })
   @IsObject()
   @IsOptional()
-  config?: any;
+  config?: Record<string, unknown>;
 }
