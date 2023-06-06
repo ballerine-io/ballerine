@@ -153,7 +153,7 @@ export class WorkflowControllerInternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async deleteWorkflowDefinitionById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
-  ): Promise<WorkflowDefinitionModel | null> {
+  ): Promise<WorkflowDefinition> {
     try {
       return await this.service.deleteWorkflowDefinitionById(params.id, {
         select: {

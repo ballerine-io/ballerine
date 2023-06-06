@@ -43,6 +43,7 @@ import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
 import { getDocumentId } from '@/documents/utils';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
+import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 
 type TEntityId = string;
 
@@ -183,6 +184,9 @@ export class WorkflowService {
     const workflowDef = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
     );
+
+    const correlationId: string = await this.getCorrelationIdFromWorkflow(runtimeData);
+
     let contextHasChanged, mergedContext;
     if (data.context) {
       contextHasChanged = !isEqual(data.context, runtimeData.context);
@@ -197,7 +201,7 @@ export class WorkflowService {
       };
 
       const validateContextSchema = ajv.compile(
-        ((workflowDef?.contextSchema as any)?.schema as Schema) ?? {},
+        (workflowDef?.contextSchema?.schema as Schema) ?? {},
       );
       const isValidContextSchema = validateContextSchema(context);
 
@@ -270,9 +274,11 @@ export class WorkflowService {
 
     if (contextHasChanged) {
       this.workflowEventEmitter.emit('workflow.context.changed', {
-        runtimeData,
+        runtimeData: runtimeData,
         state: currentState as string,
         context: mergedContext,
+        entityId: (runtimeData.businessId || runtimeData.endUserId) as string,
+        correlationId: correlationId,
       });
     }
 
@@ -295,6 +301,24 @@ export class WorkflowService {
     );
 
     return updatedWorkflowRuntime;
+  }
+
+  private async getCorrelationIdFromWorkflow(runtimeData: WorkflowRuntimeData) {
+    let correlationId: string;
+    if (runtimeData.businessId) {
+      correlationId = (await this.businessRepository.getCorrelationIdById(
+        runtimeData.businessId,
+      )) as string;
+    } else if (runtimeData.endUserId) {
+      correlationId = (await this.endUserRepository.getCorrelationIdById(
+        runtimeData.endUserId,
+      )) as string;
+    } else {
+      correlationId = '';
+      console.error('No entity Id found');
+      // throw new Error('No entity Id found');
+    }
+    return correlationId;
   }
 
   async deleteWorkflowDefinitionById(
@@ -328,9 +352,11 @@ export class WorkflowService {
         },
       }));
 
+    const entityId = endUserId || businessId;
+
     this.logger.log(`Entity state updated to ${ApprovalState.PROCESSING}`, {
       entityType: endUserId ? 'endUser' : 'business',
-      entityId: endUserId || businessId,
+      entityId,
     });
 
     // will throw exception if review machine def is missing
@@ -416,13 +442,21 @@ export class WorkflowService {
   async createOrUpdateWorkflowRuntime({
     workflowDefinitionId,
     context,
+    config,
   }: {
     workflowDefinitionId: string;
     context: DefaultContextSchema;
+    config?: WorkflowConfig;
   }): Promise<RunnableWorkflowData[]> {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
+    let validatedConfig: WorkflowConfig;
+    try {
+      validatedConfig = ConfigSchema.parse(config);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(context);
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
@@ -459,6 +493,7 @@ export class WorkflowService {
           ...entityConnect,
           workflowDefinitionVersion: workflowDefinition.version,
           context: contextToInsert as InputJsonValue,
+          config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
           status: 'active',
           workflowDefinition: {
             connect: {
@@ -474,6 +509,10 @@ export class WorkflowService {
           data: {
             ...entityConnect,
             context: contextToInsert as InputJsonValue,
+            config: merge(
+              existingWorkflowRuntimeData.config,
+              validatedConfig || {},
+            ) as InputJsonValue,
           },
         },
       );

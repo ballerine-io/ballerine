@@ -1,9 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import { App } from './App/App';
 import './i18n';
 import { env } from './common/env/env';
+import { Router } from './Router/Router';
 
 const rootElement = document.getElementById('root');
 
@@ -24,7 +24,7 @@ void prepare().then(() => {
 
     root.render(
       <StrictMode>
-        <App />
+        <Router />
       </StrictMode>,
     );
   }

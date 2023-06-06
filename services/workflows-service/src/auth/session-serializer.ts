@@ -2,6 +2,7 @@ import { PassportSerializer } from '@nestjs/passport';
 import { Inject } from '@nestjs/common';
 import { UserService } from '@/user/user.service';
 import { User } from '@prisma/client';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
 
 export class SessionSerializer extends PassportSerializer {
   constructor(@Inject('USER_SERVICE') private readonly userService: UserService) {
@@ -18,14 +19,16 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   async deserializeUser(user: User, done: (err: unknown, user: User | null) => void) {
-    const userResult = await this.userService.getById(user.id);
+    try {
+      const userResult = await this.userService.getById(user.id);
 
-    if (!userResult) {
+      delete (userResult as Partial<User>).password;
+
+      return done(null, userResult);
+    } catch (err) {
+      if (!isRecordNotFoundError(err)) throw err;
+
       return done(null, null);
     }
-
-    delete (userResult as Partial<User>).password;
-
-    return done(null, userResult);
   }
 }
