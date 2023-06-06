@@ -7,7 +7,7 @@ import { Input } from '../../common/components/atoms/Input/Input';
 import { Card } from '../../common/components/atoms/Card/Card';
 import { BallerineLogo } from '../../common/components/atoms/icons';
 import { Alert } from '../../common/components/atoms/Alert/Alert';
-import { AlertCircle, Image } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { AlertDescription } from '../../common/components/atoms/Alert/Alert.Description';
 import { AlertTitle } from '../../common/components/atoms/Alert/Alert.Title';
 import { useSignInMutation } from '../../domains/auth/hooks/mutations/useSignInMutation/useSignInMutation';
@@ -59,7 +59,7 @@ export const SignIn: FunctionComponent = () => {
   return (
     <section className={`flex h-full flex-col items-center justify-center`}>
       <div className={`mb-16`}>
-        {env.VITE_AUTH_ENABLED ? <img src={env.IMAGE_LOGO_URL} /> : <BallerineLogo />}
+        {!!env.IMAGE_LOGO_URL ? <img className={`w-40`} src={env.IMAGE_LOGO_URL} /> : <BallerineLogo />}
       </div>
       <Card className={`w-full max-w-lg`}>
         <CardHeader className={`mb-2 text-center text-4xl font-bold`}>Sign In</CardHeader>
