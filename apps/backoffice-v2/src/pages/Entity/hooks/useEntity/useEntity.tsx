@@ -14,6 +14,12 @@ const convertSnakeCaseToTitleCase = (input: string): string =>
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
+const composePickableCategoryType = (categoryValue: string, docType: string, workflowcontextSchema: any) => {
+// [
+//   {category: {type: 'string', format: 'dropdown', pattern: undefined, isEditable: true, value: categoryValue, pickerOptions:  }},
+//   { docType: {type, format, pattern, isEditable = true }}]
+}
+
 export const useEntity = () => {
   const { entityId } = useParams();
   const { data: entity, isLoading } = useEntityWithWorkflowQuery(entityId);
@@ -56,6 +62,8 @@ export const useEntity = () => {
             { id, type: docType, category, issuer, properties, propertiesSchema, decision },
             docIndex,
           ) => {
+            const pickableCategoryType = composePickableCategoryType(category, docType, entity?.workflow?.propertiesSchema)
+
             return [
               {
                 id: 'header',

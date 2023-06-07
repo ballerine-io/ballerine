@@ -14,6 +14,8 @@ import { FormItem } from '../../../../common/components/organisms/Form/Form.Item
 import { FormLabel } from '../../../../common/components/organisms/Form/Form.Label';
 import { FormControl } from '../../../../common/components/organisms/Form/Form.Control';
 import { FormMessage } from '../../../../common/components/organisms/Form/Form.Message';
+import {SelectItem} from "../../../../common/components/atoms/Select/Select.Item";
+import {SelectContent} from "../../../../common/components/atoms/Select/Select.Content";
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
@@ -89,7 +91,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
             'grid-cols-3': id === 'entity-details',
           })}
         >
-          {data?.map(({ title, isEditable, type, format, pattern, value }) =>
+          {data?.map(({ title, isEditable, type, format, pattern, value, pickerOptions }) =>
             isDecisionComponent && !value ? null : (
               <FormField
                 key={title}
@@ -99,26 +101,39 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                   <FormItem>
                     <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
                     <FormControl>
-                      <Input
-                        type={!format ? (type === 'string' ? 'text' : type) : format}
-                        disabled={!isEditable}
-                        className={ctw(
-                          `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
-                          {
-                            'font-bold text-success': isDecisionPositive(
-                              isDecisionComponent,
-                              value,
-                            ),
-                            'font-bold text-destructive': isDecisionNegative(
-                              isDecisionComponent,
-                              value,
-                            ),
-                          },
-                        )}
-                        pattern={pattern}
-                        autoComplete={'off'}
-                        {...field}
-                      />
+                      { pickerOptions ?
+                        (
+                          <SelectContent>
+                          {pickerOptions?.map(reason => {
+                            return (
+                              <SelectItem key={reason.value} value={reason.value}>
+                                {reason.label}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                        ) : (
+                        <Input
+                          type={!format ? (type === 'string' ? 'text' : type) : format}
+                          disabled={!isEditable}
+                          className={ctw(
+                            `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
+                            {
+                              'font-bold text-success': isDecisionPositive(
+                                isDecisionComponent,
+                                value,
+                              ),
+                              'font-bold text-destructive': isDecisionNegative(
+                                isDecisionComponent,
+                                value,
+                              ),
+                            },
+                          )}
+                          pattern={pattern}
+                          autoComplete={'off'}
+                          {...field}
+                        />
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
