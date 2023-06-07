@@ -10,7 +10,8 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import { DefaultContextSchema } from '@ballerine/common';
+import defaultContextSchema from '@ballerine/common/src/schemas/documents/default-context-schema.json';
+
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
@@ -355,7 +356,7 @@ async function seed(bcryptSalt: Salt) {
       },
       contextSchema: {
         type: 'json-schema',
-        schema: DefaultContextSchema,
+        schema: defaultContextSchema,
       },
       definition: {
         id: 'risk-score-improvement',

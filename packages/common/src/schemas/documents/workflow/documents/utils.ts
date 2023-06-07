@@ -1,5 +1,5 @@
-import { DefaultContextSchema } from '@/workflow/schemas/context';
 import { TDocument } from './types';
+import { DefaultContextSchema } from '../../context';
 
 export const getDocumentId = (
   document: TDocument | DefaultContextSchema['documents'][number],
