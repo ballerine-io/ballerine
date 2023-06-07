@@ -3,15 +3,15 @@ import { useParams } from 'react-router-dom';
 import { useSelectEntity } from '../useSelectEntity/useSelectEntity';
 import { useFilterEntity } from '../useFilterEntity/useFilterEntity';
 import { useWorkflowsQuery } from '../../../workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
-import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
+import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 
 /**
  * @description Sets the selected end user to the first end user in the array on mount if no user is currently selected. Returns the select end user handler.
  */
 export const useSelectEntityOnMount = () => {
   const { entityId } = useParams();
-  const filterId = useFilterId();
-  const { data: workflows } = useWorkflowsQuery(filterId);
+  const [{ filterId, sortBy, sortDir }] = useSearchParamsByEntity();
+  const { data: workflows } = useWorkflowsQuery({ filterId, sortBy, sortDir });
   const onSelectEntity = useSelectEntity();
   const entity = useFilterEntity();
   const firstCaseId = workflows?.[0]?.id;

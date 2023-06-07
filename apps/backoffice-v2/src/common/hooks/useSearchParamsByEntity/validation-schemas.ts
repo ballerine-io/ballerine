@@ -10,11 +10,11 @@ export const SearchSchema = z.object({
   filterName: z.string().catch(''),
   entity: z.string().catch(''),
 });
+
+// @TODO: Fix
 export const IndividualsSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
-    sortBy: z
-      .enum(['firstName', 'lastName', 'email', 'phone', 'caseCreatedAt', 'approvalState'])
-      .catch('caseCreatedAt'),
+    sortBy: z.enum(['firstName', 'lastName', 'email', 'createdAt']).catch('createdAt'),
     filter: z
       .object({
         approvalState: z.array(z.enum(States)).catch([]),
@@ -29,7 +29,7 @@ export const IndividualsSearchSchema = (authenticatedUserId: string) =>
   });
 export const BusinessesSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
-    sortBy: z.enum(['caseCreatedAt', 'companyName']).catch('caseCreatedAt'),
+    sortBy: z.enum(['createdAt', 'companyName']).catch('createdAt'),
     filter: z
       .object({
         assigneeId: z.array(z.string().nullable()).catch([authenticatedUserId, null]),

@@ -4,10 +4,13 @@ import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-e
 import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
 import { Method, States } from '../../common/enums';
 import { IWorkflowId } from './interfaces';
+import qs from 'qs';
 
-export const fetchWorkflows = async (filterId: string) => {
+export const fetchWorkflows = async (params: { filterId: string; orderBy: string }) => {
+  const queryParams = qs.stringify(params);
+
   const [workflows, error] = await apiClient({
-    endpoint: `workflows?filterId=${filterId}`,
+    endpoint: `workflows?${queryParams}`,
     method: Method.GET,
     schema: z.array(
       z.object({

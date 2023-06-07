@@ -30,16 +30,16 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
   const { data: workflow } = useWorkflowQuery({ workflowId, filterId });
   const { mutate: mutateApproveEntity, isLoading: isLoadingApproveEntity } =
     useApproveEntityMutation({
-      workflowId: workflow.id,
+      workflowId: workflowId,
       onSelectNextEntity,
     });
   const { mutate: mutateRejectEntity, isLoading: isLoadingRejectEntity } = useRejectEntityMutation({
-    workflowId: workflow.id,
+    workflowId: workflowId,
     onSelectNextEntity,
   });
 
   const { mutate: mutateAssignWorkflow, isLoading: isLoadingAssignWorkflow } =
-    useAssignWorkflowMutation({ workflowRuntimeId: workflow.id });
+    useAssignWorkflowMutation({ workflowRuntimeId: workflowId });
 
   const isLoading = isLoadingApproveEntity || isLoadingRejectEntity || isLoadingAssignWorkflow;
   // Create initials from the first character of the first name, middle name, and last name.

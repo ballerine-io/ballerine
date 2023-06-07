@@ -1,10 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
-import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 
 // @TODO: Refactor to be under cases/workflows domain
 export const useApproveEntityMutation = ({
@@ -15,7 +13,6 @@ export const useApproveEntityMutation = ({
   onSelectNextEntity: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
-  const filterId = useFilterId();
 
   return useMutation({
     mutationFn: () =>
@@ -26,9 +23,7 @@ export const useApproveEntityMutation = ({
         },
       }),
     onSuccess: () => {
-      void queryClient.invalidateQueries(workflowsQueryKeys.list(filterId).queryKey);
-      const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
-      void queryClient.invalidateQueries(workflowById.queryKey);
+      void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
       toast.success(t('toast:approve_case.success'));
 
