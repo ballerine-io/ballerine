@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DefaultContextSchema } from '../schemas/context';
 import { IsNotEmpty, IsObject, IsOptional } from 'class-validator';
+import {DefaultContextSchema} from "@ballerine/common";
 
 export class WorkflowRunDto {
   @ApiProperty({

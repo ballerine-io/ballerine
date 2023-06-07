@@ -12,7 +12,6 @@ import { DocumentChangedWebhookCaller } from '@/events/document-changed-webhook-
 import { BusinessRepository } from '@/business/business.repository';
 import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
-import { StorageModule } from '@/storage/storage.module';
 import { FileRepository } from '@/storage/storage.repository';
 import { HttpModule, HttpService } from '@nestjs/axios';
 

@@ -1,3 +1,3 @@
-import { DefaultContextSchema } from '@/workflow/schemas/context';
+import {DefaultContextSchema} from "@/schemas/documents/context";
 
 export type TDefaultSchemaDocumentPage = DefaultContextSchema['documents'][number]['pages'][number];
