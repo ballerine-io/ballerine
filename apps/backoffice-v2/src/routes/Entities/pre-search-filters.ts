@@ -9,7 +9,7 @@ const sharedPreSearchFilters = {
 
 export const preSearchFiltersByKind = {
   businesses: {
-    sortBy: 'caseCreatedAt' as const,
+    sortBy: 'createdAt' as const,
     entity: 'businesses' as const,
     filter: {
       assigneeId: [],
@@ -18,7 +18,7 @@ export const preSearchFiltersByKind = {
     ...sharedPreSearchFilters,
   },
   individuals: {
-    sortBy: 'caseCreatedAt' as const,
+    sortBy: 'createdAt' as const,
     entity: 'individuals' as const,
     filter: {
       approvalState: [],
