@@ -11,7 +11,6 @@ export const SearchSchema = z.object({
   entity: z.string().catch(''),
 });
 
-// @TODO: Fix
 export const IndividualsSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
     sortBy: z.enum(['firstName', 'lastName', 'email', 'createdAt']).catch('createdAt'),

@@ -1,13 +1,13 @@
 import { Prisma } from '@prisma/client';
 
 type Direction = 'asc' | 'desc';
-type IndividualsColumn = 'firstName' | 'lastName' | 'email';
-type BusinessesColumn = 'companyName';
-type WorkflowColumn = 'createdAt';
+type IndividualsColumns = 'firstName' | 'lastName' | 'email';
+type BusinessesColumns = 'companyName';
+type WorkflowColumns = 'createdAt';
 
 type AvailableColumns<T extends 'individuals' | 'businesses'> = T extends 'individuals'
-  ? IndividualsColumn | WorkflowColumn
-  : BusinessesColumn | WorkflowColumn;
+  ? IndividualsColumns | WorkflowColumns
+  : BusinessesColumns | WorkflowColumns;
 
 type EntityType = 'individuals' | 'businesses';
 

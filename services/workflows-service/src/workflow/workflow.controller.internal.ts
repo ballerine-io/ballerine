@@ -18,7 +18,7 @@ import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
 import {
   FindWorkflowsListDto,
-  FindWorkflowsListQuerySchema,
+  FindWorkflowsListLogicSchema,
   FindWorkflowsListSchema,
 } from '@/workflow/dtos/find-workflows-list.dto';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
@@ -65,7 +65,7 @@ export class WorkflowControllerInternal {
 
     const entityType = filter.entity as 'individuals' | 'businesses';
 
-    const { orderBy } = FindWorkflowsListQuerySchema[entityType].parse(queryParams);
+    const { orderBy } = FindWorkflowsListLogicSchema[entityType].parse(queryParams);
 
     type Query = Parameters<typeof this.service.listWorkflowRuntimeDataWithRelations>[0];
 
