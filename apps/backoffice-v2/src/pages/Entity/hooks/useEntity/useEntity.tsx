@@ -7,7 +7,7 @@ import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseSt
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { components } from './components';
-import { getDocumentsByCountry } from '@ballerine/common';
+import { getDocumentsByCountry } from '@ballerine/common/src/schemas/documents/workflow/documents/schemas/index';
 
 const convertSnakeCaseToTitleCase = (input: string): string =>
   input
@@ -16,19 +16,47 @@ const convertSnakeCaseToTitleCase = (input: string): string =>
     .join(' ');
 
 const extractCountryCodeFromEntity = entity => {
-  return entity?.workflow?.definition?.context?.documents?.find(document => {
-    document?.issuer?.country;
+  const issuerCountryCode = entity?.workflow?.definition?.context?.documents?.find(document => {
+    return document?.issuer?.country;
   })?.issuer?.country;
+
+  return issuerCountryCode;
+};
+
+const uniqueArrayByKey = (array, key) => {
+  return [...new Map(array.map(item => [item[key], item])).values()];
 };
 const composePickableCategoryType = (
   categoryValue: string,
   docType: string,
   documentsSchema: any,
 ) => {
-  console.log('workflowcontextSchema', documentsSchema);
-  // [
-  //   {category: {type: 'string', format: 'dropdown', pattern: undefined, isEditable: true, value: categoryValue, pickerOptions:  }},
-  //   { docType: {type, format, pattern, isEditable = true }}]
+  const documentTypesDropdownOptions: Array<{ value: string; label: string }> = [];
+  const documentCategoryDropdownOptions: Array<{ value: string; label: string }> = [];
+
+  Object.values(documentsSchema).forEach(document => {
+    const category = document.category;
+    if (category) {
+      documentTypesDropdownOptions.push({
+        value: category as string,
+        label: convertSnakeCaseToTitleCase(category),
+      });
+    }
+    const type = document.type;
+    if (type) {
+      documentCategoryDropdownOptions.push({
+        value: type as string,
+        label: convertSnakeCaseToTitleCase(type),
+      });
+    }
+  });
+
+  const typePickerOptions = uniqueArrayByKey(documentTypesDropdownOptions, 'value');
+  const categoryOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
+  return {
+    type: { title: 'type', type: 'string', pickerOptions: typePickerOptions, value: categoryValue },
+    category: { title: 'category', type: 'string', pickerOptions: categoryOptions, value: docType },
+  };
 };
 
 export const useEntity = () => {
@@ -58,9 +86,7 @@ export const useEntity = () => {
   };
 
   const issuerCountryCode = extractCountryCodeFromEntity(entity);
-  if (!!issuerCountryCode) {
-    const documentsSchema = getDocumentsByCountry(issuerCountryCode);
-  }
+  const documentsSchema = issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
 
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
@@ -79,11 +105,8 @@ export const useEntity = () => {
             { id, type: docType, category, issuer, properties, propertiesSchema, decision },
             docIndex,
           ) => {
-            const pickableCategoryType = composePickableCategoryType(
-              category,
-              docType,
-              documentsSchema,
-            );
+            const additionProperties =
+              !!documentsSchema && composePickableCategoryType(category, docType, documentsSchema);
 
             return [
               {
@@ -131,15 +154,28 @@ export const useEntity = () => {
                     value: {
                       id,
                       title: `${category} - ${docType}`,
-                      data: Object.entries(propertiesSchema?.properties ?? {})?.map(
-                        ([title, { type, format, pattern, isEditable = true }]) => ({
+                      data: Object.entries(
+                        {
+                          ...additionProperties,
+                          ...propertiesSchema?.properties,
+                        } ?? {},
+                      )?.map(
+                        ([
                           title,
-                          value: properties?.[title] ?? '',
-                          type,
-                          format,
-                          pattern,
-                          isEditable: caseState.writeEnabled && isEditable,
-                        }),
+                          { type, format, pattern, isEditable = true, pickerOptions, value },
+                        ]) => {
+                          const fieldValue = value || (properties?.[title] ?? '');
+
+                          return {
+                            title,
+                            value: fieldValue,
+                            type,
+                            format,
+                            pattern,
+                            isEditable: caseState.writeEnabled && isEditable,
+                            pickerOptions,
+                          };
+                        },
                       ),
                     },
                   },

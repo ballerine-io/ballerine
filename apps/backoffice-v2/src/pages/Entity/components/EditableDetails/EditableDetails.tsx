@@ -16,6 +16,9 @@ import { FormControl } from '../../../../common/components/organisms/Form/Form.C
 import { FormMessage } from '../../../../common/components/organisms/Form/Form.Message';
 import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
 import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
+import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
+import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
+import { Select } from '../../../../common/components/atoms/Select/Select';
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
@@ -63,14 +66,17 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     const context = {
       documents: documents?.map(document => {
         if (document?.id !== valueId) return document;
+        const properties = Object.keys(document?.properties).reduce((acc, curr) => {
+          acc[curr] = data?.[curr];
+
+          return acc;
+        }, {});
 
         return {
           ...document,
-          properties: Object.keys(document?.properties).reduce((acc, curr) => {
-            acc[curr] = data?.[curr];
-
-            return acc;
-          }, {}),
+          type: data.type,
+          category: data.category,
+          properties: properties,
         };
       }),
     };
@@ -102,15 +108,24 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                     <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
                     <FormControl>
                       {pickerOptions ? (
-                        <SelectContent>
-                          {pickerOptions?.map(reason => {
-                            return (
-                              <SelectItem key={reason.value} value={reason.value}>
-                                {reason.label}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
+                        <Select
+                          disabled={!isEditable}
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {pickerOptions?.map(({ label, value }) => {
+                              return (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </Select>
                       ) : (
                         <Input
                           type={!format ? (type === 'string' ? 'text' : type) : format}

@@ -1,9 +1,9 @@
-export { getDocumentId } from '@/schemas/documents/workflow/documents/utils';
-export { type DefaultContextSchema } from '@/schemas/documents/context';
-export { type TDefaultSchemaDocumentPage } from '@/schemas/documents/default-context-page-schema';
+export { getDocumentId } from './documents/workflow/documents/utils';
+export { type DefaultContextSchema } from './documents/context';
+export { type TDefaultSchemaDocumentPage } from './documents/default-context-page-schema';
 export {
   ghanaDocuments,
   certificateOfResidenceGH,
-} from '@/schemas/documents/workflow/documents/schemas/GH';
-export { getDocumentsByCountry } from '@/schemas/documents/workflow/documents/schemas/index';
-export { type TDocument } from '@/schemas/documents/workflow/documents/types';
+} from './documents/workflow/documents/schemas/GH';
+export { getDocumentsByCountry } from './documents/workflow/documents/schemas/index';
+export { type TDocument } from './documents/workflow/documents/types';
