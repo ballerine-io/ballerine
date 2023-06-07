@@ -604,11 +604,9 @@ async function seed(bcryptSalt: Salt) {
         select: {
           id: true,
           correlationId: true,
-          verificationId: true,
           endUserType: true,
           approvalState: true,
           stateReason: true,
-          jsonData: true,
           firstName: true,
           lastName: true,
           email: true,
