@@ -41,7 +41,7 @@ import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
-import {DefaultContextSchema, getDocumentId, TDefaultSchemaDocumentPage} from "@ballerine/common";
+import { DefaultContextSchema, getDocumentId, TDefaultSchemaDocumentPage } from '@ballerine/common';
 
 type TEntityId = string;
 

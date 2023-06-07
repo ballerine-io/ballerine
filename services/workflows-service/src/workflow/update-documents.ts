@@ -1,4 +1,4 @@
-import {DefaultContextSchema, getDocumentId} from "@ballerine/common";
+import { DefaultContextSchema, getDocumentId } from '@ballerine/common';
 
 type Documents = DefaultContextSchema['documents'];
 type Document = Documents[number];

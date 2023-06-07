@@ -4,8 +4,8 @@ import {
   DefaultContextSchema,
   getDocumentId,
   getDocumentsByCountry,
-  TDocument
-} from "@ballerine/common";
+  TDocument,
+} from '@ballerine/common';
 
 export const enrichWorkflowRuntimeData = (workflowRuntimeData: WorkflowRuntimeData) => {
   if (workflowRuntimeData?.context?.documents?.length) {
