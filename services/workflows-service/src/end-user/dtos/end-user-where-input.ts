@@ -49,17 +49,17 @@ export class EndUserWhereInput {
 
   @ApiProperty({
     required: true,
-    type: StringNullableFilter,
+    type: String,
   })
   @Type(() => String)
-  firstName: string | undefined;
+  firstName!: string;
 
   @ApiProperty({
     required: true,
     type: String,
   })
   @Type(() => String)
-  lastName?: string;
+  lastName!: string;
 
   @ApiProperty({
     required: false,
