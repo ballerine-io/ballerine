@@ -26,6 +26,7 @@ import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
 import Ajv, { Schema } from 'ajv';
 import addFormats from 'ajv-formats';
+import addKeywords from 'ajv-keywords';
 import { DefaultContextSchema } from './schemas/context';
 import * as console from 'console';
 import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
@@ -52,6 +53,7 @@ const ajv = new Ajv({
   coerceTypes: true,
 });
 addFormats(ajv, { formats: ['email', 'uri', 'date'] });
+addKeywords(ajv);
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',

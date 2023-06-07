@@ -59,6 +59,7 @@
     "accesscontrol": "^2.2.1",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
+    "ajv-keywords": "^5.1.0",
     "axios": "^1.4.0",
     "bcrypt": "5.1.0",
     "class-transformer": "0.5.1",

@@ -50,10 +50,18 @@
         "type": "object",
         "properties": {
           "category": {
-            "type": "string"
+            "type": "string",
+            "transform": [
+              "trim",
+              "toLowerCase"
+            ]
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "transform": [
+              "trim",
+              "toLowerCase"
+            ]
           },
           "issuer": {
             "type": "object",
@@ -65,7 +73,11 @@
                 "type": "string"
               },
               "country": {
-                "type": "string"
+                "type": "string",
+                "transform": [
+                  "trim",
+                  "toUpperCase"
+                ]
               },
               "city": {
                 "type": "string"
