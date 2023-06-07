@@ -599,6 +599,56 @@ async function seed(bcryptSalt: Salt) {
   await client.filter.create({
     data: {
       entity: 'individuals',
+      name: 'Onboarding - Individuals',
+      query: {
+        select: {
+          id: true,
+          correlationId: true,
+          endUserType: true,
+          approvalState: true,
+          stateReason: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          dateOfBirth: true,
+          avatarUrl: true,
+          additionalInfo: true,
+          createdAt: true,
+          updatedAt: true,
+          workflowRuntimeData: {
+            select: {
+              id: true,
+              status: true,
+              assigneeId: true,
+              createdAt: true,
+              workflowDefinition: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          workflowRuntimeData: {
+            some: {
+              workflowDefinition: {
+                is: {
+                  id: 'manualMachineId',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  await client.filter.create({
+    data: {
+      entity: 'individuals',
       name: 'Risk Score Improvement - Individuals',
       query: {
         select: {
@@ -636,7 +686,7 @@ async function seed(bcryptSalt: Salt) {
             some: {
               workflowDefinition: {
                 is: {
-                  id: manualMachineId,
+                  id: 'risk-score-improvement-dev',
                 },
               },
             },
