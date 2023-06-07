@@ -10,7 +10,7 @@ export const useWorkflowQuery = ({
 }) => {
   return useQuery({
     ...workflowsQueryKeys.byId({ workflowId, filterId }),
-    enabled: !!filterId,
+    enabled: !!filterId && !!workflowId,
     staleTime: 10_000,
   });
 };

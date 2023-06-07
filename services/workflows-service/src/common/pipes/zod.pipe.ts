@@ -11,7 +11,6 @@ export class ZodValidationPipe implements PipeTransform {
       return value;
     }
 
-    console.log('ZodValidationPipe.transform', { value, metadata });
     const result = this.schema.safeParse(value);
 
     if (!result.success) {

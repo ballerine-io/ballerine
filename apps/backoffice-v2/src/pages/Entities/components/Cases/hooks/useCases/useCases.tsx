@@ -10,7 +10,7 @@ export const useCases = () => {
   const sharedSortByOptions = [
     {
       label: 'Created At',
-      value: 'caseCreatedAt',
+      value: 'createdAt',
     },
   ];
   const individualsSortByOptions = [

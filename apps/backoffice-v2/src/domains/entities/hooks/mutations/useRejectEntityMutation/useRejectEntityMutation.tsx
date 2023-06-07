@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Action } from '../../../../../common/enums';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 
@@ -15,7 +14,6 @@ export const useRejectEntityMutation = ({
   onSelectNextEntity: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
-  const filterId = useFilterEntity();
 
   return useMutation({
     mutationFn: (
@@ -42,9 +40,7 @@ export const useRejectEntityMutation = ({
         },
       }),
     onSuccess: (data, payload) => {
-      void queryClient.invalidateQueries(workflowsQueryKeys.list(filterId).queryKey);
-      const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
-      void queryClient.invalidateQueries(workflowById.queryKey);
+      void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
       const action = payload.action === Action.REJECT ? 'reject_case' : 'ask_resubmit_case';
 

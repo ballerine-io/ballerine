@@ -1,22 +1,17 @@
-import { useCallback, useMemo } from 'react';
-import { AnyArray, TKeyofArrayElement } from '../../types';
-import { sort } from './sort';
+import { useCallback } from 'react';
 import { useSearchParamsByEntity } from '../useSearchParamsByEntity/useSearchParamsByEntity';
 
 /**
  * @description A hook to easily sort an array of objects by key, and change sort direction or the sort by key.
  * @param props
- * @param props.data - The data to sort.
  * @param props.initialState - An object of the initial sorting direction and sort by state.
  */
-export const useSort = <TArray extends AnyArray>({
-  data,
+export const useSort = ({
   initialState,
 }: {
-  data: TArray;
   initialState: {
     sortDir?: 'asc' | 'desc';
-    sortBy: TKeyofArrayElement<TArray>;
+    sortBy: string;
   };
 }) => {
   const [
@@ -24,15 +19,6 @@ export const useSort = <TArray extends AnyArray>({
     setSearchParams,
   ] = useSearchParamsByEntity();
   // Sort
-  const sorted = useMemo(
-    () =>
-      sort({
-        data,
-        sortBy,
-        sortDir,
-      }),
-    [data, sortDir, sortBy],
-  );
   const onSortDir = useCallback(() => {
     setSearchParams({
       sortDir: sortDir === 'asc' ? 'desc' : 'asc',
@@ -50,7 +36,6 @@ export const useSort = <TArray extends AnyArray>({
   return {
     sortBy,
     sortDir,
-    sorted,
     onSortDir,
     onSortBy,
   };
