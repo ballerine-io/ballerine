@@ -14,8 +14,8 @@ import { FormItem } from '../../../../common/components/organisms/Form/Form.Item
 import { FormLabel } from '../../../../common/components/organisms/Form/Form.Label';
 import { FormControl } from '../../../../common/components/organisms/Form/Form.Control';
 import { FormMessage } from '../../../../common/components/organisms/Form/Form.Message';
-import {SelectItem} from "../../../../common/components/atoms/Select/Select.Item";
-import {SelectContent} from "../../../../common/components/atoms/Select/Select.Content";
+import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
+import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
@@ -101,9 +101,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                   <FormItem>
                     <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
                     <FormControl>
-                      { pickerOptions ?
-                        (
-                          <SelectContent>
+                      {pickerOptions ? (
+                        <SelectContent>
                           {pickerOptions?.map(reason => {
                             return (
                               <SelectItem key={reason.value} value={reason.value}>
@@ -112,7 +111,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             );
                           })}
                         </SelectContent>
-                        ) : (
+                      ) : (
                         <Input
                           type={!format ? (type === 'string' ? 'text' : type) : format}
                           disabled={!isEditable}

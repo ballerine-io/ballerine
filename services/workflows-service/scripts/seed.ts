@@ -10,7 +10,7 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import { DefaultContextSchema } from "@ballerine/common";
+import { DefaultContextSchema } from '@ballerine/common';
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';

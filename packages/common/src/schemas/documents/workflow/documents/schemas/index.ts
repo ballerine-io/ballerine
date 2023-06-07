@@ -1,7 +1,7 @@
 import { ghanaDocuments } from './GH';
 import { TDocument } from '../types';
 import { countryCodes } from '@/common/countries';
-import {getDocumentId} from "@/schemas/documents/workflow/documents/utils";
+import { getDocumentId } from '@/schemas/documents/workflow/documents/utils';
 
 const createDocumentIdToDocumentMap = (documents: TDocument[]) => {
   const result = {} as Record<string, TDocument>;

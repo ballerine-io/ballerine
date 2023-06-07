@@ -1,4 +1,3 @@
-
 const userRolesSchema = {
   type: 'array',
   items: {
