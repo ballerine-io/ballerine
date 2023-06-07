@@ -14,17 +14,23 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
-import { RunnableWorkflowData } from './types';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
-import { enrichWorkflowRuntimeData } from './enrich-workflow-runtime-data';
 import {
   FindWorkflowsListDto,
+  FindWorkflowsListLogicSchema,
   FindWorkflowsListSchema,
 } from '@/workflow/dtos/find-workflows-list.dto';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { UsePipes } from '@nestjs/common';
 import { FilterService } from '@/filter/filter.service';
+import {
+  FindWorkflowParamsDto,
+  FindWorkflowQueryDto,
+  FindWorkflowQuerySchema,
+} from '@/workflow/dtos/find-workflow.dto';
+import { merge } from 'lodash';
+import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -46,17 +52,43 @@ export class WorkflowControllerInternal {
     return await this.service.createWorkflowDefinition(data);
   }
 
-  // @TODO: Refactor this endpoint to return as minimal data as possible, and make sure the data is enriched only in the `byId` endpoint
   @common.Get()
   @swagger.ApiOkResponse()
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @ApiNestedQuery(FindWorkflowsListDto)
-  @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema))
-  async listWorkflowRuntimeData(@common.Query() { filterId }: FindWorkflowsListDto) {
+  @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema, 'query'))
+  async listWorkflowRuntimeData(
+    @common.Query() { filterId, ...queryParams }: FindWorkflowsListDto,
+  ) {
     const filter = await this.filterService.getById(filterId);
 
-    return await this.service.listWorkflowRuntimeDataWithRelations(filter.query as any);
+    const entityType = filter.entity as 'individuals' | 'businesses';
+
+    const { orderBy } = FindWorkflowsListLogicSchema[entityType].parse(queryParams);
+
+    type Query = Parameters<typeof this.service.listWorkflowRuntimeDataWithRelations>[0];
+
+    const query = merge<Query, Query>(filter.query as Query, {
+      orderBy: toPrismaOrderBy(orderBy, entityType),
+    });
+
+    return await this.service.listWorkflowRuntimeDataWithRelations(query);
+  }
+
+  @common.Get('/:id')
+  @swagger.ApiOkResponse()
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiNestedQuery(FindWorkflowQueryDto)
+  @UsePipes(new ZodValidationPipe(FindWorkflowQuerySchema, 'query'))
+  async getRunnableWorkflowDataById(
+    @common.Param() { id }: FindWorkflowParamsDto,
+    @common.Query() { filterId }: FindWorkflowQueryDto,
+  ) {
+    const filter = await this.filterService.getById(filterId);
+
+    return await this.service.getWorkflowByIdWithRelations(id, filter.query as any);
   }
 
   @common.Get('/active-states')
@@ -86,23 +118,6 @@ export class WorkflowControllerInternal {
       ...data,
       id: params.id,
     });
-  }
-
-  @common.Get('/:id')
-  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async getRunnableWorkflowDataById(
-    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
-  ): Promise<RunnableWorkflowData | null> {
-    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(params.id);
-    const workflowDefinition = await this.service.getWorkflowDefinitionById(
-      workflowRuntimeData.workflowDefinitionId,
-    );
-    return {
-      workflowDefinition,
-      workflowRuntimeData: enrichWorkflowRuntimeData(workflowRuntimeData),
-    };
   }
 
   // PATCH /workflows/:id

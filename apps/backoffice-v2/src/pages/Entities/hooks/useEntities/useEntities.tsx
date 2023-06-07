@@ -8,11 +8,11 @@ import { TIndividual } from '../../../../domains/individuals/types';
 import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
 import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
 import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
-import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
+import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 
 export const useEntities = () => {
-  const filterId = useFilterId();
-  const { data: cases, isLoading } = useWorkflowsQuery(filterId);
+  const [{ filterId, sortBy, sortDir }] = useSearchParamsByEntity();
+  const { data: cases, isLoading } = useWorkflowsQuery({ filterId, sortBy, sortDir });
   const entity = useFilterEntity();
   const individualsSearchOptions = ['firstName', 'lastName', 'email', 'phone'];
   const businessesSearchOptions = [
@@ -25,14 +25,14 @@ export const useEntities = () => {
     data: cases,
     searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
   });
-  const { sorted, onSortBy, onSortDir } = useSort({
-    data: searched,
+  const { onSortBy, onSortDir } = useSort({
     initialState: {
-      sortBy: 'caseCreatedAt',
+      sortBy: 'createdAt',
+      sortDir: 'desc',
     },
   });
   const { filtered, onFilter } = useFilter({
-    data: sorted,
+    data: searched,
   });
   const { paginated, page, pages, totalPages, onPaginate } = usePagination({
     data: filtered,

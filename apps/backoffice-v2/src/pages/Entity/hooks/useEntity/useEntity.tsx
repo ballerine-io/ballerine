@@ -73,7 +73,7 @@ export const useEntity = () => {
                         value: 'Reject',
                         data: {
                           id,
-                          disabled: Boolean(decision),
+                          disabled: Boolean(decision?.status),
                           approvalStatus: 'rejected',
                         },
                       },
@@ -82,7 +82,7 @@ export const useEntity = () => {
                         value: 'Approve',
                         data: {
                           id,
-                          disabled: Boolean(decision),
+                          disabled: Boolean(decision?.status),
                           approvalStatus: 'approved',
                         },
                       },
