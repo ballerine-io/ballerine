@@ -37,7 +37,7 @@ export const FindWorkflowsListSchema = z.object({
   orderBy: z.string(),
 });
 
-export const FindWorkflowsListQuerySchema = {
+export const FindWorkflowsListLogicSchema = {
   individuals: z.object({
     orderBy:
       z.custom<`${(typeof sortableColumnsIndividuals)[number]}:${(typeof sortDirections)[number]}`>(
