@@ -21,6 +21,9 @@ import { Request } from 'express';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
 import { enrichWorkflowRuntimeData } from './enrich-workflow-runtime-data';
+import { UseGuards } from '@nestjs/common';
+import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
+import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -105,12 +108,32 @@ export class WorkflowControllerInternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(WorkflowAssigneeGuard)
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
   ): Promise<WorkflowRuntimeData> {
     try {
       return await this.service.updateWorkflowRuntimeData(params.id, data);
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
+  }
+
+  // PATCH /workflows/assign/:id
+  @common.Patch('/assign/:id')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async assignWorkflowById(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @common.Body() data: WorkflowAssigneeId,
+  ): Promise<WorkflowRuntimeData> {
+    try {
+      return await this.service.assignWorkflowToUser(params.id, data);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -130,7 +153,7 @@ export class WorkflowControllerInternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async deleteWorkflowDefinitionById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
-  ): Promise<WorkflowDefinitionModel | null> {
+  ): Promise<WorkflowDefinition> {
     try {
       return await this.service.deleteWorkflowDefinitionById(params.id, {
         select: {

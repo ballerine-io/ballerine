@@ -12,6 +12,7 @@ export const fetchWorkflows = async () => {
     schema: z.array(
       ObjectWithIdSchema.extend({
         state: z.string().nullable(),
+        status: z.union([z.literal('active'), z.literal('completed'), z.literal('failed')]),
         endUserId: z.string().nullable(),
         businessId: z.string().nullable(),
         assigneeId: z.string().nullable(),
@@ -40,6 +41,22 @@ export const fetchUpdateWorkflowById = async ({
 }) => {
   const [workflow, error] = await apiClient({
     endpoint: `workflows/${workflowId}`,
+    method: Method.PATCH,
+    body,
+    schema: z.any(),
+  });
+
+  return handleZodError(error, workflow);
+};
+
+export const updateWorkflowSetAssignById = async ({
+  workflowId,
+  body,
+}: IWorkflowId & {
+  body: { assigneeId: string | null; isAssignedToMe?: boolean };
+}) => {
+  const [workflow, error] = await apiClient({
+    endpoint: `workflows/assign/${workflowId}`,
     method: Method.PATCH,
     body,
     schema: z.any(),

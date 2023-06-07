@@ -177,7 +177,7 @@ const IntFilterSchema = z.lazy(() =>
     not: z.union([NestedIntFilterSchema, z.number()]).optional(),
   }),
 );
-
+// @ts-ignore
 export const BusinessRelationFilterSchema = z.object({
   is: z.lazy(() => BusinessWhereInputSchema).optional(),
   isNot: z.lazy(() => BusinessWhereInputSchema).optional(),
@@ -192,6 +192,7 @@ export const WorkflowRuntimeDataWhereInputSchema = z.lazy(() =>
     workflowDefinitionId: zStringFilterStringUnion.optional(),
     workflowDefinitionVersion: zStringFilterStringUnion.optional(),
     context: z.unknown().optional(),
+    config: z.unknown().optional(),
     state: zStringNullableFilterStringNullUnion.optional(),
     status: zStringFilterStringUnion.optional(),
     createdAt: zDateTimeFilterDateStringUnion.optional(),
@@ -416,7 +417,7 @@ export const EndUserFilterCreateSchema = EndUserFilterSchema.omit({
 });
 
 /* Businesses */
-
+// @ts-ignore
 export const BusinessSelectSchema = z.object({
   id: z.boolean().optional(),
   companyName: z.boolean().optional(),
@@ -452,7 +453,7 @@ export const BusinessSelectSchema = z.object({
   createdAt: z.boolean().optional(),
   updatedAt: z.boolean().optional(),
 });
-
+// @ts-ignore
 export const BusinessWhereInputSchema = z.object({
   id: zStringFilterStringUnion.optional(),
   companyName: zStringFilterStringUnion.optional(),
@@ -479,11 +480,17 @@ export const BusinessFilterSchema = FilterSchema.extend({
   query: z
     .object({
       select: BusinessSelectSchema.strict()
-        .refine(v => Object.keys(v).length > 0, 'At least one `select` field must be provided')
+        .refine(
+          value => Object.keys(value).length > 0,
+          'At least one `select` field must be provided',
+        )
         .optional(),
       where: BusinessWhereInputSchema.strict().optional(),
     })
-    .refine(v => v.select || v.where, 'At least `query.select` or `query.where` must be provided'),
+    .refine(
+      value => value.select || value.where,
+      'At least `query.select` or `query.where` must be provided',
+    ),
 });
 
 export const BusinessFilterCreateSchema = BusinessFilterSchema.omit({

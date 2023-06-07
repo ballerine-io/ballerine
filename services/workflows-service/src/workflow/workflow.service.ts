@@ -41,6 +41,8 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
 import { getDocumentId } from '@/documents/utils';
+import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
+import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 
 type TEntityId = string;
 
@@ -188,6 +190,9 @@ export class WorkflowService {
     const workflowDef = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
     );
+
+    const correlationId: string = await this.getCorrelationIdFromWorkflow(runtimeData);
+
     let contextHasChanged, mergedContext;
     if (data.context) {
       contextHasChanged = !isEqual(data.context, runtimeData.context);
@@ -240,6 +245,7 @@ export class WorkflowService {
       ['active'].includes(data.status! || runtimeData.status) &&
       workflowDef.config?.completedWhenTasksResolved
     ) {
+      // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
       const allDocumentsResolved =
         data.context?.documents?.length &&
         data.context?.documents?.every((document: DefaultContextSchema['documents'][number]) => {
@@ -267,19 +273,46 @@ export class WorkflowService {
         runtimeData,
         state: currentState as string,
         context: mergedContext,
+        entityId: (runtimeData.businessId || runtimeData.endUserId) as string,
+        correlationId: correlationId,
       });
     }
 
     // TODO: Move to a separate method
-    if (data.state) {
-      if (isFinal && workflowDef.reviewMachineId) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
-      }
+    if (data.state && isFinal && workflowDef.reviewMachineId) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
     }
 
     return updateResult;
+  }
+
+  async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
+    const updatedWorkflowRuntime = await this.workflowRuntimeDataRepository.updateById(
+      workflowRuntimeId,
+      { data: { assigneeId: assigneeId } },
+    );
+
+    return updatedWorkflowRuntime;
+  }
+
+  private async getCorrelationIdFromWorkflow(runtimeData: WorkflowRuntimeData) {
+    let correlationId: string;
+    if (runtimeData.businessId) {
+      correlationId = (await this.businessRepository.getCorrelationIdById(
+        runtimeData.businessId,
+      )) as string;
+    } else if (runtimeData.endUserId) {
+      correlationId = (await this.endUserRepository.getCorrelationIdById(
+        runtimeData.endUserId,
+      )) as string;
+    } else {
+      correlationId = '';
+      console.error('No entity Id found');
+      // throw new Error('No entity Id found');
+    }
+    return correlationId;
   }
 
   async deleteWorkflowDefinitionById(
@@ -313,9 +346,11 @@ export class WorkflowService {
         },
       }));
 
+    const entityId = endUserId || businessId;
+
     this.logger.log(`Entity state updated to ${ApprovalState.PROCESSING}`, {
       entityType: endUserId ? 'endUser' : 'business',
-      entityId: endUserId || businessId,
+      entityId,
     });
 
     // will throw exception if review machine def is missing
@@ -401,13 +436,21 @@ export class WorkflowService {
   async createOrUpdateWorkflowRuntime({
     workflowDefinitionId,
     context,
+    config,
   }: {
     workflowDefinitionId: string;
     context: DefaultContextSchema;
+    config?: WorkflowConfig;
   }): Promise<RunnableWorkflowData[]> {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
+    let validatedConfig: WorkflowConfig;
+    try {
+      validatedConfig = ConfigSchema.parse(config);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(context);
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
@@ -444,6 +487,7 @@ export class WorkflowService {
           ...entityConnect,
           workflowDefinitionVersion: workflowDefinition.version,
           context: contextToInsert as InputJsonValue,
+          config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
           status: 'active',
           workflowDefinition: {
             connect: {
@@ -459,6 +503,10 @@ export class WorkflowService {
           data: {
             ...entityConnect,
             context: contextToInsert as InputJsonValue,
+            config: merge(
+              existingWorkflowRuntimeData.config,
+              validatedConfig || {},
+            ) as InputJsonValue,
           },
         },
       );

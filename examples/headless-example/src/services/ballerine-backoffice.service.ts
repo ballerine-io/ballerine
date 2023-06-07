@@ -15,7 +15,7 @@ export class BallerineBackOfficeService {
     entity,
     entityId,
   }: {
-    entity: 'endUser' | 'business';
+    entity: 'end-user' | 'business';
     entityId: string;
   }) =>
     fetchJson<

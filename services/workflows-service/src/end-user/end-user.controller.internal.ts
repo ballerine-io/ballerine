@@ -20,6 +20,7 @@ import { EndUserFilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
 import { JsonValue } from 'type-fest';
 import { EndUserFindUniqueArgs } from '@/end-user/dtos/end-user-find-unique-args';
 import { TEndUserFilter } from '@/end-user/types';
+import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 
 @swagger.ApiTags('internal/end-users')
 @common.Controller('internal/end-users')
@@ -89,6 +90,7 @@ export class EndUserControllerInternal {
   }
 
   @common.Post('filters')
+  @UseKeyAuthGuard()
   @swagger.ApiCreatedResponse({ type: EndUserFilterModel })
   @swagger.ApiForbiddenResponse()
   @UsePipes(new ZodValidationPipe(EndUserFilterCreateSchema))

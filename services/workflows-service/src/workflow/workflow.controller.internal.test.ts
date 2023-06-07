@@ -9,6 +9,8 @@ import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-reposit
 import { WorkflowControllerInternal } from './workflow.controller.internal';
 import { WorkflowService } from './workflow.service';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
+import { EndUserModel } from '@/end-user/end-user.model';
+import { BusinessModel } from '@/business/business.model';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -19,6 +21,18 @@ class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
 class FakeWorkflowDefinitionRepo extends BaseFakeRepository {
   constructor() {
     super(WorkflowDefinitionModel);
+  }
+}
+
+class FakeBusinessRepo extends BaseFakeRepository {
+  constructor() {
+    super(BusinessModel);
+  }
+}
+
+class FakeEndUserRepo extends BaseFakeRepository {
+  constructor() {
+    super(EndUserModel);
   }
 }
 
@@ -53,12 +67,16 @@ function buildWorkflowDeifintion(sequenceNum) {
 describe('WorkflowControllerInternal', () => {
   let controller;
   let workflowRuntimeDataRepo;
+  let businessRepo;
+  let endUserRepo;
   let eventEmitterSpy;
   const numbUserInfo = Symbol();
 
   beforeEach(() => {
     const workflowDefinitionRepo = new FakeWorkflowDefinitionRepo();
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
+    businessRepo = new FakeBusinessRepo();
+    endUserRepo = new FakeEndUserRepo();
 
     eventEmitterSpy = {
       emitted: [],
@@ -70,8 +88,8 @@ describe('WorkflowControllerInternal', () => {
     const service = new WorkflowService(
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
-      {} as any,
-      {} as any,
+      endUserRepo,
+      businessRepo,
       {} as any,
       {} as any,
       eventEmitterSpy,

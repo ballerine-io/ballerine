@@ -599,7 +599,7 @@ async function seed(bcryptSalt: Salt) {
   await client.filter.create({
     data: {
       entity: 'individuals',
-      name: 'Individuals',
+      name: 'Risk Score Improvement - Individuals',
       query: {
         select: {
           id: true,
@@ -651,7 +651,7 @@ async function seed(bcryptSalt: Salt) {
   await client.filter.create({
     data: {
       entity: 'businesses',
-      name: 'Risk Score Improvement',
+      name: 'Risk Score Improvement - Businesses',
       query: {
         select: {
           id: true,
