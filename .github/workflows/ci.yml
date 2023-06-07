@@ -33,6 +33,8 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
+    env:
+      TESTCONTAINERS_RYUK_DISABLED: true
 
     steps:
       - name: Checkout

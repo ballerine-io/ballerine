@@ -1,6 +1,7 @@
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from 'testcontainers';
+import { PostgreSqlContainer } from 'testcontainers';
 import console from 'console';
 import { TestGlobal } from '@/test/test-global';
+import { execSync } from 'child_process';
 
 module.exports = async () => {
   const container = await new PostgreSqlContainer().withDatabase('test').start();
@@ -14,9 +15,8 @@ module.exports = async () => {
 };
 
 const runPrismaMigrations = async () => {
-  const { execSync } = require('child_process');
   try {
-    execSync('npx prisma migrate dev --preview-feature', { stdio: 'inherit' });
+    await execSync('npx prisma migrate dev --preview-feature', { stdio: 'inherit' });
   } catch (error) {
     console.error('Prisma migration failed:');
     console.error(error);
