@@ -4,6 +4,8 @@ import { TestGlobal } from '@/test/test-global';
 import { execSync } from 'child_process';
 
 module.exports = async () => {
+  if (process.env.SKIP_DB_SETUP_TEARDOWN) return;
+
   const container = await new PostgreSqlContainer().withDatabase('test').start();
   process.env.TEST_DATABASE_SCHEMA_NAME = container.getDatabase();
   process.env.DB_URL = container.getConnectionUri();
@@ -15,6 +17,8 @@ module.exports = async () => {
 };
 
 const runPrismaMigrations = async () => {
+  if (process.env.SKIP_DB_SETUP_TEARDOWN) return;
+
   try {
     await execSync('npx prisma migrate dev --preview-feature', { stdio: 'inherit' });
   } catch (error) {
