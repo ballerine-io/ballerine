@@ -7,6 +7,7 @@ import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseSt
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { components } from './components';
+import { getDocumentsByCountry } from '@ballerine/common';
 
 const convertSnakeCaseToTitleCase = (input: string): string =>
   input
@@ -14,11 +15,21 @@ const convertSnakeCaseToTitleCase = (input: string): string =>
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-const composePickableCategoryType = (categoryValue: string, docType: string, workflowcontextSchema: any) => {
-// [
-//   {category: {type: 'string', format: 'dropdown', pattern: undefined, isEditable: true, value: categoryValue, pickerOptions:  }},
-//   { docType: {type, format, pattern, isEditable = true }}]
-}
+const extractCountryCodeFromEntity = entity => {
+  return entity?.workflow?.definition?.context?.documents?.find(document => {
+    document?.issuer?.country;
+  })?.issuer?.country;
+};
+const composePickableCategoryType = (
+  categoryValue: string,
+  docType: string,
+  documentsSchema: any,
+) => {
+  console.log('workflowcontextSchema', documentsSchema);
+  // [
+  //   {category: {type: 'string', format: 'dropdown', pattern: undefined, isEditable: true, value: categoryValue, pickerOptions:  }},
+  //   { docType: {type, format, pattern, isEditable = true }}]
+};
 
 export const useEntity = () => {
   const { entityId } = useParams();
@@ -45,6 +56,12 @@ export const useEntity = () => {
     avatarUrl: entity?.avatarUrl,
     workflow: entity?.workflow,
   };
+
+  const issuerCountryCode = extractCountryCodeFromEntity(entity);
+  if (!!issuerCountryCode) {
+    const documentsSchema = getDocumentsByCountry(issuerCountryCode);
+  }
+
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
@@ -62,7 +79,11 @@ export const useEntity = () => {
             { id, type: docType, category, issuer, properties, propertiesSchema, decision },
             docIndex,
           ) => {
-            const pickableCategoryType = composePickableCategoryType(category, docType, entity?.workflow?.propertiesSchema)
+            const pickableCategoryType = composePickableCategoryType(
+              category,
+              docType,
+              documentsSchema,
+            );
 
             return [
               {
