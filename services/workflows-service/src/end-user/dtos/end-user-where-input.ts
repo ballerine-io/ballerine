@@ -48,20 +48,18 @@ export class EndUserWhereInput {
   stateReason?: StringNullableFilter;
 
   @ApiProperty({
-    required: false,
+    required: true,
     type: StringNullableFilter,
   })
-  @Type(() => StringNullableFilter)
-  @IsOptional()
-  firstName?: StringNullableFilter;
+  @Type(() => String)
+  firstName: string | undefined;
 
   @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
+    required: true,
+    type: String,
   })
-  @Type(() => StringNullableFilter)
-  @IsOptional()
-  lastName?: StringNullableFilter;
+  @Type(() => String)
+  lastName?: string;
 
   @ApiProperty({
     required: false,
