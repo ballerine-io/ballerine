@@ -55,6 +55,9 @@ export const SignIn: FunctionComponent = () => {
     },
   });
 
+  // Handles a flash of content on sign in
+  if (isAuthenticated) return null;
+
   return (
     <section className={`flex h-full flex-col items-center justify-center`}>
       <div className={`mb-16`}>

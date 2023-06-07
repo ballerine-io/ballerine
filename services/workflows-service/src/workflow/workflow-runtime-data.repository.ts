@@ -77,6 +77,18 @@ export class WorkflowRuntimeDataRepository {
     });
   }
 
+  async getEntityTypeAndId(workflowRuntimeDataId: string) {
+    return await this.findOne({
+      where: {
+        id: workflowRuntimeDataId,
+      },
+      select: {
+        businessId: true,
+        endUserId: true,
+      },
+    });
+  }
+
   async findContext(id: string) {
     return (
       await this.prisma.workflowRuntimeData.findUniqueOrThrow({

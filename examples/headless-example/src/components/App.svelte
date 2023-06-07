@@ -61,7 +61,7 @@
       },
       enabled: typeof id === 'string' && id.length > 0,
     });
-  const entity = import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'endUser' : ('business' as const);
+  const entity = import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'end-user' : ('business' as const);
   const createWorkflowsQuery = (
     options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {},
   ) =>
@@ -90,10 +90,28 @@
   const createFirstWorkflowQuery = () =>
     createWorkflowsQuery({
       select: workflows => {
+        console.log({ workflows });
         return Array.isArray(workflows)
-          ? workflows?.find(
-              workflow => workflow?.workflowDefinition?.name === import.meta.env.VITE_EXAMPLE_TYPE,
-            )
+          ? workflows
+              ?.slice()
+              ?.sort((a, b) => {
+                if (
+                  a?.workflowRuntimeData?.status === 'active' &&
+                  b?.workflowRuntimeData?.status !== 'active'
+                )
+                  return -1;
+                if (
+                  b?.workflowRuntimeData?.status === 'active' &&
+                  a?.workflowRuntimeData?.status !== 'active'
+                )
+                  return 1;
+
+                return 0;
+              })
+              ?.find(
+                workflow =>
+                  workflow?.workflowDefinition?.name === import.meta.env.VITE_EXAMPLE_TYPE,
+              )
           : undefined;
       },
     });
@@ -111,6 +129,7 @@
         if (
           isRejected ||
           isApproved ||
+          data?.workflowRuntimeData?.status === 'active' ||
           (entityState === 'NEW' && data?.workflowRuntimeData?.status === 'created') ||
           (isProcessing && data?.workflowRuntimeData?.status !== 'completed')
         ) {
@@ -119,7 +138,7 @@
 
         return parseInt(import.meta.env.VITE_POLLING_INTERVAL) * 1000 || false;
       },
-      enabled: typeof id === 'string' && id.length > 0,
+      enabled: typeof id === 'string' && id.length > 0 && !!entity && !!entityId,
     });
   const queryClient = useQueryClient();
   const createSignUpMutation = () =>
@@ -202,6 +221,9 @@
       ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)
     ) {
       nextWorkflow = mergeWorkflow();
+      console.log({
+        nextWorkflow: nextWorkflow,
+      });
       if (
         nextWorkflow?.definition?.initial !== $workflow?.definition?.initial &&
         nextWorkflow?.definition?.context?.documents?.some(

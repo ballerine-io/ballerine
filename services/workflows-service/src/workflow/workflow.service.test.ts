@@ -24,6 +24,18 @@ class FakeWorkflowDefinitionRepo extends BaseFakeRepository {
   }
 }
 
+class FakeBusinessRepo extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
+class FakeEndUserRepo extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
 function buildWorkflowDeifintion(sequenceNum) {
   return {
     id: sequenceNum.toString(),
@@ -58,19 +70,22 @@ function buildDocument(category, status) {
     decision: {
       status: status,
     },
-    propertiesSchema: {},
   };
 }
 
 describe('WorkflowService', () => {
   let service;
   let workflowRuntimeDataRepo;
+  let businessRepo;
+  let endUserRepo;
   const numbUserInfo = Symbol();
   let fakeHttpService;
 
   beforeEach(() => {
     const workflowDefinitionRepo = new FakeWorkflowDefinitionRepo();
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
+    businessRepo = new FakeBusinessRepo();
+    endUserRepo = new FakeEndUserRepo();
 
     fakeHttpService = {
       requests: [],
@@ -114,8 +129,8 @@ describe('WorkflowService', () => {
     service = new WorkflowService(
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
-      {} as any,
-      {} as any,
+      endUserRepo,
+      businessRepo,
       {} as any,
       {} as any,
       eventEmitter as any,
@@ -202,6 +217,9 @@ describe('WorkflowService', () => {
           data: {
             id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
             eventName: 'workflow.context.document.changed',
+            workflowDefinitionId: '2',
+            ballerineEntityId: undefined,
+            correlationId: '',
             apiVersion: 1,
             timestamp: expect.stringMatching(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/),
             workflowRuntimeId: '2',
@@ -244,9 +262,12 @@ describe('WorkflowService', () => {
           data: {
             id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
             eventName: 'workflow.context.document.changed',
+            ballerineEntityId: undefined,
+            correlationId: '',
             apiVersion: 1,
             timestamp: expect.stringMatching(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/),
             workflowRuntimeId: '2',
+            workflowDefinitionId: '2',
             environment: 'some-node-env',
             data: {
               ...newContext,

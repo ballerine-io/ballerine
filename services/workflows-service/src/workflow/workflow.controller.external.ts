@@ -23,6 +23,7 @@ import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { camelCase } from 'lodash';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -43,12 +44,13 @@ export class WorkflowControllerExternal {
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   @UseKeyAuthInDevGuard()
   async listWorkflowRuntimeDataByUserId(
-    @Param('entity') entity: TEntityType,
+    @Param('entity') entity: 'end-user' | 'business',
     @Param('entityId') entityId: string,
   ) {
     const completeWorkflowData = await this.service.listFullWorkflowDataByUserId({
       entityId,
-      entity,
+      // Expecting kebab-case from the url
+      entity: camelCase(entity) as TEntityType,
     });
     const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
       workflowRuntimeData: rest,
@@ -122,7 +124,7 @@ export class WorkflowControllerExternal {
     @common.Body() body: WorkflowRunDto,
     @Res() res: Response,
   ): Promise<any> {
-    const { workflowId, context } = body;
+    const { workflowId, context, config } = body;
     const { entity } = context;
 
     if (!entity.id && !entity.ballerineEntityId)
@@ -131,6 +133,7 @@ export class WorkflowControllerExternal {
     const actionResult = await this.service.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowId,
       context,
+      config,
     });
 
     return res.json({
