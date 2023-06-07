@@ -10,6 +10,7 @@ export interface IDetailsProps {
       format?: string;
       pattern?: string;
       value: unknown;
+      pickerOptions?: Array<{ label: string; value: string }>;
     }>;
   };
 }
