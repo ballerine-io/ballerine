@@ -9,14 +9,14 @@ module.exports = async () => {
   process.env.DB_URL = container.getConnectionUri();
   console.log('\nStarting database container on: ' + container.getConnectionUri());
 
-  await runPrismaMigrations();
+  runPrismaMigrations();
 
   (globalThis as TestGlobal).__DB_CONTAINER__ = container;
 };
 
-const runPrismaMigrations = async () => {
+const runPrismaMigrations = () => {
   try {
-    await execSync('npx prisma migrate dev --preview-feature', { stdio: 'inherit' });
+    execSync('npx prisma migrate dev --preview-feature', { stdio: 'inherit' });
   } catch (error) {
     console.error('Prisma migration failed:');
     console.error(error);
