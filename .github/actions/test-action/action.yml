@@ -36,4 +36,4 @@ runs:
 
     - name: Test
       shell: bash
-      run: pnpm test:integration
+      run: pnpm test
