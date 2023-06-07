@@ -10,7 +10,7 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
+import { DefaultContextSchema } from "@ballerine/common";
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
@@ -355,7 +355,7 @@ async function seed(bcryptSalt: Salt) {
       },
       contextSchema: {
         type: 'json-schema',
-        schema: defaultContextSchema,
+        schema: DefaultContextSchema,
       },
       definition: {
         id: 'risk-score-improvement',

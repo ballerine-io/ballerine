@@ -26,7 +26,6 @@ import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
 import Ajv, { Schema } from 'ajv';
 import addFormats from 'ajv-formats';
-import { DefaultContextSchema } from './schemas/context';
 import * as console from 'console';
 import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
 import { z } from 'zod';
@@ -37,13 +36,12 @@ import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
 import * as process from 'process';
 import * as crypto from 'crypto';
-import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-page-schema';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
-import { getDocumentId } from '@/documents/utils';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
+import {DefaultContextSchema, getDocumentId, TDefaultSchemaDocumentPage} from "@ballerine/common";
 
 type TEntityId = string;
 
@@ -537,6 +535,7 @@ export class WorkflowService {
     entityId: TEntityId,
   ): Promise<DefaultContextSchema> {
     const documentsWithPersistedImages = await Promise.all(
+      // @ts-ignore
       context.documents.map(async document => ({
         ...document,
         pages: await this.__persistDocumentPagesFiles(document, entityId),
@@ -551,6 +550,7 @@ export class WorkflowService {
     entityId: string,
   ) {
     return await Promise.all(
+      // @ts-ignore
       document.pages.map(async documentPage => {
         const ballerineFileId =
           documentPage.ballerineFileId ||

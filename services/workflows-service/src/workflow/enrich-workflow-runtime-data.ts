@@ -1,18 +1,21 @@
 import { WorkflowRuntimeData } from '@prisma/client';
-import { DefaultContextSchema } from './schemas/context';
-import { getDocumentId } from '@/documents/utils';
-import { getDocumentsByCountry } from '@/documents/schemas';
-import { Document } from '@/documents/types';
 import { countryCodes } from '@/common/countries';
+import {
+  DefaultContextSchema,
+  getDocumentId,
+  getDocumentsByCountry,
+  TDocument
+} from "@ballerine/common";
 
 export const enrichWorkflowRuntimeData = (workflowRuntimeData: WorkflowRuntimeData) => {
   if (workflowRuntimeData?.context?.documents?.length) {
     const documents = workflowRuntimeData?.context?.documents as DefaultContextSchema['documents'];
+    // @ts-ignore
     const result = documents.map(document => {
       const documents = getDocumentsByCountry(
         document.issuer.country as (typeof countryCodes)[number],
       );
-      const id = getDocumentId(document as unknown as Document);
+      const id = getDocumentId(document as unknown as TDocument);
       const documentSchema = documents[id];
 
       return {

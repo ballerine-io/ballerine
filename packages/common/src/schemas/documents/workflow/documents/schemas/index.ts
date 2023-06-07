@@ -1,10 +1,10 @@
-import { getDocumentId } from '@/documents/utils';
 import { ghanaDocuments } from './GH';
-import { Document } from '../types';
+import { TDocument } from '../types';
 import { countryCodes } from '@/common/countries';
+import {getDocumentId} from "@/schemas/documents/workflow/documents/utils";
 
-const createDocumentIdToDocumentMap = (documents: Document[]) => {
-  const result = {} as Record<string, Document>;
+const createDocumentIdToDocumentMap = (documents: TDocument[]) => {
+  const result = {} as Record<string, TDocument>;
   for (const document of documents) {
     const id = getDocumentId(document);
     result[id] = document;
@@ -18,7 +18,7 @@ const documentIdsByCountry: Partial<Record<(typeof countryCodes)[number], any>> 
 
 export const getDocumentsByCountry = (
   countryCode: (typeof countryCodes)[number],
-): Record<string, Document> => {
+): Record<string, TDocument> => {
   const documents = documentIdsByCountry[countryCode];
   if (!documents) return {};
 
