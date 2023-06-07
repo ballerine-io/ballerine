@@ -14,6 +14,14 @@ const convertSnakeCaseToTitleCase = (input: string): string =>
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
+function omit(obj, ...props) {
+  const result = { ...obj };
+  props.forEach(function (prop) {
+    delete result[prop];
+  });
+  return result;
+}
+
 export const useEntity = () => {
   const { entityId } = useParams();
   const { data: entity, isLoading } = useEntityWithWorkflowQuery(entityId);
@@ -155,7 +163,10 @@ export const useEntity = () => {
             type: 'details',
             value: {
               title: `${toStartCase(contextEntity?.type)} Information`,
-              data: Object.entries(contextEntity?.data ?? {})?.map(([title, value]) => ({
+              data: [
+                ...Object.entries(omit(contextEntity?.data, 'additionalInfo') ?? {}),
+                ...Object.entries(contextEntity?.data?.additionalInfo ?? {}),
+              ]?.map(([title, value]) => ({
                 title,
                 value,
                 type: 'string',
