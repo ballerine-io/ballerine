@@ -6,15 +6,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 export const useSelectEntityFilterOnMount = () => {
   const { data: filters } = useFiltersQuery();
   const { locale } = useParams();
-  const [{ entity, filterId, filterName }, setSearchParams] = useSearchParamsByEntity();
+  const [{ entity, filterId }, setSearchParams] = useSearchParamsByEntity();
   const navigate = useNavigate();
   const [firstFilter] = filters ?? [];
 
   useEffect(() => {
-    if ((entity && filterId && filterName) || !firstFilter) return;
+    if ((entity && filterId) || !firstFilter) return;
 
     navigate(
-      `/${locale}/case-management/entities?entity=${firstFilter?.entity}&filterId=${firstFilter?.id}&filterName=${firstFilter?.name}`,
+      `/${locale}/case-management/entities?entity=${firstFilter?.entity}&filterId=${firstFilter?.id}`,
     );
-  }, [entity, filterId, filterName, firstFilter, setSearchParams]);
+  }, [entity, filterId, firstFilter, setSearchParams]);
 };

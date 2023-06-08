@@ -7,7 +7,6 @@ export const SearchSchema = z.object({
   page: z.coerce.number().int().positive().catch(1),
   search: z.string().catch(''),
   filterId: z.string().catch(''),
-  filterName: z.string().catch(''),
   entity: z.string().catch(''),
 });
 
