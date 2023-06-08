@@ -7,21 +7,18 @@ type Filters = {
 
 export const toPrismaWhere = (filters: Filters): Prisma.WorkflowRuntimeDataWhereInput => {
   const where: Prisma.WorkflowRuntimeDataWhereInput = {};
-  where.OR = [];
 
   if (filters.assigneeId) {
-    where.OR.push({
-      OR: [
-        {
-          assigneeId: {
-            in: filters.assigneeId.filter((id): id is string => id !== null),
-          },
+    where.OR = [
+      {
+        assigneeId: {
+          in: filters.assigneeId.filter((id): id is string => id !== null),
         },
-        {
-          assigneeId: filters.assigneeId.includes(null) ? null : undefined,
-        },
-      ],
-    });
+      },
+      {
+        assigneeId: filters.assigneeId.includes(null) ? null : undefined,
+      },
+    ];
   }
 
   if (filters.status) {
@@ -29,8 +26,6 @@ export const toPrismaWhere = (filters: Filters): Prisma.WorkflowRuntimeDataWhere
       in: filters.status,
     };
   }
-
-  console.log(where);
 
   return where;
 };

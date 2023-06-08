@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { CaseStatus, CaseStatuses, States } from '../../enums';
+import { CaseStatus, CaseStatuses } from '../../enums';
 
 export const SearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).catch('desc'),
-  limit: z.coerce.number().int().positive().catch(50),
+  pageSize: z.coerce.number().int().positive().catch(50),
   page: z.coerce.number().int().positive().catch(1),
   search: z.string().catch(''),
   filterId: z.string().catch(''),
