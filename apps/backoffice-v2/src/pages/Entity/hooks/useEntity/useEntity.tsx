@@ -7,7 +7,7 @@ import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseSt
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { components } from './components';
-import { getDocumentsByCountry } from '@ballerine/common/src/schemas/documents/workflow/documents/schemas/index';
+import { getDocumentsByCountry } from '@ballerine/common';
 
 const convertSnakeCaseToTitleCase = (input: string): string =>
   input
