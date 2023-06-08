@@ -1,5 +1,5 @@
-import { DefaultContextSchema } from '@/workflow/schemas/context';
 import { randomUUID } from 'crypto';
+import {DefaultContextSchema} from "@ballerine/common";
 
 type Documents = DefaultContextSchema['documents'];
 

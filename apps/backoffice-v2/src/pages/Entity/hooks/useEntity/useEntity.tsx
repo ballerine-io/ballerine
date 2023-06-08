@@ -123,7 +123,7 @@ export const useEntity = () => {
           ) => {
             const additionProperties =
               isExistingSchemaForDocument(documentsSchema) &&
-              composePickableCategoryType(category, type, documentsSchema);
+              composePickableCategoryType(category, docType, documentsSchema);
 
             return [
               {
@@ -170,17 +170,14 @@ export const useEntity = () => {
                     type: 'details',
                     value: {
                       id,
-                      title: `${category} - ${type}`,
+                      title: `${category} - ${docType}`,
                       data: Object.entries(
                         {
                           ...additionProperties,
                           ...propertiesSchema?.properties,
                         } ?? {},
                       )?.map(
-                        ([
-                          title,
-                          { type, format, pattern, isEditable = true, pickerOptions, value },
-                        ]) => {
+                        ([title, { type, format, pattern, isEditable = true, pickerOptions, value },]) => {
                           const fieldValue = value || (properties?.[title] ?? '');
 
                           return {

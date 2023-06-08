@@ -27,7 +27,6 @@ import { BusinessRepository } from '@/business/business.repository';
 import Ajv, { Schema } from 'ajv';
 import addFormats from 'ajv-formats';
 import addKeywords from 'ajv-keywords';
-import { DefaultContextSchema } from './schemas/context';
 import * as console from 'console';
 import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
 import { z } from 'zod';
@@ -42,7 +41,6 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
-import { getDocumentId } from '@/documents/utils';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { DefaultContextSchema, getDocumentId, TDefaultSchemaDocumentPage } from '@ballerine/common';
@@ -554,6 +552,7 @@ export class WorkflowService {
     document: DefaultContextSchema['documents'][number],
     entityId: string,
   ) {
+    // @ts-ignore
     return await Promise.all(
       document.pages.map(async documentPage => {
         const ballerineFileId =
