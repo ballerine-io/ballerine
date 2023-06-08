@@ -14,6 +14,14 @@ const convertSnakeCaseToTitleCase = (input: string): string =>
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
+function omit(obj, ...props) {
+  const result = { ...obj };
+  props.forEach(function (prop) {
+    delete result[prop];
+  });
+  return result;
+}
+
 export const useEntity = () => {
   const { entityId } = useParams();
   const { data: entity, isLoading } = useEntityWithWorkflowQuery(entityId);
@@ -39,8 +47,10 @@ export const useEntity = () => {
     avatarUrl: entity?.avatarUrl,
     workflow: entity?.workflow,
   };
+
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
+
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
     useUpdateWorkflowByIdMutation({
       workflowId: entity?.workflow?.runtimeDataId,
@@ -139,7 +149,7 @@ export const useEntity = () => {
                         }`,
                         imageUrl:
                           type === 'pdf'
-                            ? octetToFileType(results[docIndex][pageIndex], type)
+                            ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
                             : results[docIndex][pageIndex],
                         fileType: type,
                       }),
@@ -155,7 +165,10 @@ export const useEntity = () => {
             type: 'details',
             value: {
               title: `${toStartCase(contextEntity?.type)} Information`,
-              data: Object.entries(contextEntity?.data ?? {})?.map(([title, value]) => ({
+              data: [
+                ...Object.entries(omit(contextEntity?.data, 'additionalInfo') ?? {}),
+                ...Object.entries(contextEntity?.data?.additionalInfo ?? {}),
+              ]?.map(([title, value]) => ({
                 title,
                 value,
                 type: 'string',
