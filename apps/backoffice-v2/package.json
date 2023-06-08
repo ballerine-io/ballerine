@@ -47,7 +47,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@ballerine/common": "^0.5.0",
+    "@ballerine/common": "^0.5.1",
     "@ballerine/workflow-browser-sdk": "^0.4.4",
     "@ballerine/workflow-node-sdk": "^0.4.3",
     "@formkit/auto-animate": "1.0.0-beta.5",
