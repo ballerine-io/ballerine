@@ -51,14 +51,14 @@ const composePickableCategoryType = (
     }
   });
 
-  const typePickerOptions = uniqueArrayByKey(documentTypesDropdownOptions, 'value');
-  const categoryPickerOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
+  const typeDropdownOptions = uniqueArrayByKey(documentTypesDropdownOptions, 'value');
+  const categoryDropdownOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
   return {
-    type: { title: 'type', type: 'string', pickerOptions: typePickerOptions, value: typeValue },
+    type: { title: 'type', type: 'string', dropdownOptions: typeDropdownOptions, value: typeValue },
     category: {
       title: 'category',
       type: 'string',
-      pickerOptions: categoryPickerOptions,
+      dropdownOptions: categoryDropdownOptions,
       value: categoryValue,
     },
   };
@@ -177,7 +177,10 @@ export const useEntity = () => {
                           ...propertiesSchema?.properties,
                         } ?? {},
                       )?.map(
-                        ([title, { type, format, pattern, isEditable = true, pickerOptions, value },]) => {
+                        ([
+                          title,
+                          { type, format, pattern, isEditable = true, dropdownOptions, value },
+                        ]) => {
                           const fieldValue = value || (properties?.[title] ?? '');
 
                           return {
@@ -187,7 +190,7 @@ export const useEntity = () => {
                             format,
                             pattern,
                             isEditable: caseState.writeEnabled && isEditable,
-                            pickerOptions,
+                            dropdownOptions,
                           };
                         },
                       ),

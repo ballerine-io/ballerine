@@ -17,6 +17,7 @@ export const enrichWorkflowRuntimeData = (workflowRuntimeData: WorkflowRuntimeDa
       );
       const id = getDocumentId(document as unknown as TDocument);
       const documentSchema = documents[id];
+      document.id ||= id;
 
       return {
         ...document,

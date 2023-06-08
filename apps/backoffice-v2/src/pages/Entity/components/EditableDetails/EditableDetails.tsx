@@ -66,11 +66,14 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     const context = {
       documents: documents?.map(document => {
         if (document?.id !== valueId) return document;
-        const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce((acc, curr) => {
-          acc[curr] = data?.[curr];
+        const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
+          (acc, curr) => {
+            acc[curr] = data?.[curr];
 
-          return acc;
-        }, {});
+            return acc;
+          },
+          {},
+        );
 
         return {
           ...document,
@@ -97,7 +100,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
             'grid-cols-3': id === 'entity-details',
           })}
         >
-          {data?.map(({ title, isEditable, type, format, pattern, value, pickerOptions }) =>
+          {data?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
             isDecisionComponent && !value ? null : (
               <FormField
                 key={title}
@@ -107,7 +110,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                   <FormItem>
                     <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
                     <FormControl>
-                      {pickerOptions ? (
+                      {dropdownOptions ? (
                         <Select
                           disabled={!isEditable}
                           onValueChange={field.onChange}
@@ -117,7 +120,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {pickerOptions?.map(({ label, value }) => {
+                            {dropdownOptions?.map(({ label, value }) => {
                               return (
                                 <SelectItem key={value} value={value}>
                                   {label}
