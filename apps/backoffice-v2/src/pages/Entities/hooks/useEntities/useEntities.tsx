@@ -1,6 +1,5 @@
 import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
 import { useFilter } from '../../../../common/hooks/useFilter/useFilter';
-import { usePagination } from '../../../../common/hooks/usePagination/usePagination';
 import { ChangeEventHandler, useCallback } from 'react';
 import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
 import { useSort } from '../../../../common/hooks/useSort/useSort';
@@ -11,8 +10,12 @@ import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/u
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 
 export const useEntities = () => {
-  const [{ filterId, sortBy, sortDir }] = useSearchParamsByEntity();
-  const { data: cases, isLoading } = useWorkflowsQuery({ filterId, sortBy, sortDir });
+  const [{ filterId, sortBy, sortDir, page, limit }, setSearchParams] = useSearchParamsByEntity();
+  const { data, isLoading } = useWorkflowsQuery({ filterId, sortBy, sortDir, page, limit });
+  const {
+    meta: { totalPages },
+    data: cases,
+  } = data || { meta: { totalPages: 0 }, data: [] };
   const entity = useFilterEntity();
   const individualsSearchOptions = ['firstName', 'lastName', 'email', 'phone'];
   const businessesSearchOptions = [
@@ -31,14 +34,20 @@ export const useEntities = () => {
       sortDir: 'desc',
     },
   });
-  const { filtered, onFilter } = useFilter({
+  const { onFilter } = useFilter({
     data: searched,
   });
-  const { paginated, page, pages, totalPages, onPaginate } = usePagination({
-    data: filtered,
-    initialPageSize: 10,
-    initialPage: 1,
-  });
+
+  const onPaginate = useCallback(
+    (page: number) => () => {
+      setSearchParams({
+        page,
+        limit,
+      });
+    },
+    [limit, setSearchParams],
+  );
+
   const onSearchChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     event => {
       onSearch(event.target.value);
@@ -73,7 +82,6 @@ export const useEntities = () => {
     cases,
     isLoading,
     page,
-    pages,
     totalPages,
     skeletonEntities,
     entity,

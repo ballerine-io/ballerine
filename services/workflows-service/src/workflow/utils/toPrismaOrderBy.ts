@@ -21,7 +21,13 @@ export const toPrismaOrderBy = <
 ): Prisma.WorkflowRuntimeDataOrderByWithRelationInput => {
   const [column, direction] = orderBy.split(':') as [TColumn, TDirection];
 
-  if (entityType === 'individuals' && ['firstName', 'lastName', 'email'].includes(column)) {
+  if (column === 'createdAt') {
+    return {
+      [column]: direction,
+    };
+  }
+
+  if (entityType === 'individuals') {
     return {
       endUser: {
         [column]: direction,
@@ -29,15 +35,9 @@ export const toPrismaOrderBy = <
     };
   }
 
-  if (entityType === 'businesses' && column === 'companyName') {
-    return {
-      business: {
-        [column]: direction,
-      },
-    };
-  }
-
   return {
-    [column]: direction,
+    business: {
+      [column]: direction,
+    },
   };
 };

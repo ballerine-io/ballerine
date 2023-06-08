@@ -7,16 +7,20 @@ export const useWorkflowsQuery = ({
   filterId,
   sortBy,
   sortDir,
+  page,
+  limit,
 }: {
   filterId: string;
   sortBy: string;
   sortDir: string;
+  page: number;
+  limit: number;
 }) => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...workflowsQueryKeys.list({ filterId, sortBy, sortDir }),
-    enabled: !!filterId && isAuthenticated && Boolean(sortBy) && Boolean(sortDir),
+    ...workflowsQueryKeys.list({ filterId, sortBy, sortDir, page, limit }),
+    enabled: !!filterId && isAuthenticated && !!sortBy && !!sortDir && !!page && !!limit,
     staleTime: 100_000,
   });
 };

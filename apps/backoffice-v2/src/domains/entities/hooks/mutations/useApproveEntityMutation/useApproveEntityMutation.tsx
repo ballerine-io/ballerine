@@ -23,6 +23,7 @@ export const useApproveEntityMutation = ({
         },
       }),
     onSuccess: () => {
+      // workflowsQueryKeys._def is the base key for all workflows queries
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
       toast.success(t('toast:approve_case.success'));

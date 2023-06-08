@@ -17,7 +17,7 @@ import { CompleteWorkflowData, RunnableWorkflowData, TWorkflowWithRelations } fr
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
@@ -47,6 +47,7 @@ import { getDocumentId } from '@/documents/utils';
 import { certificateOfResidenceGH } from '@/documents/schemas/GH';
 
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
+import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 
 type TEntityId = string;
 
@@ -203,14 +204,45 @@ export class WorkflowService {
     });
   }
 
-  async listWorkflowRuntimeDataWithRelations(
-    args?: Parameters<WorkflowRuntimeDataRepository['findMany']>[0],
-  ) {
+  async listWorkflowRuntimeDataWithRelations({
+    args,
+    entityType,
+    orderBy,
+    page,
+  }: {
+    args: Parameters<WorkflowRuntimeDataRepository['findMany']>[0];
+    entityType: 'individuals' | 'businesses';
+    orderBy: Parameters<typeof toPrismaOrderBy>[0];
+    page: {
+      number: number;
+      size: number;
+    };
+  }) {
+    const query = merge(args, {
+      orderBy: toPrismaOrderBy(orderBy, entityType),
+      skip: (page.number - 1) * page.size,
+      take: page.size,
+    });
+
+    const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count({
+      where: query.where,
+    });
+
+    if (totalWorkflowsCount < (page.number - 1) * page.size + 1) {
+      throw new NotFoundException('Page not found');
+    }
+
     const workflows = (await this.workflowRuntimeDataRepository.findMany(
-      args,
+      query,
     )) as TWorkflowWithRelations[];
 
-    return this.formatWorkflowsRuntimeData(workflows);
+    return {
+      data: this.formatWorkflowsRuntimeData(workflows),
+      meta: {
+        totalItems: totalWorkflowsCount,
+        totalPages: Math.max(Math.ceil(totalWorkflowsCount / page.size), 1),
+      },
+    };
   }
 
   private formatWorkflowsRuntimeData(workflows: TWorkflowWithRelations[]) {

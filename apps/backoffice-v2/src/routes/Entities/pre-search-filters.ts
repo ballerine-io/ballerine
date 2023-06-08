@@ -2,7 +2,7 @@ import { CaseStatus, State } from '../../common/enums';
 
 const sharedPreSearchFilters = {
   sortDir: 'desc' as const,
-  pageSize: 10,
+  limit: 10,
   page: 1,
   search: '',
 } as const;
