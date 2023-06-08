@@ -59,7 +59,7 @@ export class WorkflowControllerInternal {
   @ApiNestedQuery(FindWorkflowsListDto)
   @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema, 'query'))
   async listWorkflowRuntimeData(
-    @common.Query() { filterId, page, ...queryParams }: FindWorkflowsListDto,
+    @common.Query() { filterId, page, filter: filters, ...queryParams }: FindWorkflowsListDto,
   ) {
     const filter = await this.filterService.getById(filterId);
 
@@ -72,6 +72,7 @@ export class WorkflowControllerInternal {
       entityType,
       orderBy,
       page,
+      filters,
     });
   }
 

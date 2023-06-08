@@ -15,14 +15,12 @@ export const IndividualsSearchSchema = (authenticatedUserId: string) =>
     sortBy: z.enum(['firstName', 'lastName', 'email', 'createdAt']).catch('createdAt'),
     filter: z
       .object({
-        approvalState: z.array(z.enum(States)).catch([]),
         assigneeId: z.array(z.string().nullable()).catch([authenticatedUserId, null]),
-        caseStatus: z.array(z.enum(CaseStatuses)).catch([CaseStatus.ACTIVE]),
+        status: z.array(z.enum(CaseStatuses)).catch([CaseStatus.ACTIVE]),
       })
       .catch({
-        approvalState: [],
         assigneeId: [authenticatedUserId, null],
-        caseStatus: [CaseStatus.ACTIVE],
+        status: [CaseStatus.ACTIVE],
       }),
   });
 export const BusinessesSearchSchema = (authenticatedUserId: string) =>
@@ -31,10 +29,10 @@ export const BusinessesSearchSchema = (authenticatedUserId: string) =>
     filter: z
       .object({
         assigneeId: z.array(z.string().nullable()).catch([authenticatedUserId, null]),
-        caseStatus: z.array(z.enum(CaseStatuses)).catch([CaseStatus.ACTIVE]),
+        status: z.array(z.enum(CaseStatuses)).catch([CaseStatus.ACTIVE]),
       })
       .catch({
         assigneeId: [authenticatedUserId, null],
-        caseStatus: [CaseStatus.ACTIVE],
+        status: [CaseStatus.ACTIVE],
       }),
   });
