@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import {DefaultContextSchema} from "@ballerine/common";
+import { DefaultContextSchema } from '@ballerine/common';
 
 type Documents = DefaultContextSchema['documents'];
 
