@@ -1,28 +1,20 @@
-import {useParams} from 'react-router-dom';
-import {
-  useEntityWithWorkflowQuery
-} from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
-import {
-  useStorageFilesQuery
-} from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import {useFilterEntity} from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
-import {
-  useUpdateWorkflowByIdMutation
-} from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
-import {useCaseState} from '../../components/Case/hooks/useCaseState/useCaseState';
-import {
-  useAuthenticatedUserQuery
-} from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import {toStartCase} from '../../../../common/utils/to-start-case/to-start-case';
-import {components} from './components';
-import {getDocumentsByCountry} from '@ballerine/common';
+import { useParams } from 'react-router-dom';
+import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
+import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
+import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
+import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
+import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
+import { components } from './components';
+import { getDocumentsByCountry } from '@ballerine/common';
 import {
   composePickableCategoryType,
   convertSnakeCaseToTitleCase,
   extractCountryCodeFromEntity,
   isExistingSchemaForDocument,
-  omit
-} from "./utils";
+  omit,
+} from './utils';
 
 export const useEntity = () => {
   const { entityId } = useParams();
@@ -131,7 +123,6 @@ export const useEntity = () => {
                           { type, format, pattern, isEditable = true, dropdownOptions, value },
                         ]) => {
                           const fieldValue = value || (properties?.[title] ?? '');
-
                           return {
                             title,
                             value: fieldValue,

@@ -1,11 +1,11 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm, UseFormWatch } from 'react-hook-form';
 import { Form } from '../../../../common/components/organisms/Form/Form';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Button } from '../../../../common/components/atoms/Button/Button';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
 import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
@@ -19,6 +19,7 @@ import { SelectContent } from '../../../../common/components/atoms/Select/Select
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 import { Select } from '../../../../common/components/atoms/Select/Select';
+import { TDropdownOption } from './types';
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
@@ -28,6 +29,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   title,
   workflowId,
 }) => {
+  const [formData, setFormData] = useState(data);
   const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
     workflowId,
   });
@@ -66,6 +68,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     const context = {
       documents: documents?.map(document => {
         if (document?.id !== valueId) return document;
+        console.log('data', data);
         const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
           (acc, curr) => {
             if (!data?.[curr]) return acc;
@@ -93,7 +96,25 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const isDecisionComponent = title === 'Decision';
   const watch = form.watch;
   React.useEffect(() => {
-    const subscription = watch((value, { name, type, dropdownOptions }) => console.log(value, name, type, dropdownOptions));
+    watch((value, { name, type }) => {
+      const newData = JSON.parse(JSON.stringify(data));
+      newData
+        .filter(item => !!item.dropdownOptions)
+        .filter(item =>
+          item.dropdownOptions.find(dropdownOption => dropdownOption.dependantOn === name),
+        )
+        .forEach(item => {
+          item.dropdownOptions = item.dropdownOptions.filter(
+            (dropdownOption: TDropdownOption) => dropdownOption.dependantValue === value[name],
+          );
+          item.value = item.dropdownOptions.find(
+            dropDownOption => dropDownOption.value == value,
+          )?.value;
+          console.log('item', item);
+          return (newData[newData.indexOf(item)] = item);
+        });
+      setFormData(newData);
+    });
   }, [watch]);
 
   return (
@@ -105,7 +126,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
             'grid-cols-3': id === 'entity-details',
           })}
         >
-          {data?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
+          {formData?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
             isDecisionComponent && !value ? null : (
               <FormField
                 key={title}

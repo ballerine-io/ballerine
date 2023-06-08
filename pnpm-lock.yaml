@@ -1314,8 +1314,8 @@ importers:
         specifier: ^1.2.3
         version: 1.2.3(@babel/core@7.21.4)(solid-js@1.7.3)(vite@3.2.5)
       '@ballerine/common':
-        specifier: 0.0.1
-        version: 0.0.1
+        specifier: 0.5.1
+        version: link:../../packages/common
       '@docsearch/css':
         specifier: ^3.1.0
         version: 3.3.3
@@ -4962,11 +4962,6 @@ packages:
       '@babel/helper-string-parser': 7.19.4
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
-
-  /@ballerine/common@0.0.1:
-    resolution: {integrity: sha512-j4mZ3rWjT0y7HVCnuXZbSp06ML7wP7XRC8Eiga29UCXgKoAxys95zB5nuDjE0t20nAgEoC90G5TN/jkd20on6w==}
-    engines: {node: '>=12'}
-    dev: false
 
   /@base2/pretty-print-object@1.0.1:
     resolution: {integrity: sha512-4iri8i1AqYHJE2DstZYkyEprg6Pq6sKx3xn5FpySk9sNhH7qN2LLlHJCfDTZRILNwQNPD7mATWM0TBui7uC1pA==}
