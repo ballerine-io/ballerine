@@ -24,7 +24,6 @@ import { enrichWorkflowRuntimeData } from './enrich-workflow-runtime-data';
 import { UseGuards } from '@nestjs/common';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
-import console from "console";
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
