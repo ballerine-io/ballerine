@@ -1,4 +1,5 @@
 import { TDocument } from '../types';
+const ghNationalIdNumber = '^$|^GHA-\\d{9}-\\d{1}$';
 
 export const certificateOfResidenceGH: TDocument = {
   category: 'proof_of_address',
@@ -16,7 +17,7 @@ export const certificateOfResidenceGH: TDocument = {
     properties: {
       nationalIdNumber: {
         type: 'string',
-        pattern: '^GHA-\\d{9}-\\d{1}$',
+        pattern: ghNationalIdNumber,
       },
       docNumber: {
         type: 'number',
@@ -53,7 +54,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -90,7 +91,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -125,7 +126,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -160,7 +161,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -195,7 +196,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -227,7 +228,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -259,7 +260,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -291,7 +292,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -323,7 +324,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -359,7 +360,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -391,7 +392,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -426,7 +427,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
@@ -458,7 +459,7 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         nationalIdNumber: {
           type: 'string',
-          pattern: '^GHA-\\d{9}-\\d{1}$',
+          pattern: ghNationalIdNumber,
         },
         docNumber: {
           type: 'number',
