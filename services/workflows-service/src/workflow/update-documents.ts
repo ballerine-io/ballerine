@@ -11,14 +11,14 @@ export const updateDocuments = (
 
   // @ts-ignore
   existingDocuments.forEach(document => {
-    const documentId = getDocumentId(document);
+    const documentId = document.id || getDocumentId(document);
 
     updatedDocumentsMap.set(documentId, document);
   });
 
   // @ts-ignore
   documentsToUpdate.forEach(document => {
-    const documentId = getDocumentId(document);
+    const documentId = document.id || getDocumentId(document);
 
     updatedDocumentsMap.set(documentId, document);
   });

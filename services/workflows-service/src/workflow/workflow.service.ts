@@ -26,6 +26,8 @@ import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
 import Ajv, { Schema } from 'ajv';
 import addFormats from 'ajv-formats';
+import addKeywords from 'ajv-keywords';
+import { DefaultContextSchema } from './schemas/context';
 import * as console from 'console';
 import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
 import { z } from 'zod';
@@ -39,6 +41,8 @@ import * as crypto from 'crypto';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
+import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
+import { getDocumentId } from '@/documents/utils';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { DefaultContextSchema, getDocumentId, TDefaultSchemaDocumentPage } from '@ballerine/common';
@@ -50,6 +54,7 @@ const ajv = new Ajv({
   coerceTypes: true,
 });
 addFormats(ajv, { formats: ['email', 'uri', 'date'] });
+addKeywords(ajv);
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -455,6 +460,7 @@ export class WorkflowService {
     } catch (error) {
       throw new BadRequestException(error);
     }
+    context.documents = assignIdToDocuments(context.documents);
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(context);
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
@@ -535,7 +541,6 @@ export class WorkflowService {
     entityId: TEntityId,
   ): Promise<DefaultContextSchema> {
     const documentsWithPersistedImages = await Promise.all(
-      // @ts-ignore
       context.documents.map(async document => ({
         ...document,
         pages: await this.__persistDocumentPagesFiles(document, entityId),
@@ -550,7 +555,6 @@ export class WorkflowService {
     entityId: string,
   ) {
     return await Promise.all(
-      // @ts-ignore
       document.pages.map(async documentPage => {
         const ballerineFileId =
           documentPage.ballerineFileId ||
