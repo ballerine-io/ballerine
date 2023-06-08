@@ -91,6 +91,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     });
   };
   const isDecisionComponent = title === 'Decision';
+  const watch = form.watch;
+  React.useEffect(() => {
+    const subscription = watch((value, { name, type, dropdownOptions }) => console.log(value, name, type, dropdownOptions));
+  }, [watch]);
 
   return (
     <Form {...form}>

@@ -1,80 +1,29 @@
-import { useParams } from 'react-router-dom';
-import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
-import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
-import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
-import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
-import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
-import { components } from './components';
-import { getDocumentsByCountry } from '@ballerine/common';
+import {useParams} from 'react-router-dom';
+import {
+  useEntityWithWorkflowQuery
+} from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
+import {
+  useStorageFilesQuery
+} from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
+import {useFilterEntity} from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
+import {
+  useUpdateWorkflowByIdMutation
+} from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import {useCaseState} from '../../components/Case/hooks/useCaseState/useCaseState';
+import {
+  useAuthenticatedUserQuery
+} from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import {toStartCase} from '../../../../common/utils/to-start-case/to-start-case';
+import {components} from './components';
+import {getDocumentsByCountry} from '@ballerine/common';
+import {
+  composePickableCategoryType,
+  convertSnakeCaseToTitleCase,
+  extractCountryCodeFromEntity,
+  isExistingSchemaForDocument,
+  omit
+} from "./utils";
 
-const convertSnakeCaseToTitleCase = (input: string): string =>
-  input
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-
-const extractCountryCodeFromEntity = entity => {
-  const issuerCountryCode = entity?.workflow?.definition?.context?.documents?.find(document => {
-    return document?.issuer?.country;
-  })?.issuer?.country;
-
-  return issuerCountryCode;
-};
-
-const uniqueArrayByKey = (array, key) => {
-  return [...new Map(array.map(item => [item[key], item])).values()];
-};
-const composePickableCategoryType = (
-  categoryValue: string,
-  typeValue: string,
-  documentsSchema: any,
-) => {
-  const documentTypesDropdownOptions: Array<{ value: string; label: string }> = [];
-  const documentCategoryDropdownOptions: Array<{ value: string; label: string }> = [];
-
-  Object.values(documentsSchema).forEach(document => {
-    const category = document.category;
-    if (category) {
-      documentCategoryDropdownOptions.push({
-        value: category as string,
-        label: convertSnakeCaseToTitleCase(category),
-      });
-    }
-    const type = document.type;
-    if (type) {
-      documentTypesDropdownOptions.push({
-        value: type as string,
-        label: convertSnakeCaseToTitleCase(type),
-      });
-    }
-  });
-
-  const typeDropdownOptions = uniqueArrayByKey(documentTypesDropdownOptions, 'value');
-  const categoryDropdownOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
-  return {
-    type: { title: 'type', type: 'string', dropdownOptions: typeDropdownOptions, value: typeValue },
-    category: {
-      title: 'category',
-      type: 'string',
-      dropdownOptions: categoryDropdownOptions,
-      value: categoryValue,
-    },
-  };
-};
-
-const isExistingSchemaForDocument = documentsSchema => {
-  return Object.entries(documentsSchema).length > 0;
-};
-
-function omit(obj, ...props) {
-  const result = { ...obj };
-  props.forEach(function (prop) {
-    delete result[prop];
-  });
-  return result;
-}
 export const useEntity = () => {
   const { entityId } = useParams();
   const { data: entity, isLoading } = useEntityWithWorkflowQuery(entityId);
