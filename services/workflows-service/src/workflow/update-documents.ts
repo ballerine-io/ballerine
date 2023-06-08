@@ -11,13 +11,13 @@ export const updateDocuments = (
   const updatedDocumentsMap = new Map<string, Document>();
 
   existingDocuments.forEach(document => {
-    const documentId = getDocumentId(document);
+    const documentId = document.id || getDocumentId(document);
 
     updatedDocumentsMap.set(documentId, document);
   });
 
   documentsToUpdate.forEach(document => {
-    const documentId = getDocumentId(document);
+    const documentId = document.id || getDocumentId(document);
 
     updatedDocumentsMap.set(documentId, document);
   });
