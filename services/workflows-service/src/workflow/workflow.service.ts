@@ -42,6 +42,7 @@ import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-p
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
+import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { getDocumentId } from '@/documents/utils';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
@@ -459,6 +460,7 @@ export class WorkflowService {
     } catch (error) {
       throw new BadRequestException(error);
     }
+    context.documents = assignIdToDocuments(context.documents);
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(context);
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
