@@ -66,7 +66,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     const context = {
       documents: documents?.map(document => {
         if (document?.id !== valueId) return document;
-        const properties = Object.keys(document?.properties).reduce((acc, curr) => {
+        const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce((acc, curr) => {
           acc[curr] = data?.[curr];
 
           return acc;
