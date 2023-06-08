@@ -22,7 +22,6 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
-import { PrismaClientValidationFilter } from '@/common/filters/PrismaClientValidation.filter';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -115,7 +114,6 @@ export class WorkflowControllerExternal {
   @UseKeyAuthGuard()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseFilters(new PrismaClientValidationFilter())
   async createWorkflowRuntimeData(
     @common.Body() body: WorkflowRunDto,
     @Res() res: Response,
