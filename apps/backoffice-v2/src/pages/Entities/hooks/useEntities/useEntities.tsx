@@ -1,17 +1,23 @@
 import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
-import { useFilter } from '../../../../common/hooks/useFilter/useFilter';
 import { ChangeEventHandler, useCallback } from 'react';
 import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
 import { useSort } from '../../../../common/hooks/useSort/useSort';
-import { TIndividual } from '../../../../domains/individuals/types';
 import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
 import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
 import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 
 export const useEntities = () => {
-  const [{ filterId, sortBy, sortDir, page, limit }, setSearchParams] = useSearchParamsByEntity();
-  const { data, isLoading } = useWorkflowsQuery({ filterId, sortBy, sortDir, page, limit });
+  const [{ filterId, filter, sortBy, sortDir, page, limit }, setSearchParams] =
+    useSearchParamsByEntity();
+  const { data, isLoading } = useWorkflowsQuery({
+    filterId,
+    filter,
+    sortBy,
+    sortDir,
+    page,
+    limit,
+  });
   const {
     meta: { totalPages },
     data: cases,
@@ -34,9 +40,21 @@ export const useEntities = () => {
       sortDir: 'desc',
     },
   });
-  const { onFilter } = useFilter({
-    data: searched,
-  });
+
+  const onFilterChange = useCallback(
+    (key: string) => {
+      return (values: string[]) => {
+        setSearchParams({
+          filter: {
+            ...filter,
+            [key]: values,
+          },
+          page: 1,
+        });
+      };
+    },
+    [filter, setSearchParams],
+  );
 
   const onPaginate = useCallback(
     (page: number) => () => {
@@ -59,14 +77,6 @@ export const useEntities = () => {
       onSortBy(event.target.value);
     },
     [onSortBy],
-  );
-  const onFilterChange = useCallback(
-    (key: keyof TIndividual) => (values: Array<string>) => {
-      onFilter({
-        [key]: values,
-      });
-    },
-    [onFilter],
   );
   const skeletonEntities = createArrayOfNumbers(3);
 

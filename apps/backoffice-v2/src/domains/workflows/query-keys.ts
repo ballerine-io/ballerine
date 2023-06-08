@@ -14,6 +14,7 @@ export const workflowsQueryKeys = createQueryKeys('workflows', {
     sortDir: string;
     page: number;
     limit: number;
+    filter: Record<string, unknown>;
   }) => {
     const data = {
       ...params,
