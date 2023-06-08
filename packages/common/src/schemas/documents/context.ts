@@ -10,6 +10,7 @@ export interface DefaultContextSchema {
     [k: string]: unknown;
   };
   documents: {
+    id?: string;
     category: string;
     type: string;
     issuer: {

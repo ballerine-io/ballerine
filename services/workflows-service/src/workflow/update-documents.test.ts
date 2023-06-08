@@ -1,5 +1,5 @@
-import { DefaultContextSchema } from '@/workflow/schemas/context';
 import { updateDocuments } from '@/workflow/update-documents';
+import { DefaultContextSchema } from '@ballerine/common';
 
 type Documents = DefaultContextSchema['documents'];
 
