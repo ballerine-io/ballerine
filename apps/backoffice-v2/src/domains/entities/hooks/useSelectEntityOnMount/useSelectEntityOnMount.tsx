@@ -10,8 +10,8 @@ import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParam
  */
 export const useSelectEntityOnMount = () => {
   const { entityId } = useParams();
-  const [{ filterId, sortBy, sortDir, page, limit }] = useSearchParamsByEntity();
-  const { data } = useWorkflowsQuery({ filterId, sortBy, sortDir, page, limit });
+  const [{ filterId, filter, sortBy, sortDir, page, limit }] = useSearchParamsByEntity();
+  const { data } = useWorkflowsQuery({ filterId, filter, sortBy, sortDir, page, limit });
   const { data: workflows } = data || { data: [] };
   const onSelectEntity = useSelectEntity();
   const entity = useFilterEntity();

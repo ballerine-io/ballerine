@@ -13,6 +13,7 @@ export const fetchWorkflows = async (params: {
     number: number;
     size: number;
   };
+  filter: Record<string, unknown>;
 }) => {
   const queryParams = qs.stringify(params, { encode: false });
 
