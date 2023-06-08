@@ -13,7 +13,7 @@ import helmet from 'helmet';
 import { env } from '@/env';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
 import { NextFunction, Request, Response } from 'express';
-import { PrismaClientValidationFilter } from '@/common/filters/PrismaClientValidation.filter';
+import { PrismaClientValidationFilter } from '@/common/filters/prisma-client-validation-filter/PrismaClientValidation.filter';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
