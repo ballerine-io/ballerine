@@ -67,7 +67,7 @@
               "city": {
                 "type": "string"
               },
-              "additionalDetails": {
+              "additionalInfo": {
                 "type": "object"
               }
             },
