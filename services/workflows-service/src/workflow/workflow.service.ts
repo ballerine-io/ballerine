@@ -48,6 +48,7 @@ import { certificateOfResidenceGH } from '@/documents/schemas/GH';
 
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
+import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
 
 type TEntityId = string;
 
@@ -209,6 +210,7 @@ export class WorkflowService {
     entityType,
     orderBy,
     page,
+    filters,
   }: {
     args: Parameters<WorkflowRuntimeDataRepository['findMany']>[0];
     entityType: 'individuals' | 'businesses';
@@ -217,9 +219,14 @@ export class WorkflowService {
       number: number;
       size: number;
     };
+    filters?: {
+      assigneeId?: (string | null)[];
+      status?: WorkflowRuntimeDataStatus[];
+    };
   }) {
     const query = merge(args, {
       orderBy: toPrismaOrderBy(orderBy, entityType),
+      where: filters ? toPrismaWhere(filters) : {},
       skip: (page.number - 1) * page.size,
       take: page.size,
     });
@@ -228,7 +235,7 @@ export class WorkflowService {
       where: query.where,
     });
 
-    if (totalWorkflowsCount < (page.number - 1) * page.size + 1) {
+    if (page.number > 1 && totalWorkflowsCount < (page.number - 1) * page.size + 1) {
       throw new NotFoundException('Page not found');
     }
 

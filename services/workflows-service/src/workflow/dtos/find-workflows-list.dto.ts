@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { WorkflowRuntimeDataStatus } from '@prisma/client';
 import { z } from 'zod';
 
 class PageDto {
@@ -7,6 +8,14 @@ class PageDto {
 
   @ApiProperty()
   size!: number;
+}
+
+class FilterDto {
+  @ApiProperty()
+  assigneeId?: (string | null)[];
+
+  @ApiProperty()
+  status?: WorkflowRuntimeDataStatus[];
 }
 
 export class FindWorkflowsListDto {
@@ -21,6 +30,9 @@ export class FindWorkflowsListDto {
 
   @ApiProperty()
   limit!: number;
+
+  @ApiProperty()
+  filter?: FilterDto;
 }
 
 const validateOrderBy = (value: unknown, validColumns: readonly string[]) => {
@@ -48,6 +60,14 @@ export const FindWorkflowsListSchema = z.object({
     number: z.coerce.number().int().positive(),
     size: z.coerce.number().int().positive(),
   }),
+  filter: z
+    .object({
+      assigneeId: z
+        .array(z.union([z.literal('').transform(() => null), z.string().nonempty()]))
+        .optional(),
+      status: z.array(z.nativeEnum(WorkflowRuntimeDataStatus)).optional(),
+    })
+    .optional(),
 });
 
 const sortDirections = ['asc', 'desc'] as const;

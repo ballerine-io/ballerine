@@ -40,8 +40,8 @@ export const useCases = () => {
     entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions;
   const filterByOptions = [
     {
-      label: 'Case Status',
-      value: 'caseStatus',
+      label: 'Status',
+      value: 'status',
       options: [
         {
           label: 'Active',
