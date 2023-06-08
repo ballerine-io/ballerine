@@ -6,14 +6,14 @@ export const workflowsQueryKeys = createQueryKeys('workflows', {
     sortBy,
     sortDir,
     page,
-    limit,
+    pageSize,
     ...params
   }: {
     filterId: string;
     sortBy: string;
     sortDir: string;
     page: number;
-    limit: number;
+    pageSize: number;
     filter: Record<string, unknown>;
   }) => {
     const data = {
@@ -21,7 +21,7 @@ export const workflowsQueryKeys = createQueryKeys('workflows', {
       orderBy: `${sortBy}:${sortDir}`,
       page: {
         number: Number(page),
-        size: Number(limit),
+        size: Number(pageSize),
       },
     };
 

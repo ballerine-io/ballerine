@@ -6,7 +6,7 @@ import { workflowsQueryKeys } from '../../domains/workflows/query-keys';
 import { defaultDeserializer } from '../../common/hooks/useZodSearchParams/utils/default-deserializer';
 
 export const entitiesLoader: LoaderFunction = async ({ request }) => {
-  const { entity, filterId, filter, sortBy, sortDir, page, limit } = defaultDeserializer(
+  const { entity, filterId, filter, sortBy, sortDir, page, pageSize } = defaultDeserializer(
     request.url.split('?')[1],
   );
   const authenticatedUser = authQueryKeys.authenticatedUser();
@@ -15,13 +15,20 @@ export const entitiesLoader: LoaderFunction = async ({ request }) => {
     authenticatedUser.queryFn,
   );
 
-  if (!entity || !filterId || !session?.user || !sortBy || !sortDir || !page || !limit) {
+  if (!entity || !filterId || !session?.user || !sortBy || !sortDir || !page || !pageSize) {
     return null;
   }
 
   const usersList = usersQueryKeys.list();
   await queryClient.ensureQueryData(usersList.queryKey, usersList.queryFn);
-  const workflowList = workflowsQueryKeys.list({ filterId, filter, sortBy, sortDir, page, limit });
+  const workflowList = workflowsQueryKeys.list({
+    filterId,
+    filter,
+    sortBy,
+    sortDir,
+    page,
+    pageSize,
+  });
   await queryClient.ensureQueryData(workflowList.queryKey, workflowList.queryFn);
 
   return null;

@@ -31,7 +31,7 @@ export const toPrismaOrderBy = <
     return {
       endUser: {
         [column]: direction,
-      } as { [K in TColumn]: TDirection },
+      },
     };
   }
 

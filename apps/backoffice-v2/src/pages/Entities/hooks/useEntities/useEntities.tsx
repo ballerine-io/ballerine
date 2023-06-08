@@ -1,14 +1,13 @@
 import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
 import { ChangeEventHandler, useCallback } from 'react';
 import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
-import { useSort } from '../../../../common/hooks/useSort/useSort';
 import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
 import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
 import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 
 export const useEntities = () => {
-  const [{ filterId, filter, sortBy, sortDir, page, limit }, setSearchParams] =
+  const [{ filterId, filter, sortBy, sortDir, page, pageSize }, setSearchParams] =
     useSearchParamsByEntity();
   const { data, isLoading } = useWorkflowsQuery({
     filterId,
@@ -16,7 +15,7 @@ export const useEntities = () => {
     sortBy,
     sortDir,
     page,
-    limit,
+    pageSize,
   });
   const {
     meta: { totalPages },
@@ -29,12 +28,21 @@ export const useEntities = () => {
     data: cases,
     searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
   });
-  const { onSortBy, onSortDir } = useSort({
-    initialState: {
-      sortBy: 'createdAt',
-      sortDir: 'desc',
+
+  const onSortDirToggle = useCallback(() => {
+    setSearchParams({
+      sortDir: sortDir === 'asc' ? 'desc' : 'asc',
+    });
+  }, [setSearchParams, sortDir]);
+
+  const onSortBy = useCallback(
+    (sortBy: string) => {
+      setSearchParams({
+        sortBy,
+      });
     },
-  });
+    [setSearchParams],
+  );
 
   const onFilterChange = useCallback(
     (key: string) => {
@@ -55,10 +63,10 @@ export const useEntities = () => {
     (page: number) => () => {
       setSearchParams({
         page,
-        limit,
+        pageSize,
       });
     },
-    [limit, setSearchParams],
+    [pageSize, setSearchParams],
   );
 
   const onSearchChange: ChangeEventHandler<HTMLInputElement> = useCallback(
@@ -82,7 +90,7 @@ export const useEntities = () => {
     onSearch: onSearchChange,
     onFilter: onFilterChange,
     onSortBy: onSortByChange,
-    onSortDir,
+    onSortDirToggle,
     search,
     cases: searched,
     isLoading,

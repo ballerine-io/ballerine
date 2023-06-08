@@ -12,7 +12,7 @@ export const Entities: FunctionComponent = () => {
     onSearch,
     onFilter,
     onSortBy,
-    onSortDir,
+    onSortDirToggle,
     search,
     cases,
     isLoading,
@@ -28,7 +28,7 @@ export const Entities: FunctionComponent = () => {
         onSearch={onSearch}
         onFilter={onFilter}
         onSortBy={onSortBy}
-        onSortDir={onSortDir}
+        onSortDirToggle={onSortDirToggle}
         search={search}
       >
         <MotionScrollArea className={`h-[calc(100vh-210px)]`}>

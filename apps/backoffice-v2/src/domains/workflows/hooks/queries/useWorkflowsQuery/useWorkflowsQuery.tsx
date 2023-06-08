@@ -8,21 +8,21 @@ export const useWorkflowsQuery = ({
   sortBy,
   sortDir,
   page,
-  limit,
+  pageSize,
   filter,
 }: {
   filterId: string;
   sortBy: string;
   sortDir: string;
   page: number;
-  limit: number;
+  pageSize: number;
   filter: Record<string, unknown>;
 }) => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...workflowsQueryKeys.list({ filterId, filter, sortBy, sortDir, page, limit }),
-    enabled: !!filterId && isAuthenticated && !!sortBy && !!sortDir && !!page && !!limit,
+    ...workflowsQueryKeys.list({ filterId, filter, sortBy, sortDir, page, pageSize }),
+    enabled: !!filterId && isAuthenticated && !!sortBy && !!sortDir && !!page && !!pageSize,
     staleTime: 100_000,
   });
 };
