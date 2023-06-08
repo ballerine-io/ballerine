@@ -10,7 +10,7 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
+import defaultContextSchema from '@ballerine/common/src/schemas/documents/default-context-schema.json';
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
@@ -135,8 +135,8 @@ async function seed(bcryptSalt: Salt) {
           numberOfEmployees: faker.datatype.number(1000),
           businessPurpose: faker.company.catchPhraseDescriptor(),
           approvalState: 'NEW',
+          additionalInfo: { customParam: 'customValue' },
         } satisfies Partial<Business>,
-        additionalDetails: {},
         ballerineEntityId: businessId,
         id: correlationId,
       },
@@ -149,7 +149,7 @@ async function seed(bcryptSalt: Salt) {
             name: 'Government',
             country: 'GH',
             city: faker.address.city(),
-            additionalDetails: {},
+            additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
 
@@ -195,7 +195,7 @@ async function seed(bcryptSalt: Salt) {
             name: 'Government',
             country: 'GH',
             city: faker.address.city(),
-            additionalDetails: {},
+            additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
 
@@ -252,8 +252,8 @@ async function seed(bcryptSalt: Salt) {
           stateReason: 'Poor quality of documents',
           // @ts-expect-error - end user type expects a date and not a string.
           dateOfBirth: faker.date.past(20).toISOString(),
+          additionalInfo: { customParam: 'customValue' },
         } satisfies Partial<EndUser>,
-        additionalDetails: {},
         ballerineEntityId: endUserId,
         id: correlationId,
       },
@@ -266,7 +266,7 @@ async function seed(bcryptSalt: Salt) {
             name: 'Government',
             country: faker.address.country(),
             city: faker.address.city(),
-            additionalDetails: {},
+            additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
 
@@ -312,7 +312,7 @@ async function seed(bcryptSalt: Salt) {
             name: 'Government',
             country: faker.address.country(),
             city: faker.address.city(),
-            additionalDetails: {},
+            additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
 
