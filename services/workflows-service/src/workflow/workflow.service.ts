@@ -547,7 +547,6 @@ export class WorkflowService {
 
     return { ...context, documents: documentsWithPersistedImages };
   }
-
   private async __persistDocumentPagesFiles(
     document: DefaultContextSchema['documents'][number],
     entityId: string,
