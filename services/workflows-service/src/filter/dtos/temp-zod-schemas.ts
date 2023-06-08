@@ -481,7 +481,7 @@ export const BusinessFilterSchema = FilterSchema.extend({
     .object({
       select: BusinessSelectSchema.strict()
         .refine(
-          value => Object.keys(value).length > 0,
+          (value: any) => Object.keys(value).length > 0,
           'At least one `select` field must be provided',
         )
         .optional(),

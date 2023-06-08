@@ -55,14 +55,26 @@ const composePickableCategoryType = (
   const categoryPickerOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
   return {
     type: { title: 'type', type: 'string', pickerOptions: typePickerOptions, value: typeValue },
-    category: { title: 'category', type: 'string', pickerOptions: categoryPickerOptions, value: categoryValue },
+    category: {
+      title: 'category',
+      type: 'string',
+      pickerOptions: categoryPickerOptions,
+      value: categoryValue,
+    },
   };
 };
 
-const isExistingSchemaForDocument = (documentsSchema) => {
-  return (Object.entries(documentsSchema).length > 0);
-}
+const isExistingSchemaForDocument = documentsSchema => {
+  return Object.entries(documentsSchema).length > 0;
+};
 
+function omit(obj, ...props) {
+  const result = { ...obj };
+  props.forEach(function (prop) {
+    delete result[prop];
+  });
+  return result;
+}
 export const useEntity = () => {
   const { entityId } = useParams();
   const { data: entity, isLoading } = useEntityWithWorkflowQuery(entityId);
@@ -106,11 +118,12 @@ export const useEntity = () => {
     ? [
         ...(contextDocuments?.map(
           (
-            { id, type, category, issuer, properties, propertiesSchema, decision },
+            { id, type: docType, category, issuer, properties, propertiesSchema, decision },
             docIndex,
           ) => {
             const additionProperties =
-              isExistingSchemaForDocument(documentsSchema) && composePickableCategoryType(category, type, documentsSchema);
+              isExistingSchemaForDocument(documentsSchema) &&
+              composePickableCategoryType(category, type, documentsSchema);
 
             return [
               {
@@ -121,7 +134,7 @@ export const useEntity = () => {
                     type: 'heading',
                     value: `${convertSnakeCaseToTitleCase(
                       category,
-                    )} - ${convertSnakeCaseToTitleCase(type)}`,
+                    )} - ${convertSnakeCaseToTitleCase(docType)}`,
                   },
                   {
                     id: 'actions',
@@ -203,12 +216,12 @@ export const useEntity = () => {
                   data:
                     contextDocuments?.[docIndex]?.pages?.map(
                       ({ type, metadata, data }, pageIndex) => ({
-                        title: `${category} - ${type}${
+                        title: `${category} - ${docType}${
                           metadata?.side ? ` - ${metadata?.side}` : ''
                         }`,
                         imageUrl:
                           type === 'pdf'
-                            ? octetToFileType(results[docIndex][pageIndex], type)
+                            ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
                             : results[docIndex][pageIndex],
                         fileType: type,
                       }),
@@ -224,7 +237,10 @@ export const useEntity = () => {
             type: 'details',
             value: {
               title: `${toStartCase(contextEntity?.type)} Information`,
-              data: Object.entries(contextEntity?.data ?? {})?.map(([title, value]) => ({
+              data: [
+                ...Object.entries(omit(contextEntity?.data, 'additionalInfo') ?? {}),
+                ...Object.entries(contextEntity?.data?.additionalInfo ?? {}),
+              ]?.map(([title, value]) => ({
                 title,
                 value,
                 type: 'string',
