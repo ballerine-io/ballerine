@@ -57,7 +57,7 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.5.0
+        specifier: ^0.5.1
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
         specifier: ^0.4.4
@@ -1064,7 +1064,7 @@ importers:
         specifier: 3.325.0
         version: 3.325.0(@aws-sdk/abort-controller@3.329.0)(@aws-sdk/client-s3@3.325.0)
       '@ballerine/common':
-        specifier: 0.5.0
+        specifier: 0.5.1
         version: link:../../packages/common
       '@ballerine/workflow-node-sdk':
         specifier: ^0.4.2
