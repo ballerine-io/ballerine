@@ -26,8 +26,13 @@ export class DocumentChangedWebhookCaller {
   ) {
     this.#__axios = this.httpService.axiosRef;
 
-    workflowEventEmitter.on('workflow.context.changed', data => {
-      void this.handleWorkflowEvent(data);
+    workflowEventEmitter.on('workflow.context.changed', async data => {
+      try {
+        await this.handleWorkflowEvent(data);
+      } catch (error) {
+        console.error(error);
+        alertWebhookFailure(error);
+      }
     });
   }
 
@@ -36,9 +41,12 @@ export class DocumentChangedWebhookCaller {
     const newDocuments = data.context?.['documents'] || [];
 
     const documentIdentifier = (doc: any) => {
-      return `${doc.category as string}$${doc.type as string}$${
-        doc.issuer?.country as string
-      }`.toLowerCase();
+      return (
+        doc.id ||
+        `${doc.category as string}$${doc.type as string}$${
+          doc.issuer?.country as string
+        }`.toLowerCase()
+      );
     };
 
     const newDocumentsByIdentifier = newDocuments.reduce((accumulator: any, doc: any) => {
