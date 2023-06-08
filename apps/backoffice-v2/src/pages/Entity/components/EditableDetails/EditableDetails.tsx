@@ -64,11 +64,15 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
         return {
           ...document,
-          properties: Object.keys(document?.properties).reduce((acc, curr) => {
-            acc[curr] = data?.[curr];
+          properties: Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
+            (acc, curr) => {
+              if (!data?.[curr]) return acc;
+              acc[curr] = data?.[curr];
 
-            return acc;
-          }, {}),
+              return acc;
+            },
+            {},
+          ),
         };
       }),
     };
