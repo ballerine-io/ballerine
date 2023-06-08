@@ -23,13 +23,8 @@ export const useEntities = () => {
     data: cases,
   } = data || { meta: { totalPages: 0 }, data: [] };
   const entity = useFilterEntity();
-  const individualsSearchOptions = ['firstName', 'lastName', 'email', 'phone'];
-  const businessesSearchOptions = [
-    'companyName',
-    'registrationNumber',
-    'legalForm',
-    'countryOfIncorporation',
-  ];
+  const individualsSearchOptions = ['entity.name', 'entity.email'];
+  const businessesSearchOptions = ['entity.name'];
   const { searched, onSearch, search } = useSearch({
     data: cases,
     searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
@@ -89,7 +84,7 @@ export const useEntities = () => {
     onSortBy: onSortByChange,
     onSortDir,
     search,
-    cases,
+    cases: searched,
     isLoading,
     page,
     totalPages,
