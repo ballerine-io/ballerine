@@ -552,7 +552,6 @@ export class WorkflowService {
     document: DefaultContextSchema['documents'][number],
     entityId: string,
   ) {
-    // @ts-ignore
     return await Promise.all(
       document.pages.map(async documentPage => {
         const ballerineFileId =
