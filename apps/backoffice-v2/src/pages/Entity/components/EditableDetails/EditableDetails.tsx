@@ -110,7 +110,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
           item.value = item.dropdownOptions.find(
             dropDownOption => dropDownOption.value == value,
           )?.value;
-          console.log('item', item);
+
           return (newData[newData.indexOf(item)] = item);
         });
       setFormData(newData);
