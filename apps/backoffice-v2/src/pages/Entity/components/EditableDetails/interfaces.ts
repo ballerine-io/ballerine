@@ -6,6 +6,7 @@ export interface IEditableDetails {
     type: string;
     format?: string;
     pattern?: string;
+    dropdownOptions?: Array<{ label: string; value: string }>;
   }>;
   valueId: string;
   id: string;
