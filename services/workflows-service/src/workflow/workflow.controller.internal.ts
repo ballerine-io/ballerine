@@ -59,7 +59,7 @@ export class WorkflowControllerInternal {
   @ApiNestedQuery(FindWorkflowsListDto)
   @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema, 'query'))
   async listWorkflowRuntimeData(
-    @common.Query() { filterId, ...queryParams }: FindWorkflowsListDto,
+    @common.Query() { filterId, page, ...queryParams }: FindWorkflowsListDto,
   ) {
     const filter = await this.filterService.getById(filterId);
 
@@ -67,13 +67,12 @@ export class WorkflowControllerInternal {
 
     const { orderBy } = FindWorkflowsListLogicSchema[entityType].parse(queryParams);
 
-    type Query = Parameters<typeof this.service.listWorkflowRuntimeDataWithRelations>[0];
-
-    const query = merge<Query, Query>(filter.query as Query, {
-      orderBy: toPrismaOrderBy(orderBy, entityType),
+    return await this.service.listWorkflowRuntimeDataWithRelations({
+      args: filter.query as any,
+      entityType,
+      orderBy,
+      page,
     });
-
-    return await this.service.listWorkflowRuntimeDataWithRelations(query);
   }
 
   @common.Get('/:id')

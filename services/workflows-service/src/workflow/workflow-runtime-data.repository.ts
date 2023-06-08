@@ -97,4 +97,10 @@ export class WorkflowRuntimeDataRepository {
       })
     )?.context;
   }
+
+  async count<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
+    args?: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindManyArgs>,
+  ): Promise<number> {
+    return await this.prisma.workflowRuntimeData.count(args);
+  }
 }

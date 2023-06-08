@@ -6,28 +6,41 @@ import { Method, States } from '../../common/enums';
 import { IWorkflowId } from './interfaces';
 import qs from 'qs';
 
-export const fetchWorkflows = async (params: { filterId: string; orderBy: string }) => {
-  const queryParams = qs.stringify(params);
+export const fetchWorkflows = async (params: {
+  filterId: string;
+  orderBy: string;
+  page: {
+    number: number;
+    size: number;
+  };
+}) => {
+  const queryParams = qs.stringify(params, { encode: false });
 
   const [workflows, error] = await apiClient({
     endpoint: `workflows?${queryParams}`,
     method: Method.GET,
-    schema: z.array(
-      z.object({
-        id: z.string(),
-        status: z.string(),
-        createdAt: z.string().datetime(),
-        entity: ObjectWithIdSchema.extend({
-          name: z.string(),
-          avatarUrl: z.string().nullable(),
-          approvalState: z.enum(States),
+    schema: z.object({
+      data: z.array(
+        z.object({
+          id: z.string(),
+          status: z.string(),
+          createdAt: z.string().datetime(),
+          entity: ObjectWithIdSchema.extend({
+            name: z.string(),
+            avatarUrl: z.string().nullable(),
+            approvalState: z.enum(States),
+          }),
+          assignee: ObjectWithIdSchema.extend({
+            firstName: z.string(),
+            lastName: z.string(),
+          }).nullable(),
         }),
-        assignee: ObjectWithIdSchema.extend({
-          firstName: z.string(),
-          lastName: z.string(),
-        }).nullable(),
+      ),
+      meta: z.object({
+        totalItems: z.number().nonnegative(),
+        totalPages: z.number().nonnegative(),
       }),
-    ),
+    }),
   });
 
   return handleZodError(error, workflows);

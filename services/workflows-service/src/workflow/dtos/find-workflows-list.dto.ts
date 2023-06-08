@@ -1,9 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { z } from 'zod';
 
-const sortDirections = ['asc', 'desc'] as const;
-const sortableColumnsIndividuals = ['createdAt', 'firstName', 'lastName', 'email'] as const;
-const sortableColumnsBusinesses = ['createdAt', 'companyName'] as const;
+class PageDto {
+  @ApiProperty()
+  number!: number;
+
+  @ApiProperty()
+  size!: number;
+}
 
 export class FindWorkflowsListDto {
   @ApiProperty()
@@ -11,6 +15,12 @@ export class FindWorkflowsListDto {
 
   @ApiProperty()
   orderBy!: string;
+
+  @ApiProperty()
+  page!: PageDto;
+
+  @ApiProperty()
+  limit!: number;
 }
 
 const validateOrderBy = (value: unknown, validColumns: readonly string[]) => {
@@ -31,11 +41,18 @@ const validateOrderBy = (value: unknown, validColumns: readonly string[]) => {
 
   return value;
 };
-
 export const FindWorkflowsListSchema = z.object({
   filterId: z.string(),
   orderBy: z.string(),
+  page: z.object({
+    number: z.coerce.number().int().positive(),
+    size: z.coerce.number().int().positive(),
+  }),
 });
+
+const sortDirections = ['asc', 'desc'] as const;
+const sortableColumnsIndividuals = ['createdAt', 'firstName', 'lastName', 'email'] as const;
+const sortableColumnsBusinesses = ['createdAt', 'companyName'] as const;
 
 export const FindWorkflowsListLogicSchema = {
   individuals: z.object({
