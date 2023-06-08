@@ -28,7 +28,7 @@ const uniqueArrayByKey = (array, key) => {
 };
 const composePickableCategoryType = (
   categoryValue: string,
-  docType: string,
+  typeValue: string,
   documentsSchema: any,
 ) => {
   const documentTypesDropdownOptions: Array<{ value: string; label: string }> = [];
@@ -37,14 +37,14 @@ const composePickableCategoryType = (
   Object.values(documentsSchema).forEach(document => {
     const category = document.category;
     if (category) {
-      documentTypesDropdownOptions.push({
+      documentCategoryDropdownOptions.push({
         value: category as string,
         label: convertSnakeCaseToTitleCase(category),
       });
     }
     const type = document.type;
     if (type) {
-      documentCategoryDropdownOptions.push({
+      documentTypesDropdownOptions.push({
         value: type as string,
         label: convertSnakeCaseToTitleCase(type),
       });
@@ -52,12 +52,16 @@ const composePickableCategoryType = (
   });
 
   const typePickerOptions = uniqueArrayByKey(documentTypesDropdownOptions, 'value');
-  const categoryOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
+  const categoryPickerOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
   return {
-    type: { title: 'type', type: 'string', pickerOptions: typePickerOptions, value: categoryValue },
-    category: { title: 'category', type: 'string', pickerOptions: categoryOptions, value: docType },
+    type: { title: 'type', type: 'string', pickerOptions: typePickerOptions, value: typeValue },
+    category: { title: 'category', type: 'string', pickerOptions: categoryPickerOptions, value: categoryValue },
   };
 };
+
+const isExistingSchemaForDocument = (documentsSchema) => {
+  return (Object.entries(documentsSchema).length > 0);
+}
 
 export const useEntity = () => {
   const { entityId } = useParams();
@@ -102,11 +106,11 @@ export const useEntity = () => {
     ? [
         ...(contextDocuments?.map(
           (
-            { id, type: docType, category, issuer, properties, propertiesSchema, decision },
+            { id, type, category, issuer, properties, propertiesSchema, decision },
             docIndex,
           ) => {
             const additionProperties =
-              !!documentsSchema && composePickableCategoryType(category, docType, documentsSchema);
+              isExistingSchemaForDocument(documentsSchema) && composePickableCategoryType(category, type, documentsSchema);
 
             return [
               {
@@ -117,7 +121,7 @@ export const useEntity = () => {
                     type: 'heading',
                     value: `${convertSnakeCaseToTitleCase(
                       category,
-                    )} - ${convertSnakeCaseToTitleCase(docType)}`,
+                    )} - ${convertSnakeCaseToTitleCase(type)}`,
                   },
                   {
                     id: 'actions',
@@ -153,7 +157,7 @@ export const useEntity = () => {
                     type: 'details',
                     value: {
                       id,
-                      title: `${category} - ${docType}`,
+                      title: `${category} - ${type}`,
                       data: Object.entries(
                         {
                           ...additionProperties,
@@ -199,7 +203,7 @@ export const useEntity = () => {
                   data:
                     contextDocuments?.[docIndex]?.pages?.map(
                       ({ type, metadata, data }, pageIndex) => ({
-                        title: `${category} - ${docType}${
+                        title: `${category} - ${type}${
                           metadata?.side ? ` - ${metadata?.side}` : ''
                         }`,
                         imageUrl:
