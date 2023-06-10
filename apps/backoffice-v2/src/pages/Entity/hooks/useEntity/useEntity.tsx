@@ -7,12 +7,66 @@ import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseSt
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { components } from './components';
+import { getDocumentsByCountry } from '@ballerine/common';
 
 const convertSnakeCaseToTitleCase = (input: string): string =>
   input
     .split('_')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+
+const extractCountryCodeFromEntity = entity => {
+  const issuerCountryCode = entity?.workflow?.definition?.context?.documents?.find(document => {
+    return document?.issuer?.country;
+  })?.issuer?.country;
+
+  return issuerCountryCode;
+};
+
+const uniqueArrayByKey = (array, key) => {
+  return [...new Map(array.map(item => [item[key], item])).values()];
+};
+const composePickableCategoryType = (
+  categoryValue: string,
+  typeValue: string,
+  documentsSchema: any,
+) => {
+  const documentTypesDropdownOptions: Array<{ value: string; label: string }> = [];
+  const documentCategoryDropdownOptions: Array<{ value: string; label: string }> = [];
+
+  Object.values(documentsSchema).forEach(document => {
+    const category = document.category;
+    if (category) {
+      documentCategoryDropdownOptions.push({
+        value: category as string,
+        label: convertSnakeCaseToTitleCase(category),
+      });
+    }
+    const type = document.type;
+    if (type) {
+      documentTypesDropdownOptions.push({
+        value: type as string,
+        label: convertSnakeCaseToTitleCase(type),
+      });
+    }
+  });
+
+  const typeDropdownOptions = uniqueArrayByKey(documentTypesDropdownOptions, 'value');
+  const categoryDropdownOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
+  return {
+    type: { title: 'type', type: 'string', dropdownOptions: typeDropdownOptions, value: typeValue },
+    category: {
+      title: 'category',
+      type: 'string',
+      dropdownOptions: categoryDropdownOptions,
+      value: categoryValue,
+    },
+  };
+};
+
+const isExistingSchemaForDocument = documentsSchema => {
+  return Object.entries(documentsSchema).length > 0;
+};
 
 function omit(obj, ...props) {
   const result = { ...obj };
@@ -21,7 +75,6 @@ function omit(obj, ...props) {
   });
   return result;
 }
-
 export const useEntity = () => {
   const { entityId } = useParams();
   const { data: entity, isLoading } = useEntityWithWorkflowQuery(entityId);
@@ -47,6 +100,10 @@ export const useEntity = () => {
     avatarUrl: entity?.avatarUrl,
     workflow: entity?.workflow,
   };
+
+  const issuerCountryCode = extractCountryCodeFromEntity(entity);
+  const documentsSchema = issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
+
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
@@ -64,6 +121,10 @@ export const useEntity = () => {
             { id, type: docType, category, issuer, properties, propertiesSchema, decision },
             docIndex,
           ) => {
+            const additionProperties =
+              isExistingSchemaForDocument(documentsSchema) &&
+              composePickableCategoryType(category, docType, documentsSchema);
+
             return [
               {
                 id: 'header',
@@ -110,15 +171,28 @@ export const useEntity = () => {
                     value: {
                       id,
                       title: `${category} - ${docType}`,
-                      data: Object.entries(propertiesSchema?.properties ?? {})?.map(
-                        ([title, { type, format, pattern, isEditable = true }]) => ({
+                      data: Object.entries(
+                        {
+                          ...additionProperties,
+                          ...propertiesSchema?.properties,
+                        } ?? {},
+                      )?.map(
+                        ([
                           title,
-                          value: properties?.[title] ?? '',
-                          type,
-                          format,
-                          pattern,
-                          isEditable: caseState.writeEnabled && isEditable,
-                        }),
+                          { type, format, pattern, isEditable = true, dropdownOptions, value },
+                        ]) => {
+                          const fieldValue = value || (properties?.[title] ?? '');
+
+                          return {
+                            title,
+                            value: fieldValue,
+                            type,
+                            format,
+                            pattern,
+                            isEditable: caseState.writeEnabled && isEditable,
+                            dropdownOptions,
+                          };
+                        },
                       ),
                     },
                   },
@@ -147,7 +221,7 @@ export const useEntity = () => {
                         }`,
                         imageUrl:
                           type === 'pdf'
-                            ? octetToFileType(results[docIndex][pageIndex], type)
+                            ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
                             : results[docIndex][pageIndex],
                         fileType: type,
                       }),
