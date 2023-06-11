@@ -1,5 +1,6 @@
 import { PrismaValidationExceptionParseResult } from './types';
 import { Prisma } from '@prisma/client';
+import { IParser } from '@/common/filters/prisma-client-validation-filter/utils/IParser';
 
 /**
  * PrismaValidationExceptionParser
@@ -11,26 +12,24 @@ import { Prisma } from '@prisma/client';
  */
 
 export class PrismaValidationExceptionParser {
-  // Looking for matches in following string format: Argument {{paramName}}: Got {{errorReason}} on prisma
-  private pattern = new RegExp(/Argument ([^:]+):[^]+?Got ([^]+?) on prisma/, 'g');
-
-  constructor(private readonly exception: Prisma.PrismaClientValidationError) {}
+  constructor(
+    private readonly parsers: (new (message: string) => IParser)[],
+    private readonly exception: Prisma.PrismaClientValidationError,
+  ) {}
 
   parse(): PrismaValidationExceptionParseResult {
     const { message } = this.exception;
-    const parseResult: PrismaValidationExceptionParseResult = {};
+    const parseResult: PrismaValidationExceptionParseResult = this.parsers.reduce(
+      (parseResult, Parser) => {
+        const parser = new Parser(message);
 
-    let match: RegExpExecArray | null = null;
-
-    if (!message) return {};
-
-    while ((match = this.pattern.exec(message))) {
-      const [_, paramName, errorReason] = match;
-
-      if (paramName && errorReason) {
-        parseResult[paramName] = errorReason;
-      }
-    }
+        return {
+          ...parseResult,
+          ...parser.parse(),
+        };
+      },
+      {},
+    );
 
     return parseResult;
   }

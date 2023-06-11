@@ -1,14 +1,11 @@
-import { PrismaValidationExceptionParser } from './PrismaValidationExceptionParser';
-import { Prisma } from '@prisma/client';
+import { InvalidArgumentParser } from './invalid-argument.parser';
 
-describe('PrismaValidationExceptionParser', () => {
-  let exception: Prisma.PrismaClientValidationError;
-  let parser: PrismaValidationExceptionParser;
+describe('InvalidArgumentParser', () => {
+  let parser: InvalidArgumentParser;
 
   describe('when exception message is empty', () => {
     beforeEach(() => {
-      exception = new Prisma.PrismaClientValidationError('');
-      parser = new PrismaValidationExceptionParser(exception);
+      parser = new InvalidArgumentParser('');
     });
 
     it('will return empty object', () => {
@@ -20,8 +17,7 @@ describe('PrismaValidationExceptionParser', () => {
     it('will parse string with single error', () => {
       const errorReason = `some-error`;
       const signleExceptionMessage = `Argument paramName: Got ${errorReason} on prisma`;
-      exception = new Prisma.PrismaClientValidationError(signleExceptionMessage);
-      parser = new PrismaValidationExceptionParser(exception);
+      parser = new InvalidArgumentParser(signleExceptionMessage);
 
       expect(parser.parse()).toEqual({ paramName: errorReason });
     });
@@ -30,9 +26,8 @@ describe('PrismaValidationExceptionParser', () => {
       const reasonOne = 'reasonOne';
       const reasonTwo = 'reasonTwo';
 
-      const exceptionMessage = `Argument paramOne: Got ${reasonOne} on prisma.Argument paramTwo: Got ${reasonTwo} on prisma`;
-      exception = new Prisma.PrismaClientValidationError(exceptionMessage);
-      parser = new PrismaValidationExceptionParser(exception);
+      const message = `Argument paramOne: Got ${reasonOne} on prisma.Argument paramTwo: Got ${reasonTwo} on prisma`;
+      parser = new InvalidArgumentParser(message);
 
       expect(parser.parse()).toEqual({ paramOne: reasonOne, paramTwo: reasonTwo });
     });
@@ -41,15 +36,14 @@ describe('PrismaValidationExceptionParser', () => {
       const reasonOne = 'reasonOne';
       const reasonTwo = 'reasonTwo';
 
-      const exceptionMessage = `Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      const message = `Lorem Ipsum is simply dummy text of the printing and typesetting industry.
       Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
       Argument paramOne: Got ${reasonOne} on prisma.
       when an unknown printer took a galley of type and scrambled
       Argument paramTwo: Got ${reasonTwo} on prisma
       it to make a type specimen book. It has survived not only five centuries,`;
 
-      exception = new Prisma.PrismaClientValidationError(exceptionMessage);
-      parser = new PrismaValidationExceptionParser(exception);
+      parser = new InvalidArgumentParser(message);
 
       expect(parser.parse()).toEqual({ paramOne: reasonOne, paramTwo: reasonTwo });
     });

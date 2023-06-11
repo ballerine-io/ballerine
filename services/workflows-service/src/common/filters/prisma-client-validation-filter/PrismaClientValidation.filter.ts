@@ -4,6 +4,8 @@ import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
 import { PrismaClientValidationError } from '@prisma/client/runtime';
 import { PrismaValidationExceptionParseResult } from '@/common/filters/prisma-client-validation-filter/utils/types';
+import { InvalidArgumentParser } from '@/common/filters/prisma-client-validation-filter/utils/parsers/invalid-argument-parser/invalid-argument.parser';
+import { UnknownArgumentParser } from '@/common/filters/prisma-client-validation-filter/utils/parsers/unknown-argument-parser/unknown-argument-parser';
 
 @Catch(Prisma.PrismaClientValidationError)
 export class PrismaClientValidationFilter extends BaseExceptionFilter {
@@ -27,7 +29,10 @@ export class PrismaClientValidationFilter extends BaseExceptionFilter {
   private parseException(
     exception: PrismaClientValidationError,
   ): PrismaValidationExceptionParseResult {
-    const parser = new PrismaValidationExceptionParser(exception);
+    const parser = new PrismaValidationExceptionParser(
+      [InvalidArgumentParser, UnknownArgumentParser],
+      exception,
+    );
 
     return parser.parse();
   }
