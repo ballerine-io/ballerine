@@ -40,15 +40,13 @@ describe('#EndUserControllerExternal', () => {
     it('it creates an end-user', async () => {
       expect(await endUserService.list({})).toHaveLength(0);
 
-      const response = await request(app.getHttpServer())
-        .post('/external/end-users')
-        .send({
-          correlationId: faker.datatype.uuid(),
-          endUserType: faker.random.word(),
-          approvalState: 'APPROVED',
-          firstName: 'test',
-          lastName: 'lastName',
-        });
+      const response = await request(app.getHttpServer()).post('/external/end-users').send({
+        correlationId: faker.datatype.uuid(),
+        endUserType: faker.random.word(),
+        approvalState: 'APPROVED',
+        firstName: 'test',
+        lastName: 'lastName',
+      });
 
       expect(response.status).toBe(201);
       const allEndUsers = await endUserService.list({});
