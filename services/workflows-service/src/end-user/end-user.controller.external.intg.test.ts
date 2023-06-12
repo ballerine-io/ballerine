@@ -46,9 +46,6 @@ describe('#EndUserControllerExternal', () => {
           correlationId: faker.datatype.uuid(),
           endUserType: faker.random.word(),
           approvalState: 'APPROVED',
-          jsonData: {
-            key: 'value', // replace with your JSON data
-          },
           firstName: 'test',
           lastName: 'lastName',
         });
