@@ -23,7 +23,6 @@
     "lint": "eslint . --ext .ts",
     "dev": "concurrently --kill-others \"pnpm build -w\" \"pnpm watch\"",
     "test": "vitest run",
-    "test:unit": "vitest run",
     "test:watch": "vitest"
   },
   "engines": {
