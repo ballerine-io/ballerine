@@ -9,10 +9,13 @@
           "enum": ["individual", "business"]
         },
         "data": {
-          "type": "object"
-        },
-        "additionalDetails": {
-          "type": "object"
+          "type": "object",
+          "properties": {
+            "additionalInfo": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": true
         },
         "ballerineEntityId": {
           "type": "string"
@@ -37,11 +40,16 @@
       "items": {
         "type": "object",
         "properties": {
-          "category": {
+          "id": {
             "type": "string"
           },
+          "category": {
+            "type": "string",
+            "transform": ["trim", "toLowerCase"]
+          },
           "type": {
-            "type": "string"
+            "type": "string",
+            "transform": ["trim", "toLowerCase"]
           },
           "issuer": {
             "type": "object",
@@ -53,12 +61,13 @@
                 "type": "string"
               },
               "country": {
-                "type": "string"
+                "type": "string",
+                "transform": ["trim", "toUpperCase"]
               },
               "city": {
                 "type": "string"
               },
-              "additionalDetails": {
+              "additionalInfo": {
                 "type": "object"
               }
             },
