@@ -19,8 +19,9 @@ import { SelectContent } from '../../../../common/components/atoms/Select/Select
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 import { Select } from '../../../../common/components/atoms/Select/Select';
-import { TDropdownOption } from './types';
+import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 
+const UPDATEABLE_FIELDS = ['type', 'category'];
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
   valueId,
@@ -33,6 +34,12 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
     workflowId,
   });
+  const useInitiateCategorySetValue = () => {
+    useEffect(() => {
+      const categoryValue = form.getValues('category');
+      form.setValue('category', categoryValue);
+    }, [form, data, setFormData]);
+  };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
   const isDecisionPositive = (isDecisionComponent: boolean, value) => {
@@ -64,11 +71,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const form = useForm({
     defaultValues,
   });
-  const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = data => {
+  const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
     const context = {
       documents: documents?.map(document => {
         if (document?.id !== valueId) return document;
-        console.log('data', data);
         const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
           (acc, curr) => {
             if (!data?.[curr]) return acc;
@@ -81,8 +87,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
         return {
           ...document,
-          type: data.type,
-          category: data.category,
+          type: formData.type,
+          category: formData.category,
           properties: properties,
         };
       }),
@@ -94,28 +100,9 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     });
   };
   const isDecisionComponent = title === 'Decision';
-  const watch = form.watch;
-  React.useEffect(() => {
-    watch((value, { name, type }) => {
-      const newData = JSON.parse(JSON.stringify(data));
-      newData
-        .filter(item => !!item.dropdownOptions)
-        .filter(item =>
-          item.dropdownOptions.find(dropdownOption => dropdownOption.dependantOn === name),
-        )
-        .forEach(item => {
-          item.dropdownOptions = item.dropdownOptions.filter(
-            (dropdownOption: TDropdownOption) => dropdownOption.dependantValue === value[name],
-          );
-          item.value = item.dropdownOptions.find(
-            dropDownOption => dropDownOption.value == value,
-          )?.value;
 
-          return (newData[newData.indexOf(item)] = item);
-        });
-      setFormData(newData);
-    });
-  }, [watch]);
+  useWatchDropdownOptions({ form, data, setFormData });
+  useInitiateCategorySetValue();
 
   return (
     <Form {...form}>

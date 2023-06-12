@@ -16,6 +16,13 @@ import {
   omit,
 } from './utils';
 
+const NONE_EDITABLE_FIELDS = ['category'] as const;
+const composeIsEditable = (isEditable: boolean, title: string) => {
+  if (NONE_EDITABLE_FIELDS.includes(title)) return false;
+
+  return isEditable;
+};
+
 export const useEntity = () => {
   const { entityId } = useParams();
   const { data: entity, isLoading } = useEntityWithWorkflowQuery(entityId);
@@ -129,7 +136,8 @@ export const useEntity = () => {
                             type,
                             format,
                             pattern,
-                            isEditable: caseState.writeEnabled && isEditable,
+                            isEditable:
+                              caseState.writeEnabled && composeIsEditable(isEditable, title),
                             dropdownOptions,
                           };
                         },
