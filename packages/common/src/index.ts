@@ -13,7 +13,6 @@ export {
 } from './utils';
 
 export {
-  getDocumentId,
   type DefaultContextSchema,
   type TDefaultSchemaDocumentPage,
   ghanaDocuments,

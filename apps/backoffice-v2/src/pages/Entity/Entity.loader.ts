@@ -1,28 +1,18 @@
-import { authQueryKeys } from '../../domains/auth/query-keys';
+import { searchParamsToObject } from '../../common/hooks/useZodSearchParams/utils/search-params-to-object';
 import { queryClient } from '../../lib/react-query/query-client';
-import { queryKeys } from '../../domains/entities/query-keys';
 import { LoaderFunction } from 'react-router-dom';
+import { workflowsQueryKeys } from '../../domains/workflows/query-keys';
 
-export const entityLoader: LoaderFunction = async ({ params, request }) => {
+export const entityLoader: LoaderFunction = async ({ request, params }) => {
   const url = new URL(request.url);
-  const { entityId } = params;
-  const entity = url?.searchParams?.get('entity');
-  const filterId = url?.searchParams?.get('filterId');
-  const authenticatedUser = authQueryKeys.authenticatedUser();
-  const session = await queryClient.ensureQueryData(
-    authenticatedUser.queryKey,
-    authenticatedUser.queryFn,
-  );
+  const { filterId } = searchParamsToObject(url.searchParams);
 
-  if (entity || !filterId || !session?.user) return null;
+  if (!filterId) {
+    return null;
+  }
 
-  const entityById = queryKeys[entity].byId(entityId, filterId);
-  // TODO: Add workflowId to params/searchParams
-  // const workflowById = workflows.byId({ workflowId });
-
-  await queryClient.ensureQueryData(entityById.queryKey, entityById.queryFn);
-
-  // await queryClient.ensureQueryData(workflowById.queryKey, workflowById.queryFn);
+  const workflowById = workflowsQueryKeys.byId({ workflowId: params.entityId, filterId });
+  await queryClient.ensureQueryData(workflowById.queryKey, workflowById.queryFn);
 
   return null;
 };

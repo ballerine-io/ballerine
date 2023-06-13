@@ -71,7 +71,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     isActionButtonDisabled,
     onTriggerAssignToMe,
     isAssignedToMe,
-  } = useActions({ entityId: id, fullName });
+  } = useActions({ workflowId: id, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-4`}>
