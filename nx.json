@@ -28,6 +28,9 @@
     },
     "test:e2e": {
       "dependsOn": [{ "projects": "self", "target": "build" }]
+    },
+    "lint": {
+      "dependsOn": [{ "projects": "self", "target": "build" }]
     }
   },
   "defaultBase": "main"
