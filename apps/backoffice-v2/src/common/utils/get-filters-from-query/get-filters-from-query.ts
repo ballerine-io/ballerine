@@ -3,7 +3,7 @@ import { filtersQueryKeys } from '../../../domains/filters/query-keys';
 import { TFilter } from 'src/domains/filters/types';
 
 export function getFiltersFromQuery(): TFilter[] {
-  const [_, result] = queryClient.getQueriesData(filtersQueryKeys.list())[0];
+  const filters = queryClient.getQueryData<TFilter[]>(filtersQueryKeys.list().queryKey);
 
-  return (result ? result : []) as TFilter[];
+  return filters ? filters : [];
 }
