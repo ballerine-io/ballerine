@@ -5,8 +5,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   ApprovalState,
-  Business,
-  EndUser,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -262,24 +260,24 @@ export class WorkflowService {
       console.log('workflow', workflow);
 
       return {
-        id: workflow.id,
-        status: workflow.status,
-        createdAt: workflow.createdAt,
+        id: workflow?.id,
+        status: workflow?.status,
+        createdAt: workflow?.createdAt,
         entity: {
-          id: isIndividual ? workflow.endUser.id : workflow.business.id,
+          id: isIndividual ? workflow?.endUser?.id : workflow?.business?.id,
           name: isIndividual
-            ? `${String(workflow.endUser.firstName)} ${String(workflow.endUser.lastName)}`
-            : workflow.business.companyName,
-          avatarUrl: isIndividual ? workflow.endUser.avatarUrl : null,
+            ? `${String(workflow?.endUser?.firstName)} ${String(workflow?.endUser?.lastName)}`
+            : workflow?.business?.companyName,
+          avatarUrl: isIndividual ? workflow?.endUser?.avatarUrl : null,
           approvalState: isIndividual
-            ? workflow.endUser.approvalState
-            : workflow.business.approvalState,
+            ? workflow?.endUser?.approvalState
+            : workflow?.business?.approvalState,
         },
-        assignee: workflow.assigneeId
+        assignee: workflow?.assigneeId
           ? {
-              id: workflow.assigneeId,
-              firstName: workflow.assignee?.firstName,
-              lastName: workflow.assignee?.lastName,
+              id: workflow?.assigneeId,
+              firstName: workflow?.assignee?.firstName,
+              lastName: workflow?.assignee?.lastName,
             }
           : null,
       };
