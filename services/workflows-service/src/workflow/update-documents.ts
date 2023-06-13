@@ -1,4 +1,4 @@
-import { DefaultContextSchema, getDocumentId } from '@ballerine/common';
+import { DefaultContextSchema } from '@ballerine/common';
 
 type Documents = DefaultContextSchema['documents'];
 type Document = Documents[number];
@@ -11,16 +11,12 @@ export const updateDocuments = (
 
   // @ts-ignore
   existingDocuments.forEach(document => {
-    const documentId = document.id || getDocumentId(document);
-
-    updatedDocumentsMap.set(documentId, document);
+    updatedDocumentsMap.set(document.id!, document);
   });
 
   // @ts-ignore
   documentsToUpdate.forEach(document => {
-    const documentId = document.id || getDocumentId(document);
-
-    updatedDocumentsMap.set(documentId, document);
+    updatedDocumentsMap.set(document.id!, document);
   });
 
   return Array.from(updatedDocumentsMap.values());
