@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-service",
   "private": false,
-  "version": "0.4.12",
+  "version": "0.4.13",
   "description": "workflow-service",
   "scripts": {
     "setup": "npm run docker:db && npm run db:clean && npm run db:migrate-save && npm run seed",
@@ -35,7 +35,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.325.0",
     "@aws-sdk/lib-storage": "3.325.0",
-    "@ballerine/common": "0.5.1",
+    "@ballerine/common": "0.5.2",
     "@ballerine/workflow-node-sdk": "^0.4.2",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
