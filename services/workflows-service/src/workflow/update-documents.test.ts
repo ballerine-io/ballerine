@@ -56,6 +56,7 @@ describe('updateDocuments', () => {
       const documents = getMockDocuments();
       const documentsToUpdate: Documents = [
         {
+          id: 'id-1',
           version: 1,
           decision: {
             revisionReason: '',
@@ -112,6 +113,7 @@ describe('updateDocuments', () => {
 function getMockDocuments(): Documents {
   return [
     {
+      id: 'id-1',
       version: 1,
       decision: {
         revisionReason: 'Blurry image',
@@ -167,6 +169,7 @@ function getMockDocuments(): Documents {
       },
     },
     {
+      id: 'id-2',
       version: 1,
       decision: {
         revisionReason: 'Blurry image',
@@ -214,6 +217,7 @@ function getMockDocuments(): Documents {
       },
     },
     {
+      id: 'id-3',
       version: 1,
       decision: {
         revisionReason: 'Blurry image',
