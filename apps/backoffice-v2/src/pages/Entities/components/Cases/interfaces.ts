@@ -15,6 +15,6 @@ export interface ICasesProps extends DivComponent {
   onSearch: ChangeEventHandler<HTMLInputElement>;
   onFilter: (filterBy: keyof TIndividual) => (filters: Array<string>) => void;
   onSortBy: ChangeEventHandler<HTMLSelectElement>;
-  onSortDir: () => void;
+  onSortDirToggle: () => void;
   search: string;
 }

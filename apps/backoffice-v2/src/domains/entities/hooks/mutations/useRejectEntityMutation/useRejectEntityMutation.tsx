@@ -1,24 +1,19 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Action } from '../../../../../common/enums';
-import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
-import { queryKeys } from '../../../query-keys';
+import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 
+// @TODO: Refactor to be under cases/workflows domain
 export const useRejectEntityMutation = ({
   workflowId,
-  entityId,
   onSelectNextEntity,
 }: {
   workflowId: string;
-  entityId: string;
   onSelectNextEntity: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
-  const filterId = useFilterId();
-  const entity = useFilterEntity();
 
   return useMutation({
     mutationFn: (
@@ -45,12 +40,8 @@ export const useRejectEntityMutation = ({
         },
       }),
     onSuccess: (data, payload) => {
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys[entity]?.list?.(filterId).queryKey,
-      });
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys[entity].byId(entityId, filterId).queryKey,
-      });
+      // workflowsQueryKeys._def is the base key for all workflows queries
+      void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
       const action = payload.action === Action.REJECT ? 'reject_case' : 'ask_resubmit_case';
 

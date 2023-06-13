@@ -2,31 +2,85 @@ import { apiClient } from '../../common/api-client/api-client';
 import { z } from 'zod';
 import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-error';
 import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
-import { Method } from '../../common/enums';
+import { Method, States } from '../../common/enums';
 import { IWorkflowId } from './interfaces';
+import qs from 'qs';
 
-export const fetchWorkflows = async () => {
+export const fetchWorkflows = async (params: {
+  filterId: string;
+  orderBy: string;
+  page: {
+    number: number;
+    size: number;
+  };
+  filter: Record<string, unknown>;
+}) => {
+  const queryParams = qs.stringify(params, { encode: false });
+
   const [workflows, error] = await apiClient({
-    endpoint: `workflows/active-states`,
+    endpoint: `workflows?${queryParams}`,
     method: Method.GET,
-    schema: z.array(
-      ObjectWithIdSchema.extend({
-        state: z.string().nullable(),
-        endUserId: z.string().nullable(),
-        businessId: z.string().nullable(),
-        assigneeId: z.string().nullable(),
+    schema: z.object({
+      data: z.array(
+        z.object({
+          id: z.string(),
+          status: z.string(),
+          createdAt: z.string().datetime(),
+          entity: ObjectWithIdSchema.extend({
+            name: z.string(),
+            avatarUrl: z.string().nullable(),
+            approvalState: z.enum(States),
+          }),
+          assignee: ObjectWithIdSchema.extend({
+            firstName: z.string(),
+            lastName: z.string(),
+          }).nullable(),
+        }),
+      ),
+      meta: z.object({
+        totalItems: z.number().nonnegative(),
+        totalPages: z.number().nonnegative(),
       }),
-    ),
+    }),
   });
 
   return handleZodError(error, workflows);
 };
 
-export const fetchWorkflowById = async ({ workflowId }: IWorkflowId) => {
+export const fetchWorkflowById = async ({
+  workflowId,
+  filterId,
+}: {
+  workflowId: string;
+  filterId: string;
+}) => {
   const [workflow, error] = await apiClient({
-    endpoint: `workflows/${workflowId}`,
+    endpoint: `workflows/${workflowId}?filterId=${filterId}`,
     method: Method.GET,
-    schema: z.any(),
+    schema: z.object({
+      id: z.string(),
+      status: z.string(),
+      nextEvents: z.array(z.any()),
+      workflowDefinition: ObjectWithIdSchema.extend({
+        name: z.string(),
+        contextSchema: z.record(z.any(), z.any()).nullable(),
+        config: z.record(z.any(), z.any()).nullable(),
+      }),
+      createdAt: z.string().datetime(),
+      context: z.object({
+        documents: z.array(z.any()),
+        entity: z.record(z.any(), z.any()),
+      }),
+      entity: ObjectWithIdSchema.extend({
+        name: z.string(),
+        avatarUrl: z.string().nullable(),
+        approvalState: z.enum(States),
+      }),
+      assignee: ObjectWithIdSchema.extend({
+        firstName: z.string(),
+        lastName: z.string(),
+      }).nullable(),
+    }),
   });
 
   return handleZodError(error, workflow);

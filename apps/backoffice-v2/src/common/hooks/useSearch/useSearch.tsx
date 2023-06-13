@@ -32,8 +32,9 @@ export const useSearch = <TArray extends AnyArray>({
   useEffect(() => {
     setSearchParams({
       search: debouncedSearch,
+      page: 1,
     });
-  }, [debouncedSearch, setSearchParams]);
+  }, [debouncedSearch]);
 
   return {
     searched,

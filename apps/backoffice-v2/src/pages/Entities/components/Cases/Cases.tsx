@@ -23,7 +23,7 @@ import { TIndividual } from '../../../../domains/individuals/types';
  * @param onSearch
  * @param onFilter
  * @param onSortBy
- * @param onSortDir
+ * @param onSortDirToggle
  * @param props
  * @constructor
  */
@@ -32,7 +32,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
   onSearch,
   onFilter,
   onSortBy,
-  onSortDir,
+  onSortDirToggle,
   search,
   ...props
 }) => {
@@ -116,7 +116,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
             <div className={`input-group flex items-center`}>
               <button
                 className={`btn-ghost btn-square btn-sm btn !rounded-md focus-visible:border-none focus-visible:bg-neutral/10 focus-visible:outline-none focus-visible:ring-0 focus-visible:theme-dark:bg-neutral`}
-                onClick={onSortDir}
+                onClick={onSortDirToggle}
                 ref={sortRef}
               >
                 <SortSvg />
