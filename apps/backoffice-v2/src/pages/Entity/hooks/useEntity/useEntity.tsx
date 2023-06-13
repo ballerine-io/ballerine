@@ -17,7 +17,7 @@ import {
 } from './utils';
 
 const NONE_EDITABLE_FIELDS = ['category'] as const;
-const composeIsEditable = (isEditable: boolean, title: string) => {
+const getIsEditable = (isEditable: boolean, title: string) => {
   if (NONE_EDITABLE_FIELDS.includes(title)) return false;
 
   return isEditable;
@@ -137,7 +137,7 @@ export const useEntity = () => {
                             format,
                             pattern,
                             isEditable:
-                              caseState.writeEnabled && composeIsEditable(isEditable, title),
+                              caseState.writeEnabled && getIsEditable(isEditable, title),
                             dropdownOptions,
                           };
                         },
