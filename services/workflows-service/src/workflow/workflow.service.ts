@@ -230,6 +230,13 @@ export class WorkflowService {
       where: filters ? toPrismaWhere(filters) : {},
       skip: (page.number - 1) * page.size,
       take: page.size,
+    }, {
+      where: entityType === 'individuals' ? {
+        endUserId: { not: null },
+      }:{
+
+        businessId: { not: null },
+      }
     });
 
     const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count({

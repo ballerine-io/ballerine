@@ -657,6 +657,7 @@ async function seed(bcryptSalt: Salt) {
     },
     where: {
       workflowDefinitionId: manualMachineId,
+      endUserId: { not: null },
     },
   });
 
@@ -703,6 +704,7 @@ async function seed(bcryptSalt: Salt) {
     },
     where: {
       workflowDefinitionId: manualMachineId,
+      endUserId: { not: null },
     },
   });
 
@@ -755,6 +757,7 @@ async function seed(bcryptSalt: Salt) {
     },
     where: {
       workflowDefinitionId: riskScoreMachineKybId,
+      businessId: { not: null },
     },
   });
 
