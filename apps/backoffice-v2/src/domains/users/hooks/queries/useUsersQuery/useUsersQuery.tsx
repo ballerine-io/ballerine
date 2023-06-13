@@ -10,5 +10,6 @@ export const useUsersQuery = () => {
     ...usersQueryKeys.list(),
     enabled: isAuthenticated,
     refetchInterval: env.VITE_ASSIGNMENT_POLLING_INTERVAL,
+    staleTime: 1_000_000,
   });
 };

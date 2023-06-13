@@ -1,4 +1,3 @@
-export { getDocumentId } from './documents/workflow/documents/utils';
 export { type DefaultContextSchema } from './documents/context';
 export { type TDefaultSchemaDocumentPage } from './documents/default-context-page-schema';
 export {
