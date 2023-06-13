@@ -22,17 +22,13 @@ import {
   FindWorkflowsListSchema,
 } from '@/workflow/dtos/find-workflows-list.dto';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
-import { UsePipes } from '@nestjs/common';
+import { UsePipes, UseGuards } from '@nestjs/common';
 import { FilterService } from '@/filter/filter.service';
 import {
   FindWorkflowParamsDto,
   FindWorkflowQueryDto,
   FindWorkflowQuerySchema,
 } from '@/workflow/dtos/find-workflow.dto';
-import { merge } from 'lodash';
-import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
-import { enrichWorkflowRuntimeData } from './enrich-workflow-runtime-data';
-import { UseGuards } from '@nestjs/common';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 

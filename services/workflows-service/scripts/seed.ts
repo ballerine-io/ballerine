@@ -142,6 +142,7 @@ async function seed(bcryptSalt: Salt) {
       },
       documents: [
         {
+          id: faker.datatype.uuid(),
           category: 'proof_of_employment',
           type: 'payslip',
           issuer: {
@@ -188,6 +189,7 @@ async function seed(bcryptSalt: Salt) {
           },
         },
         {
+          id: faker.datatype.uuid(),
           category: 'proof_of_address',
           type: 'mortgage_statement',
           issuer: {
@@ -259,6 +261,7 @@ async function seed(bcryptSalt: Salt) {
       },
       documents: [
         {
+          id: faker.datatype.uuid(),
           category: 'ID',
           type: 'photo',
           issuer: {
@@ -305,6 +308,7 @@ async function seed(bcryptSalt: Salt) {
           },
         },
         {
+          id: faker.datatype.uuid(),
           category: 'selfie',
           type: 'certificate',
           issuer: {

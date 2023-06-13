@@ -5,8 +5,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   ApprovalState,
-  Business,
-  EndUser,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -50,7 +48,6 @@ import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
 import {
   certificateOfResidenceGH,
   DefaultContextSchema,
-  getDocumentId,
   TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
 
@@ -148,7 +145,7 @@ export class WorkflowService {
 
     const service = createWorkflow({
       definition: workflow.workflowDefinition as any,
-      definitionType: workflow.workflowDefinition.definitionType as any,
+      definitionType: workflow.workflowDefinition.definitionType,
       workflowContext: {
         machineContext: workflow.context,
         state: workflow.state,
@@ -162,7 +159,6 @@ export class WorkflowService {
         documents: workflow.context?.documents?.map(
           (document: DefaultContextSchema['documents'][number]) => ({
             ...document,
-            id: getDocumentId(document),
             propertiesSchema: certificateOfResidenceGH.propertiesSchema,
           }),
         ),
@@ -264,24 +260,24 @@ export class WorkflowService {
       console.log('workflow', workflow);
 
       return {
-        id: workflow.id,
-        status: workflow.status,
-        createdAt: workflow.createdAt,
+        id: workflow?.id,
+        status: workflow?.status,
+        createdAt: workflow?.createdAt,
         entity: {
-          id: isIndividual ? workflow.endUser.id : workflow.business.id,
+          id: isIndividual ? workflow?.endUser?.id : workflow?.business?.id,
           name: isIndividual
-            ? `${String(workflow.endUser.firstName)} ${String(workflow.endUser.lastName)}`
-            : workflow.business.companyName,
-          avatarUrl: isIndividual ? workflow.endUser.avatarUrl : null,
+            ? `${String(workflow?.endUser?.firstName)} ${String(workflow?.endUser?.lastName)}`
+            : workflow?.business?.companyName,
+          avatarUrl: isIndividual ? workflow?.endUser?.avatarUrl : null,
           approvalState: isIndividual
-            ? workflow.endUser.approvalState
-            : workflow.business.approvalState,
+            ? workflow?.endUser?.approvalState
+            : workflow?.business?.approvalState,
         },
-        assignee: workflow.assigneeId
+        assignee: workflow?.assigneeId
           ? {
-              id: workflow.assigneeId,
-              firstName: workflow.assignee?.firstName,
-              lastName: workflow.assignee?.lastName,
+              id: workflow?.assigneeId,
+              firstName: workflow?.assignee?.firstName,
+              lastName: workflow?.assignee?.lastName,
             }
           : null,
       };
@@ -706,8 +702,7 @@ export class WorkflowService {
     entityId: string,
     documentPage: TDefaultSchemaDocumentPage,
   ) {
-    const documentContext = getDocumentId(document).toLowerCase();
-    const remoteFileName = `${documentContext}_${crypto.randomUUID()}.${documentPage.type}`;
+    const remoteFileName = `${document.id!}_${crypto.randomUUID()}.${documentPage.type}`;
 
     const { fromServiceProvider, fromRemoteFileConfig } =
       this.__fetchFromServiceProviders(documentPage);
@@ -798,7 +793,7 @@ export class WorkflowService {
     context: DefaultContextSchema,
   ) {
     if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema).length) {
-      const validate = ajv.compile((workflowDefinition.contextSchema as any).schema); // TODO: fix type
+      const validate = ajv.compile(workflowDefinition.contextSchema.schema); // TODO: fix type
       const validationResult = validate(context);
 
       if (!validationResult) {
@@ -822,9 +817,9 @@ export class WorkflowService {
 
     const service = createWorkflow({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      definition: workflow.definition as any,
+      definition: workflow.definition,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      definitionType: workflow.definitionType as any,
+      definitionType: workflow.definitionType,
       workflowContext: {
         machineContext: runtimeData.context,
         state: runtimeData.state,
