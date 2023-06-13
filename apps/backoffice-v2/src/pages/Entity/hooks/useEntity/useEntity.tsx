@@ -8,7 +8,7 @@ import { toStartCase } from '../../../../common/utils/to-start-case/to-start-cas
 import { components } from './components';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
-import { getDocumentsByCountry } from '@ballerine/common';
+import { getDocumentsByCountry, TDocument } from '@ballerine/common';
 
 const convertSnakeCaseToTitleCase = (input: string): string =>
   input
@@ -28,23 +28,23 @@ const uniqueArrayByKey = (array, key) => {
 const composePickableCategoryType = (
   categoryValue: string,
   typeValue: string,
-  documentsSchema: any,
+  documentsSchema: TDocument[],
 ) => {
   const documentTypesDropdownOptions: Array<{ value: string; label: string }> = [];
   const documentCategoryDropdownOptions: Array<{ value: string; label: string }> = [];
 
-  Object.values(documentsSchema).forEach(document => {
+  documentsSchema.forEach(document => {
     const category = document.category;
     if (category) {
       documentCategoryDropdownOptions.push({
-        value: category as string,
+        value: category,
         label: convertSnakeCaseToTitleCase(category),
       });
     }
     const type = document.type;
     if (type) {
       documentTypesDropdownOptions.push({
-        value: type as string,
+        value: type,
         label: convertSnakeCaseToTitleCase(type),
       });
     }
@@ -63,8 +63,8 @@ const composePickableCategoryType = (
   };
 };
 
-const isExistingSchemaForDocument = documentsSchema => {
-  return Object.entries(documentsSchema).length > 0;
+const isExistingSchemaForDocument = (documentsSchema: TDocument[]) => {
+  return documentsSchema.length > 0;
 };
 
 function omit(obj, ...props) {
