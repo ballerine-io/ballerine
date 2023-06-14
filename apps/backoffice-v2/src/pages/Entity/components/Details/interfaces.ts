@@ -11,6 +11,8 @@ export interface IDetailsProps {
       pattern?: string;
       value: unknown;
       dropdownOptions?: Array<{ label: string; value: string }>;
+      dependantOn?: string;
+      dependantValue?: string;
     }>;
   };
 }

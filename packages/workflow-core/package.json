@@ -21,7 +21,8 @@
     "build": "pnpm clean && rollup --config rollup.config.js",
     "watch": "tsc -w",
     "dev": "concurrently --kill-others \"pnpm build -w\" \"pnpm watch\"",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:unit": "vitest run"
   },
   "engines": {
     "node": ">=12"

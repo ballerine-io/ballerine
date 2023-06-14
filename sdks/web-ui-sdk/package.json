@@ -40,6 +40,7 @@
     "deprecated:build:sdk": "rollup --config",
     "start": "vite preview",
     "test": "vitest run",
+    "test:unit": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "playwright:install": "playwright install --with-deps",
