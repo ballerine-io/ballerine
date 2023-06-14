@@ -73,7 +73,7 @@ export const isExistingSchemaForDocument = documentsSchemas => {
 
 export const extractCountryCodeFromWorkflow = workflow => {
   return workflow?.context?.documents?.find(document => {
-    return document?.issuer?.country;
+    return !!document?.issuer?.country;
   })?.issuer?.country;
 };
 
