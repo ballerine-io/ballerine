@@ -1,23 +1,18 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
-import { queryKeys } from '../../../query-keys';
 import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
+import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 
+// @TODO: Refactor to be under cases/workflows domain
 export const useApproveEntityMutation = ({
-  endUserId,
   workflowId,
   onSelectNextEntity,
 }: {
-  endUserId: string;
   workflowId: string;
   onSelectNextEntity: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
-  const filterId = useFilterId();
-  const entity = useFilterEntity();
 
   return useMutation({
     mutationFn: () =>
@@ -28,12 +23,8 @@ export const useApproveEntityMutation = ({
         },
       }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys[entity as keyof typeof queryKeys]?.list?.(filterId).queryKey,
-      });
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys[entity as keyof typeof queryKeys]?.byId?.(endUserId, filterId).queryKey,
-      });
+      // workflowsQueryKeys._def is the base key for all workflows queries
+      void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
       toast.success(t('toast:approve_case.success'));
 

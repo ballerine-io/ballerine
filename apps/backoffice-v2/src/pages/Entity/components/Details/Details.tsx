@@ -4,11 +4,13 @@ import { Separator } from '../../../../common/components/atoms/Separator/Separat
 import React, { FunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { IDetailsProps } from './interfaces';
-import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
+import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 
 export const Details: FunctionComponent<IDetailsProps> = ({ id, value }) => {
   const { entityId } = useParams();
-  const { data: entity } = useEntityWithWorkflowQuery(entityId);
+  const filterId = useFilterId();
+  const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
 
   if (!value.data?.length) return;
 
@@ -19,10 +21,10 @@ export const Details: FunctionComponent<IDetailsProps> = ({ id, value }) => {
       })}
     >
       <EditableDetails
-        workflowId={entity?.workflow?.runtimeDataId}
+        workflowId={workflow.id}
         id={id}
         valueId={value?.id}
-        documents={entity?.workflow?.workflowContext?.machineContext?.documents}
+        documents={workflow.context.documents}
         title={value?.title}
         data={value?.data}
       />

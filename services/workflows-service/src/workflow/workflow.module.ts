@@ -14,6 +14,8 @@ import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import { FileRepository } from '@/storage/storage.repository';
 import { HttpModule, HttpService } from '@nestjs/axios';
+import { FilterRepository } from '@/filter/filter.repository';
+import { FilterService } from '@/filter/filter.service';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
@@ -29,6 +31,8 @@ import { HttpModule, HttpService } from '@nestjs/axios';
     FileService,
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
+    FilterRepository,
+    FilterService,
   ],
   exports: [WorkflowService, ACLModule, AuthModule, StorageService, FileRepository],
 })

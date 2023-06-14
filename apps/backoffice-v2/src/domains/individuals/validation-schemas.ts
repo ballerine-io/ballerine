@@ -2,36 +2,6 @@ import { z } from 'zod';
 import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
 import { CaseStatuses, State, States } from '../../common/enums';
 
-export const IndividualsListSchema = z
-  .array(
-    ObjectWithIdSchema.extend({
-      avatarUrl: z.string().nullable().default(''),
-      createdAt: z.string().default(''),
-      firstName: z.string().nullable().default(''),
-      middleName: z.string().default(''),
-      lastName: z.string().nullable().default(''),
-      fullName: z.string().default(''),
-      email: z.string().nullable().default(''),
-      phone: z.string().nullable().default(''),
-      approvalState: z.enum(States).default(State.PROCESSING),
-      endUserType: z.string().nullable().default(''),
-      workflowRuntimeData: z.preprocess(
-        workflows => workflows?.[0],
-        ObjectWithIdSchema.extend({
-          assigneeId: z.string().nullable().optional(),
-          createdAt: z.string().datetime(),
-          status: z.enum(CaseStatuses),
-        }).optional(),
-      ),
-    }).transform(({ firstName, lastName, ...rest }) => ({
-      ...rest,
-      firstName,
-      lastName,
-      fullName: `${firstName} ${lastName}`,
-    })),
-  )
-  .default([]);
-
 export const IndividualByIdSchema = ObjectWithIdSchema.extend({
   avatarUrl: z.string().nullable().default(''),
   createdAt: z.string().default(''),
