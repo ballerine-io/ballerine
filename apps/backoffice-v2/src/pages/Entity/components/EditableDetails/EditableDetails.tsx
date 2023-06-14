@@ -33,7 +33,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
     workflowId,
   });
-  const useInitiateCategorySetValue = () => {
+  const useInitialCategorySetValue = () => {
     useEffect(() => {
       const categoryValue = form.getValues('category');
       form.setValue('category', categoryValue);
@@ -102,7 +102,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const isDecisionComponent = title === 'Decision';
 
   useWatchDropdownOptions({ form, data, setFormData });
-  useInitiateCategorySetValue();
+  useInitialCategorySetValue();
 
   return (
     <Form {...form}>
