@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
+import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
@@ -32,7 +32,7 @@ export const useEntity = () => {
       results[docIndex][pageIndex] = docsData.shift().data;
     });
   });
-  const filterEntity = useFilterEntity();
+  const filterEntity = useEntityType();
   const selectedEntity = {
     id: entityId,
     fullName: filterEntity === 'individuals' ? entity?.fullName : entity?.companyName,

@@ -2,13 +2,13 @@ import { useFiltersQuery } from '../../../filters/hooks/queries/useFiltersQuery/
 import { useEffect } from 'react';
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useFilterEntity } from '../../hooks/useFilterEntity/useFilterEntity';
+import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 
 export const useSelectEntityFilterOnMount = () => {
   const { data: filters } = useFiltersQuery();
   const { locale } = useParams();
   const [{ filterId, filterName }, setSearchParams] = useSearchParamsByEntity();
-  const entity = useFilterEntity();
+  const entity = useEntityType();
   const navigate = useNavigate();
   const [firstFilter] = filters ?? [];
 

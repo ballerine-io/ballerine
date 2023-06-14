@@ -7,13 +7,13 @@ import { useUsersQuery } from '../../../../domains/users/hooks/queries/useUsersQ
 import { useSort } from '../../../../common/hooks/useSort/useSort';
 import { useEntitiesWithWorkflowsQuery } from '../../../../domains/entities/hooks/queries/useEntitiesWithWorkflowsQuery/useEntitiesWithWorkflowsQuery';
 import { TIndividual } from '../../../../domains/individuals/types';
-import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
+import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
 
 export const useEntities = () => {
   const { data: users } = useUsersQuery();
   const { data: cases, isLoading } = useEntitiesWithWorkflowsQuery(users);
-  const entity = useFilterEntity();
+  const entity = useEntityType();
   const individualsSearchOptions = ['firstName', 'lastName', 'email', 'phone'];
   const businessesSearchOptions = [
     'companyName',

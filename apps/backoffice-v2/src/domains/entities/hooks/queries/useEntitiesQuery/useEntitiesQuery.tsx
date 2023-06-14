@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
+import { useEntityType } from '../../../../../common/hooks/useEntityType/useEntityType';
 import { queryKeys } from '../../../query-keys';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { TEntities } from '../../../types';
@@ -10,7 +10,7 @@ export const useEntitiesQuery = <TQueryFnData = TEntities,>(
     select?: (entities: TEntities) => TQueryFnData;
   },
 ) => {
-  const entity = useFilterEntity();
+  const entity = useEntityType();
   const filterId = useFilterId();
   const isAuthenticated = useIsAuthenticated();
 

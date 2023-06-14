@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 import { queryKeys } from '../../../query-keys';
 import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
+import { useEntityType } from '../../../../../common/hooks/useEntityType/useEntityType';
 
 export const useApproveEntityMutation = ({
   endUserId,
@@ -17,7 +17,7 @@ export const useApproveEntityMutation = ({
 }) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
-  const entity = useFilterEntity();
+  const entity = useEntityType();
 
   return useMutation({
     mutationFn: () =>

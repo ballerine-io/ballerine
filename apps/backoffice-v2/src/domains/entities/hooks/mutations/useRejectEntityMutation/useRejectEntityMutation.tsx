@@ -3,9 +3,9 @@ import { Action } from '../../../../../common/enums';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
 import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
 import { queryKeys } from '../../../query-keys';
+import { useEntityType } from '../../../../../common/hooks/useEntityType/useEntityType';
 
 export const useRejectEntityMutation = ({
   workflowId,
@@ -18,7 +18,7 @@ export const useRejectEntityMutation = ({
 }) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
-  const entity = useFilterEntity();
+  const entity = useEntityType();
 
   return useMutation({
     mutationFn: (

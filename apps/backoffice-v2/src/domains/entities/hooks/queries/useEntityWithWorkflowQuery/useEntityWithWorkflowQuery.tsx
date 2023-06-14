@@ -1,10 +1,10 @@
 import { useEntityQuery } from '../useEntityQuery/useEntityQuery';
 import { useWorkflowQuery } from '../../../../workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useWorkflowsQuery } from '../../../../workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
-import { useFilterEntity } from '../../useFilterEntity/useFilterEntity';
+import { useEntityType } from '../../../../../common/hooks/useEntityType/useEntityType';
 
 export const useEntityWithWorkflowQuery = (entityId: string) => {
-  const entity = useFilterEntity();
+  const entity = useEntityType();
   const workflowId = useWorkflowsQuery()?.data?.find(
     workflow =>
       (entity === 'individuals' && workflow.endUserId === entityId) ||
