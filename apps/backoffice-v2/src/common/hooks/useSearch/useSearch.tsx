@@ -34,7 +34,7 @@ export const useSearch = <TArray extends AnyArray>({
       search: debouncedSearch,
       page: 1,
     });
-  }, [debouncedSearch, setSearchParams]);
+  }, [debouncedSearch]);
 
   return {
     searched,
