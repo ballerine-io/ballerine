@@ -13,6 +13,7 @@ import helmet from 'helmet';
 import { env } from '@/env';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
 import { NextFunction, Request, Response } from 'express';
+import { PrismaClientValidationFilter } from '@/common/filters/prisma-client-validation-filter/PrismaClientValidation.filter';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
@@ -101,6 +102,7 @@ async function main() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
+  app.useGlobalFilters(new PrismaClientValidationFilter());
 
   app.enableShutdownHooks();
 
