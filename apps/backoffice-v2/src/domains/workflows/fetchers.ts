@@ -16,6 +16,7 @@ export const fetchWorkflows = async () => {
         endUserId: z.string().nullable(),
         businessId: z.string().nullable(),
         assigneeId: z.string().nullable(),
+        workflowDefinitionId: z.string(),
       }),
     ),
   });

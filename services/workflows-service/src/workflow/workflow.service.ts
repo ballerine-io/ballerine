@@ -145,6 +145,7 @@ export class WorkflowService {
         assigneeId: true,
         id: true,
         status: true,
+        workflowDefinitionId: true,
       },
     });
   }
@@ -261,6 +262,44 @@ export class WorkflowService {
 
     if (isResolved) {
       this.logger.log('Workflow resolved', { id: workflowRuntimeId });
+    }
+
+    const documentToRevise = data.context?.documents?.find(
+      ({ decision }: { decision: DefaultContextSchema['documents'][number]['decision'] }) =>
+        decision?.status === 'revision',
+    );
+
+    if (documentToRevise && !workflowDef.reviewMachineId) {
+      const parentMachine = await this.workflowRuntimeDataRepository.findById(
+        runtimeData?.context?.parentMachine?.id,
+        {
+          include: {
+            workflowDefinition: {
+              select: {
+                definition: true,
+              },
+            },
+          },
+        },
+      );
+
+      await this.workflowRuntimeDataRepository.updateById(parentMachine?.id, {
+        data: {
+          status: 'active',
+          state: parentMachine?.workflowDefinition?.definition?.initial as string,
+          context: {
+            ...parentMachine?.context,
+            documents: parentMachine?.context?.documents?.map((document: any) => {
+              if (document.id !== documentToRevise.id) document;
+
+              return {
+                ...document,
+                decision: documentToRevise.decision,
+              };
+            }),
+          },
+        },
+      });
     }
 
     const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
@@ -401,12 +440,15 @@ export class WorkflowService {
       });
     }
 
+    const isRevision = runtime.context?.documents?.some(
+      ({ decision }: { decision: DefaultContextSchema['documents'][number]['decision'] }) =>
+        decision?.status === 'revision',
+    );
+
     await this.updateWorkflowRuntimeData(runtime.id, {
-      ...((runtime.context as { resubmissionReason: string })?.resubmissionReason
+      ...(isRevision
         ? {
             ...entitySearch,
-            workflowDefinitionVersion: workflow.version,
-            workflowDefinitionId: workflow.reviewMachineId,
             context: {
               ...context,
               parentMachine: {

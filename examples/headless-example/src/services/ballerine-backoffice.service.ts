@@ -12,10 +12,10 @@ export class BallerineBackOfficeService {
 
   fetchWorkflow = async (id: string) => fetchJson(`${this.baseUrl}/workflows/${id}`);
   fetchWorkflows = async ({
-    entity,
+    entityType,
     entityId,
   }: {
-    entity: 'end-user' | 'business';
+    entityType: 'end-user' | 'business';
     entityId: string;
   }) =>
     fetchJson<
@@ -29,7 +29,7 @@ export class BallerineBackOfficeService {
           status: string;
         };
       }>
-    >(`${this.baseUrl}/workflows/${entity}/${entityId}`);
+    >(`${this.baseUrl}/workflows/${entityType}/${entityId}`);
   fetchIntent = async () =>
     fetchJson<Array<Record<string, unknown>>>(`${this.baseUrl}/workflows/intent`, {
       method: 'POST',

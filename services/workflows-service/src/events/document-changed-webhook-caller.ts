@@ -47,14 +47,14 @@ export class DocumentChangedWebhookCaller {
       return accumulator;
     }, {});
 
-    const anyDocumentStatusChanged = (oldDocuments as Array<any>).some(oldDocument => {
+    const anyDocumentStatusChanged = oldDocuments.some((oldDocument: any) => {
       const id = documentIdentifier(oldDocument);
       return (
         (!oldDocument.decision && newDocumentsByIdentifier[id].decision) ||
         (oldDocument.decision &&
           oldDocument.decision.status &&
           id in newDocumentsByIdentifier &&
-          oldDocument.decision.status !== newDocumentsByIdentifier[id].decision.status)
+          oldDocument.decision.status !== newDocumentsByIdentifier[id].decision?.status)
       );
     });
 

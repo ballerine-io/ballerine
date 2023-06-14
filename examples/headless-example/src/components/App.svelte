@@ -61,15 +61,16 @@
       },
       enabled: typeof id === 'string' && id.length > 0,
     });
-  const entity = import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'end-user' : ('business' as const);
+  const entityType =
+    import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'end-user' : ('business' as const);
   const createWorkflowsQuery = (
     options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {},
   ) =>
     createQuery({
-      queryKey: ['workflows', { entity, entityId }],
+      queryKey: ['workflows', { entityType, entityId }],
       queryFn: () =>
         fetchWorkflows({
-          entity,
+          entityType,
           entityId,
         }),
       enabled: typeof entityId === 'string' && entityId.length > 0,
@@ -90,7 +91,6 @@
   const createFirstWorkflowQuery = () =>
     createWorkflowsQuery({
       select: workflows => {
-        console.log({ workflows });
         return Array.isArray(workflows)
           ? workflows
               ?.slice()
@@ -117,7 +117,7 @@
     });
   const createWorkflowQuery = (id: string) =>
     createQuery({
-      queryKey: ['workflows', { id, entity, entityId }],
+      queryKey: ['workflows', { id, entityType, entityId }],
       queryFn: async () => {
         const data = await fetchWorkflow(id);
 
@@ -138,7 +138,7 @@
 
         return parseInt(import.meta.env.VITE_POLLING_INTERVAL) * 1000 || false;
       },
-      enabled: typeof id === 'string' && id.length > 0 && !!entity && !!entityId,
+      enabled: typeof id === 'string' && id.length > 0 && !!entityType && !!entityId,
     });
   const queryClient = useQueryClient();
   const createSignUpMutation = () =>
@@ -185,6 +185,7 @@
   const clearUser = () => {
     sessionStorage.removeItem(ENTITY_ID_STORAGE_KEY);
     entityId = undefined;
+    workflow.set(undefined);
     queryClient.invalidateQueries();
   };
   const workflow = writable<WorkflowOptionsBrowser | undefined>();
@@ -209,6 +210,41 @@
   const mergeWorkflow = () => makeWorkflow($workflowQuery?.data || $intentQuery?.data);
   const handleResubmit = () => {
     workflow.set(mergeWorkflow());
+    shouldResubmit = false;
+  };
+  const handleNextWorkflow = ({
+    entityQueryId,
+    workflowQueryDefinition,
+    intentQueryDefinition,
+    workflowDefinitionInitial,
+  }: {
+    entityQueryId: string;
+    workflowQueryDefinition: Record<string, unknown>;
+    intentQueryDefinition: Record<string, unknown>;
+    workflowDefinitionInitial: string;
+  }) => {
+    if (!entityQueryId || (!workflowQueryDefinition && !intentQueryDefinition)) {
+      workflow.set(undefined);
+      shouldResubmit = false;
+
+      return;
+    }
+
+    nextWorkflow = mergeWorkflow();
+
+    if (
+      nextWorkflow?.definition?.initial !== workflowDefinitionInitial &&
+      nextWorkflow?.definition?.context?.documents?.some(
+        ({ decision }) => decision?.status === 'revision',
+      )
+    ) {
+      shouldResubmit = true;
+
+      return;
+    }
+
+    workflow.set(nextWorkflow);
+    shouldResubmit = false;
   };
 
   $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
@@ -216,29 +252,12 @@
   $: isProcessing = entityState === 'PROCESSING';
 
   $: {
-    if (
-      $entityQuery.data?.id &&
-      ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)
-    ) {
-      nextWorkflow = mergeWorkflow();
-      console.log({
-        nextWorkflow: nextWorkflow,
-      });
-      if (
-        nextWorkflow?.definition?.initial !== $workflow?.definition?.initial &&
-        nextWorkflow?.definition?.context?.documents?.some(
-          ({ decision }) => decision?.status === 'revision',
-        )
-      ) {
-        shouldResubmit = true;
-      } else {
-        workflow.set(nextWorkflow);
-        shouldResubmit = false;
-      }
-    } else {
-      workflow.set(undefined);
-      shouldResubmit = false;
-    }
+    handleNextWorkflow({
+      intentQueryDefinition: $intentQuery?.data?.workflowDefinition?.definition,
+      workflowQueryDefinition: $workflowQuery?.data?.workflowDefinition?.definition,
+      entityQueryId: $entityQuery?.data?.id,
+      workflowDefinitionInitial: $workflow?.definition?.initial,
+    });
   }
 
   $: {
@@ -252,10 +271,10 @@
 
     const hasDecisions = !!documentsDecisionStatuses?.length;
 
-    // In JavaScript `some` and `every` return true with empty arrays.
+    // In JavaScript `every` returns true with empty arrays.
     isApproved = hasDecisions && documentsDecisionStatuses?.every(status => status === 'approved');
-    isRejected = hasDecisions && documentsDecisionStatuses?.some(status => status === 'rejected');
-    isRevision = hasDecisions && documentsDecisionStatuses?.some(status => status === 'revision');
+    isRejected = documentsDecisionStatuses?.some(status => status === 'rejected');
+    isRevision = !isCompleted && documentsDecisionStatuses?.some(status => status === 'revision');
     isDecided = isApproved || isRejected || isRevision;
   }
 </script>
@@ -277,7 +296,7 @@
       <ThankYou />
     {/if}
 
-    {#if isRevision}
+    {#if isRevision && shouldResubmit}
       <Resubmission
         {handleResubmit}
         reason={nextWorkflow?.definition?.context?.documents
@@ -298,6 +317,6 @@
     <DevSidebar workflowDefinition={$debugWf?.definition} />
   {/if}
   <div class={'fixed left-2 top-2'}>
-    <button on:click={clearUser}> Clear User </button>
+    <button on:click={clearUser}> Clear User</button>
   </div>
 </div>

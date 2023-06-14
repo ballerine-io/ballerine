@@ -23,10 +23,11 @@
     initialValues,
     onSubmit(data, ctx) {
       const context = getSnapshotContext(workflowService);
+      const document = context?.form?.[documentId];
 
       return onSubmit(
         {
-          [documentId]: context?.form?.[documentId],
+          [documentId]: document,
         },
         ctx,
       );

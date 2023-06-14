@@ -8,8 +8,16 @@ export const useEntityWithWorkflowQuery = (entityId: string) => {
   const workflowId = useWorkflowsQuery()
     ?.data?.slice()
     ?.sort((a, b) => {
-      if (a?.status === 'completed' && b?.status !== 'completed') return -1;
-      if (b?.status === 'completed' && a?.status !== 'completed') return 1;
+      if (
+        a?.workflowDefinitionId?.startsWith('MANUAL_REVIEW_') &&
+        !b?.workflowDefinitionId?.startsWith('MANUAL_REVIEW_')
+      )
+        return -1;
+      if (
+        b?.workflowDefinitionId?.startsWith('MANUAL_REVIEW_') &&
+        !a?.workflowDefinitionId?.startsWith('MANUAL_REVIEW_')
+      )
+        return 1;
 
       return 0;
     })
