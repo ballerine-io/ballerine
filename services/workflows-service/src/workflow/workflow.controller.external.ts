@@ -37,20 +37,20 @@ export class WorkflowControllerExternal {
   ) {}
 
   // GET /workflows
-  @common.Get('/:entity/:entityId')
+  @common.Get('/:entityType/:entityId')
   @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   @UseKeyAuthInDevGuard()
   async listWorkflowRuntimeDataByUserId(
-    @Param('entity') entity: 'end-user' | 'business',
+    @Param('entityType') entityType: 'end-user' | 'business',
     @Param('entityId') entityId: string,
   ) {
     const completeWorkflowData = await this.service.listFullWorkflowDataByUserId({
       entityId,
       // Expecting kebab-case from the url
-      entity: camelCase(entity) as TEntityType,
+      entity: camelCase(entityType) as TEntityType,
     });
     const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
       workflowRuntimeData: rest,
