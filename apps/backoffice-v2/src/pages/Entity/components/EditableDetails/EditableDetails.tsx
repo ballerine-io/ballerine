@@ -21,7 +21,6 @@ import { SelectValue } from '../../../../common/components/atoms/Select/Select.V
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 
-const UPDATEABLE_FIELDS = ['type', 'category'];
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
   valueId,
@@ -75,10 +74,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     const context = {
       documents: documents?.map(document => {
         if (document?.id !== valueId) return document;
+
         const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
           (acc, curr) => {
-            if (!data?.[curr]) return acc;
-            acc[curr] = data?.[curr];
+            if (!formData?.[curr]) return acc;
+            acc[curr] = formData?.[curr];
 
             return acc;
           },

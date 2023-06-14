@@ -5,13 +5,6 @@ export const convertSnakeCaseToTitleCase = (input: string): string =>
     .split('_')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
-export const extractCountryCodeFromEntity = entity => {
-  const issuerCountryCode = entity?.workflow?.definition?.context?.documents?.find(document => {
-    return document?.issuer?.country;
-  })?.issuer?.country;
-
-  return issuerCountryCode;
-};
 const composeDataFormCell = (
   cellName: string,
   categoryDropdownOptions: TDropdownOption[],
@@ -29,6 +22,14 @@ const composeDataFormCell = (
 const uniqueArrayByKey = (array, key) => {
   return [...new Map(array.map(item => [item[key], item])).values()] as TDropdownOption[];
 };
+
+const NONE_EDITABLE_FIELDS = ['category'] as const;
+export const getIsEditable = (isEditable: boolean, title: string) => {
+  if (NONE_EDITABLE_FIELDS.includes(title)) return false;
+
+  return isEditable;
+};
+
 export const composePickableCategoryType = (
   categoryValue: string,
   typeValue: string,
@@ -65,13 +66,19 @@ export const composePickableCategoryType = (
   };
 };
 export const isExistingSchemaForDocument = documentsSchema => {
-  return Object.entries(documentsSchema).length > 0;
+  return documentsSchema && Object.entries(documentsSchema).length > 0;
 };
 
-export function omit(obj, ...props) {
+export const extractCountryCodeFromWorkflow = workflow => {
+  return workflow?.context?.documents?.find(document => {
+    return document?.issuer?.country;
+  })?.issuer?.country;
+};
+
+export const omitPropsFromObject = (obj, ...props) => {
   const result = { ...obj };
   props.forEach(function (prop) {
     delete result[prop];
   });
   return result;
-}
+};
