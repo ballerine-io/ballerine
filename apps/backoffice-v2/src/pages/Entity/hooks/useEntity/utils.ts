@@ -1,5 +1,6 @@
 import { TDropdownOption } from '../../components/EditableDetails/types';
 import {AnyArray} from "../../../../common/types";
+import {TDocument} from "@ballerine/common";
 
 export const convertSnakeCaseToTitleCase = (input: string): string =>
   input
@@ -34,12 +35,12 @@ export const getIsEditable = (isEditable: boolean, title: string) => {
 export const composePickableCategoryType = (
   categoryValue: string,
   typeValue: string,
-  documentsSchema: any,
+  documentsSchema: TDocument[],
 ) => {
   const documentCategoryDropdownOptions: Array<TDropdownOption> = [];
   const documentTypesDropdownOptions: Array<TDropdownOption> = [];
 
-  Object.values(documentsSchema).forEach(document => {
+  documentsSchema.forEach(document => {
     const category = document.category;
     if (category) {
       documentCategoryDropdownOptions.push({
