@@ -1,7 +1,7 @@
 import {
   IParser,
   IParserResult,
-} from '@/common/filters/prisma-client-validation-filter/utils/IParser';
+} from '@/common/filters/prisma-client-validation-filter/utils/parsers/parser/IParser';
 
 export class UnknownArgumentParser extends IParser {
   // Looking for matches in following string format: Unknown arg {{paramName}} in {{failedOnPath}} for type {{EntityType}}.

@@ -1,6 +1,5 @@
 export type IParserResult = Record<string, string>;
 export type IParserResolver = (result: IParserResult, execResult: RegExpExecArray) => IParserResult;
-
 export abstract class IParser {
   constructor(readonly message: string) {}
 

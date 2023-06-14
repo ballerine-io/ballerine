@@ -1,6 +1,6 @@
 import { PrismaValidationExceptionParseResult } from './types';
 import { Prisma } from '@prisma/client';
-import { IParser } from '@/common/filters/prisma-client-validation-filter/utils/IParser';
+import { IParser } from '@/common/filters/prisma-client-validation-filter/utils/parsers/parser/IParser';
 
 /**
  * PrismaValidationExceptionParser
