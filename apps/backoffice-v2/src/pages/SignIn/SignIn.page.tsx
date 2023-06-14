@@ -59,7 +59,7 @@ export const SignIn: FunctionComponent = () => {
   return (
     <section className={`flex h-full flex-col items-center justify-center`}>
       <div className={`mb-16`}>
-        {env.VITE_IMAGE_LOGO_URL ? (
+        {!!env.VITE_IMAGE_LOGO_URL ? (
           <img className={`w-40`} src={env.VITE_IMAGE_LOGO_URL} />
         ) : (
           <BallerineLogo />
