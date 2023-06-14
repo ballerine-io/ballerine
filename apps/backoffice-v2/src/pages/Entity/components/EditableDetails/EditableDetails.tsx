@@ -1,11 +1,11 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm, UseFormWatch } from 'react-hook-form';
 import { Form } from '../../../../common/components/organisms/Form/Form';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Button } from '../../../../common/components/atoms/Button/Button';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
 import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
@@ -19,6 +19,7 @@ import { SelectContent } from '../../../../common/components/atoms/Select/Select
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 import { Select } from '../../../../common/components/atoms/Select/Select';
+import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
@@ -28,9 +29,16 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   title,
   workflowId,
 }) => {
+  const [formData, setFormData] = useState(data);
   const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
     workflowId,
   });
+  const useInitiateCategorySetValue = () => {
+    useEffect(() => {
+      const categoryValue = form.getValues('category');
+      form.setValue('category', categoryValue);
+    }, [form, data, setFormData]);
+  };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
   const isDecisionPositive = (isDecisionComponent: boolean, value) => {
@@ -62,14 +70,15 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const form = useForm({
     defaultValues,
   });
-  const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = data => {
+  const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
     const context = {
       documents: documents?.map(document => {
         if (document?.id !== valueId) return document;
+
         const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
           (acc, curr) => {
-            if (!data?.[curr]) return acc;
-            acc[curr] = data?.[curr];
+            if (!formData?.[curr]) return acc;
+            acc[curr] = formData?.[curr];
 
             return acc;
           },
@@ -78,8 +87,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
         return {
           ...document,
-          type: data.type,
-          category: data.category,
+          type: formData.type,
+          category: formData.category,
           properties: properties,
         };
       }),
@@ -92,6 +101,9 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   };
   const isDecisionComponent = title === 'Decision';
 
+  useWatchDropdownOptions({ form, data, setFormData });
+  useInitiateCategorySetValue();
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={`flex h-full flex-col`}>
@@ -101,7 +113,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
             'grid-cols-3': id === 'entity-details',
           })}
         >
-          {data?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
+          {formData?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
             isDecisionComponent && !value ? null : (
               <FormField
                 key={title}
