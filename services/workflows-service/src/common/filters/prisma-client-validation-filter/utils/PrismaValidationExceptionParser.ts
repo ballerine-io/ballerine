@@ -1,6 +1,7 @@
 import { PrismaValidationExceptionParseResult } from './types';
 import { Prisma } from '@prisma/client';
 import { IParser } from '@/common/filters/prisma-client-validation-filter/utils/parsers/parser/IParser';
+import { removeAnsiEscapeCodes } from './remove-ansi-escape-codes';
 
 /**
  * PrismaValidationExceptionParser
@@ -21,7 +22,7 @@ export class PrismaValidationExceptionParser {
     const { message } = this.exception;
     const parseResult: PrismaValidationExceptionParseResult = this.parsers.reduce(
       (parseResult, Parser) => {
-        const parser = new Parser(message);
+        const parser = new Parser(removeAnsiEscapeCodes(message));
 
         return {
           ...parseResult,
@@ -34,3 +35,4 @@ export class PrismaValidationExceptionParser {
     return parseResult;
   }
 }
+
