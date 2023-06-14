@@ -1,4 +1,5 @@
 import { TDropdownOption } from '../../components/EditableDetails/types';
+import {AnyArray} from "../../../../common/types";
 
 export const convertSnakeCaseToTitleCase = (input: string): string =>
   input
@@ -19,7 +20,7 @@ const composeDataFormCell = (
     },
   };
 };
-const uniqueArrayByKey = (array, key) => {
+const uniqueArrayByKey = (array: AnyArray, key: PropertyKey) => {
   return [...new Map(array.map(item => [item[key], item])).values()] as TDropdownOption[];
 };
 
