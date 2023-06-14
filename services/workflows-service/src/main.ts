@@ -85,18 +85,20 @@ async function main() {
     defaultVersion: '1',
   });
 
-  const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
+  if (env.NODE_ENV === 'local') {
+    const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
 
-  /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
-  Object.values(document.paths).forEach((path: PathItemObject) => {
-    Object.values(path).forEach((method: { security: string[] | unknown }) => {
-      if (Array.isArray(method.security) && method.security.includes('isPublic')) {
-        method.security = [];
-      }
+    /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
+    Object.values(document.paths).forEach((path: PathItemObject) => {
+      Object.values(path).forEach((method: { security: string[] | unknown }) => {
+        if (Array.isArray(method.security) && method.security.includes('isPublic')) {
+          method.security = [];
+        }
+      });
     });
-  });
 
-  SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
+    SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
+  }
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
