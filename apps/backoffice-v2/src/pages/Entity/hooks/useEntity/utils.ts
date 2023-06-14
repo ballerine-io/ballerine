@@ -35,12 +35,12 @@ export const getIsEditable = (isEditable: boolean, title: string) => {
 export const composePickableCategoryType = (
   categoryValue: string,
   typeValue: string,
-  documentsSchema: TDocument[],
+  documentsSchemas: TDocument[],
 ) => {
   const documentCategoryDropdownOptions: Array<TDropdownOption> = [];
   const documentTypesDropdownOptions: Array<TDropdownOption> = [];
 
-  documentsSchema.forEach(document => {
+  documentsSchemas.forEach(document => {
     const category = document.category;
     if (category) {
       documentCategoryDropdownOptions.push({
@@ -67,8 +67,8 @@ export const composePickableCategoryType = (
     ...composeDataFormCell('type', typeDropdownOptions, typeValue),
   };
 };
-export const isExistingSchemaForDocument = documentsSchema => {
-  return documentsSchema && Object.entries(documentsSchema).length > 0;
+export const isExistingSchemaForDocument = documentsSchemas => {
+  return documentsSchemas && documentsSchemas.length > 0;
 };
 
 export const extractCountryCodeFromWorkflow = workflow => {

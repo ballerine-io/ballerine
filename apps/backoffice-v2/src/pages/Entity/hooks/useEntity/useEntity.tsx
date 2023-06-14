@@ -37,7 +37,7 @@ export const useEntity = () => {
   });
   const selectedEntity = workflow.entity;
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-  const documentsSchema = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
+  const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
 
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
@@ -53,8 +53,8 @@ export const useEntity = () => {
             docIndex,
           ) => {
             const additionProperties =
-              isExistingSchemaForDocument(documentsSchema) &&
-              composePickableCategoryType(category, docType, documentsSchema);
+              isExistingSchemaForDocument(documentsSchemas) &&
+              composePickableCategoryType(category, docType, documentsSchemas);
 
             return [
               {
