@@ -1,79 +1,20 @@
 import { useParams } from 'react-router-dom';
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
-import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { components } from './components';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
-import { getDocumentsByCountry, TDocument } from '@ballerine/common';
-
-const convertSnakeCaseToTitleCase = (input: string): string =>
-  input
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-
-const extractCountryCodeFromWorkflow = workflow => {
-  return workflow?.context?.documents?.find(document => {
-    return document?.issuer?.country;
-  })?.issuer?.country;
-};
-
-const uniqueArrayByKey = (array, key) => {
-  return [...new Map(array.map(item => [item[key], item])).values()];
-};
-const composePickableCategoryType = (
-  categoryValue: string,
-  typeValue: string,
-  documentsSchema: TDocument[],
-) => {
-  const documentTypesDropdownOptions: Array<{ value: string; label: string }> = [];
-  const documentCategoryDropdownOptions: Array<{ value: string; label: string }> = [];
-
-  documentsSchema.forEach(document => {
-    const category = document.category;
-    if (category) {
-      documentCategoryDropdownOptions.push({
-        value: category,
-        label: convertSnakeCaseToTitleCase(category),
-      });
-    }
-    const type = document.type;
-    if (type) {
-      documentTypesDropdownOptions.push({
-        value: type,
-        label: convertSnakeCaseToTitleCase(type),
-      });
-    }
-  });
-
-  const typeDropdownOptions = uniqueArrayByKey(documentTypesDropdownOptions, 'value');
-  const categoryDropdownOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
-  return {
-    type: { title: 'type', type: 'string', dropdownOptions: typeDropdownOptions, value: typeValue },
-    category: {
-      title: 'category',
-      type: 'string',
-      dropdownOptions: categoryDropdownOptions,
-      value: categoryValue,
-    },
-  };
-};
-
-const isExistingSchemaForDocument = (documentsSchema: TDocument[]) => {
-  return documentsSchema.length > 0;
-};
-
-function omit(obj, ...props) {
-  const result = { ...obj };
-  props.forEach(function (prop) {
-    delete result[prop];
-  });
-  return result;
-}
+import {
+  composePickableCategoryType,
+  convertSnakeCaseToTitleCase,
+  isExistingSchemaForDocument,
+  extractCountryCodeFromWorkflow,
+  omitPropsFromObject,
+  getIsEditable,
+} from './utils';
+import { getDocumentsByCountry } from '@ballerine/common';
 export const useEntity = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
@@ -94,18 +35,12 @@ export const useEntity = () => {
       results[docIndex][pageIndex] = docsData.shift().data;
     });
   });
-  const filterEntity = useFilterEntity();
   const selectedEntity = workflow.entity;
-
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-  const documentsSchema = issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
+  const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
 
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
-  const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
-    useUpdateWorkflowByIdMutation({
-      workflowId: workflow.id,
-    });
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const contextEntity = workflow.context.entity;
@@ -118,8 +53,8 @@ export const useEntity = () => {
             docIndex,
           ) => {
             const additionProperties =
-              isExistingSchemaForDocument(documentsSchema) &&
-              composePickableCategoryType(category, docType, documentsSchema);
+              isExistingSchemaForDocument(documentsSchemas) &&
+              composePickableCategoryType(category, docType, documentsSchemas);
 
             return [
               {
@@ -178,14 +113,13 @@ export const useEntity = () => {
                           { type, format, pattern, isEditable = true, dropdownOptions, value },
                         ]) => {
                           const fieldValue = value || (properties?.[title] ?? '');
-
                           return {
                             title,
                             value: fieldValue,
                             type,
                             format,
                             pattern,
-                            isEditable: caseState.writeEnabled && isEditable,
+                            isEditable: caseState.writeEnabled && getIsEditable(isEditable, title),
                             dropdownOptions,
                           };
                         },
@@ -234,7 +168,7 @@ export const useEntity = () => {
             value: {
               title: `${toStartCase(contextEntity?.type)} Information`,
               data: [
-                ...Object.entries(omit(contextEntity?.data, 'additionalInfo') ?? {}),
+                ...Object.entries(omitPropsFromObject(contextEntity?.data, 'additionalInfo') ?? {}),
                 ...Object.entries(contextEntity?.data?.additionalInfo ?? {}),
               ]?.map(([title, value]) => ({
                 title,
