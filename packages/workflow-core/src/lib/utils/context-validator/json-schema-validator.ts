@@ -1,23 +1,8 @@
-import { ISchemaValidator, TSchemaValidatorResponse, TValidationLogic } from './types';
-import { AnyRecord } from '@ballerine/common';
+import { BaseSchemaValidator, TSchemaValidatorResponse } from './types';
 import Ajv from 'ajv';
 
-export class JsonSchemaValidator implements ISchemaValidator {
-  validationLogic: TValidationLogic;
-  data: AnyRecord;
-  options: {};
-  errorMessage?: string;
-  constructor(
-    validationLogic: TValidationLogic,
-    data: AnyRecord,
-    options: {},
-    errorMessage?: string,
-  ) {
-    this.validationLogic = validationLogic;
-    this.data = structuredClone(data);
-    this.options = options;
-    this.errorMessage = errorMessage;
-  }
+export class JsonSchemaValidator extends BaseSchemaValidator {
+  name = "json-schema-validator";
 
   validate(): TSchemaValidatorResponse {
     const ajv = new Ajv(this.options);
@@ -29,4 +14,5 @@ export class JsonSchemaValidator implements ISchemaValidator {
 
     return Promise.resolve({ isValid: true });
   }
+
 }

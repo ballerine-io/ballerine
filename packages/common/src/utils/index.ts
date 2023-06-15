@@ -9,5 +9,4 @@ export { isObject } from './is-object';
 export { noNullish } from './no-nullish';
 export { sleep } from './sleep';
 export { uniqueArray } from './unique-array';
-export { AnyRecord } from './any-record';
 export { IErrorWithMessage } from './is-error-with-message';

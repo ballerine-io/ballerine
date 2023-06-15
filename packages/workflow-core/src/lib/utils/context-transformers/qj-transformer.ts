@@ -1,16 +1,8 @@
 import { run } from 'node-jq';
-import { IContextTransformer, TContext, TTransformationLogic } from './types';
+import { BaseContextTransformer, TContext } from './types';
 
-export class JQTransformer implements IContextTransformer {
-  context: TContext;
-  transformationLogic;
-  options;
-
-  constructor(context: TContext, transformationLogic: TTransformationLogic, options: {}) {
-    this.context = context;
-    this.transformationLogic = transformationLogic;
-    this.options = options;
-  }
+export class JQTransformer extends BaseContextTransformer {
+  name = 'jq-transformer';
 
   transform(): any {
     return run(this.transformationLogic, this.context, this.options);

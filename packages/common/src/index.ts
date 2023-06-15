@@ -10,9 +10,12 @@ export {
   noNullish,
   sleep,
   uniqueArray,
-  AnyRecord,
   IErrorWithMessage,
 } from './utils';
+
+export {
+  type AnyRecord
+} from './types';
 
 export {
   type DefaultContextSchema,
