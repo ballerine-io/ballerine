@@ -5,6 +5,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   ApprovalState,
+  Business,
+  EndUser,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -623,14 +625,36 @@ export class WorkflowService {
   async resolveIntent(
     intent: string,
     entityId: string,
-    tempEntityType: TEntityType,
+    entityType: TEntityType,
   ): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies[intent as keyof typeof policies];
+    const entity = await (async () => {
+      if (entityType === 'business') return await this.businessRepository.findById(entityId);
+      if (entityType === 'endUser') return await this.endUserRepository.findById(entityId);
+
+      throw new BadRequestException(`Invalid entity type ${entityType}`);
+    })();
+    const isBusinessEntity = (entity: EndUser | Business): entity is Business =>
+      entityType === 'business';
 
     // TODO: implement logic for multiple workflows
     const { workflowDefinitionId } = workflowDefinitionResolver()[0];
     const context: DefaultContextSchema = {
-      entity: { ballerineEntityId: entityId, type: tempEntityType },
+      entity: {
+        ballerineEntityId: entityId,
+        type: entityType,
+        data: {
+          ...(isBusinessEntity(entity)
+            ? {
+                companyName: entity?.companyName,
+                registrationNumber: entity?.registrationNumber,
+              }
+            : {
+                firstName: entity?.firstName,
+                lastName: entity?.lastName,
+              }),
+        },
+      },
       documents: [],
     };
     return this.createOrUpdateWorkflowRuntime({ workflowDefinitionId, context });
