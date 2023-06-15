@@ -163,6 +163,7 @@ export const makeDocument = ({
   payload: {
     [key: string]: {
       id: string;
+      fileType: string;
     };
   };
 }) => {
@@ -177,7 +178,7 @@ export const makeDocument = ({
     pages: [
       {
         ballerineFileId: payload?.[id]?.id,
-        type: 'png',
+        type: payload?.[id]?.fileType === 'application/pdf' ? 'pdf' : 'png',
         provider: 'http',
         uri: '',
       },
