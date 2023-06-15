@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker';
-import { Business, EndUser, PrismaClient } from '@prisma/client';
+import { Business, EndUser, Prisma, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -10,7 +10,7 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import defaultContextSchema from '../src/workflow/schemas/default-context-schema.json';
+import defaultContextSchema from '@ballerine/common/src/schemas/documents/default-context-schema.json';
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
@@ -135,13 +135,14 @@ async function seed(bcryptSalt: Salt) {
           numberOfEmployees: faker.datatype.number(1000),
           businessPurpose: faker.company.catchPhraseDescriptor(),
           approvalState: 'NEW',
+          additionalInfo: { customParam: 'customValue' },
         } satisfies Partial<Business>,
-        additionalDetails: {},
         ballerineEntityId: businessId,
         id: correlationId,
       },
       documents: [
         {
+          id: faker.datatype.uuid(),
           category: 'proof_of_employment',
           type: 'payslip',
           issuer: {
@@ -149,7 +150,7 @@ async function seed(bcryptSalt: Salt) {
             name: 'Government',
             country: 'GH',
             city: faker.address.city(),
-            additionalDetails: {},
+            additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
 
@@ -188,6 +189,7 @@ async function seed(bcryptSalt: Salt) {
           },
         },
         {
+          id: faker.datatype.uuid(),
           category: 'proof_of_address',
           type: 'mortgage_statement',
           issuer: {
@@ -195,7 +197,7 @@ async function seed(bcryptSalt: Salt) {
             name: 'Government',
             country: 'GH',
             city: faker.address.city(),
-            additionalDetails: {},
+            additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
 
@@ -252,13 +254,14 @@ async function seed(bcryptSalt: Salt) {
           stateReason: 'Poor quality of documents',
           // @ts-expect-error - end user type expects a date and not a string.
           dateOfBirth: faker.date.past(20).toISOString(),
+          additionalInfo: { customParam: 'customValue' },
         } satisfies Partial<EndUser>,
-        additionalDetails: {},
         ballerineEntityId: endUserId,
         id: correlationId,
       },
       documents: [
         {
+          id: faker.datatype.uuid(),
           category: 'ID',
           type: 'photo',
           issuer: {
@@ -266,7 +269,7 @@ async function seed(bcryptSalt: Salt) {
             name: 'Government',
             country: faker.address.country(),
             city: faker.address.city(),
-            additionalDetails: {},
+            additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
 
@@ -305,6 +308,7 @@ async function seed(bcryptSalt: Salt) {
           },
         },
         {
+          id: faker.datatype.uuid(),
           category: 'selfie',
           type: 'certificate',
           issuer: {
@@ -312,7 +316,7 @@ async function seed(bcryptSalt: Salt) {
             name: 'Government',
             country: faker.address.country(),
             city: faker.address.city(),
-            additionalDetails: {},
+            additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
 
@@ -340,6 +344,20 @@ async function seed(bcryptSalt: Salt) {
     };
 
     return mockData;
+  }
+
+  function createFilter(
+    name: string,
+    entity: 'individuals' | 'businesses',
+    query: Prisma.WorkflowRuntimeDataFindManyArgs,
+  ) {
+    return client.filter.create({
+      data: {
+        entity,
+        name,
+        query: query as any,
+      },
+    });
   }
 
   // Risk score improvement
@@ -596,11 +614,22 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  await client.filter.create({
-    data: {
-      entity: 'individuals',
-      name: 'Onboarding - Individuals',
-      query: {
+  await createFilter('Onboarding - Individuals', 'individuals', {
+    select: {
+      id: true,
+      status: true,
+      assigneeId: true,
+      context: true,
+      createdAt: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+        },
+      },
+      endUser: {
         select: {
           id: true,
           correlationId: true,
@@ -616,41 +645,38 @@ async function seed(bcryptSalt: Salt) {
           additionalInfo: true,
           createdAt: true,
           updatedAt: true,
-          workflowRuntimeData: {
-            select: {
-              id: true,
-              status: true,
-              assigneeId: true,
-              createdAt: true,
-              workflowDefinition: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
         },
-        where: {
-          workflowRuntimeData: {
-            some: {
-              workflowDefinition: {
-                is: {
-                  id: 'manualMachineId',
-                },
-              },
-            },
-          },
+      },
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
         },
       },
     },
+    where: {
+      workflowDefinitionId: manualMachineId,
+      endUserId: { not: null },
+    },
   });
 
-  await client.filter.create({
-    data: {
-      entity: 'individuals',
-      name: 'Risk Score Improvement - Individuals',
-      query: {
+  await createFilter('Risk Score Improvement - Individuals', 'individuals', {
+    select: {
+      id: true,
+      status: true,
+      assigneeId: true,
+      createdAt: true,
+      context: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+        },
+      },
+      endUser: {
         select: {
           id: true,
           correlationId: true,
@@ -666,41 +692,38 @@ async function seed(bcryptSalt: Salt) {
           additionalInfo: true,
           createdAt: true,
           updatedAt: true,
-          workflowRuntimeData: {
-            select: {
-              id: true,
-              status: true,
-              assigneeId: true,
-              createdAt: true,
-              workflowDefinition: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
         },
-        where: {
-          workflowRuntimeData: {
-            some: {
-              workflowDefinition: {
-                is: {
-                  id: 'risk-score-improvement-dev',
-                },
-              },
-            },
-          },
+      },
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
         },
       },
     },
+    where: {
+      workflowDefinitionId: manualMachineId,
+      endUserId: { not: null },
+    },
   });
 
-  await client.filter.create({
-    data: {
-      entity: 'businesses',
-      name: 'Risk Score Improvement - Businesses',
-      query: {
+  await createFilter('Risk Score Improvement - Businesses', 'businesses', {
+    select: {
+      id: true,
+      status: true,
+      assigneeId: true,
+      createdAt: true,
+      context: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+        },
+      },
+      business: {
         select: {
           id: true,
           companyName: true,
@@ -720,43 +743,40 @@ async function seed(bcryptSalt: Salt) {
           businessPurpose: true,
           documents: true,
           approvalState: true,
-          workflowRuntimeData: {
-            select: {
-              id: true,
-              status: true,
-              assigneeId: true,
-              createdAt: true,
-              workflowDefinition: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
           createdAt: true,
           updatedAt: true,
         },
-        where: {
-          workflowRuntimeData: {
-            some: {
-              workflowDefinition: {
-                is: {
-                  id: riskScoreMachineKybId,
-                },
-              },
-            },
-          },
+      },
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
         },
       },
     },
+    where: {
+      workflowDefinitionId: riskScoreMachineKybId,
+      businessId: { not: null },
+    },
   });
 
-  await client.filter.create({
-    data: {
-      entity: 'businesses',
-      name: 'KYB',
-      query: {
+  await createFilter('KYB', 'businesses', {
+    select: {
+      id: true,
+      status: true,
+      assigneeId: true,
+      createdAt: true,
+      context: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+        },
+      },
+      business: {
         select: {
           id: true,
           companyName: true,
@@ -776,35 +796,21 @@ async function seed(bcryptSalt: Salt) {
           businessPurpose: true,
           documents: true,
           approvalState: true,
-          workflowRuntimeData: {
-            select: {
-              id: true,
-              status: true,
-              assigneeId: true,
-              createdAt: true,
-              workflowDefinition: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
           createdAt: true,
           updatedAt: true,
         },
-        where: {
-          workflowRuntimeData: {
-            some: {
-              workflowDefinition: {
-                is: {
-                  id: manualMachineId,
-                },
-              },
-            },
-          },
+      },
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
         },
       },
+    },
+    where: {
+      workflowDefinitionId: manualMachineId,
+      businessId: { not: null },
     },
   });
 

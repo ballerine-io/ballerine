@@ -11,11 +11,11 @@ import {
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { RunnableWorkflowData } from './types';
+import { RunnableWorkflowData, TWorkflowWithRelations } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
@@ -27,7 +27,6 @@ import { BusinessRepository } from '@/business/business.repository';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import addKeywords from 'ajv-keywords';
-import { DefaultContextSchema } from './schemas/context';
 import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
 import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
@@ -37,13 +36,20 @@ import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
 import * as process from 'process';
 import * as crypto from 'crypto';
-import { TDefaultSchemaDocumentPage } from '@/workflow/schemas/default-context-page-schema';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
-import { getDocumentId } from '@/documents/utils';
+import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
+import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
+import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
+import {
+  DefaultContextSchema,
+  getDocumentId,
+  getDocumentsByCountry,
+  TDefaultSchemaDocumentPage,
+} from '@ballerine/common';
 
 type TEntityId = string;
 
@@ -122,6 +128,64 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.findById(id, args);
   }
 
+  async getWorkflowByIdWithRelations(
+    id: string,
+    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+  ) {
+    const workflow = (await this.workflowRuntimeDataRepository.findById(
+      id,
+      args,
+    )) as TWorkflowWithRelations;
+
+    return this.formatWorkflow(workflow);
+  }
+
+  private formatWorkflow(workflow: TWorkflowWithRelations) {
+    const isIndividual = 'endUser' in workflow;
+
+    const service = createWorkflow({
+      definition: workflow.workflowDefinition as any,
+      definitionType: workflow.workflowDefinition.definitionType,
+      workflowContext: {
+        machineContext: workflow.context,
+        state: workflow.state,
+      },
+    });
+
+    return {
+      ...workflow,
+      context: {
+        ...workflow.context,
+        documents: workflow.context?.documents?.map(
+          (document: DefaultContextSchema['documents'][number]) => {
+            const documentsByCountry = getDocumentsByCountry(document?.issuer?.country);
+            const documentByCountry = documentsByCountry?.find(
+              doc => getDocumentId(doc, false) === getDocumentId(document, false),
+            );
+
+            return {
+              ...document,
+              propertiesSchema: documentByCountry?.propertiesSchema ?? {},
+            };
+          },
+        ),
+      },
+      entity: {
+        id: isIndividual ? workflow.endUser.id : workflow.business.id,
+        name: isIndividual
+          ? `${String(workflow.endUser.firstName)} ${String(workflow.endUser.lastName)}`
+          : workflow.business.companyName,
+        avatarUrl: isIndividual ? workflow.endUser.avatarUrl : null,
+        approvalState: isIndividual
+          ? workflow.endUser.approvalState
+          : workflow.business.approvalState,
+      },
+      endUser: undefined,
+      business: undefined,
+      nextEvents: service.getSnapshot().nextEvents,
+    };
+  }
+
   async getWorkflowRuntimeDataByCorrelationId(
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
@@ -147,6 +211,95 @@ export class WorkflowService {
         status: true,
         workflowDefinitionId: true,
       },
+    });
+  }
+
+  async listWorkflowRuntimeDataWithRelations({
+    args,
+    entityType,
+    orderBy,
+    page,
+    filters,
+  }: {
+    args: Parameters<WorkflowRuntimeDataRepository['findMany']>[0];
+    entityType: 'individuals' | 'businesses';
+    orderBy: Parameters<typeof toPrismaOrderBy>[0];
+    page: {
+      number: number;
+      size: number;
+    };
+    filters?: {
+      assigneeId?: (string | null)[];
+      status?: WorkflowRuntimeDataStatus[];
+    };
+  }) {
+    const query = merge(
+      args,
+      {
+        orderBy: toPrismaOrderBy(orderBy, entityType),
+        where: filters ? toPrismaWhere(filters) : {},
+        skip: (page.number - 1) * page.size,
+        take: page.size,
+      },
+      {
+        where:
+          entityType === 'individuals'
+            ? {
+                endUserId: { not: null },
+              }
+            : {
+                businessId: { not: null },
+              },
+      },
+    );
+
+    const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count({
+      where: query.where,
+    });
+
+    if (page.number > 1 && totalWorkflowsCount < (page.number - 1) * page.size + 1) {
+      throw new NotFoundException('Page not found');
+    }
+
+    const workflows = await this.workflowRuntimeDataRepository.findMany(query);
+
+    return {
+      data: this.formatWorkflowsRuntimeData(workflows as unknown as TWorkflowWithRelations[]),
+      meta: {
+        totalItems: totalWorkflowsCount,
+        totalPages: Math.max(Math.ceil(totalWorkflowsCount / page.size), 1),
+      },
+    };
+  }
+
+  private formatWorkflowsRuntimeData(workflows: TWorkflowWithRelations[]) {
+    return workflows.map(workflow => {
+      const isIndividual = 'endUser' in workflow;
+
+      console.log('workflow', workflow);
+
+      return {
+        id: workflow?.id,
+        status: workflow?.status,
+        createdAt: workflow?.createdAt,
+        entity: {
+          id: isIndividual ? workflow?.endUser?.id : workflow?.business?.id,
+          name: isIndividual
+            ? `${String(workflow?.endUser?.firstName)} ${String(workflow?.endUser?.lastName)}`
+            : workflow?.business?.companyName,
+          avatarUrl: isIndividual ? workflow?.endUser?.avatarUrl : null,
+          approvalState: isIndividual
+            ? workflow?.endUser?.approvalState
+            : workflow?.business?.approvalState,
+        },
+        assignee: workflow?.assigneeId
+          ? {
+              id: workflow?.assigneeId,
+              firstName: workflow?.assignee?.firstName,
+              lastName: workflow?.assignee?.lastName,
+            }
+          : null,
+      };
     });
   }
 
@@ -199,20 +352,25 @@ export class WorkflowService {
     let contextHasChanged, mergedContext;
     if (data.context) {
       contextHasChanged = !isEqual(data.context, runtimeData.context);
-      mergedContext = merge({}, runtimeData.context, data.context);
+      mergedContext = merge({}, runtimeData.context, {
+        ...data.context,
+        documents: assignIdToDocuments(data.context?.documents),
+      });
+
       const context = {
         ...mergedContext,
         // @ts-ignore
         documents: mergedContext?.documents?.map(
           // @ts-ignore
-          ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
+          // Validating the context should be done without the propertiesSchema
+          ({ propertiesSchema: _propertiesSchema, ...document }) => document,
         ),
       };
 
       this.__validateWorkflowDefinitionContext(workflowDef, context);
 
       // @ts-ignore
-      data?.context?.documents?.forEach(({ propertiesSchema, id: _id, ...document }) => {
+      data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
         if (!Object.keys(propertiesSchema ?? {})?.length) return;
 
         const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {});
@@ -283,6 +441,7 @@ export class WorkflowService {
         },
       );
 
+      // Updates the collect documents workflow with the manual review workflow's decision.
       await this.workflowRuntimeDataRepository.updateById(parentMachine?.id, {
         data: {
           status: 'active',
@@ -290,7 +449,7 @@ export class WorkflowService {
           context: {
             ...parentMachine?.context,
             documents: parentMachine?.context?.documents?.map((document: any) => {
-              if (document.id !== documentToRevise.id) document;
+              if (document.id !== documentToRevise.id) return document;
 
               return {
                 ...document,
@@ -495,6 +654,7 @@ export class WorkflowService {
     } catch (error) {
       throw new BadRequestException(error);
     }
+    context.documents = assignIdToDocuments(context.documents);
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(context);
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
@@ -583,7 +743,6 @@ export class WorkflowService {
 
     return { ...context, documents: documentsWithPersistedImages };
   }
-
   private async __persistDocumentPagesFiles(
     document: DefaultContextSchema['documents'][number],
     entityId: string,
@@ -604,8 +763,7 @@ export class WorkflowService {
     entityId: string,
     documentPage: TDefaultSchemaDocumentPage,
   ) {
-    const documentContext = getDocumentId(document).toLowerCase();
-    const remoteFileName = `${documentContext}_${crypto.randomUUID()}.${documentPage.type}`;
+    const remoteFileName = `${document.id!}_${crypto.randomUUID()}.${documentPage.type}`;
 
     const { fromServiceProvider, fromRemoteFileConfig } =
       this.__fetchFromServiceProviders(documentPage);
@@ -725,9 +883,9 @@ export class WorkflowService {
 
     const service = createWorkflow({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      definition: workflow.definition as any,
+      definition: workflow.definition,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      definitionType: workflow.definitionType as any,
+      definitionType: workflow.definitionType,
       workflowContext: {
         machineContext: runtimeData.context,
         state: runtimeData.state,
@@ -749,6 +907,7 @@ export class WorkflowService {
       to: currentState,
     });
 
+    // TODO: Update to work with changes related to revision
     if (type === 'resubmit' && document) {
       switch (resubmissionReason) {
         case ResubmissionReason.BLURRY_IMAGE:

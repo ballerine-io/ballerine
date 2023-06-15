@@ -2,6 +2,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma, WorkflowRuntimeData, WorkflowRuntimeDataStatus } from '@prisma/client';
 import { TEntityType } from '@/workflow/types';
+import { merge } from 'lodash';
 
 @Injectable()
 export class WorkflowRuntimeDataRepository {
@@ -29,10 +30,7 @@ export class WorkflowRuntimeDataRepository {
     id: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataFindUniqueOrThrowArgs, 'where'>>,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.findUniqueOrThrow({
-      where: { id },
-      ...args,
-    });
+    return await this.prisma.workflowRuntimeData.findFirstOrThrow(merge(args, { where: { id } }));
   }
 
   async updateById<T extends Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>(
@@ -98,5 +96,11 @@ export class WorkflowRuntimeDataRepository {
         },
       })
     )?.context;
+  }
+
+  async count<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
+    args?: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindManyArgs>,
+  ): Promise<number> {
+    return await this.prisma.workflowRuntimeData.count(args);
   }
 }

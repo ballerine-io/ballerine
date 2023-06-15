@@ -1,3 +1,4 @@
+import { getDocumentId } from '@ballerine/common';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { WorkflowBrowserSDK, WorkflowOptionsBrowser } from '@ballerine/workflow-browser-sdk';
@@ -154,13 +155,6 @@ export const camelCaseToTitle = (str: string) =>
 
 export const getSnapshotContext = (workflowService: InstanceType<typeof WorkflowBrowserSDK>) =>
   workflowService?.getSnapshot()?.context;
-export const getDocumentId = (document: {
-  category: string;
-  type: string;
-  issuer: {
-    country: string;
-  };
-}) => `${document.category}-${document.type}-${document.issuer.country}`.toLowerCase();
 export const makeDocument = ({
   id,
   payload,
@@ -206,16 +200,16 @@ export const upsertDocument = ({
   documents: Array<any>;
   document: any;
 }) => {
-  const documentId = getDocumentId(document);
-  const documentExists =
-    documents?.length && documents?.some(document => getDocumentId(document) === documentId);
+  const documentExists = documents?.some(
+    doc => getDocumentId(doc, false) === getDocumentId(document, false),
+  );
 
   if (!Array.isArray(documents) || !documents?.length) return [document];
 
   return !documentExists
     ? [...documents, document]
     : documents?.map(doc => {
-        if (getDocumentId(doc) !== documentId) return doc;
+        if (getDocumentId(doc, false) !== getDocumentId(document, false)) return doc;
 
         return document;
       });

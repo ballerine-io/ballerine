@@ -36,5 +36,8 @@ export default defineConfig(configEnv => {
       environment: 'jsdom',
       setupFiles: ['./src/tests-setup.ts'],
     },
+    build: {
+      sourcemap: true,
+    },
   };
 });

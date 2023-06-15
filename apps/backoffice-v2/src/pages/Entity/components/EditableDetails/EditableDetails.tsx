@@ -14,6 +14,11 @@ import { FormItem } from '../../../../common/components/organisms/Form/Form.Item
 import { FormLabel } from '../../../../common/components/organisms/Form/Form.Label';
 import { FormControl } from '../../../../common/components/organisms/Form/Form.Control';
 import { FormMessage } from '../../../../common/components/organisms/Form/Form.Message';
+import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
+import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
+import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
+import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
+import { Select } from '../../../../common/components/atoms/Select/Select';
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
@@ -61,18 +66,21 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     const context = {
       documents: documents?.map(document => {
         if (document?.id !== valueId) return document;
+        const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
+          (acc, curr) => {
+            if (!data?.[curr]) return acc;
+            acc[curr] = data?.[curr];
+
+            return acc;
+          },
+          {},
+        );
 
         return {
           ...document,
-          properties: Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
-            (acc, curr) => {
-              if (!data?.[curr]) return acc;
-              acc[curr] = data?.[curr];
-
-              return acc;
-            },
-            {},
-          ),
+          type: data.type,
+          category: data.category,
+          properties: properties,
         };
       }),
     };
@@ -93,7 +101,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
             'grid-cols-3': id === 'entity-details',
           })}
         >
-          {data?.map(({ title, isEditable, type, format, pattern, value }) =>
+          {data?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
             isDecisionComponent && !value ? null : (
               <FormField
                 key={title}
@@ -103,26 +111,47 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                   <FormItem>
                     <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
                     <FormControl>
-                      <Input
-                        type={!format ? (type === 'string' ? 'text' : type) : format}
-                        disabled={!isEditable}
-                        className={ctw(
-                          `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
-                          {
-                            'font-bold text-success': isDecisionPositive(
-                              isDecisionComponent,
-                              value,
-                            ),
-                            'font-bold text-destructive': isDecisionNegative(
-                              isDecisionComponent,
-                              value,
-                            ),
-                          },
-                        )}
-                        pattern={pattern}
-                        autoComplete={'off'}
-                        {...field}
-                      />
+                      {dropdownOptions ? (
+                        <Select
+                          disabled={!isEditable}
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {dropdownOptions?.map(({ label, value }) => {
+                              return (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          type={!format ? (type === 'string' ? 'text' : type) : format}
+                          disabled={!isEditable}
+                          className={ctw(
+                            `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
+                            {
+                              'font-bold text-success': isDecisionPositive(
+                                isDecisionComponent,
+                                value,
+                              ),
+                              'font-bold text-destructive': isDecisionNegative(
+                                isDecisionComponent,
+                                value,
+                              ),
+                            },
+                          )}
+                          pattern={pattern}
+                          autoComplete={'off'}
+                          {...field}
+                        />
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import * as Sentry from '@sentry/node';
 import { AxiosInstance, isAxiosError } from 'axios';
 import { WorkflowConfig } from '@/workflow/schemas/zod-schemas';
+import { getDocumentId } from '@ballerine/common';
 
 @Injectable()
 export class DocumentChangedWebhookCaller {
@@ -26,8 +27,13 @@ export class DocumentChangedWebhookCaller {
   ) {
     this.#__axios = this.httpService.axiosRef;
 
-    workflowEventEmitter.on('workflow.context.changed', data => {
-      void this.handleWorkflowEvent(data);
+    workflowEventEmitter.on('workflow.context.changed', async data => {
+      try {
+        await this.handleWorkflowEvent(data);
+      } catch (error) {
+        console.error(error);
+        alertWebhookFailure(error);
+      }
     });
   }
 
@@ -35,20 +41,14 @@ export class DocumentChangedWebhookCaller {
     const oldDocuments = data.runtimeData.context['documents'] || [];
     const newDocuments = data.context?.['documents'] || [];
 
-    const documentIdentifier = (doc: any) => {
-      return `${doc.category as string}$${doc.type as string}$${
-        doc.issuer?.country as string
-      }`.toLowerCase();
-    };
-
     const newDocumentsByIdentifier = newDocuments.reduce((accumulator: any, doc: any) => {
-      const id = documentIdentifier(doc);
+      const id = getDocumentId(doc);
       accumulator[id] = doc;
       return accumulator;
     }, {});
 
     const anyDocumentStatusChanged = oldDocuments.some((oldDocument: any) => {
-      const id = documentIdentifier(oldDocument);
+      const id = getDocumentId(oldDocument);
       return (
         (!oldDocument.decision && newDocumentsByIdentifier[id].decision) ||
         (oldDocument.decision &&
