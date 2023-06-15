@@ -9,12 +9,13 @@ import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/us
 import {
   composePickableCategoryType,
   convertSnakeCaseToTitleCase,
-  isExistingSchemaForDocument,
   extractCountryCodeFromWorkflow,
-  omitPropsFromObject,
   getIsEditable,
+  isExistingSchemaForDocument,
+  omitPropsFromObject,
 } from './utils';
 import { getDocumentsByCountry } from '@ballerine/common';
+
 export const useEntity = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
@@ -161,24 +162,28 @@ export const useEntity = () => {
             ];
           },
         ) ?? []),
-        [
-          {
-            id: 'entity-details',
-            type: 'details',
-            value: {
-              title: `${toStartCase(contextEntity?.type)} Information`,
-              data: [
-                ...Object.entries(omitPropsFromObject(contextEntity?.data, 'additionalInfo') ?? {}),
-                ...Object.entries(contextEntity?.data?.additionalInfo ?? {}),
-              ]?.map(([title, value]) => ({
-                title,
-                value,
-                type: 'string',
-                isEditable: false,
-              })),
-            },
-          },
-        ],
+        Object.keys(contextEntity?.data ?? {}).length === 0
+          ? []
+          : [
+              {
+                id: 'entity-details',
+                type: 'details',
+                value: {
+                  title: `${toStartCase(contextEntity?.type)} Information`,
+                  data: [
+                    ...Object.entries(
+                      omitPropsFromObject(contextEntity?.data, 'additionalInfo') ?? {},
+                    ),
+                    ...Object.entries(contextEntity?.data?.additionalInfo ?? {}),
+                  ]?.map(([title, value]) => ({
+                    title,
+                    value,
+                    type: 'string',
+                    isEditable: false,
+                  })),
+                },
+              },
+            ],
       ]
     : [];
 
