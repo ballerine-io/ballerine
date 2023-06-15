@@ -6,15 +6,27 @@ export class JsonSchemaValidator implements ISchemaValidator {
   validationLogic: TValidationLogic;
   data: AnyRecord;
   options: {};
-  constructor(validationLogic: TValidationLogic, data: AnyRecord, options: {}) {
-    this.validationLogic = structuredClone(validationLogic);
-    this.data = data;
+  errorMessage?: string;
+  constructor(
+    validationLogic: TValidationLogic,
+    data: AnyRecord,
+    options: {},
+    errorMessage?: string,
+  ) {
+    this.validationLogic = validationLogic;
+    this.data = structuredClone(data);
     this.options = options;
+    this.errorMessage = errorMessage;
   }
 
   validate(): TSchemaValidatorResponse {
     const ajv = new Ajv(this.options);
     const validator = ajv.compile(this.validationLogic);
-    validator(this.data);
+
+    if (!validator(this.data)) {
+      return Promise.resolve({ isValid: false, errorMessage: this.errorMessage || 'Bad Request' });
+    }
+
+    Promise.resolve({ isValid: true });
   }
 }
