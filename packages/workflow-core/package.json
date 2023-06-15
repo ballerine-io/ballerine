@@ -30,7 +30,6 @@
   "dependencies": {
     "@ballerine/common": "0.5.2",
     "ajv": "^8.12.0",
-    "install": "^0.13.0",
     "json-logic-js": "^2.0.2",
     "node-jq": "^2.3.5",
     "xstate": "^4.35.2"
