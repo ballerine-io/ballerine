@@ -32,7 +32,6 @@
       type: 'USER_PREV_STEP',
       payload: {
         ...context,
-        ...payload,
         documents: updatedDocuments,
         form: {
           [DocumentId.ID_CARD]: {

@@ -1,6 +1,5 @@
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
-import { Logger, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import * as errors from '../errors';
 import { EndUserWhereUniqueInput } from './dtos/end-user-where-unique-input';
@@ -11,25 +10,14 @@ import { Request } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { EndUserService } from './end-user.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
-import { EndUserFilterModel } from '@/end-user/dtos/end-user-filter.model';
-import { FilterService } from '@/filter/filter.service';
 import { InputJsonValue } from '@/types';
-import { EndUserFilterCreateDto } from '@/end-user/dtos/end-user-filter-create';
-import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
-import { EndUserFilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
 import { JsonValue } from 'type-fest';
-import { EndUserFindUniqueArgs } from '@/end-user/dtos/end-user-find-unique-args';
-import { TEndUserFilter } from '@/end-user/types';
-import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 
 @swagger.ApiTags('internal/end-users')
 @common.Controller('internal/end-users')
 export class EndUserControllerInternal {
-  private readonly logger = new Logger(EndUserControllerInternal.name);
-
   constructor(
     protected readonly service: EndUserService,
-    protected readonly filterService: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -39,13 +27,8 @@ export class EndUserControllerInternal {
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EndUserFindManyArgs)
   async list(@common.Req() request: Request): Promise<EndUserModel[]> {
-    const { filterId, ...args } = plainToClass(EndUserFindManyArgs, request.query);
-    let query: JsonValue = {};
-
-    if (filterId) {
-      const filter = await this.filterService.getById(filterId);
-      query = filter.query;
-    }
+    const args = plainToClass(EndUserFindManyArgs, request.query);
+    const query: JsonValue = {};
 
     return this.service.list({
       ...args,
@@ -57,29 +40,9 @@ export class EndUserControllerInternal {
   @swagger.ApiOkResponse({ type: EndUserModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  @ApiNestedQuery(EndUserFindUniqueArgs)
-  async getById(
-    @common.Param() params: EndUserWhereUniqueInput,
-    @common.Req() request: Request,
-  ): Promise<EndUserModel | null> {
+  async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
     try {
-      const { filterId, ...args } = plainToClass(EndUserFindUniqueArgs, request.query);
-      let query: TEndUserFilter['query'] = {};
-
-      if (filterId) {
-        const filter = await this.filterService.getById(filterId);
-        // findUnique does not support `where`.
-        const { where: _where, ...restQuery } = filter?.query as TEndUserFilter['query'];
-
-        query = restQuery;
-      }
-
-      const endUser = await this.service.getById(params?.id, {
-        ...args,
-        ...(query as InputJsonValue),
-      });
-
-      return endUser;
+      return await this.service.getById(params?.id);
     } catch (err) {
       if (isRecordNotFoundError(err)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -87,22 +50,5 @@ export class EndUserControllerInternal {
 
       throw err;
     }
-  }
-
-  @common.Post('filters')
-  @UseKeyAuthGuard()
-  @swagger.ApiCreatedResponse({ type: EndUserFilterModel })
-  @swagger.ApiForbiddenResponse()
-  @UsePipes(new ZodValidationPipe(EndUserFilterCreateSchema))
-  async createFilter(@common.Body() data: EndUserFilterCreateDto): Promise<EndUserFilterModel> {
-    const filter = await this.filterService.create({
-      data: {
-        ...data,
-        entity: 'individuals',
-        query: data?.query as InputJsonValue,
-      },
-    });
-
-    return filter as EndUserFilterModel;
   }
 }

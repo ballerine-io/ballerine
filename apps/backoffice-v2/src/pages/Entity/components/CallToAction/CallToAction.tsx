@@ -19,7 +19,6 @@ import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dia
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useParams } from 'react-router-dom';
 import { ICallToActionProps } from './interfaces';
-import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../Case/hooks/useCaseState/useCaseState';
 import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
@@ -28,25 +27,28 @@ import { SelectItem } from '../../../../common/components/atoms/Select/Select.It
 import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
+import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
+import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 
 export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
   const { entityId } = useParams();
-  const { data: entity } = useEntityWithWorkflowQuery(entityId);
   const [revisionReason, setRevisionReason] = useState('');
+  const filterId = useFilterId();
+  const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
   const onRevisionReasonChange = useCallback(
     (value: string) => setRevisionReason(value),
     [setRevisionReason],
   );
   const { data: session } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(session?.user, entity?.workflow);
+  const caseState = useCaseState(session?.user, workflow);
   const revisionReasons =
-    entity?.workflow?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+    workflow.workflowDefinition.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum;
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
     useUpdateWorkflowByIdMutation({
-      workflowId: entity?.workflow?.runtimeDataId,
+      workflowId: workflow.id,
     });
   const onMutateUpdateWorkflowById =
     (
@@ -77,7 +79,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
       )[payload.approvalStatus];
 
       const context = {
-        documents: entity?.workflow?.workflowContext?.machineContext?.documents?.map(document => {
+        documents: workflow.context.documents?.map(document => {
           if (document?.id !== payload?.id) return document;
 
           switch (payload?.approvalStatus) {

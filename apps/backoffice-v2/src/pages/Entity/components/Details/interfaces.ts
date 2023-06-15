@@ -10,6 +10,7 @@ export interface IDetailsProps {
       format?: string;
       pattern?: string;
       value: unknown;
+      dropdownOptions?: Array<{ label: string; value: string }>;
     }>;
   };
 }

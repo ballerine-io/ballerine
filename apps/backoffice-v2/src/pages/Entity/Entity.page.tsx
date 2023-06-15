@@ -5,17 +5,17 @@ import { Card } from '../../common/components/atoms/Card/Card';
 import { CardContent } from '../../common/components/atoms/Card/Card.Content';
 
 export const Entity = () => {
-  const { selectedEntity, tasks, components, isLoading } = useEntity();
+  const { workflow, selectedEntity, tasks, components, isLoading } = useEntity();
 
   // Selected entity
   return (
     <Case>
       {/* Reject and approve header */}
       <Case.Actions
-        id={selectedEntity?.id}
-        fullName={selectedEntity?.fullName}
-        avatarUrl={selectedEntity?.avatarUrl}
-        showResolutionButtons={selectedEntity.workflow?.config?.workflowLevelResolution}
+        id={workflow.id}
+        fullName={selectedEntity.name}
+        avatarUrl={selectedEntity.avatarUrl}
+        showResolutionButtons={workflow.workflowDefinition.config?.workflowLevelResolution}
       />
       <Case.Content key={selectedEntity?.id}>
         {Array.isArray(tasks) &&
