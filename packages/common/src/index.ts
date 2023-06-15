@@ -10,6 +10,8 @@ export {
   noNullish,
   sleep,
   uniqueArray,
+  AnyRecord,
+  IErrorWithMessage,
 } from './utils';
 
 export {
