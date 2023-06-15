@@ -27,6 +27,6 @@ export class JsonSchemaValidator implements ISchemaValidator {
       return Promise.resolve({ isValid: false, errorMessage: this.errorMessage || 'Bad Request' });
     }
 
-    Promise.resolve({ isValid: true });
+    return Promise.resolve({ isValid: true });
   }
 }

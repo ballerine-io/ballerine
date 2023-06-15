@@ -8,7 +8,7 @@ export interface ISchemaValidator {
   data: AnyRecord;
   validationLogic: TValidationLogic;
   options: {};
-  errorMessage: string;
+  errorMessage?: string;
 
   validate(): TSchemaValidatorResponse;
 }
