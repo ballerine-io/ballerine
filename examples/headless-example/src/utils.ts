@@ -10,6 +10,7 @@ import { createForm } from 'felte';
 import { getContext, setContext } from 'svelte';
 import type { z, ZodSchema } from 'zod';
 import type { FetchInitWithJson, Serializable } from './types';
+import { Category } from '@/constants';
 
 export const setWorkflowContext = (service: InstanceType<typeof WorkflowBrowserSDK>) => {
   setContext('workflow', service);
@@ -168,6 +169,59 @@ export const makeDocument = ({
   };
 }) => {
   const [category, type, issuerCountry] = id?.split('-') ?? [];
+  const properties = (() => {
+    if (category === Category.CERTIFICATE_OF_INCORPORATION) {
+      return {
+        businessName: 'Test Business',
+        website: 'https://testbusiness.com',
+        phone: '+233 123 456 789',
+        email: 'test@test.com',
+        type: 'Limited Liability Company',
+        owner: 'Test Owner',
+        tin: '123456789',
+      };
+    }
+
+    if (
+      (category === Category.ID_CARD || category === Category.SELFIE) &&
+      import.meta.env.VITE_EXAMPLE_TYPE === 'kyc'
+    ) {
+      return {
+        firstName: 'John',
+        middleName: 'Oed',
+        lastName: 'Doe',
+        type: 'National ID',
+        authority: 'Canada',
+        placeOfIssue: 'Canada',
+        issueDate: '2020-01-01',
+        expires: '2025-01-01',
+        dateOfBirth: '1990-01-01',
+        placeOfBirth: 'Canada',
+        sex: 'Other',
+      };
+    }
+
+    if (
+      (category === Category.ID_CARD || category === Category.SELFIE) &&
+      import.meta.env.VITE_EXAMPLE_TYPE === 'kyb'
+    ) {
+      return {
+        firstName: 'John',
+        middleName: 'Oed',
+        lastName: 'Doe',
+        type: 'National ID',
+        authority: 'Canada',
+        placeOfIssue: 'Canada',
+        issueDate: '2020-01-01',
+        expires: '2025-01-01',
+        dateOfBirth: '1990-01-01',
+        placeOfBirth: 'Canada',
+        sex: 'Other',
+      };
+    }
+
+    throw new Error(`Invalid properties`);
+  })();
 
   return {
     category,
@@ -175,6 +229,7 @@ export const makeDocument = ({
     issuer: {
       country: issuerCountry,
     },
+    version: 1,
     pages: [
       {
         ballerineFileId: payload?.[id]?.id,
@@ -183,14 +238,7 @@ export const makeDocument = ({
         uri: '',
       },
     ],
-    properties: {
-      userNationalId: `GHA-123456789-1`,
-      docNumber: '123456789',
-      userAddress: 'address',
-      website: 'http://localhost:3000',
-      expiryDate: '2021-12-31',
-      email: 'fake@fake.com',
-    },
+    properties,
   };
 };
 // Update document if it exists, otherwise add a new document.
