@@ -11,7 +11,7 @@ export const Type = {
   PDF: 'pdf',
 } as const;
 
-export const ISSUER_COUNTRY = 'gh' as const;
+export const ISSUER_COUNTRY = 'CA' as const;
 
 export const DocumentId = {
   ID_CARD: `${Category.ID_CARD}-${Type.PHOTO}-${ISSUER_COUNTRY}`,

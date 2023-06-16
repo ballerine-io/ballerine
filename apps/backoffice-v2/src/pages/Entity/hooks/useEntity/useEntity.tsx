@@ -39,7 +39,6 @@ export const useEntity = () => {
   const selectedEntity = workflow.entity;
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
-
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
   const { data: session } = useAuthenticatedUserQuery();
