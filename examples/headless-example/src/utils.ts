@@ -176,7 +176,6 @@ export const makeDocument = ({
         website: 'https://testbusiness.com',
         phone: '+233 123 456 789',
         email: 'test@test.com',
-        type: 'Limited Liability Company',
         owner: 'Test Owner',
         tin: '123456789',
       };
@@ -190,7 +189,6 @@ export const makeDocument = ({
         firstName: 'John',
         middleName: 'Oed',
         lastName: 'Doe',
-        type: 'National ID',
         authority: 'Canada',
         placeOfIssue: 'Canada',
         issueDate: '2020-01-01',
@@ -209,7 +207,6 @@ export const makeDocument = ({
         firstName: 'John',
         middleName: 'Oed',
         lastName: 'Doe',
-        type: 'National ID',
         authority: 'Canada',
         placeOfIssue: 'Canada',
         issueDate: '2020-01-01',
