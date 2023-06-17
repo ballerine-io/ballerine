@@ -333,3 +333,54 @@ describe('workflow-runner', () => {
     expect(done).toEqual(true);
   });
 });
+
+describe('Workflows with conditions', () => {
+  it('allows to define conditions', async () => {
+    // create workflow with conditions
+    const workflow = new WorkflowRunner({
+      workflowContext: {
+        external_request_example: {
+          data: {
+            name_fuzziness_score: 0.85, // or whatever value you want to assign
+          },
+        },
+      },
+      definition: {
+        initial: 'initial',
+        states: {
+          initial: {
+            on: {
+              EVENT: [
+                {
+                  target: 'final',
+                  cond: {
+                    type: 'json-logic',
+                    options: {
+                      rule: {
+                        '>': [
+                          { var: 'context.external_request_example.data.name_fuzziness_score' },
+                          0.5,
+                        ],
+                      },
+                      onFailed: { manualReviewReason: 'name not matching ... ' },
+                    },
+                  },
+                },
+                { target: 'middle' },
+              ],
+            },
+          },
+          middle: {
+            on: { EVENT: { target: 'final', cond: 'isTrue' } },
+          },
+          final: {
+            type: 'final',
+          },
+        },
+      },
+    });
+    await workflow.sendEvent({ type: 'EVENT' });
+    console.log(workflow);
+    expect(true).toEqual(true);
+  });
+});

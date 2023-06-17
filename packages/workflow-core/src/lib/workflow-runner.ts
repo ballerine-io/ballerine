@@ -163,10 +163,11 @@ export class WorkflowRunner {
     };
 
     const guards: MachineOptions<any, any>['guards'] = {
-      'json-rule': (ctx, { payload }, { cond }) => {
-        const data = { ...ctx, ...payload };
+      'json-logic': (ctx, event, metadata) => {
+        const data = { ...ctx, ...event.payload };
         return jsonLogic.apply(
-          cond.name, // Rule
+          // @ts-expect-error
+          metadata.cond.options.rule, // Rule
           data, // Data
         );
       },
