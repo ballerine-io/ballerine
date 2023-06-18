@@ -13,7 +13,7 @@ import { BusinessRepository } from '@/business/business.repository';
 import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import { FileRepository } from '@/storage/storage.repository';
-import { HttpModule, HttpService } from '@nestjs/axios';
+import { HttpModule } from '@nestjs/axios';
 import { FilterRepository } from '@/filter/filter.repository';
 import { FilterService } from '@/filter/filter.service';
 

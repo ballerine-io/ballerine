@@ -14,6 +14,8 @@ import { env } from '@/env';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
 import { NextFunction, Request, Response } from 'express';
 import { PrismaClientValidationFilter } from '@/common/filters/prisma-client-validation-filter/PrismaClientValidation.filter';
+import { AppLoggerService } from '@/common/app-logger/app-loger.service';
+import { ClsMiddleware } from 'nestjs-cls';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
@@ -37,6 +39,8 @@ async function main() {
       credentials: true,
     },
   });
+
+  app.use(new ClsMiddleware({}).use);
 
   app.use(helmet());
   app.use(
@@ -100,9 +104,11 @@ async function main() {
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
   const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+  const loggerService = await app.resolve(AppLoggerService);
+
+  app.useGlobalFilters(new AllExceptionsFilter(loggerService, httpAdapter));
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
-  app.useGlobalFilters(new PrismaClientValidationFilter());
+  app.useGlobalFilters(new PrismaClientValidationFilter(loggerService));
 
   app.enableShutdownHooks();
 

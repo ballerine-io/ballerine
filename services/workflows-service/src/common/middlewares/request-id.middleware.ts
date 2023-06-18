@@ -1,10 +1,12 @@
-import { Injectable, Logger, NestMiddleware, Scope } from '@nestjs/common';
+import { Injectable, NestMiddleware, Scope } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { randomUUID } from 'crypto';
+import { ClsService } from 'nestjs-cls';
+import { AppLoggerService } from '@/common/app-logger/app-loger.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class RequestIdMiddleware implements NestMiddleware {
-  private readonly logger = new Logger(RequestIdMiddleware.name);
+  constructor(private readonly cls: ClsService, private readonly logger: AppLoggerService) {}
 
   use(request: Request, response: Response, next: NextFunction) {
     request.id = randomUUID();
@@ -13,6 +15,8 @@ export class RequestIdMiddleware implements NestMiddleware {
     const cleanHeaders = { ...request.headers };
     delete cleanHeaders.authorization;
     delete cleanHeaders.cookie;
+
+    this.cls.set('requestId', request.id);
 
     this.logger.log(`Incoming request`, {
       request: {

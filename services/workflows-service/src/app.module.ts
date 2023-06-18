@@ -21,6 +21,8 @@ import { env } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
 import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
 import { LogRequestInterceptor } from '@/common/interceptors/log-request.interceptor';
+import { AppLoggerModule } from '@/common/app-logger/app-loger.module';
+import { ClsModule } from 'nestjs-cls';
 
 @Module({
   controllers: [],
@@ -54,6 +56,10 @@ import { LogRequestInterceptor } from '@/common/interceptors/log-request.interce
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),
+    ClsModule.forRoot({
+      global: true,
+    }),
+    AppLoggerModule,
   ],
   providers: [
     {
