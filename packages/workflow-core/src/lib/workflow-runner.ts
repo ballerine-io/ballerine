@@ -36,10 +36,12 @@ export class WorkflowRunner {
     debugMode = true,
   ) {
     // global and state specific extensions
-    this.#__extensions = extensions ?? {
-      statePlugins: [],
-    };
+    this.#__extensions = extensions ?? {};
+    this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
+
+    const apiPlugins = this.#__extensions.apiPlugins;
+    apiPlugins && this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
 
     this.#__workflow = this.#__extendedWorkflow({
       definition,
@@ -118,6 +120,30 @@ export class WorkflowRunner {
     };
   }
 
+  #__defineApiPluginsStatesAsEntryActions(definition: any, apiPlugins: any) {
+    for (const apiPlugin of apiPlugins) {
+      const apiCaller = callApi.bind(this, apiPlugin);
+
+      for (const stateName of apiPlugin.states) {
+        if (definition.states[stateName].entry) {
+          throw new Error('api plugins do not support state with a predefined entry action');
+        }
+
+        definition.states[stateName].entry = apiCaller;
+      }
+    }
+
+    function callApi(apiPlugin) {
+      fetch(apiPlugin.url, { method: apiPlugin.method, body: '' }).then(response => {
+        if (response.ok) {
+          this.sendEvent(apiPlugin.successAction);
+        } else {
+          this.sendEvent(apiPlugin.errorAction);
+        }
+      });
+    }
+  }
+
   #__extendedWorkflow({
     definition,
     workflowActions,
@@ -131,7 +157,9 @@ export class WorkflowRunner {
      *
      * @see {@link WorfklowRunner.sendEvent}
      *  */
-    const nonBlockingPlugins = this.#__extensions.statePlugins.filter(plugin => !plugin.isBlocking);
+    const nonBlockingPlugins = this.#__extensions.statePlugins?.filter(
+      plugin => !plugin.isBlocking,
+    );
 
     for (const statePlugin of nonBlockingPlugins) {
       const when = statePlugin.when === 'pre' ? 'entry' : 'exit';
