@@ -24,6 +24,7 @@ import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
     const categoryValue = form.getValues('category');
+
     form.setValue('category', categoryValue);
   }, [form, data]);
 };
@@ -63,7 +64,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       context,
       action,
     });
-  const defaultValues = data?.reduce((acc, curr) => {
+  const defaultValues = formData?.reduce((acc, curr) => {
     acc[curr.title] = curr.value;
 
     return acc;
