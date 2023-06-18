@@ -126,7 +126,7 @@ export class WorkflowRunner {
 
       for (const stateName of apiPlugin.states) {
         if (definition.states[stateName].entry) {
-          throw 'api plugins do not support state with a predefined entry action';
+          throw new Error('api plugins do not support state with a predefined entry action');
         }
 
         definition.states[stateName].entry = apiCaller;
