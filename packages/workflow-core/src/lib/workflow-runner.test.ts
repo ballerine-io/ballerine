@@ -334,14 +334,16 @@ describe('workflow-runner', () => {
   });
 });
 
-describe('Workflows with conditions', () => {
+describe.only('Workflows with conditions', () => {
   it('allows to define conditions', async () => {
     // create workflow with conditions
-    const workflow = new WorkflowRunner({
+    const workflow = createEventCollectingWorkflow({
       workflowContext: {
-        external_request_example: {
-          data: {
-            name_fuzziness_score: 0.85, // or whatever value you want to assign
+        machineContext: {
+          external_request_example: {
+            data: {
+              name_fuzziness_score: 0.85, // or whatever value you want to assign
+            },
           },
         },
       },
@@ -357,12 +359,9 @@ describe('Workflows with conditions', () => {
                     type: 'json-logic',
                     options: {
                       rule: {
-                        '>': [
-                          { var: 'context.external_request_example.data.name_fuzziness_score' },
-                          0.5,
-                        ],
+                        '>': [{ var: 'external_request_example.data.name_fuzziness_score' }, 0.5],
                       },
-                      onFailed: { manualReviewReason: 'name not matching ... ' },
+                      assignOnFailure: { manualReviewReason: 'name not matching ... ' },
                     },
                   },
                 },
@@ -380,7 +379,8 @@ describe('Workflows with conditions', () => {
       },
     });
     await workflow.sendEvent({ type: 'EVENT' });
-    console.log(workflow);
-    expect(true).toEqual(true);
+    console.log(workflow.events);
+    expect(workflow.events[0].state).toEqual('final');
+    // expect(workflow.#__context).toContain({ manualReviewReason: 'name not matching ... ' });
   });
 });

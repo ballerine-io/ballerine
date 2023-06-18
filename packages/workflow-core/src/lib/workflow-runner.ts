@@ -165,11 +165,22 @@ export class WorkflowRunner {
     const guards: MachineOptions<any, any>['guards'] = {
       'json-logic': (ctx, event, metadata) => {
         const data = { ...ctx, ...event.payload };
-        return jsonLogic.apply(
-          // @ts-expect-error
-          metadata.cond.options.rule, // Rule
+        // @ts-expect-error
+        const options = metadata.cond.options;
+        console.log(`running json logic rule`, data, metadata.cond);
+
+        const ruleResult = jsonLogic.apply(
+          options.rule, // Rule
           data, // Data
         );
+        if (!ruleResult && options.assignOnFailure) {
+          this.#__context = {
+            ...this.#__context,
+            ...options.assignOnFailure,
+          };
+        }
+        console.log(`json logic rule result`, ruleResult);
+        return ruleResult;
       },
     };
 
