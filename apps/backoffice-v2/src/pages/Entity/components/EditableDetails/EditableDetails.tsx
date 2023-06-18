@@ -5,7 +5,7 @@ import { toStartCase } from '../../../../common/utils/to-start-case/to-start-cas
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Button } from '../../../../common/components/atoms/Button/Button';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
 import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
@@ -21,6 +21,17 @@ import { SelectValue } from '../../../../common/components/atoms/Select/Select.V
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 
+const useInitialCategorySetValue = ({ form, data }) => {
+  const ref = useRef(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const categoryValue = form.getValues('category');
+    form.setValue('category', categoryValue);
+  }, [form, data]);
+};
+
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
   valueId,
@@ -33,12 +44,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
     workflowId,
   });
-  const useInitialCategorySetValue = () => {
-    useEffect(() => {
-      const categoryValue = form.getValues('category');
-      form.setValue('category', categoryValue);
-    }, [form, data, setFormData]);
-  };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
   const isDecisionPositive = (isDecisionComponent: boolean, value) => {
@@ -102,7 +107,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const isDecisionComponent = title === 'Decision';
 
   useWatchDropdownOptions({ form, data, setFormData });
-  useInitialCategorySetValue();
+  useInitialCategorySetValue({
+    form,
+    data,
+  });
 
   return (
     <Form {...form}>
