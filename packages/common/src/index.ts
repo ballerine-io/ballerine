@@ -13,9 +13,7 @@ export {
   type IErrorWithMessage,
 } from './utils';
 
-export {
-  type AnyRecord
-} from './types';
+export { type AnyRecord } from './types';
 
 export {
   type DefaultContextSchema,
