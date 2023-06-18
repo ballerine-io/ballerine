@@ -5,9 +5,9 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { Headers, LoggerService, NotFoundException, Res, UseFilters } from '@nestjs/common';
+import { Headers, NotFoundException, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { Prisma, WorkflowRuntimeData } from '@prisma/client';
+import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
 import * as errors from '../errors';
 import { IntentDto } from './dtos/intent';
@@ -32,8 +32,6 @@ export class WorkflowControllerExternal {
     protected readonly service: WorkflowService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-    private eventEmitter: EventEmitter2,
-    private readonly logger: AppLoggerService,
   ) {}
 
   // GET /workflows
