@@ -46,7 +46,6 @@ async function main() {
       httpOnly: true,
       domain: env.NODE_ENV === 'production' ? '.ballerine.app' : undefined,
       secure: env.NODE_ENV === 'production',
-      secureProxy: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 1000 * 60 * 60 * 1, // 1 hour(s)
     }),
