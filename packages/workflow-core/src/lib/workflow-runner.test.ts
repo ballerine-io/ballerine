@@ -1,4 +1,6 @@
-import { beforeEach, afterEach, describe, expect, it, test } from 'vitest';
+/* eslint-disable */
+
+import { afterEach, describe, expect, it } from 'vitest';
 import { WorkflowRunner } from './workflow-runner';
 import { sleep } from '@ballerine/common';
 import { rest } from 'msw';
@@ -184,9 +186,9 @@ describe('workflow-runner', () => {
         ]);
       });
 
-      it('raises an exception if any of stateNames is not defined', async => {
+      it('raises an exception if any of stateNames is not defined', () => {
         expect(() => {
-          const workflow = new WorkflowRunner({
+          new WorkflowRunner({
             definition: TWO_STATES_MACHINE_DEFINITION,
             extensions: {
               statePlugins: [
@@ -220,7 +222,7 @@ describe('workflow-runner', () => {
                 when: 'pre',
                 isBlocking: true,
                 stateNames: ['initial'],
-                action: async () => {
+                action: () => {
                   throw new Error('some error');
                 },
               },
@@ -330,7 +332,7 @@ describe('workflow-runner', () => {
       }
     });
 
-    it('does not support states with a predefined entry action', async () => {
+    it('does not support states with a predefined entry action', () => {
       const definition = {
         initial: 'initial',
         states: {
@@ -341,10 +343,8 @@ describe('workflow-runner', () => {
         },
       };
 
-      const results = [];
-
       expect(() => {
-        const workflow = new WorkflowRunner({
+        new WorkflowRunner({
           definition,
           extensions: {
             apiPlugins,
@@ -393,8 +393,7 @@ describe('workflow-runner', () => {
         },
       });
 
-      workflow.sendEvent('CHECK_BUSINESS_SCORE');
-
+      await workflow.sendEvent('CHECK_BUSINESS_SCORE');
       await sleep(2);
 
       expect(results).toEqual(['success']);
@@ -440,9 +439,8 @@ describe('workflow-runner', () => {
         },
       });
 
-      workflow.sendEvent('CHECK_BUSINESS_SCORE');
-
-      await sleep(10);
+      await workflow.sendEvent('CHECK_BUSINESS_SCORE');
+      await sleep(2);
 
       expect(results).toEqual(['error']);
     });
