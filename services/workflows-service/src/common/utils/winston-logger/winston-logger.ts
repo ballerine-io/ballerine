@@ -9,7 +9,10 @@ export class WinstonLogger implements IAppLogger {
       format: format.combine(format.json(), format.timestamp()),
       transports: [
         new transports.Console({
-          format: format.combine(format.colorize(), format.simple()),
+          format:
+            process.env.NODE_ENV === 'production'
+              ? format.simple()
+              : format.combine(format.colorize(), format.simple()),
         }),
       ],
     });

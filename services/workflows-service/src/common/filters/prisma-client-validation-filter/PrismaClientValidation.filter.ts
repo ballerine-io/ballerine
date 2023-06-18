@@ -1,5 +1,5 @@
 import { PrismaValidationExceptionParser } from './utils/PrismaValidationExceptionParser';
-import { ArgumentsHost, Catch, HttpStatus, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
 import { PrismaClientValidationError } from '@prisma/client/runtime';
@@ -8,6 +8,7 @@ import { InvalidArgumentParser } from '@/common/filters/prisma-client-validation
 import { UnknownArgumentParser } from '@/common/filters/prisma-client-validation-filter/utils/parsers/unknown-argument-parser/unknown-argument-parser';
 import { AppLoggerService } from '@/common/app-logger/app-loger.service';
 
+@Injectable()
 @Catch(Prisma.PrismaClientValidationError)
 export class PrismaClientValidationFilter extends BaseExceptionFilter {
   constructor(private readonly logger: AppLoggerService) {

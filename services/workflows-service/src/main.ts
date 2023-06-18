@@ -1,8 +1,7 @@
 import passport from 'passport';
 import cookieSession from 'cookie-session';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
-import { HttpExceptionFilter } from '@/common/filters/HttpExceptions.filter';
 import { AppModule } from './app.module';
 import { swaggerDocumentOptions, swaggerPath, swaggerSetupOptions } from './swagger';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
@@ -11,10 +10,7 @@ import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.in
 // @ts-ignore - there is an issue with helemet types
 import helmet from 'helmet';
 import { env } from '@/env';
-import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
 import { NextFunction, Request, Response } from 'express';
-import { PrismaClientValidationFilter } from '@/common/filters/prisma-client-validation-filter/PrismaClientValidation.filter';
-import { AppLoggerService } from '@/common/app-logger/app-loger.service';
 import { ClsMiddleware } from 'nestjs-cls';
 
 // This line is used to improve Sentry's stack traces
@@ -102,13 +98,6 @@ async function main() {
   });
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
-
-  const { httpAdapter } = app.get(HttpAdapterHost);
-  const loggerService = await app.resolve(AppLoggerService);
-
-  app.useGlobalFilters(new AllExceptionsFilter(loggerService, httpAdapter));
-  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
-  app.useGlobalFilters(new PrismaClientValidationFilter(loggerService));
 
   app.enableShutdownHooks();
 

@@ -27,7 +27,7 @@ export class AppLoggerService implements LoggerService {
 
   private getLogMetadata() {
     return {
-      'request-id': this.cls.get('requestId'),
+      requestId: this.cls.get('requestId'),
     };
   }
 }

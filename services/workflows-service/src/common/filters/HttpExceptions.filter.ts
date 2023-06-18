@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, HttpException, HttpServer, HttpStatus } from '@nestjs/common';
-import { BaseExceptionFilter } from '@nestjs/core';
+import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
 
@@ -28,8 +28,8 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
    * @param applicationRef
    */
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  constructor(applicationRef?: HttpServer) {
-    super(applicationRef);
+  constructor(applicationRef?: HttpAdapterHost) {
+    super(applicationRef?.httpAdapter);
   }
 
   /**

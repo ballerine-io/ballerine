@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, Scope } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { UserModule } from './user/user.module';
 import { WorkflowModule } from './workflow/workflow.module';
@@ -23,6 +23,7 @@ import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware'
 import { LogRequestInterceptor } from '@/common/interceptors/log-request.interceptor';
 import { AppLoggerModule } from '@/common/app-logger/app-loger.module';
 import { ClsModule } from 'nestjs-cls';
+import { FiltersModule } from '@/common/filters/filters.module';
 
 @Module({
   controllers: [],
@@ -60,6 +61,7 @@ import { ClsModule } from 'nestjs-cls';
       global: true,
     }),
     AppLoggerModule,
+    FiltersModule,
   ],
   providers: [
     {
