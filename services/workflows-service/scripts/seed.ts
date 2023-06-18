@@ -370,6 +370,7 @@ async function seed(bcryptSalt: Salt) {
       config: {
         completedWhenTasksResolved: true,
         workflowLevelResolution: false,
+        allowMultipleWorkflows: true,
       },
       contextSchema: {
         type: 'json-schema',
