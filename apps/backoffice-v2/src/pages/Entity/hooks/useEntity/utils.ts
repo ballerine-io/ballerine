@@ -1,6 +1,6 @@
 import { TDropdownOption } from '../../components/EditableDetails/types';
-import {AnyArray} from "../../../../common/types";
-import {TDocument} from "@ballerine/common";
+import { AnyArray } from '../../../../common/types';
+import { TDocument } from '@ballerine/common';
 
 export const convertSnakeCaseToTitleCase = (input: string): string =>
   input
