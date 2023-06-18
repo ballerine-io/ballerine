@@ -126,27 +126,29 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
-                    <FormControl>
-                      {dropdownOptions ? (
-                        <Select
-                          disabled={!isEditable}
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                    {dropdownOptions ? (
+                      <Select
+                        disabled={!isEditable}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
                           <SelectTrigger className="w-full">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
-                            {dropdownOptions?.map(({ label, value }) => {
-                              return (
-                                <SelectItem key={value} value={value}>
-                                  {label}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                      ) : (
+                        </FormControl>
+                        <SelectContent>
+                          {dropdownOptions?.map(({ label, value }) => {
+                            return (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <FormControl>
                         <Input
                           type={!format ? (type === 'string' ? 'text' : type) : format}
                           disabled={!isEditable}
@@ -167,8 +169,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                           autoComplete={'off'}
                           {...field}
                         />
-                      )}
-                    </FormControl>
+                      </FormControl>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
