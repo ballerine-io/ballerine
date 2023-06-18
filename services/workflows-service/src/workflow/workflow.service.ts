@@ -46,8 +46,9 @@ import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
 import {
-  certificateOfResidenceGH,
   DefaultContextSchema,
+  getDocumentId,
+  getDocumentsByCountry,
   TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
 
@@ -142,7 +143,6 @@ export class WorkflowService {
 
   private formatWorkflow(workflow: TWorkflowWithRelations) {
     const isIndividual = 'endUser' in workflow;
-
     const service = createWorkflow({
       definition: workflow.workflowDefinition as any,
       definitionType: workflow.workflowDefinition.definitionType,
@@ -157,10 +157,17 @@ export class WorkflowService {
       context: {
         ...workflow.context,
         documents: workflow.context?.documents?.map(
-          (document: DefaultContextSchema['documents'][number]) => ({
-            ...document,
-            propertiesSchema: certificateOfResidenceGH.propertiesSchema,
-          }),
+          (document: DefaultContextSchema['documents'][number]) => {
+            const documentsByCountry = getDocumentsByCountry(document?.issuer?.country);
+            const documentByCountry = documentsByCountry?.find(
+              doc => getDocumentId(doc, false) === getDocumentId(document, false),
+            );
+
+            return {
+              ...document,
+              propertiesSchema: documentByCountry?.propertiesSchema ?? {},
+            };
+          },
         ),
       },
       entity: {

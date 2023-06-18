@@ -18,5 +18,6 @@ export {
   ghanaDocuments,
   certificateOfResidenceGH,
   getDocumentsByCountry,
+  getDocumentId,
   type TDocument,
 } from './schemas';
