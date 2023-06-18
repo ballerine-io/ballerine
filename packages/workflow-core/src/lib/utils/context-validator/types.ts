@@ -9,7 +9,6 @@ export abstract class BaseSchemaValidator {
 
   abstract validate(
     data: AnyRecord,
-    validationLogic: TValidationLogic,
     options: AnyRecord,
     errorMessage?: string,
   ): TSchemaValidatorResponse;

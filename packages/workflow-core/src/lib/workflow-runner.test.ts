@@ -315,7 +315,6 @@ describe('workflow-runner', () => {
         states: ['checkBusinessScore'],
         successAction: 'API_CALL_SUCCESS',
         errorAction: 'API_CALL_FAILURE',
-
         url: 'https://www.example.com/api',
         method: 'POST',
       },

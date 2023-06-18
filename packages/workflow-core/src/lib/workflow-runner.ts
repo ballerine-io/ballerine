@@ -1,18 +1,21 @@
 /* eslint-disable */
-import { uniqueArray } from '@ballerine/common';
+import {AnyRecord, uniqueArray} from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
   ObjectValues,
-  StatePlugin,
   WorkflowEvent,
   WorkflowEventWithoutState,
   WorkflowExtensions,
   WorkflowRunnerArgs,
 } from './types';
 import { Error as ErrorEnum } from './types';
+import {JQTransformer} from "./utils/context-transformers/qj-transformer";
+import {JsonSchemaValidator} from "./utils/context-validator/json-schema-validator";
+import {TSchemaValidatorResponse, TValidationLogic} from "./utils/context-validator/types";
+import {StatePlugin} from "./plugins/types";
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -41,7 +44,7 @@ export class WorkflowRunner {
     this.#__debugMode = debugMode;
 
     const apiPlugins = this.#__extensions.apiPlugins;
-    apiPlugins && this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
+    apiPlugins && this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins, workflowContext);
 
     this.#__workflow = this.#__extendedWorkflow({
       definition,
@@ -120,9 +123,9 @@ export class WorkflowRunner {
     };
   }
 
-  #__defineApiPluginsStatesAsEntryActions(definition: any, apiPlugins: any) {
+  async #__defineApiPluginsStatesAsEntryActions(definition: any, apiPlugins: any) {
     for (const apiPlugin of apiPlugins) {
-      const apiCaller = callApi.bind(this, apiPlugin);
+      const apiCaller = await callApi.bind(this, apiPlugin, this.#__context);
 
       for (const stateName of apiPlugin.states) {
         if (definition.states[stateName].entry) {
@@ -132,16 +135,42 @@ export class WorkflowRunner {
         definition.states[stateName].entry = apiCaller;
       }
     }
-
-    function callApi(apiPlugin) {
-      fetch(apiPlugin.url, { method: apiPlugin.method, body: '' }).then(response => {
+    async function callApi(apiPlugin, workflowContext) {
+      const requestBody = transformContextToRequest(workflowContext, apiPlugin.request.transformer);
+      const {isValid, errorMessage} = await validateRequestBody(requestBody, apiPlugin.request.validator);
+      if (!isValid) {
+        return dispatchErrorEvent.call(this, workflowContext, apiPlugin, errorMessage);
+      }
+      fetch(apiPlugin.url, { method: apiPlugin.method, body: JSON.stringify(requestBody) })
+        .then(response => {
         if (response.ok) {
           this.sendEvent(apiPlugin.successAction);
         } else {
-          this.sendEvent(apiPlugin.errorAction);
+          dispatchErrorEvent.call(this, workflowContext, apiPlugin, response.error)
         }
       });
     }
+
+    function dispatchErrorEvent(workflowContext, apiPlugin, errorMessage) {
+      this.#__context = {
+        ...workflowContext,
+        ...{[apiPlugin.name]: {error: errorMessage}}
+      };
+      return this.sendEvent(apiPlugin.errorAction);
+    }
+
+    async function transformContextToRequest(workflowContext: AnyRecord, transformer) {
+      if (transformer.name === 'jq') return new JQTransformer().transform(transformer.transformationLogic, workflowContext, {});
+
+      throw new Error(`Transformer ${transformer.name} is not supported`);
+    }
+
+    async function validateRequestBody(requestBody: AnyRecord, validator): Promise<TSchemaValidatorResponse> {
+      if (validator.name === 'json-schema') return new JsonSchemaValidator().validate(validator.validationLogic as TValidationLogic, requestBody, {});
+
+      throw new Error(`Validator ${validator.name} is not supported`);
+    }
+
   }
 
   #__extendedWorkflow({
