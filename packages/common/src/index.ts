@@ -10,7 +10,7 @@ export {
   noNullish,
   sleep,
   uniqueArray,
-  IErrorWithMessage,
+  type IErrorWithMessage,
 } from './utils';
 
 export {

@@ -4,7 +4,7 @@ import { BaseContextTransformer, TContext } from './types';
 export class JQTransformer extends BaseContextTransformer {
   name = 'jq-transformer';
 
-  transform(): any {
+  transform() {
     return run(this.transformationLogic, this.context, this.options);
   }
 }

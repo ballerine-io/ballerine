@@ -1,2 +1,2 @@
 export { isErrorWithMessage } from './is-error-with-message';
-export { IErrorWithMessage } from './interfaces';
+export { type IErrorWithMessage } from './interfaces';
