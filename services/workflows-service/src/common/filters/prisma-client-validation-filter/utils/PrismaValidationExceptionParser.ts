@@ -35,4 +35,3 @@ export class PrismaValidationExceptionParser {
     return parseResult;
   }
 }
-
