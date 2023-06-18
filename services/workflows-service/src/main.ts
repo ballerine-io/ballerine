@@ -50,6 +50,7 @@ async function main() {
       maxAge: 1000 * 60 * 60 * 1, // 1 hour(s)
     }),
   );
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (!req.session) return next();
 
