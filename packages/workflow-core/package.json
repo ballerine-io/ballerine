@@ -58,6 +58,8 @@
     "eslint-plugin-functional": "^3.0.2",
     "eslint-plugin-import": "^2.22.0",
     "fs-extra": "^11.1.0",
+    "msw": "^1.2.2",
+    "node-fetch": "^3.3.1",
     "plugin-babel": "link:@types/@rollup/plugin-babel",
     "plugin-terser": "link:@types/@rollup/plugin-terser",
     "prettier": "^2.1.1",
