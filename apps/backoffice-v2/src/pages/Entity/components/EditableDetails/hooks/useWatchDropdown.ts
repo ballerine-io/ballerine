@@ -21,7 +21,10 @@ export const useWatchDropdownOptions = ({ form, data, setFormData }) => {
             dropDownOption => dropDownOption.value == value,
           )?.value;
 
-          form.setValue(item.title, `${item.value}`);
+          if (item.value) {
+            form.setValue(item.title, `${item.value}`);
+          }
+
           return (newData[newData.indexOf(item)] = item);
         });
 
