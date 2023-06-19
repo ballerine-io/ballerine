@@ -597,9 +597,6 @@ importers:
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
-      axios:
-        specifier: ^1.4.0
-        version: 1.4.0
       json-logic-js:
         specifier: ^2.0.2
         version: 2.0.2
