@@ -7,10 +7,12 @@ export class JQTransformer extends BaseContextTransformer {
 
   constructor(transformationLogic: TTransformationLogic) {
     super();
-    this.transformationLogic = transformationLogic
+    this.transformationLogic = transformationLogic;
   }
 
   async transform(context: TContext, options: {}) {
-    return await run(this.transformationLogic, context, options) as object;
+    const response = await run(this.transformationLogic, context, options);
+
+    return response;
   }
 }

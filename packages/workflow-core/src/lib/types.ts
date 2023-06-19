@@ -1,5 +1,7 @@
-import type {MachineConfig, MachineOptions} from 'xstate';
-import {StatePlugins} from "./plugins/types";
+import type { MachineConfig, MachineOptions } from 'xstate';
+import { StatePlugins } from './plugins/types';
+import { ApiPlugin } from './plugins/external-plugin/api-plugin';
+import { AnyRecord } from '@ballerine/common';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
@@ -18,7 +20,7 @@ export interface WorkflowEvent {
 
 export interface WorkflowExtensions {
   statePlugins: StatePlugins;
-  externalPlugins: StatePlugins;
+  externalPlugins: { apiPlugins?: ApiPlugin[]; apiPluginsSchemas?: AnyRecord[] };
 }
 export interface WorkflowContext {
   id?: string;

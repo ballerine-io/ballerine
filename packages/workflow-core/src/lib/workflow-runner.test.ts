@@ -1,8 +1,6 @@
 import { beforeEach, afterEach, describe, expect, it, test } from 'vitest';
 import { WorkflowRunner } from './workflow-runner';
 import { sleep } from '@ballerine/common';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
 
 const DEFAULT_PAYLOAD = { payload: { some: 'payload' } };
 
@@ -310,24 +308,29 @@ describe('workflow-runner', () => {
   });
 
   describe('api plugins', () => {
-    const apiPlugins = [
+    const apiPluginsSchemas = [
       {
+        name: 'ballerineEnrichment',
+        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.json',
+        method: 'GET',
         states: ['checkBusinessScore'],
         successAction: 'API_CALL_SUCCESS',
         errorAction: 'API_CALL_FAILURE',
-        url: 'https://www.example.com/api',
-        method: 'POST',
+        // request: { transform: { transformer: "jq", transformationLogic: {"machineContext .entity .id": "saleforce_id" }}},
+        request: {
+          transform: {
+            transformer: 'jq',
+            transformationLogic: '{saleforce_id: .context.machineContext.entity.id}',
+          },
+        },
+        response: {
+          transform: {
+            transformer: 'jq',
+            transformationLogic: { '.': '{ballerineEnrichment: .}' },
+          },
+        },
       },
     ];
-
-    let server;
-
-    afterEach(() => {
-      if (server) {
-        server.resetHandlers();
-        server.close();
-      }
-    });
 
     it('does not support states with a predefined entry action', async () => {
       const definition = {
@@ -346,7 +349,7 @@ describe('workflow-runner', () => {
         const workflow = new WorkflowRunner({
           definition,
           extensions: {
-            apiPlugins,
+            apiPluginsSchemas,
           },
         });
       }).toThrowError('api plugins do not support state with a predefined entry action');
@@ -378,18 +381,19 @@ describe('workflow-runner', () => {
         },
       };
 
-      server = setupServer(
-        rest.post('https://www.example.com/api', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({}));
-        }),
-      );
-      server.listen({ onUnhandledRequest: 'error' });
+      // server = setupServer(
+      //   rest.post('https://www.example.com/api', (req, res, ctx) => {
+      //     return res(ctx.status(200), ctx.json({}));
+      //   }),
+      // );
+      // server.listen({ onUnhandledRequest: 'error' });
 
       const workflow = new WorkflowRunner({
         definition,
         extensions: {
           apiPlugins,
         },
+        workflowContext: { machineContext: { entity: { id: 'some_id' } } },
       });
 
       workflow.sendEvent('CHECK_BUSINESS_SCORE');
@@ -425,12 +429,12 @@ describe('workflow-runner', () => {
         },
       };
 
-      server = setupServer(
-        rest.post('https://www.example.com/api', (req, res, ctx) => {
-          return res(ctx.status(300), ctx.json({}));
-        }),
-      );
-      server.listen({ onUnhandledRequest: 'error' });
+      // server = setupServer(
+      //   rest.post('https://www.example.com/api', (req, res, ctx) => {
+      //     return res(ctx.status(300), ctx.json({}));
+      //   }),
+      // );
+      // server.listen({ onUnhandledRequest: 'error' });
 
       const workflow = new WorkflowRunner({
         definition,
