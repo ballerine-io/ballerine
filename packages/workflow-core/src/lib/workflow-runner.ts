@@ -2,7 +2,7 @@
 import { uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
-import { createMachine, interpret } from 'xstate';
+import { createMachine, interpret, assign } from 'xstate';
 import { HttpError } from './errors';
 import type {
   ObjectValues,
@@ -22,6 +22,7 @@ export class WorkflowRunner {
   #__callback: ((event: WorkflowEvent) => void) | null = null;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
+  events: any;
 
   public get workflow() {
     return this.#__workflow;
@@ -191,12 +192,27 @@ export class WorkflowRunner {
     };
 
     const guards: MachineOptions<any, any>['guards'] = {
-      'json-rule': (ctx, { payload }, { cond }) => {
-        const data = { ...ctx, ...payload };
-        return jsonLogic.apply(
-          cond.name, // Rule
+      'json-logic': (ctx, event, metadata) => {
+        const data = { ...ctx, ...event.payload };
+        // @ts-expect-error
+        const options = metadata.cond.options;
+        console.log(`running json logic rule`, data, metadata.cond);
+
+        const ruleResult = jsonLogic.apply(
+          options.rule, // Rule
           data, // Data
         );
+        if (!ruleResult && options.assignOnFailure) {
+          this.#__callback?.({
+            type: 'RULE_EVALUATION_FAILURE',
+            state: this.#__currentState,
+            payload: {
+              ...options,
+            },
+          });
+        }
+        console.log(`json logic rule result`, ruleResult);
+        return ruleResult;
       },
     };
 
