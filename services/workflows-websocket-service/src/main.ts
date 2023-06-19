@@ -6,7 +6,6 @@ import { env } from '@/env';
 async function main() {
   const app = await NestFactory.create(AppModule);
   app.useWebSocketAdapter(new WsAdapter(app));
-
   void app.listen(env.PORT);
   console.log(`Listening on port ${env.PORT}`);
 
