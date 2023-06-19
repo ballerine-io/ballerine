@@ -1,4 +1,5 @@
 import { fetchJson } from '@/utils';
+import { ENTITY_ID_STORAGE_KEY } from '@/constants';
 
 export type WorkServiceEndpoints = {
   base: string;
@@ -10,7 +11,13 @@ export class BallerineBackOfficeService {
   fetchBusiness = async (id: string) => fetchJson(`${this.baseUrl}/businesses/${id}`);
 
   fetchWorkflow = async (id: string) => fetchJson(`${this.baseUrl}/workflows/${id}`);
-  fetchWorkflows = async () =>
+  fetchWorkflows = async ({
+    entityType,
+    entityId,
+  }: {
+    entityType: 'end-user' | 'business';
+    entityId: string;
+  }) =>
     fetchJson<
       Array<{
         workflowDefinition: {
@@ -22,11 +29,14 @@ export class BallerineBackOfficeService {
           status: string;
         };
       }>
-    >(`${this.baseUrl}/workflows`);
+    >(`${this.baseUrl}/workflows/${entityType}/${entityId}`);
   fetchIntent = async () =>
     fetchJson<Array<Record<string, unknown>>>(`${this.baseUrl}/workflows/intent`, {
       method: 'POST',
-      body: { intentName: import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'kycSignup' : 'kybSignup' },
+      body: {
+        intentName: import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'kycSignup' : 'kybSignup',
+        entityId: sessionStorage.getItem(ENTITY_ID_STORAGE_KEY),
+      },
     });
 
   fetchBusinessSignUp = async ({
