@@ -92,7 +92,7 @@ export class ApiPlugin {
   }
 
   async transformResponse(responseBody: AnyRecord) {
-    return (await this.response.transform.transform(responseBody, {})) as AnyRecord;
+    return (await this.response.transform.transform(responseBody, { input: 'json', output: 'json' })) as AnyRecord;
   }
 
   async validateResponse(transformedResponse: AnyRecord) {
