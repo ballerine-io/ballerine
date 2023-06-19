@@ -466,7 +466,7 @@ export class WorkflowService {
           context: {
             ...data.context,
             parentMachine: {
-              ...data.context?.parentMachine,
+              id: parentMachine?.id,
               status: 'active',
             },
           },
