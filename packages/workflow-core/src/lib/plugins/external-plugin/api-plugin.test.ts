@@ -123,32 +123,34 @@ describe('workflow-runner', () => {
       });
     });
 
-    describe('when api request invalid for schema', () => {
-      const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
-      apiPluginsSchemasCopy[0].request.schema = {
-        $schema: 'http://json-schema.org/draft-07/schema#',
-        type: 'object',
-        properties: {
-          business_name: {
-            type: 'string',
+    describe('when api plugin has schema', () => {
+      describe('when api request invalid for schema', () => {
+        const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
+        apiPluginsSchemasCopy[0].request.schema = {
+          $schema: 'http://json-schema.org/draft-07/schema#',
+          type: 'object',
+          properties: {
+            business_name: {
+              type: 'string',
+            },
+            registration_number: {
+              type: 'string',
+            },
           },
-          registration_number: {
-            type: 'string',
-          },
-        },
-        required: ['business_name', 'registration_number'],
-      };
-      const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
+          required: ['business_name', 'registration_number'],
+        };
+        const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
 
-      it('it returns error for transformation and transition to testManually', async () => {
-        await workflow.sendEvent('CHECK_BUSINESS_SCORE');
+        it('it returns error for transformation and transition to testManually', async () => {
+          await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
-        expect(workflow.state).toEqual('testManually');
-        expect(workflow.context).toEqual({
-          entity: { id: 'some_id' },
-          ballerineEnrichment: {
-            error: '',
-          },
+          expect(workflow.state).toEqual('testManually');
+          expect(workflow.context).toEqual({
+            entity: {id: 'some_id'},
+            ballerineEnrichment: {
+              error: '',
+            },
+          });
         });
       });
     });
