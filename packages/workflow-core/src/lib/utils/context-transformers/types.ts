@@ -6,7 +6,6 @@ export abstract class BaseContextTransformer {
   type = 'context-transformer';
 
   abstract transform(
-    transformationLogic: TTransformationLogic,
     context: TContext,
     options: {},
   ): Promise<any>;
