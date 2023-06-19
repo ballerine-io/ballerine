@@ -4,5 +4,5 @@ export {
   ghanaDocuments,
   certificateOfResidenceGH,
 } from './documents/workflow/documents/schemas/GH';
-export { getDocumentsByCountry } from './documents/workflow/documents/schemas/index';
+export { getDocumentsByCountry, getDocumentId } from './documents/workflow/documents/schemas/index';
 export { type TDocument } from './documents/workflow/documents/types';

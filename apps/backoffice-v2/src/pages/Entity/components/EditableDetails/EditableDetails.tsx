@@ -1,4 +1,4 @@
-import { FieldValues, SubmitHandler, useForm, UseFormWatch } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Form } from '../../../../common/components/organisms/Form/Form';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
@@ -21,6 +21,14 @@ import { SelectValue } from '../../../../common/components/atoms/Select/Select.V
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 
+const useInitialCategorySetValue = ({ form, data }) => {
+  useEffect(() => {
+    const categoryValue = form.getValues('category');
+
+    form.setValue('category', categoryValue);
+  }, [form, data]);
+};
+
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
   valueId,
@@ -30,9 +38,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   workflowId,
 }) => {
   const [formData, setFormData] = useState(data);
-  const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
-    workflowId,
-  });
   const useInitialCategorySetValue = () => {
     useEffect(() => {
       const categoryValue = form.getValues('category');
@@ -41,16 +46,23 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
-  const isDecisionPositive = (isDecisionComponent: boolean, value) => {
-    return (
-      isDecisionComponent && value && POSITIVE_VALUE_INDICATOR.includes(String(value).toLowerCase())
-    );
+  const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
+    return isDecisionComponent && value && POSITIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
-  const isDecisionNegative = (isDecisionComponent: boolean, value) => {
-    return (
-      isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(String(value).toLowerCase())
-    );
+  const isDecisionNegative = (isDecisionComponent: boolean, value: string) => {
+    return isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
+  const defaultValues = formData?.reduce((acc, curr) => {
+    acc[curr.title] = curr.value;
+
+    return acc;
+  }, {});
+  const form = useForm({
+    defaultValues,
+  });
+  const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
+    workflowId,
+  });
   const onMutateTaskDecisionById = ({
     context,
     action,
@@ -62,14 +74,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       context,
       action,
     });
-  const defaultValues = data?.reduce((acc, curr) => {
-    acc[curr.title] = curr.value;
-
-    return acc;
-  }, {});
-  const form = useForm({
-    defaultValues,
-  });
   const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
     const context = {
       documents: documents?.map(document => {
@@ -102,7 +106,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const isDecisionComponent = title === 'Decision';
 
   useWatchDropdownOptions({ form, data, setFormData });
-  useInitialCategorySetValue();
+  useInitialCategorySetValue({
+    form,
+    data,
+  });
 
   return (
     <Form {...form}>
@@ -122,27 +129,29 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
-                    <FormControl>
-                      {dropdownOptions ? (
-                        <Select
-                          disabled={!isEditable}
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                    {dropdownOptions ? (
+                      <Select
+                        disabled={!isEditable}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
                           <SelectTrigger className="w-full">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
-                            {dropdownOptions?.map(({ label, value }) => {
-                              return (
-                                <SelectItem key={value} value={value}>
-                                  {label}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                      ) : (
+                        </FormControl>
+                        <SelectContent>
+                          {dropdownOptions?.map(({ label, value }) => {
+                            return (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <FormControl>
                         <Input
                           type={!format ? (type === 'string' ? 'text' : type) : format}
                           disabled={!isEditable}
@@ -151,11 +160,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             {
                               'font-bold text-success': isDecisionPositive(
                                 isDecisionComponent,
-                                value,
+                                field.value,
                               ),
                               'font-bold text-destructive': isDecisionNegative(
                                 isDecisionComponent,
-                                value,
+                                field.value,
                               ),
                             },
                           )}
@@ -163,8 +172,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                           autoComplete={'off'}
                           {...field}
                         />
-                      )}
-                    </FormControl>
+                      </FormControl>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}

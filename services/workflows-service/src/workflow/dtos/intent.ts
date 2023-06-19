@@ -4,5 +4,5 @@ export class IntentDto {
   @ApiProperty()
   intentName!: string;
   @ApiProperty()
-  userId!: string;
+  entityId!: string;
 }

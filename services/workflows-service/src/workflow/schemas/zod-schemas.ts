@@ -13,7 +13,9 @@ export const ConfigSchema = z
     subscriptions: z.array(SubscriptionSchema).optional(),
     completedWhenTasksResolved: z.boolean().optional(),
     workflowLevelResolution: z.boolean().optional(),
+    allowMultipleActiveWorkflows: z.boolean().optional(),
   })
-  .strict();
+  .strict()
+  .optional();
 
 export type WorkflowConfig = z.infer<typeof ConfigSchema>;
