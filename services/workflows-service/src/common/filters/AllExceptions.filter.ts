@@ -1,4 +1,4 @@
-import { AppLoggerService } from '@/common/app-logger/app-loger.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { Catch, ArgumentsHost } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { Response } from 'express';

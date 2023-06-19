@@ -6,9 +6,8 @@ import { PrismaClientValidationError } from '@prisma/client/runtime';
 import { PrismaValidationExceptionParseResult } from '@/common/filters/prisma-client-validation-filter/utils/types';
 import { InvalidArgumentParser } from '@/common/filters/prisma-client-validation-filter/utils/parsers/invalid-argument-parser/invalid-argument.parser';
 import { UnknownArgumentParser } from '@/common/filters/prisma-client-validation-filter/utils/parsers/unknown-argument-parser/unknown-argument-parser';
-import { AppLoggerService } from '@/common/app-logger/app-loger.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
-@Injectable()
 @Catch(Prisma.PrismaClientValidationError)
 export class PrismaClientValidationFilter extends BaseExceptionFilter {
   constructor(private readonly logger: AppLoggerService) {

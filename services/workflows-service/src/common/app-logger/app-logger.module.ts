@@ -1,4 +1,4 @@
-import { AppLoggerService } from '@/common/app-logger/app-loger.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 import { Global, Module } from '@nestjs/common';
 

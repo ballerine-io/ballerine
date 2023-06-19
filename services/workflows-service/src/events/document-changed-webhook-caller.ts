@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import * as Sentry from '@sentry/node';
 import { AxiosInstance, isAxiosError } from 'axios';
 import { WorkflowConfig } from '@/workflow/schemas/zod-schemas';
-import { AppLoggerService } from '@/common/app-logger/app-loger.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @Injectable()
 export class DocumentChangedWebhookCaller {

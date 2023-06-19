@@ -2,7 +2,7 @@ import { Injectable, NestMiddleware, Scope } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { randomUUID } from 'crypto';
 import { ClsService } from 'nestjs-cls';
-import { AppLoggerService } from '@/common/app-logger/app-loger.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class RequestIdMiddleware implements NestMiddleware {
