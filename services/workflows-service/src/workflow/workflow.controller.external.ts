@@ -2,10 +2,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
+import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { NotFoundException, Headers } from '@nestjs/common';
+import { NotFoundException, Param, Res, UseFilters } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -15,9 +15,15 @@ import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
-import { RunnableWorkflowData } from './types';
+import { RunnableWorkflowData, TEntityType } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Response } from 'express';
+import { WorkflowRunDto } from './dtos/workflow-run';
+import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { camelCase } from 'lodash';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -27,20 +33,25 @@ export class WorkflowControllerExternal {
     protected readonly service: WorkflowService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   // GET /workflows
-  @common.Get()
+  @common.Get('/:entityType/:entityId')
   @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
+  @UseKeyAuthInDevGuard()
   async listWorkflowRuntimeDataByUserId(
-    @UserData()
-    _userInfo: UserInfo,
-    @Headers('no_auth_user_id') no_auth_user_id: string,
-  ): Promise<RunnableWorkflowData[]> {
-    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(no_auth_user_id);
+    @Param('entityType') entityType: 'end-user' | 'business',
+    @Param('entityId') entityId: string,
+  ) {
+    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId({
+      entityId,
+      // Expecting kebab-case from the url
+      entity: camelCase(entityType) as TEntityType,
+    });
     const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
       workflowRuntimeData: rest,
       workflowDefinition,
@@ -53,6 +64,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseKeyAuthInDevGuard()
   async getRunnableWorkflowDataById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
   ): Promise<RunnableWorkflowData> {
@@ -76,6 +88,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseKeyAuthInDevGuard()
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
@@ -95,12 +108,39 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async intent(
-    @common.Body() intent: IntentDto,
-    @Headers('no_auth_user_id') no_auth_user_id: string,
-  ): Promise<IntentResponse> {
+  @UseKeyAuthInDevGuard()
+  async intent(@common.Body() { intentName, entityId }: IntentDto): Promise<IntentResponse> {
     // Rename to intent or getRunnableWorkflowDataByIntent?
-    return await this.service.resolveIntent(intent.intentName, no_auth_user_id);
+    const entityType = intentName === 'kycSignup' ? 'endUser' : 'business';
+    return await this.service.resolveIntent(intentName, entityId, entityType);
+  }
+
+  @common.Post('/run')
+  @swagger.ApiOkResponse()
+  @UseKeyAuthGuard()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async createWorkflowRuntimeData(
+    @common.Body() body: WorkflowRunDto,
+    @Res() res: Response,
+  ): Promise<any> {
+    const { workflowId, context, config } = body;
+    const { entity } = context;
+
+    if (!entity.id && !entity.ballerineEntityId)
+      throw new common.BadRequestException('Entity id is required');
+
+    const actionResult = await this.service.createOrUpdateWorkflowRuntime({
+      workflowDefinitionId: workflowId,
+      context,
+      config,
+    });
+
+    return res.json({
+      workflowDefinitionId: actionResult[0]!.workflowDefinition.id,
+      workflowRuntimeId: actionResult[0]!.workflowRuntimeData.id,
+      ballerineEntityId: actionResult[0]!.ballerineEntityId,
+    });
   }
 
   // POST /event
@@ -117,5 +157,25 @@ export class WorkflowControllerExternal {
       ...data,
       id,
     });
+  }
+
+  // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
+  @common.Get('/:id/context')
+  @UseKeyAuthGuard()
+  @swagger.ApiOkResponse()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async getWorkflowRuntimeDataContext(@common.Param('id') id: string) {
+    try {
+      const context = await this.service.getWorkflowRuntimeDataContext(id);
+
+      return { context };
+    } catch (err) {
+      if (isRecordNotFoundError(err)) {
+        throw new NotFoundException(`No resource was found for ${JSON.stringify(id)}`);
+      }
+
+      throw err;
+    }
   }
 }

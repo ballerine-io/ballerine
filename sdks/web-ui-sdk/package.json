@@ -1,5 +1,5 @@
 {
-  "author": "Ballerine.io",
+  "author": "Ballerine <dev@ballerine.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/ballerine-io/ballerine/tree/main/sdks/web-ui-sdk"
@@ -21,7 +21,7 @@
   "types": "dist/index.d.ts",
   "name": "@ballerine/web-ui-sdk",
   "private": false,
-  "version": "1.3.2",
+  "version": "1.3.4",
   "type": "module",
   "files": [
     "dist"
@@ -40,6 +40,7 @@
     "deprecated:build:sdk": "rollup --config",
     "start": "vite preview",
     "test": "vitest run",
+    "test:unit": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "playwright:install": "playwright install --with-deps",
@@ -92,7 +93,7 @@
     "vitest": "^0.24.5"
   },
   "dependencies": {
-    "@ballerine/common": "0.4.3",
+    "@ballerine/common": "0.5.3",
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "deepmerge": "^4.3.0",

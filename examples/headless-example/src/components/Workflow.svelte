@@ -1,29 +1,11 @@
 <script lang="ts">
   import type { WorkflowOptionsBrowser } from '@ballerine/workflow-browser-sdk';
-  import DocumentPhoto from './DocumentPhoto.svelte';
-  import DocumentSelection from './DocumentSelection.svelte';
-  import ErrorComponent from './Error.svelte';
-  import Final from './Final.svelte';
-  import Resubmission from './Resubmission.svelte';
-  import Success from './Success.svelte';
   import { type ObjectValues, State } from '@/types';
-  import Welcome from './Welcome.svelte';
-  import { initWorkflowContext } from '@/utils';
-  import DocumentReview from './DocumentReview.svelte';
+  import { initWorkflowContext, makeDocument, upsertDocument } from '@/utils';
   import { createEventDispatcher } from 'svelte';
+  import { DocumentId } from '@/constants';
+  import { Step } from '@/steps';
 
-  const Step = {
-    WELCOME: Welcome,
-    DOCUMENT_SELECTION: DocumentSelection,
-    DOCUMENT_PHOTO: DocumentPhoto,
-    DOCUMENT_REVIEW: DocumentReview,
-    SELFIE: DocumentPhoto,
-    SELFIE_REVIEW: DocumentReview,
-    FINAL: Final,
-    ERROR: ErrorComponent,
-    SUCCESS: Success,
-    RESUBMISSION: Resubmission,
-  } as const;
   export let workflow: WorkflowOptionsBrowser;
   const dispatch = createEventDispatcher();
   const workflowUpdated = (newWf: unknown) => dispatch('workflow-updated', newWf);
@@ -37,45 +19,83 @@
 
   const onPrev = (payload: Record<PropertyKey, any>) => () => {
     const context = workflowService.getSnapshot()?.context;
+    const document = makeDocument({
+      id: Object.keys(payload)[0],
+      payload,
+    });
+    const updatedDocuments = upsertDocument({
+      documents: context?.documents,
+      document,
+    });
 
     workflowService.sendEvent({
       type: 'USER_PREV_STEP',
       payload: {
         ...context,
-        ...payload,
-        id: {
-          ...context?.id,
-          ...payload?.id,
-        },
-        selfie: {
-          ...context?.selfie,
-          ...payload?.selfie,
+        documents: updatedDocuments,
+        form: {
+          [DocumentId.ID_CARD]: {
+            ...context?.form?.[DocumentId.ID_CARD],
+            ...payload?.[DocumentId.ID_CARD],
+          },
+          [DocumentId.SELFIE]: {
+            ...context?.form?.[DocumentId.SELFIE],
+            ...payload?.[DocumentId.SELFIE],
+          },
+          [DocumentId.CERTIFICATE_OF_INCORPORATION]: {
+            ...context?.form?.[DocumentId.CERTIFICATE_OF_INCORPORATION],
+            ...payload?.[DocumentId.CERTIFICATE_OF_INCORPORATION],
+          },
         },
       },
     });
   };
   const onSubmit = (payload: Record<PropertyKey, any>) => {
+    const context = workflowService.getSnapshot()?.context;
+    const documentId = Object.keys(payload ?? {})?.[0];
+    const document = makeDocument({
+      id: documentId,
+      payload,
+    });
+    const newDocuments = upsertDocument({
+      documents: context?.documents,
+      document,
+    });
+
     workflowService.sendEvent({
       type: 'USER_NEXT_STEP',
-      payload,
+      payload: {
+        documents: newDocuments,
+        form: {
+          ...context?.form,
+          [documentId]: {
+            ...context?.form?.[documentId],
+            ...payload?.[documentId],
+          },
+        },
+      },
     });
   };
   let initialValues = {
-    id: {
-      type: snapshot?.context?.id?.type,
+    [DocumentId.ID_CARD]: {
+      type: snapshot?.context?.form?.[DocumentId.ID_CARD]?.type,
     },
-    selfie: {
-      type: snapshot?.context?.selfie?.type,
+    [DocumentId.SELFIE]: {
+      type: snapshot?.context?.form?.[DocumentId.SELFIE]?.type,
+    },
+    [DocumentId.CERTIFICATE_OF_INCORPORATION]: {
+      type: snapshot?.context?.form?.[DocumentId.CERTIFICATE_OF_INCORPORATION]?.type,
     },
   };
-  let documentName;
+
+  let documentId;
 
   workflowService.subscribe('USER_NEXT_STEP', async data => {
     currentStep = data.state;
 
     if (currentStep !== 'final') return;
 
-    window.location.reload();
+    setTimeout(() => window.location.reload(), 240);
   });
 
   workflowService.subscribe('USER_PREV_STEP', data => {
@@ -103,17 +123,22 @@
     step = Step[currentStep.toUpperCase() as keyof typeof Step];
     snapshot = workflowService?.getSnapshot();
     workflowUpdated(snapshot);
-    initialValues.id.type = snapshot?.context?.id?.type;
-    initialValues.selfie.type = 'selfie';
+    initialValues[DocumentId.ID_CARD].type = snapshot?.context?.form?.[DocumentId.ID_CARD]?.type;
+    initialValues[DocumentId.SELFIE].type = 'selfie';
+    initialValues[DocumentId.CERTIFICATE_OF_INCORPORATION].type = 'incorporation';
 
     switch (currentStep) {
       case 'document_photo':
       case 'document_review':
-        documentName = 'id';
+        documentId = DocumentId.ID_CARD;
         break;
       case 'selfie':
       case 'selfie_review':
-        documentName = 'selfie';
+        documentId = DocumentId.SELFIE;
+        break;
+      case 'certificate_of_incorporation':
+      case 'certificate_of_incorporation_review':
+        documentId = DocumentId.CERTIFICATE_OF_INCORPORATION;
         break;
       default:
         break;
@@ -121,7 +146,7 @@
   }
 </script>
 
-<span class="absolute text-sm bottom-8 left-8 text-slate-500">
+<span class="absolute bottom-8 left-8 text-sm text-slate-500">
   {#if stateActionStatus === 'PENDING'}
     Loading...
   {/if}
@@ -135,4 +160,4 @@
   {/if}
 </span>
 
-<svelte:component this={step} {onPrev} {onSubmit} {initialValues} {documentName} />
+<svelte:component this={step} {onPrev} {onSubmit} {initialValues} {documentId} />

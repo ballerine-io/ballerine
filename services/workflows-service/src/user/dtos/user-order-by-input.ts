@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SortOrder } from '../../query-filters/sort-order';
+import { SortOrder } from '@/common/query-filters/sort-order';
 
 export class UserOrderByInput {
   @ApiProperty({
@@ -12,7 +12,7 @@ export class UserOrderByInput {
     required: false,
     enum: ['asc', 'desc'],
   })
-  username?: SortOrder;
+  email?: SortOrder;
 
   @ApiProperty({
     required: false,

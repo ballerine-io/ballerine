@@ -1,8 +1,8 @@
-import { JsonFilter } from '@/query-filters/json-filter';
+import { JsonFilter } from '@/common/query-filters/json-filter';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional } from 'class-validator';
-import { StringFilter } from '../../query-filters/string-filter';
+import { StringFilter } from '@/common/query-filters/string-filter';
 
 export class UserWhereInput {
   @ApiProperty({
@@ -19,7 +19,7 @@ export class UserWhereInput {
   })
   @Type(() => StringFilter)
   @IsOptional()
-  username?: StringFilter;
+  email?: StringFilter;
 
   @ApiProperty({
     required: false,

@@ -1,6 +1,6 @@
-import { InputJsonValue } from '@/types';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsObject } from 'class-validator';
+import { WorkflowRuntimeDataStatus } from '@prisma/client';
 
 export class WorkflowDefinitionUpdateInput {
   @ApiProperty({
@@ -17,7 +17,25 @@ export class WorkflowDefinitionUpdateInput {
   })
   @IsObject()
   @IsOptional()
-  context?: InputJsonValue;
+  context?: any;
 
-  status?: string;
+  @ApiProperty({
+    required: false,
+    type: 'string',
+  })
+  @IsString()
+  @IsOptional()
+  status?: WorkflowRuntimeDataStatus;
+
+  @ApiProperty({
+    required: false,
+    type: 'string',
+  })
+  @IsString()
+  @IsOptional()
+  resolvedAt?: Date | null;
+
+  @IsString()
+  @IsOptional()
+  assigneeId?: string;
 }

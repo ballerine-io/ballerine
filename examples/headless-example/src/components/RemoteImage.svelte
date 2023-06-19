@@ -1,9 +1,11 @@
 <script lang="ts">
-  import {onMount} from "svelte";
-  import {fetchBlob} from "@/utils";
+  import { onMount } from 'svelte';
+  import { fetchBlob, fetchJson } from '@/utils';
+  import { z } from 'zod';
 
   export let id: string;
   export let alt: string;
+  export let fileType: string;
   let src: string;
 
   const blobToBase64 = (blob: Blob) => {
@@ -13,22 +15,51 @@
       reader.onloadend = () => {
         resolve(reader.result);
       };
-      reader.onerror = (error) => {
+      reader.onerror = error => {
         reject(error);
       };
     });
   };
 
-  onMount(async () => {
+  const isFileSourcePublic = fileInfo => {
+    return fileInfo.uri.includes('https') && !fileInfo.fileNameInBucket;
+  };
+  const fetchFileInfoById = async (id: string) => {
+    const data = await fetchJson(`http://localhost:3000/api/v1/external/storage/${id}`);
 
+    return z
+      .object({
+        uri: z.string(),
+        fileNameInBucket: z.string().nullable(),
+      })
+      .parse(data);
+  };
+  const fetchFileContentById = async (id: string) => {
+    const data = await fetchBlob(`http://localhost:3000/api/v1/external/storage/content/${id}`);
+
+    return z.instanceof(Blob).transform(blobToBase64).parseAsync(data);
+  };
+
+  onMount(async () => {
     if (!id) return;
 
-    const data = await fetchBlob<Blob>(
-      `http://localhost:3000/api/external/storage/${id}`,
-    );
+    const fileInfo = await fetchFileInfoById(id);
 
-    src = await blobToBase64(data);
+    if (isFileSourcePublic(fileInfo)) {
+      src = fileInfo.uri;
+
+      return;
+    }
+
+    const base64 = await fetchFileContentById(id);
+
+    src = base64?.replace(/application\/octet-stream/gi, fileType);
   });
 </script>
 
-<img class="rounded-lg" {src} {alt} />
+{#if fileType === 'application/pdf'}
+  <iframe class="rounded-lg" {src} {alt} />
+{/if}
+{#if fileType !== 'application/pdf'}
+  <img class="rounded-lg" {src} {alt} />
+{/if}

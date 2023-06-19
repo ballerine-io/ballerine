@@ -16,7 +16,6 @@ export class UserRepository {
   ): Promise<User> {
     return this.prisma.user.create<T>({
       ...args,
-
       data: {
         ...args.data,
         // Use Prisma middleware
@@ -35,18 +34,18 @@ export class UserRepository {
     id: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
   ): Promise<User> {
-    return await this.prisma.user.findUniqueOrThrow({
+    return this.prisma.user.findUniqueOrThrow({
       where: { id },
       ...args,
     });
   }
 
-  async findByUsername<T extends Omit<Prisma.UserFindUniqueArgs, 'where'>>(
-    username: string,
+  async findByEmail<T extends Omit<Prisma.UserFindUniqueArgs, 'where'>>(
+    email: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueArgs, 'where'>>,
-  ): Promise<User | null> {
-    return await this.prisma.user.findUnique({
-      where: { username },
+  ): Promise<any> {
+    return this.prisma.user.findUnique({
+      where: { email },
       ...args,
     });
   }

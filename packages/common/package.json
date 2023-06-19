@@ -1,8 +1,8 @@
 {
   "private": false,
   "name": "@ballerine/common",
-  "author": "Ballerine",
-  "version": "0.4.3",
+  "author": "Ballerine <dev@ballerine.com>",
+  "version": "0.5.3",
   "description": "common",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
@@ -21,6 +21,7 @@
     "build": "rollup --config rollup.config.js",
     "watch": "concurrently --kill-others \"rollup --config rollup.config.js -w\" \"tsc -b --watch\"",
     "test": "vitest",
+    "test:unit": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --fix",
@@ -68,5 +69,9 @@
     "typescript": "4.9.5",
     "vite": "^4.1.1",
     "vitest": "^0.28.4"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "json-schema-to-zod": "^0.6.3"
   }
 }

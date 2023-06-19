@@ -8,13 +8,17 @@ export class StorageService {
   constructor(protected readonly fileRepository: FileRepository) {}
 
   async createFileLink({
+    uri,
     fileNameOnDisk,
     userId,
-  }: Pick<Prisma.FileCreateInput, 'fileNameOnDisk' | 'userId'>) {
+    fileNameInBucket,
+  }: Pick<Prisma.FileCreateInput, 'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket'>) {
     const file = await this.fileRepository.create({
       data: {
+        uri,
         fileNameOnDisk,
         userId,
+        fileNameInBucket,
       },
       select: {
         id: true,
@@ -24,10 +28,7 @@ export class StorageService {
     return file.id;
   }
 
-  async getFileNameById({ id, userId }: IFileIds) {
-    return await this.fileRepository.findNameById({
-      id,
-      userId,
-    });
+  async getFileNameById({ id }: IFileIds) {
+    return await this.fileRepository.findById({ id });
   }
 }

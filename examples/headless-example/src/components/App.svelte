@@ -6,12 +6,11 @@
     type CreateQueryOptions,
     useQueryClient,
   } from '@tanstack/svelte-query';
-  import { fetchJson, makeWorkflow } from '@/utils';
+  import { makeWorkflow } from '@/utils';
   import SignUp from './SignUp.svelte';
   import Workflow from './Workflow.svelte';
-  import { NO_AUTH_USER_KEY } from '@/constants';
+  import { ENTITY_ID_STORAGE_KEY } from '@/constants';
   import { writable } from 'svelte/store';
-  import Card from '@/components/Card.svelte';
   import Approved from '@/components/Approved.svelte';
   import Rejected from '@/components/Rejected.svelte';
   import Resubmission from '@/components/Resubmission.svelte';
@@ -20,40 +19,61 @@
   import { BallerineBackOfficeService } from '@/services/ballerine-backoffice.service';
   import DevSidebar from '@/visualiser/dev-sidebar.svelte';
 
-  let noAuthUserId = sessionStorage.getItem(NO_AUTH_USER_KEY);
+  let entityId = sessionStorage.getItem(ENTITY_ID_STORAGE_KEY);
+  let nextWorkflow;
+  let shouldResubmit = false;
+  let documentsDecisionStatuses;
+  let isDecided;
+  let isApproved;
+  let isRejected;
+  let isRevision;
 
-  const { fetchEndUser, fetchIntent, fetchSignUp, fetchWorkflow, fetchWorkflows } =
-    new BallerineBackOfficeService();
+  const {
+    fetchEndUser,
+    fetchBusiness,
+    fetchIntent,
+    fetchBusinessSignUp,
+    fetchEnduserSignUp,
+    fetchWorkflow,
+    fetchWorkflows,
+  } = new BallerineBackOfficeService();
 
-  const createEndUserQuery = (id: string) =>
+  const createEntityQuery = (id: string) =>
     createQuery({
-      queryKey: ['end-user', { id }],
-      queryFn: async () => fetchEndUser(id),
+      queryKey: ['entity', { id }],
+      queryFn: async () =>
+        import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? fetchEndUser(id) : fetchBusiness(id),
       onSuccess(data) {
-        const cached = sessionStorage.getItem(NO_AUTH_USER_KEY);
+        const cached = sessionStorage.getItem(ENTITY_ID_STORAGE_KEY);
 
         if ((cached && cached === data?.id) || !data?.id) return;
 
-        noAuthUserId = data?.id;
-        sessionStorage.setItem(NO_AUTH_USER_KEY, noAuthUserId);
+        entityId = data?.id;
+        sessionStorage.setItem(ENTITY_ID_STORAGE_KEY, entityId);
       },
       onError(error) {
         if (error.message !== 'Not Found (404)') {
           throw error;
         }
 
-        sessionStorage.removeItem(NO_AUTH_USER_KEY);
-        noAuthUserId = undefined;
+        sessionStorage.removeItem(ENTITY_ID_STORAGE_KEY);
+        entityId = undefined;
       },
       enabled: typeof id === 'string' && id.length > 0,
     });
+  const entityType =
+    import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'end-user' : ('business' as const);
   const createWorkflowsQuery = (
     options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {},
   ) =>
     createQuery({
-      queryKey: ['workflows'],
-      queryFn: fetchWorkflows,
-      enabled: typeof noAuthUserId === 'string' && noAuthUserId.length > 0,
+      queryKey: ['workflows', { entityType, entityId }],
+      queryFn: () =>
+        fetchWorkflows({
+          entityType,
+          entityId,
+        }),
+      enabled: typeof entityId === 'string' && entityId.length > 0,
       ...options,
     });
   const createIntentQuery = () =>
@@ -72,15 +92,32 @@
     createWorkflowsQuery({
       select: workflows => {
         return Array.isArray(workflows)
-          ? workflows?.find(
-              workflow => workflow?.workflowDefinition?.name === 'onboarding_client_collect_data',
-            )
+          ? workflows
+              ?.slice()
+              ?.sort((a, b) => {
+                if (
+                  a?.workflowRuntimeData?.status === 'active' &&
+                  b?.workflowRuntimeData?.status !== 'active'
+                )
+                  return -1;
+                if (
+                  b?.workflowRuntimeData?.status === 'active' &&
+                  a?.workflowRuntimeData?.status !== 'active'
+                )
+                  return 1;
+
+                return 0;
+              })
+              ?.find(
+                workflow =>
+                  workflow?.workflowDefinition?.name === import.meta.env.VITE_EXAMPLE_TYPE,
+              )
           : undefined;
       },
     });
   const createWorkflowQuery = (id: string) =>
     createQuery({
-      queryKey: ['workflows', { id }],
+      queryKey: ['workflows', { id, entityType, entityId }],
       queryFn: async () => {
         const data = await fetchWorkflow(id);
 
@@ -90,9 +127,10 @@
       },
       refetchInterval(data) {
         if (
-          endUserState === 'REJECTED' ||
-          endUserState === 'APPROVED' ||
-          (endUserState === 'NEW' && data?.workflowRuntimeData?.status === 'created') ||
+          isRejected ||
+          isApproved ||
+          data?.workflowRuntimeData?.status === 'active' ||
+          (entityState === 'NEW' && data?.workflowRuntimeData?.status === 'created') ||
           (isProcessing && data?.workflowRuntimeData?.status !== 'completed')
         ) {
           return false;
@@ -100,25 +138,26 @@
 
         return parseInt(import.meta.env.VITE_POLLING_INTERVAL) * 1000 || false;
       },
-      enabled: typeof id === 'string' && id.length > 0,
+      enabled: typeof id === 'string' && id.length > 0 && !!entityType && !!entityId,
     });
   const queryClient = useQueryClient();
   const createSignUpMutation = () =>
     createMutation({
-      mutationFn: fetchSignUp,
+      mutationFn:
+        import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? fetchEnduserSignUp : fetchBusinessSignUp,
       onSuccess: data => {
-        sessionStorage.setItem(NO_AUTH_USER_KEY, data?.id);
-        noAuthUserId = data?.id;
+        sessionStorage.setItem(ENTITY_ID_STORAGE_KEY, data?.id);
+        entityId = data?.id;
         queryClient.invalidateQueries();
       },
     });
-  $: endUserQuery = createEndUserQuery(noAuthUserId);
+  $: entityQuery = createEntityQuery(entityId);
   const firstWorkflowQuery = createFirstWorkflowQuery();
   $: workflowQuery = createWorkflowQuery($firstWorkflowQuery?.data?.workflowRuntimeData?.id);
   const intentQuery = createIntentQuery();
 
   const signUpMutation = createSignUpMutation();
-  const onSubmit = async ({
+  const onSubmitEnduser = async ({
     fname: firstName,
     lname: lastName,
   }: {
@@ -130,6 +169,25 @@
       lastName,
     });
 
+  const onSubmitBusiness = async ({
+    bname: companyName,
+    rnum: registrationNumber,
+  }: {
+    bname: string;
+    rnum: string;
+  }) =>
+    $signUpMutation.mutate({
+      companyName,
+      registrationNumber,
+    });
+
+  const onSubmit = import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? onSubmitEnduser : onSubmitBusiness;
+  const clearUser = () => {
+    sessionStorage.removeItem(ENTITY_ID_STORAGE_KEY);
+    entityId = undefined;
+    workflow.set(undefined);
+    queryClient.invalidateQueries();
+  };
   const workflow = writable<WorkflowOptionsBrowser | undefined>();
   const debugWf = writable<{ definition: unknown }>();
 
@@ -152,93 +210,113 @@
   const mergeWorkflow = () => makeWorkflow($workflowQuery?.data || $intentQuery?.data);
   const handleResubmit = () => {
     workflow.set(mergeWorkflow());
+    shouldResubmit = false;
   };
-
-  let nextWorkflow;
-  let shouldResubmit = false;
-  $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
-  $: endUserId = $endUserQuery.data?.id;
-  $: endUserState = $endUserQuery.data?.state;
-  $: isProcessing = endUserState === 'PROCESSING';
-  $: isValidWorkflow = endUserId && !isCompleted;
-
-  $: {
-    if (
-      endUserId &&
-      ($workflowQuery?.data?.workflowDefinition || $intentQuery?.data?.workflowDefinition)
-    ) {
-      nextWorkflow = mergeWorkflow();
-
-      if (
-        nextWorkflow?.definition?.initial !== $workflow?.definition?.initial &&
-        nextWorkflow?.definition?.context?.id?.resubmissionReason
-      ) {
-        shouldResubmit = true;
-      } else {
-        workflow.set(nextWorkflow);
-        shouldResubmit = false;
-      }
-    } else {
+  const handleNextWorkflow = ({
+    entityQueryId,
+    workflowQueryDefinition,
+    intentQueryDefinition,
+    workflowDefinitionInitial,
+  }: {
+    entityQueryId: string;
+    workflowQueryDefinition: Record<string, unknown>;
+    intentQueryDefinition: Record<string, unknown>;
+    workflowDefinitionInitial: string;
+  }) => {
+    if (!entityQueryId || (!workflowQueryDefinition && !intentQueryDefinition)) {
       workflow.set(undefined);
       shouldResubmit = false;
-    }
-  }
 
-  let message;
+      return;
+    }
+
+    nextWorkflow = mergeWorkflow();
+
+    if (
+      nextWorkflow?.definition?.initial !== workflowDefinitionInitial &&
+      nextWorkflow?.definition?.context?.documents?.some(
+        ({ decision }) => decision?.status === 'revision',
+      )
+    ) {
+      shouldResubmit = true;
+
+      return;
+    }
+
+    workflow.set(nextWorkflow);
+    shouldResubmit = false;
+  };
+
+  $: isCompleted = $workflowQuery.data?.workflowRuntimeData?.status === 'completed';
+  $: entityState = $entityQuery.data?.approvalState;
+  $: isProcessing = entityState === 'PROCESSING';
 
   $: {
-    switch (endUserState) {
-      case 'PROCESSING':
-        message = '';
-        break;
-      case 'REJECTED':
-        message = 'Your request was declined.';
-        break;
-      case 'APPROVED':
-        message = 'Your request was approved :)';
-        break;
-      default:
-        message = '';
-    }
+    handleNextWorkflow({
+      intentQueryDefinition: $intentQuery?.data?.workflowDefinition?.definition,
+      workflowQueryDefinition: $workflowQuery?.data?.workflowDefinition?.definition,
+      entityQueryId: $entityQuery?.data?.id,
+      workflowDefinitionInitial: $workflow?.definition?.initial,
+    });
+  }
+
+  $: {
+    documentsDecisionStatuses = nextWorkflow
+      ? nextWorkflow?.workflowContext?.machineContext?.documents?.map(
+          ({ decision }) => decision?.status,
+        )
+      : $workflow?.workflowContext?.machineContext?.documents?.map(
+          ({ decision }) => decision?.status,
+        );
+
+    const hasDecisions = !!documentsDecisionStatuses?.length;
+
+    // In JavaScript `every` returns true with empty arrays.
+    isApproved = hasDecisions && documentsDecisionStatuses?.every(status => status === 'approved');
+    isRejected = documentsDecisionStatuses?.some(status => status === 'rejected');
+    isRevision = !isCompleted && documentsDecisionStatuses?.some(status => status === 'revision');
+    isDecided = isApproved || isRejected || isRevision;
   }
 </script>
 
-<div class="h-full flex flex-row items-center justify-center">
-  <main class="h-full w-full flex flex-col items-center justify-center p-6">
-    {#if !endUserId}
+<div class="flex h-full flex-row items-center justify-center">
+  <main class="flex h-full w-full flex-col items-center justify-center p-6">
+    {#if !$entityQuery.data?.id}
       <SignUp {onSubmit} />
     {/if}
-
     {#if $workflow && !isCompleted && !shouldResubmit}
       <Workflow workflow={$workflow} on:workflow-updated={workflowComponentStateUpdated} />
     {/if}
 
-    {#if endUserId && !$workflow && !isProcessing}
-      <Intent disabled={!endUserId} refetch={$intentQuery.refetch} />
+    {#if $entityQuery.data?.id && !$workflow && !isProcessing}
+      <Intent disabled={!$entityQuery.data?.id} refetch={$intentQuery.refetch} />
     {/if}
 
-    {#if endUserId && isProcessing && isCompleted}
+    {#if $entityQuery.data?.id && isCompleted && !isDecided}
       <ThankYou />
     {/if}
 
-    {#if isValidWorkflow && shouldResubmit}
+    {#if isRevision && shouldResubmit}
       <Resubmission
         {handleResubmit}
-        reason={nextWorkflow?.definition?.context?.id?.resubmissionReason
-          ?.toLowerCase()
-          ?.replace(/_/g, ' ')}
+        reason={nextWorkflow?.definition?.context?.documents
+          ?.find(({ decision }) => decision?.status === 'revision')
+          ?.decision?.revisionReason?.toLowerCase()}
       />
     {/if}
 
-    {#if endUserState === 'REJECTED'}
+    {#if isRejected}
       <Rejected />
     {/if}
 
-    {#if endUserState === 'APPROVED'}
+    {#if isApproved}
       <Approved />
     {/if}
   </main>
   {#if $debugWf}
     <DevSidebar workflowDefinition={$debugWf?.definition} />
   {/if}
+  <div class={'fixed left-2 top-2'}>
+    <button on:click={clearUser}> Clear User</button>
+  </div>
 </div>
