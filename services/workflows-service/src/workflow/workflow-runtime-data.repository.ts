@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, WorkflowRuntimeData, WorkflowRuntimeDataStatus } from '@prisma/client';
 import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
+import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 
 @Injectable()
 export class WorkflowRuntimeDataRepository {
@@ -11,7 +12,16 @@ export class WorkflowRuntimeDataRepository {
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.create<T>(args);
+    return await this.prisma.workflowRuntimeData.create<T>({
+      ...args,
+      data: {
+        ...args.data,
+        context: {
+          ...((args.data?.context ?? {}) as any),
+          documents: assignIdToDocuments((args.data?.context as any)?.documents),
+        },
+      },
+    });
   }
 
   async findMany<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(

@@ -42,13 +42,14 @@ export class DocumentChangedWebhookCaller {
     const newDocuments = data.context?.['documents'] || [];
 
     const newDocumentsByIdentifier = newDocuments.reduce((accumulator: any, doc: any) => {
-      const id = getDocumentId(doc);
+      const id = getDocumentId(doc, false);
       accumulator[id] = doc;
       return accumulator;
     }, {});
 
     const anyDocumentStatusChanged = oldDocuments.some((oldDocument: any) => {
-      const id = getDocumentId(oldDocument);
+      const id = getDocumentId(oldDocument, false);
+
       return (
         (!oldDocument.decision && newDocumentsByIdentifier[id].decision) ||
         (oldDocument.decision &&
