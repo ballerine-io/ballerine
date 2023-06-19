@@ -85,7 +85,7 @@ describe('workflow-runner', () => {
       const workflow = new WorkflowRunner({
         definition,
         extensions: {
-          externalPlugins: { apiPluginsSchemas },
+          apiPlugins: { apiPluginsSchemas },
         },
         workflowContext: { machineContext: { entity: { id: 'some_id' } } },
       });
