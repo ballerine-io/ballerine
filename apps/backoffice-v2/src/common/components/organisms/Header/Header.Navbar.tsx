@@ -59,7 +59,10 @@ export const Navbar: FunctionComponent = () => {
               'bg-muted font-bold': id === searchParams?.filterId,
             })}
           >
-            <CheckSquare /> {name}
+            <span>
+              <CheckSquare className={`d-4`} />
+            </span>{' '}
+            {name}
           </NavItem>
         ))}
       </ul>

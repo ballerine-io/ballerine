@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import * as Sentry from '@sentry/node';
 import { AxiosInstance, isAxiosError } from 'axios';
 import { WorkflowConfig } from '@/workflow/schemas/zod-schemas';
+import { getDocumentId } from '@ballerine/common';
 
 @Injectable()
 export class DocumentChangedWebhookCaller {
@@ -40,29 +41,21 @@ export class DocumentChangedWebhookCaller {
     const oldDocuments = data.runtimeData.context['documents'] || [];
     const newDocuments = data.context?.['documents'] || [];
 
-    const documentIdentifier = (doc: any) => {
-      return (
-        doc.id ||
-        `${doc.category as string}$${doc.type as string}$${
-          doc.issuer?.country as string
-        }`.toLowerCase()
-      );
-    };
-
     const newDocumentsByIdentifier = newDocuments.reduce((accumulator: any, doc: any) => {
-      const id = documentIdentifier(doc);
+      const id = getDocumentId(doc, false);
       accumulator[id] = doc;
       return accumulator;
     }, {});
 
-    const anyDocumentStatusChanged = (oldDocuments as Array<any>).some(oldDocument => {
-      const id = documentIdentifier(oldDocument);
+    const anyDocumentStatusChanged = oldDocuments.some((oldDocument: any) => {
+      const id = getDocumentId(oldDocument, false);
+
       return (
         (!oldDocument.decision && newDocumentsByIdentifier[id].decision) ||
         (oldDocument.decision &&
           oldDocument.decision.status &&
           id in newDocumentsByIdentifier &&
-          oldDocument.decision.status !== newDocumentsByIdentifier[id].decision.status)
+          oldDocument.decision.status !== newDocumentsByIdentifier[id].decision?.status)
       );
     });
 
