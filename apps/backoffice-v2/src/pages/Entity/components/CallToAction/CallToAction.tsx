@@ -29,6 +29,7 @@ import { SelectTrigger } from '../../../../common/components/atoms/Select/Select
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { Input } from '../../../../common/components/atoms/Input/Input';
 
 export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
   const { entityId } = useParams();
@@ -165,24 +166,31 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
             reason for requesting a document re-submission.
           </DialogDescription>
         </DialogHeader>
-        <Select onValueChange={onRevisionReasonChange}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Re-submission reason" />
-          </SelectTrigger>
-          <SelectContent>
-            {revisionReasons?.map(reason => {
-              const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
-              const capitalizedReason =
-                reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
+        {!revisionReasons?.length ? (
+          <Input
+            placeholder={`Re-submission reason`}
+            onChange={event => onRevisionReasonChange(event.target.value)}
+          />
+        ) : (
+          <Select onValueChange={onRevisionReasonChange}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Re-submission reason" />
+            </SelectTrigger>
+            <SelectContent>
+              {revisionReasons?.map(reason => {
+                const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
+                const capitalizedReason =
+                  reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
 
-              return (
-                <SelectItem key={reason} value={reason}>
-                  {capitalizedReason}
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
+                return (
+                  <SelectItem key={reason} value={reason}>
+                    {capitalizedReason}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        )}
         <DialogFooter>
           <DialogClose asChild>
             <button

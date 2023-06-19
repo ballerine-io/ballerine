@@ -12,6 +12,7 @@ import { EndUserWhereUniqueInput } from './dtos/end-user-where-unique-input';
 import { EndUserModel } from './end-user.model';
 import { EndUserService } from './end-user.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 
 @swagger.ApiTags('external/end-users')
 @common.Controller('external/end-users')
@@ -25,6 +26,7 @@ export class EndUserControllerExternal {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [EndUserModel] })
   @swagger.ApiForbiddenResponse()
+  @UseKeyAuthInDevGuard()
   async create(
     @common.Body() data: EndUserCreateDto,
   ): Promise<Pick<EndUserModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>> {
@@ -59,6 +61,7 @@ export class EndUserControllerExternal {
   @swagger.ApiOkResponse({ type: EndUserModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
+  @UseKeyAuthInDevGuard()
   async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
     try {
       const endUser = await this.service.getById(params.id);
