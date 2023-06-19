@@ -7,8 +7,8 @@ export interface ApiPluginParams {
   stateNames: Array<string>;
   url: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
-  request: { transform: TTransformers; postTransformSchema?: TValidators };
-  response: { transform: TTransformers; postTransformSchema?: TValidators };
+  request: { transformer: TTransformers; schemaValidator?: TValidators };
+  response: { transformer: TTransformers; schemaValidator?: TValidators };
   headers?: HeadersInit;
   successAction: string;
   errorAction: string;
@@ -17,10 +17,10 @@ export class ApiPlugin {
   name: string;
   stateNames: Array<string>;
   url: string;
-  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
-  headers: HeadersInit;
-  request: { transform: TTransformers; postTransformSchema?: TValidators };
-  response: { transform: TTransformers; postTransformSchema?: TValidators };
+  method: ApiPluginParams['method'];
+  headers: ApiPluginParams['headers'];
+  request: ApiPluginParams['request'];
+  response: ApiPluginParams['response'];
   successAction: string;
   errorAction: string;
 
@@ -36,23 +36,41 @@ export class ApiPlugin {
     this.errorAction = pluginParams.errorAction;
   }
   async callApi(context: TContext) {
-    const payload = await this.transformRequest(context);
-    await this.validateRequest(payload);
+    try {
+      const requestPayload = await this.transformData(this.request.transformer, context);
+      const { isRequestValid, errorMessage } = await this.validateRequest(
+        requestPayload as AnyRecord,
+      );
+      if (!isRequestValid) return this.returnErrorResponse(errorMessage!);
 
-    const response = await this.makeApiRequest(this.url, this.method, payload, this.headers);
+      const apiResponse = await this.makeApiRequest(
+        this.url,
+        this.method,
+        requestPayload,
+        this.headers,
+      );
 
-    if (response.ok) {
-      const result = await response.json();
-      const responseBody = await this.transformResponse(result as AnyRecord);
-      await this.validateResponse(responseBody);
+      if (apiResponse.ok) {
+        const result = await apiResponse.json();
+        const responseBody = await this.transformData(
+          this.response.transformer,
+          result as AnyRecord,
+        );
 
-      return { callbackAction: this.successAction, response: responseBody };
-    } else {
-      return {
-        callbackAction: this.errorAction,
-        response: 'Request Failed: ' + response.statusText,
-      };
+        const { isResponseValid, errorMessage } = await this.validateResponse(responseBody);
+        if (!isResponseValid) return this.returnErrorResponse(errorMessage!);
+
+        return { callbackAction: this.successAction, responseBody };
+      } else {
+        return this.returnErrorResponse('Request Failed: ' + apiResponse.statusText);
+      }
+    } catch (error) {
+      return this.returnErrorResponse(error.message);
     }
+  }
+
+  returnErrorResponse(errorMessage: string) {
+    return { callbackAction: this.errorAction, error: errorMessage };
   }
 
   async makeApiRequest(
@@ -76,33 +94,30 @@ export class ApiPlugin {
     return await fetch(url, requestParams);
   }
 
-  async transformRequest(context: TContext) {
-    return await this.request.transform.transform(context, { input: 'json', output: 'json' });
-  }
-
-  async validateRequest(transformedRequest: AnyRecord) {
-    if (!this.request.postTransformSchema) return;
-
-    const { isValid, errorMessage } = await this.request.postTransformSchema.validate(
-      transformedRequest,
-    );
-    if (!isValid) {
-      return this?.errorCallbackState(errorMessage);
+  async transformData(transformer: TTransformers, record: AnyRecord) {
+    try {
+      return (await transformer.transform(record, { input: 'json', output: 'json' })) as AnyRecord;
+    } catch (error) {
+      throw new Error(
+        `Error transforming data: ${error.message} for transformer mapping: ${transformer.mapping}`,
+      );
     }
   }
 
-  async transformResponse(responseBody: AnyRecord) {
-    return (await this.response.transform.transform(responseBody, {})) as AnyRecord;
-  }
+  async validateRequest(transformedRequest: AnyRecord) {
+    if (!this.request.schemaValidator) return { isRequestValid: true };
 
+    const { isValid, errorMessage } = await this.request.schemaValidator.validate(
+      transformedRequest,
+    );
+    return { isRequestValid: isValid, errorMessage };
+  }
   async validateResponse(transformedResponse: AnyRecord) {
-    if (!this.response.postTransformSchema) return;
+    if (!this.response.postTransformSchema) return { isResponseValid: true };
 
     const { isValid, errorMessage } = await this.response.postTransformSchema.validate(
       transformedResponse,
     );
-    if (!isValid) {
-      return this?.errorCallbackState(errorMessage);
-    }
+    return { isResponseValid: isValid, errorMessage };
   }
 }
