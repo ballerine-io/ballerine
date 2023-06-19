@@ -124,7 +124,7 @@ export const kybWithExternalRequestWorkflowExample = {
         }, // Schema is OPTIONAL, but if provided, it will be used to validate the request body
       },
       response: {
-        transform: {}, // JQ
+        transform: '{.}', // JQ
         schema: {
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',
