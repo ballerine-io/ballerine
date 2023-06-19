@@ -41,7 +41,6 @@ import * as crypto from 'crypto';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
-import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
@@ -52,6 +51,7 @@ import {
   getDocumentsByCountry,
   TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
+import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 
 type TEntityId = string;
 
@@ -352,11 +352,9 @@ export class WorkflowService {
 
     let contextHasChanged, mergedContext;
     if (data.context) {
+      data.context.documents = assignIdToDocuments(data.context.documents);
       contextHasChanged = !isEqual(data.context, runtimeData.context);
-      mergedContext = merge({}, runtimeData.context, {
-        ...data.context,
-        documents: assignIdToDocuments(data.context?.documents),
-      });
+      mergedContext = merge({}, runtimeData.context, data.context);
 
       const context = {
         ...mergedContext,
@@ -683,7 +681,6 @@ export class WorkflowService {
     } catch (error) {
       throw new BadRequestException(error);
     }
-    context.documents = assignIdToDocuments(context.documents);
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(context);
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
