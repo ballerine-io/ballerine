@@ -1,4 +1,4 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm, UseFormWatch } from 'react-hook-form';
 import { Form } from '../../../../common/components/organisms/Form/Form';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
@@ -38,6 +38,13 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   workflowId,
 }) => {
   const [formData, setFormData] = useState(data);
+  const [formData, setFormData] = useState(data);
+  const useInitialCategorySetValue = () => {
+    useEffect(() => {
+      const categoryValue = form.getValues('category');
+      form.setValue('category', categoryValue);
+    }, [form, data, setFormData]);
+  };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {

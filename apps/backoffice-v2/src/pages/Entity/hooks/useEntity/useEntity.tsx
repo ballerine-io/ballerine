@@ -9,13 +9,12 @@ import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/us
 import {
   composePickableCategoryType,
   convertSnakeCaseToTitleCase,
-  extractCountryCodeFromWorkflow,
-  getIsEditable,
   isExistingSchemaForDocument,
+  extractCountryCodeFromWorkflow,
   omitPropsFromObject,
+  getIsEditable,
 } from './utils';
 import { getDocumentsByCountry } from '@ballerine/common';
-
 export const useEntity = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
