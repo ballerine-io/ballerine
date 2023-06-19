@@ -2,7 +2,7 @@
 import { uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
-import { createMachine, interpret } from 'xstate';
+import { createMachine, interpret, assign } from 'xstate';
 import { HttpError } from './errors';
 import type {
   ObjectValues,
@@ -22,6 +22,7 @@ export class WorkflowRunner {
   #__callback: ((event: WorkflowEvent) => void) | null = null;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
+  events: any;
 
   public get workflow() {
     return this.#__workflow;
@@ -174,10 +175,13 @@ export class WorkflowRunner {
           data, // Data
         );
         if (!ruleResult && options.assignOnFailure) {
-          this.#__context = {
-            ...this.#__context,
-            ...options.assignOnFailure,
-          };
+          this.#__callback?.({
+            type: 'RULE_EVALUATION_FAILURE',
+            state: this.#__currentState,
+            payload: {
+              ...options,
+            },
+          });
         }
         console.log(`json logic rule result`, ruleResult);
         return ruleResult;
