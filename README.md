@@ -89,7 +89,7 @@ View each component's current state in the [roadmap](#roadmap) below.
 - **Rule engine** - Leverage various rule types to ensure user compliance with your risk policy.
 
 ####   Planned on roadmap - 📌
-- **Frontend headless SDK**- Real-time modification of KYC/KYB frontend user journeys. 
+- **Frontend headless SDK**- Real-time modification of KYC/KYB frontend user journeys.
 
 #### Community driven building blocks - 🌍
 - [**User flows UX/UI**](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md) - KYC/KYB/Document collection flows and UI via mobile & web SDK.
@@ -167,9 +167,15 @@ To set up a local environment, follow these steps:
 Once the process is complete,  _2 tabs_   will open in your browser:
 
 1. http://localhost:5173/ - for the _document collection flow_
-2. http://localhost:5137/ - for the  _backffice_ 
+2. http://localhost:5137/ - for the  _backffice_
 (It's recommended to have them positioned side-by-side).
-<sub>If the required tabs have not opened automatically, please use the links we have provided above.</sub>
+
+##### KYB Manual Review Workflow:
+The following command will run the workflow's backend (workflow service API), the backoffice, and UI example using the headless web SDK:
+```sh
+pnpm kyb-manual-review-example
+```
+<sub>If the tabs have not opened automatically, please use the links provided above.</sub>
 
 **Steps to go over the flow:**
 

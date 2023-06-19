@@ -1,17 +1,1 @@
-{
-  "RESOURCE": {
-    "END_USER": "user"
-  },
-  "RESULT": {
-    "SUCCEEDED": "Action succeeded:",
-    "FAILED": "Action failed:"
-  },
-  "ACTION": {
-    "APPROVE": "approve",
-    "REJECT": "reject",
-    "RESUBMIT": "resubmit",
-    "SIGN_IN": "sign in",
-    "SIGN_OUT": "sign out"
-  },
-  "EVENT": "{{result}} {{action}} {{resource}}"
-}
+{}

@@ -1,15 +1,18 @@
 import * as common from '@nestjs/common';
-import { Post, UseInterceptors, UploadedFile, Param, Res } from '@nestjs/common';
+import { Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { Response } from 'express';
-import { diskStorage } from 'multer';
 import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
-import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { fileFilter } from './file-filter';
-import { getFileName } from './get-file-name';
+import { downloadFileFromS3, manageFileByProvider } from '@/storage/get-file-storage-manager';
+import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
+import * as os from 'os';
+import * as path from 'path';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 
 // Temporarily identical to StorageControllerInternal
 @swagger.ApiTags('Storage')
@@ -24,10 +27,7 @@ export class StorageControllerExternal {
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './upload',
-        filename: getFileName,
-      }),
+      storage: manageFileByProvider(process.env),
       fileFilter,
     }),
   )
@@ -43,9 +43,12 @@ export class StorageControllerExternal {
       },
     },
   })
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  @UseKeyAuthInDevGuard()
+  async uploadFile(@UploadedFile() file: Partial<Express.MulterS3.File>) {
     const id = await this.service.createFileLink({
-      fileNameOnDisk: file.filename,
+      uri: file.location || String(file.path),
+      fileNameOnDisk: String(file.path),
+      fileNameInBucket: file.key,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
     });
@@ -53,19 +56,42 @@ export class StorageControllerExternal {
     return { id };
   }
 
-  // curl -v http://localhost:3000/api/storage/1679322938093
+  // curl -v http://localhost:3000/api/v1/storage/1679322938093
   @common.Get('/:id')
+  @UseKeyAuthInDevGuard()
   async getFileById(@Param('id') id: string, @Res() res: Response) {
     // currently ignoring user id due to no user info
-    const fileNameOnDisk = await this.service.getFileNameById({
+    const persistedFile = await this.service.getFileNameById({
       id,
-      userId: '',
     });
-
-    if (!fileNameOnDisk) {
+    if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }
 
-    return res.sendFile(fileNameOnDisk, { root: './upload' });
+    return res.send(persistedFile);
+  }
+
+  // curl -v http://localhost:3000/api/v1/storage/content/1679322938093
+  @common.Get('/content/:id')
+  @UseKeyAuthInDevGuard()
+  async fetchFileContent(@Param('id') id: string, @Res() res: Response) {
+    // currently ignoring user id due to no user info
+    const persistedFile = await this.service.getFileNameById({
+      id,
+    });
+    if (!persistedFile) {
+      throw new errors.NotFoundException('file not found');
+    }
+
+    if (persistedFile.fileNameInBucket) {
+      const localFilePath = await downloadFileFromS3(
+        AwsS3FileConfig.fetchBucketName(process.env) as string,
+        persistedFile.fileNameInBucket,
+      );
+      return res.sendFile(localFilePath, { root: '/' });
+    } else {
+      const root = path.parse(os.homedir()).root;
+      return res.sendFile(persistedFile.fileNameOnDisk, { root: root });
+    }
   }
 }

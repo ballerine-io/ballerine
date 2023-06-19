@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/rules-engine-lib",
-  "author": "Ballerine",
+  "author": "Ballerine <dev@ballerine.com>",
   "version": "0.4.3",
   "description": "rules-engine-lib",
   "module": "./dist/esm/index.js",
@@ -16,7 +16,8 @@
   "scripts": {
     "build": "rollup --config rollup.config.js",
     "watch": "concurrently --kill-others \"rollup --config rollup.config.js -w\" \"tsc -b --watch\"",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:unit": "vitest run"
   },
   "engines": {
     "node": ">=12"

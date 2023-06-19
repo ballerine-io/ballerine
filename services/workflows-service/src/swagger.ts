@@ -13,7 +13,7 @@ export const swaggerSetupOptions: SwaggerCustomOptions = {
   swaggerOptions: {
     persistAuthorization: true,
   },
-  customCssUrl: '../swagger/swagger.css',
-  customfavIcon: '../swagger/favicon.png',
+  customCssUrl: '../common/swagger/swagger.css',
+  customfavIcon: '../common/swagger/favicon.png',
   customSiteTitle: 'Sample service',
 };

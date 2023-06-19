@@ -1,4 +1,4 @@
-import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
+import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { faker } from '@faker-js/faker';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
@@ -11,6 +11,8 @@ import { EndUserFindManyArgs } from './dtos/end-user-find-many-args';
 import { EndUserWhereUniqueInput } from './dtos/end-user-where-unique-input';
 import { EndUserModel } from './end-user.model';
 import { EndUserService } from './end-user.service';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 
 @swagger.ApiTags('external/end-users')
 @common.Controller('external/end-users')
@@ -24,6 +26,7 @@ export class EndUserControllerExternal {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [EndUserModel] })
   @swagger.ApiForbiddenResponse()
+  @UseKeyAuthInDevGuard()
   async create(
     @common.Body() data: EndUserCreateDto,
   ): Promise<Pick<EndUserModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>> {
@@ -58,11 +61,18 @@ export class EndUserControllerExternal {
   @swagger.ApiOkResponse({ type: EndUserModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
+  @UseKeyAuthInDevGuard()
   async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
-    const endUser = await this.service.getById(params.id);
-    if (endUser === null) {
-      throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+    try {
+      const endUser = await this.service.getById(params.id);
+
+      return endUser;
+    } catch (err) {
+      if (isRecordNotFoundError(err)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+
+      throw err;
     }
-    return endUser;
   }
 }

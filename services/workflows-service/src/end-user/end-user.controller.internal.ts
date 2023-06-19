@@ -1,4 +1,4 @@
-import { ApiNestedQuery } from '@/decorators/api-nested-query.decorator';
+import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import * as errors from '../errors';
@@ -9,6 +9,9 @@ import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { EndUserService } from './end-user.service';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import { InputJsonValue } from '@/types';
+import { JsonValue } from 'type-fest';
 
 @swagger.ApiTags('internal/end-users')
 @common.Controller('internal/end-users')
@@ -25,7 +28,12 @@ export class EndUserControllerInternal {
   @ApiNestedQuery(EndUserFindManyArgs)
   async list(@common.Req() request: Request): Promise<EndUserModel[]> {
     const args = plainToClass(EndUserFindManyArgs, request.query);
-    return this.service.list(args);
+    const query: JsonValue = {};
+
+    return this.service.list({
+      ...args,
+      ...(query as InputJsonValue),
+    });
   }
 
   @common.Get(':id')
@@ -33,10 +41,14 @@ export class EndUserControllerInternal {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
   async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
-    const endUser = await this.service.getById(params.id);
-    if (endUser === null) {
-      throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+    try {
+      return await this.service.getById(params?.id);
+    } catch (err) {
+      if (isRecordNotFoundError(err)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+
+      throw err;
     }
-    return endUser;
   }
 }

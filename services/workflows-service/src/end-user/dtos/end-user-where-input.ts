@@ -1,17 +1,18 @@
-import { DateTimeFilter } from '@/query-filters/date-time-filter';
-import { StringFilter } from '@/query-filters/string-filter';
-import { StringNullableFilter } from '@/query-filters/string-nullable-filter';
+import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
+import { StringNullableFilter } from '@/common/query-filters/string-nullable-filter';
 import { ApiProperty } from '@nestjs/swagger';
-import { EndUserState } from '@prisma/client';
+import { ApprovalState } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { IsOptional, IsEmail, IsPhoneNumber } from 'class-validator';
+import { IsEmail, IsOptional, IsPhoneNumber } from 'class-validator';
+import { StringFilter } from '@/common/query-filters/string-filter';
 
 export class EndUserWhereInput {
   @ApiProperty({
-    required: true,
+    required: false,
     type: StringFilter,
   })
   @Type(() => StringFilter)
+  @IsOptional()
   correlationId?: StringFilter;
 
   @ApiProperty({
@@ -35,7 +36,8 @@ export class EndUserWhereInput {
     enum: ['APPROVED', 'REJECTED', 'PROCESSING', 'NEW'],
   })
   @IsOptional()
-  state?: EndUserState;
+  // Incorrect type - would be a lot of time and effort to type this correctly.
+  approvalState?: ApprovalState;
 
   @ApiProperty({
     required: false,
@@ -46,20 +48,18 @@ export class EndUserWhereInput {
   stateReason?: StringNullableFilter;
 
   @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
+    required: true,
+    type: String,
   })
-  @Type(() => StringNullableFilter)
-  @IsOptional()
-  firstName?: StringNullableFilter;
+  @Type(() => String)
+  firstName!: string;
 
   @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
+    required: true,
+    type: String,
   })
-  @Type(() => StringNullableFilter)
-  @IsOptional()
-  lastName?: StringNullableFilter;
+  @Type(() => String)
+  lastName!: string;
 
   @ApiProperty({
     required: false,

@@ -26,19 +26,11 @@ jobs:
 
       - name: Format
         uses: ./.github/actions/format-action
-
-  test:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Test
-        uses: ./.github/actions/test-action
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout
@@ -46,3 +38,24 @@ jobs:
 
       - name: Build
         uses: ./.github/actions/build-action
+
+  test_linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test
+        uses: ./.github/actions/test-action
+
+  test_windows:
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test
+        uses: ./.github/actions/unit-test-action

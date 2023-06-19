@@ -1,4 +1,4 @@
-import { SortOrder } from '@/query-filters/sort-order';
+import { SortOrder } from '@/common/query-filters/sort-order';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class EndUserOrderByInput {

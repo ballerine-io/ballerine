@@ -4,7 +4,7 @@ import { createWorkflow } from './create-workflow';
 test('temp', () => {
   const service = createWorkflow({
     id: 'clf8xbocb0002zpeid7bq9vgn',
-    name: 'onboarding_client_collect_data',
+    name: 'kyc',
     version: 1,
     definitionType: 'statechart-json',
     definition: {

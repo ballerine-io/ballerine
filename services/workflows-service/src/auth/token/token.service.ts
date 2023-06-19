@@ -11,15 +11,15 @@ export class TokenService implements ITokenService {
   constructor(protected readonly jwtService: JwtService) {}
   /**
    *
-   * @object { id: String, username: String, password: String}
-   * @returns a jwt token sign with the username and user id
+   * @object { id: String, email: String, password: String}
+   * @returns a jwt token sign with the email and user id
    */
-  createToken({ id, username, password }: ITokenPayload): Promise<string> {
-    if (!username) return Promise.reject(INVALID_USERNAME_ERROR);
+  createToken({ id, email, password }: ITokenPayload): Promise<string> {
+    if (!email) return Promise.reject(INVALID_USERNAME_ERROR);
     if (!password) return Promise.reject(INVALID_PASSWORD_ERROR);
     return this.jwtService.signAsync({
       sub: id,
-      username,
+      email,
     });
   }
 }

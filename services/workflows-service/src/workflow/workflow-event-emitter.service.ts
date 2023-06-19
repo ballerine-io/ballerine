@@ -5,7 +5,12 @@ import { WorkflowRuntimeData } from '@prisma/client';
 export interface WorkflowEventRawData {
   runtimeData: WorkflowRuntimeData;
   state: string;
-  context: unknown;
+  context: {
+    documents: any[];
+    entity: any;
+  };
+  entityId: string;
+  correlationId: string;
 }
 
 export interface WorkflowEventData {
@@ -15,25 +20,27 @@ export interface WorkflowEventData {
   workflowDefinitionVersion: number;
   state: string;
   result: unknown;
-  context: unknown;
+  context: any;
 }
 
 @Injectable()
 export class WorkflowEventEmitterService {
   constructor(private eventEmitter: EventEmitter2) {}
 
-  emit(eventName: string, { runtimeData, state, context }: WorkflowEventRawData) {
+  emit(eventName: string, eventData: WorkflowEventRawData) {
     if (!eventName) {
       throw new Error('Event name is required');
     }
 
-    this.eventEmitter.emit(eventName, {
-      context,
-      entityId: runtimeData.endUserId, // TODO: rename to entityId
-      workflowDefinitionId: runtimeData.workflowDefinitionId,
-      workflowDefinitionVersion: runtimeData.workflowDefinitionVersion,
-      state,
-      result: context, // TODO: final result should be a subset of context, should be defined as part of the workflow definition
-    });
+    this.eventEmitter.emit(eventName, eventData);
+  }
+
+  on(eventName: string, listener: (eventData: WorkflowEventRawData) => Promise<void>) {
+    if (!eventName) {
+      throw new Error('Event name is required');
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    this.eventEmitter.on(eventName, listener);
   }
 }

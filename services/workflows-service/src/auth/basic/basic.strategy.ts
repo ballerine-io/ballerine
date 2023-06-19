@@ -11,8 +11,8 @@ export class BasicStrategy extends PassportStrategy(Strategy) implements IAuthSt
     super();
   }
 
-  async validate(username: string, password: string): Promise<UserInfo> {
-    const user = await this.authService.validateUser(username, password);
+  async validate(email: string, password: string): Promise<UserInfo> {
+    const user = await this.authService.validateUser(email, password);
     if (!user) {
       throw new UnauthorizedException();
     }
