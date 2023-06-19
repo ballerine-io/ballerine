@@ -15,7 +15,7 @@ import { Error as ErrorEnum } from './types';
 import { JQTransformer } from './utils/context-transformers/qj-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import { StatePlugin } from './plugins/types';
-import { ApiPlugin } from './plugins/external-plugin/api-plugin';
+import { ApiPlugin, ApiPluginParams } from './plugins/external-plugin/api-plugin';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -43,8 +43,7 @@ export class WorkflowRunner {
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
-    const apiPlugins = this.#__extensions.externalPlugins?.apiPluginsSchemas;
-    this.#__extensions.externalPlugins.apiPlugins = this.initiateApiPlugins(apiPlugins);
+    this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
 
     this.#__workflow = this.#__extendedWorkflow({
@@ -62,7 +61,7 @@ export class WorkflowRunner {
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
   }
 
-  initiateApiPlugins(apiPluginSchemas) {
+  initiateApiPlugins(apiPluginSchemas: ApiPluginParams[]) {
     return apiPluginSchemas?.map(apiPluginSchema => {
       const requestTransformerLogic = apiPluginSchema.request.transform;
       const responseTransformerLogic = apiPluginSchema.response.transform;
@@ -307,12 +306,14 @@ export class WorkflowRunner {
 
     this.#__context = service.getSnapshot().context;
 
-    for (const apiPlugin of this.#__extensions.externalPlugins?.apiPlugins) {
-      if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
+    if (this.#__extensions.apiPlugins) {
+      for (const apiPlugin of this.#__extensions.apiPlugins) {
+        if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
 
-      const result = await apiPlugin.callApi(this.#__context);
-      this.#__context = { ...this.#__context, ...{ result: result } };
-      await this.sendEvent('API_CALL_SUCCESS');
+        const result = await apiPlugin.callApi(this.#__context);
+        this.#__context = { ...this.#__context, ...{ result: result } };
+        await this.sendEvent('API_CALL_SUCCESS');
+      }
     }
 
     if (this.#__debugMode) {

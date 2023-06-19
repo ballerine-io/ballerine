@@ -1,6 +1,7 @@
 import { beforeEach, afterEach, describe, expect, it, test } from 'vitest';
 import { WorkflowRunner } from '../../workflow-runner';
 import { sleep } from '@ballerine/common';
+import { ApiPluginParams } from './api-plugin';
 
 const DEFAULT_PAYLOAD = { payload: { some: 'payload' } };
 
@@ -37,7 +38,7 @@ function createEventCollectingWorkflow(args) {
 
 describe('workflow-runner', () => {
   describe('api plugins', () => {
-    const apiPluginsSchemas = [
+    const apiPluginsSchemas: ApiPluginParams[] = [
       {
         name: 'ballerineEnrichment',
         url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.json',
@@ -52,7 +53,7 @@ describe('workflow-runner', () => {
           },
         },
         response: {
-          transform: { transformer: 'jq', transformationLogic: '{.: .ballerineEnrichment}' },
+          transform: { transformer: 'jq', transformationLogic: '{test: .companyInfo .ceo}' },
         },
       },
     ];
@@ -85,7 +86,7 @@ describe('workflow-runner', () => {
       const workflow = new WorkflowRunner({
         definition,
         extensions: {
-          externalPlugins: { apiPluginsSchemas },
+          apiPlugins: apiPluginsSchemas,
         },
         workflowContext: { machineContext: { entity: { id: 'some_id' } } },
       });
