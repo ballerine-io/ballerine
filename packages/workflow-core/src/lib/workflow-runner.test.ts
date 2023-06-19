@@ -1,7 +1,7 @@
 /* eslint-disable */
 
-import { afterEach, describe, expect, it } from 'vitest';
-import { WorkflowRunner } from './workflow-runner';
+import { afterEach, describe, expect, it, test } from 'vitest';
+import { WorkflowRunner, CallApiPlugin, BlockingPostPlugin } from './workflow-runner';
 import { sleep } from '@ballerine/common';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -309,18 +309,139 @@ describe('workflow-runner', () => {
         ]);
       });
     });
+
+    test('postPlugins', async () => {
+      const actions = ['anyValue'];
+
+      const TWO_STATES_MACHINE_DEFINITION = {
+        initial: 'initial',
+        states: {
+          initial: {
+            on: { EVENT: 'final' },
+            exit: ['exitInitial'],
+          },
+          final: {
+            entry: ['enterFinal'],
+            on: { EVENT: 'initial' },
+          },
+        },
+      };
+
+      const workflow = createEventCollectingWorkflow({
+        definition: TWO_STATES_MACHINE_DEFINITION,
+        workflowContext: { machineContext: actions },
+        extensions: {
+          plugins: [
+            new BlockingPostPlugin(['initial'], async (...args) => {
+              actions.push('post initial blocking');
+              await sleep(0);
+            }),
+          ],
+          statePlugins: [
+            {
+              name: 'NonBlockingPost',
+              isBlocking: false,
+              when: 'post',
+              stateNames: ['initial'],
+              action: () => {
+                actions.push('post initial');
+              },
+            },
+          ],
+        },
+        workflowActions: {
+          exitInitial: () => {
+            sleep(3).then(() => {
+              actions.push('exitInitial');
+            });
+          },
+          enterFinal: () => {
+            sleep(3).then(() => {
+              actions.push('enterFinal');
+            });
+          },
+        },
+      });
+
+      await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+      await sleep(5);
+
+      expect(actions).toStrictEqual([
+        'anyValue',
+        'post initial blocking',
+        'post initial',
+        'exitInitial',
+        'enterFinal',
+      ]);
+    });
+
+    test('prePlugins', async () => {
+      const actions = [];
+
+      const TWO_STATES_MACHINE_DEFINITION = {
+        initial: 'initial',
+        states: {
+          initial: {
+            on: { EVENT: 'final' },
+            exit: ['exitInitial'],
+          },
+          final: {
+            entry: ['enterFinal'],
+            on: {
+              EVENT: {
+                actions: ['just an event'],
+              },
+            },
+          },
+        },
+      };
+
+      const workflow = createEventCollectingWorkflow({
+        definition: TWO_STATES_MACHINE_DEFINITION,
+        extensions: {
+          // we can see here, that the meaning of 'post' is changing by isBlocking
+          statePlugins: [
+            {
+              name: 'NonBlockingPre',
+              isBlocking: false,
+              when: 'pre',
+              stateNames: ['final'],
+              action: () => {
+                actions.push('pre final');
+              },
+            },
+          ],
+        },
+        workflowActions: {
+          exitInitial: () => {
+            sleep(3).then(() => {
+              actions.push('exit initial');
+            });
+          },
+          enterFinal: () => {
+            sleep(3).then(() => {
+              actions.push('enter final');
+            });
+          },
+        },
+      });
+
+      await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
+      await sleep(10);
+
+      expect(actions).toStrictEqual(['pre final', 'exit initial', 'enter final']);
+    });
   });
 
   describe('api plugins', () => {
-    const apiPlugins = [
-      {
-        states: ['checkBusinessScore'],
-        successAction: 'API_CALL_SUCCESS',
-        errorAction: 'API_CALL_FAILURE',
-
-        url: 'https://www.example.com/api',
-        method: 'POST',
-      },
+    const plugins = [
+      new CallApiPlugin(
+        ['checkBusinessScore'],
+        'API_CALL_SUCCESS',
+        'API_CALL_FAILURE',
+        'https://www.example.com/api',
+        'POST',
+      ),
     ];
 
     let server;
@@ -330,27 +451,6 @@ describe('workflow-runner', () => {
         server.resetHandlers();
         server.close();
       }
-    });
-
-    it('does not support states with a predefined entry action', () => {
-      const definition = {
-        initial: 'initial',
-        states: {
-          initial: {},
-          checkBusinessScore: {
-            entry: 'predefinedEntryAction',
-          },
-        },
-      };
-
-      expect(() => {
-        new WorkflowRunner({
-          definition,
-          extensions: {
-            apiPlugins,
-          },
-        });
-      }).toThrowError('api plugins do not support state with a predefined entry action');
     });
 
     it('allows to define only an endpoint and a simple success action', async () => {
@@ -389,12 +489,12 @@ describe('workflow-runner', () => {
       const workflow = new WorkflowRunner({
         definition,
         extensions: {
-          apiPlugins,
+          plugins,
         },
       });
 
       await workflow.sendEvent('CHECK_BUSINESS_SCORE');
-      await sleep(2);
+      await sleep(22);
 
       expect(results).toEqual(['success']);
     });
@@ -435,7 +535,7 @@ describe('workflow-runner', () => {
       const workflow = new WorkflowRunner({
         definition,
         extensions: {
-          apiPlugins,
+          plugins,
         },
       });
 
