@@ -47,6 +47,34 @@ export const fetchWorkflows = async (params: {
   return handleZodError(error, workflows);
 };
 
+export const WorkflowByIdSchema = z.object({
+  id: z.string(),
+  status: z.string(),
+  nextEvents: z.array(z.any()),
+  workflowDefinition: ObjectWithIdSchema.extend({
+    name: z.string(),
+    contextSchema: z.record(z.any(), z.any()).nullable(),
+    config: z.record(z.any(), z.any()).nullable(),
+  }),
+  createdAt: z.string().datetime(),
+  context: z.object({
+    documents: z.array(z.any()),
+    entity: z.record(z.any(), z.any()),
+    parentMachine: ObjectWithIdSchema.extend({
+      status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),
+    }),
+  }),
+  entity: ObjectWithIdSchema.extend({
+    name: z.string(),
+    avatarUrl: z.string().nullable(),
+    approvalState: z.enum(States),
+  }),
+  assignee: ObjectWithIdSchema.extend({
+    firstName: z.string(),
+    lastName: z.string(),
+  }).nullable(),
+});
+
 export const fetchWorkflowById = async ({
   workflowId,
   filterId,
@@ -57,30 +85,7 @@ export const fetchWorkflowById = async ({
   const [workflow, error] = await apiClient({
     endpoint: `workflows/${workflowId}?filterId=${filterId}`,
     method: Method.GET,
-    schema: z.object({
-      id: z.string(),
-      status: z.string(),
-      nextEvents: z.array(z.any()),
-      workflowDefinition: ObjectWithIdSchema.extend({
-        name: z.string(),
-        contextSchema: z.record(z.any(), z.any()).nullable(),
-        config: z.record(z.any(), z.any()).nullable(),
-      }),
-      createdAt: z.string().datetime(),
-      context: z.object({
-        documents: z.array(z.any()),
-        entity: z.record(z.any(), z.any()),
-      }),
-      entity: ObjectWithIdSchema.extend({
-        name: z.string(),
-        avatarUrl: z.string().nullable(),
-        approvalState: z.enum(States),
-      }),
-      assignee: ObjectWithIdSchema.extend({
-        firstName: z.string(),
-        lastName: z.string(),
-      }).nullable(),
-    }),
+    schema: WorkflowByIdSchema,
   });
 
   return handleZodError(error, workflow);

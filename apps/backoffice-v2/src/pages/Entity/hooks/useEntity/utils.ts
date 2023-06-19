@@ -1,6 +1,6 @@
 import { TDropdownOption } from '../../components/EditableDetails/types';
-import {AnyArray} from "../../../../common/types";
-import {TDocument} from "@ballerine/common";
+import { AnyArray } from '../../../../common/types';
+import { TDocument } from '@ballerine/common';
 
 export const convertSnakeCaseToTitleCase = (input: string): string =>
   input
@@ -73,7 +73,7 @@ export const isExistingSchemaForDocument = documentsSchemas => {
 
 export const extractCountryCodeFromWorkflow = workflow => {
   return workflow?.context?.documents?.find(document => {
-    return document?.issuer?.country;
+    return !!document?.issuer?.country;
   })?.issuer?.country;
 };
 
