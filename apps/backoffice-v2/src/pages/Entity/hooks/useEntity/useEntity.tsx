@@ -55,6 +55,9 @@ export const useEntity = () => {
             const additionProperties =
               isExistingSchemaForDocument(documentsSchemas) &&
               composePickableCategoryType(category, docType, documentsSchemas);
+            const isDoneWithRevision =
+              decision?.status === 'revision' &&
+              workflow?.context?.parentMachine?.status === 'completed';
 
             return [
               {
@@ -76,7 +79,7 @@ export const useEntity = () => {
                         value: 'Reject',
                         data: {
                           id,
-                          disabled: Boolean(decision?.status),
+                          disabled: !isDoneWithRevision && Boolean(decision?.status),
                           approvalStatus: 'rejected',
                         },
                       },
@@ -85,7 +88,7 @@ export const useEntity = () => {
                         value: 'Approve',
                         data: {
                           id,
-                          disabled: Boolean(decision?.status),
+                          disabled: !isDoneWithRevision && Boolean(decision?.status),
                           approvalStatus: 'approved',
                         },
                       },

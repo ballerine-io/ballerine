@@ -38,21 +38,25 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   workflowId,
 }) => {
   const [formData, setFormData] = useState(data);
+  const POSITIVE_VALUE_INDICATOR = ['approved'];
+  const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
+  const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
+    return isDecisionComponent && value && POSITIVE_VALUE_INDICATOR.includes(value.toLowerCase());
+  };
+  const isDecisionNegative = (isDecisionComponent: boolean, value: string) => {
+    return isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
+  };
+  const defaultValues = formData?.reduce((acc, curr) => {
+    acc[curr.title] = curr.value;
+
+    return acc;
+  }, {});
+  const form = useForm({
+    defaultValues,
+  });
   const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
     workflowId,
   });
-  const POSITIVE_VALUE_INDICATOR = ['approved'];
-  const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
-  const isDecisionPositive = (isDecisionComponent: boolean, value) => {
-    return (
-      isDecisionComponent && value && POSITIVE_VALUE_INDICATOR.includes(String(value).toLowerCase())
-    );
-  };
-  const isDecisionNegative = (isDecisionComponent: boolean, value) => {
-    return (
-      isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(String(value).toLowerCase())
-    );
-  };
   const onMutateTaskDecisionById = ({
     context,
     action,
@@ -64,14 +68,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       context,
       action,
     });
-  const defaultValues = formData?.reduce((acc, curr) => {
-    acc[curr.title] = curr.value;
-
-    return acc;
-  }, {});
-  const form = useForm({
-    defaultValues,
-  });
   const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
     const context = {
       documents: documents?.map(document => {
@@ -158,11 +154,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             {
                               'font-bold text-success': isDecisionPositive(
                                 isDecisionComponent,
-                                value,
+                                field.value,
                               ),
                               'font-bold text-destructive': isDecisionNegative(
                                 isDecisionComponent,
-                                value,
+                                field.value,
                               ),
                             },
                           )}
