@@ -428,6 +428,7 @@ export class WorkflowService {
       ({ decision }: { decision: DefaultContextSchema['documents'][number]['decision'] }) =>
         decision?.status === 'revision',
     );
+    let updatedResult;
 
     if (documentToRevise && !workflowDef.reviewMachineId) {
       const parentMachine = await this.workflowRuntimeDataRepository.findById(
@@ -461,14 +462,28 @@ export class WorkflowService {
           },
         },
       });
-    }
 
-    const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
-      data: {
-        ...data,
-        resolvedAt: isResolved ? new Date() : null,
-      },
-    });
+      updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
+        data: {
+          ...data,
+          context: {
+            ...data.context,
+            parentMachine: {
+              ...data.context?.parentMachine,
+              status: 'active',
+            },
+          },
+          resolvedAt: isResolved ? new Date() : null,
+        },
+      });
+    } else {
+      updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
+        data: {
+          ...data,
+          resolvedAt: isResolved ? new Date() : null,
+        },
+      });
+    }
 
     if (contextHasChanged) {
       this.workflowEventEmitter.emit('workflow.context.changed', {
@@ -487,7 +502,7 @@ export class WorkflowService {
       await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
     }
 
-    return updateResult;
+    return updatedResult;
   }
 
   async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
@@ -567,7 +582,7 @@ export class WorkflowService {
       entitySearch.endUserId = runtime.endUserId as string;
     }
 
-    const workflowRuntimeDataExists = await this.workflowRuntimeDataRepository.findOne({
+    const manualReviewWorkflow = await this.workflowRuntimeDataRepository.findOne({
       where: {
         ...entitySearch,
         context: {
@@ -577,7 +592,7 @@ export class WorkflowService {
       },
     });
 
-    if (!workflowRuntimeDataExists) {
+    if (!manualReviewWorkflow) {
       await this.workflowRuntimeDataRepository.create({
         data: {
           ...entitySearch,
@@ -587,37 +602,27 @@ export class WorkflowService {
             ...context,
             parentMachine: {
               id: runtime.id,
+              status: 'completed',
             },
           },
           status: 'active',
         },
       });
     } else {
-      await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataExists.id, {
+      await this.workflowRuntimeDataRepository.updateById(manualReviewWorkflow.id, {
         data: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          context: context as any,
+          context: {
+            ...manualReviewWorkflow.context,
+            parentMachine: {
+              id: runtime.id,
+              status: 'completed',
+            },
+          },
         },
       });
     }
 
-    const isRevision = runtime.context?.documents?.some(
-      ({ decision }: { decision: DefaultContextSchema['documents'][number]['decision'] }) =>
-        decision?.status === 'revision',
-    );
-
     await this.updateWorkflowRuntimeData(runtime.id, {
-      ...(isRevision
-        ? {
-            ...entitySearch,
-            context: {
-              ...context,
-              parentMachine: {
-                id: runtime.id,
-              },
-            },
-          }
-        : {}),
       status: 'completed',
     });
   }
