@@ -14,10 +14,8 @@ import type {
 import { Error as ErrorEnum } from './types';
 import { JQTransformer } from './utils/context-transformers/qj-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
-import { TSchemaValidatorResponse, TValidationLogic } from './utils/context-validator/types';
 import { StatePlugin } from './plugins/types';
 import { ApiPlugin } from './plugins/external-plugin/api-plugin';
-import { TTransformers, TValidators } from './utils/types';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -27,6 +25,7 @@ export class WorkflowRunner {
   #__callback: ((event: WorkflowEvent) => void) | null = null;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
+  events: any;
 
   public get workflow() {
     return this.#__workflow;
@@ -163,7 +162,7 @@ export class WorkflowRunner {
     for (const apiPlugin of apiPlugins) {
       const apiCaller = callApi.bind(this, apiPlugin);
 
-      for (const stateName of apiPlugin.stateNames) {
+      for (const stateName of apiPlugin.states) {
         if (definition.states[stateName].entry) {
           throw new Error('api plugins do not support state with a predefined entry action');
         }
@@ -173,9 +172,8 @@ export class WorkflowRunner {
     }
 
     function callApi(apiPlugin) {
-      fetch(apiPlugin.url, { method: apiPlugin.method }).then(response => {
+      fetch(apiPlugin.url, { method: apiPlugin.method, body: '' }).then(response => {
         if (response.ok) {
-          assign({ 'Some data': 'some ' });
           this.sendEvent(apiPlugin.successAction);
         } else {
           this.sendEvent(apiPlugin.errorAction);
@@ -200,12 +198,6 @@ export class WorkflowRunner {
     const nonBlockingPlugins = this.#__extensions.statePlugins?.filter(
       plugin => !plugin.isBlocking,
     );
-
-    // this.#__extensions.externalPlugins?.apiPlugins?.forEach(apiPlugin => {
-    //   apiPlugin.stateNames.forEach(stateName => {
-    //     definition.states[stateName].entry = async (context, event) => await apiPlugin.callApi(context);
-    //   });
-    // });
 
     for (const statePlugin of nonBlockingPlugins) {
       const when = statePlugin.when === 'pre' ? 'entry' : 'exit';
@@ -237,12 +229,27 @@ export class WorkflowRunner {
     };
 
     const guards: MachineOptions<any, any>['guards'] = {
-      'json-rule': (ctx, { payload }, { cond }) => {
-        const data = { ...ctx, ...payload };
-        return jsonLogic.apply(
-          cond.name, // Rule
+      'json-logic': (ctx, event, metadata) => {
+        const data = { ...ctx, ...event.payload };
+        // @ts-expect-error
+        const options = metadata.cond.options;
+        console.log(`running json logic rule`, data, metadata.cond);
+
+        const ruleResult = jsonLogic.apply(
+          options.rule, // Rule
           data, // Data
         );
+        if (!ruleResult && options.assignOnFailure) {
+          this.#__callback?.({
+            type: 'RULE_EVALUATION_FAILURE',
+            state: this.#__currentState,
+            payload: {
+              ...options,
+            },
+          });
+        }
+        console.log(`json logic rule result`, ruleResult);
+        return ruleResult;
       },
     };
 
@@ -287,6 +294,7 @@ export class WorkflowRunner {
     );
 
     const snapshot = service.getSnapshot();
+
     for (const prePlugin of prePlugins) {
       await this.#__handleAction({
         type: 'STATE_ACTION_STATUS',

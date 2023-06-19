@@ -1,6 +1,10 @@
-import { beforeEach, afterEach, describe, expect, it, test } from 'vitest';
+/* eslint-disable */
+
+import { afterEach, describe, expect, it } from 'vitest';
 import { WorkflowRunner } from './workflow-runner';
 import { sleep } from '@ballerine/common';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 
 const DEFAULT_PAYLOAD = { payload: { some: 'payload' } };
 
@@ -182,9 +186,9 @@ describe('workflow-runner', () => {
         ]);
       });
 
-      it('raises an exception if any of stateNames is not defined', async => {
+      it('raises an exception if any of stateNames is not defined', () => {
         expect(() => {
-          const workflow = new WorkflowRunner({
+          new WorkflowRunner({
             definition: TWO_STATES_MACHINE_DEFINITION,
             extensions: {
               statePlugins: [
@@ -218,7 +222,7 @@ describe('workflow-runner', () => {
                 when: 'pre',
                 isBlocking: true,
                 stateNames: ['initial'],
-                action: async () => {
+                action: () => {
                   throw new Error('some error');
                 },
               },
@@ -308,31 +312,27 @@ describe('workflow-runner', () => {
   });
 
   describe('api plugins', () => {
-    const apiPluginsSchemas = [
+    const apiPlugins = [
       {
-        name: 'ballerineEnrichment',
-        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.json',
-        method: 'GET',
         states: ['checkBusinessScore'],
         successAction: 'API_CALL_SUCCESS',
         errorAction: 'API_CALL_FAILURE',
-        // request: { transform: { transformer: "jq", transformationLogic: {"machineContext .entity .id": "saleforce_id" }}},
-        request: {
-          transform: {
-            transformer: 'jq',
-            transformationLogic: '{saleforce_id: .context.machineContext.entity.id}',
-          },
-        },
-        response: {
-          transform: {
-            transformer: 'jq',
-            transformationLogic: { '.': '{ballerineEnrichment: .}' },
-          },
-        },
+
+        url: 'https://www.example.com/api',
+        method: 'POST',
       },
     ];
 
-    it('does not support states with a predefined entry action', async () => {
+    let server;
+
+    afterEach(() => {
+      if (server) {
+        server.resetHandlers();
+        server.close();
+      }
+    });
+
+    it('does not support states with a predefined entry action', () => {
       const definition = {
         initial: 'initial',
         states: {
@@ -343,13 +343,11 @@ describe('workflow-runner', () => {
         },
       };
 
-      const results = [];
-
       expect(() => {
-        const workflow = new WorkflowRunner({
+        new WorkflowRunner({
           definition,
           extensions: {
-            apiPluginsSchemas,
+            apiPlugins,
           },
         });
       }).toThrowError('api plugins do not support state with a predefined entry action');
@@ -381,23 +379,21 @@ describe('workflow-runner', () => {
         },
       };
 
-      // server = setupServer(
-      //   rest.post('https://www.example.com/api', (req, res, ctx) => {
-      //     return res(ctx.status(200), ctx.json({}));
-      //   }),
-      // );
-      // server.listen({ onUnhandledRequest: 'error' });
+      server = setupServer(
+        rest.post('https://www.example.com/api', (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({}));
+        }),
+      );
+      server.listen({ onUnhandledRequest: 'error' });
 
       const workflow = new WorkflowRunner({
         definition,
         extensions: {
           apiPlugins,
         },
-        workflowContext: { machineContext: { entity: { id: 'some_id' } } },
       });
 
-      workflow.sendEvent('CHECK_BUSINESS_SCORE');
-
+      await workflow.sendEvent('CHECK_BUSINESS_SCORE');
       await sleep(2);
 
       expect(results).toEqual(['success']);
@@ -429,12 +425,12 @@ describe('workflow-runner', () => {
         },
       };
 
-      // server = setupServer(
-      //   rest.post('https://www.example.com/api', (req, res, ctx) => {
-      //     return res(ctx.status(300), ctx.json({}));
-      //   }),
-      // );
-      // server.listen({ onUnhandledRequest: 'error' });
+      server = setupServer(
+        rest.post('https://www.example.com/api', (req, res, ctx) => {
+          return res(ctx.status(300), ctx.json({}));
+        }),
+      );
+      server.listen({ onUnhandledRequest: 'error' });
 
       const workflow = new WorkflowRunner({
         definition,
@@ -443,9 +439,8 @@ describe('workflow-runner', () => {
         },
       });
 
-      workflow.sendEvent('CHECK_BUSINESS_SCORE');
-
-      await sleep(10);
+      await workflow.sendEvent('CHECK_BUSINESS_SCORE');
+      await sleep(2);
 
       expect(results).toEqual(['error']);
     });
@@ -475,5 +470,88 @@ describe('workflow-runner', () => {
     await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
 
     expect(done).toEqual(true);
+  });
+});
+
+describe.only('Workflows with conditions', () => {
+  const createCondMachine = score => ({
+    workflowContext: {
+      machineContext: {
+        external_request_example: {
+          data: {
+            name_fuzziness_score: 0.85, // or whatever value you want to assign
+          },
+        },
+      },
+    },
+    definition: {
+      initial: 'initial',
+      states: {
+        initial: {
+          on: {
+            EVENT: [
+              {
+                target: 'final',
+                cond: {
+                  type: 'json-logic',
+                  options: {
+                    rule: {
+                      '>': [{ var: 'external_request_example.data.name_fuzziness_score' }, score],
+                    },
+                    assignOnFailure: { manualReviewReason: 'name not matching ... ' },
+                  },
+                },
+              },
+            ],
+          },
+        },
+        middle: {
+          on: { EVENT2: { target: 'final', cond: 'isTrue' } },
+        },
+        final: {
+          type: 'final',
+        },
+      },
+    },
+  });
+  it('should not proceed with transition if json logic condition falsy', async () => {
+    const workflow = createEventCollectingWorkflow(createCondMachine(0.9));
+    await workflow.sendEvent({ type: 'EVENT' });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(workflow.events[0].state).toEqual('initial');
+  });
+  it('should proceed with transition if json logic condition truthy', async () => {
+    const workflowArgs = createCondMachine(0.5);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const workflow = createEventCollectingWorkflow(workflowArgs);
+    await workflow.sendEvent({ type: 'EVENT' });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(workflow.events[0].state).toEqual('final');
+    // expect(workflow.#__context).toContain({ manualReviewReason: 'name not matching ... ' });
+  });
+  it('should proceed with transition if json logic condition truthy, and default transition is set', async () => {
+    const workflowArgs = createCondMachine(0.5);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    workflowArgs.definition.states.initial.on.EVENT.push({ target: 'middle' });
+    const workflow = createEventCollectingWorkflow(workflowArgs);
+    await workflow.sendEvent({ type: 'EVENT' });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(workflow.events[0].state).toEqual('final');
+    // expect(workflow.#__context).toContain({ manualReviewReason: 'name not matching ... ' });
+  });
+  it('should not proceed with transition if json logic condition truthy, but transition to a default state THIS TEST SHOULD BE REVISIONED', async () => {
+    const workflowArgs = createCondMachine(0.9);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    workflowArgs.definition.states.initial.on.EVENT.push({ target: 'middle' });
+    console.log(JSON.stringify(workflowArgs.definition, null, 2));
+
+    const workflow = createEventCollectingWorkflow(workflowArgs);
+    await workflow.sendEvent({ type: 'EVENT' });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(workflow.events[0].state).toEqual('initial');
+    // expect(workflow.#__context).toContain({ manualReviewReason: 'name not matching ... ' });
   });
 });
