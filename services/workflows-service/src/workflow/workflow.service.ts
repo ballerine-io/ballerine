@@ -5,13 +5,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   ApprovalState,
+  Business,
+  EndUser,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { CompleteWorkflowData, RunnableWorkflowData, TWorkflowWithRelations } from './types';
+import { RunnableWorkflowData, TWorkflowWithRelations } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
@@ -24,10 +26,9 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
 import { InputJsonValue, IObjectWithId } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
-import Ajv, { Schema } from 'ajv';
+import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import addKeywords from 'ajv-keywords';
-import * as console from 'console';
 import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
 import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
@@ -40,7 +41,6 @@ import * as crypto from 'crypto';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
-import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
@@ -51,6 +51,7 @@ import {
   getDocumentsByCountry,
   TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
+import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 
 type TEntityId = string;
 
@@ -209,6 +210,7 @@ export class WorkflowService {
         assigneeId: true,
         id: true,
         status: true,
+        workflowDefinitionId: true,
       },
     });
   }
@@ -260,12 +262,10 @@ export class WorkflowService {
       throw new NotFoundException('Page not found');
     }
 
-    const workflows = (await this.workflowRuntimeDataRepository.findMany(
-      query,
-    )) as TWorkflowWithRelations[];
+    const workflows = await this.workflowRuntimeDataRepository.findMany(query);
 
     return {
-      data: this.formatWorkflowsRuntimeData(workflows),
+      data: this.formatWorkflowsRuntimeData(workflows as unknown as TWorkflowWithRelations[]),
       meta: {
         totalItems: totalWorkflowsCount,
         totalPages: Math.max(Math.ceil(totalWorkflowsCount / page.size), 1),
@@ -310,12 +310,19 @@ export class WorkflowService {
     });
   }
 
-  async listFullWorkflowDataByUserId(userId: string): Promise<CompleteWorkflowData[]> {
-    return (await this.workflowRuntimeDataRepository.findMany({
-      // todo refactor
-      where: { businessId: userId },
+  async listFullWorkflowDataByUserId({
+    entityId,
+    entity,
+  }: {
+    entityId: string;
+    entity: TEntityType;
+  }) {
+    return await this.workflowRuntimeDataRepository.findMany({
+      where: {
+        [`${entity}Id`]: entityId,
+      },
       include: { workflowDefinition: true },
-    })) as CompleteWorkflowData[];
+    });
   }
 
   async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {
@@ -345,34 +352,26 @@ export class WorkflowService {
 
     let contextHasChanged, mergedContext;
     if (data.context) {
+      data.context.documents = assignIdToDocuments(data.context.documents);
       contextHasChanged = !isEqual(data.context, runtimeData.context);
       mergedContext = merge({}, runtimeData.context, data.context);
+
       const context = {
         ...mergedContext,
         // @ts-ignore
         documents: mergedContext?.documents?.map(
           // @ts-ignore
-          ({ propertiesSchema: _propertiesSchema, id: _id, ...document }) => document,
+          // Validating the context should be done without the propertiesSchema
+          ({ propertiesSchema: _propertiesSchema, ...document }) => document,
         ),
       };
 
-      const validateContextSchema = ajv.compile(
-        (workflowDef?.contextSchema?.schema as Schema) ?? {},
-      );
-      const isValidContextSchema = validateContextSchema(context);
-
-      if (!isValidContextSchema) {
-        throw new BadRequestException(
-          validateContextSchema.errors?.map(({ instancePath, message, ...rest }) => ({
-            ...rest,
-            instancePath,
-            message: `${instancePath} ${message}`,
-          })),
-        );
-      }
+      this.__validateWorkflowDefinitionContext(workflowDef, context);
 
       // @ts-ignore
-      data?.context?.documents?.forEach(({ propertiesSchema, id: _id, ...document }) => {
+      data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
+        if (!Object.keys(propertiesSchema ?? {})?.length) return;
+
         const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {});
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
@@ -406,11 +405,12 @@ export class WorkflowService {
       ['active'].includes(data.status! || runtimeData.status) &&
       workflowDef.config?.completedWhenTasksResolved
     ) {
-      const allDocumentsResolved = data.context?.documents?.every(
-        (document: DefaultContextSchema['documents'][number]) => {
+      // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
+      const allDocumentsResolved =
+        data.context?.documents?.length &&
+        data.context?.documents?.every((document: DefaultContextSchema['documents'][number]) => {
           return ['approved', 'rejected'].includes(document?.decision?.status as string);
-        },
-      );
+        });
 
       data.status = allDocumentsResolved ? 'completed' : data.status! || runtimeData.status;
     }
@@ -421,16 +421,70 @@ export class WorkflowService {
       this.logger.log('Workflow resolved', { id: workflowRuntimeId });
     }
 
-    const updateResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
-      data: {
-        ...data,
-        resolvedAt: isResolved ? new Date() : null,
-      },
-    });
+    const documentToRevise = data.context?.documents?.find(
+      ({ decision }: { decision: DefaultContextSchema['documents'][number]['decision'] }) =>
+        decision?.status === 'revision',
+    );
+    let updatedResult;
+
+    if (documentToRevise && !workflowDef.reviewMachineId) {
+      const parentMachine = await this.workflowRuntimeDataRepository.findById(
+        runtimeData?.context?.parentMachine?.id,
+        {
+          include: {
+            workflowDefinition: {
+              select: {
+                definition: true,
+              },
+            },
+          },
+        },
+      );
+
+      // Updates the collect documents workflow with the manual review workflow's decision.
+      await this.workflowRuntimeDataRepository.updateById(parentMachine?.id, {
+        data: {
+          status: 'active',
+          state: parentMachine?.workflowDefinition?.definition?.initial as string,
+          context: {
+            ...parentMachine?.context,
+            documents: parentMachine?.context?.documents?.map((document: any) => {
+              if (document.id !== documentToRevise.id) return document;
+
+              return {
+                ...document,
+                decision: documentToRevise.decision,
+              };
+            }),
+          },
+        },
+      });
+
+      updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
+        data: {
+          ...data,
+          context: {
+            ...data.context,
+            parentMachine: {
+              id: parentMachine?.id,
+              status: 'active',
+            },
+          },
+          resolvedAt: isResolved ? new Date() : null,
+        },
+      });
+    } else {
+      updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
+        data: {
+          ...data,
+          resolvedAt: isResolved ? new Date() : null,
+        },
+      });
+    }
 
     if (contextHasChanged) {
       this.workflowEventEmitter.emit('workflow.context.changed', {
-        runtimeData: runtimeData,
+        runtimeData,
         state: currentState as string,
         context: mergedContext,
         entityId: (runtimeData.businessId || runtimeData.endUserId) as string,
@@ -439,15 +493,13 @@ export class WorkflowService {
     }
 
     // TODO: Move to a separate method
-    if (data.state) {
-      if (isFinal && workflowDef.reviewMachineId) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
-      }
+    if (data.state && isFinal && workflowDef.reviewMachineId) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
     }
 
-    return updateResult;
+    return updatedResult;
   }
 
   async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
@@ -527,7 +579,7 @@ export class WorkflowService {
       entitySearch.endUserId = runtime.endUserId as string;
     }
 
-    const workflowRuntimeDataExists = await this.workflowRuntimeDataRepository.findOne({
+    const manualReviewWorkflow = await this.workflowRuntimeDataRepository.findOne({
       where: {
         ...entitySearch,
         context: {
@@ -537,7 +589,7 @@ export class WorkflowService {
       },
     });
 
-    if (!workflowRuntimeDataExists) {
+    if (!manualReviewWorkflow) {
       await this.workflowRuntimeDataRepository.create({
         data: {
           ...entitySearch,
@@ -547,34 +599,27 @@ export class WorkflowService {
             ...context,
             parentMachine: {
               id: runtime.id,
+              status: 'completed',
             },
           },
           status: 'active',
         },
       });
     } else {
-      await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataExists.id, {
+      await this.workflowRuntimeDataRepository.updateById(manualReviewWorkflow.id, {
         data: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          context: context as any,
+          context: {
+            ...manualReviewWorkflow.context,
+            parentMachine: {
+              id: runtime.id,
+              status: 'completed',
+            },
+          },
         },
       });
     }
 
     await this.updateWorkflowRuntimeData(runtime.id, {
-      ...((runtime.context as { resubmissionReason: string })?.resubmissionReason
-        ? {
-            ...entitySearch,
-            workflowDefinitionVersion: workflow.version,
-            workflowDefinitionId: workflow.reviewMachineId,
-            context: {
-              ...context,
-              parentMachine: {
-                id: runtime.id,
-              },
-            },
-          }
-        : {}),
       status: 'completed',
     });
   }
@@ -582,14 +627,36 @@ export class WorkflowService {
   async resolveIntent(
     intent: string,
     entityId: string,
-    tempEntityType: TEntityType,
+    entityType: TEntityType,
   ): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies[intent as keyof typeof policies];
+    const entity = await (async () => {
+      if (entityType === 'business') return await this.businessRepository.findById(entityId);
+      if (entityType === 'endUser') return await this.endUserRepository.findById(entityId);
+
+      throw new BadRequestException(`Invalid entity type ${entityType}`);
+    })();
+    const isBusinessEntity = (entity: EndUser | Business): entity is Business =>
+      entityType === 'business';
 
     // TODO: implement logic for multiple workflows
     const { workflowDefinitionId } = workflowDefinitionResolver()[0];
     const context: DefaultContextSchema = {
-      entity: { ballerineEntityId: entityId, entityType: tempEntityType },
+      entity: {
+        ballerineEntityId: entityId,
+        type: entityType,
+        data: {
+          ...(isBusinessEntity(entity)
+            ? {
+                companyName: entity?.companyName,
+                registrationNumber: entity?.registrationNumber,
+              }
+            : {
+                firstName: entity?.firstName,
+                lastName: entity?.lastName,
+              }),
+        },
+      },
       documents: [],
     };
     return this.createOrUpdateWorkflowRuntime({ workflowDefinitionId, context });
@@ -614,7 +681,6 @@ export class WorkflowService {
     } catch (error) {
       throw new BadRequestException(error);
     }
-    context.documents = assignIdToDocuments(context.documents);
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(context);
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
@@ -815,15 +881,20 @@ export class WorkflowService {
     workflowDefinition: WorkflowDefinition,
     context: DefaultContextSchema,
   ) {
-    if (workflowDefinition.contextSchema && Object.keys(workflowDefinition.contextSchema).length) {
-      const validate = ajv.compile(workflowDefinition.contextSchema.schema); // TODO: fix type
-      const validationResult = validate(context);
+    if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
 
-      if (!validationResult) {
-        console.log(validate.errors);
-        throw new BadRequestException('Invalid context', JSON.stringify(validate.errors));
-      }
-    }
+    const validate = ajv.compile((workflowDefinition?.contextSchema as any)?.schema); // TODO: fix type
+    const isValid = validate(context);
+
+    if (isValid) return;
+
+    throw new BadRequestException(
+      validate.errors?.map(({ instancePath, message, ...rest }) => ({
+        ...rest,
+        instancePath,
+        message: `${instancePath} ${message}`,
+      })),
+    );
   }
 
   async event({
@@ -864,6 +935,7 @@ export class WorkflowService {
       to: currentState,
     });
 
+    // TODO: Update to work with changes related to revision
     if (type === 'resubmit' && document) {
       switch (resubmissionReason) {
         case ResubmissionReason.BLURRY_IMAGE:
