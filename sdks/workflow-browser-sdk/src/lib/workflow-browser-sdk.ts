@@ -262,6 +262,9 @@ export class WorkflowBrowserSDK {
       {
         method: this.#__backendOptions.endpoints.uploadFile.method,
         body: formData,
+        headers: {
+          Authorization: this.#__backendOptions.headers?.Authorization ?? '',
+        },
       },
     );
 

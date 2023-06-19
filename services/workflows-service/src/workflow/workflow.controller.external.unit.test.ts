@@ -79,7 +79,7 @@ describe('Workflow (external)', () => {
     );
 
     await request(app.getHttpServer())
-      .get('/external/workflows')
+      .get('/external/workflows/end-user/123')
       .expect(HttpStatus.OK)
       .expect([
         {
