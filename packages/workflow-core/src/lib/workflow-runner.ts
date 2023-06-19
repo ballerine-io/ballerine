@@ -1,18 +1,21 @@
 /* eslint-disable */
-import { uniqueArray } from '@ballerine/common';
+import { AnyRecord, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { createMachine, interpret, assign } from 'xstate';
 import { HttpError } from './errors';
 import type {
   ObjectValues,
-  StatePlugin,
   WorkflowEvent,
   WorkflowEventWithoutState,
   WorkflowExtensions,
   WorkflowRunnerArgs,
 } from './types';
 import { Error as ErrorEnum } from './types';
+import { JQTransformer } from './utils/context-transformers/qj-transformer';
+import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
+import { StatePlugin } from './plugins/types';
+import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -40,9 +43,9 @@ export class WorkflowRunner {
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
-
-    const apiPlugins = this.#__extensions.apiPlugins;
-    apiPlugins && this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
+    const apiPlugins = this.#__extensions.externalPlugins?.apiPluginsSchemas;
+    this.#__extensions.externalPlugins.apiPlugins = this.initiateApiPlugins(apiPlugins);
+    // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
 
     this.#__workflow = this.#__extendedWorkflow({
       definition,
@@ -57,6 +60,40 @@ export class WorkflowRunner {
 
     // use initial state or provided state
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
+  }
+
+  initiateApiPlugins(apiPluginSchemas) {
+    return apiPluginSchemas?.map(apiPluginSchema => {
+      const requestTransformerLogic = apiPluginSchema.request.transform;
+      const responseTransformerLogic = apiPluginSchema.response.transform;
+      const requestTransformer = this.fetchTransformer(requestTransformerLogic);
+      const responseTransformer = this.fetchTransformer(responseTransformerLogic);
+
+      const apiPlugin = new ApiPlugin({
+        name: apiPluginSchema.name,
+        stateNames: apiPluginSchema.stateNames,
+        url: apiPluginSchema.url,
+        method: apiPluginSchema.method,
+        request: { transform: requestTransformer },
+        response: { transform: responseTransformer },
+        validators: apiPluginSchema.validators,
+        successAction: apiPluginSchema.successAction,
+        errorAction: apiPluginSchema.errorAction,
+      });
+
+      return apiPlugin;
+    });
+  }
+
+  fetchTransformer(transformer) {
+    if (transformer.transformer == 'jq') return new JQTransformer(transformer.transformationLogic);
+
+    throw new Error(`Transformer ${transformer.name} is not supported`);
+  }
+  validateRequestBody(validator) {
+    if (validator.name === 'json-schema') return new JsonSchemaValidator(validator.validationLogic);
+
+    throw new Error(`Validator ${validator.name} is not supported`);
   }
 
   #__handleAction({
@@ -255,6 +292,7 @@ export class WorkflowRunner {
         plugin.when === 'pre' &&
         plugin.stateNames.includes(this.#__currentState),
     );
+
     const snapshot = service.getSnapshot();
 
     for (const prePlugin of prePlugins) {
@@ -268,6 +306,14 @@ export class WorkflowRunner {
     service.send(event);
 
     this.#__context = service.getSnapshot().context;
+
+    for (const apiPlugin of this.#__extensions.externalPlugins?.apiPlugins) {
+      if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
+
+      const result = await apiPlugin.callApi(this.#__context);
+      this.#__context = { ...this.#__context, ...{ result: result } };
+      await this.sendEvent('API_CALL_SUCCESS');
+    }
 
     if (this.#__debugMode) {
       console.log('context:', this.#__context);
