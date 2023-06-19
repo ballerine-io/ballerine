@@ -1,4 +1,4 @@
-import { FieldValues, SubmitHandler, useForm, UseFormWatch } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Form } from '../../../../common/components/organisms/Form/Form';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
@@ -37,7 +37,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   title,
   workflowId,
 }) => {
-  const [formData, setFormData] = useState(data);
   const [formData, setFormData] = useState(data);
   const useInitialCategorySetValue = () => {
     useEffect(() => {
