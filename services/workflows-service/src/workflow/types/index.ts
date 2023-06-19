@@ -1,4 +1,10 @@
-import { Business, EndUser, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import {
+  Business,
+  EndUser,
+  WorkflowDefinition,
+  WorkflowRuntimeData,
+  WorkflowRuntimeDataStatus,
+} from '@prisma/client';
 import { User } from '@sentry/node';
 
 export interface RunnableWorkflowData {

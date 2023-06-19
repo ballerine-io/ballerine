@@ -21,6 +21,7 @@ import { env } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
 import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
 import { LogRequestInterceptor } from '@/common/interceptors/log-request.interceptor';
+import { WorkflowRuntimeModule } from '@/workflow-runtime/workflow-runtime.module';
 
 @Module({
   controllers: [],
@@ -39,6 +40,7 @@ import { LogRequestInterceptor } from '@/common/interceptors/log-request.interce
     // }),
     UserModule,
     WorkflowModule,
+    WorkflowRuntimeModule,
     StorageModule,
     EndUserModule,
     BusinessModule,

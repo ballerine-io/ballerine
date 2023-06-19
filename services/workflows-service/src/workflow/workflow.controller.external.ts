@@ -18,13 +18,11 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { RunnableWorkflowData, TEntityType } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 import { camelCase } from 'lodash';
-
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
 @common.Controller('external/workflows')
@@ -33,9 +31,7 @@ export class WorkflowControllerExternal {
     protected readonly service: WorkflowService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-    private eventEmitter: EventEmitter2,
   ) {}
-
   // GET /workflows
   @common.Get('/:entityType/:entityId')
   @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
