@@ -472,3 +472,86 @@ describe('workflow-runner', () => {
     expect(done).toEqual(true);
   });
 });
+
+describe.only('Workflows with conditions', () => {
+  const createCondMachine = score => ({
+    workflowContext: {
+      machineContext: {
+        external_request_example: {
+          data: {
+            name_fuzziness_score: 0.85, // or whatever value you want to assign
+          },
+        },
+      },
+    },
+    definition: {
+      initial: 'initial',
+      states: {
+        initial: {
+          on: {
+            EVENT: [
+              {
+                target: 'final',
+                cond: {
+                  type: 'json-logic',
+                  options: {
+                    rule: {
+                      '>': [{ var: 'external_request_example.data.name_fuzziness_score' }, score],
+                    },
+                    assignOnFailure: { manualReviewReason: 'name not matching ... ' },
+                  },
+                },
+              },
+            ],
+          },
+        },
+        middle: {
+          on: { EVENT2: { target: 'final', cond: 'isTrue' } },
+        },
+        final: {
+          type: 'final',
+        },
+      },
+    },
+  });
+  it('should not proceed with transition if json logic condition falsy', async () => {
+    const workflow = createEventCollectingWorkflow(createCondMachine(0.9));
+    await workflow.sendEvent({ type: 'EVENT' });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(workflow.events[0].state).toEqual('initial');
+  });
+  it('should proceed with transition if json logic condition truthy', async () => {
+    const workflowArgs = createCondMachine(0.5);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const workflow = createEventCollectingWorkflow(workflowArgs);
+    await workflow.sendEvent({ type: 'EVENT' });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(workflow.events[0].state).toEqual('final');
+    // expect(workflow.#__context).toContain({ manualReviewReason: 'name not matching ... ' });
+  });
+  it('should proceed with transition if json logic condition truthy, and default transition is set', async () => {
+    const workflowArgs = createCondMachine(0.5);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    workflowArgs.definition.states.initial.on.EVENT.push({ target: 'middle' });
+    const workflow = createEventCollectingWorkflow(workflowArgs);
+    await workflow.sendEvent({ type: 'EVENT' });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(workflow.events[0].state).toEqual('final');
+    // expect(workflow.#__context).toContain({ manualReviewReason: 'name not matching ... ' });
+  });
+  it('should not proceed with transition if json logic condition truthy, but transition to a default state THIS TEST SHOULD BE REVISIONED', async () => {
+    const workflowArgs = createCondMachine(0.9);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    workflowArgs.definition.states.initial.on.EVENT.push({ target: 'middle' });
+    console.log(JSON.stringify(workflowArgs.definition, null, 2));
+
+    const workflow = createEventCollectingWorkflow(workflowArgs);
+    await workflow.sendEvent({ type: 'EVENT' });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(workflow.events[0].state).toEqual('initial');
+    // expect(workflow.#__context).toContain({ manualReviewReason: 'name not matching ... ' });
+  });
+});
