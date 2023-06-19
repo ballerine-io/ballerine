@@ -44,12 +44,12 @@ async function main() {
       name: 'session',
       keys: [env.SESSION_SECRET],
       httpOnly: true,
-      domain: env.NODE_ENV === 'production' ? '.ballerine.app' : undefined,
-      secure: env.NODE_ENV === 'production',
+      secure: false,
       sameSite: 'strict',
       maxAge: 1000 * 60 * 60 * 1, // 1 hour(s)
     }),
   );
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (!req.session) return next();
 
