@@ -30,7 +30,8 @@
     "@types/react": "^17.0.45",
     "@types/react-dom": "^18.0.0",
     "astro": "^2.6.6",
-    "react-dom": "^18.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "solid-js": "^1.4.3"
   },
   "devDependencies": {

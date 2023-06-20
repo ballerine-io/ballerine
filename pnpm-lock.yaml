@@ -1467,8 +1467,11 @@ importers:
       astro:
         specifier: ^2.6.6
         version: 2.6.6(@types/node@18.15.10)
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
       react-dom:
-        specifier: ^18.1.0
+        specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       solid-js:
         specifier: ^1.4.3
