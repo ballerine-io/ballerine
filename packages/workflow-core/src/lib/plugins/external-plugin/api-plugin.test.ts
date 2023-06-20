@@ -70,7 +70,7 @@ describe('workflow-runner', () => {
         await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
         expect(workflow.state).toEqual('checkBusinessScoreSuccess');
-        expect(workflow.context).toEqual({
+        expect(workflow.context.pluginsOutput).toEqual({
           ballerineEnrichment: {
             result: {
               companyInfo: {
@@ -86,7 +86,6 @@ describe('workflow-runner', () => {
               },
             },
           },
-          entity: { id: 'some_id' },
         });
       });
     });
@@ -100,8 +99,7 @@ describe('workflow-runner', () => {
         await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
         expect(workflow.state).toEqual('testManually');
-        expect(workflow.context).toEqual({
-          entity: { id: 'some_id' },
+        expect(workflow.context.pluginsOutput).toEqual({
           ballerineEnrichment: {
             error:
               'Error transforming data: write EPIPE for transformer mapping: dsa: .unknwonvalue.id}',
@@ -132,8 +130,7 @@ describe('workflow-runner', () => {
           await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
           expect(workflow.state).toEqual('testManually');
-          expect(workflow.context).toEqual({
-            entity: { id: 'some_id' },
+          expect(workflow.context.pluginsOutput).toEqual({
             ballerineEnrichment: {
               error:
                 "must have required property 'business_name' | must have required property 'registration_number'",
@@ -160,7 +157,7 @@ describe('workflow-runner', () => {
           await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
           expect(workflow.state).toEqual('checkBusinessScoreSuccess');
-          expect(Object.keys(workflow.context.ballerineEnrichment)[0]).toEqual('result');
+          expect(Object.keys(workflow.context.pluginsOutput.ballerineEnrichment)[0]).toEqual('result');
         });
       });
     });
