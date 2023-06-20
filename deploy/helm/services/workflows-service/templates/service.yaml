@@ -1,0 +1,18 @@
+{{- if .Values.workflowService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ .Values.workflowService.nameOverride }}
+    namespace: {{ .Release.Namespace | quote }}
+    labels:
+      app: {{ .Values.workflowService.nameOverride }}
+spec:
+    ports:
+    - name: {{ .Values.workflowService.nameOverride }}
+      port: {{ .Values.workflowService.service.port }}
+      protocol: {{ .Values.workflowService.service.protocol }}
+      targetPort: {{ .Values.workflowService.service.port }}
+    selector:
+        app: {{ .Values.workflowService.nameOverride }}
+    type: {{ .Values.workflowService.service.type }}
+{{- end }}

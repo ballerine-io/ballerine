@@ -1,0 +1,129 @@
+## Postgres params
+postgresql:
+  enabled: true
+  auth:
+    username: admin
+    password: admin
+    postgresPassword: admin
+    database: postgres
+  # Local dev purpose
+  # persistence:
+  #   existingClaim: postgresql-pv-claim
+  # volumePermissions:
+  #   enabled: true
+
+workflowService:
+  enabled: true
+  replicas: 1
+  strategyType: RollingUpdate
+  updateStrategy:
+    maxSurge: 1
+    maxUnavailable: "0"
+  nameOverride: workflowservice
+  migration: true
+  service:
+    port: 3000
+    type: ClusterIP
+    protocol: TCP  
+  image:
+    registry: index.docker.io
+    repository: gouthamappsmith/ball
+    pullPolicy: Never
+    tag: "0.0.1"
+  applicationConfig:
+    BCRYPT_SALT: "10"
+    JWT_SECRET_KEY: "secret"
+    JWT_EXPIRATION: "10d"
+    DB_URL: ""
+    DB_USER: ""
+    DB_PASSWORD: ""
+    DB_PORT: "5432"
+    PORT: "3000"
+    COMPOSE_PROJECT_NAME: "ballerine-x"
+    SESSION_SECRET: "iGdnj4A0YOhj8dHJK7IWSvQKEZsG7P70FFehuddhFPjtg/bSkzFejYILk4Xue6Ilx9y3IAwzR8pV1gb4"
+    BACKOFFICE_CORS_ORIGIN: "http://localhost:5137"
+    HEADLESS_EXAMPLE_CORS_ORIGIN: "http://localhost:5173"
+    API_KEY: "secret"
+    NODE_ENV: "development"
+    SENTRY_DSN: ""
+    WEBHOOK_URL: ""
+    WEBHOOK_SECRET: "webhook_secret"
+
+# replicaCount: 1
+
+# image:
+#   repository: nginx
+#   pullPolicy: IfNotPresent
+#   # Overrides the image tag whose default is the chart appVersion.
+#   tag: ""
+
+# imagePullSecrets: []
+# nameOverride: ""
+# fullnameOverride: ""
+
+# serviceAccount:
+#   # Specifies whether a service account should be created
+#   create: true
+#   # Annotations to add to the service account
+#   annotations: {}
+#   # The name of the service account to use.
+#   # If not set and create is true, a name is generated using the fullname template
+#   name: ""
+
+# podAnnotations: {}
+
+# podSecurityContext: {}
+#   # fsGroup: 2000
+
+# securityContext: {}
+#   # capabilities:
+#   #   drop:
+#   #   - ALL
+#   # readOnlyRootFilesystem: true
+#   # runAsNonRoot: true
+#   # runAsUser: 1000
+
+# service:
+#   type: ClusterIP
+#   port: 80
+
+# ingress:
+#   enabled: false
+#   className: ""
+#   annotations: {}
+#     # kubernetes.io/ingress.class: nginx
+#     # kubernetes.io/tls-acme: "true"
+#   hosts:
+#     - host: chart-example.local
+#       paths:
+#         - path: /
+#           pathType: ImplementationSpecific
+#   tls: []
+#   #  - secretName: chart-example-tls
+#   #    hosts:
+#   #      - chart-example.local
+
+# resources: {}
+#   # We usually recommend not to specify default resources and to leave this as a conscious
+#   # choice for the user. This also increases chances charts run on environments with little
+#   # resources, such as Minikube. If you do want to specify resources, uncomment the following
+#   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+#   # limits:
+#   #   cpu: 100m
+#   #   memory: 128Mi
+#   # requests:
+#   #   cpu: 100m
+#   #   memory: 128Mi
+
+# autoscaling:
+#   enabled: false
+#   minReplicas: 1
+#   maxReplicas: 100
+#   targetCPUUtilizationPercentage: 80
+#   # targetMemoryUtilizationPercentage: 80
+
+# nodeSelector: {}
+
+# tolerations: []
+
+# affinity: {}
