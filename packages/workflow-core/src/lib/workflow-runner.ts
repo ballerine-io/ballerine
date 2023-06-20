@@ -18,6 +18,7 @@ import { StatePlugin } from './plugins/types';
 import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 import { TValidators } from './utils/types';
 import { ApiPlugin, ApiPluginParams } from './plugins/external-plugin/api-plugin';
+import {WebhookPlugin} from "./plugins/external-plugin/webhook-plugin";
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -70,14 +71,16 @@ export class WorkflowRunner {
     return apiPluginSchemas?.map(apiPluginSchema => {
       const requestTransformerLogic = apiPluginSchema.request.transform;
       const requestSchema = apiPluginSchema.request.schema;
-      const responseTransformerLogic = apiPluginSchema.response.transform;
-      const responseSchema = apiPluginSchema.response.schema;
+      const responseTransformerLogic = apiPluginSchema.response?.transform;
+      const responseSchema = apiPluginSchema.response?.schema;
       const requestTransformer = this.fetchTransformer(requestTransformerLogic);
-      const responseTransformer = this.fetchTransformer(responseTransformerLogic);
+      const responseTransformer = responseTransformerLogic && this.fetchTransformer(responseTransformerLogic);
       const requestValidator = this.fetchValidator('json-schema', requestSchema);
       const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
-      const apiPlugin = new ApiPlugin({
+      let isApiPlugin = !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
+      const apiPluginClass = isApiPlugin ? ApiPlugin : WebhookPlugin;
+      const apiPlugin = new apiPluginClass({
         name: apiPluginSchema.name,
         stateNames: apiPluginSchema.stateNames,
         url: apiPluginSchema.url,
@@ -296,6 +299,8 @@ export class WorkflowRunner {
         if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
 
         const { callbackAction, responseBody, error } = await apiPlugin.callApi(this.#__context);
+        if (typeof apiPlugin == 'WebhookPlugin') continue;
+
         this.#__context.pluginsOutput = {
           ...this.#__context.pluginsOutput || {},
           ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
