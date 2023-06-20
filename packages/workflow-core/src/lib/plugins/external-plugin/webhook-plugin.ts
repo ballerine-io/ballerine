@@ -16,12 +16,17 @@ export class WebhookPlugin extends ApiPlugin {
   }
   async callApi(context: TContext) {
     const requestPayload = await this.transformData(this.request.transformer, context);
-    await this.makeApiRequest(
-      this.url,
-      this.method,
-      requestPayload,
-      this.headers,
-    );
+
+    try {
+      await this.makeApiRequest(
+        this.url,
+        this.method,
+        requestPayload,
+        this.headers,
+      );
+    } catch (e) {
+      console.error(e)
+    }
 
     return {}
   }
