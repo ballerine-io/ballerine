@@ -38,7 +38,6 @@ export const useEntity = () => {
   const selectedEntity = workflow.entity;
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
-
   const octetToFileType = (base64: string, fileType: string) =>
     base64?.replace(/application\/octet-stream/gi, fileType);
   const { data: session } = useAuthenticatedUserQuery();
@@ -55,6 +54,9 @@ export const useEntity = () => {
             const additionProperties =
               isExistingSchemaForDocument(documentsSchemas) &&
               composePickableCategoryType(category, docType, documentsSchemas);
+            const isDoneWithRevision =
+              decision?.status === 'revision' &&
+              workflow?.context?.parentMachine?.status === 'completed';
 
             return [
               {
@@ -76,7 +78,7 @@ export const useEntity = () => {
                         value: 'Reject',
                         data: {
                           id,
-                          disabled: Boolean(decision?.status),
+                          disabled: !isDoneWithRevision && Boolean(decision?.status),
                           approvalStatus: 'rejected',
                         },
                       },
@@ -85,7 +87,7 @@ export const useEntity = () => {
                         value: 'Approve',
                         data: {
                           id,
-                          disabled: Boolean(decision?.status),
+                          disabled: !isDoneWithRevision && Boolean(decision?.status),
                           approvalStatus: 'approved',
                         },
                       },
@@ -161,24 +163,28 @@ export const useEntity = () => {
             ];
           },
         ) ?? []),
-        [
-          {
-            id: 'entity-details',
-            type: 'details',
-            value: {
-              title: `${toStartCase(contextEntity?.type)} Information`,
-              data: [
-                ...Object.entries(omitPropsFromObject(contextEntity?.data, 'additionalInfo') ?? {}),
-                ...Object.entries(contextEntity?.data?.additionalInfo ?? {}),
-              ]?.map(([title, value]) => ({
-                title,
-                value,
-                type: 'string',
-                isEditable: false,
-              })),
-            },
-          },
-        ],
+        Object.keys(contextEntity?.data ?? {}).length === 0
+          ? []
+          : [
+              {
+                id: 'entity-details',
+                type: 'details',
+                value: {
+                  title: `${toStartCase(contextEntity?.type)} Information`,
+                  data: [
+                    ...Object.entries(
+                      omitPropsFromObject(contextEntity?.data, 'additionalInfo') ?? {},
+                    ),
+                    ...Object.entries(contextEntity?.data?.additionalInfo ?? {}),
+                  ]?.map(([title, value]) => ({
+                    title,
+                    value,
+                    type: 'string',
+                    isEditable: false,
+                  })),
+                },
+              },
+            ],
       ]
     : [];
 

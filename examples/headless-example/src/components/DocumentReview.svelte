@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { camelCaseToTitle, createZodForm, getWorkflowContext } from '@/utils';
+  import { camelCaseToTitle, createZodForm, getSnapshotContext, getWorkflowContext } from '@/utils';
   import { z } from 'zod';
   import type { TOnPrev, TOnSubmit } from '@/types';
   import Form from '@/components/Form.svelte';
@@ -7,11 +7,10 @@
 
   const schema = z.object({});
 
-  const workflowService = getWorkflowContext();
   export let initialValues: z.infer<typeof schema>;
   export let onSubmit: TOnSubmit<typeof schema>;
   export let onPrev: TOnPrev<typeof schema>;
-  export let documentName: string;
+  export let documentId: string;
 
   // Defaults to 'Next'
   const submitText = 'Looks Good';
@@ -19,12 +18,16 @@
   let id;
   let fileType;
 
+  const workflowService = getWorkflowContext();
   const zodForm = createZodForm(schema, {
     initialValues,
     onSubmit(data, ctx) {
+      const context = getSnapshotContext(workflowService);
+      const document = context?.form?.[documentId];
+
       return onSubmit(
         {
-          [documentName]: workflowService.getSnapshot?.()?.context?.[documentName],
+          [documentId]: document,
         },
         ctx,
       );
@@ -33,9 +36,10 @@
   const backText = 'Re-upload';
 
   $: {
-    const document = workflowService.getSnapshot?.()?.context?.[documentName];
+    const context = getSnapshotContext(workflowService);
+    const document = context?.form?.[documentId];
 
-    title = camelCaseToTitle(documentName);
+    title = camelCaseToTitle(documentId);
     id = document?.id;
     fileType = document?.fileType;
   }

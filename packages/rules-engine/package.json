@@ -47,6 +47,7 @@
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-functional": "^3.0.2",
     "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "fs-extra": "^11.1.0",
     "prettier": "^2.1.1",
     "rollup": "2.70.2",
