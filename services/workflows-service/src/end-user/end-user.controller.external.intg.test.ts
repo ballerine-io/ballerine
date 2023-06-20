@@ -7,7 +7,6 @@ import { faker } from '@faker-js/faker';
 import { EndUserService } from '@/end-user/end-user.service';
 import { PrismaModule } from 'nestjs-prisma';
 import { EndUserRepository } from '@/end-user/end-user.repository';
-import { PrismaService } from '@/prisma/prisma.service';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
 import { FileRepository } from '@/storage/storage.repository';
@@ -18,6 +17,7 @@ import { BusinessRepository } from '@/business/business.repository';
 import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -28,7 +28,6 @@ describe('#EndUserControllerExternal', () => {
   beforeAll(async () => {
     const servicesProviders = [
       EndUserRepository,
-      PrismaService,
       FilterService,
       FilterRepository,
       FileRepository,
@@ -39,6 +38,7 @@ describe('#EndUserControllerExternal', () => {
       WorkflowDefinitionRepository,
       WorkflowRuntimeDataRepository,
       WorkflowService,
+      EventEmitter2,
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,
