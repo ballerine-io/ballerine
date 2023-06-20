@@ -5,7 +5,7 @@ import { toStartCase } from '../../../../common/utils/to-start-case/to-start-cas
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Button } from '../../../../common/components/atoms/Button/Button';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
 import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
@@ -19,15 +19,6 @@ import { SelectContent } from '../../../../common/components/atoms/Select/Select
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 import { Select } from '../../../../common/components/atoms/Select/Select';
-import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
-
-const useInitialCategorySetValue = ({ form, data }) => {
-  useEffect(() => {
-    const categoryValue = form.getValues('category');
-
-    form.setValue('category', categoryValue);
-  }, [form, data]);
-};
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
@@ -37,13 +28,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   title,
   workflowId,
 }) => {
-  const [formData, setFormData] = useState(data);
-  const useInitialCategorySetValue = () => {
-    useEffect(() => {
-      const categoryValue = form.getValues('category');
-      form.setValue('category', categoryValue);
-    }, [form, data, setFormData]);
-  };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
@@ -52,7 +36,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const isDecisionNegative = (isDecisionComponent: boolean, value: string) => {
     return isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
-  const defaultValues = formData?.reduce((acc, curr) => {
+  const defaultValues = data?.reduce((acc, curr) => {
     acc[curr.title] = curr.value;
 
     return acc;
@@ -104,12 +88,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     });
   };
   const isDecisionComponent = title === 'Decision';
-
-  useWatchDropdownOptions({ form, data, setFormData });
-  useInitialCategorySetValue({
-    form,
-    data,
-  });
+  const category = form.watch('category');
 
   return (
     <Form {...form}>
@@ -120,63 +99,69 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
             'grid-cols-3': id === 'entity-details',
           })}
         >
-          {formData?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
+          {data?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
             isDecisionComponent && !value ? null : (
               <FormField
                 key={title}
                 control={form.control}
                 name={title}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
-                    {dropdownOptions ? (
-                      <Select
-                        disabled={!isEditable}
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {dropdownOptions?.map(({ label, value }) => {
-                            return (
-                              <SelectItem key={value} value={value}>
-                                {label}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <FormControl>
-                        <Input
-                          type={!format ? (type === 'string' ? 'text' : type) : format}
+                render={({ field }) => {
+                  const options = Array.isArray(dropdownOptions)
+                    ? dropdownOptions
+                    : dropdownOptions?.[category];
+
+                  return (
+                    <FormItem>
+                      <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
+                      {dropdownOptions ? (
+                        <Select
                           disabled={!isEditable}
-                          className={ctw(
-                            `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
-                            {
-                              'font-bold text-success': isDecisionPositive(
-                                isDecisionComponent,
-                                field.value,
-                              ),
-                              'font-bold text-destructive': isDecisionNegative(
-                                isDecisionComponent,
-                                field.value,
-                              ),
-                            },
-                          )}
-                          pattern={pattern}
-                          autoComplete={'off'}
-                          {...field}
-                        />
-                      </FormControl>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {options?.map(({ label, value }) => {
+                              return (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <FormControl>
+                          <Input
+                            type={!format ? (type === 'string' ? 'text' : type) : format}
+                            disabled={!isEditable}
+                            className={ctw(
+                              `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
+                              {
+                                'font-bold text-success': isDecisionPositive(
+                                  isDecisionComponent,
+                                  field.value,
+                                ),
+                                'font-bold text-destructive': isDecisionNegative(
+                                  isDecisionComponent,
+                                  field.value,
+                                ),
+                              },
+                            )}
+                            pattern={pattern}
+                            autoComplete={'off'}
+                            {...field}
+                          />
+                        </FormControl>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
             ),
           )}
