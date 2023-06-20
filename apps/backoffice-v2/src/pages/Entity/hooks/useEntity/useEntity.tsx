@@ -9,12 +9,12 @@ import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/us
 import {
   composePickableCategoryType,
   convertSnakeCaseToTitleCase,
-  isExistingSchemaForDocument,
   extractCountryCodeFromWorkflow,
-  omitPropsFromObject,
   getIsEditable,
+  omitPropsFromObject,
 } from './utils';
 import { getDocumentsByCountry } from '@ballerine/common';
+
 export const useEntity = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
@@ -51,9 +51,10 @@ export const useEntity = () => {
             { id, type: docType, category, issuer, properties, propertiesSchema, decision },
             docIndex,
           ) => {
-            const additionProperties =
-              isExistingSchemaForDocument(documentsSchemas) &&
-              composePickableCategoryType(category, docType, documentsSchemas);
+            const isExistingSchemaForDocument = !!documentsSchemas?.length;
+            const additionProperties = isExistingSchemaForDocument
+              ? composePickableCategoryType(category, docType, documentsSchemas)
+              : {};
             const isDoneWithRevision =
               decision?.status === 'revision' &&
               workflow?.context?.parentMachine?.status === 'completed';
@@ -114,7 +115,8 @@ export const useEntity = () => {
                           title,
                           { type, format, pattern, isEditable = true, dropdownOptions, value },
                         ]) => {
-                          const fieldValue = value || (properties?.[title] ?? '');
+                          const fieldValue = dropdownOptions ? value : properties?.[title] ?? '';
+
                           return {
                             title,
                             value: fieldValue,

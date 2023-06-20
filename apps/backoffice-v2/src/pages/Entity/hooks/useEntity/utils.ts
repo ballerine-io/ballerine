@@ -1,5 +1,4 @@
-import { TDropdownOption } from '../../components/EditableDetails/types';
-import { AnyArray } from '../../../../common/types';
+import { IDropdownOption } from '../../components/EditableDetails/types';
 import { TDocument } from '@ballerine/common';
 
 export const convertSnakeCaseToTitleCase = (input: string): string =>
@@ -7,27 +6,29 @@ export const convertSnakeCaseToTitleCase = (input: string): string =>
     .split('_')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
-const composeDataFormCell = (
-  cellName: string,
-  categoryDropdownOptions: TDropdownOption[],
-  value: string,
+
+const uniqueArrayByKeys = <TObj extends Record<PropertyKey, any>>(
+  array: Array<TObj>,
+  ...keys: Array<keyof TObj>
 ) => {
-  return {
-    [cellName]: {
-      title: cellName,
-      type: 'string',
-      dropdownOptions: categoryDropdownOptions,
-      value: value,
-    },
-  };
-};
-const uniqueArrayByKey = (array: AnyArray, key: PropertyKey) => {
-  return [...new Map(array.map(item => [item[key], item])).values()] as TDropdownOption[];
+  const existenceMap = new Map();
+
+  return array?.filter(item => {
+    const key = keys.map(key => item[key]).join('|');
+
+    if (!existenceMap.has(key)) {
+      existenceMap.set(key, true);
+
+      return true;
+    }
+
+    return false;
+  });
 };
 
-const NONE_EDITABLE_FIELDS = ['category'] as const;
+const NON_EDITABLE_FIELDS = ['category'] as const;
 export const getIsEditable = (isEditable: boolean, title: string) => {
-  if (NONE_EDITABLE_FIELDS.includes(title)) return false;
+  if (NON_EDITABLE_FIELDS.includes(title)) return false;
 
   return isEditable;
 };
@@ -37,38 +38,53 @@ export const composePickableCategoryType = (
   typeValue: string,
   documentsSchemas: TDocument[],
 ) => {
-  const documentCategoryDropdownOptions: Array<TDropdownOption> = [];
-  const documentTypesDropdownOptions: Array<TDropdownOption> = [];
+  const documentCategoryDropdownOptions: Array<IDropdownOption> = uniqueArrayByKeys(
+    documentsSchemas,
+    'category',
+  )?.map(document => ({
+    label: convertSnakeCaseToTitleCase(document.category),
+    value: document.category,
+  }));
+  const documentTypeDropdownOptions = documentsSchemas.reduce(
+    (acc, curr) => {
+      if (!acc[curr.category]) {
+        acc[curr.category] = [];
+      }
 
-  documentsSchemas.forEach(document => {
-    const category = document.category;
-    if (category) {
-      documentCategoryDropdownOptions.push({
-        value: category as string,
-        label: convertSnakeCaseToTitleCase(category),
-      });
-    }
-    const type = document.type;
-    if (type) {
-      documentTypesDropdownOptions.push({
-        dependantOn: 'category',
-        dependantValue: category as string,
-        value: type as string,
-        label: convertSnakeCaseToTitleCase(type),
-      });
-    }
-  });
+      if (acc[curr.category].some(item => item.value === curr.type)) {
+        return acc;
+      }
 
-  const categoryDropdownOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
-  const typeDropdownOptions = uniqueArrayByKey(documentTypesDropdownOptions, 'value');
+      acc[curr.category].push({
+        label: convertSnakeCaseToTitleCase(curr.type),
+        value: curr.type,
+      });
+
+      return acc;
+    },
+    {} as Record<
+      string,
+      Array<{
+        label: string;
+        value: string;
+      }>
+    >,
+  );
 
   return {
-    ...composeDataFormCell('category', categoryDropdownOptions, categoryValue),
-    ...composeDataFormCell('type', typeDropdownOptions, typeValue),
+    category: {
+      title: 'category',
+      type: 'string',
+      dropdownOptions: documentCategoryDropdownOptions,
+      value: categoryValue,
+    },
+    type: {
+      title: 'type',
+      type: 'string',
+      dropdownOptions: documentTypeDropdownOptions,
+      value: typeValue,
+    },
   };
-};
-export const isExistingSchemaForDocument = documentsSchemas => {
-  return documentsSchemas && documentsSchemas.length > 0;
 };
 
 export const extractCountryCodeFromWorkflow = workflow => {
@@ -77,10 +93,18 @@ export const extractCountryCodeFromWorkflow = workflow => {
   })?.issuer?.country;
 };
 
-export const omitPropsFromObject = (obj, ...props) => {
-  const result = { ...obj };
-  props.forEach(function (prop) {
-    delete result[prop];
-  });
-  return result;
+export const omitPropsFromObject = <
+  TObj extends Record<PropertyKey, any>,
+  TKeys extends Array<keyof TObj>,
+>(
+  obj: TObj,
+  ...keys: TKeys
+) => {
+  return Object.keys(obj).reduce((acc, curr) => {
+    if (keys.includes(curr)) return acc;
+
+    acc[curr] = obj[curr];
+
+    return acc;
+  }, {}) as Omit<TObj, TKeys[number]>;
 };

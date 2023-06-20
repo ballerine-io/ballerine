@@ -151,7 +151,7 @@ async function seed(bcryptSalt: Salt) {
       documents: [
         {
           id: faker.datatype.uuid(),
-          category: 'proof_of_employment',
+          category: faker.helpers.arrayElement(['proof_of_address', 'proof_of_employment']),
           type: 'payslip',
           issuer: {
             type: 'government',

@@ -1,6 +1,4 @@
-export type TDropdownOption = {
+export interface IDropdownOption {
   value: string;
   label: string;
-  dependantValue?: string;
-  dependantOn?: string;
-};
+}
