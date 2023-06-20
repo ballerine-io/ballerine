@@ -11,7 +11,7 @@ function createWorkflowRunner(
   return new WorkflowRunner({
     definition,
     extensions: {
-      externalPlugins: { apiPluginsSchemas },
+      apiPlugins: apiPluginsSchemas,
     },
     workflowContext: { machineContext: { entity: { id: 'some_id' } } },
   });
