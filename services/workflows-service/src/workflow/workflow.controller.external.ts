@@ -5,7 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { NotFoundException, Query, Res } from '@nestjs/common';
+import { NotFoundException, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -15,7 +15,7 @@ import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
-import { RunnableWorkflowData, TEntityType } from './types';
+import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -23,7 +23,6 @@ import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
-import { camelCase } from 'lodash';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -37,21 +36,13 @@ export class WorkflowControllerExternal {
   ) {}
 
   // GET /workflows
-  @common.Get('/:entityType/:entityId')
+  @common.Get('/')
   @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
-  @UseKeyAuthInDevGuard()
-  async listWorkflowRuntimeDataByUserId(
-    @Query('entityType') entityType: 'end-user' | 'business',
-    @Query('entityId') entityId: string,
-  ) {
-    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId({
-      entityId,
-      // Expecting kebab-case from the url
-      entity: camelCase(entityType) as TEntityType,
-    });
+  async listWorkflowRuntimeDataByUserId(@UserData() userInfo: UserInfo) {
+    const completeWorkflowData = await this.service.listFullWorkflowData();
     const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
       workflowRuntimeData: rest,
       workflowDefinition,

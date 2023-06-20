@@ -5,9 +5,10 @@ import { EndUserRepository } from './end-user.repository';
 import { EndUserService } from './end-user.service';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
+import { WorkflowService } from '@/workflow/workflow.service';
 
 @Module({
   controllers: [EndUserControllerInternal, EndUserControllerExternal],
-  providers: [EndUserRepository, EndUserService, FilterService, FilterRepository],
+  providers: [WorkflowService, EndUserRepository, EndUserService, FilterService, FilterRepository],
 })
 export class EndUserModule {}
