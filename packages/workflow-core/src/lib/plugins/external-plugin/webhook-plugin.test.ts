@@ -1,7 +1,5 @@
 import { beforeEach, afterEach, describe, expect, it, test } from 'vitest';
 import { WorkflowRunner } from '../../workflow-runner';
-import { IApiPluginParams } from './api-plugin';
-import { MachineConfig } from 'xstate';
 import { WorkflowRunnerArgs } from '../../types';
 import {WebhookPlugin, WebhookPluginParams} from "./webhook-plugin";
 import {setupServer} from "msw/node";
@@ -47,7 +45,7 @@ describe('workflow-runner', () => {
         name: 'ballerineEnrichment',
         url: webhookUrl,
         method: 'GET',
-        stateNames: ['checkBusinessScore'],
+        stateNames: ['success', 'type'],
         request: {
           transform: {
             transformer: 'jq',
@@ -67,15 +65,17 @@ describe('workflow-runner', () => {
         server.close();
       });
 
+      let serverRequesUrl;
       server.use(
         rest.get(webhookUrl, (req, res, ctx) => {
-          console.log("GOT RESPONSE");
+          serverRequesUrl = req.url.toString()
           return res(ctx.json({result: 'someResult'}));
         }),
       );
       const workflow = createWorkflowRunner(definition, webhookPluginsSchemas);
       it('it transitions to successAction and persist response to context', async () => {
         await workflow.sendEvent('ALL_GOOD');
+        expect(serverRequesUrl).toEqual("https://sometesturl.com/ballerine/test/url/123?result=%5Bobject+Object%5D");
       });
     });
   });
