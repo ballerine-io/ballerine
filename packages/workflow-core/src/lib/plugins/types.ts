@@ -1,3 +1,5 @@
+import { ApiPlugin } from './external-plugin/api-plugin';
+
 export type PluginAction = { workflowId: string; context: any; event: any; state: any };
 
 export type ExtensionRunOrder = 'pre' | 'post';
@@ -25,3 +27,4 @@ export interface StatePlugin extends WorkflowPlugin {
 }
 
 export type StatePlugins = StatePlugin[];
+export type ApiPlugins = ApiPlugin[];

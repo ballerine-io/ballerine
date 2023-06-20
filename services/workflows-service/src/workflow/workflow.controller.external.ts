@@ -5,7 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { Headers, NotFoundException, Res, UseFilters } from '@nestjs/common';
+import { NotFoundException, Param, Res, UseFilters } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -15,13 +15,15 @@ import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
-import { RunnableWorkflowData } from './types';
+import { RunnableWorkflowData, TEntityType } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { camelCase } from 'lodash';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -35,17 +37,21 @@ export class WorkflowControllerExternal {
   ) {}
 
   // GET /workflows
-  @common.Get()
+  @common.Get('/:entityType/:entityId')
   @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
+  @UseKeyAuthInDevGuard()
   async listWorkflowRuntimeDataByUserId(
-    @UserData()
-    _userInfo: UserInfo,
-    @Headers('no_auth_user_id') no_auth_user_id: string,
-  ): Promise<RunnableWorkflowData[]> {
-    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(no_auth_user_id);
+    @Param('entityType') entityType: 'end-user' | 'business',
+    @Param('entityId') entityId: string,
+  ) {
+    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId({
+      entityId,
+      // Expecting kebab-case from the url
+      entity: camelCase(entityType) as TEntityType,
+    });
     const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
       workflowRuntimeData: rest,
       workflowDefinition,
@@ -58,6 +64,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseKeyAuthInDevGuard()
   async getRunnableWorkflowDataById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
   ): Promise<RunnableWorkflowData> {
@@ -81,6 +88,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseKeyAuthInDevGuard()
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
@@ -100,13 +108,11 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async intent(
-    @common.Body() intent: IntentDto,
-    @Headers('no_auth_user_id') no_auth_user_id: string,
-  ): Promise<IntentResponse> {
+  @UseKeyAuthInDevGuard()
+  async intent(@common.Body() { intentName, entityId }: IntentDto): Promise<IntentResponse> {
     // Rename to intent or getRunnableWorkflowDataByIntent?
-    const entityType = intent.intentName === 'kycSignup' ? 'endUser' : 'business';
-    return await this.service.resolveIntent(intent.intentName, no_auth_user_id, entityType);
+    const entityType = intentName === 'kycSignup' ? 'endUser' : 'business';
+    return await this.service.resolveIntent(intentName, entityId, entityType);
   }
 
   @common.Post('/run')

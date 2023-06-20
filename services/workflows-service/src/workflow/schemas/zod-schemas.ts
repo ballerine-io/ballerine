@@ -15,6 +15,7 @@ export const ConfigSchema = z
     workflowLevelResolution: z.boolean().optional(),
     allowMultipleActiveWorkflows: z.boolean().optional(),
   })
-  .strict();
+  .strict()
+  .optional();
 
 export type WorkflowConfig = z.infer<typeof ConfigSchema>;

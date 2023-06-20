@@ -2,7 +2,7 @@ import { TContext, TTransformers, TValidators } from '../../utils/types';
 import { AnyRecord } from '@ballerine/common';
 import fetch from 'node-fetch';
 
-export interface IApiPluginParams {
+export interface ApiPluginParams {
   name: string;
   stateNames: Array<string>;
   url: string;
