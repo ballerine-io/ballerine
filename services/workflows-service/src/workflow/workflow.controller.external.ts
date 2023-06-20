@@ -23,6 +23,7 @@ import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -41,14 +42,10 @@ export class WorkflowControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
-  async listWorkflowRuntimeDataByUserId(@UserData() userInfo: UserInfo) {
-    const completeWorkflowData = await this.service.listFullWorkflowData();
-    const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
-      workflowRuntimeData: rest,
-      workflowDefinition,
-    }));
+  async listWorkflowRuntimeData(@UserData() userInfo: UserInfo) {
+    const workflowRuntimeDataWithDefinition = await this.service.listFullWorkflowData();
 
-    return response;
+    return makeFullWorkflow(workflowRuntimeDataWithDefinition);
   }
 
   @common.Get('/:id')

@@ -17,6 +17,7 @@ import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-gu
 import { WorkflowDefinitionModel } from '@/workflow/workflow-definition.model';
 import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definition-find-many-args';
 import { WorkflowService } from '@/workflow/workflow.service';
+import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 
 @swagger.ApiTags('external/end-users')
 @common.Controller('external/end-users')
@@ -88,16 +89,13 @@ export class EndUserControllerExternal {
   @common.HttpCode(200)
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   @UseKeyAuthInDevGuard()
-  async listWorkflowRuntimeDataByUserId(@Param('endUserId') endUserId: string) {
-    const completeWorkflowData = await this.workflowService.listFullWorkflowDataByUserId({
-      entityId: endUserId,
-      entity: 'endUser',
-    });
-    const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
-      workflowRuntimeData: rest,
-      workflowDefinition,
-    }));
+  async listWorkflowRuntimeDataByEndUserId(@Param('endUserId') endUserId: string) {
+    const workflowRuntimeDataWithDefinition =
+      await this.workflowService.listFullWorkflowDataByUserId({
+        entityId: endUserId,
+        entity: 'endUser',
+      });
 
-    return response;
+    return makeFullWorkflow(workflowRuntimeDataWithDefinition);
   }
 }
