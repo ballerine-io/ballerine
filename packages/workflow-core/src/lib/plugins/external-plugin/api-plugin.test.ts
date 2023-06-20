@@ -1,7 +1,6 @@
-import { beforeEach, afterEach, describe, expect, it, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { WorkflowRunner } from '../../workflow-runner';
 import { IApiPluginParams } from './api-plugin';
-import { MachineConfig } from 'xstate';
 import { WorkflowRunnerArgs } from '../../types';
 
 function createWorkflowRunner(
@@ -44,7 +43,7 @@ describe('workflow-runner', () => {
       },
     };
 
-    let apiPluginsSchemas = [
+    const apiPluginsSchemas = [
       {
         name: 'ballerineEnrichment',
         url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.json',
