@@ -39,7 +39,7 @@ export const kybWithExternalRequestWorkflowExample = {
                 options: {
                   rule: {
                     '>': [
-                      { var: 'context.external_request_example.data.name_fuzziness_score' },
+                      { var: 'context.external_request_example.data.name_fuzzy_logic_score' },
                       0.5,
                     ],
                   },
@@ -53,7 +53,7 @@ export const kybWithExternalRequestWorkflowExample = {
               cond: {
                 type: 'json-logic',
                 rule: {
-                  '<': [{ var: 'context.external_request_example.data.name_fuzziness_score' }, 0.5],
+                  '<': [{ var: 'context.external_request_example.data.name_fuzzy_logic_score' }, 0.5],
                 },
               },
             },
@@ -146,7 +146,7 @@ export const kybWithExternalRequestWorkflowExample = {
                 },
               },
             },
-            name_fuzziness_score: {
+            name_fuzzy_logic_score: {
               type: 'number',
               minimum: 0,
               maximum: 1,
