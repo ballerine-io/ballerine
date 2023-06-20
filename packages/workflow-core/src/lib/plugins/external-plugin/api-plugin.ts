@@ -2,16 +2,16 @@ import { TContext, TTransformers, TValidators } from '../../utils/types';
 import { AnyRecord } from '@ballerine/common';
 import fetch from 'node-fetch';
 
-export interface ApiPluginParams {
+export interface IApiPluginParams {
   name: string;
   stateNames: Array<string>;
   url: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
   request: { transformer: TTransformers; schemaValidator?: TValidators };
-  response: { transformer: TTransformers; schemaValidator?: TValidators };
+  response?: { transformer: TTransformers; schemaValidator?: TValidators };
   headers?: HeadersInit;
-  successAction: string;
-  errorAction: string;
+  successAction?: string;
+  errorAction?: string;
 }
 export class ApiPlugin {
   name: string;
@@ -20,9 +20,9 @@ export class ApiPlugin {
   method: IApiPluginParams['method'];
   headers: IApiPluginParams['headers'];
   request: IApiPluginParams['request'];
-  response: IApiPluginParams['response'];
-  successAction: string;
-  errorAction: string;
+  response?: IApiPluginParams['response'];
+  successAction?: string;
+  errorAction?: string;
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
