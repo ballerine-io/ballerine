@@ -42,7 +42,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
-  async listWorkflowRuntimeData(@UserData() userInfo: UserInfo) {
+  async listWorkflowRuntimeData() {
     const workflowRuntimeDataWithDefinition = await this.service.listFullWorkflowData();
 
     return makeFullWorkflow(workflowRuntimeDataWithDefinition);
