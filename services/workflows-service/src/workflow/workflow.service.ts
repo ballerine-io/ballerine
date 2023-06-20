@@ -470,14 +470,14 @@ export class WorkflowService {
               status: 'active',
             },
           },
-          resolvedAt: isResolved ? new Date() : null,
+          resolvedAt: isResolved ? new Date().toISOString() : null,
         },
       });
     } else {
       updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
         data: {
           ...data,
-          resolvedAt: isResolved ? new Date() : null,
+          resolvedAt: isResolved ? new Date().toISOString() : null,
         },
       });
     }
