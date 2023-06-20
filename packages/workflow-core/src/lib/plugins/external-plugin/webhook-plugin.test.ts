@@ -49,7 +49,7 @@ describe('workflow-runner', () => {
         request: {
           transform: {
             transformer: 'jq',
-            mapping: '{result: .}'
+            mapping: '{.entity}'
           },
         },
       },
@@ -75,7 +75,7 @@ describe('workflow-runner', () => {
       const workflow = createWorkflowRunner(definition, webhookPluginsSchemas);
       it('it transitions to successAction and persist response to context', async () => {
         await workflow.sendEvent('ALL_GOOD');
-        expect(serverRequesUrl).toEqual("https://sometesturl.com/ballerine/test/url/123?result=%5Bobject+Object%5D");
+        expect(serverRequesUrl).toEqual("https://sometesturl.com/ballerine/test/url/123?id=some_id");
       });
     });
   });
