@@ -18,6 +18,7 @@ import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.rep
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { PrismaService } from '@/prisma/prisma.service';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -39,6 +40,7 @@ describe('#EndUserControllerExternal', () => {
       WorkflowRuntimeDataRepository,
       WorkflowService,
       EventEmitter2,
+      PrismaService,
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,
