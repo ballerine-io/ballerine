@@ -154,7 +154,7 @@ To set up a local environment, follow these steps:
    ```sh
    pnpm install
    ```
-   3. Initilazie monorepo:
+   3. Initialize monorepo:
    ```sh
    pnpm monorepo:init
    ```
