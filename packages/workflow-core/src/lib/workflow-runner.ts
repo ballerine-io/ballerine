@@ -47,6 +47,7 @@ export class WorkflowRunner {
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
+
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
 
@@ -77,7 +78,7 @@ export class WorkflowRunner {
       const requestValidator = this.fetchValidator('json-schema', requestSchema);
       const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
-      let isApiPlugin = !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
+      let isApiPlugin = this.isApiPlugin(apiPluginSchema);
       const apiPluginClass = isApiPlugin ? ApiPlugin : WebhookPlugin;
       const apiPlugin = new apiPluginClass({
         name: apiPluginSchema.name,
@@ -92,6 +93,10 @@ export class WorkflowRunner {
 
       return apiPlugin;
     });
+  }
+
+  private isApiPlugin(apiPluginSchema: IApiPluginParams) {
+    return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
   fetchTransformer(transformer) {
@@ -298,7 +303,7 @@ export class WorkflowRunner {
         if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
 
         const { callbackAction, responseBody, error } = await apiPlugin.callApi(this.#__context);
-        if (typeof apiPlugin == 'WebhookPlugin') continue;
+        if (!this.isApiPlugin(apiPlugin)) continue;
 
         this.#__context.pluginsOutput = {
           ...(this.#__context.pluginsOutput || {}),

@@ -54,12 +54,12 @@ export class ApiPlugin {
       if (apiResponse.ok) {
         const result = await apiResponse.json();
         const responseBody = await this.transformData(
-          this.response.transformer,
+          this.response!.transformer,
           result as AnyRecord,
         );
 
         const { isValidResponse, errorMessage } = await this.validateContent(
-          this.response.schemaValidator,
+          this.response!.schemaValidator,
           responseBody,
           'Response',
         );
