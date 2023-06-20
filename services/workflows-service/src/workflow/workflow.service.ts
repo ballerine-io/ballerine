@@ -325,6 +325,12 @@ export class WorkflowService {
     });
   }
 
+  async listFullWorkflowData() {
+    return await this.workflowRuntimeDataRepository.findMany({
+      include: { workflowDefinition: true },
+    });
+  }
+
   async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {
     const select = {
       id: true,

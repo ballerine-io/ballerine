@@ -1,6 +1,7 @@
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { faker } from '@faker-js/faker';
 import * as common from '@nestjs/common';
+import { Param } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
@@ -13,12 +14,17 @@ import { EndUserModel } from './end-user.model';
 import { EndUserService } from './end-user.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { WorkflowDefinitionModel } from '@/workflow/workflow-definition.model';
+import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definition-find-many-args';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 
 @swagger.ApiTags('external/end-users')
 @common.Controller('external/end-users')
 export class EndUserControllerExternal {
   constructor(
     protected readonly service: EndUserService,
+    protected readonly workflowService: WorkflowService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -74,5 +80,22 @@ export class EndUserControllerExternal {
 
       throw err;
     }
+  }
+
+  // curl -v http://localhost:3000/api/v1/external/end-users/:endUserId/workflows
+  @common.Get('/:endUserId/workflows')
+  @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @common.HttpCode(200)
+  @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
+  @UseKeyAuthInDevGuard()
+  async listWorkflowRuntimeDataByEndUserId(@Param('endUserId') endUserId: string) {
+    const workflowRuntimeDataWithDefinition =
+      await this.workflowService.listFullWorkflowDataByUserId({
+        entityId: endUserId,
+        entity: 'endUser',
+      });
+
+    return makeFullWorkflow(workflowRuntimeDataWithDefinition);
   }
 }
