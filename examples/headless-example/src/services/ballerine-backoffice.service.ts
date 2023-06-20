@@ -29,7 +29,7 @@ export class BallerineBackOfficeService {
           status: string;
         };
       }>
-    >(`${this.baseUrl}/workflows/${entityType}/${entityId}`);
+    >(`${this.baseUrl}/workflows?entityType=${entityType}&entityId=${entityId}`);
   fetchIntent = async () =>
     fetchJson<Array<Record<string, unknown>>>(`${this.baseUrl}/workflows/intent`, {
       method: 'POST',

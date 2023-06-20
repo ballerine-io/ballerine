@@ -5,7 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { NotFoundException, Param, Res, UseFilters } from '@nestjs/common';
+import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -44,8 +44,8 @@ export class WorkflowControllerExternal {
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   @UseKeyAuthInDevGuard()
   async listWorkflowRuntimeDataByUserId(
-    @Param('entityType') entityType: 'end-user' | 'business',
-    @Param('entityId') entityId: string,
+    @Query('entityType') entityType: 'end-user' | 'business',
+    @Query('entityId') entityId: string,
   ) {
     const completeWorkflowData = await this.service.listFullWorkflowDataByUserId({
       entityId,
