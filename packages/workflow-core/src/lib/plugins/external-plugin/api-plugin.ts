@@ -1,5 +1,5 @@
 import { TContext, TTransformers, TValidators } from '../../utils/types';
-import { AnyRecord } from '@ballerine/common';
+import {AnyRecord, isErrorWithMessage} from '@ballerine/common';
 
 export interface IApiPluginParams {
   name: string;
@@ -28,7 +28,7 @@ export class ApiPlugin {
     this.stateNames = pluginParams.stateNames;
     this.url = pluginParams.url;
     this.method = pluginParams.method;
-    this.headers = pluginParams.headers || { 'Content-Type': 'application/json' };
+    this.headers = pluginParams.headers || { 'Content-Type': 'application/json' } as HeadersInit;
     this.request = pluginParams.request;
     this.response = pluginParams.response;
     this.successAction = pluginParams.successAction;
@@ -48,7 +48,7 @@ export class ApiPlugin {
         this.url,
         this.method,
         requestPayload,
-        this.headers,
+        this.headers!,
       );
 
       if (apiResponse.ok) {
@@ -70,7 +70,7 @@ export class ApiPlugin {
         return this.returnErrorResponse('Request Failed: ' + apiResponse.statusText);
       }
     } catch (error) {
-      return this.returnErrorResponse(error.message);
+      return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
     }
   }
 
@@ -84,15 +84,17 @@ export class ApiPlugin {
     payload: AnyRecord,
     headers: HeadersInit,
   ) {
-    const requestParams: {} = {
+    const requestParams = {
       method: method,
       headers: headers,
     };
 
     if (this.method.toUpperCase() === 'POST') {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       requestParams.body = JSON.stringify(payload);
     } else if (this.method.toUpperCase() === 'GET' && payload) {
-      const queryParams = new URLSearchParams(payload).toString();
+      const queryParams = new URLSearchParams(payload as Record<string, string>).toString();
       url = `${this.url}?${queryParams}`;
     }
 
@@ -104,7 +106,7 @@ export class ApiPlugin {
       return (await transformer.transform(record, { input: 'json', output: 'json' })) as AnyRecord;
     } catch (error) {
       throw new Error(
-        `Error transforming data: ${error.message} for transformer mapping: ${transformer.mapping}`,
+        `Error transforming data: ${isErrorWithMessage(error) ? error.message : ''} for transformer mapping: ${transformer.mapping}`,
       );
     }
   }
