@@ -1,8 +1,7 @@
 import { TContext, TTransformers, TValidators } from '../../utils/types';
 import { AnyRecord } from '@ballerine/common';
 import fetch from 'node-fetch';
-
-export interface ApiPluginParams {
+export interface IApiPluginParams {
   name: string;
   stateNames: Array<string>;
   url: string;
@@ -85,7 +84,7 @@ export class ApiPlugin {
     payload: AnyRecord,
     headers: HeadersInit,
   ) {
-    let requestParams: {} = {
+    const requestParams: {} = {
       method: method,
       headers: headers,
     };
