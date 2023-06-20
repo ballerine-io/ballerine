@@ -10,6 +10,14 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
 import { PrismaService } from '@/prisma/prisma.service';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
+import { FileRepository } from '@/storage/storage.repository';
+import { FileService } from '@/providers/file/file.service';
+import { StorageService } from '@/storage/storage.service';
+import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
+import { BusinessRepository } from '@/business/business.repository';
+import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
+import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { WorkflowService } from '@/workflow/workflow.service';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -18,7 +26,20 @@ describe('#EndUserControllerExternal', () => {
   afterEach(tearDownDatabase);
 
   beforeAll(async () => {
-    const servicesProviders = [EndUserRepository, PrismaService, FilterService, FilterRepository];
+    const servicesProviders = [
+      EndUserRepository,
+      PrismaService,
+      FilterService,
+      FilterRepository,
+      FileRepository,
+      FileService,
+      StorageService,
+      WorkflowEventEmitterService,
+      BusinessRepository,
+      WorkflowDefinitionRepository,
+      WorkflowRuntimeDataRepository,
+      WorkflowService,
+    ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,
     ])) as unknown as EndUserService;
