@@ -29,8 +29,8 @@
     "node": ">=12"
   },
   "dependencies": {
-    "ajv": "^8.12.0",
     "@ballerine/common": "0.5.3",
+    "ajv": "^8.12.0",
     "json-logic-js": "^2.0.2",
     "node-jq": "^2.3.5",
     "xstate": "^4.35.2"
@@ -41,6 +41,7 @@
     "@babel/preset-typescript": "7.16.7",
     "@rollup/plugin-babel": "5.3.1",
     "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "13.2.1",
     "@rollup/plugin-replace": "4.0.0",
     "@rollup/plugin-terser": "^0.4.0",

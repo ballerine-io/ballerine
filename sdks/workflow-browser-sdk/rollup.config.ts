@@ -11,6 +11,7 @@ import { readJsonSync } from 'fs-extra';
 import path from 'path';
 import { RollupOptions } from 'rollup';
 import dts from 'rollup-plugin-dts';
+import json from '@rollup/plugin-json';
 
 import visualizer from 'rollup-plugin-visualizer';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -104,7 +105,7 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
       banner,
       preserveModules: true,
     },
-    plugins: [babelPlugin, nodeResolve({ extensions: ['.ts'] })],
+    plugins: [babelPlugin, json(), nodeResolve({ extensions: ['.ts'] })],
   };
 }
 
@@ -138,6 +139,7 @@ function umdDev({ input, umdExternal, packageDir, banner, jsName }: Options): Ro
       banner,
     },
     plugins: [
+      json(),
       babelPlugin,
       commonjs(),
       nodeResolve({ extensions: ['.ts'] }),
@@ -159,6 +161,7 @@ function umdProd({ input, umdExternal, packageDir, banner, jsName }: Options): R
       banner,
     },
     plugins: [
+      json(),
       babelPlugin,
       commonjs(),
       nodeResolve({ extensions: ['.ts'] }),

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { AnyRecord, uniqueArray } from '@ballerine/common';
+import { uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { createMachine, interpret, assign } from 'xstate';
@@ -15,8 +15,8 @@ import { Error as ErrorEnum } from './types';
 import { JQTransformer } from './utils/context-transformers/qj-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import { StatePlugin } from './plugins/types';
-import { ApiPlugin, ApiPluginParams } from './plugins/external-plugin/api-plugin';
-import {WebhookPlugin} from "./plugins/external-plugin/webhook-plugin";
+import { ApiPlugin, IApiPluginParams } from './plugins/external-plugin/api-plugin';
+import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -65,14 +65,15 @@ export class WorkflowRunner {
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
   }
 
-  initiateApiPlugins(apiPluginSchemas: ApiPluginParams[]) {
+  initiateApiPlugins(apiPluginSchemas: IApiPluginParams[]) {
     return apiPluginSchemas?.map(apiPluginSchema => {
       const requestTransformerLogic = apiPluginSchema.request.transform;
       const requestSchema = apiPluginSchema.request.schema;
       const responseTransformerLogic = apiPluginSchema.response?.transform;
       const responseSchema = apiPluginSchema.response?.schema;
       const requestTransformer = this.fetchTransformer(requestTransformerLogic);
-      const responseTransformer = responseTransformerLogic && this.fetchTransformer(responseTransformerLogic);
+      const responseTransformer =
+        responseTransformerLogic && this.fetchTransformer(responseTransformerLogic);
       const requestValidator = this.fetchValidator('json-schema', requestSchema);
       const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
@@ -300,7 +301,7 @@ export class WorkflowRunner {
         if (typeof apiPlugin == 'WebhookPlugin') continue;
 
         this.#__context.pluginsOutput = {
-          ...this.#__context.pluginsOutput || {},
+          ...(this.#__context.pluginsOutput || {}),
           ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
         };
         await this.sendEvent(callbackAction);
