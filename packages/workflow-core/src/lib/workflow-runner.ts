@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { AnyRecord, uniqueArray } from '@ballerine/common';
+import { uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { createMachine, interpret, assign } from 'xstate';

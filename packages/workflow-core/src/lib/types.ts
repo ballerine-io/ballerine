@@ -1,5 +1,5 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
-import { StatePlugins } from './plugins/types';
+import {ApiPlugins, StatePlugins} from './plugins/types';
 import {IApiPluginParams} from "./plugins/external-plugin/api-plugin";
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
@@ -19,7 +19,7 @@ export interface WorkflowEvent {
 
 export interface WorkflowExtensions {
   statePlugins?: StatePlugins;
-  apiPlugins?: IApiPluginParams[];
+  apiPlugins?: ApiPlugins | IApiPluginParams[];
 }
 export interface WorkflowContext {
   id?: string;
