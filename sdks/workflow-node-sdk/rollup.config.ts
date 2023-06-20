@@ -12,6 +12,8 @@ import commonjs from '@rollup/plugin-commonjs'
 import path from 'path'
 import dts from 'rollup-plugin-dts'
 import { readJsonSync } from 'fs-extra'
+import json from '@rollup/plugin-json';
+
 
 type Options = {
   input: string;
@@ -105,6 +107,7 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
       preserveModules: true
     },
     plugins: [
+      json(),
       babelPlugin,
       nodeResolve({ extensions: ['.ts', ] }),
     ],
@@ -125,6 +128,7 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
       banner,
     },
     plugins: [
+      json(),
       babelPlugin,
       commonjs(),
       nodeResolve({ extensions: ['.ts', ] }),
@@ -151,6 +155,7 @@ function umdDev({
       banner,
     },
     plugins: [
+      json(),
       babelPlugin,
       commonjs(),
       nodeResolve({ extensions: ['.ts', ] }),
@@ -178,6 +183,7 @@ function umdProd({
       banner,
     },
     plugins: [
+      json(),
       babelPlugin,
       commonjs(),
       nodeResolve({ extensions: ['.ts', ] }),

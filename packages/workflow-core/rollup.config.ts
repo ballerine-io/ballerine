@@ -10,6 +10,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import path from 'path';
 import dts from 'rollup-plugin-dts';
 import { readJsonSync } from 'fs-extra';
+import json from '@rollup/plugin-json';
 
 type Options = {
   input: string;
@@ -100,7 +101,7 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
       banner,
       preserveModules: true,
     },
-    plugins: [babelPlugin, nodeResolve({ extensions: ['.ts'] })],
+    plugins: [babelPlugin, json(), nodeResolve({ extensions: ['.ts'] })],
   };
 }
 
@@ -117,7 +118,7 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
       exports: 'named',
       banner,
     },
-    plugins: [babelPlugin, commonjs(), nodeResolve({ extensions: ['.ts'] })],
+    plugins: [babelPlugin, json(), commonjs(), nodeResolve({ extensions: ['.ts'] })],
   };
 }
 
@@ -142,6 +143,7 @@ function umdDev({
     plugins: [
       babelPlugin,
       commonjs(),
+      json(),
       nodeResolve({ extensions: ['.ts'] }),
       umdDevPlugin('development'),
     ],
@@ -169,6 +171,7 @@ function umdProd({
     plugins: [
       babelPlugin,
       commonjs(),
+      json(),
       nodeResolve({ extensions: ['.ts'] }),
       umdDevPlugin('production'),
       terser(),
@@ -196,7 +199,7 @@ function types({
       file: `${packageDir}/dist/types/index.d.ts`,
       banner,
     },
-    plugins: [dts()],
+    plugins: [dts(), json()],
   };
 }
 
