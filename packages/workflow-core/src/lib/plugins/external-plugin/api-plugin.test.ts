@@ -1,25 +1,12 @@
 import { beforeEach, afterEach, describe, expect, it, test } from 'vitest';
 import { WorkflowRunner } from '../../workflow-runner';
+import { IApiPluginParams } from './api-plugin';
+import { MachineConfig } from 'xstate';
+import { WorkflowRunnerArgs } from '../../types';
 
 function createWorkflowRunner(
-  definition: {
-    initial: string;
-    states: {
-      initial: { on: { CHECK_BUSINESS_SCORE: { target: string } } };
-      checkBusinessScoreSuccess: { type: string };
-      checkBusinessScore: { on: { API_CALL_SUCCESS: string } };
-    };
-  },
-  apiPluginsSchemas: {
-    stateNames: string[];
-    request: { transform: { mapping: string; transformer: string } };
-    method: string;
-    successAction: string;
-    response: { transform: { mapping: string; transformer: string } };
-    name: string;
-    errorAction: string;
-    url: string;
-  }[],
+  definition: WorkflowRunnerArgs['definition'],
+  apiPluginsSchemas: IApiPluginParams[],
 ) {
   return new WorkflowRunner({
     definition,
@@ -146,11 +133,34 @@ describe('workflow-runner', () => {
 
           expect(workflow.state).toEqual('testManually');
           expect(workflow.context).toEqual({
-            entity: {id: 'some_id'},
+            entity: { id: 'some_id' },
             ballerineEnrichment: {
-              error: '',
+              error:
+                "must have required property 'business_name' | must have required property 'registration_number'",
             },
           });
+        });
+      });
+
+      describe('when api request valid schema', () => {
+        const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
+        apiPluginsSchemasCopy[0].request.schema = {
+          $schema: 'http://json-schema.org/draft-07/schema#',
+          type: 'object',
+          properties: {
+            data: {
+              type: 'string',
+            },
+          },
+          required: ['data'],
+        };
+        const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
+
+        it('it transitions to successAction and persist success (response) to context', async () => {
+          await workflow.sendEvent('CHECK_BUSINESS_SCORE');
+
+          expect(workflow.state).toEqual('checkBusinessScoreSuccess');
+          expect(Object.keys(workflow.context.ballerineEnrichment)[0]).toEqual('result');
         });
       });
     });

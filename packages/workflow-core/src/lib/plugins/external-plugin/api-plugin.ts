@@ -2,7 +2,7 @@ import { TContext, TTransformers, TValidators } from '../../utils/types';
 import { AnyRecord } from '@ballerine/common';
 import fetch from 'node-fetch';
 
-export interface ApiPluginParams {
+export interface IApiPluginParams {
   name: string;
   stateNames: Array<string>;
   url: string;
@@ -17,14 +17,14 @@ export class ApiPlugin {
   name: string;
   stateNames: Array<string>;
   url: string;
-  method: ApiPluginParams['method'];
-  headers: ApiPluginParams['headers'];
-  request: ApiPluginParams['request'];
-  response: ApiPluginParams['response'];
+  method: IApiPluginParams['method'];
+  headers: IApiPluginParams['headers'];
+  request: IApiPluginParams['request'];
+  response: IApiPluginParams['response'];
   successAction: string;
   errorAction: string;
 
-  constructor(pluginParams: ApiPluginParams) {
+  constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
     this.stateNames = pluginParams.stateNames;
     this.url = pluginParams.url;
@@ -38,10 +38,12 @@ export class ApiPlugin {
   async callApi(context: TContext) {
     try {
       const requestPayload = await this.transformData(this.request.transformer, context);
-      const { isRequestValid, errorMessage } = await this.validateRequest(
-        requestPayload as AnyRecord,
+      const { isValidRequest, errorMessage } = await this.validateContent(
+        this.request.schemaValidator,
+        requestPayload,
+        'Request',
       );
-      if (!isRequestValid) return this.returnErrorResponse(errorMessage!);
+      if (!isValidRequest) return this.returnErrorResponse(errorMessage!);
 
       const apiResponse = await this.makeApiRequest(
         this.url,
@@ -57,8 +59,12 @@ export class ApiPlugin {
           result as AnyRecord,
         );
 
-        const { isResponseValid, errorMessage } = await this.validateResponse(responseBody);
-        if (!isResponseValid) return this.returnErrorResponse(errorMessage!);
+        const { isValidResponse, errorMessage } = await this.validateContent(
+          this.response.schemaValidator,
+          responseBody,
+          'Response',
+        );
+        if (!isValidResponse) return this.returnErrorResponse(errorMessage!);
 
         return { callbackAction: this.successAction, responseBody };
       } else {
@@ -104,20 +110,15 @@ export class ApiPlugin {
     }
   }
 
-  async validateRequest(transformedRequest: AnyRecord) {
-    if (!this.request.schemaValidator) return { isRequestValid: true };
+  async validateContent<TValidationContext extends 'Request' | 'Response'>(
+    schemaValidator: TValidators | undefined,
+    transformedRequest: AnyRecord,
+    validationContext: TValidationContext,
+  ) {
+    const returnArgKey = `isValid${validationContext}`;
+    if (!schemaValidator) return { [returnArgKey]: true };
 
-    const { isValid, errorMessage } = await this.request.schemaValidator.validate(
-      transformedRequest,
-    );
-    return { isRequestValid: isValid, errorMessage };
-  }
-  async validateResponse(transformedResponse: AnyRecord) {
-    if (!this.response.postTransformSchema) return { isResponseValid: true };
-
-    const { isValid, errorMessage } = await this.response.postTransformSchema.validate(
-      transformedResponse,
-    );
-    return { isResponseValid: isValid, errorMessage };
+    const { isValid, errorMessage } = await schemaValidator.validate(transformedRequest);
+    return { [returnArgKey]: isValid, errorMessage };
   }
 }
