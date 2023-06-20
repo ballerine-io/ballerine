@@ -84,6 +84,8 @@ export class DocumentChangedWebhookCaller {
           eventName: 'workflow.context.document.changed',
           apiVersion: 1,
           timestamp: new Date().toISOString(),
+          workflowCreatedAt: data.runtimeData.createdAt,
+          workflowResolvedAt: data.runtimeData.resolvedAt,
           workflowDefinitionId: data.runtimeData.workflowDefinitionId,
           workflowRuntimeId: data.runtimeData.id,
           ballerineEntityId: data.entityId,
