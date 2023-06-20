@@ -3,13 +3,9 @@ import { WorkflowsRuntimeTable } from '@app/components/molecules/WorkflowsRuntim
 import { IWorkflowRuntime } from '@app/domains/workflows-runtime/api/workflows-runtime';
 
 interface Props {
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
   workflowRuntimes: IWorkflowRuntime[];
   isLoading?: boolean;
   isFetching?: boolean;
-  onPageChange: (nextPage: number) => void;
 }
 
 export const WorkflowsRuntimeList = ({ workflowRuntimes, isLoading, isFetching }: Props) => {

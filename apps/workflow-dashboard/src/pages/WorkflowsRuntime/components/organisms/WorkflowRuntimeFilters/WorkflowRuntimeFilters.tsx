@@ -1,4 +1,4 @@
-import { FilterComponent } from '@app/pages/WorkflowsRuntime/components/molecules/WorkflowRuntimeFilters/types';
+import { FilterComponent } from '@app/pages/WorkflowsRuntime/components/organisms/WorkflowRuntimeFilters/types';
 import { WorkflowsRuntimeFilterValues } from '@app/pages/WorkflowsRuntime/hooks/useWorkflowsRuntimeFilters/types';
 import { memo } from 'react';
 

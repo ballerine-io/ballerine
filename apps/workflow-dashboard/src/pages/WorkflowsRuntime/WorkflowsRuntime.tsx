@@ -32,13 +32,9 @@ export const WorkflowsRuntime = () => {
       </WorkflowsRuntimeLayout.Header>
       <WorkflowsRuntimeLayout.Main>
         <WorkflowsRuntimeList
-          totalItems={data.totalItems}
-          totalPages={data.totalPages || 0}
-          currentPage={filters.page || 1}
           workflowRuntimes={data.results}
           isLoading={isLoading}
           isFetching={isFetching}
-          onPageChange={handlePageChange}
         />
       </WorkflowsRuntimeLayout.Main>
       <WorkflowsRuntimeLayout.Footer>
