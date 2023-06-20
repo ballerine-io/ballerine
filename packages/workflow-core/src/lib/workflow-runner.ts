@@ -296,8 +296,8 @@ export class WorkflowRunner {
         if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
 
         const { callbackAction, responseBody, error } = await apiPlugin.callApi(this.#__context);
-        this.#__context = {
-          ...this.#__context,
+        this.#__context.pluginsOutput = {
+          ...this.#__context.pluginsOutput || {},
           ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
         };
         await this.sendEvent(callbackAction);
