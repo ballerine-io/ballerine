@@ -40,7 +40,7 @@ describe('e2e-workflow-runner', () => {
                 options: {
                   rule: {
                     '>': [
-                      { var: 'context.external_request_example.result.name_fuzziness_score' },
+                      { var: 'pluginsOutput.external_request_example.name_fuzziness_score' },
                       0.5,
                     ],
                   },
@@ -52,8 +52,14 @@ describe('e2e-workflow-runner', () => {
               target: 'auto_reject',
               cond: {
                 type: 'json-logic',
-                rule: {
-                  '<': [{ var: 'context.external_request_example.data.name_fuzziness_score' }, 0.5],
+                options: {
+                  rule: {
+                    '<': [
+                      { var: 'pluginsOutput.external_request_example.name_fuzziness_score' },
+                      0.5,
+                    ],
+                  },
+                  onFailed: { manualReviewReason: 'Fuzzy fail and does not match' },
                 },
               },
             },
@@ -64,7 +70,7 @@ describe('e2e-workflow-runner', () => {
               cond: {
                 type: 'json-logic',
                 rule: {
-                  '>=': [{ var: 'context.external_request_example.httpStatus' }, 400],
+                  '>=': [{ var: 'pluginsOutput.external_request_example.httpStatus' }, 400],
                 },
               },
             },
@@ -167,7 +173,7 @@ describe('e2e-workflow-runner', () => {
       name: 'finish_webhook',
       url: 'https://webhook.site/9cc6adb9-6409-4955-95c7-cb02b9a8e9a1',
       method: 'POST',
-      stateNames: ['auto_approve', 'auto_reject', 'approve', 'reject'],
+      stateNames: ['auto_approve', 'approve', 'reject'],
       request: {
         transform: {
           transformer: 'jq',
@@ -175,7 +181,28 @@ describe('e2e-workflow-runner', () => {
         },
       },
     },
+    {
+      name: 'fail_webhook',
+      url: 'https://webhook.site/9cc6adb9-6409-4955-95c7-cb02b9a8e9a1',
+      method: 'POST',
+      stateNames: ['auto_reject'],
+      request: {
+        transform: {
+          transformer: 'jq',
+          mapping: '{failing_result: .}',
+        },
+      },
+    }
   ]
+
+  const context = {
+    machineContext: {
+      entity: {
+        companyName: "TestCorp Ltd",
+        registrationNumber: "SomeRegistrationNumber"
+      }
+    }
+  }
 
   function createWorkflowRunner(
     definition: WorkflowRunnerArgs['definition'],
@@ -193,18 +220,33 @@ describe('e2e-workflow-runner', () => {
 
   describe('when registered name exactly the same', () => {
     it('it auto aprpoves', async () => {
-      const context = {
-        machineContext: {
-          entity: {
-            companyName: "TestCorp Ltd",
-            registrationNumber: "SomeRegistrationNumber"
-          }
-        }
-      }
       const workflow = createWorkflowRunner(definition, apiPluginsSchemas, context)
       await workflow.sendEvent('start');
 
       expect(workflow.state).toBe('auto_approve');
+    });
+  })
+
+
+  describe('when registered name similar to the name and fuzzy passes', () => {
+    const apiPluginClone = structuredClone(apiPluginsSchemas)
+    apiPluginClone[0].url = 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_eu_fuzzy.json'
+    it('goes to manual review', async () => {
+      const workflow = createWorkflowRunner(definition, apiPluginClone, context)
+      await workflow.sendEvent('start');
+
+      expect(workflow.state).toBe('manual_review');
+    });
+  })
+
+  describe('when names different and fuzzy fails', () => {
+    const apiPluginClone = structuredClone(apiPluginsSchemas)
+    apiPluginClone[0].url = 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_eu_fuzzy_fail.json'
+    it('it auto rejects', async () => {
+      const workflow = createWorkflowRunner(definition, apiPluginClone, context)
+      await workflow.sendEvent('start');
+
+      expect(workflow.state).toBe('auto_reject');
     });
   })
 })
