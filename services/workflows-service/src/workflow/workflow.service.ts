@@ -909,7 +909,7 @@ export class WorkflowService {
       runtimeData.workflowDefinitionId,
     );
 
-    const service = createWorkflow({
+    const service = await createWorkflow({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       definition: workflow.definition,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -918,6 +918,7 @@ export class WorkflowService {
         machineContext: runtimeData.context,
         state: runtimeData.state,
       },
+      extensions: workflow.extensions
     });
 
     await service.sendEvent({
