@@ -491,7 +491,7 @@ export class WorkflowService {
     if (contextHasChanged) {
       this.workflowEventEmitter.emit('workflow.context.changed', {
         oldRuntimeData: runtimeData,
-        updatedRuntimeData: updatedResult, // this is the initial state of the workflow runtime data
+        updatedRuntimeData: updatedResult,
         state: currentState as string,
         entityId: (runtimeData.businessId || runtimeData.endUserId) as string,
         correlationId: correlationId,
