@@ -15,12 +15,14 @@ export interface IWorkflow {
 
 export interface GetWorkflowResponse {
   results: IWorkflow[];
-  totalPages: null | number;
-  totalItems: number;
+  meta: {
+    pages: number;
+    total: number;
+  };
 }
 
 export interface GetWorkflowsDto {
-  status?: IWorkflowStatus;
+  status?: IWorkflowStatus[];
   page?: number;
   limit?: number;
 }

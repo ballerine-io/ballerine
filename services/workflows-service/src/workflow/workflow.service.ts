@@ -13,7 +13,12 @@ import {
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { RunnableWorkflowData, TWorkflowWithRelations } from './types';
+import {
+  ListRuntimeDataResult,
+  ListWorkflowsRuntimeParams,
+  RunnableWorkflowData,
+  TWorkflowWithRelations,
+} from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
@@ -21,7 +26,7 @@ import { BadRequestException, Injectable, Logger, NotFoundException } from '@nes
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
-import { WorkflowRuntimeDataRepository } from '../workflow-runtime/workflow-runtime-data.repository';
+import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { InputJsonValue, IObjectWithId } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
@@ -325,6 +330,33 @@ export class WorkflowService {
     });
   }
 
+  async listRuntimeData({
+    page,
+    size,
+    status,
+  }: ListWorkflowsRuntimeParams): Promise<ListRuntimeDataResult> {
+    const [workflowsRuntimeCount, workflowsRuntime] = await Promise.all([
+      this.workflowRuntimeDataRepository.count(),
+      this.workflowRuntimeDataRepository.findMany({
+        skip: page && size ? (page - 1) * size : undefined,
+        take: size,
+        where: {
+          ...(status ? { status: { in: status } } : undefined),
+        },
+      }),
+    ]);
+
+    const result: ListRuntimeDataResult = {
+      results: workflowsRuntime,
+      meta: {
+        pages: size ? Math.max(Math.ceil(workflowsRuntimeCount / size)) : 0,
+        total: workflowsRuntimeCount,
+      },
+    };
+
+    return result;
+  }
+
   async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {
     const select = {
       id: true,
@@ -470,14 +502,14 @@ export class WorkflowService {
               status: 'active',
             },
           },
-          resolvedAt: isResolved ? new Date() : null,
+          resolvedAt: isResolved ? new Date().toISOString() : null,
         },
       });
     } else {
       updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
         data: {
           ...data,
-          resolvedAt: isResolved ? new Date() : null,
+          resolvedAt: isResolved ? new Date().toISOString() : null,
         },
       });
     }

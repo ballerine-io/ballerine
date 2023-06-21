@@ -1,3 +1,4 @@
+import { WorkflowRuntimeModel } from '@/workflow/workflow-runtime.model';
 import {
   Business,
   EndUser,
@@ -23,3 +24,17 @@ export type TWorkflowWithRelations = WorkflowRuntimeData & {
   workflowDefinition: WorkflowDefinition;
   assignee: User;
 } & ({ endUser: EndUser } | { business: Business });
+
+export interface ListWorkflowsRuntimeParams {
+  page?: number;
+  size?: number;
+  status?: WorkflowRuntimeDataStatus[];
+}
+
+export interface ListRuntimeDataResult {
+  results: WorkflowRuntimeData[];
+  meta: {
+    pages: number;
+    total: number;
+  };
+}

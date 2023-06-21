@@ -31,7 +31,7 @@ export const Workflows = () => {
       </WorkflowsLayout.Main>
       <WorkflowsLayout.Footer>
         <Pagination
-          totalPages={data.totalPages || 1}
+          totalPages={data.meta.pages || 1}
           page={filters.page || 1}
           onChange={handlePageChange}
         />

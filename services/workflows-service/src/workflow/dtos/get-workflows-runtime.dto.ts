@@ -6,9 +6,9 @@ import { IsNumber, IsOptional } from 'class-validator';
 
 export class GetWorkflowsRuntimeDto {
   @IsOptional()
-  @oneOf(Object.values(WorkflowRuntimeDataStatus))
+  @oneOf(Object.values(WorkflowRuntimeDataStatus), { each: true })
   @ApiPropertyOptional()
-  status?: WorkflowRuntimeDataStatus;
+  status?: WorkflowRuntimeDataStatus[];
 
   @Type(() => Number)
   @IsOptional()

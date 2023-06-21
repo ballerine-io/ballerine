@@ -15,7 +15,7 @@ import { FileRepository } from '@/storage/storage.repository';
 import { HttpModule } from '@nestjs/axios';
 import { FilterRepository } from '@/filter/filter.repository';
 import { FilterService } from '@/filter/filter.service';
-import { WorkflowRuntimeDataRepository } from '@/workflow-runtime/workflow-runtime-data.repository';
+import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],

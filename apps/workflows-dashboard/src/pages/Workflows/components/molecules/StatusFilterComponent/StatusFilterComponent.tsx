@@ -12,8 +12,8 @@ import { FilterComponent } from '@app/pages/Workflows/components/organisms/Workf
 export const StatusFilterComponent: FilterComponent = ({ filterValues, onChange }) => {
   return (
     <Select
-      value={filterValues.status}
-      onValueChange={value => onChange({ status: value as IWorkflowStatus })}
+      value={filterValues.status?.toString()}
+      onValueChange={value => onChange({ status: [value] as IWorkflowStatus[] })}
     >
       <SelectTrigger>
         <SelectValue placeholder="Pick status"></SelectValue>

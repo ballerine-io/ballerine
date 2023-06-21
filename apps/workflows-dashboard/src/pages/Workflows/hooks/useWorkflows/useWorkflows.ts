@@ -6,7 +6,7 @@ export function useWorkflows(query: WorkflowsFilterValues) {
   const {
     isFetching,
     isLoading,
-    data = { results: [], totalItems: 0, totalPages: 0 },
+    data = { results: [], meta: { pages: 0, total: 0 } },
   } = useQuery({
     ...workflowsKeys.list(query),
     keepPreviousData: true,

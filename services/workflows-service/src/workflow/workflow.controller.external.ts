@@ -5,7 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { NotFoundException, Param, Res, UseFilters } from '@nestjs/common';
+import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -15,14 +15,19 @@ import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
-import { RunnableWorkflowData, TEntityType } from './types';
+import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
-import { camelCase } from 'lodash';
+import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
+import { GetWorkflowsRuntimeDto } from '@/workflow/dtos/get-workflows-runtime.dto';
+import { WorkflowRuntimeModel } from '@/workflow/workflow-runtime.model';
+import { GetWorkflowsRuntimeResponseDto } from '@/workflow/dtos/get-workflows-runtime-response.dto';
+import { plainToClass } from 'class-transformer';
+
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
 @common.Controller('external/workflows')
@@ -33,27 +38,22 @@ export class WorkflowControllerExternal {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
   // GET /workflows
-  @common.Get('/:entityType/:entityId')
-  @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
+  @common.Get('/')
+  @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeResponseDto] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
-  @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   @UseKeyAuthInDevGuard()
-  async listWorkflowRuntimeDataByUserId(
-    @Param('entityType') entityType: 'end-user' | 'business',
-    @Param('entityId') entityId: string,
-  ) {
-    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId({
-      entityId,
-      // Expecting kebab-case from the url
-      entity: camelCase(entityType) as TEntityType,
+  @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
+  async listWorkflowRuntimeData(
+    @Query() query: GetWorkflowsRuntimeDto,
+  ): Promise<GetWorkflowsRuntimeResponseDto> {
+    const results = await this.service.listRuntimeData({
+      page: query.page,
+      size: query.limit,
+      status: query.status,
     });
-    const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
-      workflowRuntimeData: rest,
-      workflowDefinition,
-    }));
 
-    return response;
+    return plainToClass(GetWorkflowsRuntimeResponseDto, results);
   }
 
   @common.Get('/:id')
