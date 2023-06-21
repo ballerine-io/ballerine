@@ -67,7 +67,11 @@ export const SIDEBAR: Sidebar = {
         group: `Getting started`,
         sections: [
           { text: `Introduction`, link: `introduction` },
+<<<<<<< Updated upstream
           { text: `Gloassry`, link: `gloassry` },
+=======
+          { text: `Gloassry`, link: `ui-flows` },
+>>>>>>> Stashed changes
           { text: `Install`, link: `ui-flows` },
           { text: `Deploy`, link: `ui-flows` },
         ],
