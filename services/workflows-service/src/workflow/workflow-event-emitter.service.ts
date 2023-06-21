@@ -3,12 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { WorkflowRuntimeData } from '@prisma/client';
 
 export interface WorkflowEventRawData {
-  runtimeData: WorkflowRuntimeData;
+  oldRuntimeData: WorkflowRuntimeData;
+  updatedRuntimeData: WorkflowRuntimeData;
   state: string;
-  context: {
-    documents: any[];
-    entity: any;
-  };
   entityId: string;
   correlationId: string;
 }
