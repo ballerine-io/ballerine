@@ -13,7 +13,7 @@ export class WorkflowNodeSDK {
   }
 
   async sendEvent(event: Parameters<TCreateWorkflowCoreReturn['sendEvent']>[0]) {
-    this.#__service.sendEvent(event);
+    await this.#__service.sendEvent(event);
   }
 
   getSnapshot() {
