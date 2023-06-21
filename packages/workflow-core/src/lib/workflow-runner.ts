@@ -85,6 +85,7 @@ export class WorkflowRunner {
         stateNames: apiPluginSchema.stateNames,
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
+        headers: apiPluginSchema.headers,
         request: { transformer: requestTransformer, schemaValidator: requestValidator },
         response: { transformer: responseTransformer, schemaValidator: responseValidator },
         successAction: apiPluginSchema.successAction,
