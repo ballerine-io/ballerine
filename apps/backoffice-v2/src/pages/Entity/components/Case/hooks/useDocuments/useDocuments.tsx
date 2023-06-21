@@ -70,6 +70,10 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     },
     [],
   );
+  const [documentRotation, setDocumentRotation] = useState(0);
+  const onRotateDocument = useCallback(() => {
+    setDocumentRotation(prevState => (prevState >= 360 ? 0 : prevState + 90));
+  }, []);
 
   return {
     crop,
@@ -83,5 +87,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     isLoadingOCR,
     selectedImage,
     onSelectImage,
+    documentRotation,
+    onRotateDocument,
   };
 };
