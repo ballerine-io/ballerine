@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 
-export const kybWithExternalRequestWorkflowExample = {
-  id: 'external_request_example',
-  name: 'external_request_example',
+export const kybWithDynamicExternalRequestWorkflowExample = {
+  id: 'dynamic_external_request_example',
+  name: 'dynamic_external_request_example',
   version: 1,
   definitionType: 'statechart-json',
   definition: {
@@ -116,7 +116,7 @@ export const kybWithExternalRequestWorkflowExample = {
     apiPlugins: [
       {
         name: 'external_request_example',
-        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_eu.json',
+        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/{api_url}.json',
         method: 'GET',
         stateNames: ['check_business_details'],
         successAction: 'API_CALL_SUCCESS',
@@ -175,15 +175,15 @@ export const kybWithExternalRequestWorkflowExample = {
             },
           }, // OPTIONAL
         },
-        headers: {
-          authorization: 'Bearer {secrets.BUSINESS_DATA__VENDOR_API_KEY}',
-        },
       },
       {
         name: 'finish_webhook',
         url: 'https://webhook.site/9cc6adb9-6409-4955-95c7-cb02b9a8e9a1',
         method: 'POST',
         stateNames: ['auto_approve', 'approve', 'reject'],
+        headers: {
+          authorization: 'Bearer {secret.BUSINESS_DATA__VENDOR_API_KEY}',
+        },
         request: {
           transform: {
             transformer: 'jq',
@@ -206,8 +206,8 @@ export const kybWithExternalRequestWorkflowExample = {
     ],
   },
 };
-export const generateDefinitionForE2eTest = async (prismaClient: PrismaClient) => {
+export const generateDynamicDefinitionForE2eTest = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
-    data: kybWithExternalRequestWorkflowExample,
+    data: kybWithDynamicExternalRequestWorkflowExample,
   });
 };

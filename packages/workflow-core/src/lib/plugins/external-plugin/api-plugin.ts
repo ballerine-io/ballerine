@@ -1,5 +1,6 @@
 import { TContext, TTransformers, TValidators } from '../../utils/types';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
+import * as process from "process";
 
 export interface IApiPluginParams {
   name: string;
@@ -28,7 +29,7 @@ export class ApiPlugin {
     this.stateNames = pluginParams.stateNames;
     this.url = pluginParams.url;
     this.method = pluginParams.method;
-    this.headers = pluginParams.headers || ({ 'Content-Type': 'application/json' } as HeadersInit);
+    this.headers = {'Content-Type': 'application/json', ...(pluginParams.headers || {})} as HeadersInit;
     this.request = pluginParams.request;
     this.response = pluginParams.response;
     this.successAction = pluginParams.successAction;
@@ -45,10 +46,10 @@ export class ApiPlugin {
       if (!isValidRequest) return this.returnErrorResponse(errorMessage!);
 
       const apiResponse = await this.makeApiRequest(
-        this.url,
+        this.replaceValuePlaceholders(this.url, context),
         this.method,
         requestPayload,
-        this.headers!,
+        this.composeRequestHeaders(this.headers!, context)
       );
 
       if (apiResponse.ok) {
@@ -73,7 +74,6 @@ export class ApiPlugin {
       return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
     }
   }
-
   returnErrorResponse(errorMessage: string) {
     return { callbackAction: this.errorAction, error: errorMessage };
   }
@@ -95,7 +95,7 @@ export class ApiPlugin {
       requestParams.body = JSON.stringify(payload);
     } else if (this.method.toUpperCase() === 'GET' && payload) {
       const queryParams = new URLSearchParams(payload as Record<string, string>).toString();
-      url = `${this.url}?${queryParams}`;
+      url = `${url}?${queryParams}`;
     }
 
     return await fetch(url, requestParams);
@@ -124,4 +124,23 @@ export class ApiPlugin {
     const { isValid, errorMessage } = await schemaValidator.validate(transformedRequest);
     return { [returnArgKey]: isValid, errorMessage };
   }
+
+  composeRequestHeaders(headers: HeadersInit, context: TContext) {
+    return Object.fromEntries(Object.entries(headers).map(header => [header[0], this.replaceValuePlaceholders(header[1], context)]));
+  }
+  replaceValuePlaceholders(content: string, context: TContext) {
+    const placeholders = content.match(/{(.*?)}/g);
+    if (!placeholders) return content;
+
+    let replacedContent = content;
+    placeholders.forEach(placeholder => {
+      const variableKey = placeholder.replace(/{|}/g, '');
+      const isPlaceholderSecret = variableKey.includes('secret.');
+      const placeholderValue = isPlaceholderSecret ? `${process.env[variableKey.replace('secret.','')]}`:`${context[variableKey]}`;
+      replacedContent = replacedContent.replace(placeholder, placeholderValue);
+    });
+
+    return replacedContent;
+  }
+
 }
