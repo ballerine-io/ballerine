@@ -65,21 +65,19 @@ export const SIDEBAR: Sidebar = {
     learn: [
       {
         group: `Getting started`,
-        sections: [{ text: `UI Flows`, link: `ui-flows` }],
-      },
-      {
-        group: `Start Here`,
         sections: [
           { text: `Introduction`, link: `introduction` },
-          {
-            text: `Style Guidelines`,
-            link: `style-guidelines`,
-          },
-          { text: `Contributing`, link: `contributing` },
+          { text: `Gloassry`, link: `ui-flows` },
+          { text: `Install`, link: `ui-flows` },
+          { text: `Deploy`, link: `ui-flows` },
         ],
       },
       {
-        group: `Basics`,
+        group: `Guides`,
+        sections: [{ text: `UI Flows`, link: `ui-flows` }],
+      },
+      {
+        group: `UI SDK's`,
         sections: [
           { text: `SDK Events`, link: `sdk-events` },
           { text: `SDK Backend Configuration`, link: `sdk-backend-configuration` },
@@ -96,6 +94,32 @@ export const SIDEBAR: Sidebar = {
             link: `native-mobile-apps`,
           },
         ],
+      },
+      {
+        group: `Workflows`,
+        sections: [{ text: `UI Flows`, link: `ui-flows` }],
+      },
+      {
+        group: `Case Managment`,
+        sections: [{ text: `UI Flows`, link: `ui-flows` }],
+      },
+      {
+        group: `Getting started-old`,
+        sections: [{ text: `UI Flows`, link: `ui-flows` }],
+      },
+      {
+        group: `Contributing`,
+        sections: [
+          {
+            text: `Style Guidelines`,
+            link: `style-guidelines`,
+          },
+          { text: `Contributing`, link: `contributing` },
+        ],
+      },
+      {
+        group: `Basics`,
+        sections: [],
       },
       {
         group: `Guides`,
