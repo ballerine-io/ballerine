@@ -6,6 +6,7 @@ import { CheckSvg, XMarkSvg } from '../../../../common/components/atoms/icons';
 import { useDocuments } from './hooks/useDocuments/useDocuments';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import ReactCrop from 'react-image-crop';
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 
 /**
  * @description To be used by {@link Case}, and be wrapped by {@link Case.Content}. Displays a single entity's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
@@ -37,23 +38,27 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
       <div className={`flex min-h-[600px] w-full flex-col items-center`}>
         <div
           className={`
-            d-full relative max-w-[441px] items-center rounded-md`}
+            d-full relative max-w-[441px] items-center rounded-md hover:cursor-move`}
         >
-          <ReactCrop
-            crop={crop}
-            onChange={onCrop}
-            disabled={!isCropping || selectedImage?.fileType === 'pdf'}
-            className={ctw({
-              'd-full [&>div]:d-full': selectedImage?.fileType === 'pdf',
-            })}
-          >
-            <ImageViewer.SelectedImage
-              key={initialImage?.imageUrl}
-              initialImage={initialImage}
-              ref={selectedImageRef}
-              isLoading={isLoading}
-            />
-          </ReactCrop>
+          <TransformWrapper>
+            <TransformComponent>
+              <ReactCrop
+                crop={crop}
+                onChange={onCrop}
+                disabled={!isCropping || selectedImage?.fileType === 'pdf'}
+                className={ctw({
+                  'd-full [&>div]:d-full': selectedImage?.fileType === 'pdf',
+                })}
+              >
+                <ImageViewer.SelectedImage
+                  key={initialImage?.imageUrl}
+                  initialImage={initialImage}
+                  ref={selectedImageRef}
+                  isLoading={isLoading}
+                />
+              </ReactCrop>
+            </TransformComponent>
+          </TransformWrapper>
           <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
             {selectedImage?.fileType !== 'pdf' && (
               <>
