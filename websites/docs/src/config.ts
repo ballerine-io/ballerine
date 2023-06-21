@@ -67,7 +67,7 @@ export const SIDEBAR: Sidebar = {
         group: `Getting started`,
         sections: [
           { text: `Introduction`, link: `introduction` },
-          { text: `Gloassry`, link: `ui-flows` },
+          { text: `Gloassry`, link: `gloassry` },
           { text: `Install`, link: `ui-flows` },
           { text: `Deploy`, link: `ui-flows` },
         ],
