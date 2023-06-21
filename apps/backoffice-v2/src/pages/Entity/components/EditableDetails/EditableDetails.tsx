@@ -3,7 +3,6 @@ import { Form } from '../../../../common/components/organisms/Form/Form';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
-import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Button } from '../../../../common/components/atoms/Button/Button';
 import React, { FunctionComponent } from 'react';
 import { AnyRecord } from '../../../../common/types';
@@ -19,6 +18,7 @@ import { SelectContent } from '../../../../common/components/atoms/Select/Select
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 import { Select } from '../../../../common/components/atoms/Select/Select';
+import { Input } from '../../../../common/components/atoms/Input/Input';
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,

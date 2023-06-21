@@ -36,7 +36,7 @@ describe('Workflow (external)', () => {
 
   beforeEach(async () => {
     wfService = {
-      listFullWorkflowDataByUserId: jest.fn() as unknown,
+      listFullWorkflowData: jest.fn() as unknown,
       getWorkflowRuntimeDataById: jest.fn() as unknown,
       getWorkflowDefinitionById: jest.fn() as unknown,
     } as WorkflowService;
@@ -69,7 +69,7 @@ describe('Workflow (external)', () => {
 
   test('GET /workflows will return a two-key object containing "definition" and "runtime data"  ', async () => {
     const wfService = moduleRef.get<WorkflowService>(WorkflowService);
-    (wfService.listFullWorkflowDataByUserId as jest.Mock).mockReturnValue(
+    (wfService.listFullWorkflowData as jest.Mock).mockReturnValue(
       Promise.resolve([
         {
           workflowDefinition: { id: 'a' },

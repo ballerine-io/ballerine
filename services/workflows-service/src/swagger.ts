@@ -3,9 +3,9 @@ import { DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 export const swaggerPath = 'api';
 
 export const swaggerDocumentOptions = new DocumentBuilder()
-  .setTitle('Workflow API Service')
-  .setDescription('Workflow API Service')
-  .setVersion('20')
+  .setTitle('Workflows API Service')
+  .setDescription('Workflows API Service')
+  .setVersion('1')
   .addBearerAuth()
   .build();
 
@@ -15,5 +15,5 @@ export const swaggerSetupOptions: SwaggerCustomOptions = {
   },
   customCssUrl: '../common/swagger/swagger.css',
   customfavIcon: '../common/swagger/favicon.png',
-  customSiteTitle: 'Sample service',
+  customSiteTitle: 'Workflow Service',
 };

@@ -3,7 +3,7 @@ import { getLanguageFromURL } from '../../languages';
 import { SIDEBAR } from '../../config';
 import SidebarToggleTabGroup from '../SidebarToggleTabGroup/SidebarToggleTabGroup';
 import SidebarContent from '../SidebarContent/SidebarContent.astro';
-import { ETab } from '../../types';
+import { Tab } from '../../types';
 
 type Props = {
   currentPage: string;
@@ -16,7 +16,7 @@ const currentPageMatch = currentPage.endsWith(`/`)
 const langCode = getLanguageFromURL(currentPage);
 const sidebar = SIDEBAR[langCode];
 const [, , tab] = currentPage.split(`/`);
-const activeTab: ETab = tab as ETab;
+const activeTab: Tab = tab as Tab;
 ---
 
 <nav aria-labelledby="grid-left">
@@ -31,13 +31,13 @@ const activeTab: ETab = tab as ETab;
   />
   <ul class="nav-groups">
     <SidebarContent
-      type={ETab.LEARN}
+      type={Tab.LEARN}
       defaultActiveTab={activeTab}
       sidebarSections={sidebar.learn}
       currentPageMatch={currentPageMatch}
     />
     <SidebarContent
-      type={ETab.API}
+      type={Tab.API}
       defaultActiveTab={activeTab}
       sidebarSections={sidebar.api}
       currentPageMatch={currentPageMatch}
