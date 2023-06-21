@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "NODE_ENV=test jest"
   },
   "dependencies": {
     "@lukemorales/query-key-factory": "^1.0.3",
@@ -37,6 +38,8 @@
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/classnames": "^2.3.1",
+    "@types/jest": "^26.0.19",
+    "@types/moment": "^2.13.0",
     "@types/node": "^20.3.1",
     "@types/react": "^18.0.37",
     "@types/react-custom-scrollbars": "^4.0.10",
@@ -48,8 +51,11 @@
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "jest": "^29.5.0",
+    "moment": "^2.29.4",
     "postcss": "^8.4.24",
     "tailwindcss": "^3.2.7",
+    "ts-jest": "^29.1.0",
     "typescript": "^5.0.2",
     "vite": "^4.3.9",
     "vite-plugin-checker": "^0.6.1"

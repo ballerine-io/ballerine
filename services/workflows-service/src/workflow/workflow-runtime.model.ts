@@ -76,10 +76,18 @@ export class WorkflowRuntimeModel {
   @IsDate()
   createdAt!: Date;
 
+  @ApiProperty()
+  @IsDate()
+  resolvedAt!: Date;
+
   @ApiProperty({
     required: true,
     type: Date,
   })
   @IsDate()
   updatedAt!: Date;
+
+  @ApiProperty()
+  @IsString()
+  createdBy!: string;
 }

@@ -22,6 +22,7 @@ export const WorkflowsTable = memo(({ items, isFetching }: Props) => {
   const table = useReactTable({
     columns: defaultColumns,
     data: items,
+    enableColumnResizing: true,
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -35,7 +36,7 @@ export const WorkflowsTable = memo(({ items, isFetching }: Props) => {
       })}
     >
       <Scrollbars autoHide>
-        <Table className={classnames('table-fixed')}>
+        <Table className="table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map(({ id: headerRowId, headers }) => {
               return (
@@ -64,10 +65,13 @@ export const WorkflowsTable = memo(({ items, isFetching }: Props) => {
                       return (
                         <TableCell
                           key={cell.id}
-                          className="max-w-1/4 w-1/4"
+                          className="max-w-1/4 w-1/4 "
                           title={String(cell.getValue())}
+                          style={{ maxWidth: `${cell.column.getSize()}px` }}
                         >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          <p className="line-clamp-2 overflow-hidden text-ellipsis break-all">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </p>
                         </TableCell>
                       );
                     })}
