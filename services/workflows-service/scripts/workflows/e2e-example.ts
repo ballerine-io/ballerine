@@ -28,8 +28,10 @@ export const kybWithExternalRequestWorkflowExample = {
                 options: {
                   rule: {
                     '==': [
-                      {var: 'entity.companyName'},
-                      {var: 'pluginsOutput.external_request_example.business_details.registered_name'},
+                      { var: 'entity.data.companyName' },
+                      {
+                        var: 'pluginsOutput.external_request_example.business_details.registered_name',
+                      },
                     ],
                   },
                 },
@@ -42,11 +44,11 @@ export const kybWithExternalRequestWorkflowExample = {
                 options: {
                   rule: {
                     '>': [
-                      {var: 'pluginsOutput.external_request_example.name_fuzziness_score'},
+                      { var: 'pluginsOutput.external_request_example.name_fuzziness_score' },
                       0.5,
                     ],
                   },
-                  onFailed: {manualReviewReason: 'name not matching ... '},
+                  onFailed: { manualReviewReason: 'name not matching ... ' },
                 },
               },
             },
@@ -57,11 +59,11 @@ export const kybWithExternalRequestWorkflowExample = {
                 options: {
                   rule: {
                     '<': [
-                      {var: 'pluginsOutput.external_request_example.name_fuzziness_score'},
+                      { var: 'pluginsOutput.external_request_example.name_fuzziness_score' },
                       0.5,
                     ],
                   },
-                  onFailed: {manualReviewReason: 'Fuzzy fail and does not match'},
+                  onFailed: { manualReviewReason: 'Fuzzy fail and does not match' },
                 },
               },
             },
@@ -72,7 +74,7 @@ export const kybWithExternalRequestWorkflowExample = {
               cond: {
                 type: 'json-logic',
                 rule: {
-                  '>=': [{var: 'pluginsOutput.external_request_example.httpStatus'}, 400],
+                  '>=': [{ var: 'pluginsOutput.external_request_example.httpStatus' }, 400],
                 },
               },
             },
@@ -117,7 +119,8 @@ export const kybWithExternalRequestWorkflowExample = {
         request: {
           transform: {
             transformer: 'jq',
-            mapping: '{ business_name: .entity .companyName, registration_number: .entity .registrationNumber}',
+            mapping:
+              '{ business_name: .entity .data .companyName, registration_number: .entity .data .registrationNumber}',
           }, // JQ
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',
@@ -194,10 +197,12 @@ export const kybWithExternalRequestWorkflowExample = {
             mapping: '{failing_result: .}',
           },
         },
-      }
-    ]
+      },
+    ],
   },
 };
-export const generateDefinitionForE2eTest = async(prismaClient:  PrismaClient) => {
-  return await prismaClient.workflowDefinition.create({ data: kybWithExternalRequestWorkflowExample});
-}
+export const generateDefinitionForE2eTest = async (prismaClient: PrismaClient) => {
+  return await prismaClient.workflowDefinition.create({
+    data: kybWithExternalRequestWorkflowExample,
+  });
+};
