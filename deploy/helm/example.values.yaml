@@ -7,10 +7,10 @@ postgresql:
     postgresPassword: admin
     database: postgres
   # Local dev purpose
-  # persistence:
-  #   existingClaim: postgresql-pv-claim
-  # volumePermissions:
-  #   enabled: true
+  persistence:
+    existingClaim: postgresql-pv-claim
+  volumePermissions:
+    enabled: true
 
 workflowService:
   enabled: true
@@ -24,12 +24,12 @@ workflowService:
   service:
     port: 3000
     type: ClusterIP
-    protocol: TCP  
+    protocol: TCP
   image:
     registry: index.docker.io
-    repository: gouthamappsmith/ball
-    pullPolicy: Never
-    tag: "0.0.1"
+    repository: ""
+    pullPolicy: Always
+    tag: "latest"
   applicationConfig:
     BCRYPT_SALT: "10"
     JWT_SECRET_KEY: "secret"
