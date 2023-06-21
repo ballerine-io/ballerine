@@ -67,11 +67,7 @@ export const SIDEBAR: Sidebar = {
         group: `Getting started`,
         sections: [
           { text: `Introduction`, link: `introduction` },
-<<<<<<< Updated upstream
           { text: `Gloassry`, link: `gloassry` },
-=======
-          { text: `Gloassry`, link: `ui-flows` },
->>>>>>> Stashed changes
           { text: `Install`, link: `ui-flows` },
           { text: `Deploy`, link: `ui-flows` },
         ],
@@ -112,9 +108,7 @@ export const SIDEBAR: Sidebar = {
           },
         ],
       },
-    
-     
-    
+
       {
         group: `Contributing`,
         sections: [
@@ -125,8 +119,7 @@ export const SIDEBAR: Sidebar = {
           { text: `Contributing`, link: `contributing` },
         ],
       },
-    
-   
+
       {
         group: `Examples`,
         sections: [
