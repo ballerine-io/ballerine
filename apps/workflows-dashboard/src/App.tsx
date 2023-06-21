@@ -8,7 +8,10 @@ import { useEffect } from 'react';
 export function App() {
   const navigate = useNavigate();
 
-  useEffect(() => navigate('/workflows', { replace: true }), [navigate]);
+  useEffect(
+    () => navigate({ pathname: '/workflows', search: location.search }, { replace: true }),
+    [navigate],
+  );
 
   return (
     <QueryParamProvider adapter={ReactRouter6Adapter}>

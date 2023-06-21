@@ -35,7 +35,7 @@ export const WorkflowsTable = memo(({ items, isFetching }: Props) => {
       })}
     >
       <Scrollbars autoHide>
-        <Table className="h-full table-fixed">
+        <Table className={classnames('table-fixed')}>
           <TableHeader>
             {table.getHeaderGroups().map(({ id: headerRowId, headers }) => {
               return (
