@@ -253,7 +253,7 @@ export const useEntity = () => {
 
   return {
     selectedEntity,
-    components: cells,
+    cells,
     tasks,
     workflow,
     isLoading,

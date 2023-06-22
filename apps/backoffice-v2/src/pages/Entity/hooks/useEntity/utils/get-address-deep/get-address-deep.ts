@@ -1,3 +1,7 @@
+/**
+ * Traverses an object and returns the first address object found.
+ * @param value
+ */
 export const getAddressDeep = (
   value: unknown,
 ):
