@@ -98,11 +98,11 @@ export const useCallToActionLogic = () => {
     )?.enum;
   const actions = [
     {
-      label: 'Revision',
+      label: 'Ask to re-submit',
       value: 'revision',
     },
     {
-      label: 'Reject',
+      label: 'Block',
       value: 'rejected',
     },
   ] as const;

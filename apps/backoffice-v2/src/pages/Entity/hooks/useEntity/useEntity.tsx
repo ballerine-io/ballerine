@@ -140,13 +140,18 @@ export const useEntity = () => {
                           { type, format, pattern, isEditable = true, dropdownOptions, value },
                         ]) => {
                           const fieldValue = value || (properties?.[title] ?? '');
+                          const isEditableDecision = isDoneWithRevision || !decision?.status;
+
                           return {
                             title,
                             value: fieldValue,
                             type,
                             format,
                             pattern,
-                            isEditable: caseState.writeEnabled && getIsEditable(isEditable, title),
+                            isEditable:
+                              isEditableDecision &&
+                              caseState.writeEnabled &&
+                              getIsEditable(isEditable, title),
                             dropdownOptions,
                           };
                         },
