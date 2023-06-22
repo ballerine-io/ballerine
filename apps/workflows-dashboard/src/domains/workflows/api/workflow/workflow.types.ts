@@ -1,16 +1,19 @@
 export type IWorkflowStatus = 'active' | 'completed' | 'failed';
 
+export interface IWorkflowAssignee {
+  firstName: string;
+  lastName: string;
+}
 export interface IWorkflow {
   id: string;
-  endUserId: string | null;
-  businessId: string | null;
-  assigneeId: string | null;
-  workflowDefinitionId: string;
-  context: object;
-  state: string | null;
+  workflowDefinitionName: string;
   status: IWorkflowStatus;
+  state: string | null;
+  assignee: IWorkflowAssignee | null;
+  context: object;
   createdAt: Date;
   updatedAt: Date;
+  resolvedAt: Date | null;
 }
 
 export interface GetWorkflowResponse {

@@ -22,9 +22,7 @@ import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
-import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 import { GetWorkflowsRuntimeDto } from '@/workflow/dtos/get-workflows-runtime.dto';
-import { WorkflowRuntimeModel } from '@/workflow/workflow-runtime.model';
 import { GetWorkflowsRuntimeResponseDto } from '@/workflow/dtos/get-workflows-runtime-response.dto';
 import { plainToClass } from 'class-transformer';
 

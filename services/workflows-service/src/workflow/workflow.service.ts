@@ -14,10 +14,12 @@ import {
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import {
+  CompleteWorkflowData,
   ListRuntimeDataResult,
   ListWorkflowsRuntimeParams,
   RunnableWorkflowData,
   TWorkflowWithRelations,
+  WorkflowRuntimeListQueryResult,
 } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
@@ -57,6 +59,11 @@ import {
   TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
+import {
+  WorkflowAssignee,
+  WorkflowRuntimeListItemModel,
+} from '@/workflow/workflow-runtime-list-item.model';
+import { plainToClass } from 'class-transformer';
 
 type TEntityId = string;
 
@@ -343,11 +350,15 @@ export class WorkflowService {
         where: {
           ...(status ? { status: { in: status } } : undefined),
         },
+        include: {
+          workflowDefinition: true,
+          assignee: true,
+        },
       }),
     ]);
 
     const result: ListRuntimeDataResult = {
-      results: workflowsRuntime,
+      results: this.workflowsRuntimeListItemsFactory(workflowsRuntime),
       meta: {
         pages: size ? Math.max(Math.ceil(workflowsRuntimeCount / size)) : 0,
         total: workflowsRuntimeCount,
@@ -355,6 +366,24 @@ export class WorkflowService {
     };
 
     return result;
+  }
+
+  private workflowsRuntimeListItemsFactory(
+    workflows: WorkflowRuntimeListQueryResult[],
+  ): WorkflowRuntimeListItemModel[] {
+    return workflows.map(workflow => {
+      const { assignee, workflowDefinition } = workflow;
+
+      return plainToClass(
+        WorkflowRuntimeListItemModel,
+        {
+          ...workflow,
+          assignee: assignee ? plainToClass(WorkflowAssignee, assignee) : null,
+          workflowDefinitionName: workflowDefinition?.name || null,
+        },
+        { excludeExtraneousValues: true },
+      );
+    });
   }
 
   async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {

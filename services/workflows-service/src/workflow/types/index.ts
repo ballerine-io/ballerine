@@ -1,4 +1,4 @@
-import { WorkflowRuntimeModel } from '@/workflow/workflow-runtime.model';
+import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
 import {
   Business,
   EndUser,
@@ -32,9 +32,14 @@ export interface ListWorkflowsRuntimeParams {
 }
 
 export interface ListRuntimeDataResult {
-  results: WorkflowRuntimeData[];
+  results: WorkflowRuntimeListItemModel[];
   meta: {
     pages: number;
     total: number;
   };
 }
+
+export type WorkflowRuntimeListQueryResult = WorkflowRuntimeData & {
+  workflowDefinition: WorkflowDefinition;
+  assignee: User | null;
+};

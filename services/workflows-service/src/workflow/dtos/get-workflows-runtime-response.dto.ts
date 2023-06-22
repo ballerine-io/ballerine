@@ -1,4 +1,4 @@
-import { WorkflowRuntimeModel } from '@/workflow/workflow-runtime.model';
+import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
 import { ApiProperty } from '@nestjs/swagger';
 import { ValidateNested } from 'class-validator';
 
@@ -11,9 +11,9 @@ export class Pagination {
 }
 
 export class GetWorkflowsRuntimeResponseDto {
-  @ApiProperty({ type: () => WorkflowRuntimeModel, isArray: true })
+  @ApiProperty({ type: () => WorkflowRuntimeListItemModel, isArray: true })
   @ValidateNested()
-  results!: WorkflowRuntimeModel[];
+  results!: WorkflowRuntimeListItemModel[];
 
   @ApiProperty({ type: () => Pagination })
   meta!: Pagination;

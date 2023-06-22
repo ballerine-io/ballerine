@@ -36,7 +36,7 @@ export const WorkflowsTable = memo(({ items, isFetching }: Props) => {
       })}
     >
       <Scrollbars autoHide>
-        <Table className="table-fixed">
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map(({ id: headerRowId, headers }) => {
               return (
@@ -67,7 +67,9 @@ export const WorkflowsTable = memo(({ items, isFetching }: Props) => {
                           key={cell.id}
                           className="max-w-1/4 w-1/4 "
                           title={String(cell.getValue())}
-                          style={{ maxWidth: `${cell.column.getSize()}px` }}
+                          style={{
+                            minWidth: `${cell.column.getSize()}px`,
+                          }}
                         >
                           <p className="line-clamp-2 overflow-hidden text-ellipsis break-all">
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}

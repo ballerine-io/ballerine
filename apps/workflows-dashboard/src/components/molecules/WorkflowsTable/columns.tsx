@@ -1,5 +1,5 @@
 import { HealthIndicator } from '@app/components/atoms/HealthIndicator';
-import { IWorkflow } from '@app/domains/workflows/api/workflow';
+import { IWorkflow, IWorkflowAssignee } from '@app/domains/workflows/api/workflow';
 import { getWorkflowHealthStatus } from '@app/utils/get-workflow-health-status';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -8,13 +8,13 @@ export const defaultColumns: ColumnDef<IWorkflow>[] = [
     accessorKey: 'id',
     cell: info => info.getValue<string>(),
     header: () => 'ID',
-    size: 240,
+    size: 280,
   },
   {
-    accessorKey: 'workflowDefinitionId',
+    accessorKey: 'workflowDefinitionName',
     cell: info => info.getValue<string>(),
-    header: 'Workflow Definition ID',
-    size: 5000,
+    header: 'Workflow Definition Name',
+    size: 200,
   },
   {
     accessorKey: 'status',
@@ -34,8 +34,13 @@ export const defaultColumns: ColumnDef<IWorkflow>[] = [
     size: 125,
   },
   {
-    accessorKey: 'assigneeId',
-    cell: info => info.getValue<string>(),
+    accessorKey: 'assignee',
+    cell: info => {
+      const assignee = info.getValue<IWorkflowAssignee>();
+      if (!assignee) return '-';
+
+      return `${assignee.firstName} ${assignee.lastName}`;
+    },
     header: 'Assign To',
     size: 125,
   },
@@ -44,7 +49,7 @@ export const defaultColumns: ColumnDef<IWorkflow>[] = [
     accessorFn: row => JSON.stringify(row.context),
     cell: info => info.getValue<string>(),
     header: () => 'Context',
-    size: 200,
+    size: 300,
   },
   {
     accessorKey: 'resolvedAt',
