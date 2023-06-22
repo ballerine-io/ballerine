@@ -64,7 +64,7 @@ export const WorkflowByIdSchema = z.object({
     parentMachine: ObjectWithIdSchema.extend({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),
     }).optional(),
-    pluginOutput: z.record(zPropertyKey, z.any()).optional(),
+    pluginsOutput: z.record(zPropertyKey, z.any()).optional(),
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),
