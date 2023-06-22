@@ -65,21 +65,37 @@ export const SIDEBAR: Sidebar = {
     learn: [
       {
         group: `Getting started`,
-        sections: [{ text: `UI Flows`, link: `ui-flows` }],
-      },
-      {
-        group: `Start Here`,
         sections: [
           { text: `Introduction`, link: `introduction` },
-          {
-            text: `Style Guidelines`,
-            link: `style-guidelines`,
-          },
-          { text: `Contributing`, link: `contributing` },
+          { text: `Gloassry`, link: `gloassry` },
+          { text: `Installation`, link: `installation` },
+          { text: `Deployment`, link: `deployment` },
         ],
       },
       {
-        group: `Basics`,
+        group: `Guides`,
+        sections: [
+          {
+            text: `KYB Workflow with External Integrations`,
+            link: `simple-kyb-guide`,
+          },
+    
+          {
+            text: `Creating a KYC UI Flow`,
+            link: `creating-a-kyc-flow-and-deploying-it`,
+          },
+        ],
+      },
+      {
+        group: `Workflows`,
+        sections: [],
+      },
+      {
+        group: `Case Managment`,
+        sections: [],
+      },
+      {
+        group: `UI SDK's`,
         sections: [
           { text: `SDK Events`, link: `sdk-events` },
           { text: `SDK Backend Configuration`, link: `sdk-backend-configuration` },
@@ -97,15 +113,18 @@ export const SIDEBAR: Sidebar = {
           },
         ],
       },
+
       {
-        group: `Guides`,
+        group: `Contributing`,
         sections: [
           {
-            text: `Creating a KYC flow and deploying it`,
-            link: `creating-a-kyc-flow-and-deploying-it`,
+            text: `Style Guidelines`,
+            link: `style-guidelines`,
           },
+          { text: `Contributing`, link: `contributing` },
         ],
       },
+
       {
         group: `Examples`,
         sections: [

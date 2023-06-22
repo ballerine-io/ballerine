@@ -24,9 +24,19 @@ export const kybWithExternalRequestWorkflowExample = {
               cond: {
                 type: 'json-logic',
                 rule: {
-                  '==': [
-                    { var: 'context.entity.companyName' },
-                    { var: 'response.data.registered_name' },
+                  or: [
+                    {
+                      '==': [
+                        { var: 'context.entity.companyName' },
+                        { var: 'response.data.registered_name' },
+                      ],
+                    },
+                    {
+                      '>=': [
+                        { var: 'context.external_request_example.data.name_fuzziness_score' },
+                        0.8,
+                      ],
+                    },
                   ],
                 },
               },
