@@ -1,10 +1,8 @@
 ---
-title: Creating a KYC flow and deploying it
+title: Simple KYB Workflow
 description: Learn how to create a KYC flow, customize its UI, and deploy it
 layout: ../../../layouts/MainLayout.astro
 ---
-
-# KYB Workflow Implementation Guide
 
 This guide will walk you through implementing a Know Your Business (KYB) workflow using Ballerine's system. We'll start with a simple onboarding workflow for a company, then show you how to adjust it for automatic approval.
 
@@ -156,8 +154,6 @@ Visit [Webhook.site](https://webhook.site) to get your webhook URLs. Replace the
 
 ### Changing Approval Threshold
 
-To modify the approval threshold, adjust the rule in the `check_business_details` state in your workflow definition. This
-
-allows for manual review under new enrichment data conditions.
+To modify the approval threshold, adjust the rule in the check_business_details state in your workflow definition. This allows for manual review under new enrichment data conditions.
 
 That's all! You've successfully set up and adjusted your KYB workflow. Remember, this guide is just an introduction. The Ballerine system offers much more, so feel free to experiment and learn more!
