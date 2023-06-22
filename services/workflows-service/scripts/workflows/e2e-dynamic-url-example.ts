@@ -37,7 +37,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                       {
                         '>=': [
                           { var: 'context.external_request_example.data.name_fuzziness_score' },
-                          0.9,
+                          0.8,
                         ],
                       },
                     ],
