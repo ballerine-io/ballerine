@@ -114,7 +114,9 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={`flex h-full flex-col`}>
-        <legend className={`sr-only`}>{title}</legend>
+        <legend className={ctw({ 'sr-only': id !== 'visible-title' }, 'mb-2 font-bold')}>
+          {title}
+        </legend>
         <div
           className={ctw(`grid grid-cols-2 gap-4`, {
             'grid-cols-3': id === 'entity-details',
