@@ -261,11 +261,6 @@ Visit [Webhook.site](https://webhook.site) to get your webhook URLs. Replace the
 
 ## Changing Approval Threshold
 
-<<<<<<< Updated upstream
-To modify the approval threshold, adjust the rule in the check_business_details state in your workflow definition. This allows for manual review under new enrichment data conditions.
-
-That's all! You've successfully set up and adjusted your KYB workflow. Remember, this guide is just an introduction. The Ballerine system offers much more, so feel free to experiment and learn more!
-=======
 By default, the rule we discussed in the Workflow Definition section will auto-approve the business if the fuzziness score is 0.8 or higher. However, you might want to adjust this threshold to be stricter or more lenient based on your needs.
 
 Let's make the fuzziness score threshold stricter. Change the second condition in the `API_CALL_SUCCESS` rule from 0.8 to 0.9:
@@ -302,4 +297,3 @@ Remember to save the changes you've made to the workflow definition. Once the ch
 Now, when you send a start event to a new workflow instance, it will follow the updated approval criteria. If the new criteria are met, the workflow will proceed to auto-approval and a webhook will be sent to notify about this decision. This allows for quick notifications of automated decisions, improving the speed of your KYB process.
 
 In the next section, we'll guide you on how to set up a webhook and receive notifications about workflow state changes.
->>>>>>> Stashed changes
