@@ -5,7 +5,7 @@ import { Card } from '../../common/components/atoms/Card/Card';
 import { CardContent } from '../../common/components/atoms/Card/Card.Content';
 
 export const Entity = () => {
-  const { workflow, selectedEntity, tasks, components, isLoading } = useEntity();
+  const { workflow, selectedEntity, tasks, cells, isLoading } = useEntity();
 
   // Selected entity
   return (
@@ -31,7 +31,7 @@ export const Entity = () => {
                   })}
                 >
                   {task?.map((field, index) => {
-                    const Cell = components[field?.type];
+                    const Cell = cells[field?.type];
 
                     return <Cell key={index} {...field} />;
                   })}
