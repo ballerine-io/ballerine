@@ -41,7 +41,7 @@ export class WorkflowRunner {
 
   constructor(
     { definition, workflowActions, workflowContext, extensions }: WorkflowRunnerArgs,
-    debugMode = true,
+    debugMode = false,
   ) {
     // global and state specific extensions
     this.#__extensions = extensions ?? {};
@@ -225,7 +225,6 @@ export class WorkflowRunner {
         const data = { ...ctx, ...event.payload };
         // @ts-expect-error
         const options = metadata.cond.options;
-        console.log(`running json logic rule`, data, metadata.cond);
 
         const ruleResult = jsonLogic.apply(
           options.rule, // Rule
@@ -240,7 +239,6 @@ export class WorkflowRunner {
             },
           });
         }
-        console.log(`json logic rule result`, ruleResult);
         return ruleResult;
       },
     };
