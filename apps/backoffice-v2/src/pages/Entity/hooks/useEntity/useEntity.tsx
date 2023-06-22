@@ -45,9 +45,21 @@ export const useEntity = () => {
   const caseState = useCaseState(session?.user, workflow);
   const {
     documents: contextDocuments,
-    entity: contextEntity,
+    // entity: contextEntity,
+    entity,
     pluginOutput,
   } = workflow?.context ?? {};
+  const contextEntity = {
+    ...entity,
+    data: {
+      ...entity?.data,
+      address: {
+        country: 'USA',
+        city: 'New York',
+        street: 'Wall Street',
+      },
+    },
+  };
   const pluginOutputKeys = Object.keys(pluginOutput ?? {});
   const tasks = contextEntity
     ? [
@@ -173,7 +185,9 @@ export const useEntity = () => {
                   data:
                     contextDocuments?.[docIndex]?.pages?.map(
                       ({ type, metadata, data }, pageIndex) => ({
-                        title: `${category} - ${docType}${
+                        title: `${convertSnakeCaseToTitleCase(
+                          category,
+                        )} - ${convertSnakeCaseToTitleCase(docType)}${
                           metadata?.side ? ` - ${metadata?.side}` : ''
                         }`,
                         imageUrl:
@@ -192,13 +206,17 @@ export const useEntity = () => {
           ? []
           : [
               {
+                type: 'heading',
+                value: `${toStartCase(contextEntity?.type)} Information`,
+              },
+              {
                 id: 'entity-details',
                 type: 'details',
                 value: {
                   title: `${toStartCase(contextEntity?.type)} Information`,
                   data: [
                     ...Object.entries(
-                      omitPropsFromObject(contextEntity?.data, 'additionalInfo') ?? {},
+                      omitPropsFromObject(contextEntity?.data, 'additionalInfo', 'address') ?? {},
                     ),
                     ...Object.entries(contextEntity?.data?.additionalInfo ?? {}),
                   ]?.map(([title, value]) => ({
@@ -210,16 +228,42 @@ export const useEntity = () => {
                 },
               },
             ],
-        [
-          {
-            type: 'map',
-            value: {
-              country: 'country',
-              city: 'city',
-              street: 'street',
-            },
-          },
-        ],
+        Object.keys(contextEntity?.data?.address ?? {}) === 0
+          ? []
+          : [
+              {
+                id: 'map-container',
+                type: 'container',
+                value: [
+                  {
+                    id: 'map-header',
+                    type: 'heading',
+                    value: `${toStartCase(contextEntity?.type)} Address`,
+                  },
+                  {
+                    type: 'details',
+                    value: {
+                      title: `${toStartCase(contextEntity?.type)} Address`,
+                      data: Object.entries(contextEntity?.data?.address ?? {})?.map(
+                        ([title, value]) => ({
+                          title,
+                          value,
+                          isEditable: false,
+                        }),
+                      ),
+                    },
+                  },
+                  {
+                    type: 'map',
+                    value: {
+                      country: contextEntity?.data?.address?.country,
+                      city: contextEntity?.data?.address?.city,
+                      street: contextEntity?.data?.address?.street,
+                    },
+                  },
+                ],
+              },
+            ],
       ]
     : [];
 
