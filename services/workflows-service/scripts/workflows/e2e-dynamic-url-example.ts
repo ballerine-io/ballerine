@@ -30,7 +30,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                     '==': [
                       { var: 'entity.data.companyName' },
                       {
-                        var: 'pluginsOutput.external_request_example.business_details.registered_name',
+                        var: 'pluginsOutput.business_data_vendor.business_details.registered_name',
                       },
                     ],
                   },
@@ -44,7 +44,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                 options: {
                   rule: {
                     '>': [
-                      { var: 'pluginsOutput.external_request_example.name_fuzziness_score' },
+                      { var: 'pluginsOutput.business_data_vendor.name_fuzziness_score' },
                       0.5,
                     ],
                   },
@@ -75,7 +75,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                 type: 'json-logic',
                 options: {
                   rule: {
-                    '>=': [{ var: 'pluginsOutput.external_request_example.httpStatus' }, 400],
+                    '>=': [{ var: 'pluginsOutput.business_data_vendor.httpStatus' }, 400],
                   },
                 },
               },
@@ -115,7 +115,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
   extensions: {
     apiPlugins: [
       {
-        name: 'external_request_example',
+        name: 'business_data_vendor',
         url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/{api_url.url}.json',
         method: 'GET',
         stateNames: ['check_business_details'],
@@ -187,7 +187,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         request: {
           transform: {
             transformer: 'jq',
-            mapping: '{apiOutput: .pluginsOutput .external_request_example}',
+            mapping: '{apiOutput: .pluginsOutput .business_data_vendor}',
           },
         },
       },
