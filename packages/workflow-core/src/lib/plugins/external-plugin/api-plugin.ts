@@ -1,5 +1,6 @@
 import { TContext, TTransformers, TValidators } from '../../utils/types';
-import {AnyRecord, isErrorWithMessage} from '@ballerine/common';
+import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
+import * as process from "process";
 
 export interface IApiPluginParams {
   name: string;
@@ -7,10 +8,10 @@ export interface IApiPluginParams {
   url: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
   request: { transformer: TTransformers; schemaValidator?: TValidators };
-  response: { transformer: TTransformers; schemaValidator?: TValidators };
+  response?: { transformer: TTransformers; schemaValidator?: TValidators };
   headers?: HeadersInit;
-  successAction: string;
-  errorAction: string;
+  successAction?: string;
+  errorAction?: string;
 }
 export class ApiPlugin {
   name: string;
@@ -19,16 +20,16 @@ export class ApiPlugin {
   method: IApiPluginParams['method'];
   headers: IApiPluginParams['headers'];
   request: IApiPluginParams['request'];
-  response: IApiPluginParams['response'];
-  successAction: string;
-  errorAction: string;
+  response?: IApiPluginParams['response'];
+  successAction?: string;
+  errorAction?: string;
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
     this.stateNames = pluginParams.stateNames;
     this.url = pluginParams.url;
     this.method = pluginParams.method;
-    this.headers = pluginParams.headers || { 'Content-Type': 'application/json' } as HeadersInit;
+    this.headers = {'Content-Type': 'application/json', ...(pluginParams.headers || {})} as HeadersInit;
     this.request = pluginParams.request;
     this.response = pluginParams.response;
     this.successAction = pluginParams.successAction;
@@ -45,21 +46,21 @@ export class ApiPlugin {
       if (!isValidRequest) return this.returnErrorResponse(errorMessage!);
 
       const apiResponse = await this.makeApiRequest(
-        this.url,
+        this.replaceValuePlaceholders(this.url, context),
         this.method,
         requestPayload,
-        this.headers!,
+        this.composeRequestHeaders(this.headers!, context)
       );
 
       if (apiResponse.ok) {
         const result = await apiResponse.json();
         const responseBody = await this.transformData(
-          this.response.transformer,
+          this.response!.transformer,
           result as AnyRecord,
         );
 
         const { isValidResponse, errorMessage } = await this.validateContent(
-          this.response.schemaValidator,
+          this.response!.schemaValidator,
           responseBody,
           'Response',
         );
@@ -73,7 +74,6 @@ export class ApiPlugin {
       return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
     }
   }
-
   returnErrorResponse(errorMessage: string) {
     return { callbackAction: this.errorAction, error: errorMessage };
   }
@@ -95,7 +95,7 @@ export class ApiPlugin {
       requestParams.body = JSON.stringify(payload);
     } else if (this.method.toUpperCase() === 'GET' && payload) {
       const queryParams = new URLSearchParams(payload as Record<string, string>).toString();
-      url = `${this.url}?${queryParams}`;
+      url = `${url}?${queryParams}`;
     }
 
     return await fetch(url, requestParams);
@@ -106,7 +106,9 @@ export class ApiPlugin {
       return (await transformer.transform(record, { input: 'json', output: 'json' })) as AnyRecord;
     } catch (error) {
       throw new Error(
-        `Error transforming data: ${isErrorWithMessage(error) ? error.message : ''} for transformer mapping: ${transformer.mapping}`,
+        `Error transforming data: ${
+          isErrorWithMessage(error) ? error.message : ''
+        } for transformer mapping: ${transformer.mapping}`,
       );
     }
   }
@@ -122,4 +124,23 @@ export class ApiPlugin {
     const { isValid, errorMessage } = await schemaValidator.validate(transformedRequest);
     return { [returnArgKey]: isValid, errorMessage };
   }
+
+  composeRequestHeaders(headers: HeadersInit, context: TContext) {
+    return Object.fromEntries(Object.entries(headers).map(header => [header[0], this.replaceValuePlaceholders(header[1], context)]));
+  }
+  replaceValuePlaceholders(content: string, context: TContext) {
+    const placeholders = content.match(/{(.*?)}/g);
+    if (!placeholders) return content;
+
+    let replacedContent = content;
+    placeholders.forEach(placeholder => {
+      const variableKey = placeholder.replace(/{|}/g, '');
+      const isPlaceholderSecret = variableKey.includes('secret.');
+      const placeholderValue = isPlaceholderSecret ? `${process.env[variableKey.replace('secret.','')]}`:`${context[variableKey]}`;
+      replacedContent = replacedContent.replace(placeholder, placeholderValue);
+    });
+
+    return replacedContent;
+  }
+
 }

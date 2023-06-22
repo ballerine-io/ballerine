@@ -1,6 +1,6 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
-import {ApiPlugins, StatePlugins} from './plugins/types';
-import {IApiPluginParams} from "./plugins/external-plugin/api-plugin";
+import { ApiPlugins, StatePlugins } from './plugins/types';
+import { IApiPluginParams } from './plugins/external-plugin/api-plugin';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 

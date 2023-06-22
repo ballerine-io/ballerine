@@ -62,8 +62,7 @@ function buildConfigs(opts: {
 }): RollupOptions[] {
   const input = path.resolve('./', opts.entryFile);
 
-  const packageJson =
-    readJsonSync(path.resolve(process.cwd(), 'package.json')) ?? {};
+  const packageJson = readJsonSync(path.resolve(process.cwd(), 'package.json')) ?? {};
 
   const banner = createBanner(opts.name);
 
@@ -122,13 +121,7 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
   };
 }
 
-function umdDev({
-  input,
-  umdExternal,
-  packageDir,
-  banner,
-  jsName,
-}: Options): RollupOptions {
+function umdDev({ input, umdExternal, packageDir, banner, jsName }: Options): RollupOptions {
   return {
     // UMD (Dev)
     external: umdExternal,
@@ -150,13 +143,7 @@ function umdDev({
   };
 }
 
-function umdProd({
-  input,
-  umdExternal,
-  packageDir,
-  banner,
-  jsName,
-}: Options): RollupOptions {
+function umdProd({ input, umdExternal, packageDir, banner, jsName }: Options): RollupOptions {
   return {
     // UMD (Prod)
     external: umdExternal,
@@ -184,12 +171,7 @@ function umdProd({
   };
 }
 
-function types({
-  input,
-  packageDir,
-  external,
-  banner,
-}: Options): RollupOptions {
+function types({ input, packageDir, external, banner }: Options): RollupOptions {
   return {
     // TYPES
     external,

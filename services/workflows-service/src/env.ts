@@ -8,7 +8,7 @@ export const env = createEnv({
    */
   clientPrefix: 'PUBLIC_',
   server: {
-    NODE_ENV: z.enum(['development', 'production', 'test']),
+    NODE_ENV: z.enum(['development', 'production', 'test', 'local']),
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
     COMPOSE_PROJECT_NAME: z.string(),

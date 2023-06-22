@@ -61,8 +61,9 @@
       },
       enabled: typeof id === 'string' && id.length > 0,
     });
-  const entityType =
-    import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'end-user' : ('business' as const);
+  const entityType = (
+    import.meta.env.VITE_EXAMPLE_TYPE === 'kyc' ? 'end-users' : 'businesses'
+  ) as const;
   const createWorkflowsQuery = (
     options: CreateQueryOptions<Awaited<ReturnType<typeof fetchWorkflows>>> = {},
   ) =>

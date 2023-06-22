@@ -156,7 +156,9 @@ describe('workflow-runner', () => {
           await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
           expect(workflow.state).toEqual('checkBusinessScoreSuccess');
-          expect(Object.keys(workflow.context.pluginsOutput.ballerineEnrichment)[0]).toEqual('result');
+          expect(Object.keys(workflow.context.pluginsOutput.ballerineEnrichment)[0]).toEqual(
+            'result',
+          );
         });
       });
     });

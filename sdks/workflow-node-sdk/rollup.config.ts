@@ -1,19 +1,18 @@
-import { RollupOptions } from 'rollup'
-import babel from '@rollup/plugin-babel'
-import { terser } from 'rollup-plugin-terser'
+import { RollupOptions } from 'rollup';
+import babel from '@rollup/plugin-babel';
+import { terser } from 'rollup-plugin-terser';
 // rollup-plugin-size doesn't have a types package.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import size from 'rollup-plugin-size'
-import visualizer from 'rollup-plugin-visualizer'
-import replace from '@rollup/plugin-replace'
-import nodeResolve from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
-import path from 'path'
-import dts from 'rollup-plugin-dts'
-import { readJsonSync } from 'fs-extra'
+import size from 'rollup-plugin-size';
+import visualizer from 'rollup-plugin-visualizer';
+import replace from '@rollup/plugin-replace';
+import nodeResolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import path from 'path';
+import dts from 'rollup-plugin-dts';
+import { readJsonSync } from 'fs-extra';
 import json from '@rollup/plugin-json';
-
 
 type Options = {
   input: string;
@@ -35,7 +34,7 @@ const umdDevPlugin = (type: 'development' | 'production') =>
 const babelPlugin = babel({
   babelHelpers: 'bundled',
   exclude: /node_modules/,
-  extensions: ['.ts', ],
+  extensions: ['.ts'],
 });
 
 export default function rollup(options: RollupOptions): RollupOptions[] {
@@ -65,10 +64,7 @@ function buildConfigs(opts: {
 }): RollupOptions[] {
   const input = path.resolve('./', opts.entryFile);
 
-  const packageJson =
-    readJsonSync(
-      path.resolve(process.cwd(), 'package.json')
-    ) ?? {};
+  const packageJson = readJsonSync(path.resolve(process.cwd(), 'package.json')) ?? {};
 
   const banner = createBanner(opts.name);
 
@@ -104,13 +100,9 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
       sourcemap: true,
       dir: `${packageDir}/dist/esm`,
       banner,
-      preserveModules: true
+      preserveModules: true,
     },
-    plugins: [
-      json(),
-      babelPlugin,
-      nodeResolve({ extensions: ['.ts', ] }),
-    ],
+    plugins: [json(), babelPlugin, nodeResolve({ extensions: ['.ts'] })],
   };
 }
 
@@ -127,22 +119,11 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
       exports: 'named',
       banner,
     },
-    plugins: [
-      json(),
-      babelPlugin,
-      commonjs(),
-      nodeResolve({ extensions: ['.ts', ] }),
-    ],
+    plugins: [json(), babelPlugin, commonjs(), nodeResolve({ extensions: ['.ts'] })],
   };
 }
 
-function umdDev({
-  input,
-  umdExternal,
-  packageDir,
-  banner,
-  jsName,
-}: Options): RollupOptions {
+function umdDev({ input, umdExternal, packageDir, banner, jsName }: Options): RollupOptions {
   return {
     // UMD (Dev)
     external: umdExternal,
@@ -158,19 +139,13 @@ function umdDev({
       json(),
       babelPlugin,
       commonjs(),
-      nodeResolve({ extensions: ['.ts', ] }),
+      nodeResolve({ extensions: ['.ts'] }),
       umdDevPlugin('development'),
     ],
   };
 }
 
-function umdProd({
-  input,
-  umdExternal,
-  packageDir,
-  banner,
-  jsName,
-}: Options): RollupOptions {
+function umdProd({ input, umdExternal, packageDir, banner, jsName }: Options): RollupOptions {
   return {
     // UMD (Prod)
     external: umdExternal,
@@ -186,7 +161,7 @@ function umdProd({
       json(),
       babelPlugin,
       commonjs(),
-      nodeResolve({ extensions: ['.ts', ] }),
+      nodeResolve({ extensions: ['.ts'] }),
       umdDevPlugin('production'),
       terser(),
       size({}),
@@ -198,12 +173,7 @@ function umdProd({
   };
 }
 
-function types({
-  input,
-  packageDir,
-  external,
-  banner,
-}: Options): RollupOptions {
+function types({ input, packageDir, external, banner }: Options): RollupOptions {
   return {
     // TYPES
     external,
