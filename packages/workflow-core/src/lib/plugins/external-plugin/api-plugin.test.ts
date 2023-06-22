@@ -89,23 +89,23 @@ describe('workflow-runner', () => {
       });
     });
 
-    describe('when api invalid jq transformation of request', () => {
-      const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
-      apiPluginsSchemasCopy[0].request.transform.mapping = 'dsa: .unknwonvalue.id}';
-      const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
-      // TODO: fix later
-      // it('it returns error for transformation and transition to testManually', async () => {
-      //   await workflow.sendEvent('CHECK_BUSINESS_SCORE');
-      //
-      //   expect(workflow.state).toEqual('testManually');
-      //   expect(workflow.context.pluginsOutput).toEqual({
-      //     ballerineEnrichment: {
-      //       error:
-      //         'Error transforming data: write EPIPE for transformer mapping: dsa: .unknwonvalue.id}',
-      //     },
-      //   });
-      // });
-    });
+    // describe('when api invalid jq transformation of request', () => {
+    //   const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
+    //   apiPluginsSchemasCopy[0].request.transform.mapping = 'dsa: .unknwonvalue.id}';
+    //   const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
+    //    TODO: fix later
+    //    it('it returns error for transformation and transition to testManually', async () => {
+    //      await workflow.sendEvent('CHECK_BUSINESS_SCORE');
+    //
+    //      expect(workflow.state).toEqual('testManually');
+    //      expect(workflow.context.pluginsOutput).toEqual({
+    //        ballerineEnrichment: {
+    //          error:
+    //            'Error transforming data: write EPIPE for transformer mapping: dsa: .unknwonvalue.id}',
+    //        },
+    //      });
+    //    });
+    // });
 
     describe('when api plugin has schema', () => {
       describe('when api request invalid for schema', () => {
