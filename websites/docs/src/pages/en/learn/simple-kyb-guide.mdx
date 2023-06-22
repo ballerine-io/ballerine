@@ -3,6 +3,7 @@ title: Creating a KYC flow and deploying it
 description: Learn how to create a KYC flow, customize its UI, and deploy it
 layout: ../../../layouts/MainLayout.astro
 ---
+
 # KYB Workflow Implementation Guide
 
 This guide will walk you through implementing a Know Your Business (KYB) workflow using Ballerine's system. We'll start with a simple onboarding workflow for a company, then show you how to adjust it for automatic approval.
@@ -63,7 +64,22 @@ Let's break down some crucial parts:
 ```json
 "check_business_details": {
   ...
-  // Json-logic rules and conditions go here
+   {
+              target: 'auto_approve',
+              cond: {
+                type: 'json-logic',
+                options: {
+                  rule: {
+                    '==': [
+                      { var: 'entity.data.companyName' },
+                      {
+                        var: 'pluginsOutput.external_request_example.business_details.registered_name',
+                      },
+                    ],
+                  },
+                },
+              },
+            }
   ...
 },
 ```
@@ -88,7 +104,10 @@ Let's break down some crucial parts:
 To create a new workflow instance, execute the following `curl` command:
 
 ```bash
-... [curl command] ...
+curl -X POST --location 'http://localhost:3000/api/v1/external/workflows/run' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer secret' \
+--data '{...}'
 ```
 
 This command creates a new workflow instance, which upon successful execution, provides you with a response containing `workflowDefinitionId`, `workflowRuntimeId`, and `ballerineEntityId`.
@@ -98,33 +117,35 @@ This command creates a new workflow instance, which upon successful execution, p
 To initiate the workflow, send the `start` event. This action triggers the data enrichment process.
 
 ```bash
-... [curl command] ...
+curl -X POST 'http://localhost:3000/api/v1/external/workflows/{workflowRuntimeId}/send-event' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer secret' \
+--data '{"name": "start"}'
+
 ```
 
 ## What Happens Next?
 
-The `check_business_details` state has a set of conditions written in JSON logic syntax. Depending on the fulfillment of these conditions, the workflow transitions to different states. 
+The `check_business_details` state has a set of conditions written in JSON logic syntax. Depending on the fulfillment of these conditions, the workflow transitions to different states.
 
 For instance, the workflow will move to the `manual_review` state when the conditions within the `check_business_details` state aren't met. Here's the rule for the same:
 
 ```json
 {
   "cond": {
-    "type": 'json-logic',
+    "type": "json-logic",
     "options": {
       "rule": {
-        ">": [
-          { "var": 'pluginsOutput.external_request_example.name_fuzziness_score' },
-          0.5,
-        ]
+        ">": [{ "var": "pluginsOutput.external_request_example.name_fuzziness_score" }, 0.5]
       },
-      "onFailed": { "manualReviewReason": 'name not matching ... ' },
-    },
-  },
+      "onFailed": { "manualReviewReason": "name not matching ... " }
+    }
+  }
 }
 ```
 
 In this condition, the workflow compares the company's fuzziness score (`name_fuzziness_score`) with the threshold (0.5 in this case). If the score is greater than the threshold, the workflow transitions to the `manual_review` state and a manual review reason is set.
+
 # Adjusting the Workflow
 
 Let's tweak the workflow for automatic approval and for sending updates to your backend on workflow completion.
@@ -137,6 +158,6 @@ Visit [Webhook.site](https://webhook.site) to get your webhook URLs. Replace the
 
 To modify the approval threshold, adjust the rule in the `check_business_details` state in your workflow definition. This
 
- allows for manual review under new enrichment data conditions.
+allows for manual review under new enrichment data conditions.
 
 That's all! You've successfully set up and adjusted your KYB workflow. Remember, this guide is just an introduction. The Ballerine system offers much more, so feel free to experiment and learn more!
