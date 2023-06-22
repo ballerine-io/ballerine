@@ -3,7 +3,7 @@ import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/
 import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
-import { components } from './components';
+import { cells } from './cells';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import {
@@ -47,7 +47,7 @@ export const useEntity = () => {
     documents: contextDocuments,
     // entity: contextEntity,
     entity,
-    pluginOutput,
+    pluginsOutput,
   } = workflow?.context ?? {};
   const contextEntity = {
     ...entity,
@@ -60,13 +60,13 @@ export const useEntity = () => {
       },
     },
   };
-  const pluginOutputKeys = Object.keys(pluginOutput ?? {});
+  const pluginsOutputKeys = Object.keys(pluginsOutput ?? {});
   const tasks = contextEntity
     ? [
-        ...(Object.keys(pluginOutput ?? {}).length === 0
+        ...(Object.keys(pluginsOutput ?? {}).length === 0
           ? []
-          : pluginOutputKeys
-              ?.filter(key => !!Object.keys(pluginOutput[key] ?? {})?.length)
+          : pluginsOutputKeys
+              ?.filter(key => !!Object.keys(pluginsOutput[key] ?? {})?.length)
               ?.map(key => [
                 {
                   id: 'nested-details-heading',
@@ -76,7 +76,7 @@ export const useEntity = () => {
                 {
                   type: 'nestedDetails',
                   value: {
-                    data: Object.entries(pluginOutput[key] ?? {})?.map(([title, value]) => ({
+                    data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
                       title,
                       value,
                     })),
@@ -255,11 +255,7 @@ export const useEntity = () => {
                   },
                   {
                     type: 'map',
-                    value: {
-                      country: contextEntity?.data?.address?.country,
-                      city: contextEntity?.data?.address?.city,
-                      street: contextEntity?.data?.address?.street,
-                    },
+                    value: contextEntity?.data?.address,
                   },
                 ],
               },
@@ -269,7 +265,7 @@ export const useEntity = () => {
 
   return {
     selectedEntity,
-    components,
+    components: cells,
     tasks,
     workflow,
     isLoading,

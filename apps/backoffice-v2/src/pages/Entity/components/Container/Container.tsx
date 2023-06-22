@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { IContainerProps } from './interfaces';
-import { components } from '../../hooks/useEntity/components';
+import { cells } from '../../hooks/useEntity/cells';
 
 export const Container: FunctionComponent<IContainerProps> = ({ value, id }) => {
   return (
@@ -15,7 +15,7 @@ export const Container: FunctionComponent<IContainerProps> = ({ value, id }) => 
       })}
     >
       {value?.map((cell, index) => {
-        const Cell = components[cell?.type];
+        const Cell = cells[cell?.type];
 
         return <Cell key={index} {...cell} />;
       })}
