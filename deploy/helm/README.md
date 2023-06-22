@@ -12,7 +12,7 @@ workflowService:
 
 - kubernetes cluster
 - [helm](https://helm.sh/docs/intro/install/)
-- [kubectl](curl -LO <https://storage.googleapis.com/kubernetes-release/release/v1.23.6/bin/linux/amd64/kubectl>) preferably 1.24 or less upto 1.23
+- [kubectl](https://storage.googleapis.com/kubernetes-release/release/v1.23.6/bin/linux/amd64/kubectl) preferably 1.24 or less upto 1.23
 
 ### How to install
 
@@ -81,11 +81,11 @@ kubectl get pods -n ballerine
 - Note the pod name of service you wish to trouble shoot
 
 ```bash
-kubectl logs <workflowservice-pod> -n ballerine
+kubectl logs <pod> -n ballerine
 ```
 
 - Accessing the application
 
 ```bash
-kubectl port-forward svc/workflowservice -n ball 3000:3000
+kubectl port-forward svc/<service> -n ballerine 3000:3000
 ```
