@@ -77,7 +77,7 @@ export const SIDEBAR: Sidebar = {
         sections: [
           {
             text: `KYB Workflow with External Integrations`,
-            link: `creating-a-kyc-flow-and-deploying-i`,
+            link: `simple-kyb-guide`,
           },
           {
             text: `Simple KYC workflow`,

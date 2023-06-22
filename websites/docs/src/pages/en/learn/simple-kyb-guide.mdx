@@ -1,0 +1,116 @@
+---
+title: Creating a KYC flow and deploying it
+description: Learn how to create a KYC flow, customize its UI, and deploy it
+layout: ../../../layouts/MainLayout.astro
+---
+# KYB Workflow Implementation Guide
+
+This guide will walk you through implementing a Know Your Business (KYB) workflow using Ballerine's system. We'll start with a simple onboarding workflow for a company, then show you how to adjust it for automatic approval.
+
+## Workflow Definition
+
+The workflow we're going to use is predefined, meaning it is already inserted into the database during the seeding process.
+
+This workflow is defined using a statechart definition implemented under the hood with [XState](https://xstate.js.org/docs/). If you're unfamiliar with state machines or XState, we recommend reviewing the XState documentation for a detailed explanation.
+
+Here is the complete workflow definition:
+
+```json
+... [the complete workflow json] ...
+```
+
+Let's break down some crucial parts:
+
+1. **State Machine Definition**: The core of our workflow is a state machine that defines various states and the conditions for transitions between them. This definition is based on the XState library.
+
+```json
+"definition": {
+  "id": 'kyb_example_v1',
+  "predictableActionArguments": true,
+  "initial": 'idle',
+  ...
+},
+```
+
+2. **Check Business Details State**: This state is responsible for making an external call to enrich business data and calculate a fuzziness score for the company name.
+
+```json
+"check_business_details": {
+  ...
+  // Json-logic rules and conditions go here
+  ...
+},
+```
+
+3. **API Plugins**: API plugins allow the workflow to interact with external services. For example, 'external_request_example' plugin fetches business data from an external URL.
+
+```json
+"apiPlugins": [
+  {
+    "name": 'external_request_example',
+    "url": 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/{api_url}.json',
+    ...
+  },
+  ...
+]
+```
+
+## Running the KYB Workflow
+
+### Creating a New Workflow Instance
+
+To create a new workflow instance, execute the following `curl` command:
+
+```bash
+... [curl command] ...
+```
+
+This command creates a new workflow instance, which upon successful execution, provides you with a response containing `workflowDefinitionId`, `workflowRuntimeId`, and `ballerineEntityId`.
+
+### Sending Event to a Workflow
+
+To initiate the workflow, send the `start` event. This action triggers the data enrichment process.
+
+```bash
+... [curl command] ...
+```
+
+## What Happens Next?
+
+The `check_business_details` state has a set of conditions written in JSON logic syntax. Depending on the fulfillment of these conditions, the workflow transitions to different states. 
+
+For instance, the workflow will move to the `manual_review` state when the conditions within the `check_business_details` state aren't met. Here's the rule for the same:
+
+```json
+{
+  "cond": {
+    "type": 'json-logic',
+    "options": {
+      "rule": {
+        ">": [
+          { "var": 'pluginsOutput.external_request_example.name_fuzziness_score' },
+          0.5,
+        ]
+      },
+      "onFailed": { "manualReviewReason": 'name not matching ... ' },
+    },
+  },
+}
+```
+
+In this condition, the workflow compares the company's fuzziness score (`name_fuzziness_score`) with the threshold (0.5 in this case). If the score is greater than the threshold, the workflow transitions to the `manual_review` state and a manual review reason is set.
+# Adjusting the Workflow
+
+Let's tweak the workflow for automatic approval and for sending updates to your backend on workflow completion.
+
+### Setting Up Webhooks
+
+Visit [Webhook.site](https://webhook.site) to get your webhook URLs. Replace the `url` field under the `finish_webhook` and `fail_webhook` plugins in your workflow definition with your webhook URLs.
+
+### Changing Approval Threshold
+
+To modify the approval threshold, adjust the rule in the `check_business_details` state in your workflow definition. This
+
+ allows for manual review under new enrichment data conditions.
+
+That's all! You've successfully set up and adjusted your KYB workflow. Remember, this guide is just an introduction. The Ballerine system offers much more, so feel free to experiment and learn more!
