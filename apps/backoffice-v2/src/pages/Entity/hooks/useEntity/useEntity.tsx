@@ -210,6 +210,16 @@ export const useEntity = () => {
                 },
               },
             ],
+        [
+          {
+            type: 'map',
+            value: {
+              country: 'country',
+              city: 'city',
+              street: 'street',
+            },
+          },
+        ],
       ]
     : [];
 

@@ -6,6 +6,7 @@ import { FaceComparison } from '../../components/FaceComparison/FaceComparison';
 import { Details } from '../../components/Details/Details';
 import { MultiDocuments } from '../../components/MultiDocuments/MultiDocuments';
 import { NestedDetails } from '../../components/NestedDetails/NestedDetails';
+import { Map } from '../../components/Map/Map';
 
 export const components = {
   heading: Heading,
@@ -16,4 +17,5 @@ export const components = {
   details: Details,
   nestedDetails: NestedDetails,
   multiDocuments: MultiDocuments,
+  map: Map,
 };
