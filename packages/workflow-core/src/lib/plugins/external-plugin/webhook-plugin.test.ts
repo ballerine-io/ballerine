@@ -49,7 +49,7 @@ describe('workflow-runner', () => {
         request: {
           transform: {
             transformer: 'jq',
-            mapping: '{.entity}'
+            mapping: '{id: .entity.id}'
           },
         },
       },
