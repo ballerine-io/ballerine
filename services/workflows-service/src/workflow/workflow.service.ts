@@ -325,6 +325,12 @@ export class WorkflowService {
     });
   }
 
+  async listFullWorkflowData() {
+    return await this.workflowRuntimeDataRepository.findMany({
+      include: { workflowDefinition: true },
+    });
+  }
+
   async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {
     const select = {
       id: true,
@@ -470,23 +476,23 @@ export class WorkflowService {
               status: 'active',
             },
           },
-          resolvedAt: isResolved ? new Date() : null,
+          resolvedAt: isResolved ? new Date().toISOString() : null,
         },
       });
     } else {
       updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
         data: {
           ...data,
-          resolvedAt: isResolved ? new Date() : null,
+          resolvedAt: isResolved ? new Date().toISOString() : null,
         },
       });
     }
 
     if (contextHasChanged) {
       this.workflowEventEmitter.emit('workflow.context.changed', {
-        runtimeData,
+        oldRuntimeData: runtimeData,
+        updatedRuntimeData: updatedResult,
         state: currentState as string,
-        context: mergedContext,
         entityId: (runtimeData.businessId || runtimeData.endUserId) as string,
         correlationId: correlationId,
       });

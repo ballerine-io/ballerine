@@ -6,6 +6,7 @@ import { CheckSvg, XMarkSvg } from '../../../../common/components/atoms/icons';
 import { useDocuments } from './hooks/useDocuments/useDocuments';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import ReactCrop from 'react-image-crop';
+import { FileText } from 'lucide-react';
 
 /**
  * @description To be used by {@link Case}, and be wrapped by {@link Case.Content}. Displays a single entity's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
@@ -30,6 +31,8 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
     isLoadingOCR,
     selectedImage,
     onSelectImage,
+    documentRotation,
+    onRotateDocument,
   } = useDocuments(documents);
 
   return (
@@ -39,24 +42,42 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
           className={`
             d-full relative max-w-[441px] items-center rounded-md`}
         >
-          <ReactCrop
-            crop={crop}
-            onChange={onCrop}
-            disabled={!isCropping || selectedImage?.fileType === 'pdf'}
-            className={ctw({
-              'd-full [&>div]:d-full': selectedImage?.fileType === 'pdf',
+          <div
+            className={ctw('max-w-[441px] overflow-x-auto', {
+              'd-full': selectedImage?.fileType === 'pdf',
             })}
           >
-            <ImageViewer.SelectedImage
-              key={initialImage?.imageUrl}
-              initialImage={initialImage}
-              ref={selectedImageRef}
-              isLoading={isLoading}
-            />
-          </ReactCrop>
+            <ReactCrop
+              crop={crop}
+              onChange={onCrop}
+              disabled={!isCropping || selectedImage?.fileType === 'pdf'}
+              className={ctw({
+                'd-full [&>div]:d-full': selectedImage?.fileType === 'pdf',
+                'rotate-90': documentRotation === 90,
+                'rotate-180': documentRotation === 180,
+                'rotate-270': documentRotation === 270,
+              })}
+            >
+              <ImageViewer.SelectedImage
+                key={initialImage?.imageUrl}
+                initialImage={initialImage}
+                ref={selectedImageRef}
+                isLoading={isLoading}
+              />
+            </ReactCrop>
+          </div>
           <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
             {selectedImage?.fileType !== 'pdf' && (
               <>
+                <button
+                  type={`button`}
+                  className={ctw(
+                    `btn-ghost btn-sm btn-circle btn bg-base-300/70 text-[0.688rem] focus:outline-primary`,
+                  )}
+                  onClick={onRotateDocument}
+                >
+                  <FileText className={`rotate-90 p-0.5`} />
+                </button>
                 <button
                   className={ctw(
                     'btn-ghost btn-sm btn-circle btn bg-base-300/70 focus:outline-primary',

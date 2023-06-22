@@ -5,6 +5,7 @@ import { CallToAction } from '../../components/CallToAction/CallToAction';
 import { FaceComparison } from '../../components/FaceComparison/FaceComparison';
 import { Details } from '../../components/Details/Details';
 import { MultiDocuments } from '../../components/MultiDocuments/MultiDocuments';
+import { NestedDetails } from '../../components/NestedDetails/NestedDetails';
 
 export const components = {
   heading: Heading,
@@ -13,5 +14,6 @@ export const components = {
   callToAction: CallToAction,
   faceComparison: FaceComparison,
   details: Details,
+  nestedDetails: NestedDetails,
   multiDocuments: MultiDocuments,
 };

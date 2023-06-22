@@ -38,8 +38,8 @@ export class DocumentChangedWebhookCaller {
   }
 
   async handleWorkflowEvent(data: WorkflowEventRawData) {
-    const oldDocuments = data.runtimeData.context['documents'] || [];
-    const newDocuments = data.context?.['documents'] || [];
+    const oldDocuments = data.oldRuntimeData.context['documents'] || [];
+    const newDocuments = data.updatedRuntimeData.context?.['documents'] || [];
 
     const newDocumentsByIdentifier = newDocuments.reduce((accumulator: any, doc: any) => {
       const id = getDocumentId(doc, false);
@@ -66,11 +66,11 @@ export class DocumentChangedWebhookCaller {
     const id = randomUUID();
     const environment = this.configService.get<string>('NODE_ENV');
     const url =
-      getDynamicWebhookUrl(data.runtimeData?.config) ||
+      getDynamicWebhookUrl(data.updatedRuntimeData?.config) ||
       this.configService.get<string>('WEBHOOK_URL')!;
     const authSecret = this.configService.get<string>('WEBHOOK_SECRET');
 
-    data.context.documents.forEach((doc: any) => {
+    data.updatedRuntimeData.context.documents.forEach((doc: any) => {
       delete doc.propertiesSchema;
     });
 
@@ -84,12 +84,14 @@ export class DocumentChangedWebhookCaller {
           eventName: 'workflow.context.document.changed',
           apiVersion: 1,
           timestamp: new Date().toISOString(),
-          workflowDefinitionId: data.runtimeData.workflowDefinitionId,
-          workflowRuntimeId: data.runtimeData.id,
+          workflowCreatedAt: data.updatedRuntimeData.createdAt,
+          workflowResolvedAt: data.updatedRuntimeData.resolvedAt,
+          workflowDefinitionId: data.updatedRuntimeData.workflowDefinitionId,
+          workflowRuntimeId: data.updatedRuntimeData.id,
           ballerineEntityId: data.entityId,
           correlationId: data.correlationId,
           environment,
-          data: data.context,
+          data: data.updatedRuntimeData.context,
         },
         {
           headers: {
