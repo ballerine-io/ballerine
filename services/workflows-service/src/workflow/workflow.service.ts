@@ -20,6 +20,8 @@ import {
   RunnableWorkflowData,
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
+  WorkflowsRuntimeMetric,
+  WorkflowStatusMetric,
 } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
@@ -342,18 +344,22 @@ export class WorkflowService {
     size,
     status,
   }: ListWorkflowsRuntimeParams): Promise<ListRuntimeDataResult> {
+    const query = {
+      where: {
+        ...(status ? { status: { in: status } } : undefined),
+      },
+    };
+
     const [workflowsRuntimeCount, workflowsRuntime] = await Promise.all([
-      this.workflowRuntimeDataRepository.count(),
+      this.workflowRuntimeDataRepository.count(query),
       this.workflowRuntimeDataRepository.findMany({
         skip: page && size ? (page - 1) * size : undefined,
         take: size,
-        where: {
-          ...(status ? { status: { in: status } } : undefined),
-        },
         include: {
           workflowDefinition: true,
           assignee: true,
         },
+        ...query,
       }),
     ]);
 
@@ -1115,5 +1121,37 @@ export class WorkflowService {
 
   async getWorkflowRuntimeDataContext(id: string) {
     return this.workflowRuntimeDataRepository.findContext(id);
+  }
+
+  async listWorkflowsMetrics(): Promise<WorkflowsRuntimeMetric> {
+    return {
+      approvedWorkflows: (await this.listResolvedWorkflowRuntimes()) as any,
+      status: await this._getWorkflowsStatusMetric(),
+    };
+  }
+
+  private async listResolvedWorkflowRuntimes(): Promise<WorkflowRuntimeData[]> {
+    return await this.workflowRuntimeDataRepository.findMany({
+      where: { resolvedAt: { not: null } },
+    });
+  }
+
+  private async _getWorkflowsStatusMetric(): Promise<WorkflowStatusMetric> {
+    const queryResult = await this.workflowRuntimeDataRepository.groupBy({
+      by: ['status'],
+      _count: true,
+    });
+
+    const metrics: WorkflowStatusMetric = {
+      active: 0,
+      failed: 0,
+      completed: 0,
+    };
+
+    queryResult.forEach(metric => {
+      metrics[metric.status] = Number(metric._count) || 0;
+    });
+
+    return metrics;
   }
 }

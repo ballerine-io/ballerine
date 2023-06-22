@@ -3,5 +3,5 @@ interface Props {
 }
 
 export const Header = ({ children }: Props) => {
-  return <header className="p-4">{children}</header>;
+  return <header className="flex flex-col gap-4 p-4">{children}</header>;
 };

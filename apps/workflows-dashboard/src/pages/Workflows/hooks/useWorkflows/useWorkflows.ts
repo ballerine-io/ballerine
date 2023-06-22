@@ -1,4 +1,4 @@
-import { workflowsKeys } from '@app/domains/workflows';
+import { workflowKeys } from '@app/domains/workflows';
 import { WorkflowsFilterValues } from '@app/pages/Workflows/hooks/useWorkflowsFilters/types';
 import { useQuery } from '@tanstack/react-query';
 
@@ -8,7 +8,7 @@ export function useWorkflows(query: WorkflowsFilterValues) {
     isLoading,
     data = { results: [], meta: { pages: 0, total: 0 } },
   } = useQuery({
-    ...workflowsKeys.list(query),
+    ...workflowKeys.list(query),
     keepPreviousData: true,
   });
 

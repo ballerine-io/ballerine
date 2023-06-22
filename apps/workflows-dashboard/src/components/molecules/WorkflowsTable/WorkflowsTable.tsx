@@ -71,9 +71,9 @@ export const WorkflowsTable = memo(({ items, isFetching }: Props) => {
                             minWidth: `${cell.column.getSize()}px`,
                           }}
                         >
-                          <p className="line-clamp-2 overflow-hidden text-ellipsis break-all">
+                          <div className="line-clamp-2 overflow-hidden text-ellipsis break-all">
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </p>
+                          </div>
                         </TableCell>
                       );
                     })}

@@ -54,6 +54,12 @@ export class WorkflowControllerExternal {
     return plainToClass(GetWorkflowsRuntimeResponseDto, results);
   }
 
+  @common.Get('/metrics')
+  @UseKeyAuthInDevGuard()
+  async listWorkflowRuntimeMetric() {
+    return await this.service.listWorkflowsMetrics();
+  }
+
   @common.Get('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
