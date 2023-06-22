@@ -1,4 +1,5 @@
 import { HealthIndicator } from '@app/components/atoms/HealthIndicator';
+import { formatDate } from '@app/components/molecules/WorkflowsTable/utils/format-date';
 import { IWorkflow, IWorkflowAssignee } from '@app/domains/workflows/api/workflow';
 import { getWorkflowHealthStatus } from '@app/utils/get-workflow-health-status';
 import { ColumnDef } from '@tanstack/react-table';
@@ -53,7 +54,7 @@ export const defaultColumns: ColumnDef<IWorkflow>[] = [
   },
   {
     accessorKey: 'resolvedAt',
-    cell: info => info.getValue<string>() || '-',
+    cell: info => (info.getValue<Date>() ? formatDate(info.getValue<Date>()) : '-'),
     header: 'Resolved At',
   },
   {
@@ -63,7 +64,8 @@ export const defaultColumns: ColumnDef<IWorkflow>[] = [
   },
   {
     accessorKey: 'createdAt',
-    cell: info => info.getValue<string>(),
+    cell: info => formatDate(info.getValue<Date>()),
     header: 'Created At',
+    size: 240,
   },
 ];
