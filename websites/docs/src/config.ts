@@ -68,15 +68,23 @@ export const SIDEBAR: Sidebar = {
         sections: [
           { text: `Introduction`, link: `introduction` },
           { text: `Gloassry`, link: `gloassry` },
-          { text: `Install`, link: `ui-flows` },
-          { text: `Deploy`, link: `ui-flows` },
+          { text: `Installation`, link: `installation` },
+          { text: `Deployment`, link: `deployment` },
         ],
       },
       {
         group: `Guides`,
         sections: [
           {
-            text: `Creating a KYC flow and deploying it`,
+            text: `KYB Workflow with External Integrations`,
+            link: `creating-a-kyc-flow-and-deploying-i`,
+          },
+          {
+            text: `Simple KYC workflow`,
+            link: `creating-a-kyc-flow-and-deploying-i`,
+          },
+          {
+            text: `Creating a KYC UI Flow`,
             link: `creating-a-kyc-flow-and-deploying-it`,
           },
         ],

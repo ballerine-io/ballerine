@@ -1,6 +1,6 @@
 ---
-title: Introduction
-description: Docs intro
+title: Gloassry
+description: This page provides a glossary of key terms and concepts related to the Ballerine project, offering brief explanations of the system components, processes, etc..
 layout: ../../../layouts/MainLayout.astro
 ---
 # Glossary
@@ -46,3 +46,46 @@ layout: ../../../layouts/MainLayout.astro
 - **Open Source**: A development approach where the source code of a software project is made freely available for anyone to view, use, modify, and distribute.
 
 Please note that this glossary provides a brief explanation of key terms related to Ballerine and may not cover all possible definitions or variations of the terms.
+
+
+## Glossary
+
+**1. Ballerine**: A case management system that allows businesses to optimize manual work, enhance teamwork, and monitor productivity.
+
+**2. Workflow**: A series of interconnected tasks in Ballerine that make up a process, like KYC (Know Your Customer) or document approval.
+
+**3. Case**: A specific instance of a workflow in Ballerine, representing a unique process for an individual enduser or business.
+
+**4. Task**: An individual operation or step within a workflow in Ballerine, such as document selection or review.
+
+**5. Event**: An occurrence in Ballerine that can initiate tasks, change the state of a case, or trigger workflows.
+
+**6. UI Component**: An element of the Ballerine user interface, designed to be versatile for various workflow needs.
+
+**7. State**: A snapshot of a case in Ballerine at a specific point in a workflow, helping track progression and manage tasks.
+
+**8. User**: An operator or employee managing and operating Ballerine for their organization, such as reviewing cases or making decisions.
+
+**9. Enduser**: The subject of a case in Ballerine, usually a customer or an individual entity undergoing the process outlined by a workflow.
+
+**10. Business**: A client entity in Ballerine, undergoing a series of tasks defined in the workflow, similar to an enduser but with potential for more complexity due to multiple associated individuals or documents.
+
+**11. Rules Engine**: A component of Ballerine that applies predefined business rules to automate decisions within workflows.
+
+**12. XState**: The library upon which Ballerine's workflows are built, providing state machine and statechart capabilities to model complex workflows.
+
+**13. Statecharts**: A method of modeling system behavior (workflows) in Ballerine, showing the interaction between states and transitions.
+
+**14. Document Review**: A task in Ballerine workflows where users review documents submitted by endusers or businesses.
+
+**15. Manual Review**: A process in Ballerine where users manually evaluate a case, potentially approving, rejecting, or asking for more information.
+
+**16. Selfie Review**: A task within certain Ballerine workflows where a selfie provided by an enduser is reviewed for validation purposes.
+
+**17. Final State**: The concluding state of a workflow in Ballerine, marking the completion of a case.
+
+**18. KYC (Know Your Customer)**: A type of workflow in Ballerine that verifies the identity of endusers, ensuring that they're real and legitimate entities.
+
+**19. KYB (Know Your Business)**: A type of workflow in Ballerine that verifies the legitimacy of a business, considering multiple UBOs, documents, and other collected information.
+
+**20. RBAC (Role-Based Access Control)**: A feature in Ballerine that limits system access to authorized users based on their roles within the organization.
