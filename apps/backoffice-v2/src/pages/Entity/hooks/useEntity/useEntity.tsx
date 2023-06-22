@@ -9,12 +9,13 @@ import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/us
 import {
   composePickableCategoryType,
   convertSnakeCaseToTitleCase,
-  isExistingSchemaForDocument,
   extractCountryCodeFromWorkflow,
-  omitPropsFromObject,
   getIsEditable,
+  isExistingSchemaForDocument,
+  omitPropsFromObject,
 } from './utils';
 import { getDocumentsByCountry } from '@ballerine/common';
+
 export const useEntity = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
@@ -42,10 +43,34 @@ export const useEntity = () => {
     base64?.replace(/application\/octet-stream/gi, fileType);
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
-  const contextEntity = workflow.context.entity;
-  const contextDocuments = workflow.context.documents;
+  const {
+    documents: contextDocuments,
+    entity: contextEntity,
+    pluginOutput,
+  } = workflow?.context ?? {};
+  const pluginOutputKeys = Object.keys(pluginOutput ?? {});
   const tasks = contextEntity
     ? [
+        ...(Object.keys(pluginOutput ?? {}).length === 0
+          ? []
+          : pluginOutputKeys
+              ?.filter(key => !!Object.keys(pluginOutput[key] ?? {})?.length)
+              ?.map(key => [
+                {
+                  id: 'nested-details-heading',
+                  type: 'heading',
+                  value: convertSnakeCaseToTitleCase(key),
+                },
+                {
+                  type: 'nestedDetails',
+                  value: {
+                    data: Object.entries(pluginOutput[key] ?? {})?.map(([title, value]) => ({
+                      title,
+                      value,
+                    })),
+                  },
+                },
+              ])),
         ...(contextDocuments?.map(
           (
             { id, type: docType, category, issuer, properties, propertiesSchema, decision },
