@@ -5,6 +5,7 @@ import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-wi
 import { Method, States } from '../../common/enums';
 import { IWorkflowId } from './interfaces';
 import qs from 'qs';
+import { zPropertyKey } from '../../lib/zod/utils/z-property-key/z-property-key';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -63,6 +64,7 @@ export const WorkflowByIdSchema = z.object({
     parentMachine: ObjectWithIdSchema.extend({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),
     }).optional(),
+    pluginsOutput: z.record(zPropertyKey, z.any()).optional(),
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),

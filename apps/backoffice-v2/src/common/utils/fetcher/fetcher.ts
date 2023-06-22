@@ -56,7 +56,7 @@ export const fetcher: IFetcher = async ({
 
   const [data, jsonError] = isBlob
     ? await handlePromise(res.blob())
-    : res.headers.get('content-length') > '0'
+    : !res.headers.get('content-length') || res.headers.get('content-length') > '0'
     ? await handlePromise(res.json())
     : [undefined, undefined];
 
