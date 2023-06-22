@@ -117,7 +117,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
       {
         name: 'business_data_vendor',
         logo: 'https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/649435882f9b2819873035d7_companyVendorLogo.png',
-        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/{api_url.url}.json',
+        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/{api_config.url_endpoint}.json',
         method: 'GET',
         stateNames: ['check_business_details'],
         successAction: 'API_CALL_SUCCESS',
