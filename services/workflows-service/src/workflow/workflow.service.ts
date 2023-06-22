@@ -325,6 +325,12 @@ export class WorkflowService {
     });
   }
 
+  async listFullWorkflowData() {
+    return await this.workflowRuntimeDataRepository.findMany({
+      include: { workflowDefinition: true },
+    });
+  }
+
   async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {
     const select = {
       id: true,
@@ -470,23 +476,23 @@ export class WorkflowService {
               status: 'active',
             },
           },
-          resolvedAt: isResolved ? new Date() : null,
+          resolvedAt: isResolved ? new Date().toISOString() : null,
         },
       });
     } else {
       updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
         data: {
           ...data,
-          resolvedAt: isResolved ? new Date() : null,
+          resolvedAt: isResolved ? new Date().toISOString() : null,
         },
       });
     }
 
     if (contextHasChanged) {
       this.workflowEventEmitter.emit('workflow.context.changed', {
-        runtimeData,
+        oldRuntimeData: runtimeData,
+        updatedRuntimeData: updatedResult,
         state: currentState as string,
-        context: mergedContext,
         entityId: (runtimeData.businessId || runtimeData.endUserId) as string,
         correlationId: correlationId,
       });
@@ -883,7 +889,7 @@ export class WorkflowService {
   ) {
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
 
-    const validate = ajv.compile((workflowDefinition?.contextSchema as any)?.schema); // TODO: fix type
+    const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate(context);
 
     if (isValid) return;
@@ -909,7 +915,7 @@ export class WorkflowService {
       runtimeData.workflowDefinitionId,
     );
 
-    const service = createWorkflow({
+    const service = await createWorkflow({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       definition: workflow.definition,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -918,6 +924,7 @@ export class WorkflowService {
         machineContext: runtimeData.context,
         state: runtimeData.state,
       },
+      extensions: workflow.extensions
     });
 
     await service.sendEvent({

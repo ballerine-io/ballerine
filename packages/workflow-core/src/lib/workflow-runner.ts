@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { AnyRecord, uniqueArray } from '@ballerine/common';
+import { uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { createMachine, interpret, assign } from 'xstate';
@@ -15,7 +15,8 @@ import { Error as ErrorEnum } from './types';
 import { JQTransformer } from './utils/context-transformers/qj-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import { StatePlugin } from './plugins/types';
-import { ApiPlugin, ApiPluginParams } from './plugins/external-plugin/api-plugin';
+import { ApiPlugin, IApiPluginParams } from './plugins/external-plugin/api-plugin';
+import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -31,6 +32,9 @@ export class WorkflowRunner {
     return this.#__workflow;
   }
 
+  public get context() {
+    return this.#__context;
+  }
   public get state() {
     return this.#__currentState;
   }
@@ -43,6 +47,7 @@ export class WorkflowRunner {
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
+
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
 
@@ -61,21 +66,28 @@ export class WorkflowRunner {
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
   }
 
-  initiateApiPlugins(apiPluginSchemas: ApiPluginParams[]) {
+  initiateApiPlugins(apiPluginSchemas: IApiPluginParams[]) {
     return apiPluginSchemas?.map(apiPluginSchema => {
       const requestTransformerLogic = apiPluginSchema.request.transform;
-      const responseTransformerLogic = apiPluginSchema.response.transform;
+      const requestSchema = apiPluginSchema.request.schema;
+      const responseTransformerLogic = apiPluginSchema.response?.transform;
+      const responseSchema = apiPluginSchema.response?.schema;
       const requestTransformer = this.fetchTransformer(requestTransformerLogic);
-      const responseTransformer = this.fetchTransformer(responseTransformerLogic);
+      const responseTransformer =
+        responseTransformerLogic && this.fetchTransformer(responseTransformerLogic);
+      const requestValidator = this.fetchValidator('json-schema', requestSchema);
+      const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
-      const apiPlugin = new ApiPlugin({
+      let isApiPlugin = this.isApiPlugin(apiPluginSchema);
+      const apiPluginClass = isApiPlugin ? ApiPlugin : WebhookPlugin;
+      const apiPlugin = new apiPluginClass({
         name: apiPluginSchema.name,
         stateNames: apiPluginSchema.stateNames,
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
-        request: { transform: requestTransformer },
-        response: { transform: responseTransformer },
-        validators: apiPluginSchema.validators,
+        headers: apiPluginSchema.headers,
+        request: { transformer: requestTransformer, schemaValidator: requestValidator },
+        response: { transformer: responseTransformer, schemaValidator: responseValidator },
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
       });
@@ -84,15 +96,20 @@ export class WorkflowRunner {
     });
   }
 
+  private isApiPlugin(apiPluginSchema: IApiPluginParams) {
+    return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
+  }
+
   fetchTransformer(transformer) {
-    if (transformer.transformer == 'jq') return new JQTransformer(transformer.transformationLogic);
+    if (transformer.transformer == 'jq') return new JQTransformer(transformer.mapping);
 
     throw new Error(`Transformer ${transformer.name} is not supported`);
   }
-  validateRequestBody(validator) {
-    if (validator.name === 'json-schema') return new JsonSchemaValidator(validator.validationLogic);
+  fetchValidator(validatorName, schema) {
+    if (!schema) return;
+    if (validatorName === 'json-schema') return new JsonSchemaValidator(schema);
 
-    throw new Error(`Validator ${validator.name} is not supported`);
+    throw new Error(`Validator ${validatorName} is not supported`);
   }
 
   #__handleAction({
@@ -155,30 +172,6 @@ export class WorkflowRunner {
         });
       }
     };
-  }
-
-  #__defineApiPluginsStatesAsEntryActions(definition: any, apiPlugins: any) {
-    for (const apiPlugin of apiPlugins) {
-      const apiCaller = callApi.bind(this, apiPlugin);
-
-      for (const stateName of apiPlugin.states) {
-        if (definition.states[stateName].entry) {
-          throw new Error('api plugins do not support state with a predefined entry action');
-        }
-
-        definition.states[stateName].entry = apiCaller;
-      }
-    }
-
-    function callApi(apiPlugin) {
-      fetch(apiPlugin.url, { method: apiPlugin.method, body: '' }).then(response => {
-        if (response.ok) {
-          this.sendEvent(apiPlugin.successAction);
-        } else {
-          this.sendEvent(apiPlugin.errorAction);
-        }
-      });
-    }
   }
 
   #__extendedWorkflow({
@@ -310,9 +303,14 @@ export class WorkflowRunner {
       for (const apiPlugin of this.#__extensions.apiPlugins) {
         if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
 
-        const result = await apiPlugin.callApi(this.#__context);
-        this.#__context = { ...this.#__context, ...{ result: result } };
-        await this.sendEvent('API_CALL_SUCCESS');
+        const { callbackAction, responseBody, error } = await apiPlugin.callApi(this.#__context);
+        if (!this.isApiPlugin(apiPlugin)) continue;
+
+        this.#__context.pluginsOutput = {
+          ...(this.#__context.pluginsOutput || {}),
+          ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
+        };
+        await this.sendEvent(callbackAction);
       }
     }
 

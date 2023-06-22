@@ -14,6 +14,8 @@ import defaultContextSchema from '@ballerine/common/src/schemas/documents/defaul
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
+import { generateDefinitionForE2eTest } from './workflows/e2e-example';
+import {generateDynamicDefinitionForE2eTest} from "./workflows/e2e-dynamic-url-example";
 
 if (require.main === module) {
   dotenv.config();
@@ -51,6 +53,8 @@ function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, 
 async function seed(bcryptSalt: Salt) {
   console.info('Seeding database...');
   const client = new PrismaClient();
+  await generateDefinitionForE2eTest(client);
+  await generateDynamicDefinitionForE2eTest(client);
   const users = [
     {
       email: 'agent1@ballerine.com',
@@ -387,7 +391,7 @@ async function seed(bcryptSalt: Salt) {
       config: {
         completedWhenTasksResolved: true,
         workflowLevelResolution: false,
-        allowMultipleWorkflows: true,
+        allowMultipleActiveWorkflows: true,
       },
       contextSchema: {
         type: 'json-schema',

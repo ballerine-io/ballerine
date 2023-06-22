@@ -1,17 +1,18 @@
 import { run } from 'node-jq';
-import { BaseContextTransformer, TContext, TTransformationLogic } from './types';
+import { BaseContextTransformer, TTransformationLogic } from './types';
+import { TContext } from '../types';
 
 export class JQTransformer extends BaseContextTransformer {
   name = 'jq-transformer';
-  transformationLogic: TTransformationLogic;
+  mapping: TTransformationLogic;
 
-  constructor(transformationLogic: TTransformationLogic) {
+  constructor(mapping: TTransformationLogic) {
     super();
-    this.transformationLogic = transformationLogic;
+    this.mapping = mapping;
   }
 
   async transform(context: TContext, options: {}) {
-    const response = await run(this.transformationLogic, context, options);
+    const response = await run(this.mapping, context, options);
 
     return response;
   }

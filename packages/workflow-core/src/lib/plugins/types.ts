@@ -1,4 +1,4 @@
-import { ApiPlugin } from "./external-plugin/api-plugin";
+import { ApiPlugin } from './external-plugin/api-plugin';
 
 export type PluginAction = { workflowId: string; context: any; event: any; state: any };
 

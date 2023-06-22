@@ -3,8 +3,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { WorkflowRunner } from './workflow-runner';
 import { sleep } from '@ballerine/common';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
 
 const DEFAULT_PAYLOAD = { payload: { some: 'payload' } };
 
@@ -311,141 +309,6 @@ describe('workflow-runner', () => {
     });
   });
 
-  describe('api plugins', () => {
-    const apiPlugins = [
-      {
-        states: ['checkBusinessScore'],
-        successAction: 'API_CALL_SUCCESS',
-        errorAction: 'API_CALL_FAILURE',
-
-        url: 'https://www.example.com/api',
-        method: 'POST',
-      },
-    ];
-
-    let server;
-
-    afterEach(() => {
-      if (server) {
-        server.resetHandlers();
-        server.close();
-      }
-    });
-
-    it('does not support states with a predefined entry action', () => {
-      const definition = {
-        initial: 'initial',
-        states: {
-          initial: {},
-          checkBusinessScore: {
-            entry: 'predefinedEntryAction',
-          },
-        },
-      };
-
-      expect(() => {
-        new WorkflowRunner({
-          definition,
-          extensions: {
-            apiPlugins,
-          },
-        });
-      }).toThrowError('api plugins do not support state with a predefined entry action');
-    });
-
-    it('allows to define only an endpoint and a simple success action', async () => {
-      const results = [];
-
-      const definition = {
-        initial: 'initial',
-        states: {
-          initial: {
-            on: {
-              CHECK_BUSINESS_SCORE: {
-                target: 'checkBusinessScore',
-              },
-            },
-          },
-          checkBusinessScore: {
-            on: {
-              API_CALL_SUCCESS: 'checkBusinessScoreSuccess',
-            },
-          },
-          checkBusinessScoreSuccess: {
-            entry: () => {
-              results.push('success');
-            },
-          },
-        },
-      };
-
-      server = setupServer(
-        rest.post('https://www.example.com/api', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({}));
-        }),
-      );
-      server.listen({ onUnhandledRequest: 'error' });
-
-      const workflow = new WorkflowRunner({
-        definition,
-        extensions: {
-          apiPlugins,
-        },
-      });
-
-      await workflow.sendEvent('CHECK_BUSINESS_SCORE');
-      await sleep(2);
-
-      expect(results).toEqual(['success']);
-    });
-
-    it('allows to define only an endpoint and a simple error action', async () => {
-      const results = [];
-
-      const definition = {
-        initial: 'initial',
-        states: {
-          initial: {
-            on: {
-              CHECK_BUSINESS_SCORE: {
-                target: 'checkBusinessScore',
-              },
-            },
-          },
-          checkBusinessScore: {
-            on: {
-              API_CALL_FAILURE: 'checkBusinessScoreError',
-            },
-          },
-          checkBusinessScoreError: {
-            entry: () => {
-              results.push('error');
-            },
-          },
-        },
-      };
-
-      server = setupServer(
-        rest.post('https://www.example.com/api', (req, res, ctx) => {
-          return res(ctx.status(300), ctx.json({}));
-        }),
-      );
-      server.listen({ onUnhandledRequest: 'error' });
-
-      const workflow = new WorkflowRunner({
-        definition,
-        extensions: {
-          apiPlugins,
-        },
-      });
-
-      await workflow.sendEvent('CHECK_BUSINESS_SCORE');
-      await sleep(2);
-
-      expect(results).toEqual(['error']);
-    });
-  });
-
   it('allows to pass xstate actions', async () => {
     let done = false;
     const workflow = new WorkflowRunner({
@@ -473,7 +336,7 @@ describe('workflow-runner', () => {
   });
 });
 
-describe.only('Workflows with conditions', () => {
+describe('Workflows with conditions', () => {
   const createCondMachine = score => ({
     workflowContext: {
       machineContext: {

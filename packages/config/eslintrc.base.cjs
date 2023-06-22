@@ -17,9 +17,6 @@ module.exports = {
   rules: {
     'no-unused-vars': 'off', // We use the unused-imports plugin instead
     'unused-imports/no-unused-imports': 'error',
-    'unused-imports/no-unused-vars': [
-      'warn',
-      { vars: 'all', args: 'after-used' },
-    ],
+    'unused-imports/no-unused-vars': ['warn', { vars: 'all', args: 'after-used' }],
   },
 };

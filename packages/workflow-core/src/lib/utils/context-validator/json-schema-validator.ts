@@ -4,11 +4,11 @@ import { AnyRecord } from '@ballerine/common';
 
 export class JsonSchemaValidator extends BaseSchemaValidator {
   name = 'json-schema-validator';
-  validationLogic: TValidationLogic;
+  schema: TValidationLogic;
 
-  constructor(validationLogic: TValidationLogic) {
+  constructor(schema: TValidationLogic) {
     super();
-    this.validationLogic = validationLogic;
+    this.schema = schema;
   }
   async validate(
     data: AnyRecord,
@@ -16,7 +16,7 @@ export class JsonSchemaValidator extends BaseSchemaValidator {
     errorMessage?: string,
   ): TSchemaValidatorResponse {
     const validator = new Ajv(options);
-    const validationResult = validator.validate(this.validationLogic, data);
+    const validationResult = validator.validate(this.schema, data);
 
     if (!validationResult) {
       const validationErrorMessage = validator.errors?.map(error => error.message).join(' | ');
