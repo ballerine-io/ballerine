@@ -14,9 +14,35 @@ The workflow we're going to use is predefined, meaning it is already inserted in
 This workflow is defined using a statechart definition implemented under the hood with [XState](https://xstate.js.org/docs/). If you're unfamiliar with state machines or XState, we recommend reviewing the XState documentation for a detailed explanation.
 
 Here is the complete workflow definition:
+(See the full file on GitHub [add link])
 
 ```json
-... [the complete workflow json] ...
+{
+  "id": "dynamic_external_request_example",
+  "name": "dynamic_external_request_example",
+  "version": 1,
+  "definitionType": "statechart-json",
+  "definition": {
+    "id": "kyb_example_v1",
+    "initial": "idle",
+    "states": {
+      "idle": {
+        "on": {
+          "start": "check_business_details"
+        }
+      },
+      "check_business_details": { ... },
+      "manual_review": { ... },
+      "auto_approve": { ... },
+      "auto_reject": { ... },
+      "reject": { ... },
+      "approve": { ... },
+      "revision": { ... }
+    }
+  },
+  "extensions": { ... }
+}
+
 ```
 
 Let's break down some crucial parts:

@@ -1439,14 +1439,14 @@ importers:
         specifier: ^4.13.1
         version: 4.16.0
       '@astrojs/mdx':
-        specifier: 0.18.4
-        version: 0.18.4(astro@2.6.6)(rollup@2.70.2)
+        specifier: 0.19.7
+        version: 0.19.7(astro@2.6.6)
       '@astrojs/react':
         specifier: ^2.2.1
         version: 2.2.1(@types/react-dom@18.0.11)(@types/react@17.0.53)(react-dom@18.2.0)(react@18.2.0)
       '@astrojs/solid-js':
         specifier: ^1.2.3
-        version: 1.2.3(@babel/core@7.22.5)(solid-js@1.6.15)(vite@3.2.5)
+        version: 1.2.3(@babel/core@7.22.5)(solid-js@1.6.15)
       '@astrojs/tailwind':
         specifier: ^4.0.0
         version: 4.0.0(astro@2.6.6)(tailwindcss@3.2.7)(ts-node@10.9.1)
@@ -1471,12 +1471,18 @@ importers:
       astro:
         specifier: ^2.6.6
         version: 2.6.6(@types/node@18.15.10)
+      mdx@latest:
+        specifier: link:@@astrojs/mdx@latest
+        version: link:@@astrojs/mdx@latest
       react:
         specifier: ^18.2.0
         version: 18.2.0
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      shiki:
+        specifier: ^0.14.2
+        version: 0.14.2
       solid-js:
         specifier: ^1.4.3
         version: 1.6.15
@@ -1798,7 +1804,7 @@ packages:
       remark-parse: 10.0.1
       remark-rehype: 10.1.0
       remark-smartypants: 2.0.0
-      shiki: 0.14.1
+      shiki: 0.14.2
       unified: 10.1.2
       unist-util-visit: 4.1.2
       vfile: 5.3.7
@@ -1806,31 +1812,30 @@ packages:
       - supports-color
     dev: false
 
-  /@astrojs/mdx@0.18.4(astro@2.6.6)(rollup@2.70.2):
-    resolution: {integrity: sha512-yLlHF74oBtCCPnCY4LBios3OrXc97IXIBVOWuyXxmNwAYMA4xIfClN2YP9cFQJITDI/d80qrANzQLQInUNKlHA==}
+  /@astrojs/mdx@0.19.7(astro@2.6.6):
+    resolution: {integrity: sha512-mfEbBD7oi8yBHhcJucEjnrquREkJ3os+jioURP8BR2B8tOV2rV2j8trvmLUgfS+P/+HevGObxCTjcRYxn6T7eg==}
     engines: {node: '>=16.12.0'}
     dependencies:
       '@astrojs/markdown-remark': 2.2.1(astro@2.6.6)
       '@astrojs/prism': 2.1.2
       '@mdx-js/mdx': 2.3.0
-      '@mdx-js/rollup': 2.3.0(rollup@2.70.2)
       acorn: 8.8.2
       es-module-lexer: 1.2.0
       estree-util-visit: 1.2.1
       github-slugger: 1.5.0
       gray-matter: 4.0.3
+      hast-util-to-html: 8.0.4
       kleur: 4.1.5
       rehype-raw: 6.1.1
       remark-frontmatter: 4.0.1
       remark-gfm: 3.0.1
       remark-smartypants: 2.0.0
-      shiki: 0.11.1
+      shiki: 0.14.2
       source-map: 0.7.4
       unist-util-visit: 4.1.2
       vfile: 5.3.7
     transitivePeerDependencies:
       - astro
-      - rollup
       - supports-color
     dev: false
 
@@ -1860,7 +1865,7 @@ packages:
       - supports-color
     dev: false
 
-  /@astrojs/solid-js@1.2.3(@babel/core@7.22.5)(solid-js@1.6.15)(vite@3.2.5):
+  /@astrojs/solid-js@1.2.3(@babel/core@7.22.5)(solid-js@1.6.15):
     resolution: {integrity: sha512-YyWQVcIeUMGKTnK3myXmBrG6dfYL5qiQNn8fv50jV0nPgahLeSUTIVxtt5WtqmbFr5kGTwDyk63TZoUvCUWJXA==}
     engines: {node: ^14.18.0 || >=16.12.0}
     peerDependencies:
@@ -1868,10 +1873,9 @@ packages:
     dependencies:
       babel-preset-solid: 1.6.13(@babel/core@7.22.5)
       solid-js: 1.6.15
-      vitefu: 0.2.4(vite@3.2.5)
+      vitefu: 0.2.4(vite@4.2.1)
     transitivePeerDependencies:
       - '@babel/core'
-      - vite
     dev: false
 
   /@astrojs/tailwind@4.0.0(astro@2.6.6)(tailwindcss@3.2.7)(ts-node@10.9.1):
@@ -8021,20 +8025,6 @@ packages:
       react: 18.2.0
     dev: true
 
-  /@mdx-js/rollup@2.3.0(rollup@2.70.2):
-    resolution: {integrity: sha512-wLvRfJS/M4UmdqTd+WoaySEE7q4BIejYf1xAHXYvtT1du/1Tl/z2450Gg2+Hu7fh05KwRRiehiTP9Yc/Dtn0fA==}
-    peerDependencies:
-      rollup: '>=2'
-    dependencies:
-      '@mdx-js/mdx': 2.3.0
-      '@rollup/pluginutils': 5.0.2(rollup@2.70.2)
-      rollup: 2.70.2
-      source-map: 0.7.4
-      vfile: 5.3.7
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
   /@microsoft/api-extractor-model@7.26.4(@types/node@18.15.10):
     resolution: {integrity: sha512-PDCgCzXDo+SLY5bsfl4bS7hxaeEtnXj7XtuzEE+BtALp7B5mK/NrS2kHWU69pohgsRmEALycQdaQPXoyT2i5MQ==}
     dependencies:
@@ -13019,7 +13009,7 @@ packages:
       rehype: 12.0.1
       semver: 7.3.8
       server-destroy: 1.0.1
-      shiki: 0.14.1
+      shiki: 0.14.2
       slash: 4.0.0
       string-width: 5.1.2
       strip-ansi: 7.0.1
@@ -23312,16 +23302,8 @@ packages:
       rechoir: 0.6.2
     dev: true
 
-  /shiki@0.11.1:
-    resolution: {integrity: sha512-EugY9VASFuDqOexOgXR18ZV+TbFrQHeCpEYaXamO+SZlsnT/2LxuLBX25GGtIrwaEVFXUAbUQ601SWE2rMwWHA==}
-    dependencies:
-      jsonc-parser: 3.2.0
-      vscode-oniguruma: 1.7.0
-      vscode-textmate: 6.0.0
-    dev: false
-
-  /shiki@0.14.1:
-    resolution: {integrity: sha512-+Jz4nBkCBe0mEDqo1eKRcCdjRtrCjozmcbTUjbPTX7OOJfEbTZzlUWlZtGe3Gb5oV1/jnojhG//YZc3rs9zSEw==}
+  /shiki@0.14.2:
+    resolution: {integrity: sha512-ltSZlSLOuSY0M0Y75KA+ieRaZ0Trf5Wl3gutE7jzLuIcWxLp5i/uEnLoQWNvgKXQ5OMpGkJnVMRLAuzjc0LJ2A==}
     dependencies:
       ansi-sequence-parser: 1.1.0
       jsonc-parser: 3.2.0
@@ -24908,7 +24890,7 @@ packages:
       lunr: 2.3.9
       marked: 4.3.0
       minimatch: 7.4.3
-      shiki: 0.14.1
+      shiki: 0.14.2
       typescript: 4.9.5
     dev: true
 
@@ -25577,17 +25559,6 @@ packages:
       fsevents: 2.3.2
     dev: false
 
-  /vitefu@0.2.4(vite@3.2.5):
-    resolution: {integrity: sha512-fanAXjSaf9xXtOOeno8wZXIhgia+CZury481LsDaV++lSvcU2R9Ch2bPh3PYFyoHW+w9LqAeYRISVQjUIew14g==}
-    peerDependencies:
-      vite: ^3.0.0 || ^4.0.0
-    peerDependenciesMeta:
-      vite:
-        optional: true
-    dependencies:
-      vite: 3.2.5(@types/node@18.15.10)
-    dev: false
-
   /vitefu@0.2.4(vite@4.2.1):
     resolution: {integrity: sha512-fanAXjSaf9xXtOOeno8wZXIhgia+CZury481LsDaV++lSvcU2R9Ch2bPh3PYFyoHW+w9LqAeYRISVQjUIew14g==}
     peerDependencies:
@@ -25597,7 +25568,6 @@ packages:
         optional: true
     dependencies:
       vite: 4.2.1(@types/node@18.15.10)
-    dev: true
 
   /vitefu@0.2.4(vite@4.3.9):
     resolution: {integrity: sha512-fanAXjSaf9xXtOOeno8wZXIhgia+CZury481LsDaV++lSvcU2R9Ch2bPh3PYFyoHW+w9LqAeYRISVQjUIew14g==}
@@ -25825,10 +25795,6 @@ packages:
 
   /vscode-oniguruma@1.7.0:
     resolution: {integrity: sha512-L9WMGRfrjOhgHSdOYgCt/yRMsXzLDJSL7BPrOZt73gU0iWO4mpqzqQzOz5srxqTvMBaR0XZTSrVWo4j55Rc6cA==}
-
-  /vscode-textmate@6.0.0:
-    resolution: {integrity: sha512-gu73tuZfJgu+mvCSy4UZwd2JXykjK9zAZsfmDeut5dx/1a7FeTk0XwJsSuqQn+cuMCGVbIBfl+s53X4T19DnzQ==}
-    dev: false
 
   /vscode-textmate@8.0.0:
     resolution: {integrity: sha512-AFbieoL7a5LMqcnOF04ji+rpXadgOXnZsxQr//r83kLPr7biP7am3g9zbaZIaBGwBRWeSvoMD4mgPdX3e4NWBg==}

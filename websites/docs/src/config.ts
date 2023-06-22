@@ -80,7 +80,7 @@ export const SIDEBAR: Sidebar = {
             link: `simple-kyb-guide`,
           },
           {
-            text: `Simple KYC workflow`,
+            text: `1111Simple KYC workflow`,
             link: `creating-a-kyc-flow-and-deploying-i`,
           },
           {
