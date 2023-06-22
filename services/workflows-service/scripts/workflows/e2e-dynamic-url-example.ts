@@ -34,12 +34,12 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                           { var: 'response.data.registered_name' },
                         ],
                       },
-                      {
-                        '>=': [
-                          0.8,
-                          { var: 'context.external_request_example.data.name_fuzziness_score' },
-                        ],
-                      },
+                      // {
+                      //   '>=': [
+                      //     { var: 'context.external_request_example.data.name_fuzziness_score' },
+                      //     0.91,
+                      //   ],
+                      // },
                     ],
                   },
                 },
