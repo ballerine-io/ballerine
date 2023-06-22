@@ -924,7 +924,7 @@ export class WorkflowService {
         machineContext: runtimeData.context,
         state: runtimeData.state,
       },
-      extensions: workflow.extensions
+      extensions: workflow.extensions,
     });
 
     await service.sendEvent({

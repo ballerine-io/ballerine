@@ -75,7 +75,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                 type: 'json-logic',
                 options: {
                   rule: {
-                    '>=': [{var: 'pluginsOutput.external_request_example.httpStatus'}, 400],
+                    '>=': [{ var: 'pluginsOutput.external_request_example.httpStatus' }, 400],
                   },
                 },
               },

@@ -53,7 +53,10 @@ export const kybWithExternalRequestWorkflowExample = {
               cond: {
                 type: 'json-logic',
                 rule: {
-                  '<': [{ var: 'context.external_request_example.data.name_fuzzy_logic_score' }, 0.5],
+                  '<': [
+                    { var: 'context.external_request_example.data.name_fuzzy_logic_score' },
+                    0.5,
+                  ],
                 },
               },
             },
