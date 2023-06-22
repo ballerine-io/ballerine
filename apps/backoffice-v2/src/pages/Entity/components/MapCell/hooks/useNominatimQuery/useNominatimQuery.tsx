@@ -13,7 +13,12 @@ export const useNominatimQuery = ({
 }) => {
   return useQuery({
     queryKey: ['nominatim', 'search', { country, city, street }],
-    queryFn: fetchNominatimSearch,
+    queryFn: () =>
+      fetchNominatimSearch({
+        country,
+        city,
+        street,
+      }),
     staleTime: Infinity,
     refetchInterval: false,
     enabled:

@@ -15,6 +15,7 @@ import {
   omitPropsFromObject,
 } from './utils';
 import { getDocumentsByCountry } from '@ballerine/common';
+import { getAddressDeep } from './utils/get-address-deep/get-address-deep';
 
 export const useEntity = () => {
   const { entityId } = useParams();
@@ -45,22 +46,11 @@ export const useEntity = () => {
   const caseState = useCaseState(session?.user, workflow);
   const {
     documents: contextDocuments,
-    // entity: contextEntity,
-    entity,
+    entity: contextEntity,
     pluginsOutput,
   } = workflow?.context ?? {};
-  const contextEntity = {
-    ...entity,
-    data: {
-      ...entity?.data,
-      address: {
-        country: 'USA',
-        city: 'New York',
-        street: 'Wall Street',
-      },
-    },
-  };
   const pluginsOutputKeys = Object.keys(pluginsOutput ?? {});
+  const address = getAddressDeep(pluginsOutput);
   const tasks = contextEntity
     ? [
         ...(Object.keys(pluginsOutput ?? {}).length === 0
@@ -228,7 +218,7 @@ export const useEntity = () => {
                 },
               },
             ],
-        Object.keys(contextEntity?.data?.address ?? {}) === 0
+        Object.keys(address ?? {})?.length === 0
           ? []
           : [
               {
@@ -244,18 +234,16 @@ export const useEntity = () => {
                     type: 'details',
                     value: {
                       title: `${toStartCase(contextEntity?.type)} Address`,
-                      data: Object.entries(contextEntity?.data?.address ?? {})?.map(
-                        ([title, value]) => ({
-                          title,
-                          value,
-                          isEditable: false,
-                        }),
-                      ),
+                      data: Object.entries(address ?? {})?.map(([title, value]) => ({
+                        title,
+                        value,
+                        isEditable: false,
+                      })),
                     },
                   },
                   {
                     type: 'map',
-                    value: contextEntity?.data?.address,
+                    value: address,
                   },
                 ],
               },
