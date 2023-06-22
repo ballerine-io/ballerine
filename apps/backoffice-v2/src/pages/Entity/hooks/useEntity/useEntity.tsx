@@ -46,15 +46,15 @@ export const useEntity = () => {
   const {
     documents: contextDocuments,
     entity: contextEntity,
-    pluginOutput,
+    pluginsOutput,
   } = workflow?.context ?? {};
-  const pluginOutputKeys = Object.keys(pluginOutput ?? {});
+  const pluginsOutputKeys = Object.keys(pluginsOutput ?? {});
   const tasks = contextEntity
     ? [
-        ...(Object.keys(pluginOutput ?? {}).length === 0
+        ...(Object.keys(pluginsOutput ?? {}).length === 0
           ? []
-          : pluginOutputKeys
-              ?.filter(key => !!Object.keys(pluginOutput[key] ?? {})?.length)
+          : pluginsOutputKeys
+              ?.filter(key => !!Object.keys(pluginsOutput[key] ?? {})?.length)
               ?.map(key => [
                 {
                   id: 'nested-details-heading',
@@ -64,7 +64,7 @@ export const useEntity = () => {
                 {
                   type: 'nestedDetails',
                   value: {
-                    data: Object.entries(pluginOutput[key] ?? {})?.map(([title, value]) => ({
+                    data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
                       title,
                       value,
                     })),

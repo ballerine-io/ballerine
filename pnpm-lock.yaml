@@ -164,6 +164,9 @@ importers:
       react-router-dom:
         specifier: ^6.11.2
         version: 6.11.2(react-dom@18.2.0)(react@18.2.0)
+      react-zoom-pan-pinch:
+        specifier: ^3.0.8
+        version: 3.0.8(react-dom@18.2.0)(react@18.2.0)
       tailwind-merge:
         specifier: ^1.10.0
         version: 1.10.0
@@ -22866,6 +22869,17 @@ packages:
       invariant: 2.2.4
       react: 18.2.0
       tslib: 2.5.2
+    dev: false
+
+  /react-zoom-pan-pinch@3.0.8(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-z6O5SV5X+XBo/LLO59PgzNE2WT+tp8lw1w3M0y138jCXViwHWKK1MqorICbmSVSOOD5Fa2o6pcg1ppJj9vzqJA==}
+    engines: {node: '>=8', npm: '>=5'}
+    peerDependencies:
+      react: '*'
+      react-dom: '*'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /react@18.2.0:
