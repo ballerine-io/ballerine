@@ -86,7 +86,6 @@ async function main() {
     defaultVersion: '1',
   });
 
-  if (env.NODE_ENV === 'local') {
     const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
 
     /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
@@ -99,7 +98,6 @@ async function main() {
     });
 
     SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
-  }
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
