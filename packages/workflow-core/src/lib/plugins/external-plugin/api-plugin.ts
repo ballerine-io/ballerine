@@ -136,11 +136,27 @@ export class ApiPlugin {
     placeholders.forEach(placeholder => {
       const variableKey = placeholder.replace(/{|}/g, '');
       const isPlaceholderSecret = variableKey.includes('secret.');
-      const placeholderValue = isPlaceholderSecret ? `${process.env[variableKey.replace('secret.','')]}`:`${context[variableKey]}`;
+      const placeholderValue = isPlaceholderSecret ?
+        `${process.env[variableKey.replace('secret.','')]}`:
+        `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
       replacedContent = replacedContent.replace(placeholder, placeholderValue);
     });
 
     return replacedContent;
   }
 
+  fetchObjectPlaceholderValue(record: AnyRecord, path: string) {
+    let pathToValue = path.split('.');
+
+    return pathToValue.reduce((acc: unknown, pathKey: string) => {
+      if (typeof acc === 'object' && acc !== null && acc.hasOwnProperty(pathKey)) {
+        return (acc as AnyRecord)[pathKey];
+      } else {
+        return undefined;
+      }
+    }, record as unknown);
+  }
 }
+
+
+

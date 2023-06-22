@@ -116,7 +116,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
     apiPlugins: [
       {
         name: 'external_request_example',
-        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/{api_url}.json',
+        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/{api_url.url}.json',
         method: 'GET',
         stateNames: ['check_business_details'],
         successAction: 'API_CALL_SUCCESS',
