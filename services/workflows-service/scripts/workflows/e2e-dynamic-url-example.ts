@@ -27,10 +27,18 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                 type: 'json-logic',
                 options: {
                   rule: {
-                    '==': [
-                      { var: 'entity.data.companyName' },
+                    or: [
                       {
-                        var: 'pluginsOutput.business_data_vendor.business_details.registered_name',
+                        '==': [
+                          { var: 'context.entity.companyName' },
+                          { var: 'response.data.registered_name' },
+                        ],
+                      },
+                      {
+                        '>=': [
+                          { var: 'context.external_request_example.data.name_fuzziness_score' },
+                          0.9,
+                        ],
                       },
                     ],
                   },
@@ -43,10 +51,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                 type: 'json-logic',
                 options: {
                   rule: {
-                    '>': [
-                      { var: 'pluginsOutput.business_data_vendor.name_fuzziness_score' },
-                      0.5,
-                    ],
+                    '>': [{ var: 'pluginsOutput.business_data_vendor.name_fuzziness_score' }, 0.5],
                   },
                   onFailed: { manualReviewReason: 'name not matching ... ' },
                 },
@@ -161,7 +166,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                     type: 'string',
                   },
                   address: {
-                    type: 'string',
+                    type: 'object',
                   },
                   contact_number: {
                     type: 'string',
@@ -179,7 +184,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
       },
       {
         name: 'finish_webhook',
-        url: 'https://webhook.site/9cc6adb9-6409-4955-95c7-cb02b9a8e9a1',
+        url: 'https://webhook.site/3c48b14f-1a70-4f73-9385-fab2d0db0db8',
         method: 'POST',
         stateNames: ['auto_approve', 'approve', 'reject'],
         headers: {
@@ -188,13 +193,13 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         request: {
           transform: {
             transformer: 'jq',
-            mapping: '{apiOutput: .pluginsOutput .business_data_vendor}',
+            mapping: '{success_result: .pluginsOutput .business_data_vendor}',
           },
         },
       },
       {
         name: 'fail_webhook',
-        url: 'https://webhook.site/9cc6adb9-6409-4955-95c7-cb02b9a8e9a1',
+        url: 'https://webhook.site/3c48b14f-1a70-4f73-9385-fab2d0db0db8',
         method: 'POST',
         stateNames: ['auto_reject'],
         request: {
