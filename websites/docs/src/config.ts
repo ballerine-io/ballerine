@@ -41,7 +41,7 @@ export const GITHUB_REPO_URL = `https://github.com/ballerine-io/ballerine/`;
 
 export const TWITTER_URL = `https://twitter.com/ballerine_io`;
 
-export const EMAIL_ADDRESS = `oss@ballerine.io`;
+export const EMAIL_ADDRESS = `oss@ballerine.com`;
 
 // See "Algolia" section of the README for more information.
 export const ALGOLIA = {
@@ -65,21 +65,49 @@ export const SIDEBAR: Sidebar = {
     learn: [
       {
         group: `Getting started`,
-        sections: [{ text: `UI Flows`, link: `ui-flows` }],
-      },
-      {
-        group: `Start Here`,
         sections: [
           { text: `Introduction`, link: `introduction` },
-          {
-            text: `Style Guidelines`,
-            link: `style-guidelines`,
-          },
-          { text: `Contributing`, link: `contributing` },
+          { text: `Gloassry`, link: `gloassry` },
+          { text: `Installation`, link: `installation` },
+          { text: `Deployment`, link: `deployment` },
         ],
       },
       {
-        group: `Basics`,
+        group: `Guides`,
+        sections: [
+          {
+            text: `KYB Workflow with External Integrations`,
+            link: `simple-kyb-guide`,
+          },
+          {
+            text: `Creating a KYC UI Flow`,
+            link: `creating-a-kyc-flow-and-deploying-it`,
+          },
+        ],
+      },
+      {
+        group: `Workflows`,
+        sections: [
+          {
+            text: `Understanding Workflows`,
+            link: `understanding_workflows`,
+          },
+          {
+            text: `Workflow Definitions`,
+            link: `workflow_definitions`,
+          },
+          {
+            text: `Interacting with Workflows`,
+            link: `interacting_with_workflows`,
+          },
+        ],
+      },
+      // {
+      //   group: `Case Managment`,
+      //   sections: [],
+      // },
+      {
+        group: `UI SDK's`,
         sections: [
           { text: `SDK Events`, link: `sdk-events` },
           { text: `SDK Backend Configuration`, link: `sdk-backend-configuration` },
@@ -97,15 +125,18 @@ export const SIDEBAR: Sidebar = {
           },
         ],
       },
+
       {
-        group: `Guides`,
+        group: `Contributing`,
         sections: [
           {
-            text: `Creating a KYC flow and deploying it`,
-            link: `creating-a-kyc-flow-and-deploying-it`,
+            text: `Style Guidelines`,
+            link: `style-guidelines`,
           },
+          { text: `Contributing`, link: `contributing` },
         ],
       },
+
       {
         group: `Examples`,
         sections: [

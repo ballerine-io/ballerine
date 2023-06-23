@@ -14,6 +14,7 @@ import defaultContextSchema from '@ballerine/common/src/schemas/documents/defaul
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
+import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 
 if (require.main === module) {
   dotenv.config();
@@ -36,17 +37,22 @@ const persistImageFile = async (client: PrismaClient, uri: string) => {
   return file.id;
 };
 
-function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number) {
+function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, pdf = false) {
+  if (pdf) {
+    return `https://backoffice-demo.ballerine.app/images/mock-documents/set_1_doc_pdf.pdf`;
+  }
+
   if (countOfBusiness < 4) {
     return `https://backoffice-demo.ballerine.app/images/mock-documents/${imageTemplate}`;
-  } else {
-    return faker.image.people(1000, 2000, true);
   }
+
+  return faker.image.people(1000, 2000, true);
 }
 
 async function seed(bcryptSalt: Salt) {
   console.info('Seeding database...');
   const client = new PrismaClient();
+  await generateDynamicDefinitionForE2eTest(client);
   const users = [
     {
       email: 'agent1@ballerine.com',
@@ -113,7 +119,11 @@ async function seed(bcryptSalt: Salt) {
       `set_${countOfBusiness}_doc_face.png`,
       countOfBusiness,
     );
-    const imageUri3 = generateAvatarImageUri(`set_${countOfBusiness}_selfie.png`, countOfBusiness);
+    const imageUri3 = generateAvatarImageUri(
+      `set_${countOfBusiness}_selfie.png`,
+      countOfBusiness,
+      true,
+    );
 
     const mockData = {
       entity: {
@@ -180,12 +190,12 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            userNationalId: generateUserNationalId(),
+            nationalIdNumber: generateUserNationalId(),
             docNumber: faker.finance.account(9),
-            userAddress: faker.address.streetAddress(),
-            website: faker.internet.url(),
-            expiryDate: faker.date.future(10).toISOString().split('T')[0],
-            email: faker.internet.email(),
+            employeeName: faker.name.fullName(),
+            position: faker.name.jobTitle(),
+            salaryAmount: faker.finance.amount(1000, 10000),
+            issuingDate: faker.date.past(10).toISOString().split('T')[0],
           },
         },
         {
@@ -213,12 +223,12 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            userNationalId: generateUserNationalId(),
+            nationalIdNumber: generateUserNationalId(),
             docNumber: faker.finance.account(9),
-            userAddress: faker.address.streetAddress(),
-            website: faker.internet.url(),
-            expiryDate: faker.date.future(10).toISOString().split('T')[0],
-            email: faker.internet.email(),
+            employeeName: faker.name.fullName(),
+            position: faker.name.jobTitle(),
+            salaryAmount: faker.finance.amount(1000, 10000),
+            issuingDate: faker.date.past(10).toISOString().split('T')[0],
           },
         },
       ],
@@ -240,6 +250,7 @@ async function seed(bcryptSalt: Salt) {
     const imageUri3 = generateAvatarImageUri(
       `set_${countOfIndividual}_selfie.png`,
       countOfIndividual,
+      true,
     );
 
     const mockData = {
@@ -262,12 +273,12 @@ async function seed(bcryptSalt: Salt) {
       documents: [
         {
           id: faker.datatype.uuid(),
-          category: 'ID',
+          category: 'id',
           type: 'photo',
           issuer: {
             type: 'government',
             name: 'Government',
-            country: faker.address.country(),
+            country: 'CA',
             city: faker.address.city(),
             additionalInfo: { customParam: 'customValue' },
           },
@@ -299,22 +310,26 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            userNationalId: generateUserNationalId(),
-            docNumber: faker.finance.account(9),
-            userAddress: faker.address.streetAddress(),
-            website: faker.internet.url(),
-            expiryDate: faker.date.future(10).toISOString().split('T')[0],
-            email: faker.internet.email(),
+            firstName: faker.name.firstName(),
+            middleName: faker.name.firstName(),
+            lastName: faker.name.lastName(),
+            authority: faker.company.name(),
+            placeOfIssue: faker.address.city(),
+            issueDate: faker.date.past(10).toISOString().split('T')[0],
+            expires: faker.date.future(10).toISOString().split('T')[0],
+            dateOfBirth: faker.date.past(20).toISOString().split('T')[0],
+            placeOfBirth: faker.address.city(),
+            sex: faker.helpers.arrayElement(['male', 'female', 'other']),
           },
         },
         {
           id: faker.datatype.uuid(),
           category: 'selfie',
-          type: 'certificate',
+          type: 'photo',
           issuer: {
             type: 'government',
             name: 'Government',
-            country: faker.address.country(),
+            country: 'CA',
             city: faker.address.city(),
             additionalInfo: { customParam: 'customValue' },
           },
@@ -332,12 +347,16 @@ async function seed(bcryptSalt: Salt) {
             },
           ],
           properties: {
-            userNationalId: generateUserNationalId(),
-            docNumber: faker.finance.account(9),
-            userAddress: faker.address.streetAddress(),
-            website: faker.internet.url(),
-            expiryDate: faker.date.future(10).toISOString().split('T')[0],
-            email: faker.internet.email(),
+            firstName: faker.name.firstName(),
+            middleName: faker.name.firstName(),
+            lastName: faker.name.lastName(),
+            authority: faker.company.name(),
+            placeOfIssue: faker.address.city(),
+            issueDate: faker.date.past(10).toISOString().split('T')[0],
+            expires: faker.date.future(10).toISOString().split('T')[0],
+            dateOfBirth: faker.date.past(20).toISOString().split('T')[0],
+            placeOfBirth: faker.address.city(),
+            sex: faker.helpers.arrayElement(['male', 'female', 'other']),
           },
         },
       ],
@@ -370,6 +389,7 @@ async function seed(bcryptSalt: Salt) {
       config: {
         completedWhenTasksResolved: true,
         workflowLevelResolution: false,
+        allowMultipleActiveWorkflows: true,
       },
       contextSchema: {
         type: 'json-schema',
@@ -614,6 +634,59 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
+  await createFilter('Onboarding - Businesses with enriched data', 'businesses', {
+    select: {
+      id: true,
+      status: true,
+      assigneeId: true,
+      createdAt: true,
+      context: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+        },
+      },
+      business: {
+        select: {
+          id: true,
+          companyName: true,
+          registrationNumber: true,
+          legalForm: true,
+          countryOfIncorporation: true,
+          dateOfIncorporation: true,
+          address: true,
+          phoneNumber: true,
+          email: true,
+          website: true,
+          industry: true,
+          taxIdentificationNumber: true,
+          vatNumber: true,
+          shareholderStructure: true,
+          numberOfEmployees: true,
+          businessPurpose: true,
+          documents: true,
+          approvalState: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
+    where: {
+      workflowDefinitionId: 'dynamic_external_request_example',
+      businessId: { not: null },
+    },
+  });
+
   await createFilter('Onboarding - Individuals', 'individuals', {
     select: {
       id: true,
@@ -757,6 +830,59 @@ async function seed(bcryptSalt: Salt) {
     },
     where: {
       workflowDefinitionId: riskScoreMachineKybId,
+      businessId: { not: null },
+    },
+  });
+
+  await createFilter('KYB', 'businesses', {
+    select: {
+      id: true,
+      status: true,
+      assigneeId: true,
+      createdAt: true,
+      context: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+        },
+      },
+      business: {
+        select: {
+          id: true,
+          companyName: true,
+          registrationNumber: true,
+          legalForm: true,
+          countryOfIncorporation: true,
+          dateOfIncorporation: true,
+          address: true,
+          phoneNumber: true,
+          email: true,
+          website: true,
+          industry: true,
+          taxIdentificationNumber: true,
+          vatNumber: true,
+          shareholderStructure: true,
+          numberOfEmployees: true,
+          businessPurpose: true,
+          documents: true,
+          approvalState: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
+    where: {
+      workflowDefinitionId: manualMachineId,
       businessId: { not: null },
     },
   });

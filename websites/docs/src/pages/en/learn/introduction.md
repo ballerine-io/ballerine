@@ -6,7 +6,7 @@ layout: ../../../layouts/MainLayout.astro
 
 <div align="center">
 
-<a href="https://ballerine.io" title="Ballerine - Open-source Infrastructure for Identity and Risk management.">
+<a href="https://ballerine.com" title="Ballerine - Open-source Infrastructure for Identity and Risk management.">
     <img src="/ballerine-logo.png" alt="Ballerine's website">
     <span class="ballerine-span">Ballerine</span>
 </a>

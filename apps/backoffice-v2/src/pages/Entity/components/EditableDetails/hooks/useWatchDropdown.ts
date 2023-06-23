@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { TDropdownOption } from '../types';
+
 export const useWatchDropdownOptions = ({ form, data, setFormData }) => {
   const watch = form.watch;
 
@@ -21,7 +22,10 @@ export const useWatchDropdownOptions = ({ form, data, setFormData }) => {
             dropDownOption => dropDownOption.value == value,
           )?.value;
 
-          form.setValue(item.title, `${item.value}`);
+          if (item.value) {
+            form.setValue(item.title, `${item.value}`);
+          }
+
           return (newData[newData.indexOf(item)] = item);
         });
 

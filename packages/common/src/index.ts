@@ -10,7 +10,10 @@ export {
   noNullish,
   sleep,
   uniqueArray,
+  type IErrorWithMessage,
 } from './utils';
+
+export { type AnyRecord } from './types';
 
 export {
   type DefaultContextSchema,
@@ -18,5 +21,6 @@ export {
   ghanaDocuments,
   certificateOfResidenceGH,
   getDocumentsByCountry,
+  getDocumentId,
   type TDocument,
 } from './schemas';
