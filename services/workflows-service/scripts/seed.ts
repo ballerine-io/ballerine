@@ -633,7 +633,7 @@ async function seed(bcryptSalt: Salt) {
       ],
     },
   });
-  
+
   await createFilter('Onboarding - Businesses with enriched data', 'businesses', {
     select: {
       id: true,
