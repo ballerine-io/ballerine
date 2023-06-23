@@ -1,0 +1,31 @@
+{{- $name := .Release.Name }}
+{{- $namespace:= .Release.Namespace }}
+{{- $postgresqlUser := .Values.postgresql.auth.username -}}
+{{- $postgresqlPassword := .Values.postgresql.auth.password -}}
+{{- $postgresqlDatabase := .Values.postgresql.auth.database -}}
+{{- if .Values.workflowService.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ .Values.workflowService.nameOverride }}
+    namespace: {{ .Release.Namespace | quote }}
+    labels:
+      app: {{ .Values.workflowService.nameOverride }}
+data:
+  {{- range $key, $value := .Values.workflowService.applicationConfig }}
+  {{- if $.Values.postgresql.enabled }}  
+  {{- if (eq "DB_URL" $key) }}
+  {{ $key }}: postgres://{{ $postgresqlUser }}:{{ $postgresqlPassword }}@{{ $name }}-postgresql.{{ $namespace }}.svc.cluster.local:5432/{{ $postgresqlDatabase }}
+  {{- end }}
+  {{- if (eq "DB_USER" $key) }}
+  {{ $key }}: {{ $postgresqlUser }}
+  {{- end }}
+  {{- if (eq "DB_PASSWORD" $key) }}
+  {{ $key }}: {{ $postgresqlPassword }}
+  {{- end }}
+  {{- end }}
+  {{- if $value }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}
