@@ -9,7 +9,7 @@ const TEST_DATABASE_SCHEMA_NAME = z
 
 //should be implemented in BeforeEach hook
 export const cleanupDatabase = async () => {
-  let tableNames = await __getTables(databaseHelper);
+  const tableNames = await __getTables(databaseHelper);
   await __removeAllTableContent(databaseHelper, tableNames);
 };
 

@@ -79,7 +79,7 @@ export const SIDEBAR: Sidebar = {
             text: `KYB Workflow with External Integrations`,
             link: `simple-kyb-guide`,
           },
-    
+
           {
             text: `Creating a KYC UI Flow`,
             link: `creating-a-kyc-flow-and-deploying-it`,
