@@ -14,6 +14,7 @@ import defaultContextSchema from '@ballerine/common/src/schemas/documents/defaul
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
+import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 
 if (require.main === module) {
   dotenv.config();
@@ -51,6 +52,7 @@ function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, 
 async function seed(bcryptSalt: Salt) {
   console.info('Seeding database...');
   const client = new PrismaClient();
+  await generateDynamicDefinitionForE2eTest(client);
   const users = [
     {
       email: 'agent1@ballerine.com',
@@ -629,6 +631,59 @@ async function seed(bcryptSalt: Salt) {
           state: 'document_photo',
         },
       ],
+    },
+  });
+
+  await createFilter('Onboarding - Businesses with enriched data', 'businesses', {
+    select: {
+      id: true,
+      status: true,
+      assigneeId: true,
+      createdAt: true,
+      context: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+        },
+      },
+      business: {
+        select: {
+          id: true,
+          companyName: true,
+          registrationNumber: true,
+          legalForm: true,
+          countryOfIncorporation: true,
+          dateOfIncorporation: true,
+          address: true,
+          phoneNumber: true,
+          email: true,
+          website: true,
+          industry: true,
+          taxIdentificationNumber: true,
+          vatNumber: true,
+          shareholderStructure: true,
+          numberOfEmployees: true,
+          businessPurpose: true,
+          documents: true,
+          approvalState: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
+    where: {
+      workflowDefinitionId: 'dynamic_external_request_example',
+      businessId: { not: null },
     },
   });
 

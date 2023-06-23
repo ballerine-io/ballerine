@@ -10,6 +10,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import path from 'path';
 import dts from 'rollup-plugin-dts';
 import { readJsonSync } from 'fs-extra';
+import json from '@rollup/plugin-json';
 
 type Options = {
   input: string;
@@ -61,8 +62,7 @@ function buildConfigs(opts: {
 }): RollupOptions[] {
   const input = path.resolve('./', opts.entryFile);
 
-  const packageJson =
-    readJsonSync(path.resolve(process.cwd(), 'package.json')) ?? {};
+  const packageJson = readJsonSync(path.resolve(process.cwd(), 'package.json')) ?? {};
 
   const banner = createBanner(opts.name);
 
@@ -100,7 +100,7 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
       banner,
       preserveModules: true,
     },
-    plugins: [babelPlugin, nodeResolve({ extensions: ['.ts'] })],
+    plugins: [babelPlugin, json(), nodeResolve({ extensions: ['.ts'] })],
   };
 }
 
@@ -117,17 +117,11 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
       exports: 'named',
       banner,
     },
-    plugins: [babelPlugin, commonjs(), nodeResolve({ extensions: ['.ts'] })],
+    plugins: [babelPlugin, json(), commonjs(), nodeResolve({ extensions: ['.ts'] })],
   };
 }
 
-function umdDev({
-  input,
-  umdExternal,
-  packageDir,
-  banner,
-  jsName,
-}: Options): RollupOptions {
+function umdDev({ input, umdExternal, packageDir, banner, jsName }: Options): RollupOptions {
   return {
     // UMD (Dev)
     external: umdExternal,
@@ -142,19 +136,14 @@ function umdDev({
     plugins: [
       babelPlugin,
       commonjs(),
+      json(),
       nodeResolve({ extensions: ['.ts'] }),
       umdDevPlugin('development'),
     ],
   };
 }
 
-function umdProd({
-  input,
-  umdExternal,
-  packageDir,
-  banner,
-  jsName,
-}: Options): RollupOptions {
+function umdProd({ input, umdExternal, packageDir, banner, jsName }: Options): RollupOptions {
   return {
     // UMD (Prod)
     external: umdExternal,
@@ -169,6 +158,7 @@ function umdProd({
     plugins: [
       babelPlugin,
       commonjs(),
+      json(),
       nodeResolve({ extensions: ['.ts'] }),
       umdDevPlugin('production'),
       terser(),
@@ -181,12 +171,7 @@ function umdProd({
   };
 }
 
-function types({
-  input,
-  packageDir,
-  external,
-  banner,
-}: Options): RollupOptions {
+function types({ input, packageDir, external, banner }: Options): RollupOptions {
   return {
     // TYPES
     external,
@@ -196,7 +181,7 @@ function types({
       file: `${packageDir}/dist/types/index.d.ts`,
       banner,
     },
-    plugins: [dts()],
+    plugins: [dts(), json()],
   };
 }
 

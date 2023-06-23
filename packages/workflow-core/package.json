@@ -22,6 +22,7 @@
     "watch": "tsc -w",
     "dev": "concurrently --kill-others \"pnpm build -w\" \"pnpm watch\"",
     "test": "vitest run",
+    "test:watch": "vitest",
     "test:unit": "vitest run"
   },
   "engines": {
@@ -29,7 +30,9 @@
   },
   "dependencies": {
     "@ballerine/common": "0.5.3",
+    "ajv": "^8.12.0",
     "json-logic-js": "^2.0.2",
+    "node-jq": "^2.3.5",
     "xstate": "^4.35.2"
   },
   "devDependencies": {
@@ -38,6 +41,7 @@
     "@babel/preset-typescript": "7.16.7",
     "@rollup/plugin-babel": "5.3.1",
     "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "13.2.1",
     "@rollup/plugin-replace": "4.0.0",
     "@rollup/plugin-terser": "^0.4.0",
@@ -57,6 +61,8 @@
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "fs-extra": "^11.1.0",
+    "msw": "^1.2.2",
+    "node-fetch": "^3.3.1",
     "plugin-babel": "link:@types/@rollup/plugin-babel",
     "plugin-terser": "link:@types/@rollup/plugin-terser",
     "prettier": "^2.1.1",

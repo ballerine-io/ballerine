@@ -2,17 +2,21 @@
 import { uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
-import { createMachine, interpret } from 'xstate';
+import { createMachine, interpret, assign } from 'xstate';
 import { HttpError } from './errors';
 import type {
   ObjectValues,
-  StatePlugin,
   WorkflowEvent,
   WorkflowEventWithoutState,
   WorkflowExtensions,
   WorkflowRunnerArgs,
 } from './types';
 import { Error as ErrorEnum } from './types';
+import { JQTransformer } from './utils/context-transformers/qj-transformer';
+import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
+import { StatePlugin } from './plugins/types';
+import { ApiPlugin, IApiPluginParams } from './plugins/external-plugin/api-plugin';
+import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -22,24 +26,30 @@ export class WorkflowRunner {
   #__callback: ((event: WorkflowEvent) => void) | null = null;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
+  events: any;
 
   public get workflow() {
     return this.#__workflow;
   }
 
+  public get context() {
+    return this.#__context;
+  }
   public get state() {
     return this.#__currentState;
   }
 
   constructor(
     { definition, workflowActions, workflowContext, extensions }: WorkflowRunnerArgs,
-    debugMode = true,
+    debugMode = false,
   ) {
     // global and state specific extensions
-    this.#__extensions = extensions ?? {
-      statePlugins: [],
-    };
+    this.#__extensions = extensions ?? {};
+    this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
+
+    this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins);
+    // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
 
     this.#__workflow = this.#__extendedWorkflow({
       definition,
@@ -54,6 +64,52 @@ export class WorkflowRunner {
 
     // use initial state or provided state
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
+  }
+
+  initiateApiPlugins(apiPluginSchemas: IApiPluginParams[]) {
+    return apiPluginSchemas?.map(apiPluginSchema => {
+      const requestTransformerLogic = apiPluginSchema.request.transform;
+      const requestSchema = apiPluginSchema.request.schema;
+      const responseTransformerLogic = apiPluginSchema.response?.transform;
+      const responseSchema = apiPluginSchema.response?.schema;
+      const requestTransformer = this.fetchTransformer(requestTransformerLogic);
+      const responseTransformer =
+        responseTransformerLogic && this.fetchTransformer(responseTransformerLogic);
+      const requestValidator = this.fetchValidator('json-schema', requestSchema);
+      const responseValidator = this.fetchValidator('json-schema', responseSchema);
+
+      let isApiPlugin = this.isApiPlugin(apiPluginSchema);
+      const apiPluginClass = isApiPlugin ? ApiPlugin : WebhookPlugin;
+      const apiPlugin = new apiPluginClass({
+        name: apiPluginSchema.name,
+        stateNames: apiPluginSchema.stateNames,
+        url: apiPluginSchema.url,
+        method: apiPluginSchema.method,
+        headers: apiPluginSchema.headers,
+        request: { transformer: requestTransformer, schemaValidator: requestValidator },
+        response: { transformer: responseTransformer, schemaValidator: responseValidator },
+        successAction: apiPluginSchema.successAction,
+        errorAction: apiPluginSchema.errorAction,
+      });
+
+      return apiPlugin;
+    });
+  }
+
+  private isApiPlugin(apiPluginSchema: IApiPluginParams) {
+    return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
+  }
+
+  fetchTransformer(transformer) {
+    if (transformer.transformer == 'jq') return new JQTransformer(transformer.mapping);
+
+    throw new Error(`Transformer ${transformer.name} is not supported`);
+  }
+  fetchValidator(validatorName, schema) {
+    if (!schema) return;
+    if (validatorName === 'json-schema') return new JsonSchemaValidator(schema);
+
+    throw new Error(`Validator ${validatorName} is not supported`);
   }
 
   #__handleAction({
@@ -131,7 +187,9 @@ export class WorkflowRunner {
      *
      * @see {@link WorfklowRunner.sendEvent}
      *  */
-    const nonBlockingPlugins = this.#__extensions.statePlugins.filter(plugin => !plugin.isBlocking);
+    const nonBlockingPlugins = this.#__extensions.statePlugins?.filter(
+      plugin => !plugin.isBlocking,
+    );
 
     for (const statePlugin of nonBlockingPlugins) {
       const when = statePlugin.when === 'pre' ? 'entry' : 'exit';
@@ -163,12 +221,25 @@ export class WorkflowRunner {
     };
 
     const guards: MachineOptions<any, any>['guards'] = {
-      'json-rule': (ctx, { payload }, { cond }) => {
-        const data = { ...ctx, ...payload };
-        return jsonLogic.apply(
-          cond.name, // Rule
+      'json-logic': (ctx, event, metadata) => {
+        const data = { ...ctx, ...event.payload };
+        // @ts-expect-error
+        const options = metadata.cond.options;
+
+        const ruleResult = jsonLogic.apply(
+          options.rule, // Rule
           data, // Data
         );
+        if (!ruleResult && options.assignOnFailure) {
+          this.#__callback?.({
+            type: 'RULE_EVALUATION_FAILURE',
+            state: this.#__currentState,
+            payload: {
+              ...options,
+            },
+          });
+        }
+        return ruleResult;
       },
     };
 
@@ -211,6 +282,7 @@ export class WorkflowRunner {
         plugin.when === 'pre' &&
         plugin.stateNames.includes(this.#__currentState),
     );
+
     const snapshot = service.getSnapshot();
 
     for (const prePlugin of prePlugins) {
@@ -224,6 +296,21 @@ export class WorkflowRunner {
     service.send(event);
 
     this.#__context = service.getSnapshot().context;
+
+    if (this.#__extensions.apiPlugins) {
+      for (const apiPlugin of this.#__extensions.apiPlugins) {
+        if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
+
+        const { callbackAction, responseBody, error } = await apiPlugin.callApi(this.#__context);
+        if (!this.isApiPlugin(apiPlugin)) continue;
+
+        this.#__context.pluginsOutput = {
+          ...(this.#__context.pluginsOutput || {}),
+          ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
+        };
+        await this.sendEvent(callbackAction);
+      }
+    }
 
     if (this.#__debugMode) {
       console.log('context:', this.#__context);

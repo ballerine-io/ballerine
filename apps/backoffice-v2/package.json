@@ -30,8 +30,8 @@
     "not IE 11"
   ],
   "engines": {
-    "node": ">=14",
-    "yarn": ">=1.22.5"
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   },
   "scripts": {
     "format": "prettier --plugin-search-dir=. --write .",
