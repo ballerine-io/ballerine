@@ -79,7 +79,10 @@ export const SIDEBAR: Sidebar = {
             text: `KYB Workflow with External Integrations`,
             link: `simple-kyb-guide`,
           },
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
           {
             text: `Creating a KYC UI Flow`,
             link: `creating-a-kyc-flow-and-deploying-it`,
@@ -88,12 +91,25 @@ export const SIDEBAR: Sidebar = {
       },
       {
         group: `Workflows`,
-        sections: [],
+        sections: [
+          {
+            text: `Understanding Workflows`,
+            link: `understanding_workflows`,
+          },
+          {
+            text: `Workflow Definitions`,
+            link: `workflow_definitions`,
+          },
+          {
+            text: `Interacting with Workflows`,
+            link: `interacting_with_workflows`,
+          },
+        ],
       },
-      {
-        group: `Case Managment`,
-        sections: [],
-      },
+      // {
+      //   group: `Case Managment`,
+      //   sections: [],
+      // },
       {
         group: `UI SDK's`,
         sections: [
