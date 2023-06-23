@@ -41,7 +41,7 @@ export const GITHUB_REPO_URL = `https://github.com/ballerine-io/ballerine/`;
 
 export const TWITTER_URL = `https://twitter.com/ballerine_io`;
 
-export const EMAIL_ADDRESS = `oss@ballerine.io`;
+export const EMAIL_ADDRESS = `oss@ballerine.com`;
 
 // See "Algolia" section of the README for more information.
 export const ALGOLIA = {
