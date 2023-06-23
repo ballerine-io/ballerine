@@ -7,7 +7,7 @@ type Props = {
 };
 const { path } = Astro.props as Props;
 // Change to the path of the docs repo
-const resolvedPath = `examples/docs/${path}`;
+const resolvedPath = `websites/docs/${path}`;
 const url = `https://api.github.com/repos/ballerine-io/ballerine/commits?path=${resolvedPath}`;
 const commitsURL = `https://github.com/ballerine-io/ballerine/commits/main/${resolvedPath}`;
 
