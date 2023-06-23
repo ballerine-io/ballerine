@@ -5,7 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { NotFoundException, Res } from '@nestjs/common';
+import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -18,12 +18,13 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
-import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
+import { GetWorkflowsRuntimeDto } from '@/workflow/dtos/get-workflows-runtime.dto';
+import { GetWorkflowsRuntimeResponseDto } from '@/workflow/dtos/get-workflows-runtime-response.dto';
+import { plainToClass } from 'class-transformer';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -33,19 +34,30 @@ export class WorkflowControllerExternal {
     protected readonly service: WorkflowService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-    private eventEmitter: EventEmitter2,
   ) {}
-
   // GET /workflows
   @common.Get('/')
-  @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
+  @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeResponseDto] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
+  @UseKeyAuthInDevGuard()
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
-  async listWorkflowRuntimeData() {
-    const workflowRuntimeDataWithDefinition = await this.service.listFullWorkflowData();
+  async listWorkflowRuntimeData(
+    @Query() query: GetWorkflowsRuntimeDto,
+  ): Promise<GetWorkflowsRuntimeResponseDto> {
+    const results = await this.service.listRuntimeData({
+      page: query.page,
+      size: query.limit,
+      status: query.status,
+    });
 
-    return makeFullWorkflow(workflowRuntimeDataWithDefinition);
+    return plainToClass(GetWorkflowsRuntimeResponseDto, results);
+  }
+
+  @common.Get('/metrics')
+  @UseKeyAuthInDevGuard()
+  async listWorkflowRuntimeMetric() {
+    return await this.service.listWorkflowsMetrics();
   }
 
   @common.Get('/:id')
