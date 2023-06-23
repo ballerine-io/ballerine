@@ -551,9 +551,9 @@ export class WorkflowService {
 
     if (contextHasChanged) {
       this.workflowEventEmitter.emit('workflow.context.changed', {
-        runtimeData,
+        oldRuntimeData: runtimeData,
+        updatedRuntimeData: updatedResult,
         state: currentState as string,
-        context: mergedContext,
         entityId: (runtimeData.businessId || runtimeData.endUserId) as string,
         correlationId: correlationId,
       });
@@ -950,7 +950,7 @@ export class WorkflowService {
   ) {
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
 
-    const validate = ajv.compile((workflowDefinition?.contextSchema as any)?.schema); // TODO: fix type
+    const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate(context);
 
     if (isValid) return;
@@ -985,6 +985,7 @@ export class WorkflowService {
         machineContext: runtimeData.context,
         state: runtimeData.state,
       },
+      extensions: workflow.extensions,
     });
 
     await service.sendEvent({

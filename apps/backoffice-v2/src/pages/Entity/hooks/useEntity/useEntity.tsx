@@ -3,18 +3,20 @@ import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/
 import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
-import { components } from './components';
+import { cells } from './cells';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import {
   composePickableCategoryType,
   convertSnakeCaseToTitleCase,
-  isExistingSchemaForDocument,
   extractCountryCodeFromWorkflow,
-  omitPropsFromObject,
   getIsEditable,
+  isExistingSchemaForDocument,
+  omitPropsFromObject,
 } from './utils';
 import { getDocumentsByCountry } from '@ballerine/common';
+import { getAddressDeep } from './utils/get-address-deep/get-address-deep';
+
 export const useEntity = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
@@ -42,10 +44,35 @@ export const useEntity = () => {
     base64?.replace(/application\/octet-stream/gi, fileType);
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
-  const contextEntity = workflow.context.entity;
-  const contextDocuments = workflow.context.documents;
+  const {
+    documents: contextDocuments,
+    entity: contextEntity,
+    pluginsOutput,
+  } = workflow?.context ?? {};
+  const pluginsOutputKeys = Object.keys(pluginsOutput ?? {});
+  const address = getAddressDeep(pluginsOutput);
   const tasks = contextEntity
     ? [
+        ...(Object.keys(pluginsOutput ?? {}).length === 0
+          ? []
+          : pluginsOutputKeys
+              ?.filter(key => !!Object.keys(pluginsOutput[key] ?? {})?.length)
+              ?.map(key => [
+                {
+                  id: 'nested-details-heading',
+                  type: 'heading',
+                  value: convertSnakeCaseToTitleCase(key),
+                },
+                {
+                  type: 'nestedDetails',
+                  value: {
+                    data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
+                      title,
+                      value,
+                    })),
+                  },
+                },
+              ])),
         ...(contextDocuments?.map(
           (
             { id, type: docType, category, issuer, properties, propertiesSchema, decision },
@@ -115,13 +142,18 @@ export const useEntity = () => {
                           { type, format, pattern, isEditable = true, dropdownOptions, value },
                         ]) => {
                           const fieldValue = value || (properties?.[title] ?? '');
+                          const isEditableDecision = isDoneWithRevision || !decision?.status;
+
                           return {
                             title,
                             value: fieldValue,
                             type,
                             format,
                             pattern,
-                            isEditable: caseState.writeEnabled && getIsEditable(isEditable, title),
+                            isEditable:
+                              isEditableDecision &&
+                              caseState.writeEnabled &&
+                              getIsEditable(isEditable, title),
                             dropdownOptions,
                           };
                         },
@@ -148,7 +180,9 @@ export const useEntity = () => {
                   data:
                     contextDocuments?.[docIndex]?.pages?.map(
                       ({ type, metadata, data }, pageIndex) => ({
-                        title: `${category} - ${docType}${
+                        title: `${convertSnakeCaseToTitleCase(
+                          category,
+                        )} - ${convertSnakeCaseToTitleCase(docType)}${
                           metadata?.side ? ` - ${metadata?.side}` : ''
                         }`,
                         imageUrl:
@@ -167,13 +201,17 @@ export const useEntity = () => {
           ? []
           : [
               {
+                type: 'heading',
+                value: `${toStartCase(contextEntity?.type)} Information`,
+              },
+              {
                 id: 'entity-details',
                 type: 'details',
                 value: {
                   title: `${toStartCase(contextEntity?.type)} Information`,
                   data: [
                     ...Object.entries(
-                      omitPropsFromObject(contextEntity?.data, 'additionalInfo') ?? {},
+                      omitPropsFromObject(contextEntity?.data, 'additionalInfo', 'address') ?? {},
                     ),
                     ...Object.entries(contextEntity?.data?.additionalInfo ?? {}),
                   ]?.map(([title, value]) => ({
@@ -185,12 +223,42 @@ export const useEntity = () => {
                 },
               },
             ],
+        Object.keys(address ?? {})?.length === 0
+          ? []
+          : [
+              {
+                id: 'map-container',
+                type: 'container',
+                value: [
+                  {
+                    id: 'map-header',
+                    type: 'heading',
+                    value: `${toStartCase(contextEntity?.type)} Address`,
+                  },
+                  {
+                    type: 'details',
+                    value: {
+                      title: `${toStartCase(contextEntity?.type)} Address`,
+                      data: Object.entries(address ?? {})?.map(([title, value]) => ({
+                        title,
+                        value,
+                        isEditable: false,
+                      })),
+                    },
+                  },
+                  {
+                    type: 'map',
+                    value: address,
+                  },
+                ],
+              },
+            ],
       ]
     : [];
 
   return {
     selectedEntity,
-    components,
+    cells,
     tasks,
     workflow,
     isLoading,

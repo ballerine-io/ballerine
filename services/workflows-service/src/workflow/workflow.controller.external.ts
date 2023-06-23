@@ -159,6 +159,22 @@ export class WorkflowControllerExternal {
     });
   }
 
+  // POST /event
+  @common.Post('/:id/send-event')
+  @swagger.ApiOkResponse()
+  @UseKeyAuthGuard()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async sendEvent(
+    @UserData() _userInfo: UserInfo,
+    @common.Param('id') id: string,
+    @common.Body() data: WorkflowEventInput,
+  ): Promise<void> {
+    return await this.service.event({
+      ...data,
+      id,
+    });
+  }
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')
   @UseKeyAuthGuard()

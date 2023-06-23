@@ -6,6 +6,8 @@ import { CheckSvg, XMarkSvg } from '../../../../common/components/atoms/icons';
 import { useDocuments } from './hooks/useDocuments/useDocuments';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import ReactCrop from 'react-image-crop';
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
+import { FileText } from 'lucide-react';
 
 /**
  * @description To be used by {@link Case}, and be wrapped by {@link Case.Content}. Displays a single entity's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
@@ -30,33 +32,70 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
     isLoadingOCR,
     selectedImage,
     onSelectImage,
+    documentRotation,
+    onRotateDocument,
+    onTransformed,
+    isRotatedOrTransformed,
   } = useDocuments(documents);
 
   return (
     <ImageViewer selectedImage={selectedImage} onSelectImage={onSelectImage}>
       <div className={`flex min-h-[600px] w-full flex-col items-center`}>
         <div
-          className={`
-            d-full relative max-w-[441px] items-center rounded-md`}
+          className={ctw(
+            `
+            d-full relative flex justify-center rounded-md`,
+          )}
         >
-          <ReactCrop
-            crop={crop}
-            onChange={onCrop}
-            disabled={!isCropping || selectedImage?.fileType === 'pdf'}
-            className={ctw({
-              'd-full [&>div]:d-full': selectedImage?.fileType === 'pdf',
-            })}
-          >
-            <ImageViewer.SelectedImage
-              key={initialImage?.imageUrl}
-              initialImage={initialImage}
-              ref={selectedImageRef}
-              isLoading={isLoading}
-            />
-          </ReactCrop>
+          <TransformWrapper onTransformed={onTransformed}>
+            <TransformComponent
+              wrapperClass={`max-w-[441px]`}
+              contentClass={ctw(`overflow-x-auto`, {
+                'hover:cursor-move': selectedImage?.fileType !== 'pdf',
+              })}
+              wrapperStyle={{
+                width: '100%',
+                height: '100%',
+              }}
+              contentStyle={{
+                width: '100%',
+                height: '100%',
+              }}
+            >
+              <ReactCrop
+                crop={crop}
+                onChange={onCrop}
+                disabled={
+                  !isCropping || selectedImage?.fileType === 'pdf' || isRotatedOrTransformed
+                }
+                className={ctw({
+                  'd-full [&>div]:d-full': selectedImage?.fileType === 'pdf',
+                  'rotate-90': documentRotation === 90,
+                  'rotate-180': documentRotation === 180,
+                  'rotate-[270deg]': documentRotation === 270,
+                })}
+              >
+                <ImageViewer.SelectedImage
+                  key={initialImage?.imageUrl}
+                  initialImage={initialImage}
+                  ref={selectedImageRef}
+                  isLoading={isLoading}
+                />
+              </ReactCrop>
+            </TransformComponent>
+          </TransformWrapper>
           <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
             {selectedImage?.fileType !== 'pdf' && (
               <>
+                <button
+                  type={`button`}
+                  className={ctw(
+                    `btn-ghost btn-sm btn-circle btn bg-base-300/70 text-[0.688rem] focus:outline-primary`,
+                  )}
+                  onClick={onRotateDocument}
+                >
+                  <FileText className={`rotate-90 p-0.5`} />
+                </button>
                 <button
                   className={ctw(
                     'btn-ghost btn-sm btn-circle btn bg-base-300/70 focus:outline-primary',
@@ -68,18 +107,26 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
                 >
                   <XMarkSvg className={`p-0.5`} />
                 </button>
-                <button
-                  type={`button`}
-                  className={ctw(
-                    `btn-ghost btn-sm btn-circle btn bg-base-300/70 text-[0.688rem] focus:outline-primary`,
-                    { loading: isLoadingOCR },
-                  )}
-                  onClick={onOcr}
-                  disabled={isLoading}
+                <div
+                  title={
+                    isRotatedOrTransformed
+                      ? `Cannot OCR rotated, zoomed, panned, or pinched documents`
+                      : undefined
+                  }
                 >
-                  {isCropping && !isLoadingOCR && <CheckSvg className={`p-0.5`} />}
-                  {!isCropping && !isLoadingOCR && <span className={`p-0.5`}>OCR</span>}
-                </button>
+                  <button
+                    type={`button`}
+                    className={ctw(
+                      `btn-ghost btn-sm btn-circle btn bg-base-300/70 text-[0.688rem] focus:outline-primary`,
+                      { loading: isLoadingOCR },
+                    )}
+                    onClick={onOcr}
+                    disabled={isLoading || isRotatedOrTransformed}
+                  >
+                    {isCropping && !isLoadingOCR && <CheckSvg className={`p-0.5`} />}
+                    {!isCropping && !isLoadingOCR && <span className={`p-0.5`}>OCR</span>}
+                  </button>
+                </div>
               </>
             )}
             <ImageViewer.ZoomButton disabled={isLoading} />

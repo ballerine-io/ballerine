@@ -6,10 +6,6 @@ import { Button } from '../../common/components/atoms/Button/Button';
 import { Input } from '../../common/components/atoms/Input/Input';
 import { Card } from '../../common/components/atoms/Card/Card';
 import { BallerineLogo } from '../../common/components/atoms/icons';
-import { Alert } from '../../common/components/atoms/Alert/Alert';
-import { AlertCircle } from 'lucide-react';
-import { AlertDescription } from '../../common/components/atoms/Alert/Alert.Description';
-import { AlertTitle } from '../../common/components/atoms/Alert/Alert.Title';
 import { useSignInMutation } from '../../domains/auth/hooks/mutations/useSignInMutation/useSignInMutation';
 import { FunctionComponent, useCallback } from 'react';
 import { useAuthContext } from '../../domains/auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
@@ -23,6 +19,7 @@ import { FormLabel } from '../../common/components/organisms/Form/Form.Label';
 import { FormControl } from '../../common/components/organisms/Form/Form.Control';
 import { FormMessage } from '../../common/components/organisms/Form/Form.Message';
 import { env } from '../../common/env/env';
+import { ErrorAlert } from '../../common/components/atoms/ErrorAlert/ErrorAlert';
 
 export const SignIn: FunctionComponent = () => {
   const SignInSchema = z.object({
@@ -72,11 +69,7 @@ export const SignIn: FunctionComponent = () => {
         <CardHeader className={`mb-2 text-center text-4xl font-bold`}>Sign In</CardHeader>
         <CardContent>
           {isErrorWithCode(error) && error?.code === 401 && (
-            <Alert className={`mb-8`} variant={`destructive`}>
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>Invalid credentials</AlertDescription>
-            </Alert>
+            <ErrorAlert>Invalid credentials</ErrorAlert>
           )}
           <Form {...signInForm}>
             <form onSubmit={signInForm.handleSubmit(onSubmit)} className="space-y-8">
