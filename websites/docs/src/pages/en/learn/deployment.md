@@ -25,23 +25,98 @@ layout: '../../../layouts/MainLayout.astro'
 The application should now be running at the ports defined in your Docker Compose configuration. 
 
 ### Kubernetes Deployment (Helm)
+# Install ballerine using helm chart
 
-1. **Add the Ballerine Chart Repo**: Add the Helm chart repository that contains the Ballerine charts:
-    ```shell
-    helm repo add ballerine https://helm.ballerine.io
-    ```
+Ballerine is a collection of services like workflow-service, backendoffice.
+In values.yaml we have sections to enable/disable them based on the necessity like below
 
-2. **Update your Helm Repo**: Fetch the latest version of the Helm chart from the repo:
-    ```shell
-    helm repo update
-    ```
+``` bash
+workflowService:
+  enabled: true
+```
 
-3. **Install the Ballerine Chart**: Now you can install the Ballerine Helm chart onto your Kubernetes cluster:
-    ```shell
-    helm install ballerine ballerine/ballerine
-    ```
+## Prerequisites
 
-By default, the application will be deployed on your default namespace. You can specify a different namespace by adding `-n <namespace>` at the end of the `helm install` command. 
+- kubernetes cluster
+- [helm](https://helm.sh/docs/intro/install/)
+- [kubectl](https://storage.googleapis.com/kubernetes-release/release/v1.23.6/bin/linux/amd64/kubectl) preferably 1.24 or less upto 1.23
+
+### How to install
+
+Move to deploy directory
+
+```bash
+cd deploy/helm
+```
+
+### Setup Postgresql
+
+#### Install postgresql along with ballerine
+
+- edit values.yaml
+
+```bash
+## Postgres params
+postgresql:
+  enabled: true
+  auth:
+    username: admin
+    password: admin
+    postgresPassword: admin
+    database: postgres
+#   Local dev purpose
+#   persistence:
+#     existingClaim: postgresql-pv-claim
+#   volumePermissions:
+#     enabled: true
+```
+
+#### How to use managed postgresql along with ballerine
+
+- edit values.yaml
+
+```bash
+## Postgres params
+postgresql:
+  enabled: false
+.
+.
+.
+.
+  applicationConfig:
+    BCRYPT_SALT: "10"
+    JWT_SECRET_KEY: "secret"
+    JWT_EXPIRATION: "10d"
+    DB_URL: "<Managed DB_URL with databasename>"
+    DB_USER: "<Managed DB_USER>"
+    DB_PASSWORD: "<Managed DB_PASSWORD>"
+    DB_PORT: "5432"
+```
+
+### Installing Ballerine helm chart
+
+``` bash
+helm install ballerine . -n ballerine --create-namespace -f values.yaml
+```
+
+### Troubleshooting
+
+```bash
+kubectl get pods -n ballerine
+```
+
+- Note the pod name of service you wish to trouble shoot
+
+```bash
+kubectl logs <pod> -n ballerine
+```
+
+- Accessing the application
+
+```bash
+kubectl port-forward svc/<service> -n ballerine 3000:3000
+```
+
 
 Always refer to the official documentation of Ballerine for more specific configuration and deployment details.
 
