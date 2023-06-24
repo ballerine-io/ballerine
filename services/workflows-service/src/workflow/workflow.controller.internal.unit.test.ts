@@ -12,10 +12,8 @@ import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { EndUserModel } from '@/end-user/end-user.model';
 import { BusinessModel } from '@/business/business.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
-import { commonTestingModules, initiateNestApp } from '@/test/helpers/nest-app-helper';
+import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -84,7 +82,7 @@ describe('WorkflowControllerInternal', () => {
     }).compile();
   });
 
-  beforeEach(async () => {
+  beforeEach(() => {
     const workflowDefinitionRepo = new FakeWorkflowDefinitionRepo();
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
     businessRepo = new FakeBusinessRepo();
