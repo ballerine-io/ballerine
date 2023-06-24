@@ -11,6 +11,11 @@ import { WorkflowService } from './workflow.service';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { EndUserModel } from '@/end-user/end-user.model';
 import { BusinessModel } from '@/business/business.model';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
+import { commonTestingModules, initiateNestApp } from '@/test/helpers/nest-app-helper';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -71,8 +76,15 @@ describe('WorkflowControllerInternal', () => {
   let endUserRepo;
   let eventEmitterSpy;
   const numbUserInfo = Symbol();
+  let testingModule: TestingModule;
 
-  beforeEach(() => {
+  beforeAll(async () => {
+    testingModule = await Test.createTestingModule({
+      imports: commonTestingModules,
+    }).compile();
+  });
+
+  beforeEach(async () => {
     const workflowDefinitionRepo = new FakeWorkflowDefinitionRepo();
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
     businessRepo = new FakeBusinessRepo();
@@ -93,6 +105,7 @@ describe('WorkflowControllerInternal', () => {
       {} as any,
       {} as any,
       eventEmitterSpy,
+      testingModule.get(AppLoggerService),
     );
     const filterService = {} as any;
     const rolesBuilder = {} as any;
