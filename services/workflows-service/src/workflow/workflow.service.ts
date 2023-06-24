@@ -13,7 +13,16 @@ import {
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { RunnableWorkflowData, TWorkflowWithRelations } from './types';
+import {
+  CompleteWorkflowData,
+  ListRuntimeDataResult,
+  ListWorkflowsRuntimeParams,
+  RunnableWorkflowData,
+  TWorkflowWithRelations,
+  WorkflowRuntimeListQueryResult,
+  WorkflowsRuntimeMetric,
+  WorkflowStatusMetric,
+} from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
@@ -53,6 +62,11 @@ import {
 } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
+import {
+  WorkflowAssignee,
+  WorkflowRuntimeListItemModel,
+} from '@/workflow/workflow-runtime-list-item.model';
+import { plainToClass } from 'class-transformer';
 
 type TEntityId = string;
 
@@ -325,9 +339,56 @@ export class WorkflowService {
     });
   }
 
-  async listFullWorkflowData() {
-    return await this.workflowRuntimeDataRepository.findMany({
-      include: { workflowDefinition: true },
+  async listRuntimeData({
+    page,
+    size,
+    status,
+  }: ListWorkflowsRuntimeParams): Promise<ListRuntimeDataResult> {
+    const query = {
+      where: {
+        ...(status ? { status: { in: status } } : undefined),
+      },
+    };
+
+    const [workflowsRuntimeCount, workflowsRuntime] = await Promise.all([
+      this.workflowRuntimeDataRepository.count(query),
+      this.workflowRuntimeDataRepository.findMany({
+        skip: page && size ? (page - 1) * size : undefined,
+        take: size,
+        include: {
+          workflowDefinition: true,
+          assignee: true,
+        },
+        ...query,
+      }),
+    ]);
+
+    const result: ListRuntimeDataResult = {
+      results: this.workflowsRuntimeListItemsFactory(workflowsRuntime),
+      meta: {
+        pages: size ? Math.max(Math.ceil(workflowsRuntimeCount / size)) : 0,
+        total: workflowsRuntimeCount,
+      },
+    };
+
+    return result;
+  }
+
+  private workflowsRuntimeListItemsFactory(
+    workflows: WorkflowRuntimeListQueryResult[],
+  ): WorkflowRuntimeListItemModel[] {
+    return workflows.map(workflow => {
+      const { assignee, workflowDefinition } = workflow;
+
+      return plainToClass(
+        WorkflowRuntimeListItemModel,
+        {
+          ...workflow,
+          assignee: assignee ? plainToClass(WorkflowAssignee, assignee) : null,
+          workflowDefinitionName: workflowDefinition?.name || null,
+        },
+        { excludeExtraneousValues: true },
+      );
     });
   }
 
@@ -1061,5 +1122,37 @@ export class WorkflowService {
 
   async getWorkflowRuntimeDataContext(id: string) {
     return this.workflowRuntimeDataRepository.findContext(id);
+  }
+
+  async listWorkflowsMetrics(): Promise<WorkflowsRuntimeMetric> {
+    return {
+      approvedWorkflows: (await this.listResolvedWorkflowRuntimes()) as any,
+      status: await this._getWorkflowsStatusMetric(),
+    };
+  }
+
+  private async listResolvedWorkflowRuntimes(): Promise<WorkflowRuntimeData[]> {
+    return await this.workflowRuntimeDataRepository.findMany({
+      where: { resolvedAt: { not: null } },
+    });
+  }
+
+  private async _getWorkflowsStatusMetric(): Promise<WorkflowStatusMetric> {
+    const queryResult = await this.workflowRuntimeDataRepository.groupBy({
+      by: ['status'],
+      _count: true,
+    });
+
+    const metrics: WorkflowStatusMetric = {
+      active: 0,
+      failed: 0,
+      completed: 0,
+    };
+
+    queryResult.forEach(metric => {
+      metrics[metric.status] = Number(metric._count) || 0;
+    });
+
+    return metrics;
   }
 }

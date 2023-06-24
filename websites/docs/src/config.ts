@@ -31,7 +31,7 @@ export const KNOWN_LANGUAGES = {
 } as const;
 export const KNOWN_LANGUAGE_CODES = Object.values(KNOWN_LANGUAGES);
 
-export const GITHUB_EDIT_URL = `https://github.com/ballerine-io/ballerine/tree/main/examples/docs`;
+export const GITHUB_EDIT_URL = `https://github.com/ballerine-io/ballerine/tree/dev/websites/docs`;
 
 export const DISCORD_URL = `https://discord.gg/e2rQE4YygA`;
 
@@ -78,6 +78,10 @@ export const SIDEBAR: Sidebar = {
           {
             text: `KYB Workflow with External Integrations`,
             link: `simple-kyb-guide`,
+          },
+          {
+            text: `KYC Manual Review Workflow Guide`,
+            link: `kyc-manual-review-workflow-guide`,
           },
           {
             text: `Creating a KYC UI Flow`,

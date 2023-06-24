@@ -113,4 +113,10 @@ export class WorkflowRuntimeDataRepository {
   ): Promise<number> {
     return await this.prisma.workflowRuntimeData.count(args);
   }
+
+  async groupBy<T extends Prisma.WorkflowRuntimeDataGroupByArgs>(
+    args: Prisma.SubsetIntersection<T, Prisma.WorkflowRuntimeDataGroupByArgs, any>,
+  ) {
+    return await this.prisma.workflowRuntimeData.groupBy(args);
+  }
 }
