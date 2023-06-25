@@ -4,17 +4,24 @@ import { FilterComponent } from '@app/pages/Workflows/components/organisms/Workf
 import { useWorkflows } from '@app/pages/Workflows/hooks/useWorkflows';
 import { useWorkflowsFilters } from '@app/pages/Workflows/hooks/useWorkflowsFilters';
 import { useCallback } from 'react';
-import { WorkflowsList } from '@app/pages/Workflows/components/molecules/WorkflowsList';
+import { WorkflowsList } from '@app/pages/Workflows/components/organisms/WorkflowsList';
 import { WorkflowFilters } from '@app/pages/Workflows/components/organisms/WorkflowFilters';
 import { WorkflowsLayout } from '@app/pages/Workflows/components/layouts/WorkflowsLayout';
 import { DashboardLayout } from '@app/components/layouts/DashboardLayout';
 import { WorkflowMetrics } from '@app/pages/Workflows/components/organisms/WorkflowMetrics';
+import { useSorting } from '@app/common/hooks/useSorting';
 
 const filterComponents: FilterComponent[] = [StatusFilterComponent];
 
 export const Workflows = () => {
   const { filters, setFilters } = useWorkflowsFilters();
-  const { data, isLoading, isFetching } = useWorkflows(filters);
+  const { sortingKey, sortingDirection } = useSorting('order_by');
+  const { data, isLoading, isFetching } = useWorkflows(
+    filters,
+    sortingKey && sortingDirection
+      ? { orderBy: sortingKey, orderDirection: sortingDirection }
+      : undefined,
+  );
 
   const handlePageChange = useCallback(
     (nextPage: number) => {

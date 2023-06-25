@@ -14,15 +14,15 @@ import { Activity, CreditCard, DollarSign, Users } from 'lucide-react';
 export const Overview = () => {
   return (
     <DashboardLayout pageName="Overview">
-      <div className="flex flex-col gap-4">
-        <Tabs defaultValue="overview">
-          <TabsList>
+      <div className="flex h-full flex-col gap-4">
+        <Tabs defaultValue="overview" className="flex flex-1 flex-col">
+          <TabsList className="flex flex-row justify-start self-start">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
           </TabsList>
-          <TabsContent value="overview" className="space-y-4">
+          <TabsContent value="overview" className="flex flex-1 flex-col space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -65,12 +65,12 @@ export const Overview = () => {
                 </CardContent>
               </Card>
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-4">
+            <div className="grid flex-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
+              <Card className="col-span-4 flex flex-col">
                 <CardHeader>
                   <CardTitle>Overview</CardTitle>
                 </CardHeader>
-                <CardContent className="pl-2">
+                <CardContent className="flex-1 pl-2">
                   <OverviewChartMock />
                 </CardContent>
               </Card>
