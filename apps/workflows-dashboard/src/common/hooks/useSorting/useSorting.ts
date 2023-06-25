@@ -8,12 +8,11 @@ import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 export function useSorting(prefix = 'order_by') {
-  const regex = useMemo(() => buildSortingRegex(prefix), [prefix]);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const parseResult: SortingData | null = useMemo(() => {
-    return getSortingDataFromQuery(searchParams.toString(), regex);
-  }, [searchParams, regex]);
+    return getSortingDataFromQuery(searchParams.toString(), buildSortingRegex(prefix));
+  }, [prefix, searchParams]);
 
   const setSorting = useCallback(
     (key: string, value: 'asc' | 'desc') => {

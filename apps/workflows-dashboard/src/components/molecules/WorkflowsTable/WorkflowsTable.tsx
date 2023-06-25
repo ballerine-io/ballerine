@@ -47,7 +47,6 @@ export const WorkflowsTable = memo(({ items, isFetching, sorting, onSort }: Prop
         table.setSorting(newSortingValue);
       } else {
         const sortingState = updater as SortingState;
-        console.log('STATE', updater);
         onSort(sortingState[0].id, sortingState[0].desc ? 'desc' : 'asc');
       }
     },
