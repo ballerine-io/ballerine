@@ -3,10 +3,22 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import tailwindcss from 'tailwindcss';
 import checker from 'vite-plugin-checker';
+import terminal from 'vite-plugin-terminal';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss(), checker({ typescript: true })],
+  server: {
+    port: 5174,
+  },
+  plugins: [
+    react(),
+    tailwindcss(),
+    checker({ typescript: true }),
+    terminal({
+      output: ['console', 'terminal'],
+      strip: false,
+    }),
+  ],
   resolve: {
     alias: {
       '@app': resolve(__dirname, './src'),
