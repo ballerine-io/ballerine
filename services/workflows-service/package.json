@@ -28,10 +28,10 @@
     "db:init": "npm run db:migrate-save -- --name 'initial version' && npm run db:migrate-up seed",
     "prisma:generate": "prisma generate",
     "json-schema:generate": "json2ts src/workflow/schemas/default-context-schema.json src/workflow/schemas/context.d.ts",
-    "docker:db": "docker-compose -f docker-compose.db.yml up -d --wait",
+    "docker:db": "docker compose -f docker-compose.db.yml up -d --wait",
     "docker:build": "docker build .",
-    "compose:up": "docker-compose up -d",
-    "compose:down": "docker-compose down --volumes",
+    "compose:up": "docker compose up -d",
+    "compose:down": "docker compose down --volumes",
     "upload-sourcemaps": "ts-node scripts/upload-sourcemaps.ts",
     "prepare": "npm run prisma:generate"
   },
@@ -73,6 +73,7 @@
     "lodash": "^4.17.21",
     "multer-s3": "3.0.1",
     "nest-access-control": "2.2.0",
+    "nestjs-cls": "^3.5.0",
     "nestjs-prisma": "0.20.0",
     "passport": "0.6.0",
     "passport-http": "0.3.0",
@@ -82,6 +83,7 @@
     "rxjs": "^7.8.0",
     "swagger-ui-express": "4.6.2",
     "tmp": "^0.2.1",
+    "winston": "^3.9.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

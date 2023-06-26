@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ServeStaticModuleOptions, ServeStaticModuleOptionsFactory } from '@nestjs/serve-static';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 const SERVE_STATIC_ROOT_PATH_VAR = 'SERVE_STATIC_ROOT_PATH';
 const DEFAULT_STATIC_MODULE_OPTIONS_LIST: ServeStaticModuleOptions[] = [
@@ -13,9 +14,10 @@ const DEFAULT_STATIC_MODULE_OPTIONS_LIST: ServeStaticModuleOptions[] = [
 
 @Injectable()
 export class ServeStaticOptionsService implements ServeStaticModuleOptionsFactory {
-  private readonly logger = new Logger(ServeStaticOptionsService.name);
-
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly logger: AppLoggerService,
+  ) {}
 
   createLoggerOptions(): ServeStaticModuleOptions[] {
     const serveStaticRootPath = this.configService.get(SERVE_STATIC_ROOT_PATH_VAR) as string;
