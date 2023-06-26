@@ -3,7 +3,7 @@ import * as React from 'react';
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <table ref={ref} className={cn('caption-bottom w-full text-sm', className)} {...props} />
+    <table ref={ref} className={cn('w-full caption-bottom text-sm', className)} {...props} />
   ),
 );
 Table.displayName = 'Table';

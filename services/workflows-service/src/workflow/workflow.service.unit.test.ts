@@ -11,6 +11,9 @@ import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-reposit
 import { WorkflowService } from './workflow.service';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { DocumentChangedWebhookCaller } from '../events/document-changed-webhook-caller';
+import { Test, TestingModule } from '@nestjs/testing';
+import { commonTestingModules } from '@/test/helpers/nest-app-helper';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -80,6 +83,13 @@ describe('WorkflowService', () => {
   let endUserRepo;
   const numbUserInfo = Symbol();
   let fakeHttpService;
+  let testingModule: TestingModule;
+
+  beforeAll(async () => {
+    testingModule = await Test.createTestingModule({
+      imports: commonTestingModules,
+    }).compile();
+  });
 
   beforeEach(() => {
     const workflowDefinitionRepo = new FakeWorkflowDefinitionRepo();
@@ -124,6 +134,7 @@ describe('WorkflowService', () => {
       fakeHttpService,
       eventEmitter as any,
       env as any,
+      testingModule.get(AppLoggerService),
     );
 
     service = new WorkflowService(
@@ -134,6 +145,7 @@ describe('WorkflowService', () => {
       {} as any,
       {} as any,
       eventEmitter as any,
+      testingModule.get(AppLoggerService),
     );
   });
 

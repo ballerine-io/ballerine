@@ -12,18 +12,18 @@ import { ConfigService } from '@nestjs/config';
 import * as Sentry from '@sentry/node';
 import { AxiosInstance, isAxiosError } from 'axios';
 import { WorkflowConfig } from '@/workflow/schemas/zod-schemas';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { getDocumentId } from '@ballerine/common';
 
 @Injectable()
 export class DocumentChangedWebhookCaller {
-  private readonly logger = new Logger(DocumentChangedWebhookCaller.name);
-
   #__axios: AxiosInstance;
 
   constructor(
     private httpService: HttpService,
     private workflowEventEmitter: WorkflowEventEmitterService,
     private configService: ConfigService,
+    private readonly logger: AppLoggerService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
