@@ -48,8 +48,8 @@ describe('workflow-runner', () => {
         stateNames: ['success', 'type'],
         request: {
           transform: {
-            transformer: 'jq',
-            mapping: '{id: .entity.id}'
+            transformer: 'jmespath',
+            mapping: '{id: entity.id}'
           },
         },
       },
