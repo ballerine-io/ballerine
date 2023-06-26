@@ -19,6 +19,8 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@/prisma/prisma.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
