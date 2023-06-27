@@ -1,9 +1,8 @@
-import { run } from 'node-jq';
 import { BaseContextTransformer, TTransformationLogic } from './types';
 import { TContext } from '../types';
-
-export class JQTransformer extends BaseContextTransformer {
-  name = 'jq-transformer';
+import { search } from 'jmespath';
+export class JmespathTransformer extends BaseContextTransformer {
+  name = 'jmespath-transformer';
   mapping: TTransformationLogic;
 
   constructor(mapping: TTransformationLogic) {
@@ -12,7 +11,7 @@ export class JQTransformer extends BaseContextTransformer {
   }
 
   async transform(context: TContext, options: {}) {
-    const response = await run(this.mapping, context, options);
+    const response = await search(context, this.mapping);
 
     return response;
   }
