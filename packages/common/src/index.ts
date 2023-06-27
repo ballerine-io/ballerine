@@ -8,7 +8,7 @@ export {
   isNullish,
   isObject,
   noNullish,
-  ZodErrorToReadable,
+  zodErrorToReadable,
   sleep,
   uniqueArray,
   type IErrorWithMessage,

@@ -1,3 +1,3 @@
-export { ZodErrorToReadable } from './zod-error-to-readable';
+export { zodErrorToReadable } from './zod-error-to-readable';
 
 

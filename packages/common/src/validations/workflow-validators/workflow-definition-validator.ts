@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ApiPluginSchema } from "./api-plugin.validator";
 import { WebhookPluginSchema } from "./webhook-plugin.validator";
 import { AnyRecord } from "@/types";
-import { ZodErrorToReadable } from "../../utils/zod-error-to-readable";
+import { zodErrorToReadable } from "../../utils/zod-error-to-readable";
 
 const ApiOrWebhookSchema = z.union([ApiPluginSchema, WebhookPluginSchema]);
 
@@ -16,7 +16,7 @@ export const validateWorkflowDefinition = (workflowDefinition: AnyRecord) => {
   const parseResult = WorkflowDefinitionSchema.safeParse(workflowDefinition);
 
   if (!parseResult.success) {
-    return {isValid: false, error: ZodErrorToReadable(parseResult.error)};
+    return {isValid: false, error: zodErrorToReadable(parseResult.error)};
   }
   return { isValid: true, error: undefined };
 }
