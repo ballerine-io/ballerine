@@ -129,10 +129,10 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         errorAction: 'API_CALL_ERROR',
         request: {
           transform: {
-            transformer: 'jq',
+            transformer: 'jmespath',
             mapping:
-              '{ business_name: .entity .data .companyName, registration_number: .entity .data .registrationNumber}',
-          }, // JQ
+              '{ business_name: entity.data.companyName, registration_number: entity.data.registrationNumber}',
+          }, // jmespath
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',
             type: 'object',
@@ -149,8 +149,8 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         },
         response: {
           transform: {
-            transformer: 'jq',
-            mapping: '.', // JQ
+            transformer: 'jmespath',
+            mapping: '@', // jmespath
           },
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',
@@ -192,8 +192,8 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         },
         request: {
           transform: {
-            transformer: 'jq',
-            mapping: '{success_result: .pluginsOutput .business_data_vendor}',
+            transformer: 'jmespath',
+            mapping: '{success_result: pluginsOutput.business_data_vendor}',
           },
         },
       },
@@ -204,8 +204,8 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         stateNames: ['auto_reject'],
         request: {
           transform: {
-            transformer: 'jq',
-            mapping: '{failing_result: .}',
+            transformer: 'jmespath',
+            mapping: '{failing_result: @}',
           },
         },
       },

@@ -12,7 +12,7 @@ import type {
   WorkflowRunnerArgs,
 } from './types';
 import { Error as ErrorEnum } from './types';
-import { JQTransformer } from './utils/context-transformers/qj-transformer';
+import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import { StatePlugin } from './plugins/types';
 import { ApiPlugin, IApiPluginParams } from './plugins/external-plugin/api-plugin';
@@ -101,7 +101,7 @@ export class WorkflowRunner {
   }
 
   fetchTransformer(transformer) {
-    if (transformer.transformer == 'jq') return new JQTransformer(transformer.mapping);
+    if (transformer.transformer == 'jmespath') return new JmespathTransformer(transformer.mapping);
 
     throw new Error(`Transformer ${transformer.name} is not supported`);
   }

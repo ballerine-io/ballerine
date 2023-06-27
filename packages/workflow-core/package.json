@@ -31,8 +31,8 @@
   "dependencies": {
     "@ballerine/common": "0.5.3",
     "ajv": "^8.12.0",
+    "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
-    "node-jq": "^2.3.5",
     "xstate": "^4.35.2"
   },
   "devDependencies": {
@@ -46,6 +46,7 @@
     "@rollup/plugin-replace": "4.0.0",
     "@rollup/plugin-terser": "^0.4.0",
     "@types/babel__core": "^7.20.0",
+    "@types/jmespath": "^0.15.0",
     "@types/fs-extra": "^11.0.1",
     "@types/json-logic-js": "^2.0.1",
     "@types/node": "^18.14.0",
