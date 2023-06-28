@@ -1,10 +1,8 @@
 ---
-title: SDK UI Flows
-description: SDK UI flows documentation
+title: Interacting with Workflows
+description: Interacting with Workflows
 layout: ../../../layouts/MainLayout.astro
 ---
-
-# Interacting with Workflows
 
 Once a workflow is defined, you can create instances of it and interact with them in various ways. Each instance of a workflow is unique, with its own ID and context. 
 
