@@ -47,7 +47,7 @@
         <input type="text" id="bname" name="bname" />
       </div>
       <div>
-        <label for="rnum">Regestration Number</label>
+        <label for="rnum">Registration Number</label>
         <input type="text" id="rnum" name="rnum" />
       </div>
     {/if}
