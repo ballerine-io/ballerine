@@ -65,7 +65,7 @@ Ballerine is an open-source user risk decisioning infrastructure that helps comp
 
 ## Our vision for this project
 
-Watch a brief video expalining what we're building.
+Watch a brief video explaining what we're building.
 
 [Watch now](https://youtu.be/0SppYSZOatw)
 
@@ -124,7 +124,7 @@ We believe in enabling companies to manage user  identity  and risk according to
 
 **Demo example video**
 
-Watch a video of how the demo works, with explainations:
+Watch a video of how the demo works, with explanations:
 [Watch now](https://youtu.be/EzBXhUM7gb8)
 
 <br/>
