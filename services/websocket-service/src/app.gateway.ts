@@ -23,10 +23,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   broadcast(event: string, message: string) {
-    const broadCastMessage = JSON.stringify(message);
     if (this.server) {
       for (const client of this.server.clients) {
-        client.send(event + broadCastMessage);
+        client.send(message);
       }
     }
   }

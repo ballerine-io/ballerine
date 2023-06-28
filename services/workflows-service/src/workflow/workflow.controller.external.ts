@@ -25,6 +25,7 @@ import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-gu
 import { GetWorkflowsRuntimeDto } from '@/workflow/dtos/get-workflows-runtime.dto';
 import { GetWorkflowsRuntimeResponseDto } from '@/workflow/dtos/get-workflows-runtime-response.dto';
 import { plainToClass } from 'class-transformer';
+import axios from 'axios';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -94,7 +95,11 @@ export class WorkflowControllerExternal {
     @common.Body() data: WorkflowDefinitionUpdateInput,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.updateWorkflowRuntimeData(params.id, data);
+      const updatedWorkflow = await this.service.updateWorkflowRuntimeData(params.id, data);
+      const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+      // todo is it important to await this?
+      await axios.post(websocketServerNotifyUri);
+      return updatedWorkflow;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -153,10 +158,14 @@ export class WorkflowControllerExternal {
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
   ): Promise<void> {
-    return await this.service.event({
+    const createdEvent = await this.service.event({
       ...data,
       id,
     });
+    const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+    // todo is it important to await this?
+    await axios.post(websocketServerNotifyUri);
+    return createdEvent;
   }
 
   // POST /event
@@ -170,10 +179,14 @@ export class WorkflowControllerExternal {
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
   ): Promise<void> {
-    return await this.service.event({
+    const createdEvent = await this.service.event({
       ...data,
       id,
     });
+    const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+    // todo is it important to await this?
+    await axios.post(websocketServerNotifyUri);
+    return createdEvent;
   }
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')

@@ -3,9 +3,17 @@ import { useEntity } from './hooks/useEntity/useEntity';
 import { ctw } from '../../common/utils/ctw/ctw';
 import { Card } from '../../common/components/atoms/Card/Card';
 import { CardContent } from '../../common/components/atoms/Card/Card.Content';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 export const Entity = () => {
-  const { workflow, selectedEntity, tasks, cells, isLoading } = useEntity();
+  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+    share: true,
+    shouldReconnect: () => true,
+  });
+
+  const { workflow, selectedEntity, tasks, cells, isLoading } = useEntity(
+    readyState === ReadyState.OPEN,
+  );
 
   // Selected entity
   return (

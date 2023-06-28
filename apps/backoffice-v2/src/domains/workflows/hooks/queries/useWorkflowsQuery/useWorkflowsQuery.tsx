@@ -9,6 +9,7 @@ export const useWorkflowsQuery = ({
   sortDir,
   page,
   pageSize,
+  websocketConnectionIsOpen,
   filter,
 }: {
   filterId: string;
@@ -16,6 +17,7 @@ export const useWorkflowsQuery = ({
   sortDir: string;
   page: number;
   pageSize: number;
+  websocketConnectionIsOpen: boolean;
   filter: Record<string, unknown>;
 }) => {
   const isAuthenticated = useIsAuthenticated();
@@ -24,5 +26,6 @@ export const useWorkflowsQuery = ({
     ...workflowsQueryKeys.list({ filterId, filter, sortBy, sortDir, page, pageSize }),
     enabled: !!filterId && isAuthenticated && !!sortBy && !!sortDir && !!page && !!pageSize,
     staleTime: 100_000,
+    refetchInterval: () => (websocketConnectionIsOpen ? false : 100_000),
   });
 };

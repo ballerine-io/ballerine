@@ -3,6 +3,11 @@ import { Providers } from '../../common/components/templates/Providers/Providers
 import { Toaster } from 'react-hot-toast';
 import { Layout } from '../../common/components/templates/Layout/Layout';
 import { FunctionComponent, lazy, Suspense } from 'react';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { queryClient } from '../../lib/react-query/query-client';
+import { workflowsQueryKeys } from '../../domains/workflows/query-keys';
+import { storageQueryKeys } from '../../domains/storage/query-keys';
+import { filtersQueryKeys } from '../../domains/filters/query-keys';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -13,6 +18,36 @@ const ReactQueryDevtools = lazy(() =>
 );
 
 export const Root: FunctionComponent = () => {
+  useWebSocket('ws://localhost:3500/?testParams=55', {
+    share: true,
+    shouldReconnect: () => true,
+    onOpen: () => {
+      console.log('websocket opened');
+    },
+    onMessage: message => {
+      let queryKey = undefined;
+      if (message) {
+        switch (message.data) {
+          case 'filters':
+            queryKey = filtersQueryKeys._def;
+            break;
+          case 'storage':
+            queryKey = storageQueryKeys._def;
+            break;
+          case 'workflow':
+            queryKey = workflowsQueryKeys.byId._def;
+            break;
+          case 'workflows_list':
+            queryKey = workflowsQueryKeys.list._def;
+            break;
+        }
+      }
+      if (queryKey) {
+        queryClient.invalidateQueries(queryKey);
+      }
+    },
+  });
+
   return (
     <Providers>
       <Toaster

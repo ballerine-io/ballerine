@@ -14,8 +14,14 @@ import { SelectValue } from '../../../../common/components/atoms/Select/Select.V
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
 import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
+  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+    share: true,
+    shouldReconnect: () => true,
+  });
+
   const {
     onMutateUpdateWorkflowById,
     isLoadingUpdateWorkflowById,
@@ -26,7 +32,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     reasons,
     reason,
     onReasonChange,
-  } = useCallToActionLogic();
+  } = useCallToActionLogic(readyState === ReadyState.OPEN);
 
   return value === 'Reject' ? (
     <Dialog>

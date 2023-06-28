@@ -6,6 +6,8 @@ import { TRoutes } from '../../../../Router/types';
 import { CheckSquare } from 'lucide-react';
 import { useSearchParamsByEntity } from '../../../hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { queryClient } from '../../../../lib/react-query/query-client';
 
 /**
  * @description A nav element which wraps {@link NavItem} components of the app's routes. Supports nested routes.
@@ -15,7 +17,12 @@ import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks
  * @constructor
  */
 export const Navbar: FunctionComponent = () => {
-  const { data: filters } = useFiltersQuery();
+  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+    share: true,
+    shouldReconnect: () => true,
+  });
+
+  const { data: filters } = useFiltersQuery(readyState === ReadyState.OPEN);
   const [searchParams] = useSearchParamsByEntity();
   const navItems = [
     // {
@@ -26,7 +33,7 @@ export const Navbar: FunctionComponent = () => {
     // },
   ] satisfies TRoutes;
 
-  useSelectEntityFilterOnMount();
+  useSelectEntityFilterOnMount(readyState === ReadyState.OPEN);
 
   return (
     <nav>

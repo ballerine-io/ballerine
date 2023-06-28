@@ -5,8 +5,14 @@ import { useEntities } from './hooks/useEntities/useEntities';
 import { Case } from '../Entity/components/Case/Case';
 import { MotionScrollArea } from '../../common/components/molecules/MotionScrollArea/MotionScrollArea';
 import { FunctionComponent } from 'react';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 export const Entities: FunctionComponent = () => {
+  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+    share: true,
+    shouldReconnect: () => true,
+  });
+
   const {
     onPaginate,
     onSearch,
@@ -20,7 +26,7 @@ export const Entities: FunctionComponent = () => {
     totalPages,
     skeletonEntities,
     entity,
-  } = useEntities();
+  } = useEntities(readyState === ReadyState.OPEN);
 
   return (
     <>

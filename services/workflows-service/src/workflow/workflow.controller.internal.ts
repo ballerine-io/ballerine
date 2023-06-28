@@ -31,6 +31,7 @@ import {
 } from '@/workflow/dtos/find-workflow.dto';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
+import axios from 'axios';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -49,7 +50,11 @@ export class WorkflowControllerInternal {
     @UserData() userInfo: UserInfo,
     @common.Body() data: WorkflowDefinitionCreateDto,
   ) {
-    return await this.service.createWorkflowDefinition(data);
+    const createdWorkflowDefinition = await this.service.createWorkflowDefinition(data);
+    const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+    // todo is it important to await this?
+    await axios.post(websocketServerNotifyUri);
+    return createdWorkflowDefinition;
   }
 
   @common.Get()
@@ -114,10 +119,14 @@ export class WorkflowControllerInternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowEventInput,
   ): Promise<void> {
-    return await this.service.event({
+    const createdEvent = await this.service.event({
       ...data,
       id: params.id,
     });
+    const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+    // todo is it important to await this?
+    await axios.post(websocketServerNotifyUri);
+    return createdEvent;
   }
 
   // PATCH /workflows/:id
@@ -131,7 +140,11 @@ export class WorkflowControllerInternal {
     @common.Body() data: WorkflowDefinitionUpdateInput,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.updateWorkflowRuntimeData(params.id, data);
+      const updatedWorkflow = await this.service.updateWorkflowRuntimeData(params.id, data);
+      const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+      // todo is it important to await this?
+      await axios.post(websocketServerNotifyUri);
+      return updatedWorkflow;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -150,7 +163,11 @@ export class WorkflowControllerInternal {
     @common.Body() data: WorkflowAssigneeId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.assignWorkflowToUser(params.id, data);
+      const assignedWorkflow = await this.service.assignWorkflowToUser(params.id, data);
+      const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+      // todo is it important to await this?
+      await axios.post(websocketServerNotifyUri);
+      return assignedWorkflow;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -172,7 +189,7 @@ export class WorkflowControllerInternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
   ): Promise<WorkflowDefinition> {
     try {
-      return await this.service.deleteWorkflowDefinitionById(params.id, {
+      const deletedWorkflow = await this.service.deleteWorkflowDefinitionById(params.id, {
         select: {
           id: true,
           name: true,
@@ -187,6 +204,10 @@ export class WorkflowControllerInternal {
           submitStates: true,
         },
       });
+      const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+      // todo is it important to await this?
+      await axios.post(websocketServerNotifyUri);
+      return deletedWorkflow;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

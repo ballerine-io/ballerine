@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useNavigate, useParams } from 'react-router-dom';
 
-export const useSelectEntityFilterOnMount = () => {
-  const { data: filters } = useFiltersQuery();
+export const useSelectEntityFilterOnMount = (websocketConnectionIsOpen: boolean) => {
+  const { data: filters } = useFiltersQuery(websocketConnectionIsOpen);
   const { locale } = useParams();
   const [{ entity, filterId }, setSearchParams] = useSearchParamsByEntity();
   const navigate = useNavigate();

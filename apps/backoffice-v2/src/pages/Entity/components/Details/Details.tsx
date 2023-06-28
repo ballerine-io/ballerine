@@ -6,11 +6,21 @@ import { useParams } from 'react-router-dom';
 import { IDetailsProps } from './interfaces';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 export const Details: FunctionComponent<IDetailsProps> = ({ id, value }) => {
+  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+    share: true,
+    shouldReconnect: () => true,
+  });
+
   const { entityId } = useParams();
   const filterId = useFilterId();
-  const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
+  const { data: workflow } = useWorkflowQuery({
+    workflowId: entityId,
+    filterId,
+    websocketConnectionIsOpen: readyState === ReadyState.OPEN,
+  });
 
   if (!value.data?.length) return;
 

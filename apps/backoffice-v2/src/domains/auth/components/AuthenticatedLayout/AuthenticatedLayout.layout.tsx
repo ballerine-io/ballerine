@@ -1,11 +1,16 @@
 import { Header } from '../../../../common/components/organisms/Header';
 import { FunctionComponentWithChildren } from '../../../../common/types';
 import { useSelectEntityFilterOnMount } from '../../../entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {
+  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+    share: true,
+    shouldReconnect: () => true,
+  });
   // Should only be uncommented once `useAuthRedirects` is no longer in use in `AuthProvider`
   // useAuthenticatedLayout();
-  useSelectEntityFilterOnMount();
+  useSelectEntityFilterOnMount(readyState == ReadyState.OPEN);
 
   return (
     <div className="drawer-mobile drawer">
