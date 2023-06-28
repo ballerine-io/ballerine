@@ -51,9 +51,9 @@ export const Navbar: FunctionComponent = () => {
         </ul>
       ))}
       <ul className={`menu menu-compact w-full space-y-2`}>
-        {filters?.map(({ id, name }) => (
+        {filters?.map(({ id, name, entity }) => (
           <NavItem
-            href={`/en/case-management/entities?filterId=${id}`}
+            href={`/en/case-management/entities?entity=${entity}&filterId=${id}`}
             key={id}
             className={ctw(`capitalize`, {
               'bg-muted font-bold': id === searchParams?.filterId,

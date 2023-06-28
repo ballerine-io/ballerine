@@ -7,8 +7,8 @@ export {
   WorkflowEventWithoutState,
   WorkflowOptions,
   WorkflowRunnerArgs,
-  WorkflowContext,
+  WorkflowContext
 } from './types';
-export { StatePlugin } from './plugins/types';
-export { PluginAction } from './plugins/types';
-export { ExtensionRunOrder } from './plugins/types';
+export {StatePlugin} from "./plugins/types";
+export {PluginAction} from "./plugins/types";
+export {ExtensionRunOrder} from "./plugins/types";
