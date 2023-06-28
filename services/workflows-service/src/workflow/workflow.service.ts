@@ -60,6 +60,7 @@ import {
   getDocumentsByCountry,
   TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import {
   WorkflowAssignee,
@@ -108,8 +109,6 @@ const policies = {
 
 @Injectable()
 export class WorkflowService {
-  private readonly logger = new Logger(WorkflowService.name);
-
   constructor(
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
@@ -118,6 +117,7 @@ export class WorkflowService {
     protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
+    private readonly logger: AppLoggerService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {

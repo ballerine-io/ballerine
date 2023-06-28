@@ -1,7 +1,7 @@
 {
-  "name": "@ballerine/workflows-websocket-service",
+  "name": "@ballerine/websocket-service",
   "version": "0.0.1",
-  "description": "workflows-websocket-service",
+  "description": "websocket-service",
   "private": false,
   "scripts": {
     "build": "nest build",

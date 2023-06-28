@@ -8,6 +8,15 @@ import { EndUserModule } from '@/end-user/end-user.module';
 import { EndUserService } from '@/end-user/end-user.service';
 import { InstanceLink } from '@nestjs/core/injector/instance-links-host';
 import console from 'console';
+import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
+import { ClsModule } from 'nestjs-cls';
+
+export const commonTestingModules = [
+  ClsModule.forRoot({
+    global: true,
+  }),
+  AppLoggerModule,
+];
 
 const acGuard = {
   canActivate: () => {
@@ -34,7 +43,7 @@ export const fetchServiceFromModule = async <T>(
 ) => {
   const moduleRef = await Test.createTestingModule({
     providers: [service, ...dependencies],
-    imports: [...modules],
+    imports: [...modules, ...commonTestingModules],
   }).compile();
 
   return moduleRef.get<typeof service>(service);
@@ -50,7 +59,7 @@ export const initiateNestApp = async (
   const moduleRef = await Test.createTestingModule({
     providers: providers,
     controllers: controllers,
-    imports: [ACLModule, ...modules],
+    imports: [ACLModule, ...modules, ...commonTestingModules],
   })
     .overrideGuard(ACGuard)
     .useValue(acGuard)

@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export interface SortingData {
   key: string;
   keyWithPrefix: string;
@@ -5,19 +7,24 @@ export interface SortingData {
 }
 
 export function getSortingDataFromQuery(string: string, regex: RegExp): SortingData | null {
-  const parseResult = regex.exec(string);
+  const sortingQuerySchema = z
+    .string()
+    .regex(regex)
+    .transform(sortingString => {
+      regex.lastIndex = 0;
+      const parseResult = regex.exec(sortingString);
+      if (!parseResult) return null;
+      const parseValues = [parseResult[1], parseResult[2], parseResult[3]];
 
-  if (!parseResult) return null;
+      const [keyWithPrefix, key, value] = parseValues;
 
-  const parseValues = [parseResult[1], parseResult[2], parseResult[3]];
+      return {
+        keyWithPrefix,
+        key,
+        value: value as SortingData['value'],
+      };
+    })
+    .catch(null);
 
-  if (!parseResult.length || !parseValues.every(val => Boolean(val))) return null;
-
-  const [keyWithPrefix, key, value] = parseValues;
-
-  return {
-    keyWithPrefix,
-    key,
-    value: value as SortingData['value'],
-  };
+  return sortingQuerySchema.parse(string);
 }
