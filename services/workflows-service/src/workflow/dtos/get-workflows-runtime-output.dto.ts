@@ -10,7 +10,7 @@ export class Pagination {
   total!: number;
 }
 
-export class GetWorkflowsRuntimeResponseDto {
+export class GetWorkflowsRuntimeOutputDto {
   @ApiProperty({ type: () => WorkflowRuntimeListItemModel, isArray: true })
   @ValidateNested()
   results!: WorkflowRuntimeListItemModel[];

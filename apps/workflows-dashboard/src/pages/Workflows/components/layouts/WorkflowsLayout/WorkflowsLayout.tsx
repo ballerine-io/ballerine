@@ -7,7 +7,7 @@ interface Props {
 }
 
 export function WorkflowsLayout({ children }: Props) {
-  return <div className="flex h-full flex-col">{children}</div>;
+  return <div className="flex h-full flex-col gap-4">{children}</div>;
 }
 
 WorkflowsLayout.Header = Header;
