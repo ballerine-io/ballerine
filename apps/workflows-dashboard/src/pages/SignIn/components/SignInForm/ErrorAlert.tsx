@@ -5,7 +5,7 @@ interface Props {
 }
 
 const getErrorMessageByErrorCode = (code: number) => {
-  const defaultMessage = `Something wen't wrong.Try again later`;
+  const defaultMessage = `Something went wrong. Try again later.`;
 
   const codeToMessageMap: Record<number, string> = {
     [401]: 'Invalid credentials',
