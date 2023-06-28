@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { useFilterId } from '../useFilterId/useFilterId';
-import { TEntityType } from '../../../domains/entities/types';
 import { useFiltersQuery } from '../../../domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
+
+export type TEntityType = 'individuals' | 'business';
 
 export function useEntityType(defaultEntityType: TEntityType = 'individuals'): TEntityType {
   const filterId = useFilterId();

@@ -23,7 +23,7 @@ import { TIndividual } from '../../../../domains/individuals/types';
  * @param onSearch
  * @param onFilter
  * @param onSortBy
- * @param onSortDir
+ * @param onSortDirToggle
  * @param props
  * @constructor
  */
@@ -32,7 +32,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
   onSearch,
   onFilter,
   onSortBy,
-  onSortDir,
+  onSortDirToggle,
   search,
   ...props
 }) => {
@@ -66,7 +66,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
           </div>
         </div>
         <div className={`flex items-center justify-between`}>
-          <div className="dropdown-hover dropdown dropdown-bottom z-[60]">
+          <div className="dropdown-hover dropdown-bottom dropdown z-[60]">
             <button
               className={`btn-ghost btn-sm btn h-[2.125rem] gap-2 border-neutral/10 text-xs focus-visible:outline-primary theme-dark:border-neutral/50`}
               tabIndex={0}
@@ -116,7 +116,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
             <div className={`input-group flex items-center`}>
               <button
                 className={`btn-ghost btn-square btn-sm btn !rounded-md focus-visible:border-none focus-visible:bg-neutral/10 focus-visible:outline-none focus-visible:ring-0 focus-visible:theme-dark:bg-neutral`}
-                onClick={onSortDir}
+                onClick={onSortDirToggle}
                 ref={sortRef}
               >
                 <SortSvg />

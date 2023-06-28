@@ -1,44 +1,74 @@
 import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
-import { useFilter } from '../../../../common/hooks/useFilter/useFilter';
-import { usePagination } from '../../../../common/hooks/usePagination/usePagination';
 import { ChangeEventHandler, useCallback } from 'react';
 import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
-import { useUsersQuery } from '../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
-import { useSort } from '../../../../common/hooks/useSort/useSort';
-import { useEntitiesWithWorkflowsQuery } from '../../../../domains/entities/hooks/queries/useEntitiesWithWorkflowsQuery/useEntitiesWithWorkflowsQuery';
-import { TIndividual } from '../../../../domains/individuals/types';
-import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
+import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
+import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 
 export const useEntities = () => {
-  const { data: users } = useUsersQuery();
-  const { data: cases, isLoading } = useEntitiesWithWorkflowsQuery(users);
+  const [{ filterId, filter, sortBy, sortDir, page, pageSize }, setSearchParams] =
+    useSearchParamsByEntity();
+  const { data, isLoading } = useWorkflowsQuery({
+    filterId,
+    filter,
+    sortBy,
+    sortDir,
+    page,
+    pageSize,
+  });
+  const {
+    meta: { totalPages },
+    data: cases,
+  } = data || { meta: { totalPages: 0 }, data: [] };
   const entity = useEntityType();
-  const individualsSearchOptions = ['firstName', 'lastName', 'email', 'phone'];
-  const businessesSearchOptions = [
-    'companyName',
-    'registrationNumber',
-    'legalForm',
-    'countryOfIncorporation',
-  ];
+  const individualsSearchOptions = ['entity.name', 'entity.email'];
+  const businessesSearchOptions = ['entity.name'];
   const { searched, onSearch, search } = useSearch({
     data: cases,
     searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
   });
-  const { sorted, onSortBy, onSortDir } = useSort({
-    data: searched,
-    initialState: {
-      sortBy: 'caseCreatedAt',
+
+  const onSortDirToggle = useCallback(() => {
+    setSearchParams({
+      sortDir: sortDir === 'asc' ? 'desc' : 'asc',
+    });
+  }, [setSearchParams, sortDir]);
+
+  const onSortBy = useCallback(
+    (sortBy: string) => {
+      setSearchParams({
+        sortBy,
+      });
     },
-  });
-  const { filtered, onFilter } = useFilter({
-    data: sorted,
-  });
-  const { paginated, page, pages, totalPages, onPaginate } = usePagination({
-    data: filtered,
-    initialPageSize: 10,
-    initialPage: 1,
-  });
+    [setSearchParams],
+  );
+
+  const onFilterChange = useCallback(
+    (key: string) => {
+      return (values: string[]) => {
+        setSearchParams({
+          filter: {
+            ...filter,
+            [key]: values,
+          },
+          page: 1,
+        });
+      };
+    },
+    [filter, setSearchParams],
+  );
+
+  const onPaginate = useCallback(
+    (page: number) => () => {
+      setSearchParams({
+        page,
+        pageSize,
+      });
+    },
+    [pageSize, setSearchParams],
+  );
+
   const onSearchChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     event => {
       onSearch(event.target.value);
@@ -51,14 +81,6 @@ export const useEntities = () => {
     },
     [onSortBy],
   );
-  const onFilterChange = useCallback(
-    (key: keyof TIndividual) => (values: Array<string>) => {
-      onFilter({
-        [key]: values,
-      });
-    },
-    [onFilter],
-  );
   const skeletonEntities = createArrayOfNumbers(3);
 
   useSelectEntityOnMount();
@@ -68,12 +90,11 @@ export const useEntities = () => {
     onSearch: onSearchChange,
     onFilter: onFilterChange,
     onSortBy: onSortByChange,
-    onSortDir,
+    onSortDirToggle,
     search,
-    cases: paginated,
+    cases: searched,
     isLoading,
     page,
-    pages,
     totalPages,
     skeletonEntities,
     entity,

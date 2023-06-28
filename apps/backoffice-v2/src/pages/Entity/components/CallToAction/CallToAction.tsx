@@ -1,186 +1,90 @@
-import React, { FunctionComponent, useCallback, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
-import { DropdownMenu } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu';
-import { DropdownMenuTrigger } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
 import { Button } from '../../../../common/components/atoms/Button/Button';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { DropdownMenuContent } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Content';
-import { DropdownMenuLabel } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Label';
-import { DropdownMenuSeparator } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Separator';
-import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
-import { DropdownMenuItem } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Item';
-import { AlertTriangle, RotateCcw } from 'lucide-react';
 import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
-import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
-import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
-import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { DialogClose } from '@radix-ui/react-dialog';
-import { useParams } from 'react-router-dom';
 import { ICallToActionProps } from './interfaces';
-import { useEntityWithWorkflowQuery } from '../../../../domains/entities/hooks/queries/useEntityWithWorkflowQuery/useEntityWithWorkflowQuery';
-import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useCaseState } from '../Case/hooks/useCaseState/useCaseState';
-import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
-import toast from 'react-hot-toast';
 import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
 import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
+import { Input } from '../../../../common/components/atoms/Input/Input';
+import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
+import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
 
 export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
-  const { entityId } = useParams();
-  const { data: entity } = useEntityWithWorkflowQuery(entityId);
-  const [revisionReason, setRevisionReason] = useState('');
-  const onRevisionReasonChange = useCallback(
-    (value: string) => setRevisionReason(value),
-    [setRevisionReason],
-  );
-  const { data: session } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(session?.user, entity?.workflow);
-  const revisionReasons =
-    entity?.workflow?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-      ({ enum: enum_ }) => !!enum_,
-    )?.enum;
-  const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
-    useUpdateWorkflowByIdMutation({
-      workflowId: entity?.workflow?.runtimeDataId,
-    });
-  const onMutateUpdateWorkflowById =
-    (
-      payload:
-        | {
-            id: string;
-            approvalStatus: 'rejected' | 'approved';
-          }
-        | {
-            id: string;
-            approvalStatus: 'revision';
-            revisionReason: string;
-          },
-    ) =>
-    () => {
-      if (!payload?.id) {
-        toast.error('Invalid task id');
-
-        return;
-      }
-
-      const action = (
-        {
-          approved: 'approve_document',
-          rejected: 'reject_document',
-          revision: 'ask_resubmit_document',
-        } as const
-      )[payload.approvalStatus];
-
-      const context = {
-        documents: entity?.workflow?.workflowContext?.machineContext?.documents?.map(document => {
-          if (document?.id !== payload?.id) return document;
-
-          switch (payload?.approvalStatus) {
-            case 'approved':
-              return {
-                ...document,
-                decision: {
-                  revisionReason: null,
-                  rejectionReason: null,
-                  status: payload?.approvalStatus,
-                },
-              };
-            case 'rejected':
-              return {
-                ...document,
-                decision: {
-                  revisionReason: null,
-                  // Change when rejection reason is implemented.
-                  rejectionReason: document?.decision?.rejectionReason ?? '',
-                  status: payload?.approvalStatus,
-                },
-              };
-            case 'revision':
-              return {
-                ...document,
-                decision: {
-                  revisionReason: payload?.revisionReason,
-                  rejectionReason: null,
-                  status: payload?.approvalStatus,
-                },
-              };
-            default:
-              return document;
-          }
-        }),
-      };
-      return mutateUpdateWorkflowById({
-        context,
-        action,
-      });
-    };
+  const {
+    onMutateUpdateWorkflowById,
+    isLoadingUpdateWorkflowById,
+    caseState,
+    action,
+    actions,
+    onActionChange,
+    reasons,
+    reason,
+    onReasonChange,
+  } = useCallToActionLogic();
 
   return value === 'Reject' ? (
     <Dialog>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant={`destructive`}
-            className={ctw({
-              // loading: debouncedIsLoadingRejectEntity,
-            })}
-            // disabled={isLoading || !canReject}
-            disabled={!caseState.actionButtonsEnabled || data?.disabled}
-          >
-            {value}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className={`min-w-[16rem]`} align={`end`}>
-          <DropdownMenuLabel>{value}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DialogTrigger asChild>
-            <DropdownMenuItem className={`cursor-pointer gap-x-2`}>
-              <RotateCcw size={18} />
-              Ask to re-submit
-            </DropdownMenuItem>
-          </DialogTrigger>
-          <DropdownMenuItem
-            className={`cursor-pointer gap-x-2 text-red-500`}
-            onClick={onMutateUpdateWorkflowById({
-              id: data?.id,
-              approvalStatus: 'rejected',
-            })}
-          >
-            <AlertTriangle className={`text-red-500`} size={18} />
-            Block
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <DialogTrigger asChild>
+        <Button
+          variant={`destructive`}
+          className={ctw({
+            // loading: debouncedIsLoadingRejectEntity,
+          })}
+          // disabled={isLoading || !canReject}
+          disabled={!caseState.actionButtonsEnabled || data?.disabled}
+        >
+          {value}
+        </Button>
+      </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Request document re-submission</DialogTitle>
-          <DialogDescription>
-            This action will send a request to the user to re-submit their document. State the
-            reason for requesting a document re-submission.
-          </DialogDescription>
-        </DialogHeader>
-        <Select onValueChange={onRevisionReasonChange}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Re-submission reason" />
-          </SelectTrigger>
-          <SelectContent>
-            {revisionReasons?.map(reason => {
-              const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
-              const capitalizedReason =
-                reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
+        <div>
+          <h4 className={`mb-1 font-bold`}>Action</h4>
+          <Select onValueChange={onActionChange} value={action}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {actions?.map(({ label, value }) => {
+                return (
+                  <SelectItem key={action} value={value}>
+                    {label}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+        {!reasons?.length ? (
+          <Input placeholder={`Reason`} onChange={event => onReasonChange(event.target.value)} />
+        ) : (
+          <div>
+            <h4 className={`mb-1 font-bold`}>Reason</h4>
+            <Select onValueChange={onReasonChange} value={reason}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {reasons?.map(reason => {
+                  const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
+                  const capitalizedReason =
+                    reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
 
-              return (
-                <SelectItem key={reason} value={reason}>
-                  {capitalizedReason}
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
+                  return (
+                    <SelectItem key={`${action}${reason}`} value={reason} className={`capitalize`}>
+                      {capitalizedReason}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         <DialogFooter>
           <DialogClose asChild>
             <button
@@ -194,8 +98,8 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
               // disabled={!resubmissionReason}
               onClick={onMutateUpdateWorkflowById({
                 id: data?.id,
-                approvalStatus: 'revision',
-                revisionReason,
+                approvalStatus: action,
+                reason,
               })}
             >
               Confirm

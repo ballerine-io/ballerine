@@ -1,3 +1,5 @@
+import { TDropdownOption } from './types';
+
 export interface IEditableDetails {
   data: Array<{
     title: string;
@@ -6,6 +8,7 @@ export interface IEditableDetails {
     type: string;
     format?: string;
     pattern?: string;
+    dropdownOptions?: Array<TDropdownOption>;
   }>;
   valueId: string;
   id: string;

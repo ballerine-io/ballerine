@@ -7,16 +7,14 @@ import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityT
 export const useSelectEntityFilterOnMount = () => {
   const { data: filters } = useFiltersQuery();
   const { locale } = useParams();
-  const [{ filterId, filterName }, setSearchParams] = useSearchParamsByEntity();
+  const [{ filterId }, setSearchParams] = useSearchParamsByEntity();
   const entity = useEntityType();
   const navigate = useNavigate();
   const [firstFilter] = filters ?? [];
 
   useEffect(() => {
-    if ((entity && filterId && filterName) || !firstFilter) return;
+    if ((entity && filterId) || !firstFilter) return;
 
-    navigate(
-      `/${locale}/case-management/entities?filterId=${firstFilter?.id}&filterName=${firstFilter?.name}`,
-    );
-  }, [entity, filterId, filterName, firstFilter, setSearchParams]);
+    navigate(`/${locale}/case-management/entities?filterId=${firstFilter?.id}`);
+  }, [entity, filterId, firstFilter, setSearchParams]);
 };

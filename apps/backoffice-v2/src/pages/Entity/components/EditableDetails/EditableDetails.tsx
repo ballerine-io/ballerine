@@ -5,7 +5,7 @@ import { toStartCase } from '../../../../common/utils/to-start-case/to-start-cas
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Button } from '../../../../common/components/atoms/Button/Button';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
 import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
@@ -14,6 +14,20 @@ import { FormItem } from '../../../../common/components/organisms/Form/Form.Item
 import { FormLabel } from '../../../../common/components/organisms/Form/Form.Label';
 import { FormControl } from '../../../../common/components/organisms/Form/Form.Control';
 import { FormMessage } from '../../../../common/components/organisms/Form/Form.Message';
+import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
+import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
+import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
+import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
+import { Select } from '../../../../common/components/atoms/Select/Select';
+import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
+
+const useInitialCategorySetValue = ({ form, data }) => {
+  useEffect(() => {
+    const categoryValue = form.getValues('category');
+
+    form.setValue('category', categoryValue);
+  }, [form, data]);
+};
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
@@ -23,21 +37,32 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   title,
   workflowId,
 }) => {
+  const [formData, setFormData] = useState(data);
+  const useInitialCategorySetValue = () => {
+    useEffect(() => {
+      const categoryValue = form.getValues('category');
+      form.setValue('category', categoryValue);
+    }, [form, data, setFormData]);
+  };
+  const POSITIVE_VALUE_INDICATOR = ['approved'];
+  const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
+  const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
+    return isDecisionComponent && value && POSITIVE_VALUE_INDICATOR.includes(value.toLowerCase());
+  };
+  const isDecisionNegative = (isDecisionComponent: boolean, value: string) => {
+    return isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
+  };
+  const defaultValues = formData?.reduce((acc, curr) => {
+    acc[curr.title] = curr.value;
+
+    return acc;
+  }, {});
+  const form = useForm({
+    defaultValues,
+  });
   const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
     workflowId,
   });
-  const POSITIVE_VALUE_INDICATOR = ['approved'];
-  const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
-  const isDecisionPositive = (isDecisionComponent: boolean, value) => {
-    return (
-      isDecisionComponent && value && POSITIVE_VALUE_INDICATOR.includes(String(value).toLowerCase())
-    );
-  };
-  const isDecisionNegative = (isDecisionComponent: boolean, value) => {
-    return (
-      isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(String(value).toLowerCase())
-    );
-  };
   const onMutateTaskDecisionById = ({
     context,
     action,
@@ -49,26 +74,26 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       context,
       action,
     });
-  const defaultValues = data?.reduce((acc, curr) => {
-    acc[curr.title] = curr.value;
-
-    return acc;
-  }, {});
-  const form = useForm({
-    defaultValues,
-  });
-  const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = data => {
+  const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
     const context = {
       documents: documents?.map(document => {
         if (document?.id !== valueId) return document;
 
-        return {
-          ...document,
-          properties: Object.keys(document?.properties).reduce((acc, curr) => {
-            acc[curr] = data?.[curr];
+        const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
+          (acc, curr) => {
+            if (!formData?.[curr]) return acc;
+            acc[curr] = formData?.[curr];
 
             return acc;
-          }, {}),
+          },
+          {},
+        );
+
+        return {
+          ...document,
+          type: formData.type,
+          category: formData.category,
+          properties: properties,
         };
       }),
     };
@@ -80,16 +105,24 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   };
   const isDecisionComponent = title === 'Decision';
 
+  useWatchDropdownOptions({ form, data, setFormData });
+  useInitialCategorySetValue({
+    form,
+    data,
+  });
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={`flex h-full flex-col`}>
-        <legend className={`sr-only`}>{title}</legend>
+        <legend className={ctw({ 'sr-only': id !== 'visible-title' }, 'mb-2 font-bold')}>
+          {title}
+        </legend>
         <div
           className={ctw(`grid grid-cols-2 gap-4`, {
             'grid-cols-3': id === 'entity-details',
           })}
         >
-          {data?.map(({ title, isEditable, type, format, pattern, value }) =>
+          {formData?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
             isDecisionComponent && !value ? null : (
               <FormField
                 key={title}
@@ -98,28 +131,51 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type={!format ? (type === 'string' ? 'text' : type) : format}
+                    {dropdownOptions ? (
+                      <Select
                         disabled={!isEditable}
-                        className={ctw(
-                          `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
-                          {
-                            'font-bold text-success': isDecisionPositive(
-                              isDecisionComponent,
-                              value,
-                            ),
-                            'font-bold text-destructive': isDecisionNegative(
-                              isDecisionComponent,
-                              value,
-                            ),
-                          },
-                        )}
-                        pattern={pattern}
-                        autoComplete={'off'}
-                        {...field}
-                      />
-                    </FormControl>
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {dropdownOptions?.map(({ label, value }) => {
+                            return (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <FormControl>
+                        <Input
+                          type={!format ? (type === 'string' ? 'text' : type) : format}
+                          disabled={!isEditable}
+                          className={ctw(
+                            `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
+                            {
+                              'font-bold text-success': isDecisionPositive(
+                                isDecisionComponent,
+                                field.value,
+                              ),
+                              'font-bold text-destructive': isDecisionNegative(
+                                isDecisionComponent,
+                                field.value,
+                              ),
+                            },
+                          )}
+                          pattern={pattern}
+                          autoComplete={'off'}
+                          {...field}
+                        />
+                      </FormControl>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}

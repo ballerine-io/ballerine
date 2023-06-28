@@ -5,7 +5,7 @@ import { UserInfo } from '@/user/user-info';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { Headers, NotFoundException, Res } from '@nestjs/common';
+import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
@@ -18,10 +18,13 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { GetWorkflowsRuntimeDto } from '@/workflow/dtos/get-workflows-runtime.dto';
+import { GetWorkflowsRuntimeResponseDto } from '@/workflow/dtos/get-workflows-runtime-response.dto';
+import { plainToClass } from 'class-transformer';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -31,33 +34,37 @@ export class WorkflowControllerExternal {
     protected readonly service: WorkflowService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-    private eventEmitter: EventEmitter2,
   ) {}
-
   // GET /workflows
-  @common.Get()
-  @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
+  @common.Get('/')
+  @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeResponseDto] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
+  @UseKeyAuthInDevGuard()
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
-  async listWorkflowRuntimeDataByUserId(
-    @UserData()
-    _userInfo: UserInfo,
-    @Headers('no_auth_user_id') no_auth_user_id: string,
-  ): Promise<RunnableWorkflowData[]> {
-    const completeWorkflowData = await this.service.listFullWorkflowDataByUserId(no_auth_user_id);
-    const response = completeWorkflowData.map(({ workflowDefinition, ...rest }) => ({
-      workflowRuntimeData: rest,
-      workflowDefinition,
-    }));
+  async listWorkflowRuntimeData(
+    @Query() query: GetWorkflowsRuntimeDto,
+  ): Promise<GetWorkflowsRuntimeResponseDto> {
+    const results = await this.service.listRuntimeData({
+      page: query.page,
+      size: query.limit,
+      status: query.status,
+    });
 
-    return response;
+    return plainToClass(GetWorkflowsRuntimeResponseDto, results);
+  }
+
+  @common.Get('/metrics')
+  @UseKeyAuthInDevGuard()
+  async listWorkflowRuntimeMetric() {
+    return await this.service.listWorkflowsMetrics();
   }
 
   @common.Get('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseKeyAuthInDevGuard()
   async getRunnableWorkflowDataById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
   ): Promise<RunnableWorkflowData> {
@@ -81,6 +88,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseKeyAuthInDevGuard()
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
@@ -100,13 +108,11 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async intent(
-    @common.Body() intent: IntentDto,
-    @Headers('no_auth_user_id') no_auth_user_id: string,
-  ): Promise<IntentResponse> {
+  @UseKeyAuthInDevGuard()
+  async intent(@common.Body() { intentName, entityId }: IntentDto): Promise<IntentResponse> {
     // Rename to intent or getRunnableWorkflowDataByIntent?
-    const entityType = intent.intentName === 'kycSignup' ? 'endUser' : 'business';
-    return await this.service.resolveIntent(intent.intentName, no_auth_user_id, entityType);
+    const entityType = intentName === 'kycSignup' ? 'endUser' : 'business';
+    return await this.service.resolveIntent(intentName, entityId, entityType);
   }
 
   @common.Post('/run')
@@ -153,6 +159,22 @@ export class WorkflowControllerExternal {
     });
   }
 
+  // POST /event
+  @common.Post('/:id/send-event')
+  @swagger.ApiOkResponse()
+  @UseKeyAuthGuard()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async sendEvent(
+    @UserData() _userInfo: UserInfo,
+    @common.Param('id') id: string,
+    @common.Body() data: WorkflowEventInput,
+  ): Promise<void> {
+    return await this.service.event({
+      ...data,
+      id,
+    });
+  }
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')
   @UseKeyAuthGuard()

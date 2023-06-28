@@ -71,7 +71,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     isActionButtonDisabled,
     onTriggerAssignToMe,
     isAssignedToMe,
-  } = useActions({ entityId: id, fullName });
+  } = useActions({ workflowId: id, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-4`}>
@@ -112,7 +112,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           </h2>
         </div>
         {showResolutionButtons && (
-          <div className={`flex items-center space-x-6 pe-[3.35rem]`}>
+          <div className={`pe-[3.35rem] flex items-center space-x-6`}>
             <Button
               className={ctw({
                 // loading: debouncedIsLoadingRejectEntity,

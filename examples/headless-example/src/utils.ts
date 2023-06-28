@@ -1,3 +1,4 @@
+import { getDocumentId } from '@ballerine/common';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { WorkflowBrowserSDK, WorkflowOptionsBrowser } from '@ballerine/workflow-browser-sdk';
@@ -9,7 +10,7 @@ import { createForm } from 'felte';
 import { getContext, setContext } from 'svelte';
 import type { z, ZodSchema } from 'zod';
 import type { FetchInitWithJson, Serializable } from './types';
-import { NO_AUTH_USER_KEY } from './constants';
+import { Category } from '@/constants';
 
 export const setWorkflowContext = (service: InstanceType<typeof WorkflowBrowserSDK>) => {
   setContext('workflow', service);
@@ -64,6 +65,12 @@ export const makeWorkflow = (data: {
     },
     backend: {
       baseUrl: 'http://localhost:3000/api/v1/external',
+      headers: {
+        Authorization:
+          import.meta.env.MODE === 'development'
+            ? `Api-Key ${import.meta.env.VITE_API_KEY}`
+            : undefined,
+      },
     },
   };
 };
@@ -105,7 +112,7 @@ export const fetchJson = async <TData, TBody = Record<string, unknown>>(
     ...init,
     headers: {
       ...init?.headers,
-      no_auth_user_id: sessionStorage.getItem(NO_AUTH_USER_KEY) ?? '',
+      Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
     },
   });
   const data: TData = await res.json();
@@ -121,7 +128,7 @@ export const fetchBlob = async <TData, TBody = Record<string, unknown>>(
     ...init,
     headers: {
       ...init?.headers,
-      no_auth_user_id: sessionStorage.getItem(NO_AUTH_USER_KEY) ?? '',
+      Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
     },
   });
 
@@ -143,6 +150,113 @@ export const handlePromise = async <TData>(
 export const ctw = (...classNames: Array<ClassValue>) => twMerge(clsx(classNames));
 export const camelCaseToTitle = (str: string) =>
   str
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, str => str.toUpperCase())
-    .replace(/id/i, 'ID');
+    ?.replace(/([A-Z])/g, ' $1')
+    ?.replace(/^./, str => str?.toUpperCase())
+    ?.replace(/id/i, 'ID');
+
+export const getSnapshotContext = (workflowService: InstanceType<typeof WorkflowBrowserSDK>) =>
+  workflowService?.getSnapshot()?.context;
+export const makeDocument = ({
+  id,
+  payload,
+}: {
+  id: string;
+  payload: {
+    [key: string]: {
+      id: string;
+      fileType: string;
+    };
+  };
+}) => {
+  const [category, type, issuerCountry] = id?.split('-') ?? [];
+  const properties = (() => {
+    if (category === Category.CERTIFICATE_OF_INCORPORATION) {
+      return {
+        businessName: 'Test Business',
+        website: 'https://testbusiness.com',
+        phone: '+233 123 456 789',
+        email: 'test@test.com',
+        owner: 'Test Owner',
+        tin: '123456789',
+      };
+    }
+
+    if (
+      (category === Category.ID_CARD || category === Category.SELFIE) &&
+      import.meta.env.VITE_EXAMPLE_TYPE === 'kyc'
+    ) {
+      return {
+        firstName: 'John',
+        middleName: 'Oed',
+        lastName: 'Doe',
+        authority: 'Canada',
+        placeOfIssue: 'Canada',
+        issueDate: '2020-01-01',
+        expires: '2025-01-01',
+        dateOfBirth: '1990-01-01',
+        placeOfBirth: 'Canada',
+        sex: 'Other',
+      };
+    }
+
+    if (
+      (category === Category.ID_CARD || category === Category.SELFIE) &&
+      import.meta.env.VITE_EXAMPLE_TYPE === 'kyb'
+    ) {
+      return {
+        firstName: 'John',
+        middleName: 'Oed',
+        lastName: 'Doe',
+        authority: 'Canada',
+        placeOfIssue: 'Canada',
+        issueDate: '2020-01-01',
+        expires: '2025-01-01',
+        dateOfBirth: '1990-01-01',
+        placeOfBirth: 'Canada',
+        sex: 'Other',
+      };
+    }
+
+    throw new Error(`Invalid properties`);
+  })();
+
+  return {
+    category,
+    type,
+    issuer: {
+      country: issuerCountry,
+    },
+    version: 1,
+    pages: [
+      {
+        ballerineFileId: payload?.[id]?.id,
+        type: payload?.[id]?.fileType === 'application/pdf' ? 'pdf' : 'png',
+        provider: 'http',
+        uri: '',
+      },
+    ],
+    properties,
+  };
+};
+// Update document if it exists, otherwise add a new document.
+export const upsertDocument = ({
+  documents,
+  document,
+}: {
+  documents: Array<any>;
+  document: any;
+}) => {
+  const documentExists = documents?.some(
+    doc => getDocumentId(doc, false) === getDocumentId(document, false),
+  );
+
+  if (!Array.isArray(documents) || !documents?.length) return [document];
+
+  return !documentExists
+    ? [...documents, document]
+    : documents?.map(doc => {
+        if (getDocumentId(doc, false) !== getDocumentId(document, false)) return doc;
+
+        return document;
+      });
+};

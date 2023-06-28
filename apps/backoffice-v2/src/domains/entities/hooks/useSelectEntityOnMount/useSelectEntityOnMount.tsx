@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { useFirstEntityIdQuery } from '../queries/useFirstEntityIdQuery/useFirstEntityIdQuery';
 import { useParams } from 'react-router-dom';
 import { useSelectEntity } from '../useSelectEntity/useSelectEntity';
+import { useWorkflowsQuery } from '../../../workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
+import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 
 /**
@@ -9,17 +10,18 @@ import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityT
  */
 export const useSelectEntityOnMount = () => {
   const { entityId } = useParams();
-  const { data: firstEntityId } = useFirstEntityIdQuery({
-    initialState: {
-      sortBy: 'caseCreatedAt',
-    },
-  });
+  const [{ filterId, filter, sortBy, sortDir, page, pageSize }] = useSearchParamsByEntity();
+  const { data } = useWorkflowsQuery({ filterId, filter, sortBy, sortDir, page, pageSize });
+  const { data: workflows } = data || { data: [] };
   const onSelectEntity = useSelectEntity();
   const entity = useEntityType();
+  const firstCaseId = workflows?.[0]?.id;
 
   useEffect(() => {
-    if (!firstEntityId || entityId) return;
+    if (entityId) return;
 
-    onSelectEntity(firstEntityId)();
-  }, [entity, firstEntityId, entityId, onSelectEntity]);
+    if (!firstCaseId) return;
+
+    onSelectEntity(firstCaseId)();
+  }, [entity, firstCaseId, entityId, onSelectEntity]);
 };

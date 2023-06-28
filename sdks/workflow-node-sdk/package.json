@@ -16,7 +16,8 @@
   "scripts": {
     "build": "rollup --config rollup.config.js",
     "watch": "concurrently --kill-others \"rollup --config rollup.config.js -w\" \"tsc -b --watch\"",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:unit": "vitest run"
   },
   "engines": {
     "node": ">=12"
@@ -32,6 +33,7 @@
     "@babel/preset-typescript": "7.16.7",
     "@rollup/plugin-babel": "5.3.1",
     "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "13.2.1",
     "@rollup/plugin-replace": "4.0.0",
     "@types/babel__core": "^7.20.0",
@@ -47,6 +49,7 @@
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-functional": "^3.0.2",
     "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "fs-extra": "^11.1.0",
     "prettier": "^2.1.1",
     "rollup": "2.70.2",

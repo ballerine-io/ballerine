@@ -10,6 +10,12 @@ import { FilterFindManyArgs } from '@/filter/dtos/filter-find-many-args';
 import { FilterModel } from '@/filter/filter.model';
 import { FilterWhereUniqueInput } from '@/filter/dtos/filter-where-unique-input';
 import { FilterService } from '@/filter/filter.service';
+import { UsePipes } from '@nestjs/common';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import { FilterCreateDto } from '@/filter/dtos/filter-create';
+import { FilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
+import { InputJsonValue } from '@/types';
+import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 
 @swagger.ApiTags('external/filters')
 @common.Controller('external/filters')
@@ -45,5 +51,19 @@ export class FilterControllerExternal {
 
       throw err;
     }
+  }
+
+  @common.Post()
+  @UseKeyAuthGuard()
+  @swagger.ApiCreatedResponse({ type: FilterModel })
+  @swagger.ApiForbiddenResponse()
+  @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
+  async createFilter(@common.Body() data: FilterCreateDto) {
+    return await this.service.create({
+      data: {
+        ...data,
+        query: data?.query as InputJsonValue,
+      },
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { ZodSchema } from 'zod';
+import { AnyZodObject } from 'zod';
 import { useZodSearchParams } from '../useZodSearchParams/useZodSearchParams';
 import { IUseZodSearchParams } from '../useZodSearchParams/interfaces';
 import { BusinessesSearchSchema, IndividualsSearchSchema } from './validation-schemas';
@@ -6,7 +6,7 @@ import { useAuthenticatedUserQuery } from '../../../domains/auth/hooks/queries/u
 import { useMemo } from 'react';
 import { useEntityType } from '../useEntityType/useEntityType';
 
-export const useSearchParamsByEntity = <TSchema extends ZodSchema>(
+export const useSearchParamsByEntity = <TSchema extends AnyZodObject>(
   schema?: TSchema,
   options: IUseZodSearchParams = {},
 ) => {
@@ -21,7 +21,6 @@ export const useSearchParamsByEntity = <TSchema extends ZodSchema>(
   );
 
   return useZodSearchParams(
-    // @ts-ignore
     schema ? EntitySearchSchema.merge(schema) : EntitySearchSchema,
     options,
   );
