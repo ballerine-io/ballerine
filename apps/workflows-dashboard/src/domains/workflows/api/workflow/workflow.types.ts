@@ -28,4 +28,6 @@ export interface GetWorkflowsDto {
   status?: IWorkflowStatus[];
   page?: number;
   limit?: number;
+  orderBy?: string;
+  orderDirection?: 'asc' | 'desc';
 }

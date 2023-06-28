@@ -1,4 +1,5 @@
 import { HealthIndicator } from '@app/components/atoms/HealthIndicator';
+import { DataTableColumnHeader } from '@app/components/molecules/WorkflowsTable/components/DataTableColumnHeader';
 import { formatDate } from '@app/components/molecules/WorkflowsTable/utils/format-date';
 import { IWorkflow, IWorkflowAssignee } from '@app/domains/workflows/api/workflow';
 import { getWorkflowHealthStatus } from '@app/utils/get-workflow-health-status';
@@ -14,8 +15,9 @@ export const defaultColumns: ColumnDef<IWorkflow>[] = [
   {
     accessorKey: 'workflowDefinitionName',
     cell: info => info.getValue<string>(),
-    header: 'Workflow Definition Name',
-    size: 200,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Workflow Definition Name" />
+    ),
   },
   {
     accessorKey: 'status',
@@ -25,13 +27,13 @@ export const defaultColumns: ColumnDef<IWorkflow>[] = [
         {info.getValue<string>() || ''}
       </div>
     ),
-    header: () => 'Status',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
     size: 125,
   },
   {
     accessorKey: 'state',
     cell: info => info.getValue<string>(),
-    header: 'State',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="State" />,
     size: 125,
   },
   {
@@ -42,7 +44,7 @@ export const defaultColumns: ColumnDef<IWorkflow>[] = [
 
       return `${assignee.firstName} ${assignee.lastName}`;
     },
-    header: 'Assign To',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Assign To" />,
     size: 125,
   },
   {
@@ -55,17 +57,17 @@ export const defaultColumns: ColumnDef<IWorkflow>[] = [
   {
     accessorKey: 'resolvedAt',
     cell: info => (info.getValue<Date>() ? formatDate(info.getValue<Date>()) : '-'),
-    header: 'Resolved At',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Resolved At" />,
   },
   {
     accessorKey: 'createdBy',
     cell: info => info.getValue<string>(),
-    header: 'Created By',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Created By" />,
   },
   {
     accessorKey: 'createdAt',
     cell: info => formatDate(info.getValue<Date>()),
-    header: 'Created At',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Created At" />,
     size: 240,
   },
 ];

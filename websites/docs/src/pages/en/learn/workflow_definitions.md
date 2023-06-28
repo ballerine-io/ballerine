@@ -1,10 +1,8 @@
 ---
-title: SDK UI Flows
-description: SDK UI flows documentation
+title: Workflow Definitions
+description: Workflow Definitions
 layout: ../../../layouts/MainLayout.astro
 ---
-
-# Workflow Definitions
 
 A workflow definition is a JSON object that specifies the structure and behavior of a workflow. It outlines the states, transitions, actions, and events that the workflow is comprised of. 
 
