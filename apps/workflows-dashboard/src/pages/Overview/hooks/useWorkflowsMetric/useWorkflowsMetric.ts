@@ -1,5 +1,5 @@
 import { workflowMetricsKeys } from '@app/domains/workflows/api/workflow-metrics/query-keys';
-import { WorkflowsMetric } from '@app/pages/Workflows/hooks/useWorkflowsMetric/types';
+import { WorkflowsMetric } from '@app/pages/Overview/hooks/useWorkflowsMetric/types';
 import { useQuery } from '@tanstack/react-query';
 
 export function useWorkflowsMetric() {
