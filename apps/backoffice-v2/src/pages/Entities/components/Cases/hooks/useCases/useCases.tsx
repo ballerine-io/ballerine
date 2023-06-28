@@ -1,12 +1,12 @@
 import { useDocumentListener } from '../../../../../../common/hooks/useDocumentListener/useDocumentListener';
 import { useCallback, useRef } from 'react';
 import { useUsersQuery } from '../../../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
-import { useEntityType } from '../../../../../../common/hooks/useEntityType/useEntityType';
+import { useFilterEntity } from '../../../../../../domains/entities/hooks/useFilterEntity/useFilterEntity';
 import { useSearchParamsByEntity } from '../../../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 
 export const useCases = () => {
   const [{ filter, sortBy }] = useSearchParamsByEntity();
-  const entity = useEntityType();
+  const entity = useFilterEntity();
   const sharedSortByOptions = [
     {
       label: 'Created At',

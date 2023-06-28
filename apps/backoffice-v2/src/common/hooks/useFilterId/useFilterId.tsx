@@ -1,8 +1,7 @@
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParamsByEntity } from '../useSearchParamsByEntity/useSearchParamsByEntity';
 
 export const useFilterId = (): string | undefined => {
-  const [params] = useSearchParams();
-  const filterId = params.get('filterId');
+  const [{ filterId }] = useSearchParamsByEntity();
 
   return filterId;
 };
