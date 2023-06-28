@@ -17,4 +17,5 @@ export const EnvSchema = z.object({
     .or(z.literal(false))
     .catch(undefined),
   VITE_IMAGE_LOGO_URL: z.string().optional(),
+  WEBHOOK_URL: z.string().url().default('ws://localhost:3500'),
 });

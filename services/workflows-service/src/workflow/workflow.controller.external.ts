@@ -26,6 +26,7 @@ import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import axios from 'axios';
+import { env } from '@/env';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -97,7 +98,7 @@ export class WorkflowControllerExternal {
   ): Promise<WorkflowRuntimeData> {
     try {
       const updatedWorkflow = await this.service.updateWorkflowRuntimeData(params.id, data);
-      const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+      const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=workflows_list`;
       // todo is it important to await this?
       await axios.post(websocketServerNotifyUri);
       return updatedWorkflow;
@@ -163,7 +164,7 @@ export class WorkflowControllerExternal {
       ...data,
       id,
     });
-    const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+    const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=workflows_list`;
     // todo is it important to await this?
     await axios.post(websocketServerNotifyUri);
     return createdEvent;
@@ -184,7 +185,7 @@ export class WorkflowControllerExternal {
       ...data,
       id,
     });
-    const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+    const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=workflows_list`;
     // todo is it important to await this?
     await axios.post(websocketServerNotifyUri);
     return createdEvent;

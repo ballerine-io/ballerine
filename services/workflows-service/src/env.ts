@@ -27,6 +27,7 @@ export const env = createEnv({
     AWS_S3_BUCKET_SECRET: z.string().optional(),
     API_KEY: z.string(),
     SENTRY_DSN: z.string().nullable().optional(),
+    WEBHOOK_URL: z.string().url(),
   },
   client: {},
   /**

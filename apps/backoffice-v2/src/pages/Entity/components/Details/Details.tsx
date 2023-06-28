@@ -7,9 +7,10 @@ import { IDetailsProps } from './interfaces';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { env } from '../../../../common/env/env';
 
 export const Details: FunctionComponent<IDetailsProps> = ({ id, value }) => {
-  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+  const { readyState } = useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
   });

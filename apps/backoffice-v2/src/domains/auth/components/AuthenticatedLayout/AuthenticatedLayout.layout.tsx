@@ -2,9 +2,10 @@ import { Header } from '../../../../common/components/organisms/Header';
 import { FunctionComponentWithChildren } from '../../../../common/types';
 import { useSelectEntityFilterOnMount } from '../../../entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { env } from '../../../../common/env/env';
 
 export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {
-  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+  const { readyState } = useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
   });

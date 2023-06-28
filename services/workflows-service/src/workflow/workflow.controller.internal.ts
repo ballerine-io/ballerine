@@ -32,6 +32,7 @@ import {
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import axios from 'axios';
+import { env } from '@/env';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -51,7 +52,7 @@ export class WorkflowControllerInternal {
     @common.Body() data: WorkflowDefinitionCreateDto,
   ) {
     const createdWorkflowDefinition = await this.service.createWorkflowDefinition(data);
-    const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+    const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=workflows_list`;
     // todo is it important to await this?
     await axios.post(websocketServerNotifyUri);
     return createdWorkflowDefinition;
@@ -123,7 +124,7 @@ export class WorkflowControllerInternal {
       ...data,
       id: params.id,
     });
-    const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+    const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=workflows_list`;
     // todo is it important to await this?
     await axios.post(websocketServerNotifyUri);
     return createdEvent;
@@ -141,7 +142,7 @@ export class WorkflowControllerInternal {
   ): Promise<WorkflowRuntimeData> {
     try {
       const updatedWorkflow = await this.service.updateWorkflowRuntimeData(params.id, data);
-      const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+      const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=workflows_list`;
       // todo is it important to await this?
       await axios.post(websocketServerNotifyUri);
       return updatedWorkflow;
@@ -164,7 +165,7 @@ export class WorkflowControllerInternal {
   ): Promise<WorkflowRuntimeData> {
     try {
       const assignedWorkflow = await this.service.assignWorkflowToUser(params.id, data);
-      const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+      const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=workflows_list`;
       // todo is it important to await this?
       await axios.post(websocketServerNotifyUri);
       return assignedWorkflow;
@@ -204,7 +205,7 @@ export class WorkflowControllerInternal {
           submitStates: true,
         },
       });
-      const websocketServerNotifyUri = `http://localhost:3500/notify?type=workflows_list`;
+      const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=workflows_list`;
       // todo is it important to await this?
       await axios.post(websocketServerNotifyUri);
       return deletedWorkflow;

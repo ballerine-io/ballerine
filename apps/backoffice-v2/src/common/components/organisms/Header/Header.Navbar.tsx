@@ -8,6 +8,7 @@ import { useSearchParamsByEntity } from '../../../hooks/useSearchParamsByEntity/
 import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { queryClient } from '../../../../lib/react-query/query-client';
+import { env } from '../../../env/env';
 
 /**
  * @description A nav element which wraps {@link NavItem} components of the app's routes. Supports nested routes.
@@ -17,7 +18,7 @@ import { queryClient } from '../../../../lib/react-query/query-client';
  * @constructor
  */
 export const Navbar: FunctionComponent = () => {
-  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+  const { readyState } = useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
   });

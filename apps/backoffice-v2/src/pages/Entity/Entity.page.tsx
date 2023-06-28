@@ -4,9 +4,10 @@ import { ctw } from '../../common/utils/ctw/ctw';
 import { Card } from '../../common/components/atoms/Card/Card';
 import { CardContent } from '../../common/components/atoms/Card/Card.Content';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { env } from '../../common/env/env';
 
 export const Entity = () => {
-  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+  const { readyState } = useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
   });
