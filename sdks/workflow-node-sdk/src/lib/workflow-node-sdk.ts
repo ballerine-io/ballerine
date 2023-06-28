@@ -1,22 +1,18 @@
-import { createWorkflow } from '@ballerine/workflow-core';
-import { TCreateWorkflowCoreReturn, WorkflowOptionsNode } from './types';
+import { WorkflowNodeSDKInstance } from './workflow-node-sdk-instance';
+import { WorkflowClientOptions } from '@ballerine/workflow-core';
+import { WorkflowOptionsNode } from './types';
 
 export class WorkflowNodeSDK {
-  #__service: TCreateWorkflowCoreReturn;
+  #__options: WorkflowClientOptions;
 
-  constructor(options: WorkflowOptionsNode) {
-    this.#__service = createWorkflow(options);
+  constructor(options: WorkflowClientOptions = {}) {
+    this.#__options = options;
   }
 
-  subscribe(callback: Parameters<TCreateWorkflowCoreReturn['subscribe']>[0]) {
-    this.#__service.subscribe(callback);
-  }
-
-  async sendEvent(event: Parameters<TCreateWorkflowCoreReturn['sendEvent']>[0]) {
-    return await this.#__service.sendEvent(event);
-  }
-
-  getSnapshot() {
-    return this.#__service.getSnapshot();
+  createWorkflow(options: WorkflowOptionsNode) {
+    return new WorkflowNodeSDKInstance({
+      ...options,
+      ...this.#__options,
+    });
   }
 }

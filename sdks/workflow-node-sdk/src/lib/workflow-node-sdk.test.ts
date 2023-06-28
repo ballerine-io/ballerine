@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { createWorkflow } from './create-workflow';
+import { createWorkflowClient } from './create-workflow-client';
 import { MemoryStore } from './adapters/memory-store';
 import { MemoryPersistencePlugin } from './plugins/memory-persistence-plugin';
 
@@ -16,11 +16,19 @@ const simpleMachine = {
 test('Simple Server Workflow', t => {
   console.log('Running create Server Workflow');
 
-  const workflow = createWorkflow({
+  const workflow = createWorkflowClient({
+    async onEvent(payload) {
+      console.log('onEvent', payload);
+    },
+    async onInvokeChildWorkflow(payload) {
+      console.log('onInvokeChildWorkflow', payload);
+    },
+  });
+  const runner = workflow.createWorkflow({
     definitionType: 'statechart-json',
     definition: simpleMachine,
   });
-  const runner = workflow;
+
   expect(runner.getSnapshot().value).toBe('inactive');
   runner.sendEvent({ type: 'TOGGLE' });
   expect(runner.getSnapshot().value).toBe('active');
@@ -41,7 +49,7 @@ test.skip('Server Workflow persistance MemoryStore', () => {
 
   simpleMachine.context = { ...(simpleMachine.context || {}), entityId: userId };
 
-  const workflow = createWorkflow({
+  const workflow = createWorkflowClient().createWorkflow({
     definitionType: 'statechart-json',
     definition: simpleMachine,
     extensions: {
@@ -62,7 +70,7 @@ test.skip('Server Workflow persistance MemoryStore', () => {
   expect(workflowData).toBeTruthy();
 
   console.log(workflowData);
-  const restoredWorkflow = createWorkflow({
+  const restoredWorkflow = createWorkflowClient().createWorkflow({
     definitionType: 'statechart-json',
     definition: simpleMachine,
     workflowContext: { machineContext: workflowData!.context, state: workflowData!.state },

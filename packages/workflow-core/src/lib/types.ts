@@ -48,6 +48,50 @@ export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
 
 export type TCreateWorkflow = (options: WorkflowOptions) => Workflow;
 
+export interface CallbackInfo {
+  event: string;
+  // what data should be sent back to the parent workflow, out of the full child workflow context i.e. { user: true }
+  contextToCopy: { [key: string]: boolean };
+}
+export interface ParentWorkflowMetadata {
+  name: string;
+  definitionId: string;
+  runtimeId: string;
+  version: number;
+}
+export interface ChildWorkflowMetadata {
+  name: string;
+  definitionId: string;
+  runtimeId: string;
+  version: number;
+  /**
+   * @description static properties to initiate the new machine with
+   */
+  initOptions?: {
+    context: {
+      [key: string]: unknown;
+    };
+    /**
+     * @description state of the machine
+     */
+    state: string;
+    /**
+     * @description i.e. approve | reject - see the /event endpoint
+     */
+    event: string;
+  };
+}
+export interface WorkflowCallbackPayload {
+  parentWorkflowMetadata: ParentWorkflowMetadata;
+  childWorkflowMetadata: ChildWorkflowMetadata;
+  callbackInfo: CallbackInfo;
+}
+
+export interface WorkflowClientOptions {
+  onEvent?: (payload: WorkflowCallbackPayload) => Promise<void>;
+  onInvokeChildWorkflow?: (payload: WorkflowCallbackPayload) => Promise<void>;
+}
+
 export const Error = {
   ERROR: 'ERROR',
   HTTP_ERROR: 'HTTP_ERROR',

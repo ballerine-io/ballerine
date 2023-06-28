@@ -8,5 +8,10 @@ export type {
   WorkflowRunnerArgs,
   PluginAction,
   WorkflowContext,
-  ExtensionRunOrder
+  ExtensionRunOrder,
+  CallbackInfo,
+  ParentWorkflowMetadata,
+  ChildWorkflowMetadata,
+  WorkflowCallbackPayload,
+  WorkflowClientOptions,
 } from './lib';
