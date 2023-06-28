@@ -16,6 +16,8 @@ import { FilterCreateDto } from '@/filter/dtos/filter-create';
 import { FilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
 import { InputJsonValue } from '@/types';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
+import axios, { AxiosResponse } from 'axios';
+import { Readable } from 'stream';
 
 @swagger.ApiTags('external/filters')
 @common.Controller('external/filters')
@@ -59,11 +61,15 @@ export class FilterControllerExternal {
   @swagger.ApiForbiddenResponse()
   @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
   async createFilter(@common.Body() data: FilterCreateDto) {
-    return await this.service.create({
+    const createdFilter = await this.service.create({
       data: {
         ...data,
         query: data?.query as InputJsonValue,
       },
     });
+    const websocketServerNotifyUri = `http://localhost:3500/notify?type=filters`;
+    // todo is it important to await this?
+    await axios.post(websocketServerNotifyUri);
+    return createdFilter;
   }
 }

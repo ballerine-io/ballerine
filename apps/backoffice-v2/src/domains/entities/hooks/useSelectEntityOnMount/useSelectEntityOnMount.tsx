@@ -8,10 +8,18 @@ import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParam
 /**
  * @description Sets the selected end user to the first end user in the array on mount if no user is currently selected. Returns the select end user handler.
  */
-export const useSelectEntityOnMount = () => {
+export const useSelectEntityOnMount = (websocketConnectionIsOpen: boolean) => {
   const { entityId } = useParams();
   const [{ filterId, filter, sortBy, sortDir, page, pageSize }] = useSearchParamsByEntity();
-  const { data } = useWorkflowsQuery({ filterId, filter, sortBy, sortDir, page, pageSize });
+  const { data } = useWorkflowsQuery({
+    filterId,
+    filter,
+    sortBy,
+    sortDir,
+    page,
+    pageSize,
+    websocketConnectionIsOpen,
+  });
   const { data: workflows } = data || { data: [] };
   const onSelectEntity = useSelectEntity();
   const entity = useFilterEntity();

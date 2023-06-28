@@ -17,15 +17,20 @@ import {
 import { getDocumentsByCountry } from '@ballerine/common';
 import { getAddressDeep } from './utils/get-address-deep/get-address-deep';
 
-export const useEntity = () => {
+export const useEntity = (websocketConnectionIsOpen: boolean) => {
   const { entityId } = useParams();
   const filterId = useFilterId();
 
-  const { data: workflow, isLoading } = useWorkflowQuery({ workflowId: entityId, filterId });
+  const { data: workflow, isLoading } = useWorkflowQuery({
+    workflowId: entityId,
+    filterId,
+    websocketConnectionIsOpen,
+  });
   const docsData = useStorageFilesQuery(
     workflow.context.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
+    websocketConnectionIsOpen,
   );
 
   const results = [];

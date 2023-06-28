@@ -7,10 +7,14 @@ import { useUpdateWorkflowByIdMutation } from '../../../../../../domains/workflo
 import toast from 'react-hot-toast';
 import { useCallback, useState } from 'react';
 
-export const useCallToActionLogic = () => {
+export const useCallToActionLogic = (websocketConnectionIsOpen: boolean) => {
   const { entityId } = useParams();
   const filterId = useFilterId();
-  const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
+  const { data: workflow } = useWorkflowQuery({
+    workflowId: entityId,
+    filterId,
+    websocketConnectionIsOpen,
+  });
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =

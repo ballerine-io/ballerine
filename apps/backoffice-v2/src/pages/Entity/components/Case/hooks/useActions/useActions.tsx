@@ -24,10 +24,10 @@ export const ResubmissionReason = {
   FACE_IS_NOT_MATCHING: 'FACE_IS_NOT_MATCHING',
 } as const;
 
-export const useActions = ({ workflowId, fullName }: IUseActions) => {
+export const useActions = ({ workflowId, fullName, websocketConnectionIsOpen }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
   const filterId = useFilterId();
-  const { data: workflow } = useWorkflowQuery({ workflowId, filterId });
+  const { data: workflow } = useWorkflowQuery({ workflowId, filterId, websocketConnectionIsOpen });
   const { mutate: mutateApproveEntity, isLoading: isLoadingApproveEntity } =
     useApproveEntityMutation({
       workflowId: workflowId,

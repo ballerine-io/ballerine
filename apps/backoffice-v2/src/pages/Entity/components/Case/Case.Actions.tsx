@@ -30,6 +30,7 @@ import { SelectItem } from '../../../../common/components/atoms/Select/Select.It
 import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -49,6 +50,10 @@ export const Actions: FunctionComponent<IActionsProps> = ({
   fullName,
   showResolutionButtons = true,
 }) => {
+  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+    share: true,
+    shouldReconnect: () => true,
+  });
   const {
     onMutateApproveEntity,
     onMutateRejectEntity,
@@ -71,7 +76,11 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     isActionButtonDisabled,
     onTriggerAssignToMe,
     isAssignedToMe,
-  } = useActions({ workflowId: id, fullName });
+  } = useActions({
+    workflowId: id,
+    fullName,
+    websocketConnectionIsOpen: readyState === ReadyState.OPEN,
+  });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-4`}>
@@ -112,7 +121,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           </h2>
         </div>
         {showResolutionButtons && (
-          <div className={`flex items-center space-x-6 pe-[3.35rem]`}>
+          <div className={`pe-[3.35rem] flex items-center space-x-6`}>
             <Button
               className={ctw({
                 // loading: debouncedIsLoadingRejectEntity,

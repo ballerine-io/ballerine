@@ -5,8 +5,9 @@ import { useFilterEntity } from '../../../../domains/entities/hooks/useFilterEnt
 import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
 import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import useWebSocket from 'react-use-websocket';
 
-export const useEntities = () => {
+export const useEntities = (websocketConnectionIsOpen: boolean) => {
   const [{ filterId, filter, sortBy, sortDir, page, pageSize }, setSearchParams] =
     useSearchParamsByEntity();
   const { data, isLoading } = useWorkflowsQuery({
@@ -15,6 +16,7 @@ export const useEntities = () => {
     sortBy,
     sortDir,
     page,
+    websocketConnectionIsOpen,
     pageSize,
   });
   const {
@@ -83,7 +85,7 @@ export const useEntities = () => {
   );
   const skeletonEntities = createArrayOfNumbers(3);
 
-  useSelectEntityOnMount();
+  useSelectEntityOnMount(websocketConnectionIsOpen);
 
   return {
     onPaginate,
