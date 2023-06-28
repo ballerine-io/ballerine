@@ -1,5 +1,5 @@
-import { ApiPluginSchema } from "./api-plugin.validator";
-import { AnyRecord } from "@/types";
+import { ApiPluginSchema } from './api-plugin.validator';
+import { AnyRecord } from '@/types';
 
 export const WebhookPluginSchema = ApiPluginSchema.pick({
   name: true,
@@ -8,8 +8,8 @@ export const WebhookPluginSchema = ApiPluginSchema.pick({
   headers: true,
   stateNames: true,
   request: true,
-}).strict()
+}).strict();
 
 export const validate = (webhookPlugin: AnyRecord) => {
   return WebhookPluginSchema.parse(webhookPlugin);
-}
+};

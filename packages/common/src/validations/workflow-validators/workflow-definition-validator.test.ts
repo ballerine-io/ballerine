@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateWorkflowDefinition } from "./workflow-definition-validator";
+import { validateWorkflowDefinition } from './workflow-definition-validator';
 describe('WorkflowDefinitionValidator', () => {
   describe('validate Api Plugin', () => {
     const definition = {
@@ -54,7 +54,7 @@ describe('WorkflowDefinitionValidator', () => {
         name: 'ballerineEnrichmentHook',
         url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.json',
         method: 'GET',
-        headers: {'some_header': 'some_value'},
+        headers: { some_header: 'some_value' },
         stateNames: ['checkBusinessScore'],
         request: {
           transform: {
@@ -62,30 +62,32 @@ describe('WorkflowDefinitionValidator', () => {
             mapping: '{data: .entity.id}',
           },
         },
-      }
+      },
     ];
 
     const workflowDefinition = {
       ...definition,
-      ...{extensions: {apiPlugins: apiPluginsSchemas}}
-    }
+      ...{ extensions: { apiPlugins: apiPluginsSchemas } },
+    };
 
     describe('when api plugin is valid', () => {
       it('returns valid response', async () => {
         const validationResponse = validateWorkflowDefinition(workflowDefinition);
 
-        expect(validationResponse).toEqual({isValid: true, error: undefined});
+        expect(validationResponse).toEqual({ isValid: true, error: undefined });
       });
     });
 
     describe('when api plugin is invalid', () => {
       it('it returns invalid response', async () => {
-        workflowDefinition.extensions.apiPlugins[0].request = "dwadwad"
+        workflowDefinition.extensions.apiPlugins[0].request = 'dwadwad';
         const validationResponse = validateWorkflowDefinition(workflowDefinition);
 
-        expect(validationResponse).toEqual({isValid: false, error: "extensions.apiPlugins.0: Invalid input"});
+        expect(validationResponse).toEqual({
+          isValid: false,
+          error: 'extensions.apiPlugins.0: Invalid input',
+        });
       });
     });
-
   });
 });
