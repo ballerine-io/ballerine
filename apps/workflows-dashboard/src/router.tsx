@@ -1,7 +1,7 @@
 import { App } from '@app/App';
-import { DashboardLayout } from '@app/components/layouts/DashboardLayout';
+import { Overview } from '@app/pages/Overview';
 import { Workflows } from '@app/pages/Workflows';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 export const router = createBrowserRouter([
   {
@@ -10,13 +10,15 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '',
-        Component: DashboardLayout,
-        children: [
-          {
-            path: 'workflows',
-            Component: Workflows,
-          },
-        ],
+        element: <Navigate to="/overview" replace />,
+      },
+      {
+        path: 'overview',
+        Component: Overview,
+      },
+      {
+        path: 'workflows',
+        Component: Workflows,
       },
     ],
   },
