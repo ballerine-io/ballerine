@@ -8,7 +8,7 @@ import terminal from 'vite-plugin-terminal';
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    port: 5174,
+    port: 5200,
   },
   plugins: [
     react(),
