@@ -1,6 +1,6 @@
 import { TContext, TTransformers, TValidators } from '../../utils/types';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
-import * as process from "process";
+import * as process from 'process';
 
 export interface IApiPluginParams {
   name: string;
@@ -29,7 +29,10 @@ export class ApiPlugin {
     this.stateNames = pluginParams.stateNames;
     this.url = pluginParams.url;
     this.method = pluginParams.method;
-    this.headers = {'Content-Type': 'application/json', ...(pluginParams.headers || {})} as HeadersInit;
+    this.headers = {
+      'Content-Type': 'application/json',
+      ...(pluginParams.headers || {}),
+    } as HeadersInit;
     this.request = pluginParams.request;
     this.response = pluginParams.response;
     this.successAction = pluginParams.successAction;
@@ -49,7 +52,7 @@ export class ApiPlugin {
         this.replaceValuePlaceholders(this.url, context),
         this.method,
         requestPayload,
-        this.composeRequestHeaders(this.headers!, context)
+        this.composeRequestHeaders(this.headers!, context),
       );
 
       if (apiResponse.ok) {
@@ -126,7 +129,12 @@ export class ApiPlugin {
   }
 
   composeRequestHeaders(headers: HeadersInit, context: TContext) {
-    return Object.fromEntries(Object.entries(headers).map(header => [header[0], this.replaceValuePlaceholders(header[1], context)]));
+    return Object.fromEntries(
+      Object.entries(headers).map(header => [
+        header[0],
+        this.replaceValuePlaceholders(header[1], context),
+      ]),
+    );
   }
   replaceValuePlaceholders(content: string, context: TContext) {
     const placeholders = content.match(/{(.*?)}/g);
@@ -136,9 +144,9 @@ export class ApiPlugin {
     placeholders.forEach(placeholder => {
       const variableKey = placeholder.replace(/{|}/g, '');
       const isPlaceholderSecret = variableKey.includes('secret.');
-      const placeholderValue = isPlaceholderSecret ?
-        `${process.env[variableKey.replace('secret.','')]}`:
-        `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
+      const placeholderValue = isPlaceholderSecret
+        ? `${process.env[variableKey.replace('secret.', '')]}`
+        : `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
       replacedContent = replacedContent.replace(placeholder, placeholderValue);
     });
 
@@ -157,6 +165,3 @@ export class ApiPlugin {
     }, record as unknown);
   }
 }
-
-
-
