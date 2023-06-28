@@ -1,8 +1,8 @@
 import { test } from 'vitest';
-import { createWorkflow } from './create-workflow';
+import { createWorkflowClient } from './create-workflow-client';
 
 test('temp', () => {
-  const service = createWorkflow({
+  const service = createWorkflowClient().createWorkflow({
     id: 'clf8xbocb0002zpeid7bq9vgn',
     name: 'kyc',
     version: 1,

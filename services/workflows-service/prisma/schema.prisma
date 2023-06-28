@@ -141,6 +141,7 @@ model WorkflowDefinition {
   updatedAt           DateTime              @updatedAt
   createdBy           String                @default("SYSTEM")
   workflowRuntimeData WorkflowRuntimeData[]
+  childWorkflows     Json?
 }
 
 enum WorkflowRuntimeDataStatus {

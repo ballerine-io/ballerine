@@ -14,7 +14,6 @@ import {
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import {
-  CompleteWorkflowData,
   ListRuntimeDataResult,
   ListWorkflowsRuntimeParams,
   RunnableWorkflowData,
@@ -23,10 +22,10 @@ import {
   WorkflowsRuntimeMetric,
   WorkflowStatusMetric,
 } from './types';
-import { createWorkflow } from '@ballerine/workflow-node-sdk';
+import { createWorkflowClient } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
@@ -158,7 +157,7 @@ export class WorkflowService {
 
   private formatWorkflow(workflow: TWorkflowWithRelations) {
     const isIndividual = 'endUser' in workflow;
-    const service = createWorkflow({
+    const service = createWorkflowClient({
       definition: workflow.workflowDefinition as any,
       definitionType: workflow.workflowDefinition.definitionType,
       workflowContext: {
@@ -976,7 +975,7 @@ export class WorkflowService {
       runtimeData.workflowDefinitionId,
     );
 
-    const service = createWorkflow({
+    const service = createWorkflowClient({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       definition: workflow.definition,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

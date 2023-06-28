@@ -1,7 +1,7 @@
 import { rest } from 'msw';
 import { env } from '../../../../common/env/env';
 import { workflows } from './workflows.data';
-import { createWorkflow } from '@ballerine/workflow-node-sdk';
+import { createWorkflowClient } from '@ballerine/workflow-node-sdk';
 import { individuals } from '../../../individuals/mock-service-worker/individuals.data';
 
 export const workflowsController = [
@@ -84,7 +84,7 @@ export const workflowsController = [
       return res(ctx.status(404));
     }
 
-    const workflowService = createWorkflow(workflow);
+    const workflowService = createWorkflowClient(workflow);
 
     workflowService.runner.sendEvent({ type: body?.name });
 
