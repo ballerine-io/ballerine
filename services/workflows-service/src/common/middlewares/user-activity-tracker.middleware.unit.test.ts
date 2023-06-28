@@ -1,13 +1,17 @@
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { UserActivityTrackerMiddleware } from '@/common/middlewares/user-activity-tracker.middleware';
 import { PrismaModule } from '@/prisma/prisma.module';
-import { commonTestingModules } from '@/test/helpers/nest-app-helper';
-import { UserModule } from '@/user/user.module';
 import { UserService } from '@/user/user.service';
+import { UserRepository } from '@/user/user.repository';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@prisma/client';
 import { Request, Response } from 'express';
 import dayjs from 'dayjs';
+import { commonTestingModules } from '@/test/helpers/nest-app-helper';
+import { PasswordService } from '@/auth/password/password.service';
+import { env } from '@/env';
+
+env.BCRYPT_SALT = 10;
 
 describe('UserActivityTrackerMiddleware', () => {
   const testUserPayload = {
@@ -25,7 +29,8 @@ describe('UserActivityTrackerMiddleware', () => {
 
   beforeEach(async () => {
     app = await Test.createTestingModule({
-      imports: [UserModule, PrismaModule, ...commonTestingModules],
+      imports: [PrismaModule, ...commonTestingModules],
+      providers: [UserService, UserRepository, PasswordService],
     }).compile();
     middleware = new UserActivityTrackerMiddleware(app.get(AppLoggerService), app.get(UserService));
     userService = app.get(UserService);
