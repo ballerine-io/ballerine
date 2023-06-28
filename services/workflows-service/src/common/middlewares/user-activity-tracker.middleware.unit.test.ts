@@ -8,10 +8,19 @@ import { User } from '@prisma/client';
 import { Request, Response } from 'express';
 import dayjs from 'dayjs';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
+import { Injectable } from '@nestjs/common';
 import { PasswordService } from '@/auth/password/password.service';
-import { env } from '@/env';
 
-env.BCRYPT_SALT = 10;
+@Injectable()
+class FakePasswordService {
+  async compare(password: string, encrypted: string): Promise<boolean> {
+    return Promise.resolve(true);
+  }
+
+  async hash(password: string): Promise<string> {
+    return Promise.resolve(password);
+  }
+}
 
 describe('UserActivityTrackerMiddleware', () => {
   const testUserPayload = {
@@ -30,7 +39,14 @@ describe('UserActivityTrackerMiddleware', () => {
   beforeEach(async () => {
     app = await Test.createTestingModule({
       imports: [PrismaModule, ...commonTestingModules],
-      providers: [UserService, UserRepository, PasswordService],
+      providers: [
+        {
+          provide: PasswordService,
+          useClass: FakePasswordService,
+        },
+        UserService,
+        UserRepository,
+      ],
     }).compile();
     middleware = new UserActivityTrackerMiddleware(app.get(AppLoggerService), app.get(UserService));
     userService = app.get(UserService);
