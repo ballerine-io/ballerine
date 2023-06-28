@@ -4,7 +4,6 @@ import { PrismaModule } from '@/prisma/prisma.module';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { UserModule } from '@/user/user.module';
 import { UserService } from '@/user/user.service';
-import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@prisma/client';
 import { Request, Response } from 'express';
@@ -18,18 +17,16 @@ describe('UserActivityTrackerMiddleware', () => {
     email: 'example@mail.com',
     roles: [],
   } as unknown as User;
-  let moduleRef: TestingModule;
-  let app: INestApplication;
+  let app: TestingModule;
   let testUser: User;
   let middleware: UserActivityTrackerMiddleware;
   let userService: UserService;
   let callback: jest.Mock;
 
   beforeEach(async () => {
-    moduleRef = await Test.createTestingModule({
+    app = await Test.createTestingModule({
       imports: [UserModule, PrismaModule, ...commonTestingModules],
     }).compile();
-    app = moduleRef.createNestApplication();
     middleware = new UserActivityTrackerMiddleware(app.get(AppLoggerService), app.get(UserService));
     userService = app.get(UserService);
     callback = jest.fn(() => null);
@@ -70,7 +67,6 @@ describe('UserActivityTrackerMiddleware', () => {
     describe('when lastActiveAt is set', () => {
       beforeEach(async () => {
         testUser = await app.get(UserService).create({ data: testUserPayload as any });
-        app.use(middleware.use.bind(middleware));
       });
 
       afterEach(async () => {
