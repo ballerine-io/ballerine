@@ -1,11 +1,11 @@
-import { useLogout } from '@app/common/hooks/useLogout';
+import { useLogoutMutation } from '@app/common/hooks/useLogoutMutation';
 import { Input } from '@app/components/atoms/Input';
 import { Navigation } from '@app/components/molecules/Navigation';
 import { UserNavigation } from '@app/components/molecules/UserNavigation';
 import { headerNavigationLinks } from './header-navigation-links';
 
 export const Header = () => {
-  const { logout } = useLogout();
+  const { logout } = useLogoutMutation();
 
   return (
     <div className="border-b">

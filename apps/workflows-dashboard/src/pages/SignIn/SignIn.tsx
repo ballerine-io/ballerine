@@ -1,7 +1,7 @@
 import { BallerineLogo } from '@app/components/atoms/icons/BallerineLogo';
 import { env } from '@app/common/env/env';
 import { SignInForm } from '@app/pages/SignIn/components/SignInForm';
-import { useSignIn } from '@app/pages/SignIn/hooks/useSignIn';
+import { useSignInMutation } from '@app/pages/SignIn/hooks/useSignInMutation';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { getRefererUrl } from '@app/common/hocs/withSessionProtected/utils/get-referer-url';
 import { clearRefererUrl } from '@app/common/hocs/withSessionProtected/utils/clear-referer-url';
@@ -11,7 +11,7 @@ import { LoadingSpinner } from '@app/components/atoms/LoadingSpinner';
 export function SignIn() {
   const navigate = useNavigate();
   const { isLoading: isLoadingSession, isAuthenticated, refresh } = useSession();
-  const { isLoading, errorCode, signIn } = useSignIn({
+  const { isLoading, errorCode, signIn } = useSignInMutation({
     onSuccess: () => {
       refresh();
       const refUrl = getRefererUrl();

@@ -3,7 +3,7 @@ import { workflowKeys } from '@app/domains/workflows';
 import { WorkflowsFilterValues } from '@app/pages/Workflows/hooks/useWorkflowsFilters/types';
 import { useQuery } from '@tanstack/react-query';
 
-export function useWorkflows(query: WorkflowsFilterValues, sortingParams?: SortingParams) {
+export function useWorkflowsQuery(query: WorkflowsFilterValues, sortingParams?: SortingParams) {
   const {
     isFetching,
     isLoading,

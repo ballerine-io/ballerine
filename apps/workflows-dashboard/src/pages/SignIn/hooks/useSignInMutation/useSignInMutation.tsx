@@ -6,7 +6,7 @@ export interface UseSignInParams {
   onSuccess?: () => void;
 }
 
-export function useSignIn({ onSuccess }: UseSignInParams) {
+export function useSignInMutation({ onSuccess }: UseSignInParams) {
   const mutation = useMutation<GetSignInResponse, AxiosError, GetSignInDto>({
     mutationFn: fetchSignIn,
     onSuccess,
