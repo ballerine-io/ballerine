@@ -2,7 +2,7 @@ import { IWorkflowStatus } from '@app/domains/workflows/api/workflow';
 import { WorkflowStatusChartData } from '@app/pages/Workflows/components/organisms/WorkflowStatusChart';
 
 // Assigning level to each status
-function getSortLevelByStatus(status: IWorkflowStatus): number {
+function getSortLevelByStatus(status: IWorkflowStatus) {
   if (status === 'completed') return 1;
   if (status === 'active') return 2;
   if (status === 'failed') return 3;
