@@ -104,6 +104,10 @@ export const SIDEBAR: Sidebar = {
             text: `Interacting with Workflows`,
             link: `interacting_with_workflows`,
           },
+          {
+            text: `Workflows Plugins`,
+            link: `api-plugin`,
+          },
         ],
       },
       // {
