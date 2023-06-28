@@ -6,9 +6,10 @@ import { Case } from '../Entity/components/Case/Case';
 import { MotionScrollArea } from '../../common/components/molecules/MotionScrollArea/MotionScrollArea';
 import { FunctionComponent } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { env } from '../../common/env/env';
 
 export const Entities: FunctionComponent = () => {
-  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+  const { readyState } = useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
   });

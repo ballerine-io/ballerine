@@ -15,9 +15,10 @@ import { Input } from '../../../../common/components/atoms/Input/Input';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
 import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { env } from '../../../../common/env/env';
 
 export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
-  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+  const { readyState } = useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
   });

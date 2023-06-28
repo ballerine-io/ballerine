@@ -8,6 +8,7 @@ import { queryClient } from '../../lib/react-query/query-client';
 import { workflowsQueryKeys } from '../../domains/workflows/query-keys';
 import { storageQueryKeys } from '../../domains/storage/query-keys';
 import { filtersQueryKeys } from '../../domains/filters/query-keys';
+import { env } from '../../common/env/env';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -18,7 +19,7 @@ const ReactQueryDevtools = lazy(() =>
 );
 
 export const Root: FunctionComponent = () => {
-  useWebSocket('ws://localhost:3500/?testParams=55', {
+  useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
     onOpen: () => {

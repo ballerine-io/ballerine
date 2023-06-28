@@ -31,6 +31,7 @@ import { SelectContent } from '../../../../common/components/atoms/Select/Select
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { env } from '../../../../common/env/env';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -50,7 +51,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
   fullName,
   showResolutionButtons = true,
 }) => {
-  const { readyState } = useWebSocket('ws://localhost:3500/?testParams=55', {
+  const { readyState } = useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
   });
