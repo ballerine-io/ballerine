@@ -51,7 +51,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
   fullName,
   showResolutionButtons = true,
 }) => {
-  const { readyState } = useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
+  const { readyState } = useWebSocket(`${env.WEBSOCKET_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
   });

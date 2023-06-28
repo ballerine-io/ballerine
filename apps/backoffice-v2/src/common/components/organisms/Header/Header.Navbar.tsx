@@ -18,7 +18,7 @@ import { env } from '../../../env/env';
  * @constructor
  */
 export const Navbar: FunctionComponent = () => {
-  const { readyState } = useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
+  const { readyState } = useWebSocket(`${env.WEBSOCKET_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
   });

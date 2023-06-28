@@ -19,7 +19,7 @@ const ReactQueryDevtools = lazy(() =>
 );
 
 export const Root: FunctionComponent = () => {
-  useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
+  useWebSocket(`${env.WEBSOCKET_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
     onOpen: () => {
