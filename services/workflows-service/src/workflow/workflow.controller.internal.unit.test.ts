@@ -122,7 +122,7 @@ describe('WorkflowControllerInternal', () => {
             numb: 'context',
           },
         };
-        axios.get = jest.fn().mockResolvedValue({});
+        axios.post = jest.fn().mockResolvedValue({});
         await workflowRuntimeDataRepo.create({
           data: initialRuntimeData,
         });
