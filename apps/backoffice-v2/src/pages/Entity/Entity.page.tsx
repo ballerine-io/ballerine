@@ -7,7 +7,7 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { env } from '../../common/env/env';
 
 export const Entity = () => {
-  const { readyState } = useWebSocket(`${env.WEBHOOK_URL}/?testParams=55`, {
+  const { readyState } = useWebSocket(`${env.WEBSOCKET_URL}/?testParams=55`, {
     share: true,
     shouldReconnect: () => true,
   });

@@ -68,7 +68,7 @@ export class FilterControllerExternal {
         query: data?.query as InputJsonValue,
       },
     });
-    const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=filters`;
+    const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=filters`;
     // todo is it important to await this?
     await axios.post(websocketServerNotifyUri);
     return createdFilter;

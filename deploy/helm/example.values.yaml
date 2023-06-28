@@ -46,5 +46,5 @@ workflowService:
     API_KEY: "secret"
     NODE_ENV: "development"
     SENTRY_DSN: ""
-    WEBHOOK_URL: "ws://localhost:3500"
+    WEBHOOK_URL: ""
     WEBHOOK_SECRET: "webhook_secret"

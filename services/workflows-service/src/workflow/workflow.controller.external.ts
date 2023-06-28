@@ -98,7 +98,7 @@ export class WorkflowControllerExternal {
   ): Promise<WorkflowRuntimeData> {
     try {
       const updatedWorkflow = await this.service.updateWorkflowRuntimeData(params.id, data);
-      const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=workflows_list`;
+      const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=workflows_list`;
       // todo is it important to await this?
       await axios.post(websocketServerNotifyUri);
       return updatedWorkflow;
@@ -164,7 +164,7 @@ export class WorkflowControllerExternal {
       ...data,
       id,
     });
-    const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=workflows_list`;
+    const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=workflows_list`;
     // todo is it important to await this?
     await axios.post(websocketServerNotifyUri);
     return createdEvent;
@@ -185,7 +185,7 @@ export class WorkflowControllerExternal {
       ...data,
       id,
     });
-    const websocketServerNotifyUri = `${env.WEBHOOK_URL}/notify?type=workflows_list`;
+    const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=workflows_list`;
     // todo is it important to await this?
     await axios.post(websocketServerNotifyUri);
     return createdEvent;
