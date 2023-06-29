@@ -1,7 +1,7 @@
 import { Pagination } from '@app/components/molecules/Pagination';
 import { StatusFilterComponent } from '@app/pages/Workflows/components/molecules/StatusFilterComponent';
 import { FilterComponent } from '@app/pages/Workflows/components/organisms/WorkflowFilters/types';
-import { useWorkflows } from '@app/pages/Workflows/hooks/useWorkflows';
+import { useWorkflowsQuery } from '@app/pages/Workflows/hooks/useWorkflowsQuery';
 import { useWorkflowsFilters } from '@app/pages/Workflows/hooks/useWorkflowsFilters';
 import { useCallback } from 'react';
 import { WorkflowsList } from '@app/pages/Workflows/components/organisms/WorkflowsList';
@@ -16,7 +16,7 @@ const filterComponents: FilterComponent[] = [StatusFilterComponent];
 export const Workflows = () => {
   const { filters, setFilters } = useWorkflowsFilters();
   const { sortingKey, sortingDirection } = useSorting('order_by');
-  const { data, isLoading, isFetching } = useWorkflows(
+  const { data, isLoading, isFetching } = useWorkflowsQuery(
     filters,
     sortingKey && sortingDirection
       ? { orderBy: sortingKey, orderDirection: sortingDirection }
