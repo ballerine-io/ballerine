@@ -1,9 +1,9 @@
-import { fetchWorkflowMetrics } from '@app/domains/workflows/api/workflow-metrics/workflow-metrics.api';
+import { fetchWorkflowStats } from '@app/domains/workflows/api/workflow-metrics/workflow-metrics.api';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const workflowMetricsKeys = createQueryKeys('workflow-metrics', {
-  list: () => ({
+  workflowRuntimeStats: () => ({
     queryKey: [{}],
-    queryFn: fetchWorkflowMetrics,
+    queryFn: () => fetchWorkflowStats(),
   }),
 });

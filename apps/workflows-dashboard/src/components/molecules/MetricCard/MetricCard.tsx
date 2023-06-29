@@ -21,7 +21,11 @@ interface Props {
 export function MetricCard({ title, content, description, className, isLoading }: Props) {
   return (
     <Card className={classnames('flex flex-col flex-nowrap', className)}>
-      <CardHeader className="p-4">{isLoading ? <Skeleton className="h-6" /> : title}</CardHeader>
+      {isLoading ? (
+        <Skeleton className="ml-4 mr-4 mt-4 h-6" />
+      ) : (
+        <CardHeader className="dfgdf p-4">{title}</CardHeader>
+      )}
       <CardContent className={classnames('flex-1 p-4')}>
         {isLoading ? (
           <Skeleton className="h-20" />
@@ -36,9 +40,11 @@ export function MetricCard({ title, content, description, className, isLoading }
         )}
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <CardDescription className="w-full">
-          {isLoading ? <Skeleton className="h-6" /> : description}
-        </CardDescription>
+        {isLoading ? (
+          <Skeleton className="h-6" />
+        ) : description ? (
+          <CardDescription className="w-full">{description}</CardDescription>
+        ) : null}
       </CardFooter>
     </Card>
   );

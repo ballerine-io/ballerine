@@ -1,20 +1,23 @@
 import { Pagination } from '@app/components/molecules/Pagination';
 import { StatusFilterComponent } from '@app/pages/Workflows/components/molecules/StatusFilterComponent';
-import { FilterComponent } from '@app/pages/Workflows/components/organisms/WorkflowFilters/types';
 import { useWorkflowsQuery } from '@app/pages/Workflows/hooks/useWorkflowsQuery';
-import { useWorkflowsFilters } from '@app/pages/Workflows/hooks/useWorkflowsFilters';
 import { useCallback } from 'react';
 import { WorkflowsList } from '@app/pages/Workflows/components/organisms/WorkflowsList';
-import { WorkflowFilters } from '@app/pages/Workflows/components/organisms/WorkflowFilters';
 import { WorkflowsLayout } from '@app/pages/Workflows/components/layouts/WorkflowsLayout';
 import { DashboardLayout } from '@app/components/layouts/DashboardLayout';
-import { WorkflowMetrics } from '@app/pages/Workflows/components/organisms/WorkflowMetrics';
 import { useSorting } from '@app/common/hooks/useSorting';
+import { WorkflowsMetricLayout } from '@app/pages/Workflows/components/layouts/WorkflowsMetricLayout';
+import { ActivePerWorkflow } from '@app/pages/Workflows/components/organisms/metrics/ActivePerWorkflow';
+import { WorkflowFiltersProps } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowFilters/types';
+import { withWorkflowFilters } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowFilters';
+import { FilterComponent } from '@app/pages/Workflows/components/organisms/WorkflowFilters/types';
+import { WorkflowFilters } from '@app/pages/Workflows/components/organisms/WorkflowFilters';
 
 const filterComponents: FilterComponent[] = [StatusFilterComponent];
 
-export const Workflows = () => {
-  const { filters, setFilters } = useWorkflowsFilters();
+interface Props extends WorkflowFiltersProps {}
+
+export const Workflows = withWorkflowFilters(({ filters, updateFilters }: Props) => {
   const { sortingKey, sortingDirection } = useSorting('order_by');
   const { data, isLoading, isFetching } = useWorkflowsQuery(
     filters,
@@ -25,17 +28,25 @@ export const Workflows = () => {
 
   const handlePageChange = useCallback(
     (nextPage: number) => {
-      setFilters({ page: nextPage });
+      updateFilters({ page: nextPage });
     },
-    [setFilters],
+    [updateFilters],
   );
 
   return (
     <DashboardLayout pageName="Workflows">
       <WorkflowsLayout>
         <WorkflowsLayout.Header>
-          <WorkflowMetrics />
-          <WorkflowFilters components={filterComponents} values={filters} onChange={setFilters} />
+          <WorkflowsMetricLayout>
+            <WorkflowsMetricLayout.Item>
+              <ActivePerWorkflow />
+            </WorkflowsMetricLayout.Item>
+          </WorkflowsMetricLayout>
+          <WorkflowFilters
+            components={filterComponents}
+            values={filters}
+            onChange={updateFilters}
+          />
         </WorkflowsLayout.Header>
         <WorkflowsLayout.Main>
           <WorkflowsList workflows={data.results} isLoading={isLoading} isFetching={isFetching} />
@@ -50,4 +61,4 @@ export const Workflows = () => {
       </WorkflowsLayout>
     </DashboardLayout>
   );
-};
+});

@@ -11,3 +11,10 @@ export interface GetWorkflowMetricsResponse {
   status: IWorkflowStatusMetric;
   approvedWorkflows: IWorkflowApprovedMetric[];
 }
+
+export type WorkflowStatsPerStatus = Record<IWorkflowStatus, number>;
+export interface IWorkflowDefinitionStats {
+  id: string;
+  name: string;
+  stats: WorkflowStatsPerStatus;
+}
