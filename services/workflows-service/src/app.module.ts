@@ -24,7 +24,7 @@ import { LogRequestInterceptor } from '@/common/interceptors/log-request.interce
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsModule } from 'nestjs-cls';
 import { FiltersModule } from '@/common/filters/filters.module';
-import { UserActivityTrackerMiddleware } from '@/common/middlewares/user-activity-tracker.middleware';
+import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-audit.middleware';
 
 @Module({
   controllers: [],
@@ -77,6 +77,6 @@ import { UserActivityTrackerMiddleware } from '@/common/middlewares/user-activit
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestIdMiddleware, UserActivityTrackerMiddleware).forRoutes('*');
+    consumer.apply(RequestIdMiddleware, UserSessionAuditMiddleware).forRoutes('*');
   }
 }

@@ -5,7 +5,7 @@ import { User } from '@prisma/client';
 import { Request, Response } from 'express';
 
 @Injectable()
-export class UserActivityTrackerMiddleware implements NestMiddleware {
+export class UserSessionAuditMiddleware implements NestMiddleware {
   private FIVE_MINUTES_IN_MS = 1000 * 60 * 5;
   UPDATE_INTERVAL = this.FIVE_MINUTES_IN_MS;
 
@@ -17,7 +17,7 @@ export class UserActivityTrackerMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: (error?: any) => void) {
     if (req.session && req.user) {
       if (this.isUpdateCanBePerformed((req.user as User).lastActiveAt)) {
-        await this.trackUserActivity(req.user as User);
+        await this.trackAuthorizedAction(req.user as User);
       }
     }
 
@@ -36,9 +36,9 @@ export class UserActivityTrackerMiddleware implements NestMiddleware {
     return now - pastDate >= updateIntervalInMs;
   }
 
-  private async trackUserActivity(user: User, activeDate = new Date()) {
-    this.logger.log(`Updating activity`, { userId: user.id });
+  private async trackAuthorizedAction(user: User, activeDate = new Date()) {
+    this.logger.log(`Updating user presence`, { userId: user.id });
     await this.userService.updateById(user.id, { data: { lastActiveAt: activeDate } });
-    this.logger.log(`Updated activity`, { userId: user.id });
+    this.logger.log(`Updated user presence`, { userId: user.id });
   }
 }

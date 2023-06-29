@@ -1,5 +1,5 @@
+import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-audit.middleware';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { UserActivityTrackerMiddleware } from '@/common/middlewares/user-activity-tracker.middleware';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
@@ -22,7 +22,7 @@ class FakePasswordService {
   }
 }
 
-describe('UserActivityTrackerMiddleware', () => {
+describe('UserSessionAuditMiddleware', () => {
   const testUserPayload = {
     firstName: 'Test',
     lastName: 'User',
@@ -32,7 +32,7 @@ describe('UserActivityTrackerMiddleware', () => {
   } as unknown as User;
   let app: TestingModule;
   let testUser: User;
-  let middleware: UserActivityTrackerMiddleware;
+  let middleware: UserSessionAuditMiddleware;
   let userService: UserService;
   let callback: jest.Mock;
 
@@ -48,7 +48,7 @@ describe('UserActivityTrackerMiddleware', () => {
         UserRepository,
       ],
     }).compile();
-    middleware = new UserActivityTrackerMiddleware(app.get(AppLoggerService), app.get(UserService));
+    middleware = new UserSessionAuditMiddleware(app.get(AppLoggerService), app.get(UserService));
     userService = app.get(UserService);
     callback = jest.fn(() => null);
   });
