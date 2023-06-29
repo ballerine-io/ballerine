@@ -6,10 +6,12 @@ export const createWorkflow: TCreateWorkflow = ({
   workflowActions,
   workflowContext,
   extensions,
+  childWorkflows,
 }) =>
   new WorkflowRunner({
     definition,
     workflowActions,
     workflowContext,
     extensions,
+    childWorkflows,
   });

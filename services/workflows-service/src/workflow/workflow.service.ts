@@ -157,7 +157,7 @@ export class WorkflowService {
 
   private formatWorkflow(workflow: TWorkflowWithRelations) {
     const isIndividual = 'endUser' in workflow;
-    const service = createWorkflowClient({
+    const service = createWorkflowClient().createWorkflow({
       definition: workflow.workflowDefinition as any,
       definitionType: workflow.workflowDefinition.definitionType,
       workflowContext: {
@@ -975,7 +975,7 @@ export class WorkflowService {
       runtimeData.workflowDefinitionId,
     );
 
-    const service = createWorkflowClient({
+    const service = createWorkflowClient().createWorkflow({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       definition: workflow.definition,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

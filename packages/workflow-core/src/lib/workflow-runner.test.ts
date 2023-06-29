@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { WorkflowRunner } from './workflow-runner';
 import { sleep } from '@ballerine/common';
 
@@ -28,7 +28,35 @@ const TWO_STATES_MACHINE_DEFINITION = {
 };
 
 function createEventCollectingWorkflow(args) {
-  const workflow = new WorkflowRunner(args);
+  const workflow = new WorkflowRunner({
+    ...args,
+    childWorkflows: [
+      {
+        definitionId: 'child_machine',
+        definitionVersion: 1,
+        stateNames: ['checkBusinessScore'],
+        // Context to copy from the parent workflow
+        contextToCopy: {
+          stakeholders: true,
+        },
+        callbackInfo: {
+          event: 'parent_initial',
+          contextToCopy: {
+            endUser: {
+              id: true,
+            },
+          },
+        },
+        initOptions: {
+          // event: 'kyc',
+          context: {
+            type: 'kyb_child',
+          },
+          // state: 'send_communications',
+        },
+      },
+    ],
+  });
   workflow.events = [];
   workflow.subscribe(e => {
     e.error && (e.error = e.error.message);
