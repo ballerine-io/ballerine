@@ -22,9 +22,9 @@ import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
-import { GetWorkflowsRuntimeDto } from '@/workflow/dtos/get-workflows-runtime.dto';
-import { GetWorkflowsRuntimeResponseDto } from '@/workflow/dtos/get-workflows-runtime-response.dto';
 import { plainToClass } from 'class-transformer';
+import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
+import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -37,21 +37,22 @@ export class WorkflowControllerExternal {
   ) {}
   // GET /workflows
   @common.Get('/')
-  @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeResponseDto] })
+  @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeOutputDto] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
   @UseKeyAuthInDevGuard()
-  @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   async listWorkflowRuntimeData(
-    @Query() query: GetWorkflowsRuntimeDto,
-  ): Promise<GetWorkflowsRuntimeResponseDto> {
+    @Query() query: GetWorkflowsRuntimeInputDto,
+  ): Promise<GetWorkflowsRuntimeOutputDto> {
     const results = await this.service.listRuntimeData({
       page: query.page,
       size: query.limit,
       status: query.status,
+      orderBy: query.orderBy,
+      orderDirection: query.orderDirection,
     });
 
-    return plainToClass(GetWorkflowsRuntimeResponseDto, results);
+    return plainToClass(GetWorkflowsRuntimeOutputDto, results);
   }
 
   @common.Get('/metrics')
