@@ -12,6 +12,7 @@ export interface RunnableWorkflowData {
   workflowDefinition: WorkflowDefinition;
   workflowRuntimeData: WorkflowRuntimeData;
   ballerineEntityId?: string | null;
+  parentWorkflowRuntimeId?: string;
 }
 
 export type CompleteWorkflowData = WorkflowRuntimeData & {
