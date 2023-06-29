@@ -14,19 +14,16 @@ import {
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import {
-  CompleteWorkflowData,
   ListRuntimeDataResult,
   ListWorkflowsRuntimeParams,
   RunnableWorkflowData,
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
-  WorkflowsRuntimeMetric,
-  WorkflowStatusMetric,
 } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
@@ -603,7 +600,7 @@ export class WorkflowService {
   async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
     const updatedWorkflowRuntime = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
-      { data: { assigneeId: assigneeId } },
+      { data: { assigneeId: assigneeId, assignedAt: new Date() } },
     );
 
     return updatedWorkflowRuntime;
@@ -1153,37 +1150,5 @@ export class WorkflowService {
 
   async getWorkflowRuntimeDataContext(id: string) {
     return this.workflowRuntimeDataRepository.findContext(id);
-  }
-
-  async listWorkflowsMetrics(): Promise<WorkflowsRuntimeMetric> {
-    return {
-      approvedWorkflows: (await this.listResolvedWorkflowRuntimes()) as any,
-      status: await this._getWorkflowsStatusMetric(),
-    };
-  }
-
-  private async listResolvedWorkflowRuntimes(): Promise<WorkflowRuntimeData[]> {
-    return await this.workflowRuntimeDataRepository.findMany({
-      where: { resolvedAt: { not: null } },
-    });
-  }
-
-  private async _getWorkflowsStatusMetric(): Promise<WorkflowStatusMetric> {
-    const queryResult = await this.workflowRuntimeDataRepository.groupBy({
-      by: ['status'],
-      _count: true,
-    });
-
-    const metrics: WorkflowStatusMetric = {
-      active: 0,
-      failed: 0,
-      completed: 0,
-    };
-
-    queryResult.forEach(metric => {
-      metrics[metric.status] = Number(metric._count) || 0;
-    });
-
-    return metrics;
   }
 }

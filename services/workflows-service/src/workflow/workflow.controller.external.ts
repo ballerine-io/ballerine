@@ -25,6 +25,11 @@ import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-gu
 import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
+import { WorkflowRuntimeStatsModel } from '@/workflow/workflow-runtime-stats-model';
+import { WorkflowMetricService } from '@/workflow/workflow-metric.service';
+import { WorkflowRuntimeAgentCasesModel } from '@/workflow/workflow-runtime-agent-cases.model';
+import { GetWorkflowsRuntimeAgentCases } from '@/workflow/dtos/get-workflows-runtime-agent-cases-input.dto';
+import { WorkflowRuntimeCasesPerStatusModel } from '@/workflow/workflow-runtime-cases-per-status.model';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -32,6 +37,7 @@ import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runt
 export class WorkflowControllerExternal {
   constructor(
     protected readonly service: WorkflowService,
+    protected readonly metricService: WorkflowMetricService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -40,7 +46,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeOutputDto] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
-  @UseKeyAuthInDevGuard()
+  @UseKeyAuthGuard()
   async listWorkflowRuntimeData(
     @Query() query: GetWorkflowsRuntimeInputDto,
   ): Promise<GetWorkflowsRuntimeOutputDto> {
@@ -55,10 +61,42 @@ export class WorkflowControllerExternal {
     return plainToClass(GetWorkflowsRuntimeOutputDto, results);
   }
 
-  @common.Get('/metrics')
-  @UseKeyAuthInDevGuard()
-  async listWorkflowRuntimeMetric() {
-    return await this.service.listWorkflowsMetrics();
+  @common.Get('/metrics/workflows-definition-runtime-stats')
+  @swagger.ApiOkResponse({ type: [WorkflowRuntimeStatsModel] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @common.HttpCode(200)
+  @UseKeyAuthGuard()
+  async listWorkflowRuntimeStats(): Promise<WorkflowRuntimeStatsModel[]> {
+    const results = await this.metricService.listWorkflowStats();
+
+    return results.map(result => plainToClass(WorkflowRuntimeStatsModel, result));
+  }
+
+  @common.Get('/metrics/workflow-runtime-agent-cases-stats')
+  @swagger.ApiOkResponse({ type: [WorkflowRuntimeAgentCasesModel] })
+  @common.HttpCode(200)
+  @UseKeyAuthGuard()
+  async listWorkflowRuntimeAgentCasesStats(
+    @Query() query: GetWorkflowsRuntimeAgentCases,
+  ): Promise<WorkflowRuntimeAgentCasesModel[]> {
+    const results = await this.metricService.listWorkflowRuntimeAgentCasesStats({
+      fromDate: query.fromDate,
+    });
+
+    return results.map(result => plainToClass(WorkflowRuntimeAgentCasesModel, result));
+  }
+
+  @common.Get('/metrics/workflow-runtime-cases-per-status')
+  @swagger.ApiOkResponse({ type: WorkflowRuntimeCasesPerStatusModel })
+  @common.HttpCode(200)
+  @UseKeyAuthGuard()
+  async listWorkflowRuntimeCasesPerStatusStats(
+    @Query() query: GetWorkflowsRuntimeAgentCases,
+  ): Promise<WorkflowRuntimeCasesPerStatusModel> {
+    const results = await this.metricService.getWorkflowsRuntimeCasesPerStatus({
+      fromDate: query.fromDate,
+    });
+    return plainToClass(WorkflowRuntimeCasesPerStatusModel, results);
   }
 
   @common.Get('/:id')
