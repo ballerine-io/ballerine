@@ -29,24 +29,29 @@ export interface WorkflowContext {
   lockKey?: string;
 }
 
+export interface ChildWorkflow {
+  definitionId: string;
+  definitionVersion: 1;
+  stateNames: Array<string>;
+  contextToCopy: { [key: string]: boolean };
+  callbackInfo: {
+    event: string;
+    contextToCopy: { [key: string]: boolean };
+  };
+  initOptions?: {
+    context?: Record<string, unknown>;
+    state?: string;
+  };
+}
+
 export interface WorkflowOptions {
   definitionType: 'statechart-json' | 'bpmn-json';
   definition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
+  childWorkflows?: Array<ChildWorkflow>;
 }
-
-export interface WorkflowRunnerArgs {
-  definition: MachineConfig<any, any, any>;
-  workflowActions?: MachineOptions<any, any>['actions'];
-  workflowContext?: WorkflowContext;
-  extensions?: WorkflowExtensions;
-}
-
-export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
-
-export type TCreateWorkflow = (options: WorkflowOptions) => Workflow;
 
 export interface CallbackInfo {
   event: string;
@@ -67,7 +72,7 @@ export interface ChildWorkflowMetadata {
   /**
    * @description static properties to initiate the new machine with
    */
-  initOptions?: {
+  initOptions?: Partial<{
     context: {
       [key: string]: unknown;
     };
@@ -79,7 +84,7 @@ export interface ChildWorkflowMetadata {
      * @description i.e. approve | reject - see the /event endpoint
      */
     event: string;
-  };
+  }>;
 }
 export interface WorkflowCallbackPayload {
   parentWorkflowMetadata: ParentWorkflowMetadata;
@@ -89,8 +94,20 @@ export interface WorkflowCallbackPayload {
 
 export interface WorkflowClientOptions {
   onEvent?: (payload: WorkflowCallbackPayload) => Promise<void>;
-  onInvokeChildWorkflow?: (payload: WorkflowCallbackPayload) => Promise<void>;
+  onInvokeChildWorkflow?: (childWorkflowMetadata: ChildWorkflowMetadata) => Promise<void>;
 }
+
+export interface WorkflowRunnerArgs extends WorkflowClientOptions {
+  childWorkflows?: Array<ChildWorkflow>;
+  definition: MachineConfig<any, any, any>;
+  workflowActions?: MachineOptions<any, any>['actions'];
+  workflowContext?: WorkflowContext;
+  extensions?: WorkflowExtensions;
+}
+
+export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
+
+export type TCreateWorkflow = (options: WorkflowOptions) => Workflow;
 
 export const Error = {
   ERROR: 'ERROR',

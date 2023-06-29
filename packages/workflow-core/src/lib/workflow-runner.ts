@@ -2,7 +2,7 @@
 import { uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
-import { createMachine, interpret, assign } from 'xstate';
+import { createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
   ObjectValues,
@@ -26,6 +26,11 @@ export class WorkflowRunner {
   #__callback: ((event: WorkflowEvent) => void) | null = null;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
+  #__childWorkflows?: {
+    workflows: WorkflowRunnerArgs['childWorkflows'];
+    onInvokeChildWorkflow: WorkflowRunnerArgs['onInvokeChildWorkflow'];
+    onEvent: WorkflowRunnerArgs['onEvent'];
+  };
   events: any;
 
   public get workflow() {
@@ -40,14 +45,28 @@ export class WorkflowRunner {
   }
 
   constructor(
-    { definition, workflowActions, workflowContext, extensions }: WorkflowRunnerArgs,
+    {
+      definition,
+      workflowActions,
+      workflowContext,
+      extensions,
+      childWorkflows,
+      onInvokeChildWorkflow,
+      onEvent,
+    }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
     // global and state specific extensions
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
-
+    this.#__childWorkflows = childWorkflows
+      ? {
+          workflows: childWorkflows,
+          onInvokeChildWorkflow,
+          onEvent,
+        }
+      : undefined;
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
 
@@ -248,9 +267,13 @@ export class WorkflowRunner {
 
   async sendEvent(event: WorkflowEventWithoutState) {
     const workflow = this.#__workflow.withContext(this.#__context);
+    // Only iterate over the child workflows that are configured to run in the current state.
+    const childWorkflowStateNames = uniqueArray(
+      this.#__childWorkflows?.workflows?.flatMap(childWorkflow => childWorkflow?.stateNames) ?? [],
+    )?.filter(stateName => stateName === this.#__currentState);
 
     console.log('Current state:', this.#__currentState);
-
+    console.log(childWorkflowStateNames);
     const service = interpret(workflow)
       .start(this.#__currentState)
       .onTransition(state => {
@@ -284,6 +307,26 @@ export class WorkflowRunner {
     );
 
     const snapshot = service.getSnapshot();
+
+    if (this.#__childWorkflows?.onInvokeChildWorkflow) {
+      await Promise.all(
+        childWorkflowStateNames?.map(async () => {
+          await this.#__childWorkflows?.onInvokeChildWorkflow?.({
+            definitionId: 'test',
+            runtimeId: 'test',
+            name: 'test',
+            version: 1,
+            initOptions: {
+              context: {
+                test: 'test',
+              },
+              event: 'test',
+              state: 'test',
+            },
+          });
+        }),
+      );
+    }
 
     for (const prePlugin of prePlugins) {
       await this.#__handleAction({

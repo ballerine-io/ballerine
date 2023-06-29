@@ -9,6 +9,7 @@ export type {
   PluginAction,
   WorkflowContext,
   ExtensionRunOrder,
+  ChildWorkflow,
   CallbackInfo,
   ParentWorkflowMetadata,
   ChildWorkflowMetadata,

@@ -8,6 +8,7 @@ export {
   WorkflowOptions,
   WorkflowRunnerArgs,
   WorkflowContext,
+  ChildWorkflow,
   CallbackInfo,
   ParentWorkflowMetadata,
   ChildWorkflowMetadata,
