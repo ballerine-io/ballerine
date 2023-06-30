@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 import { useApproveEntityMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveEntityMutation/useApproveEntityMutation';
 import { useDebounce } from '../../../../../../common/hooks/useDebounce/useDebounce';
 import { createInitials } from '../../../../../../common/utils/create-initials/create-initials';
-import { Action } from '../../../../../../common/enums';
 import { IUseActions } from './interfaces';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
@@ -12,6 +11,7 @@ import { useRejectEntityMutation } from '../../../../../../domains/entities/hook
 import { useSelectNextEntity } from '../../../../../../domains/entities/hooks/useSelectNextEntity/useSelectNextEntity';
 import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
+import { CaseState } from '../../../../../../common/enums';
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -24,10 +24,23 @@ export const ResubmissionReason = {
   FACE_IS_NOT_MATCHING: 'FACE_IS_NOT_MATCHING',
 } as const;
 
-export const useActions = ({ workflowId, fullName }: IUseActions) => {
-  const onSelectNextEntity = useSelectNextEntity();
+export const useActionsLogic = ({ workflowId, fullName }: IUseActions) => {
+  // <Current entity>
   const filterId = useFilterId();
-  const { data: workflow } = useWorkflowQuery({ workflowId, filterId });
+  const onSelectNextEntity = useSelectNextEntity();
+  // Create initials from the first character of the first name, middle name, and last name.
+  const initials = createInitials(fullName);
+  const { data: workflow, isLoading: isLoadingEntity } = useWorkflowQuery({ workflowId, filterId });
+  // </Current entity>
+
+  // <Authenticated user>
+  const {
+    data: { user: authenticatedUser },
+  } = useAuthenticatedUserQuery();
+  // </Authenticated user>
+
+  // <Case decisions>
+  const caseState = useCaseState(authenticatedUser, workflow);
   const { mutate: mutateApproveEntity, isLoading: isLoadingApproveEntity } =
     useApproveEntityMutation({
       workflowId: workflowId,
@@ -37,43 +50,19 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
     workflowId: workflowId,
     onSelectNextEntity,
   });
-
-  const { mutate: mutateAssignWorkflow, isLoading: isLoadingAssignWorkflow } =
-    useAssignWorkflowMutation({ workflowRuntimeId: workflowId });
-
-  const isLoading = isLoadingApproveEntity || isLoadingRejectEntity || isLoadingAssignWorkflow;
-  // Create initials from the first character of the first name, middle name, and last name.
-  const initials = createInitials(fullName);
-
-  const {
-    data: { user: authenticatedUser },
-  } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(authenticatedUser, workflow);
-  const { data: users } = useUsersQuery();
-  const assignees = users?.filter(assignee => assignee?.id !== authenticatedUser?.id);
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
+  // TODO: Supposed to be based on `nextEvents` and for the global case actions (not per document)
   const canReject = caseState.actionButtonsEnabled;
   const canApprove = caseState.actionButtonsEnabled;
-
   // Only display the button spinners if the request is longer than 300ms
   const debouncedIsLoadingRejectEntity = useDebounce(isLoadingRejectEntity, 300);
   const debouncedIsLoadingApproveEntity = useDebounce(isLoadingApproveEntity, 300);
-  const debouncedIsLoadingAssignEntity = useDebounce(isLoadingAssignWorkflow, 300);
-
   // Avoid passing the onClick event to mutate
   const onMutateApproveEntity = useCallback(() => mutateApproveEntity(), [mutateApproveEntity]);
   const onMutateRejectEntity = useCallback(
     (payload: Parameters<typeof mutateRejectEntity>[0]) => () => mutateRejectEntity(payload),
     [mutateRejectEntity],
-  );
-  const onMutateAssignWorkflow = useCallback(
-    (assigneeId: string, isAssignedToMe: boolean) =>
-      mutateAssignWorkflow({
-        assigneeId,
-        isAssignedToMe,
-      }),
-    [mutateAssignWorkflow],
   );
   const [documentToResubmit, setDocumentToResubmit] = useState('id');
   const onDocumentToResubmitChange = useCallback(
@@ -86,7 +75,42 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
     [setResubmissionReason],
   );
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
-  const onTriggerAssignToMe = true;
+  // </Case decisions>
+
+  // <Assignment>
+  const { data: users } = useUsersQuery();
+  const assigneesWithoutMe = users?.filter(assignee => assignee?.id !== authenticatedUser?.id);
+  const isAssignedToMe = authenticatedUser?.id === workflow?.assignee?.id;
+  const { mutate: mutateAssignWorkflow, isLoading: isLoadingAssignWorkflow } =
+    useAssignWorkflowMutation({ workflowRuntimeId: workflowId, isAssignedToMe });
+  const debouncedIsLoadingAssignEntity = useDebounce(isLoadingAssignWorkflow, 300);
+  const isAssignToMeDisabled = !caseState.assignToMeEnabled;
+  const isAssignToOtherDisabled = !caseState.assignToOtherEnabled;
+  const isUnassignDisabled = caseState === CaseState.UNASSIGNED;
+  const onAssignMe = useCallback(
+    () =>
+      mutateAssignWorkflow({
+        assigneeId: authenticatedUser?.id,
+      }),
+    [mutateAssignWorkflow, authenticatedUser?.id],
+  );
+  const onUnassign = useCallback(
+    () =>
+      mutateAssignWorkflow({
+        assigneeId: null,
+      }),
+    [mutateAssignWorkflow],
+  );
+  const onAssign = useCallback(
+    (assigneeId: string) => () =>
+      mutateAssignWorkflow({
+        assigneeId,
+      }),
+    [mutateAssignWorkflow],
+  );
+  // </Assignment>
+
+  const isLoading = isLoadingApproveEntity || isLoadingRejectEntity || isLoadingAssignWorkflow;
 
   // useDocumentListener('keydown', event => {
   //   if (!event.ctrlKey || document.activeElement !== document.body) return;
@@ -113,24 +137,41 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
   // });
 
   return {
-    onTriggerAssignToMe,
-    isActionButtonDisabled,
-    onMutateApproveEntity,
-    onMutateRejectEntity,
-    onMutateAssignWorkflow,
-    debouncedIsLoadingRejectEntity,
-    debouncedIsLoadingApproveEntity,
-    debouncedIsLoadingAssignEntity,
-    isLoading,
+    // <Authenticated user>
+    authenticatedUser,
+    // </Authenticated user>
+
+    // <Current entity>
     initials,
+    isLoadingEntity,
+    // </Current entity>
+
+    // <Case decisions>
+    caseState,
+    isActionButtonDisabled,
     canReject,
     canApprove,
+    onMutateApproveEntity,
+    onMutateRejectEntity,
     documentToResubmit,
     resubmissionReason,
     onDocumentToResubmitChange,
     onResubmissionReasonChange,
-    caseState,
-    authenticatedUser,
-    assignees,
+    debouncedIsLoadingRejectEntity,
+    debouncedIsLoadingApproveEntity,
+    // </Case decisions>
+
+    // <Assignment>
+    assigneesWithoutMe,
+    isAssignToMeDisabled,
+    isAssignToOtherDisabled,
+    isUnassignDisabled,
+    onAssign,
+    onAssignMe,
+    onUnassign,
+    debouncedIsLoadingAssignEntity,
+    // </Assignment>
+
+    isLoading,
   };
 };

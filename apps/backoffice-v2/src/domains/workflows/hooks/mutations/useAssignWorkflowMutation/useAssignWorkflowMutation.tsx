@@ -23,12 +23,18 @@ const getToastActionAndContext = ({
   return { action, context } as const;
 };
 
-export const useAssignWorkflowMutation = ({ workflowRuntimeId }: { workflowRuntimeId: string }) => {
+export const useAssignWorkflowMutation = ({
+  workflowRuntimeId,
+  isAssignedToMe,
+}: {
+  workflowRuntimeId: string;
+  isAssignedToMe: boolean;
+}) => {
   const queryClient = useQueryClient();
   const { data: users } = useUsersQuery();
 
   return useMutation({
-    mutationFn: ({ assigneeId }: { assigneeId: string | null; isAssignedToMe: boolean }) =>
+    mutationFn: ({ assigneeId }: { assigneeId: string | null }) =>
       updateWorkflowSetAssignById({
         workflowId: workflowRuntimeId,
         body: {
@@ -42,7 +48,7 @@ export const useAssignWorkflowMutation = ({ workflowRuntimeId }: { workflowRunti
 
       return { assigneeName };
     },
-    onSuccess: (data, { assigneeId, isAssignedToMe }, { assigneeName }) => {
+    onSuccess: (data, { assigneeId }, { assigneeName }) => {
       void queryClient.invalidateQueries();
 
       const { action, context } = getToastActionAndContext({
@@ -53,11 +59,10 @@ export const useAssignWorkflowMutation = ({ workflowRuntimeId }: { workflowRunti
 
       toast.success(t(`toast:${action}.success`, context));
     },
-    onError: (error, { assigneeId, isAssignedToMe }, { assigneeName }) => {
+    onError: (error, { assigneeId }, { assigneeName }) => {
       const { action, context } = getToastActionAndContext({
         assigneeId,
         assigneeName,
-        isAssignedToMe,
       });
 
       toast.error(t(`toast:${action}.error`, context));
