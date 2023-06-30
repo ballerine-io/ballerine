@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from 'react';
-import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { IActionsProps } from './interfaces';
-import { ResubmissionReason, useActions } from './hooks/useActions/useActions';
+import { ResubmissionReason, useActionsLogic } from './hooks/useActions/useActionsLogic';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { DropdownMenu } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu';
 import { DropdownMenuTrigger } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
@@ -20,10 +19,7 @@ import { DialogDescription } from '../../../../common/components/organisms/Dialo
 import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { Select } from '../../../../common/components/atoms/Select/Select';
-import {
-  AssignButton,
-  Assignee,
-} from '../../../../common/components/atoms/AssignButton/AssignButton';
+import { ReassignDropdown } from '../../../../common/components/atoms/ReassignDropdown/ReassignDropdown';
 import * as HoverCard from '@radix-ui/react-hover-card';
 import { Button } from '../../../../common/components/atoms/Button/Button';
 import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
@@ -50,54 +46,57 @@ export const Actions: FunctionComponent<IActionsProps> = ({
   showResolutionButtons = true,
 }) => {
   const {
+    // <Authenticated user>
+    authenticatedUser,
+    // </Authenticated user>
+
+    // <Current entity>
+    initials,
+    isLoadingEntity,
+    // </Current entity>
+
+    // <Case decisions>
+    caseState,
+    isActionButtonDisabled,
+    canReject,
+    canApprove,
     onMutateApproveEntity,
     onMutateRejectEntity,
-    onMutateAssignWorkflow,
-    debouncedIsLoadingApproveEntity,
-    debouncedIsLoadingRejectEntity,
-    debouncedIsLoadingAssignEntity,
-    isLoading,
-    isLoadingEntity,
-    initials,
-    canApprove,
-    canReject,
     documentToResubmit,
-    onDocumentToResubmitChange,
     resubmissionReason,
+    onDocumentToResubmitChange,
     onResubmissionReasonChange,
-    caseState,
-    authenticatedUser,
-    assignees,
-    isActionButtonDisabled,
-    onTriggerAssignToMe,
-    isAssignedToMe,
-  } = useActions({ workflowId: id, fullName });
+    debouncedIsLoadingRejectEntity,
+    debouncedIsLoadingApproveEntity,
+    // </Case decisions>
+
+    // <Assignment>
+    assigneesWithoutMe,
+    isAssignToMeDisabled,
+    isAssignToOtherDisabled,
+    isUnassignDisabled,
+    onAssign,
+    onAssignMe,
+    onUnassign,
+    debouncedIsLoadingAssignEntity,
+    // </Assignment>
+
+    isLoading,
+  } = useActionsLogic({ workflowId: id, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-4`}>
       <div className={`flex flex-row space-x-3.5`}>
-        <AssignButton
-          assignees={[
-            {
-              id: authenticatedUser?.id,
-              fullName: authenticatedUser?.fullName,
-            },
-          ]}
-          authenticatedUser={authenticatedUser}
-          caseState={caseState}
-          onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, onTriggerAssignToMe);
-          }}
-          buttonType={'Assign'}
-        />
-        <AssignButton
-          assignees={assignees as Assignee[]}
-          authenticatedUser={authenticatedUser}
-          caseState={caseState}
-          onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, !onTriggerAssignToMe);
-          }}
-          buttonType={'Re-Assign'}
+        <Button disabled={isAssignToMeDisabled} onClick={onAssignMe}>
+          Assign Me
+        </Button>
+
+        <ReassignDropdown
+          assignees={assigneesWithoutMe}
+          isDisabled={isAssignToOtherDisabled && isUnassignDisabled}
+          isUnassignDisabled={isUnassignDisabled}
+          onAssign={onAssign}
+          onUnassign={onUnassign}
         />
       </div>
       <div className={`flex h-20 justify-between`}>
