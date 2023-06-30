@@ -1,19 +1,32 @@
 import { Header } from '../../../../common/components/organisms/Header';
-import { FunctionComponentWithChildren } from '../../../../common/types';
-import { useSelectEntityFilterOnMount } from '../../../entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
+import { useAuthenticatedLayoutLogic } from './hooks/useAuthenticatedLayoutLogic/useAuthenticatedLayoutLogic';
+import { Navigate, Outlet } from 'react-router-dom';
+import { FunctionComponent } from 'react';
 
-export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {
-  // Should only be uncommented once `useAuthRedirects` is no longer in use in `AuthProvider`
-  // useAuthenticatedLayout();
-  useSelectEntityFilterOnMount();
+export const AuthenticatedLayout: FunctionComponent = () => {
+  const { shouldRedirect, isLoading, redirectUnauthenticatedTo, location } =
+    useAuthenticatedLayoutLogic();
+
+  if (isLoading) return null;
+
+  if (shouldRedirect) {
+    return (
+      <Navigate
+        to={redirectUnauthenticatedTo}
+        replace
+        state={{
+          from: location,
+        }}
+      />
+    );
+  }
 
   return (
     <div className="drawer-mobile drawer">
       <input id="app-drawer" type="checkbox" className="drawer-toggle" />
       <div className={`drawer-content`}>
         <main className={`grid h-full grid-cols-[285px_1fr]`}>
-          {/*<Outlet />*/}
-          {children}
+          <Outlet />
         </main>
       </div>
       <div className={`drawer-side w-56`}>
