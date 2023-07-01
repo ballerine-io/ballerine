@@ -30,6 +30,8 @@ export interface WorkflowContext {
 }
 
 export interface ChildWorkflow {
+  name: string;
+  runtimeId: string;
   definitionId: string;
   definitionVersion: 1;
   stateNames: Array<string>;
