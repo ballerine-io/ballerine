@@ -6,6 +6,7 @@ import {
   ChildWorkflow,
   ChildWorkflowMetadata,
   ParentWorkflowMetadata,
+  WorkflowCallbackPayload,
   WorkflowClientOptions,
 } from '@ballerine/workflow-core';
 import { WorkflowOptionsNode } from './types';
@@ -184,7 +185,9 @@ describe('Parent and child workflows #integration #featureset', () => {
           initOptions: {
             event: 'NEXT',
             context: {
-              type: 'kyb_child',
+              endUser: {
+                id: 'user_1',
+              },
             },
             state: 'child_initial',
           },
@@ -214,7 +217,9 @@ describe('Parent and child workflows #integration #featureset', () => {
         initOptions: {
           event: 'NEXT',
           context: {
-            type: 'kyb_child',
+            endUser: {
+              id: 'user_1',
+            },
           },
           state: 'child_initial',
         },
@@ -257,7 +262,9 @@ describe('Parent and child workflows #integration #featureset', () => {
           initOptions: {
             event: 'NEXT',
             context: {
-              type: 'kyb_child',
+              endUser: {
+                id: 'user_1',
+              },
             },
             state: 'child_initial',
           },
@@ -280,11 +287,12 @@ describe('Parent and child workflows #integration #featureset', () => {
   });
 
   describe('when a child workflow reaches its final state', async () => {
+    let response: Parameters<NonNullable<WorkflowClientOptions['onEvent']>>[0] | undefined;
     const onEvent = vi.fn<
       [Parameters<NonNullable<WorkflowClientOptions['onEvent']>>[0]],
       ReturnType<NonNullable<WorkflowClientOptions['onEvent']>>
     >(async payload => {
-      return;
+      response = payload;
     });
     const childWorkflows = [
       {
@@ -302,7 +310,9 @@ describe('Parent and child workflows #integration #featureset', () => {
         initOptions: {
           event: 'NEXT',
           context: {
-            type: 'kyb_child',
+            endUser: {
+              id: 'user_1',
+            },
           },
           state: 'child_initial',
         },
@@ -368,6 +378,44 @@ describe('Parent and child workflows #integration #featureset', () => {
       });
 
       expect(onEvent).toHaveBeenCalledTimes(1);
+      onEvent.mockClear();
+    });
+
+    it('should pass the expected payload to `onEvent`', async () => {
+      await parentWorkflowService.sendEvent({
+        type: 'NEXT',
+      });
+      await parentWorkflowService.sendEvent({
+        type: 'NEXT',
+      });
+
+      expect(response).toStrictEqual({
+        parentWorkflowMetadata: {
+          name: 'parent_machine_name_1',
+          definitionId: 'parent_machine_definition_1',
+          runtimeId: 'parent_machine_runtime_1',
+          version: 1,
+        },
+        childWorkflowMetadata: {
+          name: 'child_machine_name_1',
+          definitionId: 'child_machine_definition_1',
+          runtimeId: 'child_machine_runtime_1',
+          version: 1,
+          initOptions: {
+            context: {
+              endUser: {
+                id: 'user_1',
+              },
+            },
+            event: 'NEXT',
+            state: 'child_initial',
+          },
+        },
+        callbackInfo: {
+          event: 'parent_initial',
+          contextToCopy: 'endUser.id',
+        },
+      } satisfies WorkflowCallbackPayload);
       onEvent.mockClear();
     });
   });
