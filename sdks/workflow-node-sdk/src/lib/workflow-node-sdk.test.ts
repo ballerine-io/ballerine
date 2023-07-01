@@ -1,4 +1,4 @@
-import { describe, expect, it, test, vi } from 'vitest';
+import { describe, expect, it, test } from 'vitest';
 import { createWorkflowClient } from './create-workflow-client';
 import { MemoryStore } from './adapters/memory-store';
 import { MemoryPersistencePlugin } from './plugins/memory-persistence-plugin';
@@ -14,27 +14,20 @@ const simpleMachine = {
   },
 };
 
-test('Simple Server Workflow', t => {
+test('Simple Server Workflow', async () => {
   console.log('Running create Server Workflow');
 
-  const workflow = createWorkflowClient({
-    async onEvent(payload) {
-      console.log('onEvent', payload);
-    },
-    async onInvokeChildWorkflow(payload) {
-      console.log('onInvokeChildWorkflow', payload);
-    },
-  });
+  const workflow = createWorkflowClient();
   const runner = workflow.createWorkflow({
     definitionType: 'statechart-json',
     definition: simpleMachine,
   });
 
   expect(runner.getSnapshot().value).toBe('inactive');
-  runner.sendEvent({ type: 'TOGGLE' });
+  await runner.sendEvent({ type: 'TOGGLE' });
   expect(runner.getSnapshot().value).toBe('active');
 
-  runner.sendEvent({ type: 'TOGGLE' });
+  await runner.sendEvent({ type: 'TOGGLE' });
   expect(runner.getSnapshot().value).toBe('inactive');
 });
 
@@ -104,7 +97,9 @@ const parentMachine = {
   },
   childWorkflows: [
     {
+      name: 'child_workflow',
       definitionId: 'child_machine',
+      runtimeId: 'child_machine',
       definitionVersion: 1,
       stateNames: ['parent_initial', 'invoke_child'],
       // Context to copy from the parent workflow
@@ -153,32 +148,30 @@ describe('Parent and child workflows #integration #featureset', () => {
     >;
   };
 
-  const onInvokeChildWorkflow = vi.fn();
   const workflowClient = createWorkflowClient({
-    onInvokeChildWorkflow,
-    // async onInvokeChildWorkflow(childWorkflowMetadata) {
-    //   const service = workflowClient.createWorkflow({
-    //     ...childMachine,
-    //     definition: {
-    //       ...childMachine.definition,
-    //       context: childWorkflowMetadata?.initOptions?.context,
-    //     },
-    //     workflowContext: {
-    //       machineContext: childWorkflowMetadata?.initOptions?.context,
-    //     },
-    //   });
-    //
-    //   if (childWorkflowMetadata?.initOptions?.event) {
-    //     await service.sendEvent({
-    //       type: childWorkflowMetadata?.initOptions?.event,
-    //     });
-    //   }
-    //
-    //   response = {
-    //     childWorkflowMetadata,
-    //     snapshot: service.getSnapshot(),
-    //   };
-    // },
+    async onInvokeChildWorkflow(childWorkflowMetadata) {
+      const service = workflowClient.createWorkflow({
+        ...childMachine,
+        definition: {
+          ...childMachine.definition,
+          context: childWorkflowMetadata?.initOptions?.context,
+        },
+        workflowContext: {
+          machineContext: childWorkflowMetadata?.initOptions?.context,
+        },
+      });
+
+      if (childWorkflowMetadata?.initOptions?.event) {
+        await service.sendEvent({
+          type: childWorkflowMetadata?.initOptions?.event,
+        });
+      }
+
+      response = {
+        childWorkflowMetadata,
+        snapshot: service.getSnapshot(),
+      };
+    },
   });
   const parentWorkflow = workflowClient.createWorkflow(parentMachine);
 
@@ -186,13 +179,9 @@ describe('Parent and child workflows #integration #featureset', () => {
     await parentWorkflow.sendEvent({
       type: 'NEXT',
     });
-    await parentWorkflow.sendEvent({
-      type: 'NEXT',
-    });
 
     it('should return the child workflow definition id', () => {
-      expect(onInvokeChildWorkflow).toHaveBeenCalled();
-      // expect(response?.childWorkflowMetadata?.definitionId).toBe('child_machine');
+      expect(response?.childWorkflowMetadata?.definitionId).toBe('child_machine');
     });
   });
 });

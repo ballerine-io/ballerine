@@ -5,6 +5,7 @@ import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
+  ChildWorkflow,
   ObjectValues,
   WorkflowEvent,
   WorkflowEventWithoutState,
@@ -26,11 +27,9 @@ export class WorkflowRunner {
   #__callback: ((event: WorkflowEvent) => void) | null = null;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
-  #__childWorkflows?: {
-    workflows: WorkflowRunnerArgs['childWorkflows'];
-    onInvokeChildWorkflow: WorkflowRunnerArgs['onInvokeChildWorkflow'];
-    onEvent: WorkflowRunnerArgs['onEvent'];
-  };
+  #__childWorkflows?: Array<ChildWorkflow>;
+  #__onInvokeChildWorkflow?: WorkflowRunnerArgs['onInvokeChildWorkflow'];
+  #__onEvent?: WorkflowRunnerArgs['onEvent'];
   events: any;
 
   public get workflow() {
@@ -60,13 +59,9 @@ export class WorkflowRunner {
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
-    this.#__childWorkflows = childWorkflows
-      ? {
-          workflows: childWorkflows,
-          onInvokeChildWorkflow,
-          onEvent,
-        }
-      : undefined;
+    this.#__childWorkflows = childWorkflows;
+    this.#__onInvokeChildWorkflow = onInvokeChildWorkflow;
+    this.#__onEvent = onEvent;
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
 
@@ -347,7 +342,7 @@ export class WorkflowRunner {
           plugin.stateNames.includes(this.#__currentState),
       ) ?? [];
     // Only iterate over the child workflows that are configured to run in the current state.
-    const currentChildWorkflows = this.#__childWorkflows?.workflows ?? [];
+    const currentChildWorkflows = this.#__childWorkflows ?? [];
 
     for (const postPlugin of postPlugins) {
       await this.#__handleAction({
@@ -357,11 +352,11 @@ export class WorkflowRunner {
       })(this.#__context, event);
     }
 
-    if (this.#__childWorkflows?.onInvokeChildWorkflow) {
+    if (this.#__onInvokeChildWorkflow) {
       await Promise.all(
         currentChildWorkflows?.map(
-          async ({ definitionId, definitionVersion, initOptions, runtimeId, name }) => {
-            await this.#__childWorkflows?.onInvokeChildWorkflow?.({
+          async ({ definitionId, runtimeId, name, definitionVersion, initOptions }) => {
+            await this.#__onInvokeChildWorkflow?.({
               definitionId,
               runtimeId,
               name,

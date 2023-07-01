@@ -53,6 +53,8 @@ export interface WorkflowOptions {
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
   childWorkflows?: Array<ChildWorkflow>;
+  onInvokeChildWorkflow?: WorkflowClientOptions['onInvokeChildWorkflow'];
+  onEvent?: WorkflowClientOptions['onEvent'];
 }
 
 export interface CallbackInfo {
