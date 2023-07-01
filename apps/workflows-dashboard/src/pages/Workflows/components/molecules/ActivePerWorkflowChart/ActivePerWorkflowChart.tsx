@@ -1,4 +1,5 @@
 import { MetricCard } from '@app/components/molecules/MetricCard';
+import { ChartProps } from '@app/pages/Workflows/components/molecules/common/types';
 import {
   WorkflowChart,
   WorkflowChartData,
@@ -11,8 +12,7 @@ export interface ActivePerWorkflowChartData {
   fillColor: string;
 }
 
-interface Props {
-  isLoading?: boolean;
+interface Props extends ChartProps {
   data: ActivePerWorkflowChartData[];
 }
 
@@ -26,8 +26,6 @@ export const ActivePerWorkflowChart = ({ isLoading, data }: Props) => {
       })),
     [data],
   );
-
-  console.log('chart data', chartData);
 
   return (
     <MetricCard

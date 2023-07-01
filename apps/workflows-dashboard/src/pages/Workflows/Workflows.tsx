@@ -12,6 +12,9 @@ import { WorkflowFiltersProps } from '@app/pages/Workflows/components/providers/
 import { withWorkflowFilters } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowFilters';
 import { FilterComponent } from '@app/pages/Workflows/components/organisms/WorkflowFilters/types';
 import { WorkflowFilters } from '@app/pages/Workflows/components/organisms/WorkflowFilters';
+import { AgentCasesStats } from '@app/pages/Workflows/components/organisms/metrics/AgentCasesStats';
+import { CasesPerStatusStats } from '@app/pages/Workflows/components/organisms/metrics/CasesPerStatusStats';
+import { AgentsActivityStats } from '@app/pages/Workflows/components/organisms/metrics/AgentsActivityStats';
 
 const filterComponents: FilterComponent[] = [StatusFilterComponent];
 
@@ -19,8 +22,10 @@ interface Props extends WorkflowFiltersProps {}
 
 export const Workflows = withWorkflowFilters(({ filters, updateFilters }: Props) => {
   const { sortingKey, sortingDirection } = useSorting('order_by');
+  const { fromDate: _, ...workflowsFilters } = filters;
+
   const { data, isLoading, isFetching } = useWorkflowsQuery(
-    filters,
+    workflowsFilters,
     sortingKey && sortingDirection
       ? { orderBy: sortingKey, orderDirection: sortingDirection }
       : undefined,
@@ -40,6 +45,15 @@ export const Workflows = withWorkflowFilters(({ filters, updateFilters }: Props)
           <WorkflowsMetricLayout>
             <WorkflowsMetricLayout.Item>
               <ActivePerWorkflow />
+            </WorkflowsMetricLayout.Item>
+            <WorkflowsMetricLayout.Item>
+              <AgentsActivityStats />
+            </WorkflowsMetricLayout.Item>
+            <WorkflowsMetricLayout.Item>
+              <AgentCasesStats />
+            </WorkflowsMetricLayout.Item>
+            <WorkflowsMetricLayout.Item>
+              <CasesPerStatusStats />
             </WorkflowsMetricLayout.Item>
           </WorkflowsMetricLayout>
           <WorkflowFilters
