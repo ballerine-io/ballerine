@@ -41,13 +41,13 @@ describe('workflow-runner', () => {
           type: 'final',
         },
       },
-    };
+    } satisfies ConstructorParameters<typeof WorkflowRunner>[0]['definition'];
 
     const apiPluginsSchemas = [
       {
         name: 'ballerineEnrichment',
         url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.json',
-        method: 'GET',
+        method: 'GET' as const,
         stateNames: ['checkBusinessScore'],
         successAction: 'API_CALL_SUCCESS',
         errorAction: 'API_CALL_FAILURE',
@@ -64,12 +64,23 @@ describe('workflow-runner', () => {
     ];
 
     describe('when api plugin tranforms and makes a request to an external api', () => {
-      const workflow = createWorkflowRunner(definition, apiPluginsSchemas);
+      const workflow = createWorkflowRunner(
+        definition,
+        // @ts-expect-error - see the comments about `IApiPluginParams['request']`
+        apiPluginsSchemas,
+      );
       it('it transitions to successAction and persist response to context', async () => {
+        // @ts-expect-error - `sendEvent` is not supposed to receive a string
         await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
         expect(workflow.state).toEqual('checkBusinessScoreSuccess');
-        expect(workflow.context.pluginsOutput).toEqual({
+        expect(
+          (
+            workflow.context as {
+              pluginsOutput: Record<string, unknown>;
+            }
+          ).pluginsOutput,
+        ).toEqual({
           ballerineEnrichment: {
             result: {
               companyInfo: {
@@ -91,13 +102,24 @@ describe('workflow-runner', () => {
 
     describe('when api invalid jmespath transformation of request', () => {
       const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
-      apiPluginsSchemasCopy[0].request.transform.mapping = 'dsa: .unknwonvalue.id}';
-      const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
+      apiPluginsSchemasCopy[0]!.request.transform.mapping = 'dsa: .unknwonvalue.id}';
+      const workflow = createWorkflowRunner(
+        definition,
+        // @ts-expect-error - see the comments about `IApiPluginParams['request']`
+        apiPluginsSchemasCopy,
+      );
       it('it returns error for transformation and transition to testManually', async () => {
+        // @ts-expect-error - `sendEvent` is not supposed to receive a string
         await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
         expect(workflow.state).toEqual('testManually');
-        expect(workflow.context.pluginsOutput).toEqual({
+        expect(
+          (
+            workflow.context as {
+              pluginsOutput: Record<string, unknown>;
+            }
+          ).pluginsOutput,
+        ).toEqual({
           ballerineEnrichment: {
             error:
               'Error transforming data: Unexpected token type: Colon, value: : for transformer mapping: dsa: .unknwonvalue.id}',
@@ -109,7 +131,8 @@ describe('workflow-runner', () => {
     describe('when api plugin has schema', () => {
       describe('when api request invalid for schema', () => {
         const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
-        apiPluginsSchemasCopy[0].request.schema = {
+        // @ts-expect-error - `schema` type is wrong
+        apiPluginsSchemasCopy[0]!.request.schema = {
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',
           properties: {
@@ -122,13 +145,24 @@ describe('workflow-runner', () => {
           },
           required: ['business_name', 'registration_number'],
         };
-        const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
+        const workflow = createWorkflowRunner(
+          definition,
+          // @ts-expect-error - see the comments about `IApiPluginParams['request']`
+          apiPluginsSchemasCopy,
+        );
 
         it('it returns error for transformation and transition to testManually', async () => {
+          // @ts-expect-error - `sendEvent` is not supposed to receive a string
           await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
           expect(workflow.state).toEqual('testManually');
-          expect(workflow.context.pluginsOutput).toEqual({
+          expect(
+            (
+              workflow.context as {
+                pluginsOutput: Record<string, unknown>;
+              }
+            ).pluginsOutput,
+          ).toEqual({
             ballerineEnrichment: {
               error:
                 "must have required property 'business_name' | must have required property 'registration_number'",
@@ -139,7 +173,9 @@ describe('workflow-runner', () => {
 
       describe('when api request valid schema', () => {
         const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
-        apiPluginsSchemasCopy[0].request.schema = {
+
+        // @ts-expect-error - `schema` type is wrong
+        apiPluginsSchemasCopy[0]!.request.schema = {
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',
           properties: {
@@ -149,15 +185,28 @@ describe('workflow-runner', () => {
           },
           required: ['data'],
         };
-        const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
+        const workflow = createWorkflowRunner(
+          definition,
+          // @ts-expect-error - see the comments about `IApiPluginParams['request']`
+          apiPluginsSchemasCopy,
+        );
 
         it('it transitions to successAction and persist success (response) to context', async () => {
+          // @ts-expect-error - `sendEvent` is not supposed to receive a string
           await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
           expect(workflow.state).toEqual('checkBusinessScoreSuccess');
-          expect(Object.keys(workflow.context.pluginsOutput.ballerineEnrichment)[0]).toEqual(
-            'result',
-          );
+          expect(
+            Object.keys(
+              (
+                workflow.context as {
+                  pluginsOutput: {
+                    ballerineEnrichment: Record<string, unknown>;
+                  };
+                }
+              ).pluginsOutput.ballerineEnrichment,
+            )[0],
+          ).toEqual('result');
         });
       });
     });

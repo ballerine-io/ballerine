@@ -1,9 +1,9 @@
-import { beforeEach, afterEach, describe, expect, it, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { WorkflowRunner } from '../../workflow-runner';
 import { WorkflowRunnerArgs } from '../../types';
-import {WebhookPlugin, WebhookPluginParams} from "./webhook-plugin";
-import {setupServer} from "msw/node";
-import {rest} from "msw";
+import { WebhookPluginParams } from './webhook-plugin';
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
 
 function createWorkflowRunner(
   definition: WorkflowRunnerArgs['definition'],
@@ -37,23 +37,26 @@ describe('workflow-runner', () => {
           type: 'final',
         },
       },
-    };
+    } satisfies ConstructorParameters<typeof WorkflowRunner>[0]['definition'];
 
-    let webhookUrl = 'https://SomeTestUrl.com/ballerine/test/url/123';
-    let webhookPluginsSchemas = [
+    const webhookUrl = 'https://SomeTestUrl.com/ballerine/test/url/123';
+    const webhookPluginsSchemas = [
       {
         name: 'ballerineEnrichment',
         url: webhookUrl,
         method: 'GET',
         stateNames: ['success', 'type'],
+        headers: {},
         request: {
+          // TODO: Ensure if this is intentional
+          // @ts-expect-error - this does not match the interface of IApiPluginParams['request']
           transform: {
             transformer: 'jmespath',
-            mapping: '{id: entity.id}'
+            mapping: '{id: entity.id}',
           },
         },
       },
-    ];
+    ] satisfies Parameters<typeof createWorkflowRunner>[1];
 
     describe('when webhook plugin hits state', () => {
       const server = setupServer();
@@ -65,17 +68,25 @@ describe('workflow-runner', () => {
         server.close();
       });
 
-      let serverRequesUrl;
+      let serverRequestUrl: string;
+
       server.use(
         rest.get(webhookUrl, (req, res, ctx) => {
-          serverRequesUrl = req.url.toString()
-          return res(ctx.json({result: 'someResult'}));
+          serverRequestUrl = req.url.toString();
+          return res(ctx.json({ result: 'someResult' }));
         }),
       );
-      const workflow = createWorkflowRunner(definition, webhookPluginsSchemas);
+      const workflow = createWorkflowRunner(
+        definition,
+        // @ts-expect-error - see the comments on `webhookPluginsSchemas`
+        webhookPluginsSchemas,
+      );
       it('it transitions to successAction and persist response to context', async () => {
+        // @ts-expect-error - we are testing the plugin
         await workflow.sendEvent('ALL_GOOD');
-        expect(serverRequesUrl).toEqual("https://sometesturl.com/ballerine/test/url/123?id=some_id");
+        expect(serverRequestUrl).toEqual(
+          'https://sometesturl.com/ballerine/test/url/123?id=some_id',
+        );
       });
     });
   });

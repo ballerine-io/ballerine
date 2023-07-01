@@ -1,5 +1,5 @@
-import {ApiPlugin, IApiPluginParams} from "./api-plugin";
-import {TContext} from "../../utils/types";
+import { ApiPlugin, IApiPluginParams } from './api-plugin';
+import { TContext } from '../../utils/types';
 
 export interface WebhookPluginParams {
   name: string;
@@ -14,20 +14,18 @@ export class WebhookPlugin extends ApiPlugin {
   constructor(pluginParams: IApiPluginParams) {
     super(pluginParams);
   }
+
+  // TODO: Ensure if this is intentional
+  // @ts-expect-error - this does not match the interface of api plugins
   async callApi(context: TContext) {
     const requestPayload = await this.transformData(this.request.transformer, context);
 
     try {
-      await this.makeApiRequest(
-        this.url,
-        this.method,
-        requestPayload,
-        this.headers,
-      );
-    } catch (e) {
-      console.error(e)
+      await this.makeApiRequest(this.url, this.method, requestPayload, this.headers!);
+    } catch (err) {
+      console.error(err);
     }
 
-    return {}
+    return {};
   }
 }

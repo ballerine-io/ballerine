@@ -11,6 +11,7 @@ export interface IApiPluginParams {
   headers?: HeadersInit;
   successAction?: string;
   errorAction?: string;
+  callApi?(...args: Array<any>): any;
 }
 export class ApiPlugin {
   name: string;
@@ -55,7 +56,7 @@ export class ApiPlugin {
       );
 
       if (apiResponse.ok) {
-        const result = await apiResponse.json();
+        const result = (await apiResponse.json()) as unknown;
         const responseBody = await this.transformData(
           this.response!.transformer,
           result as AnyRecord,
@@ -153,7 +154,7 @@ export class ApiPlugin {
   }
 
   fetchObjectPlaceholderValue(record: AnyRecord, path: string) {
-    let pathToValue = path.split('.');
+    const pathToValue = path.split('.');
 
     return pathToValue.reduce((acc: unknown, pathKey: string) => {
       if (typeof acc === 'object' && acc !== null && acc.hasOwnProperty(pathKey)) {

@@ -67,7 +67,7 @@ export class WorkflowRunner {
           onEvent,
         }
       : undefined;
-    this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins);
+    this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
 
     this.#__workflow = this.#__extendedWorkflow({
@@ -87,9 +87,13 @@ export class WorkflowRunner {
 
   initiateApiPlugins(apiPluginSchemas: IApiPluginParams[]) {
     return apiPluginSchemas?.map(apiPluginSchema => {
+      // @ts-expect-error - update types
       const requestTransformerLogic = apiPluginSchema.request.transform;
+      // @ts-expect-error - update types
       const requestSchema = apiPluginSchema.request.schema;
+      // @ts-expect-error - update types
       const responseTransformerLogic = apiPluginSchema.response?.transform;
+      // @ts-expect-error - update types
       const responseSchema = apiPluginSchema.response?.schema;
       const requestTransformer = this.fetchTransformer(requestTransformerLogic);
       const responseTransformer =
@@ -98,8 +102,8 @@ export class WorkflowRunner {
       const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
       let isApiPlugin = this.isApiPlugin(apiPluginSchema);
-      const apiPluginClass = isApiPlugin ? ApiPlugin : WebhookPlugin;
-      const apiPlugin = new apiPluginClass({
+      const ApiPluginClass = isApiPlugin ? ApiPlugin : WebhookPlugin;
+      const apiPlugin = new ApiPluginClass({
         name: apiPluginSchema.name,
         stateNames: apiPluginSchema.stateNames,
         url: apiPluginSchema.url,
@@ -119,12 +123,12 @@ export class WorkflowRunner {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
-  fetchTransformer(transformer) {
+  fetchTransformer(transformer: any) {
     if (transformer.transformer == 'jmespath') return new JmespathTransformer(transformer.mapping);
 
     throw new Error(`Transformer ${transformer.name} is not supported`);
   }
-  fetchValidator(validatorName, schema) {
+  fetchValidator(validatorName: any, schema: any) {
     if (!schema) return;
     if (validatorName === 'json-schema') return new JsonSchemaValidator(schema);
 
@@ -206,9 +210,8 @@ export class WorkflowRunner {
      *
      * @see {@link WorfklowRunner.sendEvent}
      *  */
-    const nonBlockingPlugins = this.#__extensions.statePlugins?.filter(
-      plugin => !plugin.isBlocking,
-    );
+    const nonBlockingPlugins =
+      this.#__extensions.statePlugins?.filter(plugin => !plugin.isBlocking) ?? [];
 
     for (const statePlugin of nonBlockingPlugins) {
       const when = statePlugin.when === 'pre' ? 'entry' : 'exit';
@@ -267,10 +270,6 @@ export class WorkflowRunner {
 
   async sendEvent(event: WorkflowEventWithoutState) {
     const workflow = this.#__workflow.withContext(this.#__context);
-    // Only iterate over the child workflows that are configured to run in the current state.
-    const childWorkflowStateNames = uniqueArray(
-      this.#__childWorkflows?.workflows?.flatMap(childWorkflow => childWorkflow?.stateNames) ?? [],
-    )?.filter(stateName => stateName === this.#__currentState);
 
     console.log('Current state:', this.#__currentState);
 
@@ -299,34 +298,14 @@ export class WorkflowRunner {
     service.start();
 
     // Non blocking plugins are executed as actions
-    const prePlugins = this.#__extensions.statePlugins.filter(
-      plugin =>
-        plugin.isBlocking &&
-        plugin.when === 'pre' &&
-        plugin.stateNames.includes(this.#__currentState),
-    );
-
+    const prePlugins =
+      this.#__extensions.statePlugins?.filter(
+        plugin =>
+          plugin.isBlocking &&
+          plugin.when === 'pre' &&
+          plugin.stateNames.includes(this.#__currentState),
+      ) ?? [];
     const snapshot = service.getSnapshot();
-
-    if (this.#__childWorkflows?.onInvokeChildWorkflow) {
-      await Promise.all(
-        childWorkflowStateNames?.map(async () => {
-          await this.#__childWorkflows?.onInvokeChildWorkflow?.({
-            definitionId: 'test',
-            runtimeId: 'test',
-            name: 'test',
-            version: 1,
-            initOptions: {
-              context: {
-                test: 'test',
-              },
-              event: 'test',
-              state: 'test',
-            },
-          });
-        }),
-      );
-    }
 
     for (const prePlugin of prePlugins) {
       await this.#__handleAction({
@@ -344,7 +323,7 @@ export class WorkflowRunner {
       for (const apiPlugin of this.#__extensions.apiPlugins) {
         if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
 
-        const { callbackAction, responseBody, error } = await apiPlugin.callApi(this.#__context);
+        const { callbackAction, responseBody, error } = await apiPlugin.callApi?.(this.#__context);
         if (!this.isApiPlugin(apiPlugin)) continue;
 
         this.#__context.pluginsOutput = {
@@ -360,12 +339,15 @@ export class WorkflowRunner {
     }
 
     // Intentionally positioned after service.start() and service.send()
-    const postPlugins = this.#__extensions.statePlugins.filter(
-      plugin =>
-        plugin.isBlocking &&
-        plugin.when === 'post' &&
-        plugin.stateNames.includes(this.#__currentState),
-    );
+    const postPlugins =
+      this.#__extensions.statePlugins?.filter(
+        plugin =>
+          plugin.isBlocking &&
+          plugin.when === 'post' &&
+          plugin.stateNames.includes(this.#__currentState),
+      ) ?? [];
+    // Only iterate over the child workflows that are configured to run in the current state.
+    const currentChildWorkflows = this.#__childWorkflows?.workflows ?? [];
 
     for (const postPlugin of postPlugins) {
       await this.#__handleAction({
@@ -373,6 +355,22 @@ export class WorkflowRunner {
         plugin: postPlugin,
         workflowId: snapshot.machine?.id,
       })(this.#__context, event);
+    }
+
+    if (this.#__childWorkflows?.onInvokeChildWorkflow) {
+      await Promise.all(
+        currentChildWorkflows?.map(
+          async ({ definitionId, definitionVersion, initOptions, runtimeId, name }) => {
+            await this.#__childWorkflows?.onInvokeChildWorkflow?.({
+              definitionId,
+              runtimeId,
+              name,
+              version: definitionVersion,
+              initOptions,
+            });
+          },
+        ),
+      );
     }
   }
 
