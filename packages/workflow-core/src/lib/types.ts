@@ -29,18 +29,21 @@ export interface WorkflowContext {
   lockKey?: string;
 }
 
+export type JMESPathString = string;
+
 export interface ChildWorkflow {
   name: string;
   runtimeId: string;
   definitionId: string;
   definitionVersion: 1;
   stateNames: Array<string>;
-  contextToCopy: { [key: string]: boolean };
+  contextToCopy: JMESPathString;
   callbackInfo: {
     event: string;
-    contextToCopy: { [key: string]: boolean };
+    contextToCopy: JMESPathString;
   };
   initOptions?: {
+    event?: string;
     context?: Record<string, unknown>;
     state?: string;
   };
@@ -60,7 +63,7 @@ export interface WorkflowOptions {
 export interface CallbackInfo {
   event: string;
   // what data should be sent back to the parent workflow, out of the full child workflow context i.e. { user: true }
-  contextToCopy: { [key: string]: boolean };
+  contextToCopy: JMESPathString;
 }
 export interface ParentWorkflowMetadata {
   name: string;

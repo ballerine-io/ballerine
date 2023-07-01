@@ -1,8 +1,9 @@
-import { describe, expect, it, test } from 'vitest';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { createWorkflowClient } from './create-workflow-client';
 import { MemoryStore } from './adapters/memory-store';
 import { MemoryPersistencePlugin } from './plugins/memory-persistence-plugin';
 import { ChildWorkflowMetadata } from '@ballerine/workflow-core';
+import { WorkflowOptionsNode } from './types';
 
 const simpleMachine = {
   id: 'toggle',
@@ -34,7 +35,7 @@ test('Simple Server Workflow', async () => {
 test.skip('Server Workflow persistence MemoryStore', () => {
   const userId = '123456';
   const memoryStore = new MemoryStore();
-  const memoryPersistancePlugin = new MemoryPersistencePlugin({
+  const memoryPersistencePlugin = new MemoryPersistencePlugin({
     name: 'in-memory-persistence',
     stateNames: [],
     when: 'post',
@@ -47,7 +48,7 @@ test.skip('Server Workflow persistence MemoryStore', () => {
     definitionType: 'statechart-json',
     definition: simpleMachine,
     extensions: {
-      statePlugins: [memoryPersistancePlugin],
+      statePlugins: [memoryPersistencePlugin],
     },
   });
 
@@ -64,19 +65,12 @@ test.skip('Server Workflow persistence MemoryStore', () => {
   expect(workflowData).toBeTruthy();
 
   console.log(workflowData);
-  const restoredWorkflow = createWorkflowClient({
-    async onEvent(payload) {
-      console.log('onEvent', payload);
-    },
-    async onInvokeChildWorkflow(payload) {
-      console.log('onInvokeChildWorkflow', payload);
-    },
-  }).createWorkflow({
+  const restoredWorkflow = createWorkflowClient().createWorkflow({
     definitionType: 'statechart-json',
     definition: simpleMachine,
     workflowContext: { machineContext: workflowData!.context, state: workflowData!.state },
     extensions: {
-      statePlugins: [memoryPersistancePlugin],
+      statePlugins: [memoryPersistencePlugin],
     },
   });
 
@@ -84,7 +78,7 @@ test.skip('Server Workflow persistence MemoryStore', () => {
   expect(restoredWorkflow.getSnapshot().value).toBe('inactive');
 });
 
-const parentMachine = {
+const parentMachineBase = {
   definitionType: 'statechart-json' as const,
   definition: {
     id: 'parent_machine',
@@ -92,41 +86,16 @@ const parentMachine = {
     context: {},
     states: {
       parent_initial: { on: { NEXT: 'invoke_child' } },
-      invoke_child: { on: { NEXT: 'parent_initial' } },
+      invoke_child: { on: { NEXT: 'invoked_child' } },
+      invoked_child: {
+        type: 'final',
+      },
     },
   },
-  childWorkflows: [
-    {
-      name: 'child_workflow',
-      definitionId: 'child_machine',
-      runtimeId: 'child_machine',
-      definitionVersion: 1,
-      stateNames: ['parent_initial', 'invoke_child'],
-      // Context to copy from the parent workflow
-      contextToCopy: {
-        stakeholders: true,
-      },
-      callbackInfo: {
-        event: 'parent_initial',
-        contextToCopy: {
-          endUser: {
-            id: true,
-          },
-        },
-      },
-      initOptions: {
-        // event: 'kyc',
-        context: {
-          type: 'kyb_child',
-        },
-        // state: 'send_communications',
-      },
-    },
-  ],
   workflowContext: {
     machineContext: {},
   },
-};
+} satisfies WorkflowOptionsNode;
 const childMachine = {
   definitionType: 'statechart-json' as const,
   definition: {
@@ -135,22 +104,25 @@ const childMachine = {
     context: {},
     states: {
       child_initial: { on: { NEXT: 'child_final' } },
-      child_final: { on: { NEXT: 'child_initial' } },
+      child_final: {
+        type: 'final',
+      },
     },
   },
-};
+} satisfies Omit<WorkflowOptionsNode, 'childWorkflows' | 'onInvokeChildWorkflow' | 'onEvent'>;
 
 describe('Parent and child workflows #integration #featureset', () => {
-  let response: {
-    childWorkflowMetadata: ChildWorkflowMetadata;
-    snapshot: ReturnType<
-      ReturnType<ReturnType<typeof createWorkflowClient>['createWorkflow']>['getSnapshot']
-    >;
-  };
-
-  const workflowClient = createWorkflowClient({
-    async onInvokeChildWorkflow(childWorkflowMetadata) {
-      const service = workflowClient.createWorkflow({
+  let response:
+    | {
+        childWorkflowMetadata: ChildWorkflowMetadata;
+        childSnapshot: ReturnType<
+          ReturnType<ReturnType<typeof createWorkflowClient>['createWorkflow']>['getSnapshot']
+        >;
+      }
+    | undefined;
+  const onInvokeChildWorkflow = vi.fn(async (childWorkflowMetadata: ChildWorkflowMetadata) => {
+    {
+      const childWorkflowService = workflowClient.createWorkflow({
         ...childMachine,
         definition: {
           ...childMachine.definition,
@@ -162,26 +134,138 @@ describe('Parent and child workflows #integration #featureset', () => {
       });
 
       if (childWorkflowMetadata?.initOptions?.event) {
-        await service.sendEvent({
+        await childWorkflowService.sendEvent({
           type: childWorkflowMetadata?.initOptions?.event,
         });
       }
 
       response = {
         childWorkflowMetadata,
-        snapshot: service.getSnapshot(),
+        childSnapshot: childWorkflowService.getSnapshot(),
       };
-    },
+    }
   });
-  const parentWorkflow = workflowClient.createWorkflow(parentMachine);
+  const onInvokeChildWorkflowTwo = vi.fn(async (childWorkflowMetadata: ChildWorkflowMetadata) => {
+    {
+      return;
+    }
+  });
+
+  beforeEach(() => {
+    onInvokeChildWorkflow.mockClear();
+    onInvokeChildWorkflowTwo.mockClear();
+    response = undefined;
+  });
+
+  let workflowClient = createWorkflowClient({
+    onInvokeChildWorkflow,
+  });
+  let parentWorkflowService = workflowClient.createWorkflow({
+    ...parentMachineBase,
+    childWorkflows: [
+      {
+        name: 'child_machine_name_1',
+        definitionId: 'child_machine_definition_1',
+        runtimeId: 'child_machine_runtime_1',
+        definitionVersion: 1,
+        stateNames: ['invoke_child'],
+        // Context to copy from the parent workflow
+        contextToCopy: 'stakeholders',
+        callbackInfo: {
+          event: 'parent_initial',
+          contextToCopy: 'endUser.id',
+        },
+        initOptions: {
+          event: 'NEXT',
+          context: {
+            type: 'kyb_child',
+          },
+          state: 'child_initial',
+        },
+      },
+    ],
+  });
 
   describe('when a child workflow is invoked', async () => {
-    await parentWorkflow.sendEvent({
-      type: 'NEXT',
+    it('should be invoked once for configured stateNames', async () => {
+      await parentWorkflowService.sendEvent({
+        type: 'NEXT',
+      });
+
+      expect(onInvokeChildWorkflow).toHaveBeenCalledTimes(1);
     });
 
-    it('should return the child workflow definition id', () => {
-      expect(response?.childWorkflowMetadata?.definitionId).toBe('child_machine');
+    it("should return the child's workflow metadata", async () => {
+      await parentWorkflowService.sendEvent({
+        type: 'NEXT',
+      });
+
+      expect(response?.childWorkflowMetadata).toStrictEqual({
+        name: 'child_machine_name_1',
+        definitionId: 'child_machine_definition_1',
+        runtimeId: 'child_machine_runtime_1',
+        version: 1,
+        initOptions: {
+          event: 'NEXT',
+          context: {
+            type: 'kyb_child',
+          },
+          state: 'child_initial',
+        },
+      } satisfies ChildWorkflowMetadata);
+    });
+
+    it('should only be invoked for configured stateNames', async () => {
+      await parentWorkflowService.sendEvent({
+        type: 'NEXT',
+      });
+      await parentWorkflowService.sendEvent({
+        type: 'NEXT',
+      });
+
+      expect(onInvokeChildWorkflow).toHaveBeenCalledTimes(1);
+      expect(parentWorkflowService.getSnapshot().value).toBe('invoked_child');
+    });
+
+    workflowClient = createWorkflowClient({
+      onInvokeChildWorkflow: onInvokeChildWorkflowTwo,
+    });
+    parentWorkflowService = workflowClient.createWorkflow({
+      ...parentMachineBase,
+      childWorkflows: [
+        {
+          name: 'child_machine_name_2',
+          definitionId: 'child_machine_definition_2',
+          runtimeId: 'child_machine_runtime_2',
+          definitionVersion: 1,
+          stateNames: ['invoke_child', 'invoked_child'],
+          // Context to copy from the parent workflow
+          contextToCopy: 'stakeholders',
+          callbackInfo: {
+            event: 'parent_initial',
+            contextToCopy: 'endUser.id',
+          },
+          initOptions: {
+            event: 'NEXT',
+            context: {
+              type: 'kyb_child',
+            },
+            state: 'child_initial',
+          },
+        },
+      ],
+    });
+
+    it('should be invoked on two or more configured stateNames', async () => {
+      await parentWorkflowService.sendEvent({
+        type: 'NEXT',
+      });
+      await parentWorkflowService.sendEvent({
+        type: 'NEXT',
+      });
+
+      expect(onInvokeChildWorkflowTwo).toHaveBeenCalledTimes(2);
+      expect(parentWorkflowService.getSnapshot().value).toBe('invoked_child');
     });
   });
 });

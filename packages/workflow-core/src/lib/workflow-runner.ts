@@ -292,7 +292,7 @@ export class WorkflowRunner {
     // all sends() will be deferred until the workflow is started
     service.start();
 
-    // Non blocking plugins are executed as actions
+    // Non-blocking plugins are executed as actions
     const prePlugins =
       this.#__extensions.statePlugins?.filter(
         plugin =>
@@ -342,7 +342,13 @@ export class WorkflowRunner {
           plugin.stateNames.includes(this.#__currentState),
       ) ?? [];
     // Only iterate over the child workflows that are configured to run in the current state.
-    const currentChildWorkflows = this.#__childWorkflows ?? [];
+    const childWorkflowsToInvoke =
+      this.#__childWorkflows?.filter(({ stateNames }) =>
+        stateNames?.includes(this.#__currentState),
+      ) ?? [];
+    const childWorkflow = childWorkflowsToInvoke?.find(
+      ({ runtimeId }) => runtimeId === snapshot.machine?.id,
+    );
 
     for (const postPlugin of postPlugins) {
       await this.#__handleAction({
@@ -352,9 +358,9 @@ export class WorkflowRunner {
       })(this.#__context, event);
     }
 
-    if (this.#__onInvokeChildWorkflow) {
+    if (this.#__onInvokeChildWorkflow && childWorkflowsToInvoke?.length) {
       await Promise.all(
-        currentChildWorkflows?.map(
+        childWorkflowsToInvoke?.map(
           async ({ definitionId, runtimeId, name, definitionVersion, initOptions }) => {
             await this.#__onInvokeChildWorkflow?.({
               definitionId,
@@ -366,6 +372,28 @@ export class WorkflowRunner {
           },
         ),
       );
+    }
+
+    if (this.#__onEvent && childWorkflow && snapshot.done) {
+      await this.#__onEvent({
+        parentWorkflowMetadata: {
+          name: snapshot.machine?.id ?? '',
+          definitionId: snapshot.machine?.id ?? '',
+          runtimeId: snapshot.machine?.id ?? '',
+          version: (snapshot.machine?.version as any) ?? 0,
+        },
+        childWorkflowMetadata: {
+          name: childWorkflow?.name ?? '',
+          definitionId: childWorkflow?.definitionId ?? '',
+          runtimeId: childWorkflow?.runtimeId ?? '',
+          initOptions: childWorkflow?.initOptions,
+          version: childWorkflow?.definitionVersion ?? 0,
+        },
+        callbackInfo: {
+          event: '',
+          contextToCopy: '',
+        },
+      });
     }
   }
 
