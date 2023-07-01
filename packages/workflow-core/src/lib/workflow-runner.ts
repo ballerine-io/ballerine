@@ -273,7 +273,7 @@ export class WorkflowRunner {
     )?.filter(stateName => stateName === this.#__currentState);
 
     console.log('Current state:', this.#__currentState);
-    console.log(childWorkflowStateNames);
+
     const service = interpret(workflow)
       .start(this.#__currentState)
       .onTransition(state => {

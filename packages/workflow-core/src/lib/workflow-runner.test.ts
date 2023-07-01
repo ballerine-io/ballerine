@@ -28,35 +28,7 @@ const TWO_STATES_MACHINE_DEFINITION = {
 };
 
 function createEventCollectingWorkflow(args) {
-  const workflow = new WorkflowRunner({
-    ...args,
-    childWorkflows: [
-      {
-        definitionId: 'child_machine',
-        definitionVersion: 1,
-        stateNames: ['checkBusinessScore'],
-        // Context to copy from the parent workflow
-        contextToCopy: {
-          stakeholders: true,
-        },
-        callbackInfo: {
-          event: 'parent_initial',
-          contextToCopy: {
-            endUser: {
-              id: true,
-            },
-          },
-        },
-        initOptions: {
-          // event: 'kyc',
-          context: {
-            type: 'kyb_child',
-          },
-          // state: 'send_communications',
-        },
-      },
-    ],
-  });
+  const workflow = new WorkflowRunner(args);
   workflow.events = [];
   workflow.subscribe(e => {
     e.error && (e.error = e.error.message);

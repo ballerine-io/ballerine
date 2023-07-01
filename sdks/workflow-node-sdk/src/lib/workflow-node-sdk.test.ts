@@ -171,7 +171,7 @@ describe('Parent and child workflows #integration #featureset', () => {
           type: childWorkflowMetadata?.initOptions?.event,
         });
       }
-
+      console.log('ayy lmao');
       response = {
         childWorkflowMetadata,
         snapshot: service.getSnapshot(),
