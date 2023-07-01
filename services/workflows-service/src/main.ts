@@ -47,7 +47,7 @@ async function main() {
       httpOnly: true,
       secure: false,
       sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 1, // 1 hour(s)
+      maxAge: 1000 * 60 * 60 * 1, // 1 hour(s),
     }),
   );
 
