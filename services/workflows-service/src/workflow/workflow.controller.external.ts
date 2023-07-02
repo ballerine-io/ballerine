@@ -15,10 +15,10 @@ import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
-import { RunnableWorkflowData } from './types';
+import { GetUserStatsParams, RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
@@ -30,6 +30,8 @@ import { WorkflowMetricService } from '@/workflow/workflow-metric.service';
 import { WorkflowRuntimeAgentCasesModel } from '@/workflow/workflow-runtime-agent-cases.model';
 import { GetWorkflowsRuntimeAgentCases } from '@/workflow/dtos/get-workflows-runtime-agent-cases-input.dto';
 import { WorkflowRuntimeCasesPerStatusModel } from '@/workflow/workflow-runtime-cases-per-status.model';
+import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
+import { GetWorkflowRuntimeUserStatsDto } from '@/workflow/dtos/get-workflow-runtime-user-stats-input.dto';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -97,6 +99,41 @@ export class WorkflowControllerExternal {
       fromDate: query.fromDate,
     });
     return plainToClass(WorkflowRuntimeCasesPerStatusModel, results);
+  }
+
+  @common.Get('/metrics/user-stats')
+  @UseKeyAuthOrSessionGuard()
+  async listUserWorkflowRuntimeUserStats(
+    @common.Request() request: Request,
+    @common.Query() query: GetWorkflowRuntimeUserStatsDto,
+  ) {
+    const statsParams: GetUserStatsParams = {
+      fromDate: query.fromDate,
+    };
+
+    const userId = request.user!.id;
+
+    const [
+      approvalRate,
+      averageResolutionTime,
+      averageAssignmentTime,
+      averageReviewTime,
+      resolvedCasesPerDay,
+    ] = await Promise.all([
+      this.service.getUserApprovalRate(userId),
+      this.service.getAverageResolutionTime(userId, statsParams),
+      this.service.getAverageAssignmentTime(userId, statsParams),
+      this.service.getAverageReviewTime(userId, statsParams),
+      this.service.getResolvedCasesPerDay(userId, statsParams),
+    ]);
+
+    return {
+      approvalRate,
+      averageResolutionTime,
+      averageAssignmentTime,
+      averageReviewTime,
+      resolvedCasesPerDay,
+    };
   }
 
   @common.Get('/:id')
