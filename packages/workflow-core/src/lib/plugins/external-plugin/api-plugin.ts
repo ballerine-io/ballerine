@@ -68,8 +68,10 @@ export class ApiPlugin {
           'Response',
         );
         if (!isValidResponse) return this.returnErrorResponse(errorMessage!);
-
-        return { callbackAction: this.successAction, responseBody };
+        if (this.successAction) {
+          return this.returnSuccessResponse(this.successAction, responseBody);
+        }
+        return;
       } else {
         return this.returnErrorResponse('Request Failed: ' + apiResponse.statusText);
       }
@@ -77,6 +79,11 @@ export class ApiPlugin {
       return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
     }
   }
+
+  returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {
+    return { callbackAction, responseBody };
+  }
+
   returnErrorResponse(errorMessage: string) {
     return { callbackAction: this.errorAction, error: errorMessage };
   }
