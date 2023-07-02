@@ -171,6 +171,7 @@ describe('Parent and child workflows #integration #featureset', () => {
       ...parentMachineBase,
       childWorkflows: [
         {
+          waitForResolved: true,
           name: 'child_machine_name_1',
           definitionId: 'child_machine_definition_1',
           runtimeId: 'child_machine_runtime_1',
@@ -258,6 +259,7 @@ describe('Parent and child workflows #integration #featureset', () => {
       ...parentMachineBase,
       childWorkflows: [
         {
+          waitForResolved: true,
           name: 'child_machine_name_2',
           definitionId: 'child_machine_definition_2',
           runtimeId: 'child_machine_runtime_2',
@@ -316,6 +318,7 @@ describe('Parent and child workflows #integration #featureset', () => {
     });
     const childWorkflows = [
       {
+        waitForResolved: true,
         name: 'child_machine_name_1',
         definitionId: 'child_machine_definition_1',
         runtimeId: 'child_machine_runtime_1',

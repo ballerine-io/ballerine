@@ -31,6 +31,7 @@ export interface WorkflowContext {
 }
 
 export interface ChildWorkflow {
+  waitForResolved?: boolean;
   name: string;
   runtimeId: string;
   definitionId: string;
