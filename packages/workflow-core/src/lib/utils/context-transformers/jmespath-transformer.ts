@@ -1,6 +1,7 @@
-import { BaseContextTransformer, TTransformationLogic } from './types';
+import { TTransformationLogic } from './types';
 import { TContext } from '../types';
 import { search } from 'jmespath';
+import { BaseContextTransformer } from './base-context-transformer';
 
 export class JmespathTransformer extends BaseContextTransformer {
   name = 'jmespath-transformer';
