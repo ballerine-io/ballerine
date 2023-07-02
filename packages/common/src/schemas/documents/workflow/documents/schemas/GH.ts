@@ -1,5 +1,7 @@
 import { TDocument } from '../types';
+
 const ghNationalIdNumber = '^$|^GHA-\\d{9}-\\d{1}$';
+const alphaNumeric = '^[a-zA-Z0-9]*$';
 
 export const certificateOfResidenceGH: TDocument = {
   category: 'proof_of_address',
@@ -20,7 +22,8 @@ export const certificateOfResidenceGH: TDocument = {
         pattern: ghNationalIdNumber,
       },
       docNumber: {
-        type: 'number',
+        type: 'string',
+        pattern: alphaNumeric,
       },
       userAddress: {
         type: 'string',
@@ -57,7 +60,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -94,7 +98,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -129,7 +134,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -164,7 +170,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         employeeName: {
           type: 'string',
@@ -199,7 +206,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         employeeName: {
           type: 'string',
@@ -231,7 +239,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -263,7 +272,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -295,7 +305,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -327,7 +338,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -363,7 +375,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         employeeName: {
           type: 'string',
@@ -395,7 +408,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         employeeName: {
           type: 'string',
@@ -430,7 +444,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -462,7 +477,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
