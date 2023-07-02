@@ -1,6 +1,7 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
 import { ApiPlugins, StatePlugins } from './plugins/types';
-import { IApiPluginParams } from './plugins/external-plugin/api-plugin';
+import { SerializableValidatableTransformer } from './plugins';
+import { ISerializableApiPluginParams } from './plugins/external-plugin/types';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
@@ -19,7 +20,7 @@ export interface WorkflowEvent {
 
 export interface WorkflowExtensions {
   statePlugins?: StatePlugins;
-  apiPlugins?: ApiPlugins | IApiPluginParams[];
+  apiPlugins?: ApiPlugins | Array<ISerializableApiPluginParams>;
 }
 export interface WorkflowContext {
   id?: string;
@@ -29,19 +30,14 @@ export interface WorkflowContext {
   lockKey?: string;
 }
 
-export type JMESPathString = string;
-
 export interface ChildWorkflow {
   name: string;
   runtimeId: string;
   definitionId: string;
   definitionVersion: 1;
   stateNames: Array<string>;
-  contextToCopy: JMESPathString;
-  callbackInfo: {
-    event: string;
-    contextToCopy: JMESPathString;
-  };
+  contextToCopy: SerializableValidatableTransformer;
+  callbackInfo: CallbackInfo;
   initOptions?: {
     event?: string;
     context?: Record<string, unknown>;
@@ -62,8 +58,8 @@ export interface WorkflowOptions {
 
 export interface CallbackInfo {
   event: string;
-  // what data should be sent back to the parent workflow, out of the full child workflow context i.e. { user: true }
-  contextToCopy: JMESPathString;
+  // what data should be sent back to the parent workflow, out of the full child workflow context
+  contextToCopy: SerializableValidatableTransformer;
 }
 export interface ParentWorkflowMetadata {
   name: string;

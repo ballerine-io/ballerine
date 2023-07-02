@@ -16,8 +16,13 @@ import { Error as ErrorEnum } from './types';
 import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import { StatePlugin } from './plugins/types';
-import { ApiPlugin, IApiPluginParams } from './plugins/external-plugin/api-plugin';
+import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
+import {
+  IApiPluginParams,
+  ISerializableApiPluginParams,
+  SerializableValidatableTransformer,
+} from './plugins/external-plugin/types';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -63,6 +68,7 @@ export class WorkflowRunner {
     this.#__childWorkflows = childWorkflows;
     this.#__onInvokeChildWorkflow = onInvokeChildWorkflow;
     this.#__onEvent = onEvent;
+    // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
 
@@ -81,23 +87,22 @@ export class WorkflowRunner {
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
   }
 
-  initiateApiPlugins(apiPluginSchemas: IApiPluginParams[]) {
+  initiateApiPlugins(apiPluginSchemas: Array<ISerializableApiPluginParams>) {
     return apiPluginSchemas?.map(apiPluginSchema => {
-      // @ts-expect-error - update types
       const requestTransformerLogic = apiPluginSchema.request.transform;
-      // @ts-expect-error - update types
       const requestSchema = apiPluginSchema.request.schema;
-      // @ts-expect-error - update types
       const responseTransformerLogic = apiPluginSchema.response?.transform;
-      // @ts-expect-error - update types
       const responseSchema = apiPluginSchema.response?.schema;
       const requestTransformer = this.fetchTransformer(requestTransformerLogic);
       const responseTransformer =
         responseTransformerLogic && this.fetchTransformer(responseTransformerLogic);
+      // @ts-expect-error TODO: fix this
       const requestValidator = this.fetchValidator('json-schema', requestSchema);
+      // @ts-expect-error TODO: fix this
       const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
-      let isApiPlugin = this.isApiPlugin(apiPluginSchema);
+      // @ts-expect-error TODO: fix this
+      const isApiPlugin = this.isApiPlugin(apiPluginSchema);
       const ApiPluginClass = isApiPlugin ? ApiPlugin : WebhookPlugin;
       const apiPlugin = new ApiPluginClass({
         name: apiPluginSchema.name,
@@ -119,12 +124,19 @@ export class WorkflowRunner {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
-  fetchTransformer(transformer: any) {
-    if (transformer.transformer == 'jmespath') return new JmespathTransformer(transformer.mapping);
+  fetchTransformer(
+    transformer: SerializableValidatableTransformer['transform'] & {
+      name?: string;
+    },
+  ) {
+    if (transformer.transformer === 'jmespath') return new JmespathTransformer(transformer.mapping);
 
     throw new Error(`Transformer ${transformer.name} is not supported`);
   }
-  fetchValidator(validatorName: any, schema: any) {
+  fetchValidator(
+    validatorName: string,
+    schema: ConstructorParameters<typeof JsonSchemaValidator>[0],
+  ) {
     if (!schema) return;
     if (validatorName === 'json-schema') return new JsonSchemaValidator(schema);
 
@@ -324,6 +336,7 @@ export class WorkflowRunner {
         if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
 
         const { callbackAction, responseBody, error } = await apiPlugin.callApi?.(this.#__context);
+        // @ts-expect-error - update webhook plugin to use serializable interface
         if (!this.isApiPlugin(apiPlugin)) continue;
 
         this.#__context.pluginsOutput = {

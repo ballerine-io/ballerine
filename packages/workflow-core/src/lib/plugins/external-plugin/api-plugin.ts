@@ -1,18 +1,7 @@
-import { TContext, TTransformers, TValidators } from '../../utils/types';
+import { TContext, Transformer, Validator } from '../../utils/types';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
+import { IApiPluginParams } from './types';
 
-export interface IApiPluginParams {
-  name: string;
-  stateNames: Array<string>;
-  url: string;
-  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
-  request: { transformer: TTransformers; schemaValidator?: TValidators };
-  response?: { transformer: TTransformers; schemaValidator?: TValidators };
-  headers?: HeadersInit;
-  successAction?: string;
-  errorAction?: string;
-  callApi?(...args: Array<any>): any;
-}
 export class ApiPlugin {
   name: string;
   stateNames: Array<string>;
@@ -104,7 +93,7 @@ export class ApiPlugin {
     return await fetch(url, requestParams);
   }
 
-  async transformData(transformer: TTransformers, record: AnyRecord) {
+  async transformData(transformer: Transformer, record: AnyRecord) {
     try {
       return (await transformer.transform(record, { input: 'json', output: 'json' })) as AnyRecord;
     } catch (error) {
@@ -117,7 +106,7 @@ export class ApiPlugin {
   }
 
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
-    schemaValidator: TValidators | undefined,
+    schemaValidator: Validator | undefined,
     transformedRequest: AnyRecord,
     validationContext: TValidationContext,
   ) {

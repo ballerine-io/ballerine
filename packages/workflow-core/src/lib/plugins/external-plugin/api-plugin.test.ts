@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { WorkflowRunner } from '../../workflow-runner';
-import { IApiPluginParams } from './api-plugin';
 import { WorkflowRunnerArgs } from '../../types';
+import { ISerializableApiPluginParams } from './types';
 
 function createWorkflowRunner(
   definition: WorkflowRunnerArgs['definition'],
-  apiPluginsSchemas: IApiPluginParams[],
+  apiPluginsSchemas: Array<ISerializableApiPluginParams>,
 ) {
   return new WorkflowRunner({
     definition,
@@ -64,11 +64,7 @@ describe('workflow-runner', () => {
     ];
 
     describe('when api plugin tranforms and makes a request to an external api', () => {
-      const workflow = createWorkflowRunner(
-        definition,
-        // @ts-expect-error - see the comments about `IApiPluginParams['request']`
-        apiPluginsSchemas,
-      );
+      const workflow = createWorkflowRunner(definition, apiPluginsSchemas);
       it('it transitions to successAction and persist response to context', async () => {
         // @ts-expect-error - `sendEvent` is not supposed to receive a string
         await workflow.sendEvent('CHECK_BUSINESS_SCORE');
@@ -103,11 +99,7 @@ describe('workflow-runner', () => {
     describe('when api invalid jmespath transformation of request', () => {
       const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
       apiPluginsSchemasCopy[0]!.request.transform.mapping = 'dsa: .unknwonvalue.id}';
-      const workflow = createWorkflowRunner(
-        definition,
-        // @ts-expect-error - see the comments about `IApiPluginParams['request']`
-        apiPluginsSchemasCopy,
-      );
+      const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
       it('it returns error for transformation and transition to testManually', async () => {
         // @ts-expect-error - `sendEvent` is not supposed to receive a string
         await workflow.sendEvent('CHECK_BUSINESS_SCORE');
@@ -145,11 +137,7 @@ describe('workflow-runner', () => {
           },
           required: ['business_name', 'registration_number'],
         };
-        const workflow = createWorkflowRunner(
-          definition,
-          // @ts-expect-error - see the comments about `IApiPluginParams['request']`
-          apiPluginsSchemasCopy,
-        );
+        const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
 
         it('it returns error for transformation and transition to testManually', async () => {
           // @ts-expect-error - `sendEvent` is not supposed to receive a string
@@ -185,11 +173,7 @@ describe('workflow-runner', () => {
           },
           required: ['data'],
         };
-        const workflow = createWorkflowRunner(
-          definition,
-          // @ts-expect-error - see the comments about `IApiPluginParams['request']`
-          apiPluginsSchemasCopy,
-        );
+        const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
 
         it('it transitions to successAction and persist success (response) to context', async () => {
           // @ts-expect-error - `sendEvent` is not supposed to receive a string

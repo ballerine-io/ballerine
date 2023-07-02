@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { WorkflowRunner } from '../../workflow-runner';
 import { WorkflowRunnerArgs } from '../../types';
-import { WebhookPluginParams } from './webhook-plugin';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { WebhookPluginParams } from './types';
 
 function createWorkflowRunner(
   definition: WorkflowRunnerArgs['definition'],
@@ -12,6 +12,7 @@ function createWorkflowRunner(
   return new WorkflowRunner({
     definition,
     extensions: {
+      // @ts-expect-error - TODO: fix this
       apiPlugins: webhookPluginsSchemas,
     },
     workflowContext: { machineContext: { entity: { id: 'some_id' } } },
