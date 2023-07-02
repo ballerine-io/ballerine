@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 export interface LoggedInAgentsChartData {
   id: string;
   fullName: string;
-  lastActiveAt: Date;
+  lastActiveAt: Date | null;
 }
 
 interface Props extends ChartProps {
@@ -32,6 +32,7 @@ export const AgentsActivityChart = ({ isLoading, data }: Props) => {
       description={'( last 1 hour )'}
       isLoading={isLoading}
       items={chartItems}
+      emptyPlaceholder={<div>No recent activity found.</div>}
     />
   );
 };

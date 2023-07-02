@@ -3,6 +3,9 @@ export interface IUser {
   email: string;
   firstName: string;
   lastName: string;
-  roles: string[];
-  lastActiveAt: Date | null;
+  lastActiveAt: string | null;
+}
+
+export interface GetActiveUsersDto {
+  fromDate?: number;
 }

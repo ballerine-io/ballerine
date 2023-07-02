@@ -37,6 +37,7 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
+    "react-json-view": "^1.21.3",
     "react-router-dom": "^6.11.2",
     "recharts": "^2.7.2",
     "tailwind-merge": "^1.13.2",
