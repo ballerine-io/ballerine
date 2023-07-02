@@ -1,4 +1,8 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 settings:
   autoInstallPeers: true
@@ -685,6 +689,9 @@ importers:
       vitest:
         specifier: ^0.28.4
         version: 0.28.5(jsdom@20.0.3)
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
 
   packages/rules-engine:
     dependencies:
@@ -1598,6 +1605,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^5.54.1
         version: 5.56.0(eslint@8.36.0)(typescript@4.9.5)
+      dayjs:
+        specifier: ^1.11.6
+        version: 1.11.7
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
@@ -4902,13 +4912,13 @@ packages:
     dependencies:
       '@babel/core': 7.21.3
       '@babel/helper-annotate-as-pure': 7.18.6
-      '@babel/helper-compilation-targets': 7.20.7(@babel/core@7.21.3)
-      '@babel/helper-environment-visitor': 7.18.9
-      '@babel/helper-function-name': 7.21.0
+      '@babel/helper-compilation-targets': 7.22.5(@babel/core@7.21.3)
+      '@babel/helper-environment-visitor': 7.22.5
+      '@babel/helper-function-name': 7.22.5
       '@babel/helper-optimise-call-expression': 7.18.6
       '@babel/helper-plugin-utils': 7.20.2
       '@babel/helper-replace-supers': 7.20.7
-      '@babel/helper-split-export-declaration': 7.18.6
+      '@babel/helper-split-export-declaration': 7.22.5
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -4922,13 +4932,13 @@ packages:
     dependencies:
       '@babel/core': 7.22.5
       '@babel/helper-annotate-as-pure': 7.18.6
-      '@babel/helper-compilation-targets': 7.20.7(@babel/core@7.22.5)
-      '@babel/helper-environment-visitor': 7.18.9
-      '@babel/helper-function-name': 7.21.0
+      '@babel/helper-compilation-targets': 7.22.5(@babel/core@7.22.5)
+      '@babel/helper-environment-visitor': 7.22.5
+      '@babel/helper-function-name': 7.22.5
       '@babel/helper-optimise-call-expression': 7.18.6
       '@babel/helper-plugin-utils': 7.20.2
       '@babel/helper-replace-supers': 7.20.7
-      '@babel/helper-split-export-declaration': 7.18.6
+      '@babel/helper-split-export-declaration': 7.22.5
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -16180,7 +16190,6 @@ packages:
 
   /dayjs@1.11.7:
     resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
-    dev: false
 
   /debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
