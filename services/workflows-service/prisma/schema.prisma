@@ -120,6 +120,12 @@ model Business {
   @@index([correlationId])
 }
 
+enum CheckPolicy {
+  always
+  sometimes
+  never
+}
+
 model WorkflowDefinition {
   id              String  @id @default(cuid())
   reviewMachineId String?
@@ -142,6 +148,10 @@ model WorkflowDefinition {
   createdBy           String                @default("SYSTEM")
   workflowRuntimeData WorkflowRuntimeData[]
   childWorkflows     Json?
+  // Example: [{ state: "initial", event: "NEXT" }]
+  autoEmitEvent Json?
+  checkPolicy CheckPolicy? @default(always)
+  policy     Json?
 }
 
 enum WorkflowRuntimeDataStatus {
