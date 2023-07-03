@@ -14,7 +14,6 @@ import {
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import {
-  CompleteWorkflowData,
   ListRuntimeDataResult,
   ListWorkflowsRuntimeParams,
   RunnableWorkflowData,
@@ -26,7 +25,7 @@ import {
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
@@ -601,12 +600,27 @@ export class WorkflowService {
   }
 
   async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
-    const updatedWorkflowRuntime = await this.workflowRuntimeDataRepository.updateById(
+    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+    );
+    const hasDecision =
+      workflowRuntimeData?.context?.documents?.length &&
+      workflowRuntimeData?.context?.documents?.every(
+        (document: DefaultContextSchema['documents'][number]) => !!document?.decision?.status,
+      );
+
+    if (hasDecision) {
+      throw new BadRequestException(
+        `Workflow with the id of "${workflowRuntimeId}" already has a decision`,
+      );
+    }
+
+    const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
       { data: { assigneeId: assigneeId } },
     );
 
-    return updatedWorkflowRuntime;
+    return updatedWorkflowRuntimeData;
   }
 
   private async getCorrelationIdFromWorkflow(runtimeData: WorkflowRuntimeData) {
