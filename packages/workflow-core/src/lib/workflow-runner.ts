@@ -99,7 +99,6 @@ export class WorkflowRunner {
       const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
       const apiPluginClass = this.pickApiPlugin(apiPluginSchema);
-      console.log('apiClass', apiPluginClass)
       const apiPlugin = new apiPluginClass({
         name: apiPluginSchema.name,
         stateNames: apiPluginSchema.stateNames,
@@ -118,10 +117,13 @@ export class WorkflowRunner {
 
   private pickApiPlugin(apiPluginSchema: IApiPluginParams) {
     let pluginClass;
+    // @ts-ignore
     if (apiPluginSchema.pluginType == 'kyc') {
       pluginClass = KycPlugin
+      // @ts-ignore
     } else if (apiPluginSchema.pluginType == 'webhook') {
       pluginClass = WebhookPlugin
+      // @ts-ignore
     } else if (apiPluginSchema.pluginType == 'api') {
       pluginClass = ApiPlugin
     }
