@@ -12,4 +12,7 @@ export class UserCaseResolvingStatsModel {
 
   @ApiProperty()
   cases!: number;
+
+  @ApiProperty()
+  email!: string;
 }

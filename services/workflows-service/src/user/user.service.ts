@@ -39,9 +39,10 @@ export class UserService {
     const rawQuery = `
     select
       user_cases."assigneeId" as id,
-      SUM(cases_per_day) as cases,
-      "firstName" ,
-      "lastName"
+      SUM(cases_per_day)::int as cases,
+      "firstName",
+      "lastName",
+      "email"
     from
       "User"
     inner join (
@@ -53,7 +54,7 @@ export class UserService {
       from
         "WorkflowRuntimeData"
       where "resolvedAt" notnull
-      ${params.fromDate ? 'and "resolvedAt" = $1' : ''}
+      ${params.fromDate ? 'and "resolvedAt" >= $1' : ''}
       group by "assigneeId", "day"
       )
       as user_cases

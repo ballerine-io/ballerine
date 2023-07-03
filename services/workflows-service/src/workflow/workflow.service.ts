@@ -1225,7 +1225,7 @@ export class WorkflowService {
       date_trunc('day', "resolvedAt") as day, count(*)::int as cases_per_day
     from "WorkflowRuntimeData"
     where "assigneeId" = $1
-    ${params.fromDate ? `and "createdAt" >= $2` : ''}
+    ${params.fromDate ? `and "resolvedAt" > $2` : ''}
     and "resolvedAt" notnull
     group by day`;
 

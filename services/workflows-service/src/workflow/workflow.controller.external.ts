@@ -30,8 +30,8 @@ import { WorkflowMetricService } from '@/workflow/workflow-metric.service';
 import { WorkflowRuntimeAgentCasesModel } from '@/workflow/workflow-runtime-agent-cases.model';
 import { GetWorkflowsRuntimeAgentCases } from '@/workflow/dtos/get-workflows-runtime-agent-cases-input.dto';
 import { WorkflowRuntimeCasesPerStatusModel } from '@/workflow/workflow-runtime-cases-per-status.model';
-import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 import { GetWorkflowRuntimeUserStatsDto } from '@/workflow/dtos/get-workflow-runtime-user-stats-input.dto';
+import { GetCaseResolvingMetricsDto } from '@/workflow/dtos/get-case-resolving-metrics-input.dto';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -108,27 +108,30 @@ export class WorkflowControllerExternal {
 
     const userId = request.user!.id;
 
-    const [
-      approvalRate,
-      averageResolutionTime,
-      averageAssignmentTime,
-      averageReviewTime,
-      resolvedCasesPerDay,
-    ] = await Promise.all([
-      this.service.getUserApprovalRate(userId),
-      this.service.getAverageResolutionTime(userId, statsParams),
-      this.service.getAverageAssignmentTime(userId, statsParams),
-      this.service.getAverageReviewTime(userId, statsParams),
-      this.service.getResolvedCasesPerDay(userId, statsParams),
-    ]);
+    const [approvalRate, averageResolutionTime, averageAssignmentTime, averageReviewTime] =
+      await Promise.all([
+        this.service.getUserApprovalRate(userId),
+        this.service.getAverageResolutionTime(userId, statsParams),
+        this.service.getAverageAssignmentTime(userId, statsParams),
+        this.service.getAverageReviewTime(userId, statsParams),
+      ]);
 
     return {
       approvalRate,
       averageResolutionTime,
       averageAssignmentTime,
       averageReviewTime,
-      resolvedCasesPerDay,
     };
+  }
+
+  @common.Get('/metrics/case-resolving')
+  async listCaseResolvingMetric(
+    @common.Request() request: Request,
+    @common.Query() query: GetCaseResolvingMetricsDto,
+  ) {
+    const userId = request.user!.id;
+
+    return await this.service.getResolvedCasesPerDay(userId, { fromDate: query.fromDate });
   }
 
   @common.Get('/:id')

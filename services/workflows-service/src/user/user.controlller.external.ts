@@ -29,7 +29,7 @@ export class UserControllerExternal {
     return results.map(result => plainToClass(UserModel, result));
   }
 
-  @common.Get('/case-resolving-stats')
+  @common.Get('/metrics/case-resolving-stats')
   @ApiOkResponse({ type: [UserCaseResolvingStatsModel] })
   async getUsersActivityStats(
     @common.Query() query: GetUsersCaseResolvingStatsDto,

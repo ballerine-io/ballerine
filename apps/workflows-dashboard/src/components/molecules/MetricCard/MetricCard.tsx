@@ -30,13 +30,7 @@ export function MetricCard({ title, content, description, className, isLoading }
         {isLoading ? (
           <Skeleton className="h-20" />
         ) : (
-          <div
-            className={classnames('w-full', 'h-full', {
-              ['border-b']: Boolean(description),
-            })}
-          >
-            {content}
-          </div>
+          <div className={classnames('w-full', 'h-full')}>{content}</div>
         )}
       </CardContent>
       <CardFooter className="p-4 pt-0">
