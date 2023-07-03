@@ -31,7 +31,7 @@ export const kycDynamicExample = {
       kyc_result: {
         on: {
           target: 'manual_review',
-        }
+        },
       },
       manual_review: {
         on: {
@@ -68,7 +68,7 @@ export const kycDynamicExample = {
             transformer: 'jmespath',
             mapping: `{
               endUserId: entity.id,
-              callbackUrl: 'http://localhost:3000/internal/{id}/hook/kyc_result',
+              callbackUrl: join('',['http://localhost:3000/internal/',entity.id,'/hook/kyc_result']),
               person: {
                firstName: entity.data.firstName,
                lastName: entity.data.lastName,
@@ -88,7 +88,8 @@ export const kycDynamicExample = {
                 },
               address: {
                 fullAddress: entity.data.additionalInfo.address
-                }
+                },
+              vendor: 'veriff'
               }`, // jmespath
           },
         },
@@ -96,7 +97,7 @@ export const kycDynamicExample = {
           transform: {
             transformer: 'jmespath',
             mapping: '@', // jmespath
-          }
+          },
         },
       },
     ],

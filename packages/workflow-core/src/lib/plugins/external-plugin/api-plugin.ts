@@ -14,7 +14,7 @@ export interface IApiPluginParams {
   callApi?(...args: Array<any>): any;
 }
 export class ApiPlugin {
-  public static pluginType = 'kyc'
+  public static pluginType = 'kyc';
   name: string;
   stateNames: Array<string>;
   url: string;
@@ -144,6 +144,7 @@ export class ApiPlugin {
       ]),
     );
   }
+
   replaceValuePlaceholders(content: string, context: TContext) {
     const placeholders = content.match(/{(.*?)}/g);
     if (!placeholders) return content;
