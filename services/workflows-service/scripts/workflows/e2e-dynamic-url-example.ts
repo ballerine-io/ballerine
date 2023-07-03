@@ -28,8 +28,8 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                 options: {
                   rule: {
                     '==': [
-                      {var: 'context.entity.companyName'},
-                      {var: 'response.data.registered_name'},
+                      { var: 'context.entity.companyName' },
+                      { var: 'response.data.registered_name' },
                     ],
                   },
                 },
@@ -208,5 +208,3 @@ export const generateDynamicDefinitionForE2eTest = async (prismaClient: PrismaCl
     data: kybWithDynamicExternalRequestWorkflowExample,
   });
 };
-
-

@@ -15,7 +15,7 @@ import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
-import { generateKycForE2eTest } from "./workflows/kyc-dynamic-process-example";
+import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
 
 if (require.main === module) {
   dotenv.config();

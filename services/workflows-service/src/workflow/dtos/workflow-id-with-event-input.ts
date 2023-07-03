@@ -15,5 +15,4 @@ export class WorkflowIdWithEventInput {
   })
   @IsString()
   event!: string;
-
 }
