@@ -153,8 +153,15 @@ describe('Parent and child workflows #integration #featureset', () => {
           childWorkflowMetadata,
           childSnapshot: childWorkflowService.getSnapshot(),
         };
+
+        return {
+          endUser: {
+            id: 'user_1',
+          },
+        };
       }
     });
+
     const onInvokeChildWorkflowTwo = vi.fn<
       [Parameters<NonNullable<WorkflowClientOptions['onInvokeChildWorkflow']>>[0]],
       ReturnType<NonNullable<WorkflowClientOptions['onInvokeChildWorkflow']>>
@@ -165,6 +172,7 @@ describe('Parent and child workflows #integration #featureset', () => {
     });
 
     const workflowClient = createWorkflowClient({
+      // @ts-expect-error - TODO: fix mock type
       onInvokeChildWorkflow,
     });
     const parentWorkflowService = workflowClient.createWorkflow({
@@ -253,6 +261,7 @@ describe('Parent and child workflows #integration #featureset', () => {
     });
 
     const workflowClientTwo = createWorkflowClient({
+      // @ts-expect-error - TODO: fix mock type
       onInvokeChildWorkflow: onInvokeChildWorkflowTwo,
     });
     const parentWorkflowServiceTwo = workflowClientTwo.createWorkflow({
@@ -306,6 +315,26 @@ describe('Parent and child workflows #integration #featureset', () => {
       expect(parentWorkflowServiceTwo.getSnapshot().value).toBe('invoked_child');
       onInvokeChildWorkflowTwo.mockClear();
     });
+
+    it('should update the context of the parent', async () => {
+      await parentWorkflowService.sendEvent({
+        type: 'NEXT',
+      });
+
+      expect(parentWorkflowService.getSnapshot().context).toStrictEqual({
+        childWorkflows: [
+          {
+            data: {
+              endUser: {
+                id: 'user_1',
+              },
+            },
+            error: undefined,
+          },
+        ],
+      });
+      onInvokeChildWorkflow.mockClear();
+    });
   });
 
   describe('when a child workflow reaches its final state', async () => {
@@ -353,6 +382,7 @@ describe('Parent and child workflows #integration #featureset', () => {
     ] satisfies Array<ChildWorkflow>;
 
     const workflowClient = createWorkflowClient({
+      // @ts-expect-error - TODO: fix mock type
       async onInvokeChildWorkflow(childWorkflowMetadata) {
         const childWorkflow = childWorkflows.find(
           ({ runtimeId }) => runtimeId === childWorkflowMetadata.runtimeId,
