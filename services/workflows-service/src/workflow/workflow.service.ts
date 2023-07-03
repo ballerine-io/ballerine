@@ -598,12 +598,27 @@ export class WorkflowService {
   }
 
   async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
-    const updatedWorkflowRuntime = await this.workflowRuntimeDataRepository.updateById(
+    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+    );
+    const hasDecision =
+      workflowRuntimeData?.context?.documents?.length &&
+      workflowRuntimeData?.context?.documents?.every(
+        (document: DefaultContextSchema['documents'][number]) => !!document?.decision?.status,
+      );
+
+    if (hasDecision) {
+      throw new BadRequestException(
+        `Workflow with the id of "${workflowRuntimeId}" already has a decision`,
+      );
+    }
+
+    const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
       { data: { assigneeId: assigneeId, assignedAt: new Date() } },
     );
 
-    return updatedWorkflowRuntime;
+    return updatedWorkflowRuntimeData;
   }
 
   private async getCorrelationIdFromWorkflow(runtimeData: WorkflowRuntimeData) {
