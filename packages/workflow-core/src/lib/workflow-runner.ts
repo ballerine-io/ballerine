@@ -2,10 +2,11 @@
 import { uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
-import { createMachine, interpret } from 'xstate';
+import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
   ChildWorkflow,
+  IUpdateContextEvent,
   ObjectValues,
   WorkflowEvent,
   WorkflowEventWithoutState,
@@ -273,7 +274,29 @@ export class WorkflowRunner {
       },
     };
 
-    return createMachine({ predictableActionArguments: true, ...definition }, { actions, guards });
+    const updateContext = assign<Record<PropertyKey, any>, IUpdateContextEvent>(
+      (context, event) => {
+        context = {
+          ...context,
+          ...event.payload,
+        };
+
+        return context;
+      },
+    );
+
+    return createMachine(
+      {
+        predictableActionArguments: true,
+        on: {
+          UPDATE_CONTEXT: {
+            actions: updateContext,
+          },
+        },
+        ...definition,
+      },
+      { actions, guards },
+    );
   }
 
   async sendEvent(event: WorkflowEventWithoutState) {
@@ -374,19 +397,42 @@ export class WorkflowRunner {
     }
 
     if (this.#__onInvokeChildWorkflow && childWorkflowsToInvoke?.length) {
-      await Promise.all(
+      const results = await Promise.allSettled(
         childWorkflowsToInvoke?.map(
           async ({ definitionId, runtimeId, name, definitionVersion, initOptions }) => {
-            await this.#__onInvokeChildWorkflow?.({
+            const result = await this.#__onInvokeChildWorkflow?.({
               definitionId,
               runtimeId,
               name,
               version: definitionVersion,
               initOptions,
             });
+
+            return result;
           },
         ),
       );
+      const childWorkflows = results?.map(result => {
+        if (result?.status === 'fulfilled') {
+          return {
+            data: result?.value,
+            error: undefined,
+          };
+        }
+
+        return {
+          data: undefined,
+          error: result?.reason,
+        };
+      });
+
+      this.#__context.childWorkflows = childWorkflows;
+      service.send({
+        type: 'UPDATE_CONTEXT',
+        payload: {
+          childWorkflows,
+        },
+      });
     }
 
     if (

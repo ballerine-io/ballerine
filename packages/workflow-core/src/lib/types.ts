@@ -30,6 +30,11 @@ export interface WorkflowContext {
   lockKey?: string;
 }
 
+export interface IUpdateContextEvent {
+  type: string;
+  payload: Record<PropertyKey, unknown>;
+}
+
 export interface ChildWorkflow {
   waitForResolved?: boolean;
   name: string;
@@ -98,7 +103,7 @@ export interface WorkflowCallbackPayload {
 
 export interface WorkflowClientOptions {
   onEvent?: (payload: WorkflowCallbackPayload) => Promise<void>;
-  onInvokeChildWorkflow?: (childWorkflowMetadata: ChildWorkflowMetadata) => Promise<void>;
+  onInvokeChildWorkflow?: <TData>(childWorkflowMetadata: ChildWorkflowMetadata) => Promise<TData>;
 }
 
 export interface WorkflowRunnerArgs extends WorkflowClientOptions {
