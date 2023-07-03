@@ -48,7 +48,6 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeOutputDto] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
-  @UseKeyAuthGuard()
   async listWorkflowRuntimeData(
     @Query() query: GetWorkflowsRuntimeInputDto,
   ): Promise<GetWorkflowsRuntimeOutputDto> {
@@ -67,7 +66,6 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: [WorkflowRuntimeStatsModel] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
-  @UseKeyAuthGuard()
   async listWorkflowRuntimeStats(): Promise<WorkflowRuntimeStatsModel[]> {
     const results = await this.metricService.listWorkflowStats();
 
@@ -77,7 +75,6 @@ export class WorkflowControllerExternal {
   @common.Get('/metrics/workflow-runtime-agent-cases-stats')
   @swagger.ApiOkResponse({ type: [WorkflowRuntimeAgentCasesModel] })
   @common.HttpCode(200)
-  @UseKeyAuthGuard()
   async listWorkflowRuntimeAgentCasesStats(
     @Query() query: GetWorkflowsRuntimeAgentCases,
   ): Promise<WorkflowRuntimeAgentCasesModel[]> {
@@ -91,7 +88,6 @@ export class WorkflowControllerExternal {
   @common.Get('/metrics/workflow-runtime-cases-per-status')
   @swagger.ApiOkResponse({ type: WorkflowRuntimeCasesPerStatusModel })
   @common.HttpCode(200)
-  @UseKeyAuthGuard()
   async listWorkflowRuntimeCasesPerStatusStats(
     @Query() query: GetWorkflowsRuntimeAgentCases,
   ): Promise<WorkflowRuntimeCasesPerStatusModel> {
@@ -102,7 +98,6 @@ export class WorkflowControllerExternal {
   }
 
   @common.Get('/metrics/user-stats')
-  @UseKeyAuthOrSessionGuard()
   async listUserWorkflowRuntimeUserStats(
     @common.Request() request: Request,
     @common.Query() query: GetWorkflowRuntimeUserStatsDto,
