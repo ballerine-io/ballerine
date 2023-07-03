@@ -44,6 +44,7 @@ enum ApprovalState {
 
 model EndUser {
   id String @id @default(cuid())
+  userType String @default("individual") // Add userType: can be 'EndUser', 'CompanyContact', 'Stakeholder'
 
   correlationId String? @unique @db.VarChar
 
@@ -97,7 +98,7 @@ model Business {
   country                 String?
   countryOfIncorporation  String? // Country where the business entity is incorporated
   dateOfIncorporation     DateTime? // Date when the business entity was incorporated
-  address                 String? // Registered address of the business entity
+  address                 Json? // Registered address of the business entity
   phoneNumber             String? // Contact phone number of the business entity
   email                   String? // Contact email of the business entity
   website                 String? // Official website of the business entity
@@ -110,6 +111,7 @@ model Business {
   documents               Json? // Collection of documents required for the KYB process, e.g., registration documents, financial statements
   avatarUrl               String?
   additionalInfo          Json?
+  bankInformation        Json?
   approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
 
   workflowRuntimeData  WorkflowRuntimeData[]
