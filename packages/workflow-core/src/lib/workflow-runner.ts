@@ -15,9 +15,10 @@ import type {
 import { Error as ErrorEnum } from './types';
 import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
-import { StatePlugin } from './plugins/types';
+import { API_PLUGIN_CLASSES, StatePlugin } from './plugins/types';
 import { ApiPlugin, IApiPluginParams } from './plugins/external-plugin/api-plugin';
 import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
+import { KycPlugin } from "./plugins/external-plugin/kyc-plugin";
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -97,9 +98,9 @@ export class WorkflowRunner {
       const requestValidator = this.fetchValidator('json-schema', requestSchema);
       const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
-      let isApiPlugin = this.isApiPlugin(apiPluginSchema);
-      const ApiPluginClass = isApiPlugin ? ApiPlugin : WebhookPlugin;
-      const apiPlugin = new ApiPluginClass({
+      const apiPluginClass = this.pickApiPlugin(apiPluginSchema);
+      console.log('apiClass', apiPluginClass)
+      const apiPlugin = new apiPluginClass({
         name: apiPluginSchema.name,
         stateNames: apiPluginSchema.stateNames,
         url: apiPluginSchema.url,
@@ -115,12 +116,27 @@ export class WorkflowRunner {
     });
   }
 
+  private pickApiPlugin(apiPluginSchema: IApiPluginParams) {
+    let pluginClass;
+    if (apiPluginSchema.pluginType == 'kyc') {
+      pluginClass = KycPlugin
+    } else if (apiPluginSchema.pluginType == 'webhook') {
+      pluginClass = WebhookPlugin
+    } else if (apiPluginSchema.pluginType == 'api') {
+      pluginClass = ApiPlugin
+    }
+    if (pluginClass) return pluginClass;
+
+    const isApiPlugin = this.isApiPlugin(apiPluginSchema);
+    return isApiPlugin ? ApiPlugin : WebhookPlugin;
+  }
+
   private isApiPlugin(apiPluginSchema: IApiPluginParams) {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
   fetchTransformer(transformer: any) {
-    if (transformer.transformer == 'jmespath') return new JmespathTransformer(transformer.mapping);
+    if (transformer.transformer == 'jmespath') return new JmespathTransformer(transformer.mapping.replace(/\s+/g, ' '));
 
     throw new Error(`Transformer ${transformer.name} is not supported`);
   }

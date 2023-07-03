@@ -27,19 +27,9 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                 type: 'json-logic',
                 options: {
                   rule: {
-                    or: [
-                      {
-                        '==': [
-                          { var: 'context.entity.companyName' },
-                          { var: 'response.data.registered_name' },
-                        ],
-                      },
-                      // {
-                      //   '>=': [
-                      //     { var: 'context.external_request_example.data.name_fuzziness_score' },
-                      //     0.91,
-                      //   ],
-                      // },
+                    '==': [
+                      {var: 'context.entity.companyName'},
+                      {var: 'response.data.registered_name'},
                     ],
                   },
                 },
@@ -121,6 +111,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
     apiPlugins: [
       {
         name: 'business_data_vendor',
+        pluginType: 'api',
         url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_eu.json',
         logo: 'https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/649435882f9b2819873035d7_companyVendorLogo.png',
         method: 'GET',
@@ -217,3 +208,5 @@ export const generateDynamicDefinitionForE2eTest = async (prismaClient: PrismaCl
     data: kybWithDynamicExternalRequestWorkflowExample,
   });
 };
+
+

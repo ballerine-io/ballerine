@@ -87,6 +87,7 @@ const kycIndividualRequestSchema = {
   "required": ["endUserId", "callbackUrl", "person", "document", "images", "address", "vendor"]
 }
 export class KycPlugin extends ApiPlugin {
+  public static pluginType = 'kyc'
   kycResponseCallbackAction: string;
   constructor(pluginParams: IApiPluginParams){
     super(pluginParams)

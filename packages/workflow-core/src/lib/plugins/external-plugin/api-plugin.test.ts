@@ -127,7 +127,33 @@ describe('workflow-runner', () => {
         });
       });
     });
+    describe('when api valid long jmespath transformation of request', () => {
+      const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
+      apiPluginsSchemasCopy[0]!.request.transform.mapping = `{ endUserId: entity.id, callbackUrl: 'http://localhost:3000/internal/{id}/hook/kyc_result', person: { firstName: entity.data.firstName, lastName: entity.data.lastName, idNumber: entity.data.additionalInfo.idNumber, gender: entity.data.additionalInfo.gender, dateOfBirth: entity.data.dateOfBirth }, document: { number: documents[0].properties.docNumber, country: documents[0].issuer.country, type: 'PASSPORT' }, images: { face: documents[0].pages[?contains(metadata.side, 'face')].uri | [0], documentFront: documents[0].pages[?contains(metadata.side, 'front')].uri | [0], documentBack: documents[0].pages[?contains(metadata.side, 'back')].uri | [0] }, address: { fullAddress: entity.data.additionalInfo.address } }`;
+      const workflow = createWorkflowRunner(
+        definition,
+        // @ts-expect-error - see the comments about `IApiPluginParams['request']`
+        apiPluginsSchemasCopy,
+      );
+      it('it returns does noterror for transformation and transition to testManually', async () => {
+        // @ts-expect-error - `sendEvent` is not supposed to receive a string
+        await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
+        expect(workflow.state).toEqual('testManually');
+        expect(
+          (
+            workflow.context as {
+              pluginsOutput: Record<string, unknown>;
+            }
+          ).pluginsOutput,
+        ).toEqual({
+          ballerineEnrichment: {
+            error:
+              'Error transforming data: Unexpected token type: Colon, value: : for transformer mapping: dsa: .unknwonvalue.id}',
+          },
+        });
+      });
+    })
     describe('when api plugin has schema', () => {
       describe('when api request invalid for schema', () => {
         const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);

@@ -14,6 +14,7 @@ export interface IApiPluginParams {
   callApi?(...args: Array<any>): any;
 }
 export class ApiPlugin {
+  public static pluginType = 'kyc'
   name: string;
   stateNames: Array<string>;
   url: string;

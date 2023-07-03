@@ -17,6 +17,7 @@ export class JmespathTransformer extends BaseContextTransformer {
    * @param _options - currently not in use
    */
   async transform(context: TContext, _options = {}) {
+    console.log('JmespathTransformer.transform', context, _options);
     const response = await search(context, this.mapping);
 
     return response;

@@ -11,6 +11,7 @@ export interface WebhookPluginParams {
 }
 
 export class WebhookPlugin extends ApiPlugin {
+  public static pluginType = 'webhook'
   constructor(pluginParams: IApiPluginParams) {
     super(pluginParams);
   }
