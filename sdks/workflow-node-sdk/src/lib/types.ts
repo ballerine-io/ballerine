@@ -5,7 +5,7 @@ import { WorkflowNodeSDK } from './workflow-node-sdk';
 export interface WorkflowOptionsNode
   extends Pick<
     WorkflowOptions,
-    'definition' | 'definitionType' | 'workflowContext' | 'childWorkflows'
+    'definition' | 'definitionType' | 'workflowContext' | 'childWorkflows' | 'runtimeId'
   > {
   extensions?: {
     statePlugins: Array<NodePlugin>;

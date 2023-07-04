@@ -993,6 +993,7 @@ async function seed(bcryptSalt: Salt) {
 
   const childRuntimeData = await client.workflowRuntimeData.create({
     data: {
+      state: 'child_initial',
       workflowDefinitionVersion: 1,
       context: {
         endUser: {
@@ -1001,6 +1002,7 @@ async function seed(bcryptSalt: Salt) {
       },
       workflowDefinitionId: childDefinition.id,
       createdAt: faker.date.recent(2),
+      businessId: businessIds[0],
     },
   });
 
@@ -1047,7 +1049,7 @@ async function seed(bcryptSalt: Salt) {
           contextToCopy: {
             transform: {
               transformer: 'jmespath',
-              mapping: 'endUser.id',
+              mapping: '{data: endUser.id}',
             },
           },
           callbackInfo: {
@@ -1055,7 +1057,7 @@ async function seed(bcryptSalt: Salt) {
             contextToCopy: {
               transform: {
                 transformer: 'jmespath',
-                mapping: 'endUser.id',
+                mapping: '{data: endUser.id}',
               },
             },
           },
@@ -1075,10 +1077,12 @@ async function seed(bcryptSalt: Salt) {
 
   await client.workflowRuntimeData.create({
     data: {
+      state: 'parent_initial',
       workflowDefinitionVersion: 1,
       context: {},
       workflowDefinitionId: parentDefinition.id,
       createdAt: faker.date.recent(2),
+      businessId: businessIds[0],
     },
   });
 }
