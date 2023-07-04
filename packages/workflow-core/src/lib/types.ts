@@ -52,6 +52,7 @@ export interface ChildWorkflow {
 }
 
 export interface WorkflowOptions {
+  runtimeId: string;
   definitionType: 'statechart-json' | 'bpmn-json';
   definition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
@@ -133,6 +134,7 @@ export interface WorkflowClientOptions {
 
 export interface WorkflowRunnerArgs extends WorkflowClientOptions {
   childWorkflows?: Array<ChildWorkflow>;
+  runtimeId: string;
   definition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;

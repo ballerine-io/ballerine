@@ -37,6 +37,7 @@ export class WorkflowRunner {
   #__onInvokeChildWorkflow?: WorkflowRunnerArgs['onInvokeChildWorkflow'];
   #__onDoneChildWorkflow?: WorkflowRunnerArgs['onDoneChildWorkflow'];
   #__invokedOnDoneChildWorkflow = false;
+  #__runtimeId: string;
   events: any;
 
   public get workflow() {
@@ -52,6 +53,7 @@ export class WorkflowRunner {
 
   constructor(
     {
+      runtimeId,
       definition,
       workflowActions,
       workflowContext,
@@ -72,6 +74,7 @@ export class WorkflowRunner {
     // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
+    this.#__runtimeId = runtimeId;
 
     this.#__workflow = this.#__extendedWorkflow({
       definition,
@@ -410,7 +413,7 @@ export class WorkflowRunner {
                   initOptions,
                 },
                 parentWorkflowMetadata: {
-                  runtimeId: snapshot.machine?.id ?? '',
+                  runtimeId: this.#__runtimeId,
                   state: this.#__currentState,
                 },
               });
@@ -467,7 +470,7 @@ export class WorkflowRunner {
         },
         {
           source: {
-            runtimeId: postSendSnapshot.machine?.id ?? '',
+            runtimeId: this.#__runtimeId,
             definitionId: childWorkflowMetadata?.definitionId,
             version: childWorkflowMetadata?.version,
             state: this.#__currentState,
