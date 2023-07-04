@@ -18,7 +18,8 @@ import { JsonSchemaValidator } from './utils/context-validator/json-schema-valid
 import { API_PLUGIN_CLASSES, StatePlugin } from './plugins/types';
 import { ApiPlugin, IApiPluginParams } from './plugins/external-plugin/api-plugin';
 import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
-import { KycPlugin } from "./plugins/external-plugin/kyc-plugin";
+import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
+import { HelpersTransformer } from './utils/context-transformers/helpers-transformer';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -92,9 +93,9 @@ export class WorkflowRunner {
       const responseTransformerLogic = apiPluginSchema.response?.transform;
       // @ts-expect-error - update types
       const responseSchema = apiPluginSchema.response?.schema;
-      const requestTransformer = this.fetchTransformer(requestTransformerLogic);
+      const requestTransformer = this.fetchTransformers(requestTransformerLogic);
       const responseTransformer =
-        responseTransformerLogic && this.fetchTransformer(responseTransformerLogic);
+        responseTransformerLogic && this.fetchTransformers(responseTransformerLogic);
       const requestValidator = this.fetchValidator('json-schema', requestSchema);
       const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
@@ -105,8 +106,8 @@ export class WorkflowRunner {
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
         headers: apiPluginSchema.headers,
-        request: { transformer: requestTransformer, schemaValidator: requestValidator },
-        response: { transformer: responseTransformer, schemaValidator: responseValidator },
+        request: { transformers: requestTransformer, schemaValidator: requestValidator },
+        response: { transformers: responseTransformer, schemaValidator: responseValidator },
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
       });
@@ -119,13 +120,13 @@ export class WorkflowRunner {
     let pluginClass;
     // @ts-ignore
     if (apiPluginSchema.pluginType == 'kyc') {
-      pluginClass = KycPlugin
+      pluginClass = KycPlugin;
       // @ts-ignore
     } else if (apiPluginSchema.pluginType == 'webhook') {
-      pluginClass = WebhookPlugin
+      pluginClass = WebhookPlugin;
       // @ts-ignore
     } else if (apiPluginSchema.pluginType == 'api') {
-      pluginClass = ApiPlugin
+      pluginClass = ApiPlugin;
     }
     if (pluginClass) return pluginClass;
 
@@ -137,10 +138,14 @@ export class WorkflowRunner {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
-  fetchTransformer(transformer: any) {
-    if (transformer.transformer == 'jmespath') return new JmespathTransformer(transformer.mapping.replace(/\s+/g, ' '));
+  fetchTransformers(transformers: Array<any>) {
+    return transformers.map(transformer => {
+      if (transformer.transformer == 'jmespath')
+        return new JmespathTransformer(transformer.mapping.replace(/\s+/g, ' '));
+      if (transformer.transformer == 'helper') return new HelpersTransformer(transformer.mapping);
 
-    throw new Error(`Transformer ${transformer.name} is not supported`);
+      throw new Error(`Transformer ${transformer.name} is not supported`);
+    });
   }
   fetchValidator(validatorName: any, schema: any) {
     if (!schema) return;

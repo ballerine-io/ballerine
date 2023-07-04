@@ -63,10 +63,12 @@ export const kycDynamicExample = {
         stateNames: ['run_kyc'],
         successAction: 'PENDING_KYC',
         errorAction: 'API_CALL_ERROR',
+        headers: { Authorization: 'Bearer {secret.KYC_API_TOKEN}' },
         request: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: `{
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
               endUserId: entity.id,
               callbackUrl: join('',['http://localhost:3000/internal/',entity.id,'/hook/kyc_result']),
               person: {
@@ -91,13 +93,27 @@ export const kycDynamicExample = {
                 },
               vendor: 'veriff'
               }`, // jmespath
-          },
+            },
+            {
+              transformer: 'helper',
+              mapping: [
+                {
+                  source: 'person.dateOfBirth',
+                  target: 'person.dateOfBirth',
+                  method: 'regex',
+                  value: '\\d{4}-\\d{2}-\\d{2}',
+                },
+              ],
+            },
+          ],
         },
         response: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: '@', // jmespath
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@', // jmespath
+            },
+          ],
         },
       },
     ],

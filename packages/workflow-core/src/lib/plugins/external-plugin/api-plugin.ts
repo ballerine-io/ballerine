@@ -1,4 +1,4 @@
-import { TContext, TTransformers, TValidators } from '../../utils/types';
+import { TContext, TTransformer, TTransformers, TValidators } from '../../utils/types';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
 
 export interface IApiPluginParams {
@@ -6,8 +6,8 @@ export interface IApiPluginParams {
   stateNames: Array<string>;
   url: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
-  request: { transformer: TTransformers; schemaValidator?: TValidators };
-  response?: { transformer: TTransformers; schemaValidator?: TValidators };
+  request: { transformers: TTransformers; schemaValidator?: TValidators };
+  response?: { transformers: TTransformers; schemaValidator?: TValidators };
   headers?: HeadersInit;
   successAction?: string;
   errorAction?: string;
@@ -41,7 +41,7 @@ export class ApiPlugin {
   }
   async callApi(context: TContext) {
     try {
-      const requestPayload = await this.transformData(this.request.transformer, context);
+      const requestPayload = await this.transformData(this.request.transformers, context);
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,
         requestPayload,
@@ -59,7 +59,7 @@ export class ApiPlugin {
       if (apiResponse.ok) {
         const result = (await apiResponse.json()) as unknown;
         const responseBody = await this.transformData(
-          this.response!.transformer,
+          this.response!.transformers,
           result as AnyRecord,
         );
 
@@ -112,7 +112,15 @@ export class ApiPlugin {
     return await fetch(url, requestParams);
   }
 
-  async transformData(transformer: TTransformers, record: AnyRecord) {
+  async transformData(transformers: TTransformers, record: AnyRecord) {
+    let mutatedRecord = record;
+    for (const transformer of transformers) {
+      mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
+    }
+    return mutatedRecord;
+  }
+
+  async transformByTransformer(transformer: TTransformer, record: AnyRecord) {
     try {
       return (await transformer.transform(record, { input: 'json', output: 'json' })) as AnyRecord;
     } catch (error) {

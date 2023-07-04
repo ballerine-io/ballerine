@@ -83,10 +83,8 @@ const kycIndividualRequestSchema = {
 };
 export class KycPlugin extends ApiPlugin {
   public static pluginType = 'kyc';
-  kycResponseCallbackAction: string;
   constructor(pluginParams: IApiPluginParams) {
     super(pluginParams);
-    this.kycResponseCallbackAction = 'kycResponseCallback';
   }
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
     schemaValidator: TValidators | undefined,

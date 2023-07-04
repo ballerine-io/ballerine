@@ -119,11 +119,13 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         successAction: 'API_CALL_SUCCESS',
         errorAction: 'API_CALL_ERROR',
         request: {
-          transform: {
-            transformer: 'jmespath',
-            mapping:
-              '{ business_name: entity.data.companyName, registration_number: entity.data.registrationNumber}',
-          }, // jmespath
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping:
+                '{ business_name: entity.data.companyName, registration_number: entity.data.registrationNumber}',
+            },
+          ], // jmespath
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',
             type: 'object',
@@ -139,10 +141,12 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
           }, // Schema is OPTIONAL, but if provided, it will be used to validate the request body
         },
         response: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: '@', // jmespath
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@', // jmespath
+            },
+          ],
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',
             type: 'object',
@@ -182,10 +186,12 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
           authorization: 'Bearer {secret.BUSINESS_DATA__VENDOR_API_KEY}',
         },
         request: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: '{success_result: pluginsOutput.business_data_vendor}',
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '{success_result: pluginsOutput.business_data_vendor}',
+            },
+          ],
         },
       },
       {
@@ -194,10 +200,12 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         method: 'POST',
         stateNames: ['auto_reject'],
         request: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: '{failing_result: @}',
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '{failing_result: @}',
+            },
+          ],
         },
       },
     ],
