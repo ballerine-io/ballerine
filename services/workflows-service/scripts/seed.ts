@@ -1076,11 +1076,7 @@ async function seed(bcryptSalt: Salt) {
   await client.workflowRuntimeData.create({
     data: {
       workflowDefinitionVersion: 1,
-      context: {
-        endUser: {
-          id: 'user_1',
-        },
-      },
+      context: {},
       workflowDefinitionId: parentDefinition.id,
       createdAt: faker.date.recent(2),
     },
