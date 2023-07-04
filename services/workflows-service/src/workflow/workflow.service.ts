@@ -14,13 +14,12 @@ import {
 } from '@prisma/client';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import {
+  GetUserStatsParams,
   ListRuntimeDataResult,
   ListWorkflowsRuntimeParams,
   RunnableWorkflowData,
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
-  WorkflowsRuntimeMetric,
-  WorkflowStatusMetric,
 } from './types';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
@@ -617,7 +616,7 @@ export class WorkflowService {
 
     const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
-      { data: { assigneeId: assigneeId } },
+      { data: { assigneeId: assigneeId, assignedAt: new Date() } },
     );
 
     return updatedWorkflowRuntimeData;
@@ -1169,35 +1168,103 @@ export class WorkflowService {
     return this.workflowRuntimeDataRepository.findContext(id);
   }
 
-  async listWorkflowsMetrics(): Promise<WorkflowsRuntimeMetric> {
-    return {
-      approvedWorkflows: (await this.listResolvedWorkflowRuntimes()) as any,
-      status: await this._getWorkflowsStatusMetric(),
-    };
+  async getUserApprovalRate(userId: string) {
+    const [resolved, approved] = await Promise.all([
+      this.workflowRuntimeDataRepository.count({
+        where: {
+          assigneeId: userId,
+          resolvedAt: {
+            not: null,
+          },
+        },
+      }),
+      this.workflowRuntimeDataRepository.count({
+        where: {
+          assigneeId: userId,
+          resolvedAt: {
+            not: null,
+          },
+          status: WorkflowRuntimeDataStatus.completed,
+        },
+      }),
+    ]);
+
+    return resolved && approved ? (approved / resolved) * 100 : 0;
   }
 
-  private async listResolvedWorkflowRuntimes(): Promise<WorkflowRuntimeData[]> {
-    return await this.workflowRuntimeDataRepository.findMany({
-      where: { resolvedAt: { not: null } },
-    });
+  // Prisma queryRaw doesn't support type interval which is recieved by calculating resolvedAt - createdAt
+  // to handle this date columns converted to MS
+  async getAverageResolutionTime(userId: string, params: GetUserStatsParams = {}): Promise<number> {
+    const rawQuery = `
+    select
+      avg((extract(epoch from "resolvedAt") - extract(epoch from "createdAt")) * 1000)::int
+      from "WorkflowRuntimeData"
+    where "assigneeId" = $1
+    ${params.fromDate ? `and "createdAt" >= $2` : ''}
+    and "resolvedAt" notnull
+    group by "assigneeId"`;
+
+    return await this._executeAverageTimeQuery(rawQuery, userId, params);
   }
 
-  private async _getWorkflowsStatusMetric(): Promise<WorkflowStatusMetric> {
-    const queryResult = await this.workflowRuntimeDataRepository.groupBy({
-      by: ['status'],
-      _count: true,
-    });
+  async getAverageAssignmentTime(userId: string, params: GetUserStatsParams): Promise<number> {
+    const rawQuery = `
+      select
+          avg((extract(epoch from "assignedAt") - extract(epoch from "createdAt")) * 1000)::int
+      from "WorkflowRuntimeData"
+      where "assigneeId" = $1
+      ${params.fromDate ? `and "createdAt" >= $2` : ''}
+      and "assignedAt" notnull
+      group by "assigneeId"
+      `;
 
-    const metrics: WorkflowStatusMetric = {
-      active: 0,
-      failed: 0,
-      completed: 0,
-    };
+    return await this._executeAverageTimeQuery(rawQuery, userId, params);
+  }
 
-    queryResult.forEach(metric => {
-      metrics[metric.status] = Number(metric._count) || 0;
-    });
+  async getAverageReviewTime(userId: string, params: GetUserStatsParams): Promise<number> {
+    const rawQuery = `
+    select
+      avg((extract(epoch from "resolvedAt") - extract(epoch from "assignedAt")) * 1000)::int
+    from "WorkflowRuntimeData"
+    where "assigneeId" = $1
+    ${params.fromDate ? `and "createdAt" >= $2` : ''}
+    and "assignedAt" notnull
+    group by "assigneeId"`;
 
-    return metrics;
+    return await this._executeAverageTimeQuery(rawQuery, userId, params);
+  }
+
+  async getResolvedCasesPerDay(userId: string, params: GetUserStatsParams) {
+    const rawQuery = `
+    select
+      date_trunc('day', "resolvedAt") as day, count(*)::int as cases_per_day
+    from "WorkflowRuntimeData"
+    where "assigneeId" = $1
+    ${params.fromDate ? `and "resolvedAt" > $2` : ''}
+    and "resolvedAt" notnull
+    group by day`;
+
+    return (
+      await this.workflowRuntimeDataRepository.queryRaw<{ day: string; cases_per_day: number }[]>(
+        rawQuery,
+        [userId, ...(params.fromDate ? [params.fromDate] : [])],
+      )
+    ).map(data => ({
+      date: data.day,
+      casesPerDay: data.cases_per_day,
+    }));
+  }
+
+  private async _executeAverageTimeQuery(
+    query: string,
+    userId: string,
+    params: GetUserStatsParams,
+  ): Promise<number> {
+    const queryResults = await this.workflowRuntimeDataRepository.queryRaw<{ avg: number }[]>(
+      query,
+      [userId, ...(params.fromDate ? [params.fromDate] : [])],
+    );
+
+    return queryResults.length ? queryResults.at(-1)?.avg || 0 : 0;
   }
 }
