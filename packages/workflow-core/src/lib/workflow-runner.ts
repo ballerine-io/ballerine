@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { uniqueArray } from '@ballerine/common';
+import { AnyRecord, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
@@ -399,30 +399,40 @@ export class WorkflowRunner {
     if (this.#__onInvokeChildWorkflow && childWorkflowsToInvoke?.length) {
       const results = await Promise.allSettled(
         childWorkflowsToInvoke?.map(
-          async ({ definitionId, runtimeId, name, definitionVersion, initOptions }) => {
-            const result = await this.#__onInvokeChildWorkflow?.({
-              definitionId,
-              runtimeId,
-              name,
-              version: definitionVersion,
-              initOptions,
-            });
+          async ({ definitionId, runtimeId, name, version, initOptions, contextToCopy }) => {
+            try {
+              const result = await this.#__onInvokeChildWorkflow?.({
+                definitionId,
+                runtimeId,
+                name,
+                version,
+                initOptions,
+              });
+              const transformer = this.fetchTransformer(contextToCopy?.transform);
+              const data = await transformer?.transform(result as AnyRecord);
 
-            return result;
+              return {
+                data,
+                error: undefined,
+                runtimeId,
+              };
+            } catch (error) {
+              return {
+                data: undefined,
+                error,
+                runtimeId,
+              };
+            }
           },
         ),
       );
       const childWorkflows = results?.map(result => {
-        if (result?.status === 'fulfilled') {
-          return {
-            data: result?.value,
-            error: undefined,
-          };
-        }
+        if (result?.status !== 'fulfilled') return;
 
         return {
-          data: undefined,
-          error: result?.reason,
+          runtimeId: result?.value?.runtimeId,
+          data: result?.value?.data,
+          error: undefined,
         };
       });
 
@@ -441,11 +451,30 @@ export class WorkflowRunner {
       postSendSnapshot.done &&
       !this.#__doneChildWorkflows.has(childWorkflowMetadata.runtimeId)
     ) {
-      await this.#__onEvent({
-        parentWorkflowMetadata,
-        childWorkflowMetadata,
-        callbackInfo,
-      });
+      const transformer = this.fetchTransformer(callbackInfo?.contextToCopy?.transform);
+      const payload = await transformer?.transform(postSendSnapshot?.context);
+
+      await this.#__onEvent(
+        {
+          type: callbackInfo?.event,
+          payload,
+        },
+        {
+          source: {
+            runtimeId: postSendSnapshot.machine?.id ?? '',
+            definitionId: childWorkflowMetadata?.definitionId,
+            version: childWorkflowMetadata?.version,
+            state: this.#__currentState,
+            event: event.type,
+          },
+          target: {
+            runtimeId: parentWorkflowMetadata?.runtimeId,
+            definitionId: parentWorkflowMetadata?.definitionId,
+            version: parentWorkflowMetadata?.version,
+            state: parentWorkflowMetadata?.state,
+          },
+        },
+      );
 
       this.#__doneChildWorkflows.set(childWorkflowMetadata.runtimeId, true);
     }
