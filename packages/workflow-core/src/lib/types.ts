@@ -122,7 +122,13 @@ export interface WorkflowClientOptions {
     event: OnDoneChildWorkflowEvent,
     payload: OnDoneChildWorkflowPayload,
   ) => Promise<void>;
-  onInvokeChildWorkflow?: <TData>(childWorkflowMetadata: ChildWorkflowMetadata) => Promise<TData>;
+  onInvokeChildWorkflow?: <TData>({
+    childWorkflowMetadata,
+    parentWorkflowMetadata,
+  }: {
+    childWorkflowMetadata: ChildWorkflowMetadata;
+    parentWorkflowMetadata: Pick<ParentWorkflowMetadata, 'runtimeId' | 'state'>;
+  }) => Promise<TData> | Promise<void>;
 }
 
 export interface WorkflowRunnerArgs extends WorkflowClientOptions {

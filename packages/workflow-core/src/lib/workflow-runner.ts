@@ -402,11 +402,17 @@ export class WorkflowRunner {
           async ({ definitionId, runtimeId, name, version, initOptions, contextToCopy }) => {
             try {
               const result = await this.#__onInvokeChildWorkflow?.({
-                definitionId,
-                runtimeId,
-                name,
-                version,
-                initOptions,
+                childWorkflowMetadata: {
+                  definitionId,
+                  runtimeId,
+                  name,
+                  version,
+                  initOptions,
+                },
+                parentWorkflowMetadata: {
+                  runtimeId: snapshot.machine?.id ?? '',
+                  state: this.#__currentState,
+                },
               });
               const transformer = this.fetchTransformer(contextToCopy?.transform);
               const data = await transformer?.transform(result as AnyRecord);
