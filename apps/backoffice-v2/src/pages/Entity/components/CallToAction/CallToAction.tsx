@@ -26,6 +26,9 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     reasons,
     reason,
     onReasonChange,
+    comment,
+    onCommentChange,
+    noReasons,
   } = useCallToActionLogic();
 
   return value === 'Reject' ? (
@@ -44,8 +47,10 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
       </DialogTrigger>
       <DialogContent>
         <div>
-          <h4 className={`mb-1 font-bold`}>Action</h4>
-          <Select onValueChange={onActionChange} value={action}>
+          <label className={`mb-1 font-bold`} htmlFor={`action`}>
+            Action
+          </label>
+          <Select onValueChange={onActionChange} value={action} id={`action`}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -60,12 +65,12 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
             </SelectContent>
           </Select>
         </div>
-        {!reasons?.length ? (
-          <Input placeholder={`Reason`} onChange={event => onReasonChange(event.target.value)} />
-        ) : (
+        {!noReasons && (
           <div>
-            <h4 className={`mb-1 font-bold`}>Reason</h4>
-            <Select onValueChange={onReasonChange} value={reason}>
+            <label className={`mb-1 font-bold`} htmlFor={`reason`}>
+              Reason
+            </label>
+            <Select onValueChange={onReasonChange} value={reason} id={`reason`}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -85,6 +90,24 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
             </Select>
           </div>
         )}
+        <div>
+          <label className={`mb-1 font-bold`} htmlFor={`comment`}>
+            {noReasons ? 'Reason' : 'Comment'}
+          </label>
+          <Input
+            onChange={event => {
+              if (noReasons) {
+                onReasonChange(event.target.value);
+
+                return;
+              }
+
+              onCommentChange(event.target.value);
+            }}
+            value={noReasons ? reason : comment}
+            id={noReasons ? `reason` : `comment`}
+          />
+        </div>
         <DialogFooter>
           <DialogClose asChild>
             <button
@@ -99,7 +122,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
               onClick={onMutateUpdateWorkflowById({
                 id: data?.id,
                 approvalStatus: action,
-                reason,
+                reason: comment ? `${reason} - ${comment}` : reason,
               })}
             >
               Confirm

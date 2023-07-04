@@ -18,6 +18,7 @@ model User {
 
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
+  lastActiveAt        DateTime?
   workflowRuntimeData WorkflowRuntimeData[]
 }
 

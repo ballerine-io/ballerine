@@ -1,44 +1,39 @@
-import { Card, CardContent, CardTitle } from '@app/components/atoms/Card';
+import { Card, CardContent } from '@app/components/atoms/Card';
 import { IWorkflowStatus } from '@app/domains/workflows/api/workflow';
+import { useWorkflowsMetric } from '@app/pages/Overview/hooks/useWorkflowsMetric';
+import { sortWorkflowChartDataByStatus } from '@app/pages/Workflows/components/organisms/WorkflowMetrics/helpers';
 import {
-  WorkflowStatusPieChart,
-  WorkflowStatusPieChartData,
-} from '@app/pages/Workflows/components/molecules/WorkflowStatusPieChart';
-import { WorkflowsMetric } from '@app/pages/Workflows/hooks/useWorkflowsMetric/types';
+  getChartColorByWorkflowStatus,
+  getChartLabelByStatus,
+  WorkflowStatusChart,
+  WorkflowStatusChartData,
+} from '@app/pages/Workflows/components/organisms/WorkflowStatusChart';
 import { useMemo } from 'react';
 
-interface Props {
-  isLoading: boolean;
-  metric: WorkflowsMetric | null;
-}
+export const WorkflowMetrics = () => {
+  const { data: metric } = useWorkflowsMetric();
 
-export const WorkflowMetrics = ({ isLoading, metric }: Props) => {
-  const pieChartData: WorkflowStatusPieChartData[] = useMemo(() => {
+  const pieChartData: WorkflowStatusChartData[] = useMemo(() => {
     if (!metric) return [];
 
-    return Object.entries(metric.status).map(([key, value]) => {
+    const chartData = Object.entries(metric.status).map(([key, value]) => {
       return {
         status: key as IWorkflowStatus,
         value,
+        fillColor: getChartColorByWorkflowStatus(key as IWorkflowStatus),
+        label: getChartLabelByStatus(key as IWorkflowStatus),
       };
     });
+
+    return sortWorkflowChartDataByStatus(chartData);
   }, [metric]);
 
   return (
-    <div className="grid grid-cols-12">
-      <div className="flex h-full min-w-[300px] max-w-[300px]">
+    <div className="flex">
+      <div className="flex h-full ">
         <Card className="font-inter flex w-full flex-col p-4">
-          <CardTitle>Overview</CardTitle>
-          <CardContent className="flex flex-1 flex-col items-center justify-center p-0">
-            <WorkflowStatusPieChart
-              size={240}
-              useLabel={isLoading ? false : true}
-              data={
-                isLoading
-                  ? [{ status: 'placeholder' as any, fillColor: 'grey', value: 100 }]
-                  : pieChartData
-              }
-            />
+          <CardContent className="flex flex-1 flex-col  p-0">
+            <WorkflowStatusChart size={160} innerRadius={60} outerRadius={80} data={pieChartData} />
           </CardContent>
         </Card>
       </div>

@@ -3,5 +3,5 @@ interface Props {
 }
 
 export const Footer = ({ children }: Props) => {
-  return <footer className="flex justify-center p-4">{children}</footer>;
+  return <footer className="flex justify-center">{children}</footer>;
 };

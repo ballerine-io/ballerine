@@ -1,3 +1,4 @@
+import { SortOrder } from '@/common/query-filters/sort-order';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
 import {
   Business,
@@ -29,6 +30,8 @@ export interface ListWorkflowsRuntimeParams {
   page?: number;
   size?: number;
   status?: WorkflowRuntimeDataStatus[];
+  orderBy?: string;
+  orderDirection?: SortOrder;
 }
 
 export interface ListRuntimeDataResult {

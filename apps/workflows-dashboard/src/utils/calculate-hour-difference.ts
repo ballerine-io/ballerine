@@ -1,4 +1,4 @@
-export function calculateHourDifference(dateA: Date, dateB: Date): number {
+export function calculateHourDifference(dateA: Date, dateB: Date) {
   const diff = Math.abs(
     Number(new Date(dateB.toISOString())) - Number(new Date(dateA.toISOString())),
   );

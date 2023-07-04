@@ -66,6 +66,7 @@ import {
   WorkflowRuntimeListItemModel,
 } from '@/workflow/workflow-runtime-list-item.model';
 import { plainToClass } from 'class-transformer';
+import { SortOrder } from '@/common/query-filters/sort-order';
 
 type TEntityId = string;
 
@@ -342,6 +343,8 @@ export class WorkflowService {
     page,
     size,
     status,
+    orderBy,
+    orderDirection,
   }: ListWorkflowsRuntimeParams): Promise<ListRuntimeDataResult> {
     const query = {
       where: {
@@ -352,13 +355,14 @@ export class WorkflowService {
     const [workflowsRuntimeCount, workflowsRuntime] = await Promise.all([
       this.workflowRuntimeDataRepository.count(query),
       this.workflowRuntimeDataRepository.findMany({
+        ...query,
         skip: page && size ? (page - 1) * size : undefined,
         take: size,
         include: {
           workflowDefinition: true,
           assignee: true,
         },
-        ...query,
+        orderBy: this._resolveOrderByParams(orderBy, orderDirection),
       }),
     ]);
 
@@ -371,6 +375,33 @@ export class WorkflowService {
     };
 
     return result;
+  }
+
+  private _resolveOrderByParams(
+    orderBy: string | undefined,
+    orderDirection: SortOrder | undefined,
+  ): object {
+    if (!orderBy && !orderDirection) return {};
+
+    if (orderBy === 'assignee') {
+      return {
+        assignee: {
+          firstName: orderDirection,
+        },
+      };
+    }
+
+    if (orderBy === 'workflowDefinitionName') {
+      return {
+        workflowDefinition: {
+          name: orderDirection,
+        },
+      };
+    }
+
+    return {
+      [orderBy as string]: orderDirection,
+    };
   }
 
   private workflowsRuntimeListItemsFactory(
@@ -569,12 +600,27 @@ export class WorkflowService {
   }
 
   async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
-    const updatedWorkflowRuntime = await this.workflowRuntimeDataRepository.updateById(
+    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+    );
+    const hasDecision =
+      workflowRuntimeData?.context?.documents?.length &&
+      workflowRuntimeData?.context?.documents?.every(
+        (document: DefaultContextSchema['documents'][number]) => !!document?.decision?.status,
+      );
+
+    if (hasDecision) {
+      throw new BadRequestException(
+        `Workflow with the id of "${workflowRuntimeId}" already has a decision`,
+      );
+    }
+
+    const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
       { data: { assigneeId: assigneeId } },
     );
 
-    return updatedWorkflowRuntime;
+    return updatedWorkflowRuntimeData;
   }
 
   private async getCorrelationIdFromWorkflow(runtimeData: WorkflowRuntimeData) {

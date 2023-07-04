@@ -4,11 +4,13 @@ import { usersQueryKeys } from '../../domains/users/query-keys';
 import { LoaderFunction } from 'react-router-dom';
 import { workflowsQueryKeys } from '../../domains/workflows/query-keys';
 import { defaultDeserializer } from '../../common/hooks/useZodSearchParams/utils/default-deserializer';
+import { getEntityTypeByFilterId } from '../../common/utils/get-entity-type-by-filter-id/get-entity-type-by-filter-id';
 
 export const entitiesLoader: LoaderFunction = async ({ request }) => {
-  const { entity, filterId, filter, sortBy, sortDir, page, pageSize } = defaultDeserializer(
+  const { filterId, filter, sortBy, sortDir, page, pageSize } = defaultDeserializer(
     request.url.split('?')[1],
   );
+  const entity = getEntityTypeByFilterId(filterId);
   const authenticatedUser = authQueryKeys.authenticatedUser();
   const session = await queryClient.ensureQueryData(
     authenticatedUser.queryKey,

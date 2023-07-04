@@ -1,9 +1,8 @@
 ---
-title: SDK UI Flows
-description: SDK UI flows documentation
+title: Understanding Workflows
+description: Understanding Workflows
 layout: ../../../layouts/MainLayout.astro
 ---
-# Understanding Workflows
 
 A workflow, in a broad sense, is a series of steps or a process that takes an input and produces an output. It's a sequence of tasks or procedures that lead to some desired outcome. However, in the context of our system, workflows are not just mere sequences but orchestrated, complex processes that involve dynamic decision-making and interactions. A good example is the "Know Your Business (KYB)" process, as explained in our [KYB guide](../guides/KYB_Workflow_Implementation_Guide.md).
 

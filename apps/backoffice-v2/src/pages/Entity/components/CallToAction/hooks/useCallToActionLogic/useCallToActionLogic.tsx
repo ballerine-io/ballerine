@@ -108,9 +108,12 @@ export const useCallToActionLogic = () => {
   ] as const;
   const [action, setAction] = useState<(typeof actions)[number]['value']>(actions[0].value);
   const reasons = action === 'revision' ? revisionReasons : rejectionReasons;
+  const noReasons = !reasons?.length;
   const [reason, setReason] = useState(reasons?.[0] ?? '');
+  const [comment, setComment] = useState('');
   const onReasonChange = useCallback((value: string) => setReason(value), [setReason]);
   const onActionChange = useCallback((value: typeof action) => setAction(value), [setAction]);
+  const onCommentChange = useCallback((value: string) => setComment(value), [setComment]);
 
   return {
     onMutateUpdateWorkflowById,
@@ -120,7 +123,10 @@ export const useCallToActionLogic = () => {
     actions,
     reasons,
     reason,
+    comment,
     onReasonChange,
     onActionChange,
+    onCommentChange,
+    noReasons,
   };
 };
