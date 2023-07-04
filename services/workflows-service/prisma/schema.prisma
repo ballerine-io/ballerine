@@ -170,6 +170,7 @@ model WorkflowRuntimeData {
   updatedAt                 DateTime                  @updatedAt
   createdBy                 String                    @default("SYSTEM")
   resolvedAt                DateTime?
+  assignedAt                DateTime?
 
   @@index([assigneeId, status])
   @@index([endUserId, status])
