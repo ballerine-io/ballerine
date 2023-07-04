@@ -72,6 +72,7 @@ export interface ParentWorkflowMetadata {
   definitionId: string;
   runtimeId: string;
   version: string;
+  state: string;
 }
 export interface ChildWorkflowMetadata {
   name: string;
