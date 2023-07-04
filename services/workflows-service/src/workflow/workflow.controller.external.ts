@@ -32,6 +32,7 @@ import { GetWorkflowsRuntimeAgentCases } from '@/workflow/dtos/get-workflows-run
 import { WorkflowRuntimeCasesPerStatusModel } from '@/workflow/workflow-runtime-cases-per-status.model';
 import { GetWorkflowRuntimeUserStatsDto } from '@/workflow/dtos/get-workflow-runtime-user-stats-input.dto';
 import { GetCaseResolvingMetricsDto } from '@/workflow/dtos/get-case-resolving-metrics-input.dto';
+import { ApiOkResponse } from '@nestjs/swagger';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -132,6 +133,13 @@ export class WorkflowControllerExternal {
     const userId = request.user!.id;
 
     return await this.service.getResolvedCasesPerDay(userId, { fromDate: query.fromDate });
+  }
+
+  @common.Get('/workflow-definition/:id')
+  @ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async getWorkflowDefinition(@common.Param() params: WorkflowDefinitionWhereUniqueInput) {
+    return await this.service.getWorkflowDefinitionById(params.id);
   }
 
   @common.Get('/:id')
