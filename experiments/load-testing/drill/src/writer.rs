@@ -14,4 +14,4 @@ pub fn write_file(filepath: &str, content: String) {
   if let Err(why) = file.write_all(content.as_bytes()) {
     panic!("couldn't write to {}: {:?}", display, why);
   }
-}
+} 
