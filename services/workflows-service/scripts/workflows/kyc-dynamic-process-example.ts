@@ -20,12 +20,8 @@ export const kycDynamicExample = {
       },
       run_kyc: {
         on: {
-          PENDING_KYC: [],
-          API_CALL_ERROR: [
-            {
-              target: 'auto_reject',
-            },
-          ],
+          PENDING_KYC: [{ target: 'kyc_result' }],
+          API_CALL_ERROR: [{ target: 'auto_reject' }],
         },
       },
       kyc_result: {
@@ -102,6 +98,21 @@ export const kycDynamicExample = {
                   target: 'person.dateOfBirth',
                   method: 'regex',
                   value: '\\d{4}-\\d{2}-\\d{2}',
+                },
+                {
+                  source: 'images.face',
+                  target: 'images.face',
+                  method: 'imageUrlToBase64',
+                },
+                {
+                  source: 'images.documentFront',
+                  target: 'images.documentFront',
+                  method: 'imageUrlToBase64',
+                },
+                {
+                  source: 'images.documentBack',
+                  target: 'images.documentBack',
+                  method: 'imageUrlToBase64',
                 },
               ],
             },
