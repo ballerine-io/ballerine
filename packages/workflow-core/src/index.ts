@@ -12,7 +12,7 @@ export type {
   CallbackInfo,
   ParentWorkflowMetadata,
   ChildWorkflowMetadata,
-  WorkflowCallbackPayload,
+  OnDoneChildWorkflowPayload,
   WorkflowClientOptions,
   ValidatableTransformer,
   SerializableValidatableTransformer,

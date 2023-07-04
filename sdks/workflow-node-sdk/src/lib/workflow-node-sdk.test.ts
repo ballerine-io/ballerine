@@ -5,8 +5,8 @@ import { MemoryPersistencePlugin } from './plugins/memory-persistence-plugin';
 import {
   ChildWorkflow,
   ChildWorkflowMetadata,
+  OnDoneChildWorkflowPayload,
   ParentWorkflowMetadata,
-  WorkflowCallbackPayload,
   WorkflowClientOptions,
 } from '@ballerine/workflow-core';
 import { WorkflowOptionsNode } from './types';
@@ -115,7 +115,10 @@ const childMachine = {
       },
     },
   },
-} satisfies Omit<WorkflowOptionsNode, 'childWorkflows' | 'onInvokeChildWorkflow' | 'onEvent'>;
+} satisfies Omit<
+  WorkflowOptionsNode,
+  'childWorkflows' | 'onInvokeChildWorkflow' | 'onDoneChildWorkflow'
+>;
 
 describe('Parent and child workflows #integration #featureset', () => {
   describe('when a child workflow is invoked', async () => {
@@ -337,13 +340,13 @@ describe('Parent and child workflows #integration #featureset', () => {
   describe('when a child workflow reaches its final state', async () => {
     let response:
       | {
-          event: Parameters<NonNullable<WorkflowClientOptions['onEvent']>>[0];
-          payload: Parameters<NonNullable<WorkflowClientOptions['onEvent']>>[1];
+          event: Parameters<NonNullable<WorkflowClientOptions['onDoneChildWorkflow']>>[0];
+          payload: Parameters<NonNullable<WorkflowClientOptions['onDoneChildWorkflow']>>[1];
         }
       | undefined;
-    const onEvent = vi.fn<
-      Parameters<NonNullable<WorkflowClientOptions['onEvent']>>,
-      ReturnType<NonNullable<WorkflowClientOptions['onEvent']>>
+    const onDoneChildWorkflow = vi.fn<
+      Parameters<NonNullable<WorkflowClientOptions['onDoneChildWorkflow']>>,
+      ReturnType<NonNullable<WorkflowClientOptions['onDoneChildWorkflow']>>
     >(async (event, payload) => {
       response = {
         event,
@@ -432,14 +435,14 @@ describe('Parent and child workflows #integration #featureset', () => {
           type: `NEXT`,
         });
       },
-      onEvent,
+      onDoneChildWorkflow: onDoneChildWorkflow,
     });
     const parentWorkflowService = workflowClient.createWorkflow({
       ...parentMachineBase,
       childWorkflows,
     });
 
-    it('should invoke `onEvent`', async () => {
+    it('should invoke `onDoneChildWorkflow`', async () => {
       await parentWorkflowService.sendEvent({
         type: 'NEXT',
       });
@@ -447,11 +450,11 @@ describe('Parent and child workflows #integration #featureset', () => {
         type: 'NEXT',
       });
 
-      expect(onEvent).toHaveBeenCalledTimes(1);
-      onEvent.mockClear();
+      expect(onDoneChildWorkflow).toHaveBeenCalledTimes(1);
+      onDoneChildWorkflow.mockClear();
     });
 
-    it('should pass the expected payload to `onEvent`', async () => {
+    it('should pass the expected payload to `onDoneChildWorkflow`', async () => {
       await parentWorkflowService.sendEvent({
         type: 'NEXT',
       });
@@ -477,13 +480,13 @@ describe('Parent and child workflows #integration #featureset', () => {
           version: '1',
           state: 'parent_initial',
         },
-      } satisfies WorkflowCallbackPayload);
-      onEvent.mockClear();
+      } satisfies OnDoneChildWorkflowPayload);
+      onDoneChildWorkflow.mockClear();
     });
 
-    const onEventTwo = vi.fn<
-      [Parameters<NonNullable<WorkflowClientOptions['onEvent']>>[0]],
-      ReturnType<NonNullable<WorkflowClientOptions['onEvent']>>
+    const onDoneChildWorkflowTwo = vi.fn<
+      [Parameters<NonNullable<WorkflowClientOptions['onDoneChildWorkflow']>>[0]],
+      ReturnType<NonNullable<WorkflowClientOptions['onDoneChildWorkflow']>>
     >(async payload => {
       console.log({
         payload,
@@ -539,7 +542,7 @@ describe('Parent and child workflows #integration #featureset', () => {
           type: `NEXT`,
         });
       },
-      onEventTwo,
+      onDoneChildWorkflow: onDoneChildWorkflowTwo,
     });
     const childWorkflowsTwo = [
       {
@@ -598,8 +601,8 @@ describe('Parent and child workflows #integration #featureset', () => {
       //     },
       //   ],
       // });
-      expect(onEventTwo).toHaveBeenCalledTimes(1);
-      onEventTwo.mockClear();
+      expect(onDoneChildWorkflowTwo).toHaveBeenCalledTimes(1);
+      onDoneChildWorkflowTwo.mockClear();
     });
   });
 });
