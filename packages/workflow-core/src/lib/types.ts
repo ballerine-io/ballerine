@@ -59,7 +59,7 @@ export interface WorkflowOptions {
   extensions?: WorkflowExtensions;
   childWorkflows?: Array<ChildWorkflow>;
   onInvokeChildWorkflow?: WorkflowClientOptions['onInvokeChildWorkflow'];
-  onEvent?: WorkflowClientOptions['onEvent'];
+  onDoneChildWorkflow?: WorkflowClientOptions['onDoneChildWorkflow'];
 }
 
 export interface CallbackInfo {
@@ -96,7 +96,7 @@ export interface ChildWorkflowMetadata {
     event: string;
   }>;
 }
-export interface WorkflowCallbackPayload {
+export interface OnDoneChildWorkflowPayload {
   source: {
     runtimeId: string;
     definitionId: string;
@@ -112,13 +112,16 @@ export interface WorkflowCallbackPayload {
   };
 }
 
-interface IWorkflowCallbackEvent {
+interface OnDoneChildWorkflowEvent {
   type: string;
   payload: Record<PropertyKey, unknown>;
 }
 
 export interface WorkflowClientOptions {
-  onEvent?: (event: IWorkflowCallbackEvent, payload: WorkflowCallbackPayload) => Promise<void>;
+  onDoneChildWorkflow?: (
+    event: OnDoneChildWorkflowEvent,
+    payload: OnDoneChildWorkflowPayload,
+  ) => Promise<void>;
   onInvokeChildWorkflow?: <TData>(childWorkflowMetadata: ChildWorkflowMetadata) => Promise<TData>;
 }
 

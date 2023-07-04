@@ -35,8 +35,8 @@ export class WorkflowRunner {
   #__debugMode: boolean;
   #__childWorkflows?: Array<ChildWorkflow>;
   #__onInvokeChildWorkflow?: WorkflowRunnerArgs['onInvokeChildWorkflow'];
-  #__onEvent?: WorkflowRunnerArgs['onEvent'];
-  #__doneChildWorkflows = new Map<string, boolean>();
+  #__onDoneChildWorkflow?: WorkflowRunnerArgs['onDoneChildWorkflow'];
+  #__invokedOnDoneChildWorkflow = false;
   events: any;
 
   public get workflow() {
@@ -58,7 +58,7 @@ export class WorkflowRunner {
       extensions,
       childWorkflows,
       onInvokeChildWorkflow,
-      onEvent,
+      onDoneChildWorkflow,
     }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
@@ -68,7 +68,7 @@ export class WorkflowRunner {
     this.#__debugMode = debugMode;
     this.#__childWorkflows = childWorkflows;
     this.#__onInvokeChildWorkflow = onInvokeChildWorkflow;
-    this.#__onEvent = onEvent;
+    this.#__onDoneChildWorkflow = onDoneChildWorkflow;
     // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
@@ -446,15 +446,15 @@ export class WorkflowRunner {
     }
 
     if (
-      this.#__onEvent &&
+      this.#__onDoneChildWorkflow &&
       childWorkflowMetadata &&
       postSendSnapshot.done &&
-      !this.#__doneChildWorkflows.has(childWorkflowMetadata.runtimeId)
+      !this.#__invokedOnDoneChildWorkflow
     ) {
       const transformer = this.fetchTransformer(callbackInfo?.contextToCopy?.transform);
       const payload = await transformer?.transform(postSendSnapshot?.context);
 
-      await this.#__onEvent(
+      await this.#__onDoneChildWorkflow(
         {
           type: callbackInfo?.event,
           payload,
@@ -476,7 +476,7 @@ export class WorkflowRunner {
         },
       );
 
-      this.#__doneChildWorkflows.set(childWorkflowMetadata.runtimeId, true);
+      this.#__invokedOnDoneChildWorkflow = true;
     }
   }
 
