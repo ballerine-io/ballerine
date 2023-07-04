@@ -22,7 +22,7 @@ import {
   WorkflowsRuntimeMetric,
   WorkflowStatusMetric,
 } from './types';
-import { createWorkflowClient } from '@ballerine/workflow-node-sdk';
+import { createWorkflowClient, WorkflowOptionsNode } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
@@ -67,6 +67,7 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import { plainToClass } from 'class-transformer';
 import { SortOrder } from '@/common/query-filters/sort-order';
+import { ParentWorkflowMetadata } from '@ballerine/workflow-core';
 
 type TEntityId = string;
 
@@ -108,6 +109,8 @@ const policies = {
 
 @Injectable()
 export class WorkflowService {
+  #__workflowsClient: ReturnType<typeof createWorkflowClient>;
+
   constructor(
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
@@ -117,7 +120,93 @@ export class WorkflowService {
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
-  ) {}
+  ) {
+    this.#__workflowsClient = this.#__initWorkflowsClient();
+  }
+
+  #__initWorkflowsClient() {
+    return createWorkflowClient({
+      onInvokeChildWorkflow: async ({ childWorkflowMetadata, parentWorkflowMetadata }) => {
+        const parentRuntimeData = await this.getWorkflowRuntimeDataById(
+          parentWorkflowMetadata?.runtimeId,
+          {
+            include: {
+              workflowDefinition: true,
+            },
+          },
+        );
+        const childRuntimeData = await this.getWorkflowRuntimeDataById(
+          childWorkflowMetadata.runtimeId,
+          {
+            include: {
+              workflowDefinition: true,
+            },
+          },
+        );
+        const context = {
+          ...childWorkflowMetadata?.initOptions?.context,
+          childWorkflowMetadata,
+          parentWorkflowMetadata: {
+            definitionId: parentRuntimeData?.workflowDefinition?.id,
+            runtimeId: parentWorkflowMetadata?.runtimeId,
+            version: parentRuntimeData?.workflowDefinition?.version,
+            name: parentRuntimeData?.workflowDefinition?.name,
+            state: parentWorkflowMetadata?.state,
+          } satisfies ParentWorkflowMetadata,
+          callbackInfo: childRuntimeData?.callbackInfo,
+        } satisfies WorkflowOptionsNode['definition']['context'];
+        const childWorkflowService = this.#__workflowsClient.createWorkflow({
+          ...childRuntimeData?.workflowDefinition,
+          definition: {
+            ...childRuntimeData.workflowDefinition?.definition,
+            context,
+          },
+          workflowContext: {
+            machineContext: context,
+          },
+        });
+
+        await childWorkflowService.sendEvent({
+          type: `NEXT`,
+        });
+        await childWorkflowService.sendEvent({
+          type: `NEXT`,
+        });
+
+        return;
+      },
+      onDoneChildWorkflow: async (event, payload) => {
+        await this.updateWorkflowRuntimeData(payload?.target?.runtimeId, {
+          context: {
+            test: event?.payload as any,
+          },
+        });
+      },
+    });
+  }
+
+  async childWorkflows(id: string) {
+    const workflow = await this.getWorkflowRuntimeDataById(id, {
+      include: {
+        workflowDefinition: true,
+      },
+    });
+    const parentWorkflowService = this.#__workflowsClient.createWorkflow({
+      definition: workflow.workflowDefinition,
+      definitionType: workflow.workflowDefinition.definitionType,
+      workflowContext: {
+        machineContext: workflow.context,
+        state: workflow.state,
+      },
+    });
+
+    await parentWorkflowService.sendEvent({
+      type: `NEXT`,
+    });
+    await parentWorkflowService.sendEvent({
+      type: `NEXT`,
+    });
+  }
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
     const select = {

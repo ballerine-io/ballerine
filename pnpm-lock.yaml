@@ -1404,6 +1404,9 @@ importers:
       '@ballerine/common':
         specifier: 0.5.3
         version: link:../../packages/common
+      '@ballerine/workflow-core':
+        specifier: workspace:^
+        version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
         specifier: ^0.4.2
         version: link:../../sdks/workflow-node-sdk
@@ -4904,13 +4907,13 @@ packages:
     dependencies:
       '@babel/core': 7.21.3
       '@babel/helper-annotate-as-pure': 7.18.6
-      '@babel/helper-compilation-targets': 7.22.5(@babel/core@7.21.3)
-      '@babel/helper-environment-visitor': 7.22.5
-      '@babel/helper-function-name': 7.22.5
+      '@babel/helper-compilation-targets': 7.20.7(@babel/core@7.21.3)
+      '@babel/helper-environment-visitor': 7.18.9
+      '@babel/helper-function-name': 7.21.0
       '@babel/helper-optimise-call-expression': 7.18.6
       '@babel/helper-plugin-utils': 7.20.2
       '@babel/helper-replace-supers': 7.20.7
-      '@babel/helper-split-export-declaration': 7.22.5
+      '@babel/helper-split-export-declaration': 7.18.6
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -4924,13 +4927,13 @@ packages:
     dependencies:
       '@babel/core': 7.22.5
       '@babel/helper-annotate-as-pure': 7.18.6
-      '@babel/helper-compilation-targets': 7.22.5(@babel/core@7.22.5)
-      '@babel/helper-environment-visitor': 7.22.5
-      '@babel/helper-function-name': 7.22.5
+      '@babel/helper-compilation-targets': 7.20.7(@babel/core@7.22.5)
+      '@babel/helper-environment-visitor': 7.18.9
+      '@babel/helper-function-name': 7.21.0
       '@babel/helper-optimise-call-expression': 7.18.6
       '@babel/helper-plugin-utils': 7.20.2
       '@babel/helper-replace-supers': 7.20.7
-      '@babel/helper-split-export-declaration': 7.22.5
+      '@babel/helper-split-export-declaration': 7.18.6
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -11333,11 +11336,11 @@ packages:
       telejson: 7.1.0
     dev: true
 
-  /@storybook/channel-postmessage@7.1.0-alpha.41:
-    resolution: {integrity: sha512-PQFbOmj4FTN4Hjg16gH9lrhrabXQvZV1Hd27LC/cJ4sa7Z05P/M49K6t9XuDCVX3CCGOUZn4REVrCvPf4CjhuQ==}
+  /@storybook/channel-postmessage@7.1.0-alpha.43:
+    resolution: {integrity: sha512-qqucnKSHW+zLbISImyeIu2+SEJXElw0Ge1XiaWjhCVH9HGjZa4Zzv9KN3zLdGCTMY6yZabQOzlhela9QGx6pzQ==}
     dependencies:
-      '@storybook/channels': 7.1.0-alpha.41
-      '@storybook/client-logger': 7.1.0-alpha.41
+      '@storybook/channels': 7.1.0-alpha.43
+      '@storybook/client-logger': 7.1.0-alpha.43
     dev: true
 
   /@storybook/channel-websocket@7.0.0-rc.10:
@@ -11361,11 +11364,11 @@ packages:
     resolution: {integrity: sha512-LNjI2etxaK5hbBHziNbDzK5VajGU0BLcD04CO3LbGRC14hJvDfVnvymJeDbbgT1b7RPUwl/vv/azO1kVHDax/A==}
     dev: true
 
-  /@storybook/channels@7.1.0-alpha.41:
-    resolution: {integrity: sha512-r2X1y2mZv2m1FyvwMT/tla3heigcmBF47YSD7R5rPqcOg7k3ye9kVPmUA3wAY2GGiW5fsK2OD8hq8Hd3Vl2pKA==}
+  /@storybook/channels@7.1.0-alpha.43:
+    resolution: {integrity: sha512-9GGMCqntc9bcMiDoddtotJqzCnUWLfSsmjJH3ml9k8W8hSmteVje/oUl0da7s2w1RQsNCBggKhkIr7/hz36vHQ==}
     dependencies:
-      '@storybook/client-logger': 7.1.0-alpha.41
-      '@storybook/core-events': 7.1.0-alpha.41
+      '@storybook/client-logger': 7.1.0-alpha.43
+      '@storybook/core-events': 7.1.0-alpha.43
       '@storybook/global': 5.0.0
       qs: 6.11.2
       telejson: 7.1.0
@@ -11434,8 +11437,8 @@ packages:
       '@storybook/global': 5.0.0
     dev: true
 
-  /@storybook/client-logger@7.1.0-alpha.41:
-    resolution: {integrity: sha512-QirwSuiDdY9hc0gOrTLvVFIUcdBvws7i88vJNVT9cqiQbNTvxtb+dhQHL402gRsmT/PSEjZ28ymX2vBNcwPMYw==}
+  /@storybook/client-logger@7.1.0-alpha.43:
+    resolution: {integrity: sha512-tDUB9OqFSXTfTB+ZfL/tADiorx6vUYxszIStfdofxMNttMnikgu5mgSiFxVCOm1ZpIG+x9YD0fdeBPu/VsyTsw==}
     dependencies:
       '@storybook/global': 5.0.0
     dev: true
@@ -11539,8 +11542,8 @@ packages:
     resolution: {integrity: sha512-Z4S6H1E5FuG7eiVozqcqNBSADt0kCDZeXlpR/gIOYLmTd/BDIQ2QhLt+G41BbEvck8nRnC7lZ9DXuref8V3pDA==}
     dev: true
 
-  /@storybook/core-events@7.1.0-alpha.41:
-    resolution: {integrity: sha512-Thk6jcmP6BFjbBeTdsSugnj3GBQ2jVAM8E4OJ9AEI7KI5ut89nEC+La9ZcqpTkpBBvesntf/yWqAVFzHEWdK9A==}
+  /@storybook/core-events@7.1.0-alpha.43:
+    resolution: {integrity: sha512-pOscUP9AIZ9RYHfNpSoKFcAzW0jsY3T09lJAvAzC5tjnfGp8QrJED+huHHEXY6y4lzUlQPZiZKBnAbcCQLnAAg==}
     dev: true
 
   /@storybook/core-server@7.0.0-rc.10:
@@ -11676,14 +11679,14 @@ packages:
       '@storybook/preview-api': 7.0.0-rc.10
     dev: true
 
-  /@storybook/instrumenter@7.1.0-alpha.41:
-    resolution: {integrity: sha512-StFqumrV/eCiFLfo/hXFnYfZsZgbwFKUV93qmmaEoh4HCdcFcMNBOVI7RL6zWtX4xJSmOWEvOxet39EgbmSCZA==}
+  /@storybook/instrumenter@7.1.0-alpha.43:
+    resolution: {integrity: sha512-aXpTW+K/ubDJcc/Uc6mZ7Bf7jI8tCS9CYJ2C9RLjdjzGf9tf2r2+UBxtwguf6WfadrqanF+wPJyZDtGVVjnOAw==}
     dependencies:
-      '@storybook/channels': 7.1.0-alpha.41
-      '@storybook/client-logger': 7.1.0-alpha.41
-      '@storybook/core-events': 7.1.0-alpha.41
+      '@storybook/channels': 7.1.0-alpha.43
+      '@storybook/client-logger': 7.1.0-alpha.43
+      '@storybook/core-events': 7.1.0-alpha.43
       '@storybook/global': 5.0.0
-      '@storybook/preview-api': 7.1.0-alpha.41
+      '@storybook/preview-api': 7.1.0-alpha.43
     dev: true
 
   /@storybook/manager-api@7.0.0-rc.10(react-dom@18.2.0)(react@18.2.0):
@@ -11752,16 +11755,16 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
-  /@storybook/preview-api@7.1.0-alpha.41:
-    resolution: {integrity: sha512-P5MZDHnwY9DOKk4V1p+PXYyVQgtxTpzYB7RCQvVuZGi03tSNvJVmK8G9/rmn30fdLdJWmLN+Jv72AOedvOYOHA==}
+  /@storybook/preview-api@7.1.0-alpha.43:
+    resolution: {integrity: sha512-Tf/uYN8NJRv46WL0fHr2ZZULej5ytqg2hAIL0v7vAQksh3EyTFVV4/E8H+3KiCpxFI/NudSxl7AapC5d0fDCmg==}
     dependencies:
-      '@storybook/channel-postmessage': 7.1.0-alpha.41
-      '@storybook/channels': 7.1.0-alpha.41
-      '@storybook/client-logger': 7.1.0-alpha.41
-      '@storybook/core-events': 7.1.0-alpha.41
+      '@storybook/channel-postmessage': 7.1.0-alpha.43
+      '@storybook/channels': 7.1.0-alpha.43
+      '@storybook/client-logger': 7.1.0-alpha.43
+      '@storybook/core-events': 7.1.0-alpha.43
       '@storybook/csf': 0.1.0
       '@storybook/global': 5.0.0
-      '@storybook/types': 7.1.0-alpha.41
+      '@storybook/types': 7.1.0-alpha.43
       '@types/qs': 6.9.7
       dequal: 2.0.3
       lodash: 4.17.21
@@ -11909,8 +11912,8 @@ packages:
   /@storybook/testing-library@0.0.14-next.1:
     resolution: {integrity: sha512-1CAl40IKIhcPaCC4pYCG0b9IiYNymktfV/jTrX7ctquRY3akaN7f4A1SippVHosksft0M+rQTFE0ccfWW581fw==}
     dependencies:
-      '@storybook/client-logger': 7.1.0-alpha.41
-      '@storybook/instrumenter': 7.1.0-alpha.41
+      '@storybook/client-logger': 7.1.0-alpha.43
+      '@storybook/instrumenter': 7.1.0-alpha.43
       '@testing-library/dom': 8.20.0
       '@testing-library/user-event': 13.5.0(@testing-library/dom@8.20.0)
       ts-dedent: 2.2.0
@@ -11953,10 +11956,10 @@ packages:
       file-system-cache: 2.1.1
     dev: true
 
-  /@storybook/types@7.1.0-alpha.41:
-    resolution: {integrity: sha512-rQ6bOJdHZnIe3dladPLr5gFstG0tNxIgORNMGK9pQqfYCe2gERTQo3NaH6WgAXyknakVBiSCME9MSaT3fzmkhg==}
+  /@storybook/types@7.1.0-alpha.43:
+    resolution: {integrity: sha512-Uea1/t62Bud4eqSYO0ElzgIsZ4XQJipl0LbakxhnJtcOfgrFnVQmI6qfqOPPS9rKU5f+pnakj+rk1pxHMYgVgw==}
     dependencies:
-      '@storybook/channels': 7.1.0-alpha.41
+      '@storybook/channels': 7.1.0-alpha.43
       '@types/babel__core': 7.20.0
       '@types/express': 4.17.9
       file-system-cache: 2.3.0
@@ -17726,7 +17729,7 @@ packages:
       '@typescript-eslint/eslint-plugin':
         optional: true
     dependencies:
-      '@typescript-eslint/eslint-plugin': 5.56.0(@typescript-eslint/parser@5.56.0)(eslint@8.36.0)(typescript@5.1.6)
+      '@typescript-eslint/eslint-plugin': 5.56.0(@typescript-eslint/parser@5.56.0)(eslint@8.36.0)(typescript@4.9.5)
       eslint: 8.36.0
       eslint-rule-composer: 0.3.0
     dev: true
