@@ -183,13 +183,13 @@ describe('Parent and child workflows #integration #featureset', () => {
           name: 'child_machine_name_1',
           definitionId: 'child_machine_definition_1',
           runtimeId: 'child_machine_runtime_1',
-          definitionVersion: 1,
+          version: '1',
           stateNames: ['invoke_child'],
           // Context to copy from the parent workflow
           contextToCopy: {
             transform: {
               transformer: 'jmespath',
-              mapping: '{data: endUser.id}',
+              mapping: 'endUser.id',
             },
           },
           callbackInfo: {
@@ -197,7 +197,7 @@ describe('Parent and child workflows #integration #featureset', () => {
             contextToCopy: {
               transform: {
                 transformer: 'jmespath',
-                mapping: '{data: endUser.id}',
+                mapping: 'endUser.id',
               },
             },
           },
@@ -232,7 +232,7 @@ describe('Parent and child workflows #integration #featureset', () => {
         name: 'child_machine_name_1',
         definitionId: 'child_machine_definition_1',
         runtimeId: 'child_machine_runtime_1',
-        version: 1,
+        version: '1',
         initOptions: {
           event: 'NEXT',
           context: {
@@ -272,13 +272,13 @@ describe('Parent and child workflows #integration #featureset', () => {
           name: 'child_machine_name_2',
           definitionId: 'child_machine_definition_2',
           runtimeId: 'child_machine_runtime_2',
-          definitionVersion: 1,
+          version: '1',
           stateNames: ['invoke_child', 'invoked_child'],
           // Context to copy from the parent workflow
           contextToCopy: {
             transform: {
               transformer: 'jmespath',
-              mapping: '{data: stakeholders}',
+              mapping: 'stakeholders',
             },
           },
           callbackInfo: {
@@ -286,7 +286,7 @@ describe('Parent and child workflows #integration #featureset', () => {
             contextToCopy: {
               transform: {
                 transformer: 'jmespath',
-                mapping: '{data: endUser.id}',
+                mapping: 'endUser.id',
               },
             },
           },
@@ -324,11 +324,8 @@ describe('Parent and child workflows #integration #featureset', () => {
       expect(parentWorkflowService.getSnapshot().context).toStrictEqual({
         childWorkflows: [
           {
-            data: {
-              endUser: {
-                id: 'user_1',
-              },
-            },
+            runtimeId: 'child_machine_runtime_1',
+            data: 'user_1',
             error: undefined,
           },
         ],
@@ -338,12 +335,20 @@ describe('Parent and child workflows #integration #featureset', () => {
   });
 
   describe('when a child workflow reaches its final state', async () => {
-    let response: Parameters<NonNullable<WorkflowClientOptions['onEvent']>>[0] | undefined;
+    let response:
+      | {
+          event: Parameters<NonNullable<WorkflowClientOptions['onEvent']>>[0];
+          payload: Parameters<NonNullable<WorkflowClientOptions['onEvent']>>[1];
+        }
+      | undefined;
     const onEvent = vi.fn<
-      [Parameters<NonNullable<WorkflowClientOptions['onEvent']>>[0]],
+      Parameters<NonNullable<WorkflowClientOptions['onEvent']>>,
       ReturnType<NonNullable<WorkflowClientOptions['onEvent']>>
-    >(async payload => {
-      response = payload;
+    >(async (event, payload) => {
+      response = {
+        event,
+        payload,
+      };
     });
     const childWorkflows = [
       {
@@ -351,13 +356,13 @@ describe('Parent and child workflows #integration #featureset', () => {
         name: 'child_machine_name_1',
         definitionId: 'child_machine_definition_1',
         runtimeId: 'child_machine_runtime_1',
-        definitionVersion: 1,
+        version: '1',
         stateNames: ['invoke_child'],
         // Context to copy from the parent workflow
         contextToCopy: {
           transform: {
             transformer: 'jmespath',
-            mapping: '{data: stakeholders}',
+            mapping: 'stakeholders',
           },
         },
         callbackInfo: {
@@ -365,7 +370,7 @@ describe('Parent and child workflows #integration #featureset', () => {
           contextToCopy: {
             transform: {
               transformer: 'jmespath',
-              mapping: '{data: endUser.id}',
+              mapping: 'endUser.id',
             },
           },
         },
@@ -398,7 +403,7 @@ describe('Parent and child workflows #integration #featureset', () => {
                 name: 'parent_machine_name_1',
                 definitionId: 'parent_machine_definition_1',
                 runtimeId: 'parent_machine_runtime_1',
-                version: 1,
+                version: '1',
               } satisfies ParentWorkflowMetadata,
               callbackInfo: childWorkflow?.callbackInfo,
             },
@@ -411,7 +416,7 @@ describe('Parent and child workflows #integration #featureset', () => {
                 name: 'parent_machine_name_1',
                 definitionId: 'parent_machine_definition_1',
                 runtimeId: 'parent_machine_runtime_1',
-                version: 1,
+                version: '1',
               } satisfies ParentWorkflowMetadata,
               callbackInfo: childWorkflow?.callbackInfo,
             },
@@ -452,26 +457,99 @@ describe('Parent and child workflows #integration #featureset', () => {
         type: 'NEXT',
       });
 
-      expect(response).toStrictEqual({
-        parentWorkflowMetadata: {
-          name: 'parent_machine_name_1',
-          definitionId: 'parent_machine_definition_1',
-          runtimeId: 'parent_machine_runtime_1',
-          version: 1,
-        },
-        childWorkflowMetadata: {
-          name: 'child_machine_name_1',
+      expect(response?.event).toStrictEqual({
+        type: 'parent_initial',
+        payload: 'user_1',
+      });
+      expect(response?.payload).toStrictEqual({
+        source: {
+          runtimeId: 'child_machine',
           definitionId: 'child_machine_definition_1',
-          runtimeId: 'child_machine_runtime_1',
-          version: 1,
-          initOptions: {
+          version: '1',
+          state: 'child_final',
+          event: 'NEXT',
+        },
+        target: {
+          runtimeId: 'parent_machine_runtime_1',
+          definitionId: 'parent_machine_definition_1',
+          version: '1',
+          state: 'undefined',
+        },
+      } satisfies WorkflowCallbackPayload);
+      onEvent.mockClear();
+    });
+
+    const onEventTwo = vi.fn<
+      [Parameters<NonNullable<WorkflowClientOptions['onEvent']>>[0]],
+      ReturnType<NonNullable<WorkflowClientOptions['onEvent']>>
+    >(async payload => {
+      console.log({
+        payload,
+      });
+      // await parentWorkflowServiceTwo.sendEvent({
+      //   type: 'UPDATE_CONTEXT',
+      //   payload: payload?.data,
+      // });
+    });
+    const workflowClientTwo = createWorkflowClient({
+      // @ts-expect-error - TODO: fix mock type
+      async onInvokeChildWorkflow(childWorkflowMetadata) {
+        const childWorkflow = childWorkflowsTwo.find(
+          ({ runtimeId }) => runtimeId === childWorkflowMetadata.runtimeId,
+        );
+        const childWorkflowService = workflowClientTwo.createWorkflow({
+          ...childMachine,
+          definition: {
+            ...childMachine.definition,
             context: {
-              endUser: {
-                id: 'user_1',
-              },
+              ...childWorkflowMetadata?.initOptions?.context,
+              childWorkflowMetadata,
+              parentWorkflowMetadata: {
+                name: 'parent_machine_name',
+                definitionId: 'parent_machine_definition',
+                runtimeId: 'parent_machine_runtime',
+                version: '1',
+              } satisfies ParentWorkflowMetadata,
+              callbackInfo: childWorkflow?.callbackInfo,
             },
-            event: 'NEXT',
-            state: 'child_initial',
+          },
+          workflowContext: {
+            machineContext: {
+              ...childWorkflowMetadata?.initOptions?.context,
+              childWorkflowMetadata,
+              parentWorkflowMetadata: {
+                name: 'parent_machine_name',
+                definitionId: 'parent_machine_definition',
+                runtimeId: 'parent_machine_runtime',
+                version: '1',
+              } satisfies ParentWorkflowMetadata,
+              callbackInfo: childWorkflow?.callbackInfo,
+            },
+          },
+        });
+
+        await childWorkflowService.sendEvent({
+          type: `NEXT`,
+        });
+        await childWorkflowService.sendEvent({
+          type: `NEXT`,
+        });
+      },
+      onEventTwo,
+    });
+    const childWorkflowsTwo = [
+      {
+        waitForResolved: true,
+        name: 'child_machine_name_2',
+        definitionId: 'child_machine_definition_2',
+        runtimeId: 'child_machine_runtime_2',
+        version: '1',
+        stateNames: ['invoke_child'],
+        // Context to copy from the parent workflow
+        contextToCopy: {
+          transform: {
+            transformer: 'jmespath',
+            mapping: 'stakeholders',
           },
         },
         callbackInfo: {
@@ -479,12 +557,45 @@ describe('Parent and child workflows #integration #featureset', () => {
           contextToCopy: {
             transform: {
               transformer: 'jmespath',
-              mapping: '{data: endUser.id}',
+              mapping: 'endUser.id',
             },
           },
         },
-      } satisfies WorkflowCallbackPayload);
-      onEvent.mockClear();
+        initOptions: {
+          event: 'NEXT',
+          context: {
+            endUser: {
+              id: 'user_1',
+            },
+          },
+          state: 'child_initial',
+        },
+      },
+    ] satisfies Array<ChildWorkflow>;
+    const parentWorkflowServiceTwo = workflowClientTwo.createWorkflow({
+      ...parentMachineBase,
+      childWorkflows: childWorkflowsTwo,
+    });
+
+    it.skip('should update the context of the parent', async () => {
+      await parentWorkflowServiceTwo.sendEvent({
+        type: 'NEXT',
+      });
+      await parentWorkflowServiceTwo.sendEvent({
+        type: 'NEXT',
+      });
+
+      // expect(parentWorkflowServiceTwo.getSnapshot().context).toStrictEqual({
+      //   childWorkflows: [
+      //     {
+      //       runtimeId: 'child_machine_runtime_2',
+      //       data: 'user_1',
+      //       error: undefined,
+      //     },
+      //   ],
+      // });
+      expect(onEventTwo).toHaveBeenCalledTimes(1);
+      onEventTwo.mockClear();
     });
   });
 });

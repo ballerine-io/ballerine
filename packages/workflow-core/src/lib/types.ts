@@ -40,7 +40,7 @@ export interface ChildWorkflow {
   name: string;
   runtimeId: string;
   definitionId: string;
-  definitionVersion: 1;
+  version: string;
   stateNames: Array<string>;
   contextToCopy: SerializableValidatableTransformer;
   callbackInfo: CallbackInfo;
@@ -71,13 +71,13 @@ export interface ParentWorkflowMetadata {
   name: string;
   definitionId: string;
   runtimeId: string;
-  version: number;
+  version: string;
 }
 export interface ChildWorkflowMetadata {
   name: string;
   definitionId: string;
   runtimeId: string;
-  version: number;
+  version: string;
   /**
    * @description static properties to initiate the new machine with
    */
@@ -96,13 +96,28 @@ export interface ChildWorkflowMetadata {
   }>;
 }
 export interface WorkflowCallbackPayload {
-  parentWorkflowMetadata: ParentWorkflowMetadata;
-  childWorkflowMetadata: ChildWorkflowMetadata;
-  callbackInfo: CallbackInfo;
+  source: {
+    runtimeId: string;
+    definitionId: string;
+    version: string;
+    state: string;
+    event: string;
+  };
+  target: {
+    runtimeId: string;
+    definitionId: string;
+    version: string;
+    state: string;
+  };
+}
+
+interface IWorkflowCallbackEvent {
+  type: string;
+  payload: Record<PropertyKey, unknown>;
 }
 
 export interface WorkflowClientOptions {
-  onEvent?: (payload: WorkflowCallbackPayload) => Promise<void>;
+  onEvent?: (event: IWorkflowCallbackEvent, payload: WorkflowCallbackPayload) => Promise<void>;
   onInvokeChildWorkflow?: <TData>(childWorkflowMetadata: ChildWorkflowMetadata) => Promise<TData>;
 }
 
