@@ -1,3 +1,5 @@
+import * as classnames from 'classnames';
+import * as dayjs from 'dayjs';
 import { ChartProps } from '@app/pages/Workflows/components/molecules/common/types';
 import { MetricListChart } from '@app/pages/Workflows/components/molecules/MetricListChart';
 import { useMemo } from 'react';
@@ -15,20 +17,30 @@ interface Props extends ChartProps {
 export const AgentsActivityChart = ({ isLoading, data }: Props) => {
   const chartItems = useMemo(
     () =>
-      data.map(item => (
-        <div
-          className="flex flex-nowrap justify-between"
-          key={`agent-cases-chart-data-key-${item.id}`}
-        >
-          <div className="text-sm">{item.fullName}</div>
-        </div>
-      )),
+      data.map(item => {
+        const hourDifference = dayjs(item.lastActiveAt).diff(Date.now(), 'hour');
+
+        return (
+          <div
+            className="flex flex-nowrap items-center justify-between"
+            key={`agent-cases-chart-data-key-${item.id}`}
+          >
+            <div className="text-sm">{item.fullName}</div>
+            <div
+              className={classnames('h-4 w-4 rounded-full', {
+                'bg-red-600': hourDifference > 1,
+                'bg-green-600': hourDifference < 1,
+              })}
+            ></div>
+          </div>
+        );
+      }),
     [data],
   );
 
   return (
     <MetricListChart
-      title="Logged in agents"
+      title="Online/Offline Agents"
       description={'( last 1 hour )'}
       isLoading={isLoading}
       items={chartItems}
