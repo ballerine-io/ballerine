@@ -5,7 +5,10 @@ import { UserModel } from './user.model';
 import { Query } from '@nestjs/common';
 import { GetActiveUsersDto } from '@/user/dtos/get-active-users.dto';
 import { plainToClass } from 'class-transformer';
-import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
+import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
+import { ApiOkResponse } from '@nestjs/swagger';
+import { GetUsersCaseResolvingStatsDto } from '@/user/dtos/get-users-case-resolving-stats-input.dto';
+import { UserCaseResolvingStatsModel } from '@/user/user-case-resolving-stats.model';
 
 @swagger.ApiTags('external/users')
 @common.Controller('external/users')
@@ -14,7 +17,6 @@ export class UserControllerExternal {
 
   @common.Get('/active-users')
   @swagger.ApiOkResponse({ type: [UserModel] })
-  @UseKeyAuthGuard()
   async getActiveUsers(@Query() query: GetActiveUsersDto) {
     const results = await this.service.list({
       where: {
@@ -25,5 +27,15 @@ export class UserControllerExternal {
     });
 
     return results.map(result => plainToClass(UserModel, result));
+  }
+
+  @common.Get('/metrics/case-resolving-stats')
+  @ApiOkResponse({ type: [UserCaseResolvingStatsModel] })
+  async getUsersActivityStats(
+    @common.Query() query: GetUsersCaseResolvingStatsDto,
+  ): Promise<UserCaseResolvingStatsModel[]> {
+    const results = await this.service.listUsersCaseResolveStats({ fromDate: query.fromDate });
+
+    return results.map(result => plainToClass(UserCaseResolvingStatsModel, result));
   }
 }

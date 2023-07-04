@@ -72,3 +72,7 @@ export type WorkflowRuntimeCasesPerStatus = Record<WorkflowRuntimeDataStatus, nu
 export interface GetWorkflowRuntimeCasesPerStatusParams {
   fromDate?: Date;
 }
+
+export interface GetUserStatsParams {
+  fromDate?: Date | null;
+}
