@@ -991,21 +991,6 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  const childRuntimeData = await client.workflowRuntimeData.create({
-    data: {
-      state: 'child_initial',
-      workflowDefinitionVersion: 1,
-      context: {
-        endUser: {
-          id: 'user_1',
-        },
-      },
-      workflowDefinitionId: childDefinition.id,
-      createdAt: faker.date.recent(2),
-      businessId: businessIds[0],
-    },
-  });
-
   const parentDefinition = await client.workflowDefinition.create({
     data: {
       id: 'parent_id',
@@ -1042,7 +1027,6 @@ async function seed(bcryptSalt: Salt) {
           waitForResolved: true,
           name: childDefinition.name,
           definitionId: childDefinition.id,
-          runtimeId: childRuntimeData.id,
           version: childDefinition.version,
           stateNames: ['invoke_child'],
           // Context to copy from the parent workflow

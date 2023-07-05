@@ -139,15 +139,6 @@ export class WorkflowService {
         const parentDefinition = await this.getWorkflowDefinitionById(
           parentRuntimeData?.workflowDefinitionId,
         );
-        const childWorkflow = parentDefinition?.childWorkflows?.find(
-          ({ runtimeId }: { runtimeId: string }) => runtimeId === childWorkflowMetadata?.runtimeId,
-        );
-        const childRuntimeData = await this.getWorkflowRuntimeDataById(
-          childWorkflowMetadata?.runtimeId,
-        );
-        const childDefinition = await this.getWorkflowDefinitionById(
-          childWorkflowMetadata?.definitionId,
-        );
         const context = {
           ...childWorkflowMetadata?.initOptions?.context,
           childWorkflowMetadata,
@@ -158,11 +149,25 @@ export class WorkflowService {
             name: parentDefinition?.name,
             state: parentWorkflowMetadata?.state,
           } satisfies ParentWorkflowMetadata,
-          callbackInfo: childWorkflow?.callbackInfo,
+          callbackInfo: childWorkflowMetadata?.callbackInfo,
+          entity: {
+            type: 'business',
+            id: parentRuntimeData?.businessId,
+            data: {
+              companyName: 'test',
+            },
+          },
         } satisfies WorkflowOptionsNode['definition']['context'];
+        const workflow = await this.createOrUpdateWorkflowRuntime({
+          workflowDefinitionId: childWorkflowMetadata?.definitionId,
+          context: context as any,
+        });
+        const childDefinition = await this.getWorkflowDefinitionById(
+          childWorkflowMetadata?.definitionId,
+        );
         const childWorkflowService = this.#__workflowsClient.createWorkflow({
           ...childDefinition,
-          runtimeId: childRuntimeData.id,
+          runtimeId: workflow[0]?.workflowRuntimeData?.id,
           definitionType: childDefinition.definitionType,
           definition: {
             ...childDefinition.definition,
@@ -170,7 +175,7 @@ export class WorkflowService {
           },
           workflowContext: {
             machineContext: context,
-            state: childRuntimeData.state,
+            state: workflow[0]?.workflowRuntimeData?.state,
           },
           extensions: childDefinition.extensions,
         });
@@ -183,7 +188,12 @@ export class WorkflowService {
         });
 
         return {
-          childWorkflows: [context],
+          childWorkflows: [
+            {
+              ...context,
+              runtimeId: workflow[0]?.workflowRuntimeData?.id,
+            },
+          ],
         };
       },
       onDoneChildWorkflow: async (event, payload) => {
@@ -198,32 +208,6 @@ export class WorkflowService {
           },
         });
       },
-    });
-  }
-
-  async childWorkflows(id: string) {
-    const parentRuntimeData = await this.getWorkflowRuntimeDataById(id);
-    const parentDefinition = await this.getWorkflowDefinitionById(
-      parentRuntimeData?.workflowDefinitionId,
-    );
-    const parentWorkflowService = this.#__workflowsClient.createWorkflow({
-      ...parentDefinition,
-      runtimeId: parentRuntimeData?.id,
-      definition: parentDefinition.definition,
-      definitionType: parentDefinition.definitionType,
-      workflowContext: {
-        machineContext: parentRuntimeData.context,
-        state: parentRuntimeData.state,
-      },
-      extensions: parentDefinition.extensions,
-      childWorkflows: parentDefinition.childWorkflows,
-    });
-
-    await parentWorkflowService.sendEvent({
-      type: `NEXT`,
-    });
-    await parentWorkflowService.sendEvent({
-      type: `NEXT`,
     });
   }
 
@@ -970,6 +954,26 @@ export class WorkflowService {
       newWorkflowCreated,
     });
 
+    const parentWorkflowService = this.#__workflowsClient.createWorkflow({
+      ...workflowDefinition,
+      runtimeId: workflowRuntimeData?.id,
+      definition: workflowDefinition.definition,
+      definitionType: workflowDefinition.definitionType,
+      workflowContext: {
+        machineContext: workflowRuntimeData.context,
+        state: workflowRuntimeData.state,
+      },
+      extensions: workflowDefinition.extensions,
+      childWorkflows: workflowDefinition.childWorkflows,
+    });
+
+    await parentWorkflowService.sendEvent({
+      type: `NEXT`,
+    });
+    await parentWorkflowService.sendEvent({
+      type: `NEXT`,
+    });
+
     return [
       {
         workflowDefinition,
@@ -983,8 +987,10 @@ export class WorkflowService {
     context: DefaultContextSchema,
     entityId: TEntityId,
   ): Promise<DefaultContextSchema> {
+    if (!context?.documents?.length) return context;
+
     const documentsWithPersistedImages = await Promise.all(
-      context.documents.map(async document => ({
+      context?.documents?.map(async document => ({
         ...document,
         pages: await this.__persistDocumentPagesFiles(document, entityId),
       })),
@@ -997,7 +1003,7 @@ export class WorkflowService {
     entityId: string,
   ) {
     return await Promise.all(
-      document.pages.map(async documentPage => {
+      document?.pages?.map(async documentPage => {
         const ballerineFileId =
           documentPage.ballerineFileId ||
           (await this.__copyFileToDestinationAndCraeteFile(document, entityId, documentPage));
