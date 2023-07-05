@@ -29,4 +29,4 @@ export interface StatePlugin extends WorkflowPlugin {
 
 export type StatePlugins = StatePlugin[];
 export type ApiPlugins = ApiPlugin[];
-export const API_PLUGIN_CLASSES = [ApiPlugin, WebhookPlugin, KycPlugin]
+export const API_PLUGIN_CLASSES = [ApiPlugin, WebhookPlugin, KycPlugin] as const
