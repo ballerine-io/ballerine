@@ -153,15 +153,17 @@ export class WorkflowRunner {
       name?: string;
     },
   ) {
-    return transformers.map(transformer => {
-      if (transformer.transformer == 'jmespath')
-        return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
-      if (transformer.transformer == 'helper') {
-        return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
-      }
+    return (
+      transformers?.map(transformer => {
+        if (transformer.transformer == 'jmespath')
+          return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
+        if (transformer.transformer == 'helper') {
+          return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
+        }
 
-      throw new Error(`Transformer ${transformer} is not supported`);
-    });
+        throw new Error(`Transformer ${transformer} is not supported`);
+      }) || []
+    );
   }
   fetchValidator(
     validatorName: string,

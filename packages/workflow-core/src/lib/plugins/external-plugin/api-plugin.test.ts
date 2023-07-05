@@ -52,13 +52,15 @@ describe('workflow-runner', () => {
         successAction: 'API_CALL_SUCCESS',
         errorAction: 'API_CALL_FAILURE',
         request: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: '{data: entity.id}',
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '{data: entity.id}',
+            },
+          ],
         },
         response: {
-          transform: { transformer: 'jmespath', mapping: '{result: @}' },
+          transform: [{ transformer: 'jmespath', mapping: '{result: @}' }],
         },
       },
     ];
@@ -98,7 +100,7 @@ describe('workflow-runner', () => {
 
     describe('when api invalid jmespath transformation of request', () => {
       const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
-      apiPluginsSchemasCopy[0]!.request.transform.mapping = 'dsa: .unknwonvalue.id}';
+      apiPluginsSchemasCopy[0]!.request.transform[0].mapping = 'dsa: .unknwonvalue.id}';
       const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
       it('it returns error for transformation and transition to testManually', async () => {
         // @ts-expect-error - `sendEvent` is not supposed to receive a string
