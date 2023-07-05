@@ -140,6 +140,7 @@ export class WorkflowService {
           parentRuntimeData?.workflowDefinitionId,
         );
         const context = {
+          ...parentWorkflowMetadata?.context,
           ...childWorkflowMetadata?.initOptions?.context,
           childWorkflowMetadata,
           parentWorkflowMetadata: {
@@ -148,7 +149,7 @@ export class WorkflowService {
             version: parentDefinition?.version,
             name: parentDefinition?.name,
             state: parentWorkflowMetadata?.state,
-          } satisfies ParentWorkflowMetadata,
+          } satisfies Omit<ParentWorkflowMetadata, 'context'>,
           callbackInfo: childWorkflowMetadata?.callbackInfo,
           entity: {
             type: 'endUser',
@@ -162,7 +163,7 @@ export class WorkflowService {
         } satisfies WorkflowOptionsNode['definition']['context'];
         const childWorkflow = await this.createOrUpdateWorkflowRuntime({
           workflowDefinitionId: childWorkflowMetadata?.definitionId,
-          context: context as any,
+          context,
         });
         const childDefinition = await this.getWorkflowDefinitionById(
           childWorkflowMetadata?.definitionId,

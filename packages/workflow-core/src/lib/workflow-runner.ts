@@ -403,8 +403,17 @@ export class WorkflowRunner {
     if (this.#__onInvokeChildWorkflow && childWorkflowsToInvoke?.length) {
       const results = await Promise.allSettled(
         childWorkflowsToInvoke?.map(
-          async ({ definitionId, name, version, initOptions, contextToCopy, callbackInfo }) => {
+          async ({
+            definitionId,
+            name,
+            version,
+            initOptions,
+            parentContextToCopy,
+            callbackInfo,
+          }) => {
             try {
+              const parentTransformer = this.fetchTransformer(parentContextToCopy?.transform);
+              const context = await parentTransformer?.transform(this.#__context);
               const result = await this.#__onInvokeChildWorkflow?.({
                 childWorkflowMetadata: {
                   definitionId,
@@ -416,9 +425,12 @@ export class WorkflowRunner {
                 parentWorkflowMetadata: {
                   runtimeId: this.#__runtimeId,
                   state: this.#__currentState,
+                  context,
                 },
               });
-              const transformer = this.fetchTransformer(contextToCopy?.transform);
+              const transformer = this.fetchTransformer(
+                callbackInfo?.childContextToCopy?.transform,
+              );
               const data = await transformer?.transform(result as AnyRecord);
 
               return {
@@ -460,7 +472,7 @@ export class WorkflowRunner {
       postSendSnapshot.done &&
       !this.#__invokedOnDoneChildWorkflow
     ) {
-      const transformer = this.fetchTransformer(callbackInfo?.contextToCopy?.transform);
+      const transformer = this.fetchTransformer(callbackInfo?.childContextToCopy?.transform);
       const payload = await transformer?.transform(postSendSnapshot?.context);
 
       await this.#__onDoneChildWorkflow(
