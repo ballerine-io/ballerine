@@ -180,13 +180,6 @@ export class WorkflowService {
           extensions: childDefinition.extensions,
         });
 
-        await childWorkflowService.sendEvent({
-          type: `NEXT`,
-        });
-        await childWorkflowService.sendEvent({
-          type: `NEXT`,
-        });
-
         return {
           childWorkflows: [
             {
