@@ -1405,7 +1405,7 @@ importers:
         specifier: 0.5.3
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: workspace:^
+        specifier: ^0.4.13
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
         specifier: ^0.4.2
@@ -11336,11 +11336,11 @@ packages:
       telejson: 7.1.0
     dev: true
 
-  /@storybook/channel-postmessage@7.1.0-alpha.43:
-    resolution: {integrity: sha512-qqucnKSHW+zLbISImyeIu2+SEJXElw0Ge1XiaWjhCVH9HGjZa4Zzv9KN3zLdGCTMY6yZabQOzlhela9QGx6pzQ==}
+  /@storybook/channel-postmessage@7.1.0-beta.0:
+    resolution: {integrity: sha512-Bq0dm8h+cDs1qpGdAhXVuOS90gZ7wSwWugmWlF84oVOQ9xtgnuXYzsnUzY/XM+/aRcowCv5+6AVA9eepcTOeBA==}
     dependencies:
-      '@storybook/channels': 7.1.0-alpha.43
-      '@storybook/client-logger': 7.1.0-alpha.43
+      '@storybook/channels': 7.1.0-beta.0
+      '@storybook/client-logger': 7.1.0-beta.0
     dev: true
 
   /@storybook/channel-websocket@7.0.0-rc.10:
@@ -11364,11 +11364,11 @@ packages:
     resolution: {integrity: sha512-LNjI2etxaK5hbBHziNbDzK5VajGU0BLcD04CO3LbGRC14hJvDfVnvymJeDbbgT1b7RPUwl/vv/azO1kVHDax/A==}
     dev: true
 
-  /@storybook/channels@7.1.0-alpha.43:
-    resolution: {integrity: sha512-9GGMCqntc9bcMiDoddtotJqzCnUWLfSsmjJH3ml9k8W8hSmteVje/oUl0da7s2w1RQsNCBggKhkIr7/hz36vHQ==}
+  /@storybook/channels@7.1.0-beta.0:
+    resolution: {integrity: sha512-hOIfrH6onSH0yoksel+lT1MkMaRWLl535hIrKyDpcLp9A/b0+8/PlIIJyvpeK05a6cStN2dc6+z1vFI9MwtnUQ==}
     dependencies:
-      '@storybook/client-logger': 7.1.0-alpha.43
-      '@storybook/core-events': 7.1.0-alpha.43
+      '@storybook/client-logger': 7.1.0-beta.0
+      '@storybook/core-events': 7.1.0-beta.0
       '@storybook/global': 5.0.0
       qs: 6.11.2
       telejson: 7.1.0
@@ -11437,8 +11437,8 @@ packages:
       '@storybook/global': 5.0.0
     dev: true
 
-  /@storybook/client-logger@7.1.0-alpha.43:
-    resolution: {integrity: sha512-tDUB9OqFSXTfTB+ZfL/tADiorx6vUYxszIStfdofxMNttMnikgu5mgSiFxVCOm1ZpIG+x9YD0fdeBPu/VsyTsw==}
+  /@storybook/client-logger@7.1.0-beta.0:
+    resolution: {integrity: sha512-I2Eu5TdyTfdSBvVW+MdmEEFbAVPjuWJanxR1pJfUM9wA1n/cJX1aUFkcFZm073mVy3nxCp6qZ6A1clYJp6cwTw==}
     dependencies:
       '@storybook/global': 5.0.0
     dev: true
@@ -11542,8 +11542,8 @@ packages:
     resolution: {integrity: sha512-Z4S6H1E5FuG7eiVozqcqNBSADt0kCDZeXlpR/gIOYLmTd/BDIQ2QhLt+G41BbEvck8nRnC7lZ9DXuref8V3pDA==}
     dev: true
 
-  /@storybook/core-events@7.1.0-alpha.43:
-    resolution: {integrity: sha512-pOscUP9AIZ9RYHfNpSoKFcAzW0jsY3T09lJAvAzC5tjnfGp8QrJED+huHHEXY6y4lzUlQPZiZKBnAbcCQLnAAg==}
+  /@storybook/core-events@7.1.0-beta.0:
+    resolution: {integrity: sha512-MXAakkdu2p4O9CRWJu/uKudETaSm0OqGUM1hqqTZ4f6UHFjD5XLVsqsxnZnJTVIWdd/44UvsXvqOF/7MhLQNzA==}
     dev: true
 
   /@storybook/core-server@7.0.0-rc.10:
@@ -11679,14 +11679,14 @@ packages:
       '@storybook/preview-api': 7.0.0-rc.10
     dev: true
 
-  /@storybook/instrumenter@7.1.0-alpha.43:
-    resolution: {integrity: sha512-aXpTW+K/ubDJcc/Uc6mZ7Bf7jI8tCS9CYJ2C9RLjdjzGf9tf2r2+UBxtwguf6WfadrqanF+wPJyZDtGVVjnOAw==}
+  /@storybook/instrumenter@7.1.0-beta.0:
+    resolution: {integrity: sha512-J/ttwl6k4pMK1GThNkyzc4zPv89e6Y+flA4qG9uIm/L6E70GJpZiRPGcxzKL3mz+PzA8C9ZbMj0upjSjbABklA==}
     dependencies:
-      '@storybook/channels': 7.1.0-alpha.43
-      '@storybook/client-logger': 7.1.0-alpha.43
-      '@storybook/core-events': 7.1.0-alpha.43
+      '@storybook/channels': 7.1.0-beta.0
+      '@storybook/client-logger': 7.1.0-beta.0
+      '@storybook/core-events': 7.1.0-beta.0
       '@storybook/global': 5.0.0
-      '@storybook/preview-api': 7.1.0-alpha.43
+      '@storybook/preview-api': 7.1.0-beta.0
     dev: true
 
   /@storybook/manager-api@7.0.0-rc.10(react-dom@18.2.0)(react@18.2.0):
@@ -11755,16 +11755,16 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
-  /@storybook/preview-api@7.1.0-alpha.43:
-    resolution: {integrity: sha512-Tf/uYN8NJRv46WL0fHr2ZZULej5ytqg2hAIL0v7vAQksh3EyTFVV4/E8H+3KiCpxFI/NudSxl7AapC5d0fDCmg==}
+  /@storybook/preview-api@7.1.0-beta.0:
+    resolution: {integrity: sha512-6VQjFUsTSVJPepl0/I2U4/dZvIOCo9yl2UJgq+k2QVfdHzkstwMlTeVYwHtP0fZDWRjOG92+1MQbGNjOiV3NBA==}
     dependencies:
-      '@storybook/channel-postmessage': 7.1.0-alpha.43
-      '@storybook/channels': 7.1.0-alpha.43
-      '@storybook/client-logger': 7.1.0-alpha.43
-      '@storybook/core-events': 7.1.0-alpha.43
+      '@storybook/channel-postmessage': 7.1.0-beta.0
+      '@storybook/channels': 7.1.0-beta.0
+      '@storybook/client-logger': 7.1.0-beta.0
+      '@storybook/core-events': 7.1.0-beta.0
       '@storybook/csf': 0.1.0
       '@storybook/global': 5.0.0
-      '@storybook/types': 7.1.0-alpha.43
+      '@storybook/types': 7.1.0-beta.0
       '@types/qs': 6.9.7
       dequal: 2.0.3
       lodash: 4.17.21
@@ -11912,8 +11912,8 @@ packages:
   /@storybook/testing-library@0.0.14-next.1:
     resolution: {integrity: sha512-1CAl40IKIhcPaCC4pYCG0b9IiYNymktfV/jTrX7ctquRY3akaN7f4A1SippVHosksft0M+rQTFE0ccfWW581fw==}
     dependencies:
-      '@storybook/client-logger': 7.1.0-alpha.43
-      '@storybook/instrumenter': 7.1.0-alpha.43
+      '@storybook/client-logger': 7.1.0-beta.0
+      '@storybook/instrumenter': 7.1.0-beta.0
       '@testing-library/dom': 8.20.0
       '@testing-library/user-event': 13.5.0(@testing-library/dom@8.20.0)
       ts-dedent: 2.2.0
@@ -11956,10 +11956,10 @@ packages:
       file-system-cache: 2.1.1
     dev: true
 
-  /@storybook/types@7.1.0-alpha.43:
-    resolution: {integrity: sha512-Uea1/t62Bud4eqSYO0ElzgIsZ4XQJipl0LbakxhnJtcOfgrFnVQmI6qfqOPPS9rKU5f+pnakj+rk1pxHMYgVgw==}
+  /@storybook/types@7.1.0-beta.0:
+    resolution: {integrity: sha512-BvPH0onnOQ4YTbujTmdqQsOqQz0PpFXn/DX33zN1vbKB6kPyojZqd49XVAfT9AtBtdL9kq1AP7VYw2A2YUin8Q==}
     dependencies:
-      '@storybook/channels': 7.1.0-alpha.43
+      '@storybook/channels': 7.1.0-beta.0
       '@types/babel__core': 7.20.0
       '@types/express': 4.17.9
       file-system-cache: 2.3.0
@@ -26303,7 +26303,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.2.7(postcss@8.4.21)(ts-node@10.9.1)
+      tailwindcss: 3.2.7(postcss@8.4.24)(ts-node@10.9.1)
     dev: false
 
   /tailwindcss@3.2.7(postcss@8.4.21)(ts-node@10.9.1):
