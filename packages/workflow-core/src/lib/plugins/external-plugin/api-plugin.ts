@@ -1,5 +1,4 @@
-import { TContext, Transformer, Validator } from '../../utils/types';
-import { TContext, TTransformer, TTransformers, TValidators } from '../../utils/types';
+import { TContext, Transformer, Transformers, Validator } from '../../utils';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
 import { IApiPluginParams } from './types';
 
@@ -102,7 +101,7 @@ export class ApiPlugin {
     return await fetch(url, requestParams);
   }
 
-  async transformData(transformers: TTransformers, record: AnyRecord) {
+  async transformData(transformers: Transformers, record: AnyRecord) {
     let mutatedRecord = record;
     for (const transformer of transformers) {
       mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
@@ -110,13 +109,14 @@ export class ApiPlugin {
     return mutatedRecord;
   }
 
-  async transformByTransformer(transformer: TTransformer, record: AnyRecord) {
+  async transformByTransformer(transformer: Transformer, record: AnyRecord) {
     try {
       return (await transformer.transform(record, { input: 'json', output: 'json' })) as AnyRecord;
     } catch (error) {
       throw new Error(
         `Error transforming data: ${
           isErrorWithMessage(error) ? error.message : ''
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         } for transformer mapping: ${transformer.mapping}`,
       );
     }
@@ -138,6 +138,7 @@ export class ApiPlugin {
     return Object.fromEntries(
       Object.entries(headers).map(header => [
         header[0],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.replaceValuePlaceholders(header[1], context),
       ]),
     );
@@ -153,7 +154,8 @@ export class ApiPlugin {
       const isPlaceholderSecret = variableKey.includes('secret.');
       const placeholderValue = isPlaceholderSecret
         ? `${process.env[variableKey.replace('secret.', '')]}`
-        : `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
+        : // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
       replacedContent = replacedContent.replace(placeholder, placeholderValue);
     });
 
@@ -164,6 +166,7 @@ export class ApiPlugin {
     const pathToValue = path.split('.');
 
     return pathToValue.reduce((acc: unknown, pathKey: string) => {
+      // eslint-disable-next-line no-prototype-builtins
       if (typeof acc === 'object' && acc !== null && acc.hasOwnProperty(pathKey)) {
         return (acc as AnyRecord)[pathKey];
       } else {

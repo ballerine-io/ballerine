@@ -16,15 +16,17 @@ import type {
 import { Error as ErrorEnum } from './types';
 import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
-import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
-import { API_PLUGIN_CLASSES, StatePlugin } from './plugins/types';
-import { ApiPlugin, IApiPluginParams } from './plugins/external-plugin/api-plugin';
+import { StatePlugin } from './plugins/types';
+import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 import {
   IApiPluginParams,
   ISerializableApiPluginParams,
   SerializableValidatableTransformer,
 } from './plugins/external-plugin/types';
+import { HelpersTransformer } from './utils/context-transformers/helpers-transformer';
+import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
+import { THelperFormatingLogic } from './utils/context-transformers/types';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -98,10 +100,13 @@ export class WorkflowRunner {
       const requestSchema = apiPluginSchema.request.schema;
       const responseTransformerLogic = apiPluginSchema.response?.transform;
       const responseSchema = apiPluginSchema.response?.schema;
+      // @ts-ignore
       const requestTransformer = this.fetchTransformers(requestTransformerLogic);
       const responseTransformer =
         responseTransformerLogic && this.fetchTransformers(responseTransformerLogic);
+      // @ts-expect-error TODO: fix this
       const requestValidator = this.fetchValidator('json-schema', requestSchema);
+      // @ts-expect-error TODO: fix this
       const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
       const apiPluginClass = this.pickApiPlugin(apiPluginSchema);
@@ -121,7 +126,7 @@ export class WorkflowRunner {
     });
   }
 
-  private pickApiPlugin(apiPluginSchema: IApiPluginParams) {
+  private pickApiPlugin(apiPluginSchema: ISerializableApiPluginParams) {
     let pluginClass;
     // @ts-ignore
     if (apiPluginSchema.pluginType == 'kyc') {
@@ -134,7 +139,7 @@ export class WorkflowRunner {
       pluginClass = ApiPlugin;
     }
     if (pluginClass) return pluginClass;
-
+    // @ts-expect-error TODO: fix this
     const isApiPlugin = this.isApiPlugin(apiPluginSchema);
     return isApiPlugin ? ApiPlugin : WebhookPlugin;
   }
@@ -143,13 +148,19 @@ export class WorkflowRunner {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
-  fetchTransformers(transformers: Array<any>) {
+  fetchTransformers(
+    transformers: SerializableValidatableTransformer['transform'] & {
+      name?: string;
+    },
+  ) {
     return transformers.map(transformer => {
       if (transformer.transformer == 'jmespath')
-        return new JmespathTransformer(transformer.mapping.replace(/\s+/g, ' '));
-      if (transformer.transformer == 'helper') return new HelpersTransformer(transformer.mapping);
+        return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
+      if (transformer.transformer == 'helper') {
+        return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
+      }
 
-      throw new Error(`Transformer ${transformer.name} is not supported`);
+      throw new Error(`Transformer ${transformer} is not supported`);
     });
   }
   fetchValidator(
@@ -432,8 +443,12 @@ export class WorkflowRunner {
                   state: this.#__currentState,
                 },
               });
-              const transformer = this.fetchTransformer(contextToCopy?.transform);
-              const data = await transformer?.transform(result as AnyRecord);
+              const transformers = this.fetchTransformers(contextToCopy?.transform);
+              let data = result;
+
+              for (const transformer of transformers) {
+                data = await transformer?.transform(data as AnyRecord);
+              }
 
               return {
                 data,
@@ -475,8 +490,12 @@ export class WorkflowRunner {
       postSendSnapshot.done &&
       !this.#__invokedOnDoneChildWorkflow
     ) {
-      const transformer = this.fetchTransformer(callbackInfo?.contextToCopy?.transform);
-      const payload = await transformer?.transform(postSendSnapshot?.context);
+      const transformers = this.fetchTransformers(callbackInfo?.contextToCopy?.transform);
+      let payload = postSendSnapshot?.context;
+
+      for (const transformer of transformers) {
+        payload = await transformer?.transform(payload as AnyRecord);
+      }
 
       await this.#__onDoneChildWorkflow(
         {

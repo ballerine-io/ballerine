@@ -4,9 +4,6 @@ import { JmespathTransformer } from './context-transformers/jmespath-transformer
 import { HelpersTransformer } from './context-transformers/helpers-transformer';
 
 export type TContext = AnyRecord;
-export type TTransformer = JmespathTransformer | HelpersTransformer;
-export type TTransformers = TTransformer[];
-export type TValidators = JsonSchemaValidator;
-// Will be a union in the future
-export type Transformer = JmespathTransformer;
+export type Transformer = JmespathTransformer | HelpersTransformer;
+export type Transformers = Transformer[];
 export type Validator = JsonSchemaValidator;
