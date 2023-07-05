@@ -141,7 +141,7 @@ describe('Parent and child workflows #integration #featureset', () => {
       {
         const childWorkflowService = workflowClient.createWorkflow({
           ...childMachine,
-          runtimeId: childWorkflowMetadata.runtimeId,
+          runtimeId: 'child_machine_runtime_id',
           definition: {
             ...childMachine.definition,
             context: childWorkflowMetadata?.initOptions?.context,
@@ -239,7 +239,6 @@ describe('Parent and child workflows #integration #featureset', () => {
       expect(response?.childWorkflowMetadata).toStrictEqual({
         name: 'child_machine_name_1',
         definitionId: 'child_machine_definition_1',
-        runtimeId: 'child_machine_runtime_1',
         version: '1',
         initOptions: {
           event: 'NEXT',
@@ -249,6 +248,15 @@ describe('Parent and child workflows #integration #featureset', () => {
             },
           },
           state: 'child_initial',
+        },
+        callbackInfo: {
+          event: 'parent_initial',
+          contextToCopy: {
+            transform: {
+              transformer: 'jmespath',
+              mapping: 'endUser.id',
+            },
+          },
         },
       } satisfies ChildWorkflowMetadata);
       response = undefined;
@@ -332,7 +340,6 @@ describe('Parent and child workflows #integration #featureset', () => {
       expect(parentWorkflowService.getSnapshot().context).toStrictEqual({
         childWorkflows: [
           {
-            runtimeId: 'child_machine_runtime_1',
             data: 'user_1',
             error: undefined,
           },
@@ -397,11 +404,11 @@ describe('Parent and child workflows #integration #featureset', () => {
     const workflowClient = createWorkflowClient({
       async onInvokeChildWorkflow({ childWorkflowMetadata }) {
         const childWorkflow = childWorkflows.find(
-          ({ runtimeId }) => runtimeId === childWorkflowMetadata.runtimeId,
+          ({ runtimeId }) => runtimeId === 'child_machine_runtime_1',
         );
         const childWorkflowService = workflowClient.createWorkflow({
           ...childMachine,
-          runtimeId: childWorkflowMetadata.runtimeId,
+          runtimeId: 'child_machine_runtime_1',
           definition: {
             ...childMachine.definition,
             context: {
@@ -504,11 +511,11 @@ describe('Parent and child workflows #integration #featureset', () => {
     const workflowClientTwo = createWorkflowClient({
       async onInvokeChildWorkflow({ childWorkflowMetadata }) {
         const childWorkflow = childWorkflowsTwo.find(
-          ({ runtimeId }) => runtimeId === childWorkflowMetadata.runtimeId,
+          ({ runtimeId }) => runtimeId === 'child_machine_runtime_2',
         );
         const childWorkflowService = workflowClientTwo.createWorkflow({
           ...childMachine,
-          runtimeId: childWorkflowMetadata.runtimeId,
+          runtimeId: 'child_machine_runtime_2',
           definition: {
             ...childMachine.definition,
             context: {
