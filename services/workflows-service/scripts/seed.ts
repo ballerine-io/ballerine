@@ -54,7 +54,6 @@ async function seed(bcryptSalt: Salt) {
   console.info('Seeding database...');
   const client = new PrismaClient();
   await generateDynamicDefinitionForE2eTest(client);
-  await generateKycForE2eTest(client);
   const users = [
     {
       email: 'agent1@ballerine.com',
@@ -992,6 +991,7 @@ async function seed(bcryptSalt: Salt) {
       submitStates: [],
     },
   });
+  const childKycExampleDefinition = await generateKycForE2eTest(client);
 
   await client.workflowDefinition.create({
     data: {
@@ -1027,9 +1027,9 @@ async function seed(bcryptSalt: Salt) {
       childWorkflows: [
         {
           waitForResolved: true,
-          name: childDefinition.name,
-          definitionId: childDefinition.id,
-          version: childDefinition.version,
+          name: childKycExampleDefinition.name,
+          definitionId: childKycExampleDefinition.id,
+          version: childKycExampleDefinition.version,
           stateNames: ['invoke_child'],
           // Context to copy from the parent workflow
           contextToCopy: {
@@ -1046,19 +1046,13 @@ async function seed(bcryptSalt: Salt) {
               transform: [
                 {
                   transformer: 'jmespath',
-                  mapping: '{data: endUser.id}',
+                  mapping: '{childValue: @}',
                 },
               ],
             },
           },
           initOptions: {
-            event: 'NEXT',
-            context: {
-              endUser: {
-                id: 'user_1',
-              },
-            },
-            state: 'child_initial',
+            event: 'start',
           },
         },
       ],
