@@ -423,6 +423,7 @@ export class WorkflowRunner {
       await this.#__handleAction({
         type: 'STATE_ACTION_STATUS',
         plugin: postPlugin,
+        // TODO: Might want to refactor to use this.#__runtimeId
         workflowId: postSendSnapshot.machine?.id,
       })(this.#__context, event);
     }
@@ -430,15 +431,15 @@ export class WorkflowRunner {
     if (this.#__onInvokeChildWorkflow && childWorkflowsToInvoke?.length) {
       const results = await Promise.allSettled(
         childWorkflowsToInvoke?.map(
-          async ({ definitionId, runtimeId, name, version, initOptions, contextToCopy }) => {
+          async ({ definitionId, name, version, initOptions, contextToCopy, callbackInfo }) => {
             try {
               const result = await this.#__onInvokeChildWorkflow?.({
                 childWorkflowMetadata: {
                   definitionId,
-                  runtimeId,
                   name,
                   version,
                   initOptions,
+                  callbackInfo,
                 },
                 parentWorkflowMetadata: {
                   runtimeId: this.#__runtimeId,
@@ -455,13 +456,13 @@ export class WorkflowRunner {
               return {
                 data,
                 error: undefined,
-                runtimeId,
               };
             } catch (error) {
+              console.error(error);
+
               return {
                 data: undefined,
                 error,
-                runtimeId,
               };
             }
           },
@@ -471,7 +472,6 @@ export class WorkflowRunner {
         if (result?.status !== 'fulfilled') return;
 
         return {
-          runtimeId: result?.value?.runtimeId,
           data: result?.value?.data,
           error: undefined,
         };
