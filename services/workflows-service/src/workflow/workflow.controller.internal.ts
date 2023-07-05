@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import * as common from '@nestjs/common';
+import { Param, UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import * as nestAccessControl from 'nest-access-control';
 import { isRecordNotFoundError } from '../prisma/prisma.util';
@@ -22,7 +23,6 @@ import {
   FindWorkflowsListSchema,
 } from '@/workflow/dtos/find-workflows-list.dto';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
-import { UsePipes, UseGuards } from '@nestjs/common';
 import { FilterService } from '@/filter/filter.service';
 import {
   FindWorkflowParamsDto,
@@ -43,6 +43,11 @@ export class WorkflowControllerInternal {
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
+
+  @common.Post('/child-workflows/:id')
+  async childWorkflows(@Param('id') id: string) {
+    return await this.service.childWorkflows(id);
+  }
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: WorkflowDefinitionModel })
@@ -143,6 +148,10 @@ export class WorkflowControllerInternal {
   }
 
   // PATCH /workflows/assign/:id
+  // curl -X PATCH http://localhost:3000/api/v1/internal/workflows/assign/:workflowId \
+  // -H 'Content-Type: application/json' \
+  // -H 'Cookie: session=[SESSION]; session.sig=[SESSION_SIG]' \
+  // -d '{"assigneeId": "[ASSIGNEE_ID]"}'
   @common.Patch('/assign/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })

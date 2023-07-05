@@ -1,18 +1,8 @@
+import { TContext, Transformer, Validator } from '../../utils/types';
 import { TContext, TTransformer, TTransformers, TValidators } from '../../utils/types';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
+import { IApiPluginParams } from './types';
 
-export interface IApiPluginParams {
-  name: string;
-  stateNames: Array<string>;
-  url: string;
-  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
-  request: { transformers: TTransformers; schemaValidator?: TValidators };
-  response?: { transformers: TTransformers; schemaValidator?: TValidators };
-  headers?: HeadersInit;
-  successAction?: string;
-  errorAction?: string;
-  callApi?(...args: Array<any>): any;
-}
 export class ApiPlugin {
   public static pluginType = 'kyc';
   name: string;
@@ -133,7 +123,7 @@ export class ApiPlugin {
   }
 
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
-    schemaValidator: TValidators | undefined,
+    schemaValidator: Validator | undefined,
     transformedRequest: AnyRecord,
     validationContext: TValidationContext,
   ) {

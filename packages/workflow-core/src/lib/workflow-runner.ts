@@ -1,11 +1,12 @@
 /* eslint-disable */
-import { uniqueArray } from '@ballerine/common';
+import { AnyRecord, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
-import { createMachine, interpret } from 'xstate';
+import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
   ChildWorkflow,
+  IUpdateContextEvent,
   ObjectValues,
   WorkflowEvent,
   WorkflowEventWithoutState,
@@ -15,11 +16,15 @@ import type {
 import { Error as ErrorEnum } from './types';
 import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
+import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
 import { API_PLUGIN_CLASSES, StatePlugin } from './plugins/types';
 import { ApiPlugin, IApiPluginParams } from './plugins/external-plugin/api-plugin';
 import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
-import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
-import { HelpersTransformer } from './utils/context-transformers/helpers-transformer';
+import {
+  IApiPluginParams,
+  ISerializableApiPluginParams,
+  SerializableValidatableTransformer,
+} from './plugins/external-plugin/types';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -31,8 +36,9 @@ export class WorkflowRunner {
   #__debugMode: boolean;
   #__childWorkflows?: Array<ChildWorkflow>;
   #__onInvokeChildWorkflow?: WorkflowRunnerArgs['onInvokeChildWorkflow'];
-  #__onEvent?: WorkflowRunnerArgs['onEvent'];
-  #__doneChildWorkflows = new Map<string, boolean>();
+  #__onDoneChildWorkflow?: WorkflowRunnerArgs['onDoneChildWorkflow'];
+  #__invokedOnDoneChildWorkflow = false;
+  #__runtimeId: string;
   events: any;
 
   public get workflow() {
@@ -48,13 +54,14 @@ export class WorkflowRunner {
 
   constructor(
     {
+      runtimeId,
       definition,
       workflowActions,
       workflowContext,
       extensions,
       childWorkflows,
       onInvokeChildWorkflow,
-      onEvent,
+      onDoneChildWorkflow,
     }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
@@ -64,9 +71,11 @@ export class WorkflowRunner {
     this.#__debugMode = debugMode;
     this.#__childWorkflows = childWorkflows;
     this.#__onInvokeChildWorkflow = onInvokeChildWorkflow;
-    this.#__onEvent = onEvent;
+    this.#__onDoneChildWorkflow = onDoneChildWorkflow;
+    // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
+    this.#__runtimeId = runtimeId;
 
     this.#__workflow = this.#__extendedWorkflow({
       definition,
@@ -83,15 +92,11 @@ export class WorkflowRunner {
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
   }
 
-  initiateApiPlugins(apiPluginSchemas: IApiPluginParams[]) {
+  initiateApiPlugins(apiPluginSchemas: Array<ISerializableApiPluginParams>) {
     return apiPluginSchemas?.map(apiPluginSchema => {
-      // @ts-expect-error - update types
       const requestTransformerLogic = apiPluginSchema.request.transform;
-      // @ts-expect-error - update types
       const requestSchema = apiPluginSchema.request.schema;
-      // @ts-expect-error - update types
       const responseTransformerLogic = apiPluginSchema.response?.transform;
-      // @ts-expect-error - update types
       const responseSchema = apiPluginSchema.response?.schema;
       const requestTransformer = this.fetchTransformers(requestTransformerLogic);
       const responseTransformer =
@@ -147,7 +152,10 @@ export class WorkflowRunner {
       throw new Error(`Transformer ${transformer.name} is not supported`);
     });
   }
-  fetchValidator(validatorName: any, schema: any) {
+  fetchValidator(
+    validatorName: string,
+    schema: ConstructorParameters<typeof JsonSchemaValidator>[0],
+  ) {
     if (!schema) return;
     if (validatorName === 'json-schema') return new JsonSchemaValidator(schema);
 
@@ -284,7 +292,29 @@ export class WorkflowRunner {
       },
     };
 
-    return createMachine({ predictableActionArguments: true, ...definition }, { actions, guards });
+    const updateContext = assign<Record<PropertyKey, any>, IUpdateContextEvent>(
+      (context, event) => {
+        context = {
+          ...context,
+          ...event.payload,
+        };
+
+        return context;
+      },
+    );
+
+    return createMachine(
+      {
+        predictableActionArguments: true,
+        on: {
+          UPDATE_CONTEXT: {
+            actions: updateContext,
+          },
+        },
+        ...definition,
+      },
+      { actions, guards },
+    );
   }
 
   async sendEvent(event: WorkflowEventWithoutState) {
@@ -347,6 +377,7 @@ export class WorkflowRunner {
         if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
 
         const { callbackAction, responseBody, error } = await apiPlugin.callApi?.(this.#__context);
+        // @ts-expect-error - update webhook plugin to use serializable interface
         if (!this.isApiPlugin(apiPlugin)) continue;
 
         this.#__context.pluginsOutput = {
@@ -384,34 +415,92 @@ export class WorkflowRunner {
     }
 
     if (this.#__onInvokeChildWorkflow && childWorkflowsToInvoke?.length) {
-      await Promise.all(
+      const results = await Promise.allSettled(
         childWorkflowsToInvoke?.map(
-          async ({ definitionId, runtimeId, name, definitionVersion, initOptions }) => {
-            await this.#__onInvokeChildWorkflow?.({
-              definitionId,
-              runtimeId,
-              name,
-              version: definitionVersion,
-              initOptions,
-            });
+          async ({ definitionId, runtimeId, name, version, initOptions, contextToCopy }) => {
+            try {
+              const result = await this.#__onInvokeChildWorkflow?.({
+                childWorkflowMetadata: {
+                  definitionId,
+                  runtimeId,
+                  name,
+                  version,
+                  initOptions,
+                },
+                parentWorkflowMetadata: {
+                  runtimeId: this.#__runtimeId,
+                  state: this.#__currentState,
+                },
+              });
+              const transformer = this.fetchTransformer(contextToCopy?.transform);
+              const data = await transformer?.transform(result as AnyRecord);
+
+              return {
+                data,
+                error: undefined,
+                runtimeId,
+              };
+            } catch (error) {
+              return {
+                data: undefined,
+                error,
+                runtimeId,
+              };
+            }
           },
         ),
       );
+      const childWorkflows = results?.map(result => {
+        if (result?.status !== 'fulfilled') return;
+
+        return {
+          runtimeId: result?.value?.runtimeId,
+          data: result?.value?.data,
+          error: undefined,
+        };
+      });
+
+      this.#__context.childWorkflows = childWorkflows;
+      service.send({
+        type: 'UPDATE_CONTEXT',
+        payload: {
+          childWorkflows,
+        },
+      });
     }
 
     if (
-      this.#__onEvent &&
+      this.#__onDoneChildWorkflow &&
       childWorkflowMetadata &&
       postSendSnapshot.done &&
-      !this.#__doneChildWorkflows.has(childWorkflowMetadata.runtimeId)
+      !this.#__invokedOnDoneChildWorkflow
     ) {
-      await this.#__onEvent({
-        parentWorkflowMetadata,
-        childWorkflowMetadata,
-        callbackInfo,
-      });
+      const transformer = this.fetchTransformer(callbackInfo?.contextToCopy?.transform);
+      const payload = await transformer?.transform(postSendSnapshot?.context);
 
-      this.#__doneChildWorkflows.set(childWorkflowMetadata.runtimeId, true);
+      await this.#__onDoneChildWorkflow(
+        {
+          type: callbackInfo?.event,
+          payload,
+        },
+        {
+          source: {
+            runtimeId: this.#__runtimeId,
+            definitionId: childWorkflowMetadata?.definitionId,
+            version: childWorkflowMetadata?.version,
+            state: this.#__currentState,
+            event: event.type,
+          },
+          target: {
+            runtimeId: parentWorkflowMetadata?.runtimeId,
+            definitionId: parentWorkflowMetadata?.definitionId,
+            version: parentWorkflowMetadata?.version,
+            state: parentWorkflowMetadata?.state,
+          },
+        },
+      );
+
+      this.#__invokedOnDoneChildWorkflow = true;
     }
   }
 

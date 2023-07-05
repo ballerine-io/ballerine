@@ -1,8 +1,5 @@
-export { createWorkflow } from './create-workflow';
-export { HttpError } from './errors';
-export {
-  Error,
-  Errors,
+export { Error, Errors } from './types';
+export type {
   WorkflowEvent,
   WorkflowEventWithoutState,
   WorkflowOptions,
@@ -12,9 +9,35 @@ export {
   CallbackInfo,
   ParentWorkflowMetadata,
   ChildWorkflowMetadata,
-  WorkflowCallbackPayload,
+  OnDoneChildWorkflowPayload,
   WorkflowClientOptions,
+  TCreateWorkflow,
+  WorkflowExtensions,
+  Workflow,
+  ObjectValues,
 } from './types';
-export { StatePlugin } from './plugins/types';
-export { PluginAction } from './plugins/types';
-export { ExtensionRunOrder } from './plugins/types';
+export type {
+  StatePlugin,
+  ExtensionRunOrder,
+  PluginAction,
+  ValidatableTransformer,
+  StatePlugins,
+  WorkflowPlugin,
+  WebhookPluginParams,
+  IApiPluginParams,
+  ApiPlugins,
+  SerializableValidatableTransformer,
+} from './plugins';
+export type {
+  Validator,
+  Transformer,
+  TContext,
+  TValidationLogic,
+  TTransformationLogic,
+  TSchemaValidatorResponse,
+  TJsonSchema,
+} from './utils';
+export { WebhookPlugin, ApiPlugin } from './plugins';
+export { JmespathTransformer, JsonSchemaValidator } from './utils';
+export { HttpError } from './errors';
+export { createWorkflow } from './create-workflow';

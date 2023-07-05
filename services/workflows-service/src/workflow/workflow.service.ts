@@ -22,7 +22,7 @@ import {
   WorkflowsRuntimeMetric,
   WorkflowStatusMetric,
 } from './types';
-import { createWorkflowClient } from '@ballerine/workflow-node-sdk';
+import { createWorkflowClient, WorkflowOptionsNode } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
@@ -66,6 +66,8 @@ import {
   WorkflowRuntimeListItemModel,
 } from '@/workflow/workflow-runtime-list-item.model';
 import { plainToClass } from 'class-transformer';
+import { SortOrder } from '@/common/query-filters/sort-order';
+import { ParentWorkflowMetadata } from '@ballerine/workflow-core';
 
 type TEntityId = string;
 
@@ -107,6 +109,8 @@ const policies = {
 
 @Injectable()
 export class WorkflowService {
+  #__workflowsClient: ReturnType<typeof createWorkflowClient>;
+
   constructor(
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
@@ -116,7 +120,112 @@ export class WorkflowService {
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
-  ) {}
+  ) {
+    this.#__workflowsClient = this.#__initWorkflowsClient();
+  }
+
+  #__initWorkflowsClient() {
+    return createWorkflowClient({
+      // @ts-expect-error - TODO: fix type
+      onInvokeChildWorkflow: async ({ childWorkflowMetadata, parentWorkflowMetadata }) => {
+        const parentRuntimeData = await this.getWorkflowRuntimeDataById(
+          parentWorkflowMetadata?.runtimeId,
+          {
+            include: {
+              workflowDefinition: true,
+            },
+          },
+        );
+        const parentDefinition = await this.getWorkflowDefinitionById(
+          parentRuntimeData?.workflowDefinitionId,
+        );
+        const childWorkflow = parentDefinition?.childWorkflows?.find(
+          ({ runtimeId }: { runtimeId: string }) => runtimeId === childWorkflowMetadata?.runtimeId,
+        );
+        const childRuntimeData = await this.getWorkflowRuntimeDataById(
+          childWorkflowMetadata?.runtimeId,
+        );
+        const childDefinition = await this.getWorkflowDefinitionById(
+          childWorkflowMetadata?.definitionId,
+        );
+        const context = {
+          ...childWorkflowMetadata?.initOptions?.context,
+          childWorkflowMetadata,
+          parentWorkflowMetadata: {
+            definitionId: parentDefinition?.id,
+            runtimeId: parentRuntimeData?.id,
+            version: parentDefinition?.version,
+            name: parentDefinition?.name,
+            state: parentWorkflowMetadata?.state,
+          } satisfies ParentWorkflowMetadata,
+          callbackInfo: childWorkflow?.callbackInfo,
+        } satisfies WorkflowOptionsNode['definition']['context'];
+        const childWorkflowService = this.#__workflowsClient.createWorkflow({
+          ...childDefinition,
+          runtimeId: childRuntimeData.id,
+          definitionType: childDefinition.definitionType,
+          definition: {
+            ...childDefinition.definition,
+            context,
+          },
+          workflowContext: {
+            machineContext: context,
+            state: childRuntimeData.state,
+          },
+          extensions: childDefinition.extensions,
+        });
+
+        await childWorkflowService.sendEvent({
+          type: `NEXT`,
+        });
+        await childWorkflowService.sendEvent({
+          type: `NEXT`,
+        });
+
+        return {
+          childWorkflows: [context],
+        };
+      },
+      onDoneChildWorkflow: async (event, payload) => {
+        await this.updateWorkflowRuntimeData(payload?.target?.runtimeId, {
+          context: {
+            childWorkflows: [
+              {
+                ...payload?.source,
+                ...event?.payload,
+              },
+            ],
+          },
+        });
+      },
+    });
+  }
+
+  async childWorkflows(id: string) {
+    const parentRuntimeData = await this.getWorkflowRuntimeDataById(id);
+    const parentDefinition = await this.getWorkflowDefinitionById(
+      parentRuntimeData?.workflowDefinitionId,
+    );
+    const parentWorkflowService = this.#__workflowsClient.createWorkflow({
+      ...parentDefinition,
+      runtimeId: parentRuntimeData?.id,
+      definition: parentDefinition.definition,
+      definitionType: parentDefinition.definitionType,
+      workflowContext: {
+        machineContext: parentRuntimeData.context,
+        state: parentRuntimeData.state,
+      },
+      extensions: parentDefinition.extensions,
+      childWorkflows: parentDefinition.childWorkflows,
+    });
+
+    await parentWorkflowService.sendEvent({
+      type: `NEXT`,
+    });
+    await parentWorkflowService.sendEvent({
+      type: `NEXT`,
+    });
+  }
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
     const select = {
@@ -158,6 +267,7 @@ export class WorkflowService {
   private formatWorkflow(workflow: TWorkflowWithRelations) {
     const isIndividual = 'endUser' in workflow;
     const service = createWorkflowClient().createWorkflow({
+      runtimeId: workflow.id,
       definition: workflow.workflowDefinition as any,
       definitionType: workflow.workflowDefinition.definitionType,
       workflowContext: {
@@ -342,6 +452,8 @@ export class WorkflowService {
     page,
     size,
     status,
+    orderBy,
+    orderDirection,
   }: ListWorkflowsRuntimeParams): Promise<ListRuntimeDataResult> {
     const query = {
       where: {
@@ -352,13 +464,14 @@ export class WorkflowService {
     const [workflowsRuntimeCount, workflowsRuntime] = await Promise.all([
       this.workflowRuntimeDataRepository.count(query),
       this.workflowRuntimeDataRepository.findMany({
+        ...query,
         skip: page && size ? (page - 1) * size : undefined,
         take: size,
         include: {
           workflowDefinition: true,
           assignee: true,
         },
-        ...query,
+        orderBy: this._resolveOrderByParams(orderBy, orderDirection),
       }),
     ]);
 
@@ -371,6 +484,33 @@ export class WorkflowService {
     };
 
     return result;
+  }
+
+  private _resolveOrderByParams(
+    orderBy: string | undefined,
+    orderDirection: SortOrder | undefined,
+  ): object {
+    if (!orderBy && !orderDirection) return {};
+
+    if (orderBy === 'assignee') {
+      return {
+        assignee: {
+          firstName: orderDirection,
+        },
+      };
+    }
+
+    if (orderBy === 'workflowDefinitionName') {
+      return {
+        workflowDefinition: {
+          name: orderDirection,
+        },
+      };
+    }
+
+    return {
+      [orderBy as string]: orderDirection,
+    };
   }
 
   private workflowsRuntimeListItemsFactory(
@@ -569,12 +709,27 @@ export class WorkflowService {
   }
 
   async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
-    const updatedWorkflowRuntime = await this.workflowRuntimeDataRepository.updateById(
+    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+    );
+    const hasDecision =
+      workflowRuntimeData?.context?.documents?.length &&
+      workflowRuntimeData?.context?.documents?.every(
+        (document: DefaultContextSchema['documents'][number]) => !!document?.decision?.status,
+      );
+
+    if (hasDecision) {
+      throw new BadRequestException(
+        `Workflow with the id of "${workflowRuntimeId}" already has a decision`,
+      );
+    }
+
+    const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
       { data: { assigneeId: assigneeId } },
     );
 
-    return updatedWorkflowRuntime;
+    return updatedWorkflowRuntimeData;
   }
 
   private async getCorrelationIdFromWorkflow(runtimeData: WorkflowRuntimeData) {
@@ -976,6 +1131,7 @@ export class WorkflowService {
     );
 
     const service = createWorkflowClient().createWorkflow({
+      runtimeId: workflow.id,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       definition: workflow.definition,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,6 +1,7 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
 import { ApiPlugins, StatePlugins } from './plugins/types';
-import { IApiPluginParams } from './plugins/external-plugin/api-plugin';
+import { SerializableValidatableTransformer } from './plugins';
+import { ISerializableApiPluginParams } from './plugins/external-plugin/types';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
@@ -19,7 +20,7 @@ export interface WorkflowEvent {
 
 export interface WorkflowExtensions {
   statePlugins?: StatePlugins;
-  apiPlugins?: ApiPlugins | IApiPluginParams[];
+  apiPlugins?: ApiPlugins | Array<ISerializableApiPluginParams>;
 }
 export interface WorkflowContext {
   id?: string;
@@ -29,19 +30,20 @@ export interface WorkflowContext {
   lockKey?: string;
 }
 
-export type JMESPathString = string;
+export interface IUpdateContextEvent {
+  type: string;
+  payload: Record<PropertyKey, unknown>;
+}
 
 export interface ChildWorkflow {
+  waitForResolved?: boolean;
   name: string;
   runtimeId: string;
   definitionId: string;
-  definitionVersion: 1;
+  version: string;
   stateNames: Array<string>;
-  contextToCopy: JMESPathString;
-  callbackInfo: {
-    event: string;
-    contextToCopy: JMESPathString;
-  };
+  contextToCopy: SerializableValidatableTransformer;
+  callbackInfo: CallbackInfo;
   initOptions?: {
     event?: string;
     context?: Record<string, unknown>;
@@ -50,6 +52,7 @@ export interface ChildWorkflow {
 }
 
 export interface WorkflowOptions {
+  runtimeId: string;
   definitionType: 'statechart-json' | 'bpmn-json';
   definition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
@@ -57,25 +60,26 @@ export interface WorkflowOptions {
   extensions?: WorkflowExtensions;
   childWorkflows?: Array<ChildWorkflow>;
   onInvokeChildWorkflow?: WorkflowClientOptions['onInvokeChildWorkflow'];
-  onEvent?: WorkflowClientOptions['onEvent'];
+  onDoneChildWorkflow?: WorkflowClientOptions['onDoneChildWorkflow'];
 }
 
 export interface CallbackInfo {
   event: string;
-  // what data should be sent back to the parent workflow, out of the full child workflow context i.e. { user: true }
-  contextToCopy: JMESPathString;
+  // what data should be sent back to the parent workflow, out of the full child workflow context
+  contextToCopy: SerializableValidatableTransformer;
 }
 export interface ParentWorkflowMetadata {
   name: string;
   definitionId: string;
   runtimeId: string;
-  version: number;
+  version: string;
+  state: string;
 }
 export interface ChildWorkflowMetadata {
   name: string;
   definitionId: string;
   runtimeId: string;
-  version: number;
+  version: string;
   /**
    * @description static properties to initiate the new machine with
    */
@@ -93,19 +97,44 @@ export interface ChildWorkflowMetadata {
     event: string;
   }>;
 }
-export interface WorkflowCallbackPayload {
-  parentWorkflowMetadata: ParentWorkflowMetadata;
-  childWorkflowMetadata: ChildWorkflowMetadata;
-  callbackInfo: CallbackInfo;
+export interface OnDoneChildWorkflowPayload {
+  source: {
+    runtimeId: string;
+    definitionId: string;
+    version: string;
+    state: string;
+    event: string;
+  };
+  target: {
+    runtimeId: string;
+    definitionId: string;
+    version: string;
+    state: string;
+  };
+}
+
+interface OnDoneChildWorkflowEvent {
+  type: string;
+  payload: Record<PropertyKey, unknown>;
 }
 
 export interface WorkflowClientOptions {
-  onEvent?: (payload: WorkflowCallbackPayload) => Promise<void>;
-  onInvokeChildWorkflow?: (childWorkflowMetadata: ChildWorkflowMetadata) => Promise<void>;
+  onDoneChildWorkflow?: (
+    event: OnDoneChildWorkflowEvent,
+    payload: OnDoneChildWorkflowPayload,
+  ) => Promise<void>;
+  onInvokeChildWorkflow?: <TData>({
+    childWorkflowMetadata,
+    parentWorkflowMetadata,
+  }: {
+    childWorkflowMetadata: ChildWorkflowMetadata;
+    parentWorkflowMetadata: Pick<ParentWorkflowMetadata, 'runtimeId' | 'state'>;
+  }) => Promise<TData> | Promise<void>;
 }
 
 export interface WorkflowRunnerArgs extends WorkflowClientOptions {
   childWorkflows?: Array<ChildWorkflow>;
+  runtimeId: string;
   definition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
