@@ -1049,18 +1049,18 @@ async function seed(bcryptSalt: Salt) {
           stateNames: ['invoke_child'],
           // Context to copy from the parent workflow
           contextToCopy: {
-            transform: {
+            transform: [{
               transformer: 'jmespath',
               mapping: '{data: endUser.id}',
-            },
+            }],
           },
           callbackInfo: {
             event: 'parent_initial',
             contextToCopy: {
-              transform: {
+              transform: [{
                 transformer: 'jmespath',
                 mapping: '{data: endUser.id}',
-              },
+              }],
             },
           },
           initOptions: {
