@@ -1,9 +1,9 @@
 import {
-  fetchUserCaseResolvingStats,
+  fetchUserDailyCasesResolvedStats,
   fetchUserStats,
 } from '@app/domains/user/api/user-stats/user-stats.api';
 import {
-  GetUserCaseResolvingStatsDto,
+  GetUserDailyCasesResolvedStatsDto,
   GetUserStatsDto,
 } from '@app/domains/user/api/user-stats/user-stats.types';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
@@ -13,8 +13,8 @@ export const userStatsQueryKeys = createQueryKeys('user-stats', {
     queryKey: [query],
     queryFn: () => fetchUserStats(query),
   }),
-  userCaseResolvingStats: (query: GetUserCaseResolvingStatsDto) => ({
+  userDailyCasesResolvedStats: (query: GetUserDailyCasesResolvedStatsDto) => ({
     queryKey: [query],
-    queryFn: () => fetchUserCaseResolvingStats(query),
+    queryFn: () => fetchUserDailyCasesResolvedStats(query),
   }),
 });

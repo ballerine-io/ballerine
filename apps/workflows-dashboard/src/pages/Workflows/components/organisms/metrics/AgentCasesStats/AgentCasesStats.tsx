@@ -2,11 +2,11 @@ import {
   AgentCasesChart,
   AgentCasesChartData,
 } from '@app/pages/Workflows/components/molecules/AgentCasesChart';
-import { useAgentCasesStatsQuery } from '@app/pages/Workflows/components/organisms/metrics/AgentCasesStats/hooks/useAgentCasesStatsQuery';
+import { useUsersAssignedCasesStatsQuery } from '@app/pages/Workflows/components/organisms/metrics/AgentCasesStats/hooks/useUsersAssignedCasesStatsQuery';
 import { useMemo } from 'react';
 
 export const AgentCasesStats = () => {
-  const { data = [], isLoading } = useAgentCasesStatsQuery();
+  const { data = [], isLoading } = useUsersAssignedCasesStatsQuery();
 
   const chartData = useMemo(
     (): AgentCasesChartData[] =>

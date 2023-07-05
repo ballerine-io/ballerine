@@ -1,5 +1,5 @@
 import {
-  GetUserCaseResolvingStatsDto,
+  GetUserDailyCasesResolvedStatsDto,
   GetUserStatsDto,
   IResolvedCasesDailyMetric,
   IUserStats,
@@ -7,21 +7,26 @@ import {
 import { request } from '@app/lib/request';
 
 export const fetchUserStats = async (query: GetUserStatsDto): Promise<IUserStats> => {
-  const result = await request.get<IUserStats>('/external/workflows/metrics/user-stats', {
-    params: query,
-  });
+  const { userId, ...restQuery } = query;
+
+  const result = await request.get<IUserStats>(
+    `/metrics/users/${userId}/user-workflow-processing-statistic`,
+    {
+      params: restQuery,
+    },
+  );
 
   return result.data;
 };
 
-export const fetchUserCaseResolvingStats = async (
-  query: GetUserCaseResolvingStatsDto,
+export const fetchUserDailyCasesResolvedStats = async (
+  query: GetUserDailyCasesResolvedStatsDto,
 ): Promise<IResolvedCasesDailyMetric[]> => {
+  const { userId, ...restQuery } = query;
+
   const result = await request.get<IResolvedCasesDailyMetric[]>(
-    '/external/workflows/metrics/case-resolving',
-    {
-      params: query,
-    },
+    `/metrics/users/${userId}/user-cases-resolved-daily`,
+    { params: restQuery },
   );
 
   return result.data;
