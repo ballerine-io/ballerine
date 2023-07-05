@@ -1,7 +1,7 @@
-import { TValidators } from '../../utils/types';
 import { AnyRecord } from '@ballerine/common';
-import { ApiPlugin, IApiPluginParams } from './api-plugin';
+import { ApiPlugin } from './api-plugin';
 import { JsonSchemaValidator } from '../../utils/context-validator/json-schema-validator';
+import {Validator} from "../../utils";
 
 const kycIndividualRequestSchema = {
   $schema: 'http://json-schema.org/draft-07/schema#',
@@ -83,11 +83,8 @@ const kycIndividualRequestSchema = {
 };
 export class KycPlugin extends ApiPlugin {
   public static pluginType = 'kyc';
-  constructor(pluginParams: IApiPluginParams) {
-    super(pluginParams);
-  }
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
-    schemaValidator: TValidators | undefined,
+    schemaValidator: Validator | undefined,
     transformedRequest: AnyRecord,
     validationContext: TValidationContext,
   ) {
