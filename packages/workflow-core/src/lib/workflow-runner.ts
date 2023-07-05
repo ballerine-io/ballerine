@@ -37,6 +37,7 @@ export class WorkflowRunner {
   #__onInvokeChildWorkflow?: WorkflowRunnerArgs['onInvokeChildWorkflow'];
   #__onDoneChildWorkflow?: WorkflowRunnerArgs['onDoneChildWorkflow'];
   #__invokedOnDoneChildWorkflow = false;
+  #__runtimeId: string;
   events: any;
 
   public get workflow() {
@@ -52,6 +53,7 @@ export class WorkflowRunner {
 
   constructor(
     {
+      runtimeId,
       definition,
       workflowActions,
       workflowContext,
@@ -72,6 +74,7 @@ export class WorkflowRunner {
     // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
+    this.#__runtimeId = runtimeId;
 
     this.#__workflow = this.#__extendedWorkflow({
       definition,
@@ -402,11 +405,17 @@ export class WorkflowRunner {
           async ({ definitionId, runtimeId, name, version, initOptions, contextToCopy }) => {
             try {
               const result = await this.#__onInvokeChildWorkflow?.({
-                definitionId,
-                runtimeId,
-                name,
-                version,
-                initOptions,
+                childWorkflowMetadata: {
+                  definitionId,
+                  runtimeId,
+                  name,
+                  version,
+                  initOptions,
+                },
+                parentWorkflowMetadata: {
+                  runtimeId: this.#__runtimeId,
+                  state: this.#__currentState,
+                },
               });
               const transformer = this.fetchTransformer(contextToCopy?.transform);
               const data = await transformer?.transform(result as AnyRecord);
@@ -461,7 +470,7 @@ export class WorkflowRunner {
         },
         {
           source: {
-            runtimeId: postSendSnapshot.machine?.id ?? '',
+            runtimeId: this.#__runtimeId,
             definitionId: childWorkflowMetadata?.definitionId,
             version: childWorkflowMetadata?.version,
             state: this.#__currentState,

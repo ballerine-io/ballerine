@@ -84,7 +84,7 @@ export const workflowsController = [
       return res(ctx.status(404));
     }
 
-    const workflowService = createWorkflowClient(workflow);
+    const workflowService = createWorkflowClient().createWorkflow(workflow);
 
     workflowService.runner.sendEvent({ type: body?.name });
 
