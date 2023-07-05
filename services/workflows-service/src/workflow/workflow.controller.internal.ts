@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import * as common from '@nestjs/common';
-import { Param, UseGuards, UsePipes } from '@nestjs/common';
+import { UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import * as nestAccessControl from 'nest-access-control';
 import { isRecordNotFoundError } from '../prisma/prisma.util';
@@ -43,11 +43,6 @@ export class WorkflowControllerInternal {
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
-
-  @common.Post('/child-workflows/:id')
-  async childWorkflows(@Param('id') id: string) {
-    return await this.service.childWorkflows(id);
-  }
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: WorkflowDefinitionModel })

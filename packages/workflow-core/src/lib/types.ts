@@ -78,7 +78,6 @@ export interface ParentWorkflowMetadata {
 export interface ChildWorkflowMetadata {
   name: string;
   definitionId: string;
-  runtimeId: string;
   version: string;
   /**
    * @description static properties to initiate the new machine with
@@ -96,6 +95,7 @@ export interface ChildWorkflowMetadata {
      */
     event: string;
   }>;
+  callbackInfo: CallbackInfo;
 }
 export interface OnDoneChildWorkflowPayload {
   source: {
