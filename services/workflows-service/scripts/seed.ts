@@ -991,7 +991,7 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  const parentDefinition = await client.workflowDefinition.create({
+  await client.workflowDefinition.create({
     data: {
       id: 'parent_id',
       name: 'parent_definition',
@@ -1056,17 +1056,6 @@ async function seed(bcryptSalt: Salt) {
           },
         },
       ],
-    },
-  });
-
-  await client.workflowRuntimeData.create({
-    data: {
-      state: 'parent_initial',
-      workflowDefinitionVersion: 1,
-      context: {},
-      workflowDefinitionId: parentDefinition.id,
-      createdAt: faker.date.recent(2),
-      businessId: businessIds[0],
     },
   });
 }

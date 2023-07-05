@@ -954,26 +954,6 @@ export class WorkflowService {
       newWorkflowCreated,
     });
 
-    const parentWorkflowService = this.#__workflowsClient.createWorkflow({
-      ...workflowDefinition,
-      runtimeId: workflowRuntimeData?.id,
-      definition: workflowDefinition.definition,
-      definitionType: workflowDefinition.definitionType,
-      workflowContext: {
-        machineContext: workflowRuntimeData.context,
-        state: workflowRuntimeData.state,
-      },
-      extensions: workflowDefinition.extensions,
-      childWorkflows: workflowDefinition.childWorkflows,
-    });
-
-    await parentWorkflowService.sendEvent({
-      type: `NEXT`,
-    });
-    await parentWorkflowService.sendEvent({
-      type: `NEXT`,
-    });
-
     return [
       {
         workflowDefinition,
@@ -1131,22 +1111,21 @@ export class WorkflowService {
     id,
   }: WorkflowEventInput & IObjectWithId) {
     this.logger.log('Workflow event received', { id, type });
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
-    const workflow = await this.workflowDefinitionRepository.findById(
-      runtimeData.workflowDefinitionId,
+    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(id);
+    const workflowDefinition = await this.workflowDefinitionRepository.findById(
+      workflowRuntimeData.workflowDefinitionId,
     );
 
-    const service = createWorkflowClient().createWorkflow({
-      runtimeId: workflow.id,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      definition: workflow.definition,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      definitionType: workflow.definitionType,
+    const service = this.#__workflowsClient.createWorkflow({
+      runtimeId: workflowRuntimeData.id,
+      definition: workflowDefinition.definition,
+      definitionType: workflowDefinition.definitionType,
       workflowContext: {
-        machineContext: runtimeData.context,
-        state: runtimeData.state,
+        machineContext: workflowRuntimeData.context,
+        state: workflowRuntimeData.state,
       },
-      extensions: workflow.extensions,
+      extensions: workflowDefinition.extensions,
+      childWorkflows: workflowDefinition.childWorkflows,
     });
 
     await service.sendEvent({
@@ -1160,7 +1139,7 @@ export class WorkflowService {
 
     this.logger.log('Workflow state transition', {
       id: id,
-      from: runtimeData.state,
+      from: workflowRuntimeData.state,
       to: currentState,
     });
 
@@ -1170,7 +1149,7 @@ export class WorkflowService {
         case ResubmissionReason.BLURRY_IMAGE:
           await this.workflowRuntimeDataRepository.updateById(
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-            (runtimeData as any).context?.parentMachine?.id,
+            (workflowRuntimeData as any).context?.parentMachine?.id,
             {
               data: {
                 state: 'document_photo',
@@ -1193,22 +1172,23 @@ export class WorkflowService {
       }
     }
 
-    await this.updateWorkflowRuntimeData(runtimeData.id, {
+    await this.updateWorkflowRuntimeData(workflowRuntimeData.id, {
       context,
       state: currentState,
-      status: isFinal ? 'completed' : runtimeData.status,
+      status: isFinal ? 'completed' : workflowRuntimeData.status,
     });
 
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
       return;
     }
 
-    runtimeData.endUserId &&
-      (await this.endUserRepository.updateById(runtimeData.endUserId, {
-        data: {
-          approvalState: ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState],
-        },
-      }));
+    if (!workflowRuntimeData.endUserId) return;
+
+    await this.endUserRepository.updateById(workflowRuntimeData.endUserId, {
+      data: {
+        approvalState: ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState],
+      },
+    });
   }
 
   private __fetchFromServiceProviders(document: TDefaultSchemaDocumentPage): {
