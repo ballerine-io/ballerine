@@ -963,4 +963,126 @@ async function seed(bcryptSalt: Salt) {
   customSeed();
 
   console.info('Seeded database successfully');
+
+  const childDefinition = await client.workflowDefinition.create({
+    data: {
+      id: 'child_id',
+      name: 'child_definition',
+      version: 1,
+      definitionType: 'statechart-json',
+      definition: {
+        id: 'Child',
+        initial: 'child_initial',
+        states: {
+          child_initial: {
+            on: {
+              NEXT: {
+                target: 'child_final',
+              },
+            },
+          },
+          child_final: {
+            type: 'final',
+          },
+        },
+      },
+      persistStates: [],
+      submitStates: [],
+    },
+  });
+
+  const childRuntimeData = await client.workflowRuntimeData.create({
+    data: {
+      state: 'child_initial',
+      workflowDefinitionVersion: 1,
+      context: {
+        endUser: {
+          id: 'user_1',
+        },
+      },
+      workflowDefinitionId: childDefinition.id,
+      createdAt: faker.date.recent(2),
+      businessId: businessIds[0],
+    },
+  });
+
+  const parentDefinition = await client.workflowDefinition.create({
+    data: {
+      id: 'parent_id',
+      name: 'parent_definition',
+      version: 1,
+      definitionType: 'statechart-json',
+      definition: {
+        id: 'Parent',
+        initial: 'parent_initial',
+        states: {
+          parent_initial: {
+            on: {
+              NEXT: {
+                target: 'invoke_child',
+              },
+            },
+          },
+          invoke_child: {
+            on: {
+              NEXT: {
+                target: 'invoked_child',
+              },
+            },
+          },
+          invoked_child: {
+            type: 'final',
+          },
+        },
+      },
+      persistStates: [],
+      submitStates: [],
+      childWorkflows: [
+        {
+          waitForResolved: true,
+          name: childDefinition.name,
+          definitionId: childDefinition.id,
+          runtimeId: childRuntimeData.id,
+          version: childDefinition.version,
+          stateNames: ['invoke_child'],
+          // Context to copy from the parent workflow
+          contextToCopy: {
+            transform: {
+              transformer: 'jmespath',
+              mapping: '{data: endUser.id}',
+            },
+          },
+          callbackInfo: {
+            event: 'parent_initial',
+            contextToCopy: {
+              transform: {
+                transformer: 'jmespath',
+                mapping: '{data: endUser.id}',
+              },
+            },
+          },
+          initOptions: {
+            event: 'NEXT',
+            context: {
+              endUser: {
+                id: 'user_1',
+              },
+            },
+            state: 'child_initial',
+          },
+        },
+      ],
+    },
+  });
+
+  await client.workflowRuntimeData.create({
+    data: {
+      state: 'parent_initial',
+      workflowDefinitionVersion: 1,
+      context: {},
+      workflowDefinitionId: parentDefinition.id,
+      createdAt: faker.date.recent(2),
+      businessId: businessIds[0],
+    },
+  });
 }

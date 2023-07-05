@@ -26,6 +26,7 @@ test('Simple Server Workflow', async () => {
 
   const workflow = createWorkflowClient();
   const runner = workflow.createWorkflow({
+    runtimeId: 'test',
     definitionType: 'statechart-json',
     definition: simpleMachine,
   });
@@ -51,6 +52,7 @@ test.skip('Server Workflow persistence MemoryStore', () => {
   simpleMachine.context = { ...(simpleMachine.context || {}), entityId: userId };
 
   const workflow = createWorkflowClient().createWorkflow({
+    runtimeId: 'test',
     definitionType: 'statechart-json',
     definition: simpleMachine,
     extensions: {
@@ -72,6 +74,7 @@ test.skip('Server Workflow persistence MemoryStore', () => {
 
   console.log(workflowData);
   const restoredWorkflow = createWorkflowClient().createWorkflow({
+    runtimeId: 'test',
     definitionType: 'statechart-json',
     definition: simpleMachine,
     workflowContext: { machineContext: workflowData!.context, state: workflowData!.state },
@@ -85,6 +88,7 @@ test.skip('Server Workflow persistence MemoryStore', () => {
 });
 
 const parentMachineBase = {
+  runtimeId: 'parent_machine_runtime_id',
   definitionType: 'statechart-json' as const,
   definition: {
     id: 'parent_machine',
@@ -117,7 +121,7 @@ const childMachine = {
   },
 } satisfies Omit<
   WorkflowOptionsNode,
-  'childWorkflows' | 'onInvokeChildWorkflow' | 'onDoneChildWorkflow'
+  'childWorkflows' | 'onInvokeChildWorkflow' | 'onDoneChildWorkflow' | 'runtimeId'
 >;
 
 describe('Parent and child workflows #integration #featureset', () => {
@@ -133,10 +137,11 @@ describe('Parent and child workflows #integration #featureset', () => {
     const onInvokeChildWorkflow = vi.fn<
       [Parameters<NonNullable<WorkflowClientOptions['onInvokeChildWorkflow']>>[0]],
       ReturnType<NonNullable<WorkflowClientOptions['onInvokeChildWorkflow']>>
-    >(async (childWorkflowMetadata: ChildWorkflowMetadata) => {
+    >(async ({ childWorkflowMetadata }) => {
       {
         const childWorkflowService = workflowClient.createWorkflow({
           ...childMachine,
+          runtimeId: childWorkflowMetadata.runtimeId,
           definition: {
             ...childMachine.definition,
             context: childWorkflowMetadata?.initOptions?.context,
@@ -390,13 +395,13 @@ describe('Parent and child workflows #integration #featureset', () => {
     ] satisfies Array<ChildWorkflow>;
 
     const workflowClient = createWorkflowClient({
-      // @ts-expect-error - TODO: fix mock type
-      async onInvokeChildWorkflow(childWorkflowMetadata) {
+      async onInvokeChildWorkflow({ childWorkflowMetadata }) {
         const childWorkflow = childWorkflows.find(
           ({ runtimeId }) => runtimeId === childWorkflowMetadata.runtimeId,
         );
         const childWorkflowService = workflowClient.createWorkflow({
           ...childMachine,
+          runtimeId: childWorkflowMetadata.runtimeId,
           definition: {
             ...childMachine.definition,
             context: {
@@ -468,7 +473,7 @@ describe('Parent and child workflows #integration #featureset', () => {
       });
       expect(response?.payload).toStrictEqual({
         source: {
-          runtimeId: 'child_machine',
+          runtimeId: 'child_machine_runtime_1',
           definitionId: 'child_machine_definition_1',
           version: '1',
           state: 'child_final',
@@ -497,13 +502,13 @@ describe('Parent and child workflows #integration #featureset', () => {
       // });
     });
     const workflowClientTwo = createWorkflowClient({
-      // @ts-expect-error - TODO: fix mock type
-      async onInvokeChildWorkflow(childWorkflowMetadata) {
+      async onInvokeChildWorkflow({ childWorkflowMetadata }) {
         const childWorkflow = childWorkflowsTwo.find(
           ({ runtimeId }) => runtimeId === childWorkflowMetadata.runtimeId,
         );
         const childWorkflowService = workflowClientTwo.createWorkflow({
           ...childMachine,
+          runtimeId: childWorkflowMetadata.runtimeId,
           definition: {
             ...childMachine.definition,
             context: {
