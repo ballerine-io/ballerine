@@ -151,14 +151,16 @@ export class WorkflowService {
           } satisfies ParentWorkflowMetadata,
           callbackInfo: childWorkflowMetadata?.callbackInfo,
           entity: {
-            type: 'business',
-            id: parentRuntimeData?.businessId,
+            type: 'endUser',
+            id: parentRuntimeData?.ballerineEntityId,
             data: {
-              companyName: 'test',
+              firstName: 'test',
+              lastName: 'test',
             },
           },
+          documents: [],
         } satisfies WorkflowOptionsNode['definition']['context'];
-        const workflow = await this.createOrUpdateWorkflowRuntime({
+        const childWorkflow = await this.createOrUpdateWorkflowRuntime({
           workflowDefinitionId: childWorkflowMetadata?.definitionId,
           context: context as any,
         });
@@ -167,7 +169,7 @@ export class WorkflowService {
         );
         const childWorkflowService = this.#__workflowsClient.createWorkflow({
           ...childDefinition,
-          runtimeId: workflow[0]?.workflowRuntimeData?.id,
+          runtimeId: childWorkflow[0]?.workflowRuntimeData?.id,
           definitionType: childDefinition.definitionType,
           definition: {
             ...childDefinition.definition,
@@ -175,16 +177,22 @@ export class WorkflowService {
           },
           workflowContext: {
             machineContext: context,
-            state: workflow[0]?.workflowRuntimeData?.state,
+            state: childWorkflow[0]?.workflowRuntimeData?.state,
           },
           extensions: childDefinition.extensions,
         });
+
+        if (childWorkflowMetadata?.initOptions?.event) {
+          await childWorkflowService.sendEvent({
+            type: childWorkflowMetadata?.initOptions?.event,
+          });
+        }
 
         return {
           childWorkflows: [
             {
               ...context,
-              runtimeId: workflow[0]?.workflowRuntimeData?.id,
+              runtimeId: childWorkflow[0]?.workflowRuntimeData?.id,
             },
           ],
         };
