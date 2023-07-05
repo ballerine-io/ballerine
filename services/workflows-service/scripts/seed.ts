@@ -15,6 +15,7 @@ import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
+import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
 
 if (require.main === module) {
   dotenv.config();
@@ -53,6 +54,7 @@ async function seed(bcryptSalt: Salt) {
   console.info('Seeding database...');
   const client = new PrismaClient();
   await generateDynamicDefinitionForE2eTest(client);
+  await generateKycForE2eTest(client);
   const users = [
     {
       email: 'agent1@ballerine.com',
@@ -1047,18 +1049,22 @@ async function seed(bcryptSalt: Salt) {
           stateNames: ['invoke_child'],
           // Context to copy from the parent workflow
           contextToCopy: {
-            transform: {
-              transformer: 'jmespath',
-              mapping: '{data: endUser.id}',
-            },
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: '{data: endUser.id}',
+              },
+            ],
           },
           callbackInfo: {
             event: 'parent_initial',
             contextToCopy: {
-              transform: {
-                transformer: 'jmespath',
-                mapping: '{data: endUser.id}',
-              },
+              transform: [
+                {
+                  transformer: 'jmespath',
+                  mapping: '{data: endUser.id}',
+                },
+              ],
             },
           },
           initOptions: {

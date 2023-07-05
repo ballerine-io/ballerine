@@ -24,6 +24,9 @@ import {
   ISerializableApiPluginParams,
   SerializableValidatableTransformer,
 } from './plugins/external-plugin/types';
+import { HelpersTransformer } from './utils/context-transformers/helpers-transformer';
+import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
+import { THelperFormatingLogic } from './utils/context-transformers/types';
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -97,25 +100,24 @@ export class WorkflowRunner {
       const requestSchema = apiPluginSchema.request.schema;
       const responseTransformerLogic = apiPluginSchema.response?.transform;
       const responseSchema = apiPluginSchema.response?.schema;
-      const requestTransformer = this.fetchTransformer(requestTransformerLogic);
+      // @ts-ignore
+      const requestTransformer = this.fetchTransformers(requestTransformerLogic);
       const responseTransformer =
-        responseTransformerLogic && this.fetchTransformer(responseTransformerLogic);
+        responseTransformerLogic && this.fetchTransformers(responseTransformerLogic);
       // @ts-expect-error TODO: fix this
       const requestValidator = this.fetchValidator('json-schema', requestSchema);
       // @ts-expect-error TODO: fix this
       const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
-      // @ts-expect-error TODO: fix this
-      const isApiPlugin = this.isApiPlugin(apiPluginSchema);
-      const ApiPluginClass = isApiPlugin ? ApiPlugin : WebhookPlugin;
-      const apiPlugin = new ApiPluginClass({
+      const apiPluginClass = this.pickApiPlugin(apiPluginSchema);
+      const apiPlugin = new apiPluginClass({
         name: apiPluginSchema.name,
         stateNames: apiPluginSchema.stateNames,
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
         headers: apiPluginSchema.headers,
-        request: { transformer: requestTransformer, schemaValidator: requestValidator },
-        response: { transformer: responseTransformer, schemaValidator: responseValidator },
+        request: { transformers: requestTransformer, schemaValidator: requestValidator },
+        response: { transformers: responseTransformer, schemaValidator: responseValidator },
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
       });
@@ -124,18 +126,44 @@ export class WorkflowRunner {
     });
   }
 
+  private pickApiPlugin(apiPluginSchema: ISerializableApiPluginParams) {
+    let pluginClass;
+    // @ts-ignore
+    if (apiPluginSchema.pluginType == 'kyc') {
+      pluginClass = KycPlugin;
+      // @ts-ignore
+    } else if (apiPluginSchema.pluginType == 'webhook') {
+      pluginClass = WebhookPlugin;
+      // @ts-ignore
+    } else if (apiPluginSchema.pluginType == 'api') {
+      pluginClass = ApiPlugin;
+    }
+    if (pluginClass) return pluginClass;
+    // @ts-expect-error TODO: fix this
+    const isApiPlugin = this.isApiPlugin(apiPluginSchema);
+    return isApiPlugin ? ApiPlugin : WebhookPlugin;
+  }
+
   private isApiPlugin(apiPluginSchema: IApiPluginParams) {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
-  fetchTransformer(
-    transformer: SerializableValidatableTransformer['transform'] & {
+  fetchTransformers(
+    transformers: SerializableValidatableTransformer['transform'] & {
       name?: string;
     },
   ) {
-    if (transformer.transformer === 'jmespath') return new JmespathTransformer(transformer.mapping);
+    return (
+      transformers?.map(transformer => {
+        if (transformer.transformer == 'jmespath')
+          return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
+        if (transformer.transformer == 'helper') {
+          return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
+        }
 
-    throw new Error(`Transformer ${transformer.name} is not supported`);
+        throw new Error(`Transformer ${transformer} is not supported`);
+      }) || []
+    );
   }
   fetchValidator(
     validatorName: string,
@@ -417,8 +445,12 @@ export class WorkflowRunner {
                   state: this.#__currentState,
                 },
               });
-              const transformer = this.fetchTransformer(contextToCopy?.transform);
-              const data = await transformer?.transform(result as AnyRecord);
+              const transformers = this.fetchTransformers(contextToCopy?.transform);
+              let data = result;
+
+              for (const transformer of transformers) {
+                data = await transformer?.transform(data as AnyRecord);
+              }
 
               return {
                 data,
@@ -460,8 +492,12 @@ export class WorkflowRunner {
       postSendSnapshot.done &&
       !this.#__invokedOnDoneChildWorkflow
     ) {
-      const transformer = this.fetchTransformer(callbackInfo?.contextToCopy?.transform);
-      const payload = await transformer?.transform(postSendSnapshot?.context);
+      const transformers = this.fetchTransformers(callbackInfo?.contextToCopy?.transform);
+      let payload = postSendSnapshot?.context;
+
+      for (const transformer of transformers) {
+        payload = await transformer?.transform(payload as AnyRecord);
+      }
 
       await this.#__onDoneChildWorkflow(
         {
