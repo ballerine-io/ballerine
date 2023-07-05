@@ -18,8 +18,9 @@ export class HelpersTransformer extends BaseContextTransformer {
       const targetPath = mappingLogic.target.split('.');
 
       const sourceAttributeValue = this.getNestedProperty(context, sourcePath);
-      // @ts-expect-error - source attribute value is dynamic - therefore it should match by config of tranformer
       const transformedValue = await this[mappingLogic.method](
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - sourceAttributeValue is dynamic and configurable
         sourceAttributeValue,
         mappingLogic.value,
       );
