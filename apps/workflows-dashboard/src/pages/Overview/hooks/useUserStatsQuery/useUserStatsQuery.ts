@@ -1,4 +1,4 @@
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { IUserStats, userStatsQueryKeys } from '@app/domains/user/api/user-stats';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';

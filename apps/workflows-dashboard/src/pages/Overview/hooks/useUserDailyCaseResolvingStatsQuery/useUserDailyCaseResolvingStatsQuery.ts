@@ -1,6 +1,6 @@
 import { usersStatsQueryKeys } from '@app/domains/user/api/users-stats';
 import { useQuery } from '@tanstack/react-query';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
 export const useUserDailyCaseResolvingStatsQuery = () => {
