@@ -20,32 +20,24 @@ export const kycDynamicExample = {
       },
       run_kyc: {
         on: {
-          PENDING_KYC: [{ target: 'kyc_result' }],
+          PENDING_KYC: [{ target: 'manual_review' }],
           API_CALL_ERROR: [{ target: 'auto_reject' }],
         },
       },
-      kyc_result: {
-        on: {
-          target: 'manual_review',
-        },
-      },
       manual_review: {
-        on: {
-          approve: 'approve',
-          reject: 'reject',
-        },
+        type: 'final' as const,
       },
       auto_approve: {
-        type: 'final' as 'final',
+        type: 'final' as const,
       },
       auto_reject: {
-        type: 'final' as 'final',
+        type: 'final' as const,
       },
       reject: {
-        type: 'final' as 'final',
+        type: 'final' as const,
       },
       approve: {
-        type: 'final' as 'final',
+        type: 'final' as const,
       },
     },
   },

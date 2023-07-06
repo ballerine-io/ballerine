@@ -25,8 +25,8 @@ import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-gu
 import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
-import {WorkflowIdWithEventInput} from "@/workflow/dtos/workflow-id-with-event-input";
-import {WorkflowWebhookInput} from "@/workflow/dtos/workflow-webhook-input";
+import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
+import { WorkflowWebhookInput } from '@/workflow/dtos/workflow-webhook-input';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -198,7 +198,6 @@ export class WorkflowControllerExternal {
     }
   }
 
-
   @common.Post('/:id/hook/:event')
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
@@ -224,4 +223,3 @@ export class WorkflowControllerExternal {
     });
   }
 }
-

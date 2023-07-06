@@ -1,6 +1,6 @@
 import { ApiPlugin } from './external-plugin/api-plugin';
-import { WebhookPlugin } from "./external-plugin/webhook-plugin";
-import { KycPlugin } from "./external-plugin/kyc-plugin";
+import { WebhookPlugin } from './external-plugin/webhook-plugin';
+import { KycPlugin } from './external-plugin/kyc-plugin';
 
 export type PluginAction = { workflowId: string; context: any; event: any; state: any };
 
@@ -29,4 +29,4 @@ export interface StatePlugin extends WorkflowPlugin {
 
 export type StatePlugins = StatePlugin[];
 export type ApiPlugins = ApiPlugin[];
-export const API_PLUGIN_CLASSES = [ApiPlugin, WebhookPlugin, KycPlugin] as const
+export const API_PLUGIN_CLASSES = [ApiPlugin, WebhookPlugin, KycPlugin] as const;

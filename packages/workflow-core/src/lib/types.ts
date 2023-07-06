@@ -42,7 +42,7 @@ export interface ChildWorkflow {
   definitionId: string;
   version: string;
   stateNames: Array<string>;
-  contextToCopy: SerializableValidatableTransformer;
+  parentContextToCopy?: SerializableValidatableTransformer;
   callbackInfo: CallbackInfo;
   initOptions?: {
     event?: string;
@@ -66,7 +66,7 @@ export interface WorkflowOptions {
 export interface CallbackInfo {
   event: string;
   // what data should be sent back to the parent workflow, out of the full child workflow context
-  contextToCopy: SerializableValidatableTransformer;
+  childContextToCopy?: SerializableValidatableTransformer;
 }
 export interface ParentWorkflowMetadata {
   name: string;
@@ -74,6 +74,8 @@ export interface ParentWorkflowMetadata {
   runtimeId: string;
   version: string;
   state: string;
+  // Transformed with `parentContextToCopy`
+  context: Record<string, unknown>;
 }
 export interface ChildWorkflowMetadata {
   name: string;
@@ -128,7 +130,7 @@ export interface WorkflowClientOptions {
     parentWorkflowMetadata,
   }: {
     childWorkflowMetadata: ChildWorkflowMetadata;
-    parentWorkflowMetadata: Pick<ParentWorkflowMetadata, 'runtimeId' | 'state'>;
+    parentWorkflowMetadata: Pick<ParentWorkflowMetadata, 'runtimeId' | 'state' | 'context'>;
   }) => Promise<TData> | Promise<void>;
 }
 

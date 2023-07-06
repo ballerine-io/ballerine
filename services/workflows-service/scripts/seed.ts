@@ -965,32 +965,6 @@ async function seed(bcryptSalt: Salt) {
 
   console.info('Seeded database successfully');
 
-  const childDefinition = await client.workflowDefinition.create({
-    data: {
-      id: 'child_id',
-      name: 'child_definition',
-      version: 1,
-      definitionType: 'statechart-json',
-      definition: {
-        id: 'Child',
-        initial: 'child_initial',
-        states: {
-          child_initial: {
-            on: {
-              NEXT: {
-                target: 'child_final',
-              },
-            },
-          },
-          child_final: {
-            type: 'final',
-          },
-        },
-      },
-      persistStates: [],
-      submitStates: [],
-    },
-  });
   const childKycExampleDefinition = await generateKycForE2eTest(client);
 
   await client.workflowDefinition.create({
@@ -1031,18 +1005,19 @@ async function seed(bcryptSalt: Salt) {
           definitionId: childKycExampleDefinition.id,
           version: childKycExampleDefinition.version,
           stateNames: ['invoke_child'],
-          // Context to copy from the parent workflow
-          contextToCopy: {
+          // Context to copy from the parent workflow to the child workflow
+          parentContextToCopy: {
             transform: [
               {
                 transformer: 'jmespath',
-                mapping: '{data: endUser.id}',
+                mapping: '{data: {documents: data.documents}}',
               },
             ],
           },
           callbackInfo: {
             event: 'parent_initial',
-            contextToCopy: {
+            // Context to copy from the child workflow to the parent workflow
+            childContextToCopy: {
               transform: [
                 {
                   transformer: 'jmespath',
