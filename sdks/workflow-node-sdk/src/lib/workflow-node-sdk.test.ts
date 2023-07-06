@@ -256,10 +256,12 @@ describe('Parent and child workflows #integration #featureset', () => {
         callbackInfo: {
           event: 'parent_initial',
           childContextToCopy: {
-            transform: {
-              transformer: 'jmespath',
-              mapping: 'endUser.id',
-            },
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: 'endUser.id',
+              },
+            ],
           },
         },
       } satisfies ChildWorkflowMetadata);
