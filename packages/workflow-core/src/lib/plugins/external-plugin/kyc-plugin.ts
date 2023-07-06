@@ -1,7 +1,7 @@
 import { AnyRecord } from '@ballerine/common';
 import { ApiPlugin } from './api-plugin';
 import { JsonSchemaValidator } from '../../utils/context-validator/json-schema-validator';
-import {Validator} from "../../utils";
+import { Validator } from '../../utils';
 
 const kycIndividualRequestSchema = {
   $schema: 'http://json-schema.org/draft-07/schema#',

@@ -431,8 +431,25 @@ export class WorkflowRunner {
     if (this.#__onInvokeChildWorkflow && childWorkflowsToInvoke?.length) {
       const results = await Promise.allSettled(
         childWorkflowsToInvoke?.map(
-          async ({ definitionId, name, version, initOptions, contextToCopy, callbackInfo }) => {
+          async ({
+            definitionId,
+            name,
+            version,
+            initOptions,
+            parentContextToCopy,
+            callbackInfo,
+          }) => {
             try {
+              let context = this.#__context;
+
+              if (parentContextToCopy) {
+                const parentTransformers = this.fetchTransformers(parentContextToCopy.transform);
+
+                for (const parentTransformer of parentTransformers) {
+                  context = await parentTransformer.transform(context);
+                }
+              }
+
               const result = await this.#__onInvokeChildWorkflow?.({
                 childWorkflowMetadata: {
                   definitionId,
@@ -444,17 +461,24 @@ export class WorkflowRunner {
                 parentWorkflowMetadata: {
                   runtimeId: this.#__runtimeId,
                   state: this.#__currentState,
+                  context: parentContextToCopy ? context : undefined,
                 },
               });
-              const transformers = this.fetchTransformers(contextToCopy?.transform);
+
               let data = result;
 
-              for (const transformer of transformers) {
-                data = await transformer?.transform(data as AnyRecord);
+              if (callbackInfo?.childContextToCopy) {
+                const childTransformers = this.fetchTransformers(
+                  callbackInfo.childContextToCopy.transform,
+                );
+
+                for (const childTransformer of childTransformers) {
+                  data = await childTransformer.transform(data as AnyRecord);
+                }
               }
 
               return {
-                data,
+                data: callbackInfo?.childContextToCopy ? data : undefined,
                 error: undefined,
               };
             } catch (error) {
@@ -492,17 +516,20 @@ export class WorkflowRunner {
       postSendSnapshot.done &&
       !this.#__invokedOnDoneChildWorkflow
     ) {
-      const transformers = this.fetchTransformers(callbackInfo?.contextToCopy?.transform);
       let payload = postSendSnapshot?.context;
 
-      for (const transformer of transformers) {
-        payload = await transformer?.transform(payload as AnyRecord);
+      if (callbackInfo?.childContextToCopy) {
+        const childTransformers = this.fetchTransformers(callbackInfo.childContextToCopy.transform);
+
+        for (const childTransformer of childTransformers) {
+          payload = await childTransformer.transform(payload as AnyRecord);
+        }
       }
 
       await this.#__onDoneChildWorkflow(
         {
           type: callbackInfo?.event,
-          payload,
+          payload: callbackInfo?.childContextToCopy ? payload : undefined,
         },
         {
           source: {

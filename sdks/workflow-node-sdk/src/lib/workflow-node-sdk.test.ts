@@ -194,20 +194,23 @@ describe('Parent and child workflows #integration #featureset', () => {
           version: '1',
           stateNames: ['invoke_child'],
           // Context to copy from the parent workflow
-          contextToCopy: {
+          parentContextToCopy: {
             transform: [
               {
-              transformer: 'jmespath',
-              mapping: 'endUser.id',
-            }],
+                transformer: 'jmespath',
+                mapping: 'endUser.id',
+              },
+            ],
           },
           callbackInfo: {
             event: 'parent_initial',
-            contextToCopy: {
-              transform: [{
-                transformer: 'jmespath',
-                mapping: 'endUser.id',
-              }],
+            childContextToCopy: {
+              transform: [
+                {
+                  transformer: 'jmespath',
+                  mapping: 'endUser.id',
+                },
+              ],
             },
           },
           initOptions: {
@@ -252,11 +255,13 @@ describe('Parent and child workflows #integration #featureset', () => {
         },
         callbackInfo: {
           event: 'parent_initial',
-          contextToCopy: {
-            transform: {
-              transformer: 'jmespath',
-              mapping: 'endUser.id',
-            },
+          childContextToCopy: {
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: 'endUser.id',
+              },
+            ],
           },
         },
       } satisfies ChildWorkflowMetadata);
@@ -292,22 +297,22 @@ describe('Parent and child workflows #integration #featureset', () => {
           version: '1',
           stateNames: ['invoke_child', 'invoked_child'],
           // Context to copy from the parent workflow
-          contextToCopy: {
+          parentContextToCopy: {
             transform: [
               {
-              transformer: 'jmespath',
-              mapping: 'stakeholders',
-            }
+                transformer: 'jmespath',
+                mapping: 'stakeholders',
+              },
             ],
           },
           callbackInfo: {
             event: 'parent_initial',
-            contextToCopy: {
+            childContextToCopy: {
               transform: [
                 {
-                transformer: 'jmespath',
-                mapping: 'endUser.id',
-              }
+                  transformer: 'jmespath',
+                  mapping: 'endUser.id',
+                },
               ],
             },
           },
@@ -379,22 +384,22 @@ describe('Parent and child workflows #integration #featureset', () => {
         version: '1',
         stateNames: ['invoke_child'],
         // Context to copy from the parent workflow
-        contextToCopy: {
+        parentContextToCopy: {
           transform: [
             {
-            transformer: 'jmespath',
-            mapping: 'stakeholders',
-          }
+              transformer: 'jmespath',
+              mapping: 'stakeholders',
+            },
           ],
         },
         callbackInfo: {
           event: 'parent_initial',
-          contextToCopy: {
+          childContextToCopy: {
             transform: [
               {
-              transformer: 'jmespath',
-              mapping: 'endUser.id',
-            }
+                transformer: 'jmespath',
+                mapping: 'endUser.id',
+              },
             ],
           },
         },
@@ -574,22 +579,22 @@ describe('Parent and child workflows #integration #featureset', () => {
         version: '1',
         stateNames: ['invoke_child'],
         // Context to copy from the parent workflow
-        contextToCopy: {
+        parentContextToCopy: {
           transform: [
             {
               transformer: 'jmespath',
               mapping: 'stakeholders',
-            }
+            },
           ],
         },
         callbackInfo: {
           event: 'parent_initial',
-          contextToCopy: {
+          childContextToCopy: {
             transform: [
               {
                 transformer: 'jmespath',
                 mapping: 'endUser.id',
-              }
+              },
             ],
           },
         },
