@@ -195,18 +195,22 @@ describe('Parent and child workflows #integration #featureset', () => {
           stateNames: ['invoke_child'],
           // Context to copy from the parent workflow
           parentContextToCopy: {
-            transform: {
-              transformer: 'jmespath',
-              mapping: 'endUser.id',
-            },
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: 'endUser.id',
+              },
+            ],
           },
           callbackInfo: {
             event: 'parent_initial',
             childContextToCopy: {
-              transform: {
-                transformer: 'jmespath',
-                mapping: 'endUser.id',
-              },
+              transform: [
+                {
+                  transformer: 'jmespath',
+                  mapping: 'endUser.id',
+                },
+              ],
             },
           },
           initOptions: {
@@ -292,18 +296,22 @@ describe('Parent and child workflows #integration #featureset', () => {
           stateNames: ['invoke_child', 'invoked_child'],
           // Context to copy from the parent workflow
           parentContextToCopy: {
-            transform: {
-              transformer: 'jmespath',
-              mapping: 'stakeholders',
-            },
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: 'stakeholders',
+              },
+            ],
           },
           callbackInfo: {
             event: 'parent_initial',
             childContextToCopy: {
-              transform: {
-                transformer: 'jmespath',
-                mapping: 'endUser.id',
-              },
+              transform: [
+                {
+                  transformer: 'jmespath',
+                  mapping: 'endUser.id',
+                },
+              ],
             },
           },
           initOptions: {
@@ -375,18 +383,22 @@ describe('Parent and child workflows #integration #featureset', () => {
         stateNames: ['invoke_child'],
         // Context to copy from the parent workflow
         parentContextToCopy: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: 'stakeholders',
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: 'stakeholders',
+            },
+          ],
         },
         callbackInfo: {
           event: 'parent_initial',
           childContextToCopy: {
-            transform: {
-              transformer: 'jmespath',
-              mapping: 'endUser.id',
-            },
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: 'endUser.id',
+              },
+            ],
           },
         },
         initOptions: {
@@ -566,18 +578,22 @@ describe('Parent and child workflows #integration #featureset', () => {
         stateNames: ['invoke_child'],
         // Context to copy from the parent workflow
         parentContextToCopy: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: 'stakeholders',
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: 'stakeholders',
+            },
+          ],
         },
         callbackInfo: {
           event: 'parent_initial',
           childContextToCopy: {
-            transform: {
-              transformer: 'jmespath',
-              mapping: 'endUser.id',
-            },
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: 'endUser.id',
+              },
+            ],
           },
         },
         initOptions: {

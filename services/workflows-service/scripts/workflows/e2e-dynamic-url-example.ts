@@ -27,19 +27,9 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                 type: 'json-logic',
                 options: {
                   rule: {
-                    or: [
-                      {
-                        '==': [
-                          { var: 'context.entity.companyName' },
-                          { var: 'response.data.registered_name' },
-                        ],
-                      },
-                      // {
-                      //   '>=': [
-                      //     { var: 'context.external_request_example.data.name_fuzziness_score' },
-                      //     0.91,
-                      //   ],
-                      // },
+                    '==': [
+                      { var: 'context.entity.companyName' },
+                      { var: 'response.data.registered_name' },
                     ],
                   },
                 },
@@ -121,6 +111,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
     apiPlugins: [
       {
         name: 'business_data_vendor',
+        pluginType: 'api',
         url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_eu.json',
         logo: 'https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/649435882f9b2819873035d7_companyVendorLogo.png',
         method: 'GET',
@@ -128,11 +119,13 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         successAction: 'API_CALL_SUCCESS',
         errorAction: 'API_CALL_ERROR',
         request: {
-          transform: {
-            transformer: 'jmespath',
-            mapping:
-              '{ business_name: entity.data.companyName, registration_number: entity.data.registrationNumber}',
-          }, // jmespath
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping:
+                '{ business_name: entity.data.companyName, registration_number: entity.data.registrationNumber}',
+            },
+          ], // jmespath
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',
             type: 'object',
@@ -148,10 +141,12 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
           }, // Schema is OPTIONAL, but if provided, it will be used to validate the request body
         },
         response: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: '@', // jmespath
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@', // jmespath
+            },
+          ],
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',
             type: 'object',
@@ -191,10 +186,12 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
           authorization: 'Bearer {secret.BUSINESS_DATA__VENDOR_API_KEY}',
         },
         request: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: '{success_result: pluginsOutput.business_data_vendor}',
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '{success_result: pluginsOutput.business_data_vendor}',
+            },
+          ],
         },
       },
       {
@@ -203,10 +200,12 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         method: 'POST',
         stateNames: ['auto_reject'],
         request: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: '{failing_result: @}',
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '{failing_result: @}',
+            },
+          ],
         },
       },
     ],

@@ -1,15 +1,16 @@
-import { TJsonSchema, Transformer, Validator } from '../../utils';
+import { TJsonSchema, Transformers, Validator } from '../../utils';
+import { THelperFormatingLogic } from '../../utils/context-transformers/types';
 
 export interface ValidatableTransformer {
-  transformer: Transformer;
+  transformers: Transformers;
   schemaValidator?: Validator;
 }
 
 export interface SerializableValidatableTransformer {
   transform: {
     transformer: string;
-    mapping: string;
-  };
+    mapping: string | THelperFormatingLogic;
+  }[];
   schema?: TJsonSchema;
 }
 

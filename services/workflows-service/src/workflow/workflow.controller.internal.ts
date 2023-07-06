@@ -31,6 +31,8 @@ import {
 } from '@/workflow/dtos/find-workflow.dto';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
+import { WorkflowWebhookInput } from '@/workflow/dtos/workflow-webhook-input';
+import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -197,5 +199,30 @@ export class WorkflowControllerInternal {
       }
       throw error;
     }
+  }
+
+  @common.Post('/:id/hook/:event')
+  @swagger.ApiOkResponse()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async hook(
+    @common.Param() params: WorkflowIdWithEventInput,
+    @common.Body() data: WorkflowWebhookInput,
+  ): Promise<void> {
+    try {
+      const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
+      const updatedContext = { ...workflowRuntime.context, ...data.payload };
+      await this.service.updateWorkflowRuntimeData(params.id, { context: updatedContext });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
+
+    return await this.service.event({
+      id: params.id,
+      name: params.event,
+    });
   }
 }

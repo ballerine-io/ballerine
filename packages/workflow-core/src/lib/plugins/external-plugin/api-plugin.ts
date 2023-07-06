@@ -1,8 +1,9 @@
-import { TContext, Transformer, Validator } from '../../utils/types';
+import { TContext, Transformer, Transformers, Validator } from '../../utils';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
 import { IApiPluginParams } from './types';
 
 export class ApiPlugin {
+  public static pluginType = 'kyc';
   name: string;
   stateNames: Array<string>;
   url: string;
@@ -29,7 +30,7 @@ export class ApiPlugin {
   }
   async callApi(context: TContext) {
     try {
-      const requestPayload = await this.transformData(this.request.transformer, context);
+      const requestPayload = await this.transformData(this.request.transformers, context);
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,
         requestPayload,
@@ -47,7 +48,7 @@ export class ApiPlugin {
       if (apiResponse.ok) {
         const result = (await apiResponse.json()) as unknown;
         const responseBody = await this.transformData(
-          this.response!.transformer,
+          this.response!.transformers,
           result as AnyRecord,
         );
 
@@ -57,8 +58,10 @@ export class ApiPlugin {
           'Response',
         );
         if (!isValidResponse) return this.returnErrorResponse(errorMessage!);
-
-        return { callbackAction: this.successAction, responseBody };
+        if (this.successAction) {
+          return this.returnSuccessResponse(this.successAction, responseBody);
+        }
+        return;
       } else {
         return this.returnErrorResponse('Request Failed: ' + apiResponse.statusText);
       }
@@ -66,6 +69,11 @@ export class ApiPlugin {
       return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
     }
   }
+
+  returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {
+    return { callbackAction, responseBody };
+  }
+
   returnErrorResponse(errorMessage: string) {
     return { callbackAction: this.errorAction, error: errorMessage };
   }
@@ -93,13 +101,22 @@ export class ApiPlugin {
     return await fetch(url, requestParams);
   }
 
-  async transformData(transformer: Transformer, record: AnyRecord) {
+  async transformData(transformers: Transformers, record: AnyRecord) {
+    let mutatedRecord = record;
+    for (const transformer of transformers) {
+      mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
+    }
+    return mutatedRecord;
+  }
+
+  async transformByTransformer(transformer: Transformer, record: AnyRecord) {
     try {
       return (await transformer.transform(record, { input: 'json', output: 'json' })) as AnyRecord;
     } catch (error) {
       throw new Error(
         `Error transforming data: ${
           isErrorWithMessage(error) ? error.message : ''
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         } for transformer mapping: ${transformer.mapping}`,
       );
     }
@@ -121,10 +138,12 @@ export class ApiPlugin {
     return Object.fromEntries(
       Object.entries(headers).map(header => [
         header[0],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.replaceValuePlaceholders(header[1], context),
       ]),
     );
   }
+
   replaceValuePlaceholders(content: string, context: TContext) {
     const placeholders = content.match(/{(.*?)}/g);
     if (!placeholders) return content;
@@ -135,7 +154,8 @@ export class ApiPlugin {
       const isPlaceholderSecret = variableKey.includes('secret.');
       const placeholderValue = isPlaceholderSecret
         ? `${process.env[variableKey.replace('secret.', '')]}`
-        : `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
+        : // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
       replacedContent = replacedContent.replace(placeholder, placeholderValue);
     });
 
@@ -146,6 +166,7 @@ export class ApiPlugin {
     const pathToValue = path.split('.');
 
     return pathToValue.reduce((acc: unknown, pathKey: string) => {
+      // eslint-disable-next-line no-prototype-builtins
       if (typeof acc === 'object' && acc !== null && acc.hasOwnProperty(pathKey)) {
         return (acc as AnyRecord)[pathKey];
       } else {

@@ -51,10 +51,12 @@ describe('workflow-runner', () => {
         request: {
           // TODO: Ensure if this is intentional
           // @ts-expect-error - this does not match the interface of IApiPluginParams['request']
-          transform: {
-            transformer: 'jmespath',
-            mapping: '{id: entity.id}',
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '{id: entity.id}',
+            },
+          ],
         },
       },
     ] satisfies Parameters<typeof createWorkflowRunner>[1];

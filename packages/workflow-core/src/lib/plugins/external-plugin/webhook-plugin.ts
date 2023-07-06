@@ -3,6 +3,7 @@ import { TContext } from '../../utils/types';
 import { IApiPluginParams } from './types';
 
 export class WebhookPlugin extends ApiPlugin {
+  public static pluginType = 'webhook';
   constructor(pluginParams: IApiPluginParams) {
     super(pluginParams);
   }
@@ -10,7 +11,7 @@ export class WebhookPlugin extends ApiPlugin {
   // TODO: Ensure if this is intentional
   // @ts-expect-error - this does not match the interface of api plugins
   async callApi(context: TContext) {
-    const requestPayload = await this.transformData(this.request.transformer, context);
+    const requestPayload = await this.transformData(this.request.transformers, context);
 
     try {
       await this.makeApiRequest(this.url, this.method, requestPayload, this.headers!);

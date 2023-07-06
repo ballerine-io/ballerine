@@ -15,6 +15,7 @@ import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
+import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
 
 if (require.main === module) {
   dotenv.config();
@@ -990,6 +991,7 @@ async function seed(bcryptSalt: Salt) {
       submitStates: [],
     },
   });
+  const childKycExampleDefinition = await generateKycForE2eTest(client);
 
   await client.workflowDefinition.create({
     data: {
@@ -1025,35 +1027,33 @@ async function seed(bcryptSalt: Salt) {
       childWorkflows: [
         {
           waitForResolved: true,
-          name: childDefinition.name,
-          definitionId: childDefinition.id,
-          version: childDefinition.version,
+          name: childKycExampleDefinition.name,
+          definitionId: childKycExampleDefinition.id,
+          version: childKycExampleDefinition.version,
           stateNames: ['invoke_child'],
           // Context to copy from the parent workflow to the child workflow
           parentContextToCopy: {
-            transform: {
-              transformer: 'jmespath',
-              mapping: '{data: {documents: data.documents}}',
-            },
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: '{data: {documents: data.documents}}',
+              },
+            ],
           },
           callbackInfo: {
             event: 'parent_initial',
             // Context to copy from the child workflow to the parent workflow
             childContextToCopy: {
-              transform: {
-                transformer: 'jmespath',
-                mapping: '{data: {endUserId: data.endUser.id}}',
-              },
+              transform: [
+                {
+                  transformer: 'jmespath',
+                  mapping: '{childValue: @}',
+                },
+              ],
             },
           },
           initOptions: {
-            event: 'NEXT',
-            context: {
-              endUser: {
-                id: 'user_1',
-              },
-            },
-            state: 'child_initial',
+            event: 'start',
           },
         },
       ],
