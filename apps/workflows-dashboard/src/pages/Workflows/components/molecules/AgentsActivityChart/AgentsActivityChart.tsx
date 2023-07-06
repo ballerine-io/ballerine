@@ -1,5 +1,5 @@
-import * as classnames from 'classnames';
-import * as dayjs from 'dayjs';
+import classnames from 'classnames';
+import dayjs from 'dayjs';
 import { ChartProps } from '@app/pages/Workflows/components/molecules/common/types';
 import { MetricListChart } from '@app/pages/Workflows/components/molecules/MetricListChart';
 import { useMemo } from 'react';

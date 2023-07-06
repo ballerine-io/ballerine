@@ -7,7 +7,7 @@ import {
   TableRow,
 } from '@app/components/atoms/Table';
 import { memo, useMemo } from 'react';
-import * as classnames from 'classnames';
+import classnames from 'classnames';
 import { useReactTable, flexRender, getCoreRowModel, SortingState } from '@tanstack/react-table';
 import { IWorkflow } from '@app/domains/workflows/api/workflow';
 import { defaultColumns } from '@app/components/molecules/WorkflowsTable/columns';
