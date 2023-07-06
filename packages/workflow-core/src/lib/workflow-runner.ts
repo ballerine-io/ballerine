@@ -85,10 +85,12 @@ export class WorkflowRunner {
     });
 
     // use initial context or provided context
-    this.#__context =
-      workflowContext && Object.keys(workflowContext.machineContext ?? {})?.length
+    this.#__context = {
+      ...(workflowContext && Object.keys(workflowContext.machineContext ?? {})?.length
         ? workflowContext.machineContext
-        : definition.context || {};
+        : definition.context ?? {}),
+      workflowRuntimeId: runtimeId,
+    };
 
     // use initial state or provided state
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
@@ -127,18 +129,13 @@ export class WorkflowRunner {
   }
 
   private pickApiPlugin(apiPluginSchema: ISerializableApiPluginParams) {
-    let pluginClass;
     // @ts-ignore
-    if (apiPluginSchema.pluginType == 'kyc') {
-      pluginClass = KycPlugin;
-      // @ts-ignore
-    } else if (apiPluginSchema.pluginType == 'webhook') {
-      pluginClass = WebhookPlugin;
-      // @ts-ignore
-    } else if (apiPluginSchema.pluginType == 'api') {
-      pluginClass = ApiPlugin;
-    }
-    if (pluginClass) return pluginClass;
+    if (apiPluginSchema.pluginType == 'kyc') return KycPlugin;
+    // @ts-ignore
+    if (apiPluginSchema.pluginType == 'webhook') return WebhookPlugin;
+    // @ts-ignore
+    if (apiPluginSchema.pluginType == 'api') return ApiPlugin;
+
     // @ts-expect-error TODO: fix this
     const isApiPlugin = this.isApiPlugin(apiPluginSchema);
     return isApiPlugin ? ApiPlugin : WebhookPlugin;

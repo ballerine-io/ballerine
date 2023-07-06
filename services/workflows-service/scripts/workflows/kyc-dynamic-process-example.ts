@@ -20,8 +20,13 @@ export const kycDynamicExample = {
       },
       run_kyc: {
         on: {
-          PENDING_KYC: [{ target: 'manual_review' }],
+          PENDING_KYC: [{ target: 'pending_kyc_response' }],
           API_CALL_ERROR: [{ target: 'auto_reject' }],
+        },
+      },
+      pending_kyc_response: {
+        on: {
+          KYC_RESPONDED: [{ target: 'manual_review' }],
         },
       },
       manual_review: {
@@ -58,7 +63,7 @@ export const kycDynamicExample = {
               transformer: 'jmespath',
               mapping: `{
               endUserId: entity.id,
-              callbackUrl: join('',['http://localhost:3000/internal/',entity.id,'/hook/kyc_result']),
+              callbackUrl: join('',['http://localhost:3000/api/v1/internal/workflows/',workflowRuntimeId,'/hook/KYC_RESPONDED']),
               person: {
                firstName: entity.data.firstName,
                lastName: entity.data.lastName,
