@@ -6,28 +6,46 @@ import {
   TableHeader,
   TableRow,
 } from '@app/components/atoms/Table';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import * as classnames from 'classnames';
 import { useReactTable, flexRender, getCoreRowModel, SortingState } from '@tanstack/react-table';
 import { IWorkflow } from '@app/domains/workflows/api/workflow';
 import { defaultColumns } from '@app/components/molecules/WorkflowsTable/columns';
 import Scrollbars from 'react-custom-scrollbars';
-
-export interface WorkflowsTableSorting {
-  key: string;
-  direction: 'asc' | 'desc';
-}
+import {
+  InputColumn,
+  WorkflowsTableSorting,
+  WorkflowTableColumnDef,
+} from '@app/components/molecules/WorkflowsTable/types';
+import keyBy from 'lodash/keyBy';
+import { mergeColumns } from '@app/components/molecules/WorkflowsTable/utils/merge-columns';
 
 interface Props {
   items: IWorkflow[];
   sorting?: WorkflowsTableSorting;
   isFetching?: boolean;
+  columns?: InputColumn[];
   onSort: (key: string, direction: 'asc' | 'desc') => void;
 }
 
-export const WorkflowsTable = memo(({ items, isFetching, sorting, onSort }: Props) => {
+export const WorkflowsTable = memo(({ items, isFetching, sorting, columns, onSort }: Props) => {
+  // merging column parameters if provided
+  const tableColumns = useMemo((): WorkflowTableColumnDef<IWorkflow>[] => {
+    if (!Array.isArray(columns) || !columns.length) return defaultColumns;
+
+    const columnsMap = keyBy(columns, 'id');
+
+    return defaultColumns.map(defaultColumn => {
+      const columnParams = columnsMap[defaultColumn.accessorKey];
+
+      if (!columnParams) return defaultColumn;
+
+      return mergeColumns(defaultColumn, columnParams);
+    });
+  }, [columns]);
+
   const table = useReactTable({
-    columns: defaultColumns,
+    columns: tableColumns,
     data: items,
     enableColumnResizing: true,
     manualSorting: false,

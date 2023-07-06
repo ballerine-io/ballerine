@@ -1,16 +1,16 @@
 import { HealthIndicator } from '@app/components/atoms/HealthIndicator';
+import { ContextViewColumn } from '@app/components/molecules/WorkflowsTable/components/ContextViewColumn';
 import { DataTableColumnHeader } from '@app/components/molecules/WorkflowsTable/components/DataTableColumnHeader';
+import { WorkflowTableColumnDef } from '@app/components/molecules/WorkflowsTable/types';
 import { formatDate } from '@app/components/molecules/WorkflowsTable/utils/format-date';
-import { IWorkflow, IWorkflowAssignee } from '@app/domains/workflows/api/workflow';
+import { IWorkflow } from '@app/domains/workflows/api/workflow';
 import { getWorkflowHealthStatus } from '@app/utils/get-workflow-health-status';
-import { ColumnDef } from '@tanstack/react-table';
 
-export const defaultColumns: ColumnDef<IWorkflow>[] = [
+export const defaultColumns: WorkflowTableColumnDef<IWorkflow>[] = [
   {
     accessorKey: 'id',
     cell: info => info.getValue<string>(),
     header: () => 'ID',
-    size: 280,
   },
   {
     accessorKey: 'workflowDefinitionName',
@@ -28,31 +28,29 @@ export const defaultColumns: ColumnDef<IWorkflow>[] = [
       </div>
     ),
     header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
-    size: 125,
   },
   {
     accessorKey: 'state',
     cell: info => info.getValue<string>(),
     header: ({ column }) => <DataTableColumnHeader column={column} title="State" />,
-    size: 125,
   },
   {
     accessorKey: 'assignee',
-    cell: info => {
-      const assignee = info.getValue<IWorkflowAssignee>();
-      if (!assignee) return '-';
-
-      return `${assignee.firstName} ${assignee.lastName}`;
-    },
+    accessorFn: row => (row.assignee ? `${row.assignee.firstName} ${row.assignee.lastName}` : '-'),
+    cell: info => info.getValue<string>(),
     header: ({ column }) => <DataTableColumnHeader column={column} title="Assign To" />,
-    size: 125,
   },
   {
     accessorKey: 'context',
     accessorFn: row => JSON.stringify(row.context),
-    cell: info => info.getValue<string>(),
+    cell: info => <ContextViewColumn context={info.getValue<string>()} />,
     header: () => 'Context',
-    size: 300,
+  },
+  {
+    accessorKey: 'view-workflow',
+    accessorFn: row => row.id,
+    cell: () => '-',
+    header: () => 'Workflow',
   },
   {
     accessorKey: 'resolvedAt',
@@ -68,6 +66,5 @@ export const defaultColumns: ColumnDef<IWorkflow>[] = [
     accessorKey: 'createdAt',
     cell: info => formatDate(info.getValue<Date>()),
     header: ({ column }) => <DataTableColumnHeader column={column} title="Created At" />,
-    size: 240,
   },
 ];

@@ -16,6 +16,9 @@ import { HttpModule } from '@nestjs/axios';
 import { FilterRepository } from '@/filter/filter.repository';
 import { FilterService } from '@/filter/filter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { UserService } from '@/user/user.service';
+import { UserRepository } from '@/user/user.repository';
+import { WorkflowMetricService } from '@/workflow/workflow-metric.service';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
@@ -33,6 +36,9 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
     DocumentChangedWebhookCaller,
     FilterRepository,
     FilterService,
+    UserService,
+    UserRepository,
+    WorkflowMetricService,
   ],
   exports: [WorkflowService, ACLModule, AuthModule, StorageService, FileRepository],
 })
