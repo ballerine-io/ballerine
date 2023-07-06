@@ -443,10 +443,10 @@ export class WorkflowRunner {
               let context = this.#__context;
 
               if (parentContextToCopy) {
-                const parentTransformers = this.fetchTransformers(parentContextToCopy?.transform);
+                const parentTransformers = this.fetchTransformers(parentContextToCopy.transform);
 
                 for (const parentTransformer of parentTransformers) {
-                  context = await parentTransformer?.transform(context);
+                  context = await parentTransformer.transform(context);
                 }
               }
 
@@ -469,11 +469,11 @@ export class WorkflowRunner {
 
               if (callbackInfo?.childContextToCopy) {
                 const childTransformers = this.fetchTransformers(
-                  callbackInfo?.childContextToCopy?.transform,
+                  callbackInfo.childContextToCopy.transform,
                 );
 
                 for (const childTransformer of childTransformers) {
-                  data = await childTransformer?.transform(data as AnyRecord);
+                  data = await childTransformer.transform(data as AnyRecord);
                 }
               }
 
@@ -519,12 +519,10 @@ export class WorkflowRunner {
       let payload = postSendSnapshot?.context;
 
       if (callbackInfo?.childContextToCopy) {
-        const childTransformers = this.fetchTransformers(
-          callbackInfo?.childContextToCopy?.transform,
-        );
+        const childTransformers = this.fetchTransformers(callbackInfo.childContextToCopy.transform);
 
         for (const childTransformer of childTransformers) {
-          payload = await childTransformer?.transform(payload as AnyRecord);
+          payload = await childTransformer.transform(payload as AnyRecord);
         }
       }
 

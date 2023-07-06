@@ -965,32 +965,6 @@ async function seed(bcryptSalt: Salt) {
 
   console.info('Seeded database successfully');
 
-  const childDefinition = await client.workflowDefinition.create({
-    data: {
-      id: 'child_id',
-      name: 'child_definition',
-      version: 1,
-      definitionType: 'statechart-json',
-      definition: {
-        id: 'Child',
-        initial: 'child_initial',
-        states: {
-          child_initial: {
-            on: {
-              NEXT: {
-                target: 'child_final',
-              },
-            },
-          },
-          child_final: {
-            type: 'final',
-          },
-        },
-      },
-      persistStates: [],
-      submitStates: [],
-    },
-  });
   const childKycExampleDefinition = await generateKycForE2eTest(client);
 
   await client.workflowDefinition.create({
