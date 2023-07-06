@@ -7,10 +7,10 @@ export interface ValidatableTransformer {
 }
 
 export interface SerializableValidatableTransformer {
-  transform: {
+  transform: Array<{
     transformer: string;
     mapping: string | THelperFormatingLogic;
-  }[];
+  }>;
   schema?: TJsonSchema;
 }
 
