@@ -1,7 +1,7 @@
 import { useSession } from '@app/common/hooks/useSession';
 import { userStatsQueryKeys } from '@app/domains/user/api/user-stats';
 import { useQuery } from '@tanstack/react-query';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
 export const useCaseResolvingStatsQuery = () => {

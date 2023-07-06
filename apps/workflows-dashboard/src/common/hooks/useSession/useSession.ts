@@ -11,6 +11,7 @@ export function useSession() {
   } = useQuery({
     ...sessionKeys.details(),
     refetchInterval: ONE_MINUTE_IN_MS,
+    retry: retryCount => retryCount < 3,
   });
 
   const isAuthenticated = Boolean(!isLoading && user);
