@@ -42,7 +42,7 @@ export interface ChildWorkflow {
   definitionId: string;
   version: string;
   stateNames: Array<string>;
-  parentContextToCopy: SerializableValidatableTransformer;
+  parentContextToCopy?: SerializableValidatableTransformer;
   callbackInfo: CallbackInfo;
   initOptions?: {
     event?: string;
@@ -66,7 +66,7 @@ export interface WorkflowOptions {
 export interface CallbackInfo {
   event: string;
   // what data should be sent back to the parent workflow, out of the full child workflow context
-  childContextToCopy: SerializableValidatableTransformer;
+  childContextToCopy?: SerializableValidatableTransformer;
 }
 export interface ParentWorkflowMetadata {
   name: string;

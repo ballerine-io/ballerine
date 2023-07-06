@@ -440,11 +440,14 @@ export class WorkflowRunner {
             callbackInfo,
           }) => {
             try {
-              const parentTransformers = this.fetchTransformers(parentContextToCopy?.transform);
               let context = this.#__context;
 
-              for (const parentTransformer of parentTransformers) {
-                context = await parentTransformer?.transform(context);
+              if (parentContextToCopy) {
+                const parentTransformers = this.fetchTransformers(parentContextToCopy?.transform);
+
+                for (const parentTransformer of parentTransformers) {
+                  context = await parentTransformer?.transform(context);
+                }
               }
 
               const result = await this.#__onInvokeChildWorkflow?.({
@@ -458,20 +461,24 @@ export class WorkflowRunner {
                 parentWorkflowMetadata: {
                   runtimeId: this.#__runtimeId,
                   state: this.#__currentState,
-                  context,
+                  context: parentContextToCopy ? context : undefined,
                 },
               });
-              const childTransformers = this.fetchTransformers(
-                callbackInfo?.childContextToCopy?.transform,
-              );
+
               let data = result;
 
-              for (const childTransformer of childTransformers) {
-                data = await childTransformer?.transform(data as AnyRecord);
+              if (callbackInfo?.childContextToCopy) {
+                const childTransformers = this.fetchTransformers(
+                  callbackInfo?.childContextToCopy?.transform,
+                );
+
+                for (const childTransformer of childTransformers) {
+                  data = await childTransformer?.transform(data as AnyRecord);
+                }
               }
 
               return {
-                data,
+                data: callbackInfo?.childContextToCopy ? data : undefined,
                 error: undefined,
               };
             } catch (error) {
@@ -509,17 +516,22 @@ export class WorkflowRunner {
       postSendSnapshot.done &&
       !this.#__invokedOnDoneChildWorkflow
     ) {
-      const childTransformers = this.fetchTransformers(callbackInfo?.childContextToCopy?.transform);
       let payload = postSendSnapshot?.context;
 
-      for (const childTransformer of childTransformers) {
-        payload = await childTransformer?.transform(payload as AnyRecord);
+      if (callbackInfo?.childContextToCopy) {
+        const childTransformers = this.fetchTransformers(
+          callbackInfo?.childContextToCopy?.transform,
+        );
+
+        for (const childTransformer of childTransformers) {
+          payload = await childTransformer?.transform(payload as AnyRecord);
+        }
       }
 
       await this.#__onDoneChildWorkflow(
         {
           type: callbackInfo?.event,
-          payload,
+          payload: callbackInfo?.childContextToCopy ? payload : undefined,
         },
         {
           source: {
