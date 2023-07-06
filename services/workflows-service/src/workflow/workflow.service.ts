@@ -152,14 +152,67 @@ export class WorkflowService {
           } satisfies Omit<ParentWorkflowMetadata, 'context'>,
           callbackInfo: childWorkflowMetadata?.callbackInfo,
           entity: {
-            type: 'endUser',
-            id: parentRuntimeData?.ballerineEntityId,
+            id: 'user_id_2211343',
             data: {
-              firstName: 'test',
-              lastName: 'test',
+              firstName: 'John',
+              lastName: 'Doe',
+              email: 'johndoe@example.com',
+              approvalState: 'NEW',
+              phone: '(123) 456-7890',
+              dateOfBirth: '2003-07-02T14:31:11.116Z',
+              additionalInfo: {
+                idNumber: '123132132132',
+                address: '123 Main St, Los Angeles, California, 90001, United States',
+                gender: 'male',
+                customParam: 'customValue',
+              },
             },
+            type: 'individual',
           },
-          documents: [],
+          documents: [
+            {
+              category: 'proof_of_Address',
+              type: 'water_bill',
+              issuer: {
+                country: 'GH',
+              },
+              pages: [
+                {
+                  provider: 'http' as const,
+                  uri: 'https://backoffice-demo.ballerine.app/images/mock-documents/set_1_selfie.png',
+                  metadata: {
+                    side: 'front',
+                    pageNumber: '1',
+                  },
+                  type: 'png' as const,
+                },
+                {
+                  provider: 'http' as const,
+                  uri: 'https://backoffice-demo.ballerine.app/images/mock-documents/set_1_doc_face.png',
+                  metadata: {
+                    side: 'face',
+                    pageNumber: '1',
+                  },
+                  type: 'png' as const,
+                },
+                {
+                  provider: 'http' as const,
+                  uri: 'https://backoffice-demo.ballerine.app/images/mock-documents/set_1_doc_back.png',
+                  metadata: {
+                    side: 'back',
+                    pageNumber: '1',
+                  },
+                  type: 'png' as const,
+                },
+              ],
+              properties: {
+                docNumber: '123414214',
+                userAddress: 'Turkey, buhgdawe',
+              },
+              version: 1,
+              issuingVersion: 1,
+            },
+          ],
         } satisfies WorkflowOptionsNode['definition']['context'];
         const childWorkflow = await this.createOrUpdateWorkflowRuntime({
           workflowDefinitionId: childWorkflowMetadata?.definitionId,

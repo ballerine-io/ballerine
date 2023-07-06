@@ -114,11 +114,13 @@ export const kybWithExternalRequestWorkflowExample = {
       when: 'pre',
       method: 'POST',
       request: {
-        transform: {
-          transformer: 'jq',
-          mapping:
-            '{ business_name: .context .entity .companyName, regestration_number:  .context .entity .registrationNumber}',
-        }, // JQ
+        transform: [
+          {
+            transformer: 'jq',
+            mapping:
+              '{ business_name: .context .entity .companyName, regestration_number:  .context .entity .registrationNumber}',
+          },
+        ], // JQ
         schema: {
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',
@@ -134,7 +136,7 @@ export const kybWithExternalRequestWorkflowExample = {
         }, // Schema is OPTIONAL, but if provided, it will be used to validate the request body
       },
       response: {
-        transform: {}, // JQ
+        transform: [{}], // JQ
         schema: {
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',
