@@ -119,4 +119,8 @@ export class WorkflowRuntimeDataRepository {
   ) {
     return await this.prisma.workflowRuntimeData.groupBy(args);
   }
+
+  async queryRaw<TValue>(query: string, values: any[] = []): Promise<TValue> {
+    return (await this.prisma.$queryRawUnsafe.apply(this.prisma, [query, ...values])) as TValue;
+  }
 }

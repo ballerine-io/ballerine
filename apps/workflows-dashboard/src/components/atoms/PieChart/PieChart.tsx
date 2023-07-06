@@ -25,13 +25,15 @@ export const PieChart = ({ size, data, outerRadius, innerRadius }: Props) => {
         innerRadius={innerRadius}
         fill="#000000"
         dataKey="value"
+        animationBegin={200}
+        animationDuration={800}
       >
-        {data.map((data, index) => (
+        {/* {data.map((data, index) => (
           <RechartPrimitive.Cell
             key={`cell-${index}`}
             fill={data.fillColor ? data.fillColor : undefined}
           />
-        ))}
+        ))} */}
         <RechartPrimitive.Label position={'center'} style={{ fontWeight: 'bold' }}>
           {totalValue}
         </RechartPrimitive.Label>
