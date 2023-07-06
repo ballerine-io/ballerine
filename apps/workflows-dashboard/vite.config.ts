@@ -10,6 +10,12 @@ export default defineConfig({
   server: {
     port: 5200,
   },
+  preview: {
+    port: 5200,
+  },
+  build: {
+    sourcemap: true,
+  },
   plugins: [
     react(),
     tailwindcss(),

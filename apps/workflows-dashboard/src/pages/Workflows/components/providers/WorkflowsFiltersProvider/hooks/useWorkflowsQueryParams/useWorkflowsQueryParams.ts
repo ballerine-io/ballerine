@@ -1,7 +1,7 @@
 import { IWorkflowStatus } from '@app/domains/workflows/api/workflow';
 import { useState } from 'react';
 import { useQueryParams, NumberParam, withDefault, ArrayParam } from 'use-query-params';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 
 export function useWorkflowsQueryParams() {
   const [dateNow] = useState(() => dayjs().subtract(1, 'hour').toDate());
