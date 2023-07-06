@@ -1010,7 +1010,7 @@ async function seed(bcryptSalt: Salt) {
             transform: [
               {
                 transformer: 'jmespath',
-                mapping: '{data: {documents: data.documents}}',
+                mapping: '{parentData: @}',
               },
             ],
           },

@@ -35,6 +35,7 @@ import { WorkflowRuntimeCasesPerStatusModel } from '@/workflow/workflow-runtime-
 import { GetWorkflowRuntimeUserStatsDto } from '@/workflow/dtos/get-workflow-runtime-user-stats-input.dto';
 import { GetCaseResolvingMetricsDto } from '@/workflow/dtos/get-case-resolving-metrics-input.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
+import { Public } from '@/common/decorators/public.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -282,14 +283,15 @@ export class WorkflowControllerExternal {
   @common.Post('/:id/hook/:event')
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
+  @Public()
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async hook(
     @common.Param() params: WorkflowIdWithEventInput,
-    @common.Body() data: WorkflowWebhookInput,
+    @common.Body() data: any,
   ): Promise<void> {
     try {
       const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
-      const updatedContext = { ...workflowRuntime.context, ...data.payload };
+      const updatedContext = { ...workflowRuntime.context, hookResponse: data };
       await this.service.updateWorkflowRuntimeData(params.id, { context: updatedContext });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -302,5 +304,7 @@ export class WorkflowControllerExternal {
       id: params.id,
       name: params.event,
     });
+
+    return;
   }
 }

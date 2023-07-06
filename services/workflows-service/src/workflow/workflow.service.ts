@@ -153,8 +153,8 @@ export class WorkflowService {
           entity: {
             id: 'user_id_2211343',
             data: {
-              firstName: 'John',
-              lastName: 'Doe',
+              firstName: 'Alon',
+              lastName: 'Mami',
               email: 'johndoe@example.com',
               approvalState: 'NEW',
               phone: '(123) 456-7890',
@@ -217,27 +217,11 @@ export class WorkflowService {
           workflowDefinitionId: childWorkflowMetadata?.definitionId,
           context,
         });
-        const childDefinition = await this.getWorkflowDefinitionById(
-          childWorkflowMetadata?.definitionId,
-        );
-        const childWorkflowService = this.#__workflowsClient.createWorkflow({
-          ...childDefinition,
-          runtimeId: childWorkflow[0]?.workflowRuntimeData?.id,
-          definitionType: childDefinition.definitionType,
-          definition: {
-            ...childDefinition.definition,
-            context,
-          },
-          workflowContext: {
-            machineContext: context,
-            state: childWorkflow[0]?.workflowRuntimeData?.state,
-          },
-          extensions: childDefinition.extensions,
-        });
 
         if (childWorkflowMetadata?.initOptions?.event) {
-          await childWorkflowService.sendEvent({
-            type: childWorkflowMetadata?.initOptions?.event,
+          await this.event({
+            id: childWorkflow[0]?.workflowRuntimeData?.id,
+            name: childWorkflowMetadata?.initOptions?.event,
           });
         }
 
