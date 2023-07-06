@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 import { IWorkflow } from '@app/domains/workflows/api/workflow';
 import { getWorkflowHealthStatus, HealthStatus } from '@app/utils/get-workflow-health-status';
 
@@ -11,7 +11,7 @@ describe('getWorkflowHealthStatus', () => {
     });
 
     test('healthy when status pending/active and process started  < 2 hours ago', () => {
-      const PAST_DATE_3O_MIN_AGO = moment().subtract(30, 'minutes');
+      const PAST_DATE_3O_MIN_AGO = dayjs().subtract(30, 'minutes');
 
       expect(
         getWorkflowHealthStatus({
@@ -24,7 +24,7 @@ describe('getWorkflowHealthStatus', () => {
 
   describe('pending status', () => {
     test('pending when status pending/active and process started > 2 && < 6 hours', () => {
-      const PAST_DATE_3HOURS_AGO = moment().subtract(3, 'hours');
+      const PAST_DATE_3HOURS_AGO = dayjs().subtract(3, 'hours');
 
       expect(
         getWorkflowHealthStatus({
@@ -37,7 +37,7 @@ describe('getWorkflowHealthStatus', () => {
 
   describe('pending-longterm status', () => {
     test('pending-longterm when status pending/active and process started > 6 hours', () => {
-      const PAST_DATE_8HOURS_AGO = moment().subtract(8, 'hours');
+      const PAST_DATE_8HOURS_AGO = dayjs().subtract(8, 'hours');
 
       expect(
         getWorkflowHealthStatus({

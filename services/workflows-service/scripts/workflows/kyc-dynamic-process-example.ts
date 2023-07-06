@@ -25,19 +25,19 @@ export const kycDynamicExample = {
         },
       },
       manual_review: {
-        type: 'final' as 'final',
+        type: 'final' as const,
       },
       auto_approve: {
-        type: 'final' as 'final',
+        type: 'final' as const,
       },
       auto_reject: {
-        type: 'final' as 'final',
+        type: 'final' as const,
       },
       reject: {
-        type: 'final' as 'final',
+        type: 'final' as const,
       },
       approve: {
-        type: 'final' as 'final',
+        type: 'final' as const,
       },
     },
   },
