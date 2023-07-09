@@ -478,6 +478,7 @@ export class WorkflowRunner {
               }
 
               return {
+                runtimeId: result?.childWorkflow?.runtimeId,
                 data: callbackInfo?.childContextToCopy ? data : undefined,
                 error: undefined,
               };
@@ -485,6 +486,7 @@ export class WorkflowRunner {
               console.error(error);
 
               return {
+                runtimeId: undefined,
                 data: undefined,
                 error,
               };
@@ -492,14 +494,33 @@ export class WorkflowRunner {
           },
         ),
       );
-      const childWorkflows = results?.map(result => {
-        if (result?.status !== 'fulfilled') return;
+      const childWorkflows = results
+        ?.filter(
+          (
+            result,
+            // Due to try/catch in `Promise.allSettled`, `result.status` can't be 'rejected'.
+          ): result is typeof result & {
+            status: 'fulfilled';
+          } => result.status === 'fulfilled',
+        )
+        ?.map(result => {
+          const existingChildWorkflow = this.#__context.childWorkflows?.find(
+            (childWorkflow: {
+              runtimeId: string;
+              error: unknown | undefined;
+              data: AnyRecord | undefined;
+            }) => childWorkflow.runtimeId === result?.value?.runtimeId,
+          );
 
-        return {
-          data: result?.value?.data,
-          error: undefined,
-        };
-      });
+          return {
+            runtimeId: result?.value?.runtimeId,
+            data: {
+              ...existingChildWorkflow?.data,
+              ...result?.value?.data,
+            },
+            error: undefined,
+          };
+        });
 
       this.#__context.childWorkflows = childWorkflows;
       service.send({

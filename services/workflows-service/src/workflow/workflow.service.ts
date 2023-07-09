@@ -24,7 +24,12 @@ import {
 import { createWorkflowClient, WorkflowOptionsNode } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
@@ -217,6 +222,11 @@ export class WorkflowService {
           workflowDefinitionId: childWorkflowMetadata?.definitionId,
           context,
         });
+
+        if (!childWorkflow[0]?.workflowRuntimeData) {
+          throw new InternalServerErrorException('Failed to create child workflow runtime data');
+        }
+
         const childDefinition = await this.getWorkflowDefinitionById(
           childWorkflowMetadata?.definitionId,
         );
@@ -242,10 +252,13 @@ export class WorkflowService {
         }
 
         return {
+          childWorkflow: {
+            runtimeId: childWorkflow[0]?.workflowRuntimeData?.id as string,
+          },
           childWorkflows: [
             {
               ...context,
-              runtimeId: childWorkflow[0]?.workflowRuntimeData?.id,
+              runtimeId: childWorkflow[0]?.workflowRuntimeData?.id as string,
             },
           ],
         };
