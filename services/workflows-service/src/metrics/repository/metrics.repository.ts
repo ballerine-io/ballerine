@@ -10,25 +10,21 @@ import { aggregateWorkflowRuntimeStatusCaseCountQuery } from './sql/aggregate-wo
 import { IAggregateWorkflowRuntimeStatusCaseCount } from '@/metrics/repository/types/aggregate-workflow-runtime-status-case-count';
 import { GetRuntimeStatusCaseCountParams } from '@/metrics/repository/types/get-runtime-status-case-count.params';
 import { GetUserApprovalRateParams } from '@/metrics/repository/types/get-user-approval-rate.params';
-import { UserApprovalRateModel } from '@/metrics/repository/models/user-approval-rate.model';
-import { aggregateUserApprovalRateQuery } from './sql/aggregate-user-approval-rate.sql';
-import { IAggregateUserApprovalRate } from '@/metrics/repository/types/aggregate-user-approval-rate';
+import { ApprovalRateModel } from '@/metrics/repository/models/approval-rate.model';
+import { IAggregateApprovalRate } from '@/metrics/repository/types/aggregate-approval-rate';
 import { GetUserAverageResolutionTimeParams } from '@/metrics/repository/types/get-user-average-resolution-time.params';
-import { UserAverageResolutionTimeModel } from '@/metrics/repository/models/user-average-resolution-time.model';
-import { aggregateUserAverageResolutionTimeQuery } from './sql/aggregate-user-average-resolution-time.sql';
-import { IAggregateUserAverageResolutionTime } from '@/metrics/repository/types/aggregate-user-average-resolution-time';
+import { AverageResolutionTimeModel } from '@/metrics/repository/models/average-resolution-time.model';
+import { aggregateAverageResolutionTimeQuery } from './sql/aggregate-average-resolution-time.sql';
+import { IAggregateAverageResolutionTime } from '@/metrics/repository/types/aggregate-average-resolution-time';
 import { GetUserAverageAssignmentTimeParams } from '@/metrics/repository/types/get-user-average-assignment-time.params';
-import { UserAverageAssignmentTimeModel } from '@/metrics/repository/models/user-average-assignment-time.model';
-import { IAggregateUserAverageAssignmentTime } from '@/metrics/repository/types/aggregate-user-average-assignment-time';
-import { aggregateUserAverageAssignmentTimeQuery } from '@/metrics/repository/sql/aggregate-user-average-assignment-time.sql';
+import { IAggregateAverageAssignmentTime } from '@/metrics/repository/types/aggregate-average-assignment-time';
 import { GetUserAverageReviewTimeParams } from '@/metrics/repository/types/get-user-average-review-time.params';
 import { UserAverageReviewTimeModel } from '@/metrics/repository/models/user-average-review-time.model';
-import { aggregateUserAverageReviewTimeQuery } from '@/metrics/repository/sql/aggregate-user-average-review-time.sql';
-import { IAggregateUserAverageReviewTime } from '@/metrics/repository/types/aggregate-user-average-review-time';
+import { IAggregateAverageReviewTime } from '@/metrics/repository/types/aggregate-average-review-time';
 import { ListUserCasesResolvedDailyParams } from '@/metrics/repository/types/list-user-cases-resolved-daily.params';
-import { UserCasesResolvedInDay } from '@/metrics/repository/models/user-cases-resolved-daily.model';
-import { IAggregateUserCasesResolvedDaily } from '@/metrics/repository/types/aggregate-user-cases-resolved-daily';
-import { aggregateUserDailyCasesResolvedQuery } from '@/metrics/repository/sql/aggregate-user-daily-cases-resolved.sql';
+import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
+import { IAggregateCasesResolvedDaily } from '@/metrics/repository/types/aggregate-cases-resolved-daily';
+import { aggregateDailyCasesResolvedQuery } from '@/metrics/repository/sql/aggregate-daily-cases-resolved.sql';
 import { ListActiveUsersParams } from '@/metrics/repository/types/list-active-users.params';
 import { ActiveUserModel } from '@/metrics/repository/models/active-user.model';
 import { ISelectActiveUser } from '@/metrics/repository/types/select-active-user';
@@ -40,6 +36,10 @@ import { FindUsersResolvedCasesStatisticParams } from '@/metrics/repository/type
 import { UserResolvedCasesStatisticModel } from '@/metrics/repository/models/user-resolved-cases-statistic.model';
 import { IAggregateUserResolvedCasesStatistic } from '@/metrics/repository/types/aggregate-user-resolved-cases-statistic';
 import { aggregateUsersResolvedCasesStatisticQuery } from '@/metrics/repository/sql/aggregate-users-resolved-cases-statistic.sql';
+import { aggregateApprovalRateQuery } from '@/metrics/repository/sql/aggregate-approval-rate.sql';
+import { aggregateAverageAssignmentTimeQuery } from '@/metrics/repository/sql/aggregate-average-assignment-time.sql';
+import { AverageAssignmentTimeModel } from '@/metrics/repository/models/average-assignment-time.model';
+import { aggregateAverageReviewTimeQuery } from '@/metrics/repository/sql/aggregate-average-review-time.sql';
 
 @Injectable()
 export class MetricsRepository {
@@ -103,71 +103,65 @@ export class MetricsRepository {
     );
   }
 
-  async getUserApprovalRate(
-    params: GetUserApprovalRateParams,
-  ): Promise<UserApprovalRateModel | null> {
-    const results = await this.prismaService.$queryRawUnsafe<IAggregateUserApprovalRate[]>(
-      aggregateUserApprovalRateQuery,
-      params.userId,
+  async getUserApprovalRate(params: GetUserApprovalRateParams): Promise<ApprovalRateModel | null> {
+    const results = await this.prismaService.$queryRawUnsafe<IAggregateApprovalRate[]>(
+      aggregateApprovalRateQuery,
       params.fromDate,
+      params.userId,
     );
 
-    return results.length ? plainToClass(UserApprovalRateModel, results.at(-1)) : null;
+    return results.length ? plainToClass(ApprovalRateModel, results.at(-1)) : null;
   }
 
   async getUserAverageResolutionTime(
     params: GetUserAverageResolutionTimeParams,
-  ): Promise<UserAverageResolutionTimeModel | null> {
-    const results = await this.prismaService.$queryRawUnsafe<IAggregateUserAverageResolutionTime[]>(
-      aggregateUserAverageResolutionTimeQuery,
-      params.userId,
+  ): Promise<AverageResolutionTimeModel | null> {
+    const results = await this.prismaService.$queryRawUnsafe<IAggregateAverageResolutionTime[]>(
+      aggregateAverageResolutionTimeQuery,
       params.fromDate,
+      params.userId,
     );
 
-    return results.length ? plainToClass(UserAverageResolutionTimeModel, results.at(-1)) : null;
+    return results.length ? plainToClass(AverageResolutionTimeModel, results.at(-1)) : null;
   }
 
   async getUserAverageAssignmentTime(
     params: GetUserAverageAssignmentTimeParams,
-  ): Promise<UserAverageAssignmentTimeModel | null> {
-    const results = await this.prismaService.$queryRawUnsafe<IAggregateUserAverageAssignmentTime[]>(
-      aggregateUserAverageAssignmentTimeQuery,
-      params.userId,
+  ): Promise<AverageAssignmentTimeModel | null> {
+    const results = await this.prismaService.$queryRawUnsafe<IAggregateAverageAssignmentTime[]>(
+      aggregateAverageAssignmentTimeQuery,
       params.fromDate,
+      params.userId,
     );
 
-    return results.length ? plainToClass(UserAverageAssignmentTimeModel, results.at(-1)) : null;
+    return results.length ? plainToClass(AverageAssignmentTimeModel, results.at(-1)) : null;
   }
 
   async getUserAverageReviewTime(
     params: GetUserAverageReviewTimeParams,
   ): Promise<UserAverageReviewTimeModel | null> {
-    const results = await this.prismaService.$queryRawUnsafe<IAggregateUserAverageReviewTime[]>(
-      aggregateUserAverageReviewTimeQuery,
-      params.userId,
+    const results = await this.prismaService.$queryRawUnsafe<IAggregateAverageReviewTime[]>(
+      aggregateAverageReviewTimeQuery,
       params.fromDate,
+      params.userId,
     );
 
     return results.length ? plainToClass(UserAverageReviewTimeModel, results.at(-1)) : null;
   }
 
-  async listUserCasesResolvedDaily(
+  async listCasesResolvedDaily(
     params: ListUserCasesResolvedDailyParams,
-  ): Promise<UserCasesResolvedInDay[]> {
-    const results = await this.prismaService.$queryRawUnsafe<IAggregateUserCasesResolvedDaily[]>(
-      aggregateUserDailyCasesResolvedQuery,
+  ): Promise<CasesResolvedInDay[]> {
+    const results = await this.prismaService.$queryRawUnsafe<IAggregateCasesResolvedDaily[]>(
+      aggregateDailyCasesResolvedQuery,
+      params.fromDate,
       params.userId,
-      params.fromDate.toISOString(),
-      new Date().toDateString(),
     );
-
-    console.log({ fromDate: +params.fromDate, to: +new Date() });
 
     if (!results.length) return [];
 
     return results.map(result =>
-      plainToClass(UserCasesResolvedInDay, {
-        id: params.userId,
+      plainToClass(CasesResolvedInDay, {
         date: result.date,
         count: result.cases,
       }),

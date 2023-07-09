@@ -11,11 +11,9 @@ export interface IUserStats {
 }
 
 export interface GetUserStatsDto {
-  userId: string;
   fromDate: number;
 }
 
 export interface GetUserDailyCasesResolvedStatsDto {
-  userId: string;
   fromDate: number;
 }

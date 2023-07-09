@@ -7,7 +7,7 @@ import { GetUsersResolvedCasesStatisticDto } from '@/metrics/dto/get-users-resol
 import { GetWorkflowRuntimesStatusCountDto } from '@/metrics/dto/get-workflow-runtimes-status-count.dto';
 import { ActiveUserModel } from '@/metrics/repository/models/active-user.model';
 import { UserAssignedCasesStatisticModel } from '@/metrics/repository/models/user-assigned-cases-statistic.model';
-import { UserCasesResolvedInDay } from '@/metrics/repository/models/user-cases-resolved-daily.model';
+import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
 import { UserResolvedCasesStatisticModel } from '@/metrics/repository/models/user-resolved-cases-statistic.model';
 import { WorkflowRuntimeStatisticModel } from '@/metrics/repository/models/workflow-runtime-statistic.model';
 import { WorkflowRuntimeStatusCaseCountModel } from '@/metrics/repository/models/workflow-runtime-status-case-count.model';
@@ -15,8 +15,9 @@ import { MetricsService } from '@/metrics/service/metrics.service';
 import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/user-workflow-processing-statistic.model';
 import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
-import { ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('/metrics')
 @Controller('/metrics')
 export class MetricsController {
   constructor(private readonly metricsService: MetricsService) {}
@@ -56,27 +57,25 @@ export class MetricsController {
   @ApiNotFoundResponse({ type: NotFoundException })
   @ApiNoContentResponse({ type: Object })
   @common.HttpCode(200)
-  @common.Get('/users/:userId/user-workflow-processing-statistic')
+  @common.Get('/users/workflow-processing-statistic')
   async getUserWorkflowProcessingStatistic(
-    @common.Param('userId') userId: string,
     @common.Query() query: GetUserWorkflowProcessingStatisticDto,
   ): Promise<UserWorkflowProcessingStatisticModel> {
     return await this.metricsService.getUserWorkflowProcessingStatistic({
       fromDate: query.fromDate,
-      userId,
+      userId: query.userId,
     });
   }
 
-  @ApiOkResponse({ type: [UserCasesResolvedInDay] })
+  @ApiOkResponse({ type: [CasesResolvedInDay] })
   @common.HttpCode(200)
-  @common.Get('/users/:userId/user-cases-resolved-daily')
+  @common.Get('/users/cases-resolved-daily')
   async getUserCasesResolvedDaily(
-    @common.Param('userId') userId: string,
     @common.Query() query: GetUserCasesResolvedDailyDto,
-  ): Promise<UserCasesResolvedInDay[]> {
+  ): Promise<CasesResolvedInDay[]> {
     return await this.metricsService.listUserCasesResolvedDaily({
       fromDate: query.fromDate,
-      userId: userId,
+      userId: query.userId,
     });
   }
 

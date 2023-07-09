@@ -7,14 +7,9 @@ import {
 import { request } from '@app/lib/request';
 
 export const fetchUserStats = async (query: GetUserStatsDto): Promise<IUserStats> => {
-  const { userId, ...restQuery } = query;
-
-  const result = await request.get<IUserStats>(
-    `/metrics/users/${userId}/user-workflow-processing-statistic`,
-    {
-      params: restQuery,
-    },
-  );
+  const result = await request.get<IUserStats>(`/metrics/users/workflow-processing-statistic`, {
+    params: query,
+  });
 
   return result.data;
 };
@@ -22,11 +17,9 @@ export const fetchUserStats = async (query: GetUserStatsDto): Promise<IUserStats
 export const fetchUserDailyCasesResolvedStats = async (
   query: GetUserDailyCasesResolvedStatsDto,
 ): Promise<IResolvedCasesDailyMetric[]> => {
-  const { userId, ...restQuery } = query;
-
   const result = await request.get<IResolvedCasesDailyMetric[]>(
-    `/metrics/users/${userId}/user-cases-resolved-daily`,
-    { params: restQuery },
+    `/metrics/users/cases-resolved-daily`,
+    { params: query },
   );
 
   return result.data;

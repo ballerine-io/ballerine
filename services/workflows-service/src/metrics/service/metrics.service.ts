@@ -1,7 +1,7 @@
 import { MetricsRepository } from '@/metrics/repository/metrics.repository';
 import { ActiveUserModel } from '@/metrics/repository/models/active-user.model';
 import { UserAssignedCasesStatisticModel } from '@/metrics/repository/models/user-assigned-cases-statistic.model';
-import { UserCasesResolvedInDay } from '@/metrics/repository/models/user-cases-resolved-daily.model';
+import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
 import { UserResolvedCasesStatisticModel } from '@/metrics/repository/models/user-resolved-cases-statistic.model';
 import { WorkflowRuntimeStatisticModel } from '@/metrics/repository/models/workflow-runtime-statistic.model';
 import { WorkflowRuntimeStatusCaseCountModel } from '@/metrics/repository/models/workflow-runtime-status-case-count.model';
@@ -65,7 +65,10 @@ export class MetricsService {
     const statisticModel: UserWorkflowProcessingStatisticModel =
       new UserWorkflowProcessingStatisticModel();
 
-    statisticModel.id = params.userId;
+    if (params.userId) {
+      statisticModel.id = params.userId;
+    }
+
     statisticModel.approvalRate = approvalRateModel?.approvalRate || 0;
     statisticModel.averageAssignmentTime = averageAssignmentTimeModel?.time || 0;
     statisticModel.averageResolutionTime = averageResolutionTimeModel?.time || 0;
@@ -76,8 +79,8 @@ export class MetricsService {
 
   async listUserCasesResolvedDaily(
     params: ListUserCasesResolvedDailyParams,
-  ): Promise<UserCasesResolvedInDay[]> {
-    return await this.metricsRepository.listUserCasesResolvedDaily(params);
+  ): Promise<CasesResolvedInDay[]> {
+    return await this.metricsRepository.listCasesResolvedDaily(params);
   }
 
   async listActiveUsers(params: ListActiveUsersParams): Promise<ActiveUserModel[]> {

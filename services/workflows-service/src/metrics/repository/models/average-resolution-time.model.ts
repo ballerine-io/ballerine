@@ -1,14 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
-export class UserCasesResolvedInDay {
-  @ApiProperty()
-  id!: string;
-
-  @ApiProperty()
+export class AverageResolutionTimeModel {
+  @ApiProperty({ description: 'Average resolution time in milliseconds.' })
   @Transform(({ value }) => (value === null ? 0 : value))
-  count!: number;
-
-  @ApiProperty()
-  date!: string;
+  time!: number;
 }
