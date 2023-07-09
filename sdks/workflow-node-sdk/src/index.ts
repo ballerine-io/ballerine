@@ -1,2 +1,2 @@
-export { createWorkflowClient, WorkflowNodeSDK } from './lib';
+export { createWorkflow, WorkflowNodeSDK } from './lib';
 export type { WorkflowOptionsNode } from './lib';

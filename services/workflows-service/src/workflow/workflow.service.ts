@@ -21,7 +21,6 @@ import {
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
 } from './types';
-import { createWorkflowClient } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
 import {
@@ -71,6 +70,7 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import { plainToClass } from 'class-transformer';
 import { SortOrder } from '@/common/query-filters/sort-order';
+import { createWorkflow, ChildWorkflowCallback } from '@ballerine/workflow-core';
 
 type TEntityId = string;
 
@@ -128,15 +128,13 @@ export class WorkflowService {
       id: true,
       name: true,
       version: true,
-
       definition: true,
       definitionType: true,
-
       backend: true,
-
       extensions: true,
       persistStates: true,
       submitStates: true,
+      parentRuntimeDataId: true,
     };
     return await this.workflowDefinitionRepository.create({ data, select });
   }
@@ -162,14 +160,14 @@ export class WorkflowService {
 
   private formatWorkflow(workflow: TWorkflowWithRelations) {
     const isIndividual = 'endUser' in workflow;
-    const service = createWorkflowClient().createWorkflow({
+    const service = createWorkflow({
       runtimeId: workflow.id,
       definition: workflow.workflowDefinition as any,
       definitionType: workflow.workflowDefinition.definitionType,
       workflowContext: {
         machineContext: workflow.context,
         state: workflow.state,
-      }
+      },
     });
 
     return {
@@ -1028,7 +1026,7 @@ export class WorkflowService {
       workflowRuntimeData.workflowDefinitionId,
     );
 
-    const service = this.#__workflowsClient.createWorkflow({
+    const service = createWorkflow({
       runtimeId: workflowRuntimeData.id,
       definition: workflowDefinition.definition,
       definitionType: workflowDefinition.definitionType,
@@ -1037,7 +1035,6 @@ export class WorkflowService {
         state: workflowRuntimeData.state,
       },
       extensions: workflowDefinition.extensions,
-      childWorkflows: workflowDefinition.childWorkflows,
     });
 
     await service.sendEvent({
@@ -1048,6 +1045,19 @@ export class WorkflowService {
     const currentState = snapshot.value;
     const context = snapshot.machine.context;
     const isFinal = snapshot.machine.states[currentState].type === 'final';
+
+    if (isFinal && workflowRuntimeData.parentRuntimeDataId) {
+      const parentWorkflowRuntime = this.getWorkflowRuntimeDataById(
+        workflowRuntimeData.parentRuntimeDataId,
+      );
+      const childWorkflowCallback =
+        workflowDefinition.parentWorkflowTranformation as ChildWorkflowCallback;
+      if (childWorkflowCallback.action === 'append') {
+        //   TODO transform response
+        //   TODO persist response to parent workflow
+        //   TODO send event to parent
+      }
+    }
 
     this.logger.log('Workflow state transition', {
       id: id,
