@@ -5,7 +5,6 @@ import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
-  ChildWorkflow,
   IUpdateContextEvent,
   ObjectValues,
   WorkflowEvent,
@@ -36,10 +35,6 @@ export class WorkflowRunner {
   #__callback: ((event: WorkflowEvent) => void) | null = null;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
-  #__childWorkflows?: Array<ChildWorkflow>;
-  #__onInvokeChildWorkflow?: WorkflowRunnerArgs['onInvokeChildWorkflow'];
-  #__onDoneChildWorkflow?: WorkflowRunnerArgs['onDoneChildWorkflow'];
-  #__invokedOnDoneChildWorkflow = false;
   #__runtimeId: string;
   events: any;
 
@@ -71,9 +66,6 @@ export class WorkflowRunner {
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
-    this.#__childWorkflows = childWorkflows;
-    this.#__onInvokeChildWorkflow = onInvokeChildWorkflow;
-    this.#__onDoneChildWorkflow = onDoneChildWorkflow;
     // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
@@ -377,9 +369,6 @@ export class WorkflowRunner {
     service.send(event);
 
     const postSendSnapshot = service.getSnapshot();
-    const { childWorkflowMetadata, parentWorkflowMetadata, callbackInfo } =
-      postSendSnapshot.context ?? {};
-
     this.#__context = postSendSnapshot.context;
 
     if (this.#__extensions.apiPlugins) {
@@ -410,11 +399,6 @@ export class WorkflowRunner {
           plugin.when === 'post' &&
           plugin.stateNames.includes(this.#__currentState),
       ) ?? [];
-    // Only iterate over the child workflows that are configured to run in the current state.
-    const childWorkflowsToInvoke =
-      this.#__childWorkflows?.filter(({ stateNames }) =>
-        stateNames?.includes(this.#__currentState),
-      ) ?? [];
 
     for (const postPlugin of postPlugins) {
       await this.#__handleAction({
@@ -423,150 +407,6 @@ export class WorkflowRunner {
         // TODO: Might want to refactor to use this.#__runtimeId
         workflowId: postSendSnapshot.machine?.id,
       })(this.#__context, event);
-    }
-
-    if (this.#__onInvokeChildWorkflow && childWorkflowsToInvoke?.length) {
-      const results = await Promise.allSettled(
-        childWorkflowsToInvoke?.map(
-          async ({
-            definitionId,
-            name,
-            version,
-            initOptions,
-            parentContextToCopy,
-            callbackInfo,
-          }) => {
-            try {
-              let context = this.#__context;
-
-              if (parentContextToCopy) {
-                const parentTransformers = this.fetchTransformers(parentContextToCopy.transform);
-
-                for (const parentTransformer of parentTransformers) {
-                  context = await parentTransformer.transform(context);
-                }
-              }
-
-              const result = await this.#__onInvokeChildWorkflow?.({
-                childWorkflowMetadata: {
-                  definitionId,
-                  name,
-                  version,
-                  initOptions,
-                  callbackInfo,
-                },
-                parentWorkflowMetadata: {
-                  runtimeId: this.#__runtimeId,
-                  state: this.#__currentState,
-                  context: parentContextToCopy ? context : undefined,
-                },
-              });
-
-              let data = result;
-
-              if (callbackInfo?.childContextToCopy) {
-                const childTransformers = this.fetchTransformers(
-                  callbackInfo.childContextToCopy.transform,
-                );
-
-                for (const childTransformer of childTransformers) {
-                  data = await childTransformer.transform(data as AnyRecord);
-                }
-              }
-
-              return {
-                runtimeId: result?.childWorkflow?.runtimeId,
-                data: callbackInfo?.childContextToCopy ? data : undefined,
-                error: undefined,
-              };
-            } catch (error) {
-              console.error(error);
-
-              return {
-                runtimeId: undefined,
-                data: undefined,
-                error,
-              };
-            }
-          },
-        ),
-      );
-      const childWorkflows = results
-        ?.filter(
-          (
-            result,
-            // Due to try/catch in `Promise.allSettled`, `result.status` can't be 'rejected'.
-          ): result is typeof result & {
-            status: 'fulfilled';
-          } => result.status === 'fulfilled',
-        )
-        ?.map(result => {
-          const existingChildWorkflow = this.#__context.childWorkflows?.find(
-            (childWorkflow: {
-              runtimeId: string;
-              error: unknown | undefined;
-              data: AnyRecord | undefined;
-            }) => childWorkflow.runtimeId === result?.value?.runtimeId,
-          );
-
-          return {
-            runtimeId: result?.value?.runtimeId,
-            data: {
-              ...existingChildWorkflow?.data,
-              ...result?.value?.data,
-            },
-            error: undefined,
-          };
-        });
-
-      this.#__context.childWorkflows = childWorkflows;
-      service.send({
-        type: 'UPDATE_CONTEXT',
-        payload: {
-          childWorkflows,
-        },
-      });
-    }
-
-    if (
-      this.#__onDoneChildWorkflow &&
-      childWorkflowMetadata &&
-      postSendSnapshot.done &&
-      !this.#__invokedOnDoneChildWorkflow
-    ) {
-      let payload = postSendSnapshot?.context;
-
-      if (callbackInfo?.childContextToCopy) {
-        const childTransformers = this.fetchTransformers(callbackInfo.childContextToCopy.transform);
-
-        for (const childTransformer of childTransformers) {
-          payload = await childTransformer.transform(payload as AnyRecord);
-        }
-      }
-
-      await this.#__onDoneChildWorkflow(
-        {
-          type: callbackInfo?.event,
-          payload: callbackInfo?.childContextToCopy ? payload : undefined,
-        },
-        {
-          source: {
-            runtimeId: this.#__runtimeId,
-            definitionId: childWorkflowMetadata?.definitionId,
-            version: childWorkflowMetadata?.version,
-            state: this.#__currentState,
-            event: event.type,
-          },
-          target: {
-            runtimeId: parentWorkflowMetadata?.runtimeId,
-            definitionId: parentWorkflowMetadata?.definitionId,
-            version: parentWorkflowMetadata?.version,
-            state: parentWorkflowMetadata?.state,
-          },
-        },
-      );
-
-      this.#__invokedOnDoneChildWorkflow = true;
     }
   }
 
