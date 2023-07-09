@@ -148,11 +148,6 @@ model WorkflowDefinition {
   updatedAt           DateTime              @updatedAt
   createdBy           String                @default("SYSTEM")
   workflowRuntimeData WorkflowRuntimeData[]
-  childWorkflows     Json?
-  // Example: [{ state: "initial", event: "NEXT" }]
-  autoEmitEvent Json?
-  checkPolicy CheckPolicy? @default(always)
-  policy     Json?
 }
 
 enum WorkflowRuntimeDataStatus {

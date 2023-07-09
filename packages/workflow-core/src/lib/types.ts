@@ -58,9 +58,7 @@ export interface WorkflowOptions {
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
-  childWorkflows?: Array<ChildWorkflow>;
-  onInvokeChildWorkflow?: WorkflowClientOptions['onInvokeChildWorkflow'];
-  onDoneChildWorkflow?: WorkflowClientOptions['onDoneChildWorkflow'];
+  parentRuntimeId?: string;
 }
 
 export interface CallbackInfo {

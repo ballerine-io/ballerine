@@ -21,7 +21,7 @@ import {
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
 } from './types';
-import { createWorkflowClient, WorkflowOptionsNode } from '@ballerine/workflow-node-sdk';
+import { createWorkflowClient } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
 import {
@@ -71,7 +71,6 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import { plainToClass } from 'class-transformer';
 import { SortOrder } from '@/common/query-filters/sort-order';
-import { ParentWorkflowMetadata } from '@ballerine/workflow-core';
 
 type TEntityId = string;
 
@@ -113,8 +112,6 @@ const policies = {
 
 @Injectable()
 export class WorkflowService {
-  #__workflowsClient: ReturnType<typeof createWorkflowClient>;
-
   constructor(
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
@@ -124,160 +121,7 @@ export class WorkflowService {
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
-  ) {
-    this.#__workflowsClient = this.#__initWorkflowsClient();
-  }
-
-  #__initWorkflowsClient() {
-    return createWorkflowClient({
-      // @ts-expect-error - TODO: fix type
-      onInvokeChildWorkflow: async ({ childWorkflowMetadata, parentWorkflowMetadata }) => {
-        const parentRuntimeData = await this.getWorkflowRuntimeDataById(
-          parentWorkflowMetadata?.runtimeId,
-          {
-            include: {
-              workflowDefinition: true,
-            },
-          },
-        );
-        const parentDefinition = await this.getWorkflowDefinitionById(
-          parentRuntimeData?.workflowDefinitionId,
-        );
-        const context = {
-          ...parentWorkflowMetadata?.context,
-          ...childWorkflowMetadata?.initOptions?.context,
-          childWorkflowMetadata,
-          parentWorkflowMetadata: {
-            definitionId: parentDefinition?.id,
-            runtimeId: parentRuntimeData?.id,
-            version: parentDefinition?.version,
-            name: parentDefinition?.name,
-            state: parentWorkflowMetadata?.state,
-          } satisfies Omit<ParentWorkflowMetadata, 'context'>,
-          callbackInfo: childWorkflowMetadata?.callbackInfo,
-          entity: {
-            id: 'user_id_2211343',
-            data: {
-              firstName: 'Alon',
-              lastName: 'Mami',
-              email: 'johndoe@example.com',
-              approvalState: 'NEW',
-              phone: '(123) 456-7890',
-              dateOfBirth: '2003-07-02T14:31:11.116Z',
-              additionalInfo: {
-                idNumber: '123132132132',
-                address: '123 Main St, Los Angeles, California, 90001, United States',
-                gender: 'male',
-                customParam: 'customValue',
-              },
-            },
-            type: 'individual',
-          },
-          documents: [
-            {
-              category: 'proof_of_Address',
-              type: 'water_bill',
-              issuer: {
-                country: 'GH',
-              },
-              pages: [
-                {
-                  provider: 'http' as const,
-                  uri: 'https://backoffice-demo.ballerine.app/images/mock-documents/set_1_selfie.png',
-                  metadata: {
-                    side: 'front',
-                    pageNumber: '1',
-                  },
-                  type: 'png' as const,
-                },
-                {
-                  provider: 'http' as const,
-                  uri: 'https://backoffice-demo.ballerine.app/images/mock-documents/set_1_doc_face.png',
-                  metadata: {
-                    side: 'face',
-                    pageNumber: '1',
-                  },
-                  type: 'png' as const,
-                },
-                {
-                  provider: 'http' as const,
-                  uri: 'https://backoffice-demo.ballerine.app/images/mock-documents/set_1_doc_back.png',
-                  metadata: {
-                    side: 'back',
-                    pageNumber: '1',
-                  },
-                  type: 'png' as const,
-                },
-              ],
-              properties: {
-                docNumber: '123414214',
-                userAddress: 'Turkey, buhgdawe',
-              },
-              version: 1,
-              issuingVersion: 1,
-            },
-          ],
-        } satisfies WorkflowOptionsNode['definition']['context'];
-        const childWorkflow = await this.createOrUpdateWorkflowRuntime({
-          workflowDefinitionId: childWorkflowMetadata?.definitionId,
-          context,
-        });
-
-        if (!childWorkflow[0]?.workflowRuntimeData) {
-          throw new InternalServerErrorException('Failed to create child workflow runtime data');
-        }
-
-        const childDefinition = await this.getWorkflowDefinitionById(
-          childWorkflowMetadata?.definitionId,
-        );
-        const childWorkflowService = this.#__workflowsClient.createWorkflow({
-          ...childDefinition,
-          runtimeId: childWorkflow[0]?.workflowRuntimeData?.id,
-          definitionType: childDefinition.definitionType,
-          definition: {
-            ...childDefinition.definition,
-            context,
-          },
-          workflowContext: {
-            machineContext: context,
-            state: childWorkflow[0]?.workflowRuntimeData?.state,
-          },
-          extensions: childDefinition.extensions,
-        });
-
-        if (childWorkflowMetadata?.initOptions?.event) {
-          await this.event({
-            id: childWorkflow[0]?.workflowRuntimeData?.id,
-            name: childWorkflowMetadata?.initOptions?.event,
-          });
-        }
-
-        return {
-          childWorkflow: {
-            runtimeId: childWorkflow[0]?.workflowRuntimeData?.id as string,
-          },
-          childWorkflows: [
-            {
-              ...context,
-              runtimeId: childWorkflow[0]?.workflowRuntimeData?.id as string,
-            },
-          ],
-        };
-      },
-      onDoneChildWorkflow: async (event, payload) => {
-        await this.updateWorkflowRuntimeData(payload?.target?.runtimeId, {
-          context: {
-            childWorkflows: [
-              {
-                ...payload?.source,
-                ...event?.payload,
-              },
-            ],
-          },
-        });
-      },
-    });
-  }
+  ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
     const select = {
@@ -325,7 +169,7 @@ export class WorkflowService {
       workflowContext: {
         machineContext: workflow.context,
         state: workflow.state,
-      },
+      }
     });
 
     return {
