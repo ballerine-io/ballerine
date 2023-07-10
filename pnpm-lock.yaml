@@ -313,9 +313,6 @@ importers:
 
   apps/workflows-dashboard:
     dependencies:
-      '@ballerine/ui':
-        specifier: workspace:^
-        version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
         version: 1.2.0(@tanstack/query-core@4.27.0)
@@ -709,118 +706,6 @@ importers:
       zod:
         specifier: ^3.21.4
         version: 3.21.4
-
-  packages/react-ui:
-    dependencies:
-      '@types/classnames':
-        specifier: ^2.3.1
-        version: 2.3.1
-      '@types/lodash':
-        specifier: ^4.14.191
-        version: 4.14.191
-      classnames:
-        specifier: ^2.3.2
-        version: 2.3.2
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-    devDependencies:
-      '@nx/react':
-        specifier: ^16.5.0
-        version: 16.5.0(eslint@8.44.0)(nx@15.0.2)(typescript@5.1.6)(webpack@5.76.2)
-      '@storybook/addon-essentials':
-        specifier: ^7.0.26
-        version: 7.0.26(react-dom@18.2.0)(react@18.2.0)
-      '@storybook/addon-interactions':
-        specifier: ^7.0.26
-        version: 7.0.26(react-dom@18.2.0)(react@18.2.0)
-      '@storybook/addon-links':
-        specifier: ^7.0.26
-        version: 7.0.26(react-dom@18.2.0)(react@18.2.0)
-      '@storybook/addon-styling':
-        specifier: ^1.3.2
-        version: 1.3.2(less@4.1.3)(postcss@8.4.24)(react-dom@18.2.0)(react@18.2.0)(webpack@5.76.2)
-      '@storybook/blocks':
-        specifier: ^7.0.26
-        version: 7.0.26(react-dom@18.2.0)(react@18.2.0)
-      '@storybook/builder-vite':
-        specifier: ^7.0.26
-        version: 7.0.26(typescript@5.1.6)(vite@4.4.2)
-      '@storybook/react':
-        specifier: ^7.0.26
-        version: 7.0.26(react-dom@18.2.0)(react@18.2.0)(typescript@5.1.6)
-      '@storybook/react-vite':
-        specifier: ^7.0.26
-        version: 7.0.26(react-dom@18.2.0)(react@18.2.0)(typescript@5.1.6)(vite@4.4.2)
-      '@storybook/testing-library':
-        specifier: ^0.0.14-next.2
-        version: 0.0.14-next.2
-      '@tailwindcss/line-clamp':
-        specifier: ^0.4.4
-        version: 0.4.4(tailwindcss@3.3.2)
-      '@types/node':
-        specifier: ^20.4.1
-        version: 20.4.1
-      '@types/react':
-        specifier: ^18.2.14
-        version: 18.2.14
-      '@types/react-dom':
-        specifier: ^18.2.6
-        version: 18.2.6
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^5.61.0
-        version: 5.61.0(@typescript-eslint/parser@5.61.0)(eslint@8.44.0)(typescript@5.1.6)
-      '@typescript-eslint/parser':
-        specifier: ^5.61.0
-        version: 5.61.0(eslint@8.44.0)(typescript@5.1.6)
-      '@vitejs/plugin-react':
-        specifier: ^4.0.1
-        version: 4.0.2(vite@4.4.2)
-      autoprefixer:
-        specifier: ^10.4.14
-        version: 10.4.14(postcss@8.4.24)
-      eslint:
-        specifier: ^8.44.0
-        version: 8.44.0
-      eslint-plugin-react-hooks:
-        specifier: ^4.6.0
-        version: 4.6.0(eslint@8.44.0)
-      eslint-plugin-react-refresh:
-        specifier: ^0.4.1
-        version: 0.4.2(eslint@8.44.0)
-      eslint-plugin-storybook:
-        specifier: ^0.6.6
-        version: 0.6.11(eslint@8.44.0)(typescript@5.1.6)
-      fast-glob:
-        specifier: ^3.3.0
-        version: 3.3.0
-      prop-types:
-        specifier: ^15.8.1
-        version: 15.8.1
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.2.0(react@18.2.0)
-      storybook:
-        specifier: ^7.0.26
-        version: 7.0.26
-      tailwindcss:
-        specifier: ^3.3.2
-        version: 3.3.2(ts-node@10.9.1)
-      tailwindcss-animate:
-        specifier: ^1.0.5
-        version: 1.0.5(tailwindcss@3.3.2)
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      vite:
-        specifier: ^4.4.0
-        version: 4.4.2(@types/node@20.4.1)(less@4.1.3)
-      vite-plugin-dts:
-        specifier: ^1.6.6
-        version: 1.7.3(@types/node@20.4.1)(vite@4.4.2)
 
   packages/rules-engine:
     dependencies:
@@ -6600,7 +6485,7 @@ packages:
       '@babel/plugin-transform-unicode-escapes': 7.18.10(@babel/core@7.22.5)
       '@babel/plugin-transform-unicode-regex': 7.18.6(@babel/core@7.22.5)
       '@babel/preset-modules': 0.1.5(@babel/core@7.22.5)
-      '@babel/types': 7.22.5
+      '@babel/types': 7.21.3
       babel-plugin-polyfill-corejs2: 0.3.3(@babel/core@7.22.5)
       babel-plugin-polyfill-corejs3: 0.5.3(@babel/core@7.22.5)
       babel-plugin-polyfill-regenerator: 0.3.1(@babel/core@7.22.5)
@@ -30793,7 +30678,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.2.7(postcss@8.4.21)(ts-node@10.9.1)
+      tailwindcss: 3.2.7(postcss@8.4.24)(ts-node@10.9.1)
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.2):
