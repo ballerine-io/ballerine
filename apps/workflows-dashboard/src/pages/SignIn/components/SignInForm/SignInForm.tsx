@@ -9,7 +9,7 @@ import { FormLabel } from '@app/components/organisms/Form/Form.Label';
 import { FormMessage } from '@app/components/organisms/Form/Form.Message';
 import { SignInFormValues } from '@app/pages/SignIn/components/SignInForm/types';
 import { useForm } from 'react-hook-form';
-import * as classnames from 'classnames';
+import classnames from 'classnames';
 import { FormErrorAlert } from '@app/pages/SignIn/components/SignInForm/ErrorAlert';
 
 interface Props {
