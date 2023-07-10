@@ -3,7 +3,8 @@ import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
 import { IApiPluginParams } from './types';
 
 export class ApiPlugin {
-  public static pluginType = 'kyc';
+  public static pluginType = 'http';
+  public static pluginKind = 'kyc';
   name: string;
   stateNames: Array<string>;
   url: string;
@@ -28,7 +29,7 @@ export class ApiPlugin {
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
   }
-  async callApi(context: TContext) {
+  async invoke(context: TContext) {
     try {
       const requestPayload = await this.transformData(this.request.transformers, context);
       const { isValidRequest, errorMessage } = await this.validateContent(

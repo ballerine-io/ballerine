@@ -1,7 +1,8 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
-import { ApiPlugins, StatePlugins } from './plugins/types';
+import { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
 import { SerializableValidatableTransformer } from './plugins';
-import { ISerializableApiPluginParams } from './plugins/external-plugin/types';
+import { ISerializableHttpPluginParams } from './plugins/external-plugin/types';
+import { ISerializableCommonPluginParams } from "./plugins/common-plugin/types";
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
@@ -20,7 +21,8 @@ export interface WorkflowEvent {
 
 export interface WorkflowExtensions {
   statePlugins?: StatePlugins;
-  apiPlugins?: ApiPlugins | Array<ISerializableApiPluginParams>;
+  apiPlugins?: HttpPlugins | Array<ISerializableHttpPluginParams>;
+  commonPlugins?: CommonPlugins | Array<ISerializableCommonPluginParams>
 }
 export interface WorkflowContext {
   id?: string;

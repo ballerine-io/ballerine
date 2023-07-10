@@ -1,5 +1,6 @@
 import { TJsonSchema, Transformers, Validator } from '../../utils';
 import { THelperFormatingLogic } from '../../utils/context-transformers/types';
+import { ActionablePlugin } from "../types";
 
 export interface ValidatableTransformer {
   transformers: Transformers;
@@ -25,15 +26,15 @@ export interface IApiPluginParams {
   successAction?: string;
   errorAction?: string;
 
-  callApi?(...args: Array<any>): any;
+  invoke?(...args: Array<any>): any;
 }
 
-export interface ISerializableApiPluginParams
+export interface ISerializableHttpPluginParams
   extends Omit<IApiPluginParams, 'request' | 'response'> {
   request: SerializableValidatableTransformer;
   response: SerializableValidatableTransformer;
 
-  callApi?(...args: Array<any>): any;
+  invoke?(...args: Array<any>): any;
 }
 
 export interface WebhookPluginParams {
@@ -43,6 +44,16 @@ export interface WebhookPluginParams {
   method: IApiPluginParams['method'];
   headers: IApiPluginParams['headers'];
   request: Omit<IApiPluginParams['request'], 'schemaValidator'>;
+}
+
+export interface IterativePluginParams {
+  name: string;
+  stateNames: Array<string>;
+  iterateOn: Omit<IApiPluginParams['request'], 'schemaValidator'>;
+  actionPlugin: ActionablePlugin;
+  invoke?(...args: Array<any>): any
+  successAction?: string;
+  errorAction?: string;
 }
 
 export interface SerializableWebhookPluginParams extends Omit<WebhookPluginParams, 'request'> {
