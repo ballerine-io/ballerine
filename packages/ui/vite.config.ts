@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import fg from 'fast-glob';
-import path from 'path';
+import { resolve } from 'path';
 import tailwindcss from 'tailwindcss';
 
 // Defines an array of entry points to be used to search for files.
@@ -29,19 +29,29 @@ const entries = Object.fromEntries(entities);
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), dts(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@components': resolve(__dirname, './src/components'),
+      '@common': resolve(__dirname, './src/common'),
+    },
+  },
   build: {
     outDir: 'lib',
     lib: {
-      entry: entries,
+      entry: {
+        ...entries,
+        index: './src/index.ts',
+      },
       formats: ['es'],
       name: 'react-ui',
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'react/jsx-runtime'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
+          'react/jsx-runtime': 'react/jsx-runtime',
         },
       },
     },
