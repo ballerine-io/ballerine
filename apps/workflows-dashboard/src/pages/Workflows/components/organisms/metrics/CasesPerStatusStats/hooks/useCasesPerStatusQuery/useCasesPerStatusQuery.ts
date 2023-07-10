@@ -6,7 +6,10 @@ import { useQuery } from '@tanstack/react-query';
 export const useCasesPerStatusQuery = () => {
   const { filters } = useWorkflowFilters();
   const { data = { active: 0, completed: 0, failed: 0 } as ICasesPerStatusStats, isLoading } =
-    useQuery(workflowMetricsKeys.workflowCasesPerStatusStats({ fromData: filters.fromDate }));
+    useQuery({
+      ...workflowMetricsKeys.workflowCasesPerStatusStats({ fromDate: filters.fromDate! }),
+      enabled: Boolean(filters.fromDate),
+    });
 
   return {
     data,
