@@ -6,7 +6,7 @@ import {
 import { UsersResolvingStatsList } from '@app/pages/Overview/components/molecules/UsersResolvingStatsList';
 import { UserStats } from '@app/pages/Overview/components/molecules/UserStats';
 import { useCaseResolvingStatsQuery } from '@app/pages/Overview/hooks/useCaseResolvingStatsQuery';
-import { useUsersCaseResolvingStatsQuery } from '@app/pages/Overview/hooks/useUsersCaseResolvingStatsQuery';
+import { useUserDailyCaseResolvingStatsQuery } from '@app/pages/Overview/hooks/useUserDailyCaseResolvingStatsQuery';
 import { useUserStatsQuery } from '@app/pages/Overview/hooks/useUserStatsQuery';
 import { useMemo } from 'react';
 
@@ -14,11 +14,11 @@ export const OverviewTabContent = () => {
   const { isLoading, data } = useUserStatsQuery();
   const { data: caseResolvingStatsData } = useCaseResolvingStatsQuery();
   const { data: usersCaseResolvingStats, isLoading: isLoadingCaseResolvingStats } =
-    useUsersCaseResolvingStatsQuery();
+    useUserDailyCaseResolvingStatsQuery();
 
   const chartData = useMemo((): DailyResolvedCasesChartData[] => {
     return caseResolvingStatsData.map(item => ({
-      value: item.casesPerDay,
+      value: item.count,
       date: new Date(item.date),
     }));
   }, [caseResolvingStatsData]);

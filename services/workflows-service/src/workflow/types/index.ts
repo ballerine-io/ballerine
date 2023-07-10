@@ -46,33 +46,3 @@ export type WorkflowRuntimeListQueryResult = WorkflowRuntimeData & {
   workflowDefinition: WorkflowDefinition;
   assignee: User | null;
 };
-
-export type WorkflowsApprovedChart = { workflowId: string; approvedDate: Date }[];
-
-export type WorkflowDefinitionStatsPerStatus = Record<WorkflowRuntimeDataStatus, number>;
-export interface WorkflowDefinitionStats {
-  id: string;
-  name: string;
-  stats: WorkflowDefinitionStatsPerStatus;
-}
-
-export interface WorkflowRuntimeAgentStats {
-  id: string;
-  firstName: string;
-  lastName: string;
-  casesCount: number;
-}
-
-export interface ListWorkflowRuntimeAgentCasesStatsParams {
-  fromDate?: Date;
-}
-
-export type WorkflowRuntimeCasesPerStatus = Record<WorkflowRuntimeDataStatus, number>;
-
-export interface GetWorkflowRuntimeCasesPerStatusParams {
-  fromDate?: Date;
-}
-
-export interface GetUserStatsParams {
-  fromDate?: Date | null;
-}
