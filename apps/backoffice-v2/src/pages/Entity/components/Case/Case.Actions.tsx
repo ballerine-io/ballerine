@@ -122,7 +122,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
               // disabled={actionButtonDisabled}
               disabled
             >
-              Execute Tasks
+              Ask for all revisions
             </Button>
             <Dialog>
               <DropdownMenu>
