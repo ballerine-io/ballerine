@@ -44,11 +44,11 @@ enum ApprovalState {
 
 model EndUser {
   id String @id @default(cuid())
-  userType String @default("individual") // Add userType: can be 'EndUser', 'CompanyContact', 'Stakeholder'
+  isContactPerson Boolean @default(false)
 
   correlationId String? @unique @db.VarChar
 
-  endUserType   String?
+  endUserType   String? @default("individual") // Add userType: can be 'EndUser', 'CompanyContact', 'Stakeholder'
   approvalState ApprovalState @default(NEW)
   stateReason   String?       @db.VarChar
 
