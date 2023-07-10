@@ -54,16 +54,7 @@ export class WorkflowRunner {
   }
 
   constructor(
-    {
-      runtimeId,
-      definition,
-      workflowActions,
-      workflowContext,
-      extensions,
-      childWorkflows,
-      onInvokeChildWorkflow,
-      onDoneChildWorkflow,
-    }: WorkflowRunnerArgs,
+    { runtimeId, definition, workflowActions, workflowContext, extensions }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
     // global and state specific extensions

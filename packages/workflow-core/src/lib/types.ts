@@ -3,6 +3,9 @@ import { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
 import { SerializableValidatableTransformer } from './plugins';
 import { ISerializableHttpPluginParams } from './plugins/external-plugin/types';
 import { ISerializableCommonPluginParams } from "./plugins/common-plugin/types";
+import { ApiPlugins, StatePlugins } from './plugins/types';
+import { ISerializableApiPluginParams } from './plugins/external-plugin/types';
+import { Transformers } from './utils';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
@@ -24,6 +27,11 @@ export interface WorkflowExtensions {
   apiPlugins?: HttpPlugins | Array<ISerializableHttpPluginParams>;
   commonPlugins?: CommonPlugins | Array<ISerializableCommonPluginParams>
 }
+export interface ChildWorkflowCallback {
+  transformers?: Transformers;
+  action: 'append';
+  event?: string;
+}
 export interface WorkflowContext {
   id?: string;
   state?: any;
@@ -36,23 +44,6 @@ export interface IUpdateContextEvent {
   type: string;
   payload: Record<PropertyKey, unknown>;
 }
-
-export interface ChildWorkflow {
-  waitForResolved?: boolean;
-  name: string;
-  runtimeId: string;
-  definitionId: string;
-  version: string;
-  stateNames: Array<string>;
-  parentContextToCopy?: SerializableValidatableTransformer;
-  callbackInfo: CallbackInfo;
-  initOptions?: {
-    event?: string;
-    context?: Record<string, unknown>;
-    state?: string;
-  };
-}
-
 export interface WorkflowOptions {
   runtimeId: string;
   definitionType: 'statechart-json' | 'bpmn-json';
@@ -60,86 +51,12 @@ export interface WorkflowOptions {
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
-  parentRuntimeId?: string;
 }
 
 export interface CallbackInfo {
   event: string;
-  // what data should be sent back to the parent workflow, out of the full child workflow context
-  childContextToCopy?: SerializableValidatableTransformer;
 }
-export interface ParentWorkflowMetadata {
-  name: string;
-  definitionId: string;
-  runtimeId: string;
-  version: string;
-  state: string;
-  // Transformed with `parentContextToCopy`
-  context: Record<string, unknown>;
-}
-export interface ChildWorkflowMetadata {
-  name: string;
-  definitionId: string;
-  version: string;
-  /**
-   * @description static properties to initiate the new machine with
-   */
-  initOptions?: Partial<{
-    context: {
-      [key: string]: unknown;
-    };
-    /**
-     * @description state of the machine
-     */
-    state: string;
-    /**
-     * @description i.e. approve | reject - see the /event endpoint
-     */
-    event: string;
-  }>;
-  callbackInfo: CallbackInfo;
-}
-export interface OnDoneChildWorkflowPayload {
-  source: {
-    runtimeId: string;
-    definitionId: string;
-    version: string;
-    state: string;
-    event: string;
-  };
-  target: {
-    runtimeId: string;
-    definitionId: string;
-    version: string;
-    state: string;
-  };
-}
-
-interface OnDoneChildWorkflowEvent {
-  type: string;
-  payload: Record<PropertyKey, unknown>;
-}
-
-export interface WorkflowClientOptions {
-  onDoneChildWorkflow?: (
-    event: OnDoneChildWorkflowEvent,
-    payload: OnDoneChildWorkflowPayload,
-  ) => Promise<void>;
-  onInvokeChildWorkflow?: <TData extends Record<string, unknown>>({
-    childWorkflowMetadata,
-    parentWorkflowMetadata,
-  }: {
-    childWorkflowMetadata: ChildWorkflowMetadata;
-    parentWorkflowMetadata: Pick<ParentWorkflowMetadata, 'runtimeId' | 'state' | 'context'>;
-  }) => Promise<
-    TData & {
-      childWorkflow: Pick<ChildWorkflow, 'runtimeId'>;
-    }
-  >;
-}
-
-export interface WorkflowRunnerArgs extends WorkflowClientOptions {
-  childWorkflows?: Array<ChildWorkflow>;
+export interface WorkflowRunnerArgs {
   runtimeId: string;
   definition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
