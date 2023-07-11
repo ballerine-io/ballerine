@@ -70,7 +70,11 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import { plainToClass } from 'class-transformer';
 import { SortOrder } from '@/common/query-filters/sort-order';
-import { createWorkflow, ChildWorkflowCallback } from '@ballerine/workflow-core';
+import {
+  createWorkflow,
+  ChildWorkflowCallback,
+  ChildPluginCallbackOutput
+} from '@ballerine/workflow-core';
 
 type TEntityId = string;
 
@@ -168,6 +172,12 @@ export class WorkflowService {
         machineContext: workflow.context,
         state: workflow.state,
       },
+      invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
+        const runnableChildWorkflow = await this.persistChildEvent(childPluginConfiguration);
+        if (runnableChildWorkflow && childPluginConfiguration.initOptions.event){
+          await this.deliverChildChildEvent(childPluginConfiguration.initOptions.event, runnableChildWorkflow.workflowRuntimeData.id);
+        }
+      }
     });
 
     return {
@@ -202,6 +212,23 @@ export class WorkflowService {
       business: undefined,
       nextEvents: service.getSnapshot().nextEvents,
     };
+  }
+
+  async persistChildEvent(childPluginConfig: ChildPluginCallbackOutput) {
+    return (await this.createOrUpdateWorkflowRuntime({
+      workflowDefinitionId: childPluginConfig.definitionId,
+      context: childPluginConfig.initOptions.context as unknown as DefaultContextSchema,
+      parentWorkflowId: childPluginConfig.parentWorkflowRuntimeId
+    }))[0];
+  }
+
+  async deliverChildChildEvent(event: string, workflowRuntimeId: string) {
+    if (event) {
+      await this.event({
+        id: workflowRuntimeId,
+        name: event,
+      })
+    }
   }
 
   async getWorkflowRuntimeDataByCorrelationId(
@@ -432,9 +459,7 @@ export class WorkflowService {
       version: true,
       definition: true,
       definitionType: true,
-
       backend: true,
-
       extensions: true,
       persistStates: true,
       submitStates: true,
@@ -781,10 +806,12 @@ export class WorkflowService {
     workflowDefinitionId,
     context,
     config,
+    parentWorkflowId
   }: {
     workflowDefinitionId: string;
     context: DefaultContextSchema;
     config?: WorkflowConfig;
+    parentWorkflowId?: string;
   }): Promise<RunnableWorkflowData[]> {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
@@ -831,6 +858,7 @@ export class WorkflowService {
               id: workflowDefinition.id,
             },
           },
+          parentWorkflowRuntimeData: {connect: {id: parentWorkflowId}}
         },
       });
       newWorkflowCreated = true;

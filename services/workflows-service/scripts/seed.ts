@@ -998,6 +998,27 @@ async function seed(bcryptSalt: Salt) {
       },
       persistStates: [],
       submitStates: [],
+      childWorkflows: [
+        {
+          waitForResolved: true,
+          name: childKycExampleDefinition.name,
+          definitionId: childKycExampleDefinition.id,
+          version: childKycExampleDefinition.version,
+          stateNames: ['invoke_child'],
+          // Context to copy from the parent workflow to the child workflow
+          parentContextToCopy: {
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: '{parentData: @}',
+              },
+            ],
+          },
+          initOptions: {
+            event: 'start',
+          },
+        },
+      ],
     },
   });
 }
