@@ -21,7 +21,7 @@ export const kybParentDynamicExample = {
       },
       run_ubos: {
         on: {
-          PENDING_KYC: [{target: 'pending_kyc_response'}],
+          PENDING_KYC: [{target: 'pending_kyc_response_to_finish'}],
           FAILED: [{target: 'auto_reject'}],
         },
       },
@@ -41,7 +41,7 @@ export const kybParentDynamicExample = {
   extensions: {
     childWorkflowPlugins: [
       {
-        name: 'veriff_kyc',
+        name: 'veriff_kyc_child_plugin',
         definitionId: kycDynamicExample.definition.id,
         transformers: [
           {
@@ -55,6 +55,7 @@ export const kybParentDynamicExample = {
     commonPlugins: [{
         pluginType: 'iterative',
         name: 'ubos_iterractive',
+        actionPluginName: 'veriff_kyc_child_plugin',
         stateNames: ['run_ubos'],
         iterateOn: [{
           transformer: 'jmespath',

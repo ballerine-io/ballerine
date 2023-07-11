@@ -863,7 +863,7 @@ export class WorkflowService {
               id: workflowDefinition.id,
             },
           },
-          parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
+         ...( parentWorkflowId && { parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } } }),
         },
       });
       newWorkflowCreated = true;
