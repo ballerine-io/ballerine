@@ -1,10 +1,10 @@
 import React from 'react';
-import classnames from 'classnames';
+import { ctw } from '@utils/ctw';
 
 export const TableBody = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <tbody ref={ref} className={classnames('[&_tr:last-child]:border-0', className)} {...props} />
+  <tbody ref={ref} className={ctw('[&_tr:last-child]:border-0', className)} {...props} />
 ));
 TableBody.displayName = 'TableBody';

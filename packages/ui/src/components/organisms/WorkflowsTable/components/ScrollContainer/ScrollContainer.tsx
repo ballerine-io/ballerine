@@ -1,11 +1,17 @@
-import Scrollbars from 'react-custom-scrollbars';
+// import Scrollbars from 'react-custom-scrollbars';
+
+import { ScrollArea } from '@components/atoms/ScrollArea';
 
 interface Props {
   children: React.ReactNode;
 }
 
 export function ScrollContainer({ children }: Props) {
-  return <Scrollbars children={children} autoHide />;
+  return (
+    <ScrollArea className="h-full" orientation="both">
+      {children}
+    </ScrollArea>
+  );
 }
 
 ScrollContainer.displayName = 'ScrollContainer';

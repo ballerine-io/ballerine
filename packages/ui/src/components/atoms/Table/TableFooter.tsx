@@ -1,5 +1,5 @@
 import React from 'react';
-import classnames from 'classnames';
+import { ctw } from '@utils/ctw';
 
 export const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
@@ -7,7 +7,7 @@ export const TableFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tfoot
     ref={ref}
-    className={classnames('bg-primary text-primary-foreground font-medium', className)}
+    className={ctw('bg-primary text-primary-foreground font-medium', className)}
     {...props}
   />
 ));

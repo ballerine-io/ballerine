@@ -68,7 +68,7 @@ export function WorkflowsTable({ items, isFetching, sorting, columns, onSort }: 
   const isEmpty = !items.length && !isFetching;
 
   return (
-    <Table className="font-inter">
+    <Table>
       <TableHeader>
         {table.getHeaderGroups().map(({ id: headerRowId, headers }) => {
           return (

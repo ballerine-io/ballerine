@@ -1,5 +1,5 @@
 import React from 'react';
-import classnames from 'classnames';
+import { ctw } from '@utils/ctw';
 
 export const TableHead = React.forwardRef<
   HTMLTableCellElement,
@@ -7,7 +7,7 @@ export const TableHead = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <th
     ref={ref}
-    className={classnames(
+    className={ctw(
       'font-inter text-muted-foreground h-12 px-4 text-left align-middle font-medium [&:has([role=checkbox])]:pr-0',
       className,
     )}

@@ -1,7 +1,5 @@
 import { Column } from '@tanstack/react-table';
 import { ChevronsUpDown, EyeOff, SortAsc, SortDesc } from 'lucide-react';
-import classnames from 'classnames';
-
 import { Button } from '@components/atoms/Button';
 import {
   DropdownMenu,
@@ -10,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@components/atoms/Dropdown';
+import { ctw } from '@utils/ctw';
 
 interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;
@@ -22,11 +21,11 @@ export function DataTableColumnHeader<TData, TValue>({
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
-    return <div className={classnames(className)}>{title}</div>;
+    return <div className={ctw(className)}>{title}</div>;
   }
 
   return (
-    <div className={classnames('flex items-center space-x-2 whitespace-nowrap', className)}>
+    <div className={ctw('flex items-center space-x-2 whitespace-nowrap', className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="data-[state=open]:bg-accent -ml-3 h-8">

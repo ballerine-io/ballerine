@@ -33,8 +33,10 @@ export default defineConfig({
     alias: {
       '@components': resolve(__dirname, './src/components'),
       '@common': resolve(__dirname, './src/common'),
+      '@utils': resolve(__dirname, './src/utils'),
     },
   },
+  test: {},
   build: {
     outDir: 'lib',
     lib: {
@@ -43,7 +45,7 @@ export default defineConfig({
         index: './src/index.ts',
       },
       formats: ['es'],
-      name: 'react-ui',
+      name: 'ui',
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime'],
