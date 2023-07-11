@@ -1,8 +1,8 @@
-import { WorkflowHealthStatus } from '@common/enums';
+import { IWorkflowHealthStatus, WorkflowHealthStatus } from '@common/enums';
 import { ctw } from '@utils/ctw';
 
 interface Props {
-  healthStatus: WorkflowHealthStatus;
+  healthStatus: IWorkflowHealthStatus;
   size?: number;
 }
 
