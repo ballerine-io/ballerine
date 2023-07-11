@@ -1046,19 +1046,6 @@ export class WorkflowService {
     const context = snapshot.machine.context;
     const isFinal = snapshot.machine.states[currentState].type === 'final';
 
-    if (isFinal && workflowRuntimeData.parentRuntimeDataId) {
-      const parentWorkflowRuntime = this.getWorkflowRuntimeDataById(
-        workflowRuntimeData.parentRuntimeDataId,
-      );
-      const childWorkflowCallback =
-        workflowDefinition.parentWorkflowTranformation as ChildWorkflowCallback;
-      if (childWorkflowCallback.action === 'append') {
-        //   TODO transform response
-        //   TODO persist response to parent workflow
-        //   TODO send event to parent
-      }
-    }
-
     this.logger.log('Workflow state transition', {
       id: id,
       from: workflowRuntimeData.state,
@@ -1100,6 +1087,10 @@ export class WorkflowService {
       status: isFinal ? 'completed' : workflowRuntimeData.status,
     });
 
+    if (isFinal && workflowRuntimeData.parentRuntimeDataId) {
+      await this.persistChildWorkflowToParent(workflowRuntimeData, workflowDefinition);
+    }
+
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
       return;
     }
@@ -1111,6 +1102,32 @@ export class WorkflowService {
         approvalState: ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState],
       },
     });
+  }
+
+  async persistChildWorkflowToParent(workflowRuntimeData: WorkflowRuntimeData, workflowDefinition: WorkflowDefinition) {
+    const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(
+      workflowRuntimeData.parentRuntimeDataId,
+    );
+    const {
+      transformers,
+      action,
+      event
+    } = workflowDefinition.parentWorkflowPersistenceLogic as ChildWorkflowCallback;
+
+    if (action === 'append') {
+      let contextToPersist = workflowRuntimeData.context
+      for (const transformer of (transformers || [])) {
+        contextToPersist = await transformer.transform(contextToPersist)
+      }
+
+      await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, contextToPersist)
+    }
+    if (event && parentWorkflowRuntime.state !== 'completed') {
+      await this.event({
+        id: parentWorkflowRuntime.id,
+        name: event
+      })
+    }
   }
 
   private __fetchFromServiceProviders(document: TDefaultSchemaDocumentPage): {
