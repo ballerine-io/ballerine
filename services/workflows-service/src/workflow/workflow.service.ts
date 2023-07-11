@@ -1086,12 +1086,37 @@ export class WorkflowService {
       return;
     }
 
-    runtimeData.endUserId &&
-      (await this.endUserRepository.updateById(runtimeData.endUserId, {
+    const entityType = context.entity.type === 'individual' ? 'endUser' : ('business' as const);
+    const entityId = runtimeData[`${entityType}Id`];
+    const approvalState = ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState];
+
+    if (!entityType) {
+      throw new BadRequestException(`entity.type is required`);
+    }
+
+    if (!entityId) {
+      throw new BadRequestException(`entity.${entityType}Id is required`);
+    }
+
+    if (entityType === 'endUser') {
+      await this.endUserRepository.updateById(entityId, {
         data: {
-          approvalState: ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState],
+          approvalState,
         },
-      }));
+      });
+
+      return;
+    }
+
+    if (entityType === 'business') {
+      await this.businessRepository.updateById(entityId, {
+        data: {
+          approvalState,
+        },
+      });
+
+      return;
+    }
   }
 
   private __fetchFromServiceProviders(document: TDefaultSchemaDocumentPage): {

@@ -113,12 +113,7 @@ export class WorkflowControllerInternal {
   async event(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowEventInput,
-  ): Promise<any> {
-    return {
-      data,
-      params,
-    };
-
+  ): Promise<void> {
     return await this.service.event({
       ...data,
       id: params.id,
