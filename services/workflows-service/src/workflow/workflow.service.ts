@@ -1104,29 +1104,29 @@ export class WorkflowService {
     });
   }
 
-  async persistChildWorkflowToParent(workflowRuntimeData: WorkflowRuntimeData, workflowDefinition: WorkflowDefinition) {
+  async persistChildWorkflowToParent(
+    workflowRuntimeData: WorkflowRuntimeData,
+    workflowDefinition: WorkflowDefinition,
+  ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(
       workflowRuntimeData.parentRuntimeDataId,
     );
-    const {
-      transformers,
-      action,
-      event
-    } = workflowDefinition.parentWorkflowPersistenceLogic as ChildWorkflowCallback;
+    const { transformers, action, event } =
+      workflowDefinition.parentWorkflowPersistenceLogic as ChildWorkflowCallback;
 
     if (action === 'append') {
-      let contextToPersist = workflowRuntimeData.context
-      for (const transformer of (transformers || [])) {
-        contextToPersist = await transformer.transform(contextToPersist)
+      let contextToPersist = workflowRuntimeData.context;
+      for (const transformer of transformers || []) {
+        contextToPersist = await transformer.transform(contextToPersist);
       }
 
-      await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, contextToPersist)
+      await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, contextToPersist);
     }
     if (event && parentWorkflowRuntime.state !== 'completed') {
       await this.event({
         id: parentWorkflowRuntime.id,
-        name: event
-      })
+        name: event,
+      });
     }
   }
 
