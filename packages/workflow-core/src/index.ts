@@ -7,6 +7,7 @@ export type {
   WorkflowRunnerArgs,
   PluginAction,
   ChildWorkflowCallback,
+  ChildPluginCallbackOutput,
   WorkflowContext,
   ExtensionRunOrder,
   ValidatableTransformer,
