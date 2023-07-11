@@ -56,10 +56,11 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     debouncedIsLoadingRejectEntity,
     debouncedIsLoadingAssignEntity,
     isLoading,
-    isLoadingEntity,
+    isLoadingCase,
     initials,
     canApprove,
     canReject,
+    canRevision,
     documentToResubmit,
     onDocumentToResubmitChange,
     resubmissionReason,
@@ -107,7 +108,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           <h2
             className={ctw(`text-2xl font-bold`, {
               'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
-                isLoadingEntity,
+                isLoadingCase,
             })}
           >
             {fullName}
@@ -117,10 +118,9 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           <div className={`pe-[3.35rem] flex items-center space-x-6`}>
             <Button
               className={ctw({
-                // loading: debouncedIsLoadingRejectEntity,
+                loading: debouncedIsLoadingRejectEntity,
               })}
-              // disabled={actionButtonDisabled}
-              disabled
+              disabled={!canRevision}
             >
               Ask for all revisions
             </Button>
@@ -130,10 +130,9 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                   <Button
                     variant={`destructive`}
                     className={ctw({
-                      // loading: debouncedIsLoadingRejectEntity,
+                      loading: debouncedIsLoadingRejectEntity,
                     })}
-                    // disabled={isLoading || !canReject}
-                    disabled
+                    disabled={isLoading || !canReject}
                   >
                     Reject
                   </Button>
@@ -212,12 +211,11 @@ export const Actions: FunctionComponent<IActionsProps> = ({
               <HoverCard.Trigger asChild>
                 <Button
                   className={ctw({
-                    // loading: debouncedIsLoadingApproveEntity,
+                    loading: debouncedIsLoadingApproveEntity,
                   })}
                   variant={`success`}
-                  // disabled={isLoading || !canApprove}
+                  disabled={isLoading || !canApprove}
                   onClick={onMutateApproveEntity}
-                  disabled
                 >
                   Approve
                 </Button>

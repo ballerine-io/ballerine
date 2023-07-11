@@ -11,6 +11,9 @@ import { useRejectEntityMutation } from '../../../../../../domains/entities/hook
 import { useSelectNextEntity } from '../../../../../../domains/entities/hooks/useSelectNextEntity/useSelectNextEntity';
 import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
+import { someDocumentDecisionStatus } from '../../../../../../common/utils/some-document-decision-status/some-document-decision-status';
+import { everyDocumentDecisionStatus } from '../../../../../../common/utils/every-document-decision-status/every-document-decision-status';
+import { safeEvery } from '../../../../../../common/utils/safe-every/safe-every';
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -26,7 +29,7 @@ export const ResubmissionReason = {
 export const useActions = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
   const filterId = useFilterId();
-  const { data: workflow } = useWorkflowQuery({ workflowId, filterId });
+  const { data: workflow, isLoading: isLoadingCase } = useWorkflowQuery({ workflowId, filterId });
   const { mutate: mutateApproveEntity, isLoading: isLoadingApproveEntity } =
     useApproveEntityMutation({
       workflowId: workflowId,
@@ -50,10 +53,22 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
   const caseState = useCaseState(authenticatedUser, workflow);
   const { data: users } = useUsersQuery();
   const assignees = users?.filter(assignee => assignee?.id !== authenticatedUser?.id);
+  const hasDecision = safeEvery(
+    workflow?.context?.documents,
+    document => !!document?.decision?.status,
+  );
+  const canTakeAction = caseState.actionButtonsEnabled && hasDecision;
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
-  const canReject = caseState.actionButtonsEnabled;
-  const canApprove = caseState.actionButtonsEnabled;
+  const canReject =
+    canTakeAction && someDocumentDecisionStatus(workflow?.context?.documents, 'rejected');
+  const canRevision =
+    canTakeAction &&
+    !canReject &&
+    someDocumentDecisionStatus(workflow?.context?.documents, 'revision');
+  const canApprove =
+    caseState.actionButtonsEnabled &&
+    everyDocumentDecisionStatus(workflow?.context?.documents, 'approved');
 
   // Only display the button spinners if the request is longer than 300ms
   const debouncedIsLoadingRejectEntity = useDebounce(isLoadingRejectEntity, 300);
@@ -86,9 +101,6 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
   );
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
   const onTriggerAssignToMe = true;
-  const hasDecision =
-    workflow?.context?.documents?.length &&
-    workflow?.context?.documents?.every(document => !!document?.decision?.status);
 
   // useDocumentListener('keydown', event => {
   //   if (!event.ctrlKey || document.activeElement !== document.body) return;
@@ -127,6 +139,7 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
     initials,
     canReject,
     canApprove,
+    canRevision,
     documentToResubmit,
     resubmissionReason,
     onDocumentToResubmitChange,
@@ -135,5 +148,6 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
     authenticatedUser,
     assignees,
     hasDecision,
+    isLoadingCase,
   };
 };
