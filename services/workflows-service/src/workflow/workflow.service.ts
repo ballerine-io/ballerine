@@ -73,7 +73,7 @@ import { SortOrder } from '@/common/query-filters/sort-order';
 import {
   createWorkflow,
   ChildWorkflowCallback,
-  ChildPluginCallbackOutput
+  ChildPluginCallbackOutput,
 } from '@ballerine/workflow-core';
 
 type TEntityId = string;
@@ -174,10 +174,13 @@ export class WorkflowService {
       },
       invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
         const runnableChildWorkflow = await this.persistChildEvent(childPluginConfiguration);
-        if (runnableChildWorkflow && childPluginConfiguration.initOptions.event){
-          await this.deliverChildChildEvent(childPluginConfiguration.initOptions.event, runnableChildWorkflow.workflowRuntimeData.id);
+        if (runnableChildWorkflow && childPluginConfiguration.initOptions.event) {
+          await this.deliverChildChildEvent(
+            runnableChildWorkflow.workflowRuntimeData.id,
+            childPluginConfiguration.initOptions.event,
+          );
         }
-      }
+      },
     });
 
     return {
@@ -215,19 +218,21 @@ export class WorkflowService {
   }
 
   async persistChildEvent(childPluginConfig: ChildPluginCallbackOutput) {
-    return (await this.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId: childPluginConfig.definitionId,
-      context: childPluginConfig.initOptions.context as unknown as DefaultContextSchema,
-      parentWorkflowId: childPluginConfig.parentWorkflowRuntimeId
-    }))[0];
+    return (
+      await this.createOrUpdateWorkflowRuntime({
+        workflowDefinitionId: childPluginConfig.definitionId,
+        context: childPluginConfig.initOptions.context as unknown as DefaultContextSchema,
+        parentWorkflowId: childPluginConfig.parentWorkflowRuntimeId,
+      })
+    )[0];
   }
 
-  async deliverChildChildEvent(event: string, workflowRuntimeId: string) {
+  async deliverChildChildEvent(workflowRuntimeId: string, event: string) {
     if (event) {
       await this.event({
         id: workflowRuntimeId,
         name: event,
-      })
+      });
     }
   }
 
@@ -806,7 +811,7 @@ export class WorkflowService {
     workflowDefinitionId,
     context,
     config,
-    parentWorkflowId
+    parentWorkflowId,
   }: {
     workflowDefinitionId: string;
     context: DefaultContextSchema;
@@ -858,7 +863,7 @@ export class WorkflowService {
               id: workflowDefinition.id,
             },
           },
-          parentWorkflowRuntimeData: {connect: {id: parentWorkflowId}}
+          parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
         },
       });
       newWorkflowCreated = true;
