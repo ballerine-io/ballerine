@@ -1,6 +1,7 @@
+import { describe, test, expect } from 'vitest';
 import { WorkflowTableItem } from '../types';
 import { getWorkflowHealthStatus } from '../utils/get-workflow-health-status';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { WorkflowHealthStatus } from '@common/enums';
 
 describe('getWorkflowHealthStatus', () => {

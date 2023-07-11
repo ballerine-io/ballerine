@@ -1,5 +1,5 @@
 import React from 'react';
-import classnames from 'classnames';
+import { ctw } from '@utils/ctw';
 
 export const TableRow = React.forwardRef<
   HTMLTableRowElement,
@@ -7,7 +7,7 @@ export const TableRow = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tr
     ref={ref}
-    className={classnames(
+    className={ctw(
       'hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors',
       className,
     )}

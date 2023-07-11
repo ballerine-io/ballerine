@@ -1,5 +1,5 @@
 import { WorkflowHealthStatus } from '@common/enums';
-import classnames from 'classnames';
+import { ctw } from '@utils/ctw';
 
 interface Props {
   healthStatus: WorkflowHealthStatus;
@@ -10,7 +10,7 @@ export const HealthIndicator = ({ healthStatus, size = 20 }: Props) => {
   return (
     <span
       style={{ width: `${size}px`, height: `${size}px` }}
-      className={classnames('block', 'rounded-full', {
+      className={ctw('block', 'rounded-full', {
         ['bg-green-400']: healthStatus === WorkflowHealthStatus.healthy,
         ['bg-red-400']: healthStatus === WorkflowHealthStatus.failed,
         ['bg-yellow-400']: healthStatus === WorkflowHealthStatus.pending,

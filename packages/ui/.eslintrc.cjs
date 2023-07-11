@@ -1,33 +1,47 @@
+const config = require('../../packages/config/eslintrc.base.cjs');
+
 /* eslint-env node */
 
 module.exports = {
-  root: true,
+  ...config,
   env: {
+    ...config.env,
     browser: true,
-    es2020: true,
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'plugin:react-hooks/recommended',
-    'plugin:storybook/recommended',
-  ],
-  parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: true,
+    ...config.parserOptions,
+    project: './tsconfig.eslint.json',
     tsconfigRootDir: __dirname,
   },
-  plugins: ['react-refresh'],
+  plugins: ['tailwindcss', ...(config.plugins ?? [])],
+  extends: [
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:tailwindcss/recommended',
+    ...(config.extends ?? []),
+  ],
   rules: {
-    'react-refresh/only-export-components': [
-      'warn',
-      {
-        allowConstantExport: true,
-      },
-    ],
-    '@typescript-eslint/no-non-null-assertion': 'off',
+    ...config.rules,
+    '@typescript-eslint/ban-ts-comment': 'warn',
+    'comma-dangle': 'off',
+    'multiline-ternary': 'off',
+    'no-use-before-define': 'off',
+    'space-before-function-paren': 'off',
+    'react/prop-types': 'off',
+    'react/no-unescaped-entities': 'off',
+    'react/display-name': 'off',
+    'react/react-in-jsx-scope': 'off',
+    'tailwindcss/classnames-order': 'off',
+    'tailwindcss/no-custom-classname': 'off',
   },
+  settings: {
+    ...config.settings,
+    tailwindcss: {
+      callees: ['ctw'],
+    },
+    react: {
+      version: 'detect',
+    },
+  },
+  ignorePatterns: ['.eslintrc.cjs', ...(config.ignorePatterns ?? [])],
 };
