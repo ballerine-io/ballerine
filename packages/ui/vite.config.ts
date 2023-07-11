@@ -13,15 +13,18 @@ const entryPoints = ['src/components/**/*.ts'];
 const files = fg.sync(entryPoints, { absolute: true });
 
 // Maps the file paths in the "files" array to an array of key-value pair.
-const entities = files.map(file => {
-  // Extract the part of the file path after the "src" folder and before the file extension.
-  const [key] = file.match(/(?<=src\/).*$/) || [];
+const entities = files
+  //excluding test files
+  .filter(file => Boolean(file.match(/(?<=src\/)(?!.*\.test).*$/)))
+  .map(file => {
+    // Extract the part of the file path after the "src" folder and before the file extension.
+    const [key] = file.match(/(?<=src\/).*$/) || [];
 
-  // Remove the file extension from the key.
-  const keyWithoutExt = key.replace(/\.[^.]*$/, '');
+    // Remove the file extension from the key.
+    const keyWithoutExt = key.replace(/\.[^.]*$/, '');
 
-  return [keyWithoutExt, file];
-});
+    return [keyWithoutExt, file];
+  });
 
 // Convert the array of key-value pairs to an object using the Object.fromEntries() method.
 // Returns an object where each key is the file name without the extension and the value is the absolute file path.
@@ -36,7 +39,9 @@ export default defineConfig({
       '@utils': resolve(__dirname, './src/utils'),
     },
   },
-  test: {},
+  test: {
+    exclude: ['node_modules', 'lib'],
+  },
   build: {
     outDir: 'lib',
     lib: {
