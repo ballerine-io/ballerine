@@ -74,5 +74,8 @@
     "vite": "^4.4.0",
     "vite-plugin-dts": "^1.6.6",
     "vitest": "^0.33.0"
+  },
+  "overrides": {
+    "@types/react": "18.0.29"
   }
 }
