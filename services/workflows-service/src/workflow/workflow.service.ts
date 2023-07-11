@@ -1068,6 +1068,15 @@ export class WorkflowService {
         state: workflowRuntimeData.state,
       },
       extensions: workflowDefinition.extensions,
+      invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
+        const runnableChildWorkflow = await this.persistChildEvent(childPluginConfiguration);
+        if (runnableChildWorkflow && childPluginConfiguration.initOptions.event) {
+          await this.deliverChildChildEvent(
+            runnableChildWorkflow.workflowRuntimeData.id,
+            childPluginConfiguration.initOptions.event,
+          );
+        }
+      }
     });
 
     await service.sendEvent({

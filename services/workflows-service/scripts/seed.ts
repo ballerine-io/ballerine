@@ -16,6 +16,7 @@ import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
+import { generateParentKybWithKycs } from "./workflows/parent-kyb-workflow";
 
 if (require.main === module) {
   dotenv.config();
@@ -962,63 +963,6 @@ async function seed(bcryptSalt: Salt) {
 
   console.info('Seeding database with custom seed...');
   customSeed();
-
+  await generateParentKybWithKycs(client);
   console.info('Seeded database successfully');
-
-  const childKycExampleDefinition = await generateKycForE2eTest(client);
-
-  await client.workflowDefinition.create({
-    data: {
-      id: 'parent_id',
-      name: 'parent_definition',
-      version: 1,
-      definitionType: 'statechart-json',
-      definition: {
-        id: 'Parent',
-        initial: 'parent_initial',
-        states: {
-          parent_initial: {
-            on: {
-              NEXT: {
-                target: 'invoke_child',
-              },
-            },
-          },
-          invoke_child: {
-            on: {
-              NEXT: {
-                target: 'invoked_child',
-              },
-            },
-          },
-          invoked_child: {
-            type: 'final',
-          },
-        },
-      },
-      persistStates: [],
-      submitStates: [],
-      childWorkflows: [
-        {
-          waitForResolved: true,
-          name: childKycExampleDefinition.name,
-          definitionId: childKycExampleDefinition.id,
-          version: childKycExampleDefinition.version,
-          stateNames: ['invoke_child'],
-          // Context to copy from the parent workflow to the child workflow
-          parentContextToCopy: {
-            transform: [
-              {
-                transformer: 'jmespath',
-                mapping: '{parentData: @}',
-              },
-            ],
-          },
-          initOptions: {
-            event: 'start',
-          },
-        },
-      ],
-    },
-  });
 }
