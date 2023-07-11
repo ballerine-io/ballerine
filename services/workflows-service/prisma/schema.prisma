@@ -178,10 +178,9 @@ model WorkflowRuntimeData {
   resolvedAt                DateTime?
   assignedAt                DateTime?
 
-  parentRuntimeDataId       String?                   @map("parent_runtime_data_id")
-  parentWorkflowRuntimeData WorkflowRuntimeData?      @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
-  childWorkflowRuntimeDatas WorkflowRuntimeData[]     @relation("ParentChild")
-
+  parentRuntimeDataId       String?               @map("parent_runtime_data_id")
+  parentWorkflowRuntimeData WorkflowRuntimeData?  @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
+  childWorkflowRuntimeDatas WorkflowRuntimeData[] @relation("ParentChild")
 
   @@index([assigneeId, status])
   @@index([endUserId, status])
