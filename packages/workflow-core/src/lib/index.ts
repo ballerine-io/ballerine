@@ -20,7 +20,7 @@ export type {
   WorkflowPlugin,
   WebhookPluginParams,
   IApiPluginParams,
-  ApiPlugins,
+  HttpPlugins,
   SerializableValidatableTransformer,
 } from './plugins';
 export type {

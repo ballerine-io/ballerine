@@ -82,7 +82,8 @@ const kycIndividualRequestSchema = {
   required: ['endUserId', 'callbackUrl', 'person', 'document', 'images', 'address', 'vendor'],
 };
 export class KycPlugin extends ApiPlugin {
-  public static pluginType = 'kyc';
+  public static pluginType = 'http';
+  public static pluginKind = 'kyc';
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
     schemaValidator: Validator | undefined,
     transformedRequest: AnyRecord,

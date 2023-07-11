@@ -15,17 +15,20 @@ import type {
 import { Error as ErrorEnum } from './types';
 import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
-import { StatePlugin } from './plugins/types';
+import { ActionablePlugin, ActionablePlugins, StatePlugin } from './plugins/types';
 import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 import {
   IApiPluginParams,
-  ISerializableApiPluginParams,
+  ISerializableHttpPluginParams,
   SerializableValidatableTransformer,
 } from './plugins/external-plugin/types';
 import { HelpersTransformer } from './utils/context-transformers/helpers-transformer';
 import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
 import { THelperFormatingLogic } from './utils/context-transformers/types';
+import { ISerializableCommonPluginParams } from "./plugins/common-plugin/types";
+import { TContext } from "./utils";
+import { IterativePlugin } from "./plugins/common-plugin/iterative-plugin";
 
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
@@ -45,6 +48,7 @@ export class WorkflowRunner {
   public get context() {
     return this.#__context;
   }
+
   public get state() {
     return this.#__currentState;
   }
@@ -59,6 +63,7 @@ export class WorkflowRunner {
     this.#__debugMode = debugMode;
     // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
+    this.#__extensions.commonPlugins = this.initiateCommonPlugins(this.#__extensions.commonPlugins ?? [], this.#__extensions.apiPlugins)
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
     this.#__runtimeId = runtimeId;
 
@@ -79,7 +84,7 @@ export class WorkflowRunner {
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
   }
 
-  initiateApiPlugins(apiPluginSchemas: Array<ISerializableApiPluginParams>) {
+  initiateApiPlugins(apiPluginSchemas: Array<ISerializableHttpPluginParams>) {
     return apiPluginSchemas?.map(apiPluginSchema => {
       const requestTransformerLogic = apiPluginSchema.request.transform;
       const requestSchema = apiPluginSchema.request.schema;
@@ -101,8 +106,8 @@ export class WorkflowRunner {
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
         headers: apiPluginSchema.headers,
-        request: { transformers: requestTransformer, schemaValidator: requestValidator },
-        response: { transformers: responseTransformer, schemaValidator: responseValidator },
+        request: {transformers: requestTransformer, schemaValidator: requestValidator},
+        response: {transformers: responseTransformer, schemaValidator: responseValidator},
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
       });
@@ -111,13 +116,30 @@ export class WorkflowRunner {
     });
   }
 
-  private pickApiPlugin(apiPluginSchema: ISerializableApiPluginParams) {
+  initiateCommonPlugins(pluginSchemas: Array<ISerializableCommonPluginParams>, actionPlugins: ActionablePlugins) {
+    return pluginSchemas.map(pluginSchema => {
+        const actionPlugin = actionPlugins.find(actionPlugin => actionPlugin.name === pluginSchema.actionPluginName);
+
+        return new IterativePlugin({
+            name: pluginSchema.name,
+            stateNames: pluginSchema.stateNames,
+            iterateOn: this.fetchTransformers(pluginSchema.iterateOn),
+            action: (context: TContext) => actionPlugin!.invoke(context),
+            successAction: pluginSchema.successAction,
+            errorAction: pluginSchema.errorAction
+          }
+        )
+      }
+    )
+  }
+
+  private pickApiPlugin(apiPluginSchema: ISerializableHttpPluginParams) {
     // @ts-ignore
-    if (apiPluginSchema.pluginType == 'kyc') return KycPlugin;
+    if (apiPluginSchema.pluginKind == 'kyc') return KycPlugin;
     // @ts-ignore
-    if (apiPluginSchema.pluginType == 'webhook') return WebhookPlugin;
+    if (apiPluginSchema.pluginKind == 'webhook') return WebhookPlugin;
     // @ts-ignore
-    if (apiPluginSchema.pluginType == 'api') return ApiPlugin;
+    if (apiPluginSchema.pluginKind == 'api') return ApiPlugin;
 
     // @ts-expect-error TODO: fix this
     const isApiPlugin = this.isApiPlugin(apiPluginSchema);
@@ -362,11 +384,26 @@ export class WorkflowRunner {
     const postSendSnapshot = service.getSnapshot();
     this.#__context = postSendSnapshot.context;
 
+
+    if (this.#__extensions.commonPlugins) {
+      for (const commonPlugin of this.#__extensions.commonPlugins) {
+        if (!commonPlugin.stateNames.includes(this.#__currentState)) continue;
+
+        const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context);
+        if (!!error) {
+          this.#__context.pluginsOutput = {
+            ...(this.#__context.pluginsOutput || {}),
+            ...{ [commonPlugin.name]: { error: error } },
+          };
+        }
+        if (callbackAction) await this.sendEvent(callbackAction);
+      }
+    }
     if (this.#__extensions.apiPlugins) {
       for (const apiPlugin of this.#__extensions.apiPlugins) {
         if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
 
-        const { callbackAction, responseBody, error } = await apiPlugin.callApi?.(this.#__context);
+        const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
         // @ts-expect-error - update webhook plugin to use serializable interface
         if (!this.isApiPlugin(apiPlugin)) continue;
 
