@@ -1,5 +1,5 @@
 export type {
-  ApiPlugins,
+  HttpPlugins,
   ExtensionRunOrder,
   PluginAction,
   StatePlugin,

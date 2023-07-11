@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { WorkflowRunner } from '../../workflow-runner';
 import { WorkflowRunnerArgs } from '../../types';
-import { ISerializableApiPluginParams } from './types';
+import { ISerializableHttpPluginParams } from './types';
 
 function createWorkflowRunner(
   definition: WorkflowRunnerArgs['definition'],
-  apiPluginsSchemas: Array<ISerializableApiPluginParams>,
+  apiPluginsSchemas: Array<ISerializableHttpPluginParams>,
 ) {
   return new WorkflowRunner({
     definition,

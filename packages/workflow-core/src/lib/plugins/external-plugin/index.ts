@@ -4,5 +4,6 @@ export type {
   WebhookPluginParams,
   IApiPluginParams,
   ValidatableTransformer,
+  IterativePluginParams,
   SerializableValidatableTransformer,
 } from './types';

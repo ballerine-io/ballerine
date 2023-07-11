@@ -1,4 +1,8 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
+import { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
+import { SerializableValidatableTransformer } from './plugins';
+import { ISerializableHttpPluginParams } from './plugins/external-plugin/types';
+import { ISerializableCommonPluginParams } from "./plugins/common-plugin/types";
 import { ApiPlugins, StatePlugins } from './plugins/types';
 import { ISerializableApiPluginParams } from './plugins/external-plugin/types';
 import { Transformers } from './utils';
@@ -20,7 +24,8 @@ export interface WorkflowEvent {
 
 export interface WorkflowExtensions {
   statePlugins?: StatePlugins;
-  apiPlugins?: ApiPlugins | Array<ISerializableApiPluginParams>;
+  apiPlugins?: HttpPlugins | Array<ISerializableHttpPluginParams>;
+  commonPlugins?: CommonPlugins | Array<ISerializableCommonPluginParams>
 }
 export interface ChildWorkflowCallback {
   transformers?: Transformers;
