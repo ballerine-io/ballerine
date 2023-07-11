@@ -848,9 +848,6 @@ importers:
       lucide-react:
         specifier: ^0.144.0
         version: 0.144.0(react@18.2.0)
-      react-custom-scrollbars:
-        specifier: ^4.2.1
-        version: 4.2.1(react-dom@18.2.0)(react@18.2.0)
       react-json-view:
         specifier: ^1.21.3
         version: 1.21.3(@types/react@18.0.37)(react-dom@18.2.0)(react@18.2.0)
@@ -897,9 +894,6 @@ importers:
       '@types/react':
         specifier: ^18.0.14
         version: 18.0.37
-      '@types/react-custom-scrollbars':
-        specifier: ^4.0.10
-        version: 4.0.10
       '@types/react-dom':
         specifier: ^18.0.5
         version: 18.0.11
@@ -930,9 +924,6 @@ importers:
       fast-glob:
         specifier: ^3.3.0
         version: 3.3.0
-      jest:
-        specifier: ^29.6.1
-        version: 29.6.1(@types/node@20.4.1)
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
@@ -8399,48 +8390,6 @@ packages:
       graceful-fs: 4.2.11
       jest-changed-files: 29.5.0
       jest-config: 29.6.1(@types/node@18.15.10)(ts-node@10.9.1)
-      jest-haste-map: 29.6.1
-      jest-message-util: 29.6.1
-      jest-regex-util: 29.4.3
-      jest-resolve: 29.6.1
-      jest-resolve-dependencies: 29.6.1
-      jest-runner: 29.6.1
-      jest-runtime: 29.6.1
-      jest-snapshot: 29.6.1
-      jest-util: 29.6.1
-      jest-validate: 29.6.1
-      jest-watcher: 29.6.1
-      micromatch: 4.0.5
-      pretty-format: 29.6.1
-      slash: 3.0.0
-      strip-ansi: 6.0.1
-    transitivePeerDependencies:
-      - supports-color
-      - ts-node
-    dev: true
-
-  /@jest/core@29.6.1:
-    resolution: {integrity: sha512-CcowHypRSm5oYQ1obz1wfvkjZZ2qoQlrKKvlfPwh5jUXVU12TWr2qMeH8chLMuTFzHh5a1g2yaqlqDICbr+ukQ==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    peerDependencies:
-      node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
-    peerDependenciesMeta:
-      node-notifier:
-        optional: true
-    dependencies:
-      '@jest/console': 29.6.1
-      '@jest/reporters': 29.6.1
-      '@jest/test-result': 29.6.1
-      '@jest/transform': 29.6.1
-      '@jest/types': 29.6.1
-      '@types/node': 18.15.10
-      ansi-escapes: 4.3.2
-      chalk: 4.1.2
-      ci-info: 3.8.0
-      exit: 0.1.2
-      graceful-fs: 4.2.11
-      jest-changed-files: 29.5.0
-      jest-config: 29.6.1(@types/node@18.15.10)
       jest-haste-map: 29.6.1
       jest-message-util: 29.6.1
       jest-regex-util: 29.4.3
@@ -22573,34 +22522,6 @@ packages:
       - ts-node
     dev: true
 
-  /jest-cli@29.6.1(@types/node@20.4.1):
-    resolution: {integrity: sha512-607dSgTA4ODIN6go9w6xY3EYkyPFGicx51a69H7yfvt7lN53xNswEVLovq+E77VsTRi5fWprLH0yl4DJgE8Ing==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    hasBin: true
-    peerDependencies:
-      node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
-    peerDependenciesMeta:
-      node-notifier:
-        optional: true
-    dependencies:
-      '@jest/core': 29.6.1
-      '@jest/test-result': 29.6.1
-      '@jest/types': 29.6.1
-      chalk: 4.1.2
-      exit: 0.1.2
-      graceful-fs: 4.2.11
-      import-local: 3.1.0
-      jest-config: 29.6.1(@types/node@20.4.1)
-      jest-util: 29.6.1
-      jest-validate: 29.6.1
-      prompts: 2.4.2
-      yargs: 17.7.1
-    transitivePeerDependencies:
-      - '@types/node'
-      - supports-color
-      - ts-node
-    dev: true
-
   /jest-config@27.5.1(ts-node@10.9.1):
     resolution: {integrity: sha512-5sAsjm6tGdsVbW9ahcChPAFCk4IlkQUknH5AvKjuLTSlcO/wCZKyFdn7Rg0EkC+OGgWODEy2hDpWB1PgzH0JNA==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
@@ -22640,45 +22561,6 @@ packages:
       - canvas
       - supports-color
       - utf-8-validate
-    dev: true
-
-  /jest-config@29.6.1(@types/node@18.15.10):
-    resolution: {integrity: sha512-XdjYV2fy2xYixUiV2Wc54t3Z4oxYPAELUzWnV6+mcbq0rh742X2p52pii5A3oeRzYjLnQxCsZmp0qpI6klE2cQ==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    peerDependencies:
-      '@types/node': '*'
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      ts-node:
-        optional: true
-    dependencies:
-      '@babel/core': 7.22.5
-      '@jest/test-sequencer': 29.6.1
-      '@jest/types': 29.6.1
-      '@types/node': 18.15.10
-      babel-jest: 29.6.1(@babel/core@7.22.5)
-      chalk: 4.1.2
-      ci-info: 3.8.0
-      deepmerge: 4.3.1
-      glob: 7.2.3
-      graceful-fs: 4.2.11
-      jest-circus: 29.6.1
-      jest-environment-node: 29.6.1
-      jest-get-type: 29.4.3
-      jest-regex-util: 29.4.3
-      jest-resolve: 29.6.1
-      jest-runner: 29.6.1
-      jest-util: 29.6.1
-      jest-validate: 29.6.1
-      micromatch: 4.0.5
-      parse-json: 5.2.0
-      pretty-format: 29.6.1
-      slash: 3.0.0
-      strip-json-comments: 3.1.1
-    transitivePeerDependencies:
-      - supports-color
     dev: true
 
   /jest-config@29.6.1(@types/node@18.15.10)(ts-node@10.9.1):
@@ -22757,45 +22639,6 @@ packages:
       slash: 3.0.0
       strip-json-comments: 3.1.1
       ts-node: 10.9.1(@types/node@18.15.10)(typescript@4.9.5)
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
-  /jest-config@29.6.1(@types/node@20.4.1):
-    resolution: {integrity: sha512-XdjYV2fy2xYixUiV2Wc54t3Z4oxYPAELUzWnV6+mcbq0rh742X2p52pii5A3oeRzYjLnQxCsZmp0qpI6klE2cQ==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    peerDependencies:
-      '@types/node': '*'
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      ts-node:
-        optional: true
-    dependencies:
-      '@babel/core': 7.22.5
-      '@jest/test-sequencer': 29.6.1
-      '@jest/types': 29.6.1
-      '@types/node': 20.4.1
-      babel-jest: 29.6.1(@babel/core@7.22.5)
-      chalk: 4.1.2
-      ci-info: 3.8.0
-      deepmerge: 4.3.1
-      glob: 7.2.3
-      graceful-fs: 4.2.11
-      jest-circus: 29.6.1
-      jest-environment-node: 29.6.1
-      jest-get-type: 29.4.3
-      jest-regex-util: 29.4.3
-      jest-resolve: 29.6.1
-      jest-runner: 29.6.1
-      jest-util: 29.6.1
-      jest-validate: 29.6.1
-      micromatch: 4.0.5
-      parse-json: 5.2.0
-      pretty-format: 29.6.1
-      slash: 3.0.0
-      strip-json-comments: 3.1.1
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -23525,26 +23368,6 @@ packages:
       '@jest/types': 29.5.0
       import-local: 3.1.0
       jest-cli: 29.5.0(@types/node@20.3.1)(ts-node@10.9.1)
-    transitivePeerDependencies:
-      - '@types/node'
-      - supports-color
-      - ts-node
-    dev: true
-
-  /jest@29.6.1(@types/node@20.4.1):
-    resolution: {integrity: sha512-Nirw5B4nn69rVUZtemCQhwxOBhm0nsp3hmtF4rzCeWD7BkjAXRIji7xWQfnTNbz9g0aVsBX6aZK3n+23LM6uDw==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    hasBin: true
-    peerDependencies:
-      node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
-    peerDependenciesMeta:
-      node-notifier:
-        optional: true
-    dependencies:
-      '@jest/core': 29.6.1
-      '@jest/types': 29.6.1
-      import-local: 3.1.0
-      jest-cli: 29.6.1(@types/node@20.4.1)
     transitivePeerDependencies:
       - '@types/node'
       - supports-color

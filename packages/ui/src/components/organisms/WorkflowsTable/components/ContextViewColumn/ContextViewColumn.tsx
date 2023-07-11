@@ -1,7 +1,7 @@
 import { Button } from '@components/atoms/Button';
 import { Dialog, DialogContent, DialogTrigger } from '@components/atoms/Dialog';
+import { ScrollArea } from '@components/atoms/ScrollArea';
 import { CodeIcon } from 'lucide-react';
-import Scrollbars from 'react-custom-scrollbars';
 import ReactJson from 'react-json-view';
 
 interface Props {
@@ -19,9 +19,9 @@ export const ContextViewColumn = ({ context }: Props) => {
       </DialogTrigger>
       <DialogContent className="h-[80vh] min-w-[80%] bg-white">
         <div className="pr-4">
-          <Scrollbars>
+          <ScrollArea orientation="both">
             <ReactJson src={context ? (JSON.parse(context) as object) : {}} />
-          </Scrollbars>
+          </ScrollArea>
         </div>
       </DialogContent>
     </Dialog>
