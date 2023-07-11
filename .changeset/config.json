@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@ballerine/docs", "@ballerine/backoffice-v2"]
+  "ignore": ["@ballerine/docs-site", "@ballerine/backoffice-v2"]
 }
