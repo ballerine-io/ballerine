@@ -444,7 +444,7 @@ async function seed(bcryptSalt: Salt) {
               reject: {
                 target: 'rejected',
               },
-              resubmit: {
+              revision: {
                 target: 'review',
               },
             },

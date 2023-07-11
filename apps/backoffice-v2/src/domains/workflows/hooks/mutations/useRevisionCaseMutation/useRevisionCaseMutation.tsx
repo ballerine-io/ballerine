@@ -2,11 +2,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Action } from '../../../../../common/enums';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
-import { workflowsQueryKeys } from '../../../../workflows/query-keys';
+import { fetchWorkflowEvent } from '../../../fetchers';
+import { workflowsQueryKeys } from '../../../query-keys';
 
-// @TODO: Refactor to be under cases/workflows domain
-export const useRejectEntityMutation = ({
+export const useRevisionCaseMutation = ({
   workflowId,
   onSelectNextEntity,
 }: {
@@ -20,20 +19,20 @@ export const useRejectEntityMutation = ({
       fetchWorkflowEvent({
         workflowId,
         body: {
-          name: Action.REJECT.toLowerCase(),
+          name: Action.REVISION.toLowerCase(),
         },
       }),
     onSuccess: () => {
       // workflowsQueryKeys._def is the base key for all workflows queries
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
-      toast.success(t(`toast:reject_case.success`));
+      toast.success(t(`toast:ask_revision_case.success`));
 
       // TODO: Re-implement
       // onSelectNextEntity();
     },
     onError: () => {
-      toast.error(t(`toast:reject_case.error`));
+      toast.error(t(`toast:ask_revision_case.error`));
     },
   });
 };

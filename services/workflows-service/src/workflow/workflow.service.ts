@@ -1048,7 +1048,7 @@ export class WorkflowService {
     });
 
     // TODO: Update to work with changes related to revision
-    if (type === 'resubmit' && document) {
+    if (type === 'revision' && document) {
       switch (resubmissionReason) {
         case ResubmissionReason.BLURRY_IMAGE:
           await this.workflowRuntimeDataRepository.updateById(

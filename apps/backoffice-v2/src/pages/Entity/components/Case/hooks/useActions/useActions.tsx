@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useApproveEntityMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveEntityMutation/useApproveEntityMutation';
 import { useDebounce } from '../../../../../../common/hooks/useDebounce/useDebounce';
 import { createInitials } from '../../../../../../common/utils/create-initials/create-initials';
@@ -14,17 +14,7 @@ import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilte
 import { someDocumentDecisionStatus } from '../../../../../../common/utils/some-document-decision-status/some-document-decision-status';
 import { everyDocumentDecisionStatus } from '../../../../../../common/utils/every-document-decision-status/every-document-decision-status';
 import { safeEvery } from '../../../../../../common/utils/safe-every/safe-every';
-
-export const ResubmissionReason = {
-  BLURRY_IMAGE: 'BLURRY_IMAGE',
-  CUT_IMAGE: 'CUT_IMAGE',
-  UNSUPPORTED_DOCUMENT: 'UNSUPPORTED_DOCUMENT',
-  DAMAGED_DOCUMENT: 'DAMAGED_DOCUMENT',
-  EXPIRED_DOCUMENT: 'EXPIRED_DOCUMENT',
-  COPY_OF_A_COPY: 'COPY_OF_A_COPY',
-  FACE_IS_UNCLEAR: 'FACE_IS_UNCLEAR',
-  FACE_IS_NOT_MATCHING: 'FACE_IS_NOT_MATCHING',
-} as const;
+import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 
 export const useActions = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -35,6 +25,10 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
       workflowId: workflowId,
       onSelectNextEntity,
     });
+  const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } = useRevisionCaseMutation({
+    workflowId: workflowId,
+    onSelectNextEntity,
+  });
   const { mutate: mutateRejectEntity, isLoading: isLoadingRejectEntity } = useRejectEntityMutation({
     workflowId: workflowId,
     onSelectNextEntity,
@@ -72,15 +66,14 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
 
   // Only display the button spinners if the request is longer than 300ms
   const debouncedIsLoadingRejectEntity = useDebounce(isLoadingRejectEntity, 300);
+  const debouncedIsLoadingRevisionCase = useDebounce(isLoadingRevisionCase, 300);
   const debouncedIsLoadingApproveEntity = useDebounce(isLoadingApproveEntity, 300);
   const debouncedIsLoadingAssignEntity = useDebounce(isLoadingAssignWorkflow, 300);
 
   // Avoid passing the onClick event to mutate
   const onMutateApproveEntity = useCallback(() => mutateApproveEntity(), [mutateApproveEntity]);
-  const onMutateRejectEntity = useCallback(
-    (payload: Parameters<typeof mutateRejectEntity>[0]) => () => mutateRejectEntity(payload),
-    [mutateRejectEntity],
-  );
+  const onMutateRevisionCase = useCallback(() => mutateRevisionCase(), [mutateRevisionCase]);
+  const onMutateRejectEntity = useCallback(() => mutateRejectEntity(), [mutateRejectEntity]);
   const onMutateAssignWorkflow = useCallback(
     (assigneeId: string, isAssignedToMe: boolean) =>
       mutateAssignWorkflow({
@@ -88,16 +81,6 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
         isAssignedToMe,
       }),
     [mutateAssignWorkflow],
-  );
-  const [documentToResubmit, setDocumentToResubmit] = useState('id');
-  const onDocumentToResubmitChange = useCallback(
-    (value: string) => setDocumentToResubmit(value),
-    [setDocumentToResubmit],
-  );
-  const [resubmissionReason, setResubmissionReason] = useState<keyof typeof ResubmissionReason>();
-  const onResubmissionReasonChange = useCallback(
-    (value: string) => setResubmissionReason(value as keyof typeof ResubmissionReason),
-    [setResubmissionReason],
   );
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
   const onTriggerAssignToMe = true;
@@ -130,20 +113,18 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
     onTriggerAssignToMe,
     isActionButtonDisabled,
     onMutateApproveEntity,
+    onMutateRevisionCase,
     onMutateRejectEntity,
     onMutateAssignWorkflow,
     debouncedIsLoadingRejectEntity,
     debouncedIsLoadingApproveEntity,
+    debouncedIsLoadingRevisionCase,
     debouncedIsLoadingAssignEntity,
     isLoading,
     initials,
     canReject,
     canApprove,
     canRevision,
-    documentToResubmit,
-    resubmissionReason,
-    onDocumentToResubmitChange,
-    onResubmissionReasonChange,
     caseState,
     authenticatedUser,
     assignees,

@@ -1,34 +1,12 @@
 import React, { FunctionComponent } from 'react';
 import { IActionsProps } from './interfaces';
-import { ResubmissionReason, useActions } from './hooks/useActions/useActions';
+import { useActions } from './hooks/useActions/useActions';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { DropdownMenu } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu';
-import { DropdownMenuTrigger } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
-import { DropdownMenuContent } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Content';
-import { DropdownMenuSeparator } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Separator';
-import { DropdownMenuLabel } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Label';
-import { DropdownMenuItem } from '../../../../common/components/molecules/DropdownMenu/DropdownMenu.Item';
-import { DropdownMenuShortcut } from '../../../../common/components/molecules/DropdownMenu/DropDownMenu.Shortcut';
-import { Action } from '../../../../common/enums';
-import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
-import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
-import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
-import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
-import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
-import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
-import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
-import { DialogClose } from '@radix-ui/react-dialog';
-import { Select } from '../../../../common/components/atoms/Select/Select';
 import {
   AssignButton,
   Assignee,
 } from '../../../../common/components/atoms/AssignButton/AssignButton';
-import * as HoverCard from '@radix-ui/react-hover-card';
 import { Button } from '../../../../common/components/atoms/Button/Button';
-import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
-import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
-import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
-import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -50,6 +28,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
 }) => {
   const {
     onMutateApproveEntity,
+    onMutateRevisionCase,
     onMutateRejectEntity,
     onMutateAssignWorkflow,
     debouncedIsLoadingApproveEntity,
@@ -61,10 +40,6 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     canApprove,
     canReject,
     canRevision,
-    documentToResubmit,
-    onDocumentToResubmitChange,
-    resubmissionReason,
-    onResubmissionReasonChange,
     caseState,
     authenticatedUser,
     assignees,
@@ -120,131 +95,31 @@ export const Actions: FunctionComponent<IActionsProps> = ({
               className={ctw({
                 loading: debouncedIsLoadingRejectEntity,
               })}
-              disabled={!canRevision}
+              disabled={isLoading || !canRevision}
+              onClick={onMutateRevisionCase}
             >
               Ask for all revisions
             </Button>
-            <Dialog>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant={`destructive`}
-                    className={ctw({
-                      loading: debouncedIsLoadingRejectEntity,
-                    })}
-                    disabled={isLoading || !canReject}
-                  >
-                    Reject
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className={`min-w-[16rem]`} align={`end`}>
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className={`cursor-pointer`}
-                    onClick={onMutateRejectEntity({
-                      action: Action.REJECT,
-                    })}
-                  >
-                    Reject
-                    <DropdownMenuShortcut>Ctrl + J</DropdownMenuShortcut>
-                  </DropdownMenuItem>
-                  <DialogTrigger asChild>
-                    <DropdownMenuItem className={`cursor-pointer`}>
-                      Re-submit Document
-                      <DropdownMenuShortcut>Ctrl + R</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                  </DialogTrigger>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Request document re-submission</DialogTitle>
-                  <DialogDescription>
-                    This action will send a request to the user to re-submit their document. State
-                    the reason for requesting a document re-submission.
-                  </DialogDescription>
-                </DialogHeader>
-                <Select onValueChange={onResubmissionReasonChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Re-submission reason" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(ResubmissionReason).map(reason => {
-                      const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
-                      const capitalizedReason =
-                        reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
-
-                      return (
-                        <SelectItem
-                          key={reason}
-                          value={reason}
-                          disabled={
-                            isActionButtonDisabled && reason !== ResubmissionReason.BLURRY_IMAGE
-                          }
-                        >
-                          {capitalizedReason}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <button
-                      className={ctw(`btn-error btn justify-center`)}
-                      onClick={onMutateRejectEntity({
-                        action: Action.RESUBMIT,
-                        // Currently hardcoded to documentOne.
-                        documentToResubmit,
-                        resubmissionReason,
-                      })}
-                      disabled={isActionButtonDisabled && !resubmissionReason}
-                    >
-                      Confirm
-                    </button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-            <HoverCard.Root openDelay={0} closeDelay={0}>
-              <HoverCard.Trigger asChild>
-                <Button
-                  className={ctw({
-                    loading: debouncedIsLoadingApproveEntity,
-                  })}
-                  variant={`success`}
-                  disabled={isLoading || !canApprove}
-                  onClick={onMutateApproveEntity}
-                >
-                  Approve
-                </Button>
-              </HoverCard.Trigger>
-              <HoverCard.Portal>
-                <HoverCard.Content
-                  className={`card card-compact mt-2 rounded-md border-neutral/10 bg-base-100 p-2 shadow theme-dark:border-neutral/50`}
-                >
-                  <div className={`flex items-center space-x-2`}>
-                    <kbd className="kbd">Ctrl</kbd>
-                    <span>+</span>
-                    <kbd className="kbd">A</kbd>
-                  </div>
-                </HoverCard.Content>
-              </HoverCard.Portal>
-            </HoverCard.Root>
-            {/*<div className="dropdown-hover dropdown dropdown-bottom dropdown-end">*/}
-            {/*  <EllipsisButton tabIndex={0} />*/}
-            {/*  <ul*/}
-            {/*    className={`dropdown-content menu h-72 w-48 space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}*/}
-            {/*  >*/}
-            {/*    <li className={`disabled`}>*/}
-            {/*      <button disabled>Coming Soon</button>*/}
-            {/*    </li>*/}
-            {/*    <li className={`disabled`}>*/}
-            {/*      <button disabled>Coming Soon</button>*/}
-            {/*    </li>*/}
-            {/*  </ul>*/}
-            {/*</div>*/}
+            <Button
+              variant={`destructive`}
+              className={ctw({
+                loading: debouncedIsLoadingRejectEntity,
+              })}
+              disabled={isLoading || !canReject}
+              onClick={onMutateRejectEntity}
+            >
+              Reject
+            </Button>
+            <Button
+              className={ctw({
+                loading: debouncedIsLoadingApproveEntity,
+              })}
+              variant={`success`}
+              disabled={isLoading || !canApprove}
+              onClick={onMutateApproveEntity}
+            >
+              Approve
+            </Button>
           </div>
         )}
       </div>
