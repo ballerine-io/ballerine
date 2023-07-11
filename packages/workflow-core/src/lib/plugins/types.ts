@@ -3,6 +3,7 @@ import { WebhookPlugin } from './external-plugin/webhook-plugin';
 import { KycPlugin } from './external-plugin/kyc-plugin';
 import { IterativePlugin } from "./common-plugin/iterative-plugin";
 import { TContext } from "../utils";
+import { ChildWorkflowPlugin } from "./common-plugin/child-workflow-plugin";
 
 export type PluginAction = { workflowId: string; context: any; event: any; state: any };
 export type InvokePluginAction = { context: TContext };
@@ -35,6 +36,7 @@ export type HttpPlugin = ApiPlugin |  WebhookPlugin | KycPlugin;
 export type CommonPlugin = IterativePlugin;
 export type HttpPlugins = Array<HttpPlugin>;
 export type CommonPlugins = Array<CommonPlugin>;
+export type ChildPlugins = Array<ChildWorkflowPlugin>;
 export type ActionablePlugin = HttpPlugin
 export type ActionablePlugins = Array<ActionablePlugin>
 

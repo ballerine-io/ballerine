@@ -5,6 +5,7 @@ import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
+  ChildPluginCallbackOutput,
   IUpdateContextEvent,
   ObjectValues,
   WorkflowEvent,
@@ -19,17 +20,24 @@ import { ActionablePlugin, ActionablePlugins, StatePlugin } from './plugins/type
 import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 import {
-  IApiPluginParams,
+  IApiPluginParams, ISerializableChildPluginParams,
   ISerializableHttpPluginParams,
   SerializableValidatableTransformer,
 } from './plugins/external-plugin/types';
 import { HelpersTransformer } from './utils/context-transformers/helpers-transformer';
 import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
 import { THelperFormatingLogic } from './utils/context-transformers/types';
-import { ISerializableCommonPluginParams } from "./plugins/common-plugin/types";
+import {
+  ChildWorkflowPluginParams,
+  ISerializableCommonPluginParams
+} from "./plugins/common-plugin/types";
 import { TContext } from "./utils";
 import { IterativePlugin } from "./plugins/common-plugin/iterative-plugin";
+import { ChildWorkflowPlugin } from "./plugins/common-plugin/child-workflow-plugin";
 
+export interface ChildCallabackable {
+  invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
+}
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
   #__workflow: StateMachine<any, any, any>;
@@ -39,6 +47,7 @@ export class WorkflowRunner {
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
   #__runtimeId: string;
+  #__invokeChildWorkflowAction?: ChildCallabackable['invokeChildWorkflowAction'];
   events: any;
 
   public get workflow() {
@@ -54,16 +63,20 @@ export class WorkflowRunner {
   }
 
   constructor(
-    { runtimeId, definition, workflowActions, workflowContext, extensions }: WorkflowRunnerArgs,
+    { runtimeId, definition, workflowActions, workflowContext, extensions, invokeChildWorkflowAction }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
     // global and state specific extensions
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
+    this.#__invokeChildWorkflowAction = invokeChildWorkflowAction;
+    // @ts-expect-error TODO: fix this
+    this.#__extensions.childWorkflowPlugins = this.initiateChildPlugin(this.#__extensions.childWorkflowPlugins ?? [], runtimeId, invokeChildWorkflowAction);
     // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
-    this.#__extensions.commonPlugins = this.initiateCommonPlugins(this.#__extensions.commonPlugins ?? [], this.#__extensions.apiPlugins)
+    // @ts-expect-error TODO: fix this
+    this.#__extensions.commonPlugins = this.initiateCommonPlugins(this.#__extensions.commonPlugins ?? [], [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat());
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
     this.#__runtimeId = runtimeId;
 
@@ -110,6 +123,24 @@ export class WorkflowRunner {
         response: {transformers: responseTransformer, schemaValidator: responseValidator},
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
+      });
+
+      return apiPlugin;
+    });
+  }
+
+  initiateChildPlugin(childPluginSchemas: Array<ISerializableChildPluginParams>, parentWorkflowRuntimeId: string, callbackAction: ChildWorkflowPluginParams['action']){
+    return childPluginSchemas?.map(childPluginSchema => {
+      const transformers = this.fetchTransformers(childPluginSchema.transformers['transform'] || []);
+
+      const apiPlugin = new ChildWorkflowPlugin({
+        name: childPluginSchema.name,
+        parentWorkflowRuntimeId: parentWorkflowRuntimeId,
+        definitionId: childPluginSchema.definitionId,
+        stateNames: childPluginSchema.stateNames,
+        transformers: transformers,
+        initEvent: childPluginSchema.initEvent,
+        action: callbackAction
       });
 
       return apiPlugin;
@@ -399,6 +430,7 @@ export class WorkflowRunner {
         if (callbackAction) await this.sendEvent(callbackAction);
       }
     }
+
     if (this.#__extensions.apiPlugins) {
       for (const apiPlugin of this.#__extensions.apiPlugins) {
         if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;

@@ -1,11 +1,12 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
 import { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
-import { SerializableValidatableTransformer } from './plugins';
-import { ISerializableHttpPluginParams } from './plugins/external-plugin/types';
+import {
+  ISerializableChildPluginParams,
+  ISerializableHttpPluginParams
+} from './plugins/external-plugin/types';
 import { ISerializableCommonPluginParams } from "./plugins/common-plugin/types";
-import { ApiPlugins, StatePlugins } from './plugins/types';
-import { ISerializableApiPluginParams } from './plugins/external-plugin/types';
-import { Transformers } from './utils';
+import { TContext, Transformers } from './utils';
+import { ChildCallabackable } from "./workflow-runner";
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
@@ -25,7 +26,8 @@ export interface WorkflowEvent {
 export interface WorkflowExtensions {
   statePlugins?: StatePlugins;
   apiPlugins?: HttpPlugins | Array<ISerializableHttpPluginParams>;
-  commonPlugins?: CommonPlugins | Array<ISerializableCommonPluginParams>
+  commonPlugins?: CommonPlugins | Array<ISerializableCommonPluginParams>;
+  childWorkflowPlugins?: Array<ISerializableChildPluginParams>;
 }
 export interface ChildWorkflowCallback {
   transformers?: Transformers;
@@ -51,6 +53,7 @@ export interface WorkflowOptions {
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
+  invokeChildWorkflowAction?: ChildCallabackable['invokeChildWorkflowAction'];
 }
 
 export interface CallbackInfo {
@@ -62,6 +65,7 @@ export interface WorkflowRunnerArgs {
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
+  invokeChildWorkflowAction?: ChildCallabackable['invokeChildWorkflowAction'];
 }
 
 export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
@@ -74,3 +78,12 @@ export const Error = {
 } as const;
 
 export const Errors = [Error.ERROR, Error.HTTP_ERROR] as const;
+
+export type ChildPluginCallbackOutput = {
+  parentWorkflowRuntimeId: string;
+  definitionId: string;
+  initOptions: {
+    context: TContext,
+    event?: string;
+  }
+}

@@ -1,6 +1,7 @@
 import { TJsonSchema, Transformers, Validator } from '../../utils';
 import { THelperFormatingLogic } from '../../utils/context-transformers/types';
 import { ActionablePlugin } from "../types";
+import { ChildWorkflowPluginParams } from "../common-plugin/types";
 
 export interface ValidatableTransformer {
   transformers: Transformers;
@@ -54,6 +55,13 @@ export interface IterativePluginParams {
   invoke?(...args: Array<any>): any
   successAction?: string;
   errorAction?: string;
+}
+
+export interface ISerializableChildPluginParams
+  extends Omit<ChildWorkflowPluginParams, 'action'| 'transformers' | 'parentWorkflowRuntimeId'> {
+  transformers: Omit<SerializableValidatableTransformer, 'schema'>;
+
+  invoke?(...args: Array<any>): Promise<any>;
 }
 
 export interface SerializableWebhookPluginParams extends Omit<WebhookPluginParams, 'request'> {

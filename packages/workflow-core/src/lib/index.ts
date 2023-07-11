@@ -7,6 +7,7 @@ export type {
   WorkflowContext,
   TCreateWorkflow,
   ChildWorkflowCallback,
+  ChildPluginCallbackOutput,
   WorkflowExtensions,
   Workflow,
   ObjectValues,
