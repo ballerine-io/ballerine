@@ -2,10 +2,14 @@ export interface IUserCaseResolvingStats {
   id: string;
   firstName: string;
   lastName: string;
-  cases: number;
+  casesCount: number;
   email: string;
 }
 
 export interface GetUsersCaseResolvingStats {
+  fromDate: number;
+}
+
+export interface GetUsersAssignedCasesStatsDto {
   fromDate?: number;
 }

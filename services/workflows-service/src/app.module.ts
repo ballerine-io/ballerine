@@ -25,9 +25,11 @@ import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsModule } from 'nestjs-cls';
 import { FiltersModule } from '@/common/filters/filters.module';
 import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-audit.middleware';
+import { MetricsController } from '@/metrics/metrics.controller';
+import { MetricsModule } from '@/metrics/metrics.module';
 
 @Module({
-  controllers: [],
+  controllers: [MetricsController],
   imports: [
     SentryModule,
     MulterModule.register({
@@ -63,6 +65,7 @@ import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-au
     }),
     AppLoggerModule,
     FiltersModule,
+    MetricsModule,
   ],
   providers: [
     {

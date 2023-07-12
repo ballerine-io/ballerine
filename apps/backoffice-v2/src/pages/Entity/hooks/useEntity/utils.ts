@@ -39,7 +39,6 @@ export const composePickableCategoryType = (
 ) => {
   const documentCategoryDropdownOptions: Array<TDropdownOption> = [];
   const documentTypesDropdownOptions: Array<TDropdownOption> = [];
-
   documentsSchemas.forEach(document => {
     const category = document.category;
     if (category) {
@@ -60,7 +59,7 @@ export const composePickableCategoryType = (
   });
 
   const categoryDropdownOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
-  const typeDropdownOptions = uniqueArrayByKey(documentTypesDropdownOptions, 'value');
+  const typeDropdownOptions = documentTypesDropdownOptions;
 
   return {
     ...composeDataFormCell('category', categoryDropdownOptions, categoryValue),

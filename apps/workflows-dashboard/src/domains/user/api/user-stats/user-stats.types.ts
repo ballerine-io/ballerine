@@ -1,9 +1,16 @@
 export interface IResolvedCasesDailyMetric {
   date: string;
-  casesPerDay: number;
+  count: number;
 }
 
 export interface IUserStats {
+  approvalRate: number;
+  averageResolutionTime: string;
+  averageAssignmentTime: string;
+  averageReviewTime: string;
+}
+
+export interface UserStats {
   approvalRate: number;
   averageResolutionTime: number;
   averageAssignmentTime: number;
@@ -11,9 +18,9 @@ export interface IUserStats {
 }
 
 export interface GetUserStatsDto {
-  fromDate?: number;
+  fromDate: number;
 }
 
-export interface GetUserCaseResolvingStatsDto {
-  fromDate?: number;
+export interface GetUserDailyCasesResolvedStatsDto {
+  fromDate: number;
 }
