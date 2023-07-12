@@ -56,7 +56,6 @@ import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
 import {
-  AnyRecord,
   DefaultContextSchema,
   getDocumentId,
   getDocumentsByCountry,
