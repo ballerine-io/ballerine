@@ -9,9 +9,7 @@ import { AclValidateRequestInterceptor } from '@/common/access-control/intercept
 import { WorkflowControllerExternal } from './workflow.controller.external';
 import { WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { CompleteWorkflowData } from './types';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
-import { WorkflowMetricService } from '@/workflow/workflow-metric.service';
 
 const acGuard = {
   canActivate: () => {
@@ -51,10 +49,6 @@ describe('Workflow (external)', () => {
         {
           provide: EventEmitter2,
           useValue: {} as EventEmitter2,
-        },
-        {
-          provide: WorkflowMetricService,
-          useValue: {} as WorkflowMetricService,
         },
       ],
       controllers: [WorkflowControllerExternal],

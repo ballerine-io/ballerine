@@ -44,6 +44,39 @@ export const certificateOfResidenceGH: TDocument = {
 
 export const ghanaDocuments: TDocument[] = [
   {
+    category: 'financial_information',
+    type: 'mtn_statement',
+    issuer: {
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        accountNameHolder: {
+          type: 'string',
+        },
+        msisdn: {
+          type: 'string',
+          pattern: '^233[0-9]{9}$',
+        },
+        from: {
+          type: 'string',
+          format: 'date',
+        },
+        to: {
+          type: 'string',
+          format: 'date',
+        },
+        timeRun: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
     category: 'proof_of_address',
     type: 'water_bill',
     issuer: {

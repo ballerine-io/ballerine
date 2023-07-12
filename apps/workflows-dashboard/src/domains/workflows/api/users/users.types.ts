@@ -7,5 +7,5 @@ export interface IUser {
 }
 
 export interface GetActiveUsersDto {
-  fromDate?: number;
+  fromDate: number;
 }

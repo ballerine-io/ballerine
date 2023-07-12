@@ -1,6 +1,6 @@
 export interface IResolvedCasesDailyMetric {
   date: string;
-  casesPerDay: number;
+  count: number;
 }
 
 export interface IUserStats {
@@ -11,9 +11,9 @@ export interface IUserStats {
 }
 
 export interface GetUserStatsDto {
-  fromDate?: number;
+  fromDate: number;
 }
 
-export interface GetUserCaseResolvingStatsDto {
-  fromDate?: number;
+export interface GetUserDailyCasesResolvedStatsDto {
+  fromDate: number;
 }
