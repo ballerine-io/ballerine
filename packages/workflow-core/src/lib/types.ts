@@ -32,7 +32,7 @@ export interface WorkflowExtensions {
 export interface ChildWorkflowCallback {
   transformers?: Transformers;
   action: 'append';
-  event?: string;
+  deliverEvent?: string;
 }
 export interface WorkflowContext {
   id?: string;

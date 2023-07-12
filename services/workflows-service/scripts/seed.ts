@@ -16,7 +16,7 @@ import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
-import { generateParentKybWithKycs } from "./workflows/parent-kyb-workflow";
+import { generateParentKybWithKycs } from './workflows/parent-kyb-workflow';
 
 if (require.main === module) {
   dotenv.config();
@@ -890,19 +890,20 @@ async function seed(bcryptSalt: Salt) {
   });
 
   await client.$transaction(async () =>
-    endUserIds.map(async (id, index) =>
-      client.endUser.create({
+    endUserIds.map(async (id, index) => {
+      let context = await createMockEndUserContextData(id, index + 1);
+      return client.endUser.create({
         /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
         data: generateEndUser({
           id,
           workflow: {
             workflowDefinitionId: manualMachineId,
             workflowDefinitionVersion: manualMachineVersion,
-            context: await createMockEndUserContextData(id, index + 1),
+            context: context,
           },
         }),
-      }),
-    ),
+      });
+    }),
   );
 
   await client.$transaction(async tx => {
@@ -963,6 +964,7 @@ async function seed(bcryptSalt: Salt) {
 
   console.info('Seeding database with custom seed...');
   customSeed();
+  await generateKycForE2eTest(client);
   await generateParentKybWithKycs(client);
   console.info('Seeded database successfully');
 }
