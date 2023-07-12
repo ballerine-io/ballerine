@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.5.5
+
+### Patch Changes
+
+- Add doc types
+
 ## 0.5.4
 
 ### Patch Changes
