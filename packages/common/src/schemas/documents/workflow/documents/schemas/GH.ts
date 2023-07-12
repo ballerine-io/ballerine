@@ -44,6 +44,39 @@ export const certificateOfResidenceGH: TDocument = {
 
 export const ghanaDocuments: TDocument[] = [
   {
+    category: 'financial_information',
+    type: 'mtn_statement',
+    issuer: {
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        accountNameHolder: {
+          type: 'string',
+        },
+        msisdn: {
+          type: 'string',
+          pattern: '^233[0-9]{9}$',
+        },
+        from: {
+          type: 'string',
+          format: 'date',
+        },
+        to: {
+          type: 'string',
+          format: 'date',
+        },
+        timeRun: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
     category: 'proof_of_address',
     type: 'water_bill',
     issuer: {
@@ -428,6 +461,42 @@ export const ghanaDocuments: TDocument[] = [
     },
   },
   {
+    category: 'proof_of_employment',
+    type: 'form_a',
+    issuer: {
+      type: 'private',
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        nationalIdNumber: {
+          type: 'string',
+          pattern: ghNationalIdNumber,
+        },
+        docNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        employeeName: {
+          type: 'string',
+        },
+        position: {
+          type: 'string',
+        },
+        employerName: {
+          type: 'string',
+        },
+        issuingDate: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
     category: 'proof_of_address',
     type: 'form_a',
     issuer: {
@@ -461,6 +530,42 @@ export const ghanaDocuments: TDocument[] = [
     },
   },
   {
+    category: 'proof_of_employment',
+    type: 'form_3',
+    issuer: {
+      type: 'private',
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        nationalIdNumber: {
+          type: 'string',
+          pattern: ghNationalIdNumber,
+        },
+        docNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        employeeName: {
+          type: 'string',
+        },
+        position: {
+          type: 'string',
+        },
+        employerName: {
+          type: 'string',
+        },
+        issuingDate: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
     category: 'proof_of_address',
     type: 'form_3',
     issuer: {
@@ -484,6 +589,75 @@ export const ghanaDocuments: TDocument[] = [
           type: 'string',
         },
         physicalAddress: {
+          type: 'string',
+        },
+        issuingDate: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
+    category: 'proof_of_address',
+    type: 'form_4',
+    issuer: {
+      type: 'government',
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        nationalIdNumber: {
+          type: 'string',
+          pattern: ghNationalIdNumber,
+        },
+        docNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        userAddress: {
+          type: 'string',
+        },
+        physicalAddress: {
+          type: 'string',
+        },
+        issuingDate: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
+    category: 'proof_of_employment',
+    type: 'form_4',
+    issuer: {
+      type: 'private',
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        nationalIdNumber: {
+          type: 'string',
+          pattern: ghNationalIdNumber,
+        },
+        docNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        employeeName: {
+          type: 'string',
+        },
+        position: {
+          type: 'string',
+        },
+        employerName: {
           type: 'string',
         },
         issuingDate: {

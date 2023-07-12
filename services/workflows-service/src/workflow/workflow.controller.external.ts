@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
 import { NotFoundException, Query, Res } from '@nestjs/common';
@@ -11,14 +10,13 @@ import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
 import * as errors from '../errors';
 import { IntentDto } from './dtos/intent';
-import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
-import { GetUserStatsParams, RunnableWorkflowData } from './types';
+import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
@@ -26,14 +24,6 @@ import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
-import { WorkflowWebhookInput } from '@/workflow/dtos/workflow-webhook-input';
-import { WorkflowRuntimeStatsModel } from '@/workflow/workflow-runtime-stats-model';
-import { WorkflowMetricService } from '@/workflow/workflow-metric.service';
-import { WorkflowRuntimeAgentCasesModel } from '@/workflow/workflow-runtime-agent-cases.model';
-import { GetWorkflowsRuntimeAgentCases } from '@/workflow/dtos/get-workflows-runtime-agent-cases-input.dto';
-import { WorkflowRuntimeCasesPerStatusModel } from '@/workflow/workflow-runtime-cases-per-status.model';
-import { GetWorkflowRuntimeUserStatsDto } from '@/workflow/dtos/get-workflow-runtime-user-stats-input.dto';
-import { GetCaseResolvingMetricsDto } from '@/workflow/dtos/get-case-resolving-metrics-input.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Public } from '@/common/decorators/public.decorator';
 
@@ -43,7 +33,6 @@ import { Public } from '@/common/decorators/public.decorator';
 export class WorkflowControllerExternal {
   constructor(
     protected readonly service: WorkflowService,
-    protected readonly metricService: WorkflowMetricService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -64,78 +53,6 @@ export class WorkflowControllerExternal {
     });
 
     return plainToClass(GetWorkflowsRuntimeOutputDto, results);
-  }
-
-  @common.Get('/metrics/workflows-definition-runtime-stats')
-  @swagger.ApiOkResponse({ type: [WorkflowRuntimeStatsModel] })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @common.HttpCode(200)
-  async listWorkflowRuntimeStats(): Promise<WorkflowRuntimeStatsModel[]> {
-    const results = await this.metricService.listWorkflowStats();
-
-    return results.map(result => plainToClass(WorkflowRuntimeStatsModel, result));
-  }
-
-  @common.Get('/metrics/workflow-runtime-agent-cases-stats')
-  @swagger.ApiOkResponse({ type: [WorkflowRuntimeAgentCasesModel] })
-  @common.HttpCode(200)
-  async listWorkflowRuntimeAgentCasesStats(
-    @Query() query: GetWorkflowsRuntimeAgentCases,
-  ): Promise<WorkflowRuntimeAgentCasesModel[]> {
-    const results = await this.metricService.listWorkflowRuntimeAgentCasesStats({
-      fromDate: query.fromDate,
-    });
-
-    return results.map(result => plainToClass(WorkflowRuntimeAgentCasesModel, result));
-  }
-
-  @common.Get('/metrics/workflow-runtime-cases-per-status')
-  @swagger.ApiOkResponse({ type: WorkflowRuntimeCasesPerStatusModel })
-  @common.HttpCode(200)
-  async listWorkflowRuntimeCasesPerStatusStats(
-    @Query() query: GetWorkflowsRuntimeAgentCases,
-  ): Promise<WorkflowRuntimeCasesPerStatusModel> {
-    const results = await this.metricService.getWorkflowsRuntimeCasesPerStatus({
-      fromDate: query.fromDate,
-    });
-    return plainToClass(WorkflowRuntimeCasesPerStatusModel, results);
-  }
-
-  @common.Get('/metrics/user-stats')
-  async listUserWorkflowRuntimeUserStats(
-    @common.Request() request: Request,
-    @common.Query() query: GetWorkflowRuntimeUserStatsDto,
-  ) {
-    const statsParams: GetUserStatsParams = {
-      fromDate: query.fromDate,
-    };
-
-    const userId = request.user!.id;
-
-    const [approvalRate, averageResolutionTime, averageAssignmentTime, averageReviewTime] =
-      await Promise.all([
-        this.service.getUserApprovalRate(userId),
-        this.service.getAverageResolutionTime(userId, statsParams),
-        this.service.getAverageAssignmentTime(userId, statsParams),
-        this.service.getAverageReviewTime(userId, statsParams),
-      ]);
-
-    return {
-      approvalRate,
-      averageResolutionTime,
-      averageAssignmentTime,
-      averageReviewTime,
-    };
-  }
-
-  @common.Get('/metrics/case-resolving')
-  async listCaseResolvingMetric(
-    @common.Request() request: Request,
-    @common.Query() query: GetCaseResolvingMetricsDto,
-  ) {
-    const userId = request.user!.id;
-
-    return await this.service.getResolvedCasesPerDay(userId, { fromDate: query.fromDate });
   }
 
   @common.Get('/workflow-definition/:id')

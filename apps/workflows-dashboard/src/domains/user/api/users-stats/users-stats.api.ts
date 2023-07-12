@@ -1,15 +1,29 @@
 import {
+  GetUsersAssignedCasesStatsDto,
   GetUsersCaseResolvingStats,
   IUserCaseResolvingStats,
 } from '@app/domains/user/api/users-stats/users-stats.types';
 import { request } from '@app/lib/request';
 
-export const fetchUsersCaseResolvingStats = async (
+export const fetchUsersResolvedCasesStats = async (
   query: GetUsersCaseResolvingStats,
 ): Promise<IUserCaseResolvingStats[]> => {
   const result = await request.get<IUserCaseResolvingStats[]>(
-    '/external/users/metrics/case-resolving-stats',
+    '/metrics/users/users-resolved-cases-statistic',
     { params: query },
+  );
+
+  return result.data;
+};
+
+export const fetchUsersAssignedCasesStats = async (
+  query: GetUsersAssignedCasesStatsDto,
+): Promise<IUserCaseResolvingStats[]> => {
+  const result = await request.get<IUserCaseResolvingStats[]>(
+    `/metrics/users/users-assigned-cases-statistic`,
+    {
+      params: query,
+    },
   );
 
   return result.data;

@@ -1,10 +1,9 @@
 import { IWorkflowStatus } from '@app/domains/workflows/api/workflow/workflow.types';
 
 export type WorkflowStatsPerStatus = Record<IWorkflowStatus, number>;
-export interface IWorkflowDefinitionStats {
+export interface IWorkflowDefinitionStats extends WorkflowStatsPerStatus {
   id: string;
   name: string;
-  stats: WorkflowStatsPerStatus;
 }
 
 export interface IAgentCasesStats {
@@ -16,12 +15,7 @@ export interface IAgentCasesStats {
 
 export type ICasesPerStatusStats = Record<IWorkflowStatus, number>;
 
-export interface GetAgentCasesStatsDto {
-  // UNIX timestamp
-  fromDate?: number;
-}
-
 export interface GetCasesPerStatusDto {
   // UNIX timestamp
-  fromData?: number;
+  fromDate?: number;
 }
