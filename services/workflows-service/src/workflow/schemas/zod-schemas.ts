@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import {ChildWorkflowCallback} from "@ballerine/workflow-core";
+import { ChildWorkflowCallback } from '@ballerine/workflow-core';
 
 const SubscriptionSchema = z
   .object({
@@ -15,11 +15,13 @@ export const ConfigSchema = z
     completedWhenTasksResolved: z.boolean().optional(),
     workflowLevelResolution: z.boolean().optional(),
     allowMultipleActiveWorkflows: z.boolean().optional(),
-    callbackResult: z.object({
-      transformers: z.array(z.any()),
-      action: z.string().optional(),
-      deliverEvent: z.string().optional()
-    }).optional(),
+    callbackResult: z
+      .object({
+        transformers: z.array(z.any()),
+        action: z.string().optional(),
+        deliverEvent: z.string().optional(),
+      })
+      .optional(),
   })
   .strict()
   .optional();

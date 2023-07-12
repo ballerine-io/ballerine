@@ -134,9 +134,9 @@ export const kycDynamicExample = {
           mapping: '{data: @}', // jmespath
         },
       ],
-      deliverEvent: 'KYC_RESPONDED'
+      deliverEvent: 'KYC_RESPONDED',
     },
-  }
+  },
 };
 export const generateKycForE2eTest = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({

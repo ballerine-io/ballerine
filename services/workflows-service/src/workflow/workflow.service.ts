@@ -245,7 +245,7 @@ export class WorkflowService {
         childWorkflow.ballerineEntityId!,
         'active',
       );
-      await this.updateWorkflowRuntimeData(parentWorkflow.id, {context: parentContext});
+      await this.updateWorkflowRuntimeData(parentWorkflow.id, { context: parentContext });
     }
 
     return childWorkflow;
@@ -1183,9 +1183,10 @@ export class WorkflowService {
       workflowRuntimeData.parentRuntimeDataId,
     );
 
-    const { transformers, deliverEvent } = workflowDefinition.config.callbackResult as ChildWorkflowCallback;
+    const { transformers, deliverEvent } = workflowDefinition.config
+      .callbackResult as ChildWorkflowCallback;
     // @ts-ignore - fix as serializable transformer
-    const transformerInstance = transformers?.map(transformer => this.pickTransformer(transformer))
+    const transformerInstance = transformers?.map(transformer => this.pickTransformer(transformer));
     let contextToPersist = workflowRuntimeData.context;
     for (const transformer of transformerInstance || []) {
       contextToPersist = await transformer.transform(contextToPersist);
@@ -1199,7 +1200,7 @@ export class WorkflowService {
       'completed',
       contextToPersist,
     );
-    await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, {context: parentContext});
+    await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
 
     if (deliverEvent && parentWorkflowRuntime.state !== 'completed') {
       await this.event({
@@ -1210,8 +1211,10 @@ export class WorkflowService {
   }
 
   private pickTransformer(transformer: SerializableTransformer) {
-    if (transformer.transformer === 'jmespath') return new JmespathTransformer(transformer.mapping as string);
-    if (transformer.transformer === 'helper') return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
+    if (transformer.transformer === 'jmespath')
+      return new JmespathTransformer(transformer.mapping as string);
+    if (transformer.transformer === 'helper')
+      return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
 
     throw new Error(`No transformer found for ${transformer.transformer}`);
   }
@@ -1225,8 +1228,8 @@ export class WorkflowService {
     response?: any,
   ) {
     const childContextResult = { entityId: entityId, status: status, result: response };
-      parentWorkflowContext['childWorkflows'] ||= {};
-      parentWorkflowContext['childWorkflows'][definitionName] ||= {};
+    parentWorkflowContext['childWorkflows'] ||= {};
+    parentWorkflowContext['childWorkflows'][definitionName] ||= {};
 
     parentWorkflowContext['childWorkflows'][definitionName][runtimeId] = childContextResult;
     return parentWorkflowContext;
