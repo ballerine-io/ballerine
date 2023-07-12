@@ -25,7 +25,7 @@ from
     count("status") as status_count
   from
     "WorkflowRuntimeData"
-  where "createdAt" >= $1
+  where "createdAt" >= coalesce($1, '1900-01-01'::timestamp)
   group by
     "status"
 ) as workflow_runtime_data`;
