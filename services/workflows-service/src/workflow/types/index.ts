@@ -46,11 +46,3 @@ export type WorkflowRuntimeListQueryResult = WorkflowRuntimeData & {
   workflowDefinition: WorkflowDefinition;
   assignee: User | null;
 };
-
-export type WorkflowStatusMetric = Record<WorkflowRuntimeDataStatus, number>;
-
-export type WorkflowsApprovedChart = { workflowId: string; approvedDate: Date }[];
-export interface WorkflowsRuntimeMetric {
-  status: WorkflowStatusMetric;
-  approvedWorkflows: WorkflowsApprovedChart;
-}

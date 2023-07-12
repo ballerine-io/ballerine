@@ -24,9 +24,12 @@ import { LogRequestInterceptor } from '@/common/interceptors/log-request.interce
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsModule } from 'nestjs-cls';
 import { FiltersModule } from '@/common/filters/filters.module';
+import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-audit.middleware';
+import { MetricsController } from '@/metrics/metrics.controller';
+import { MetricsModule } from '@/metrics/metrics.module';
 
 @Module({
-  controllers: [],
+  controllers: [MetricsController],
   imports: [
     SentryModule,
     MulterModule.register({
@@ -62,6 +65,7 @@ import { FiltersModule } from '@/common/filters/filters.module';
     }),
     AppLoggerModule,
     FiltersModule,
+    MetricsModule,
   ],
   providers: [
     {
@@ -76,6 +80,6 @@ import { FiltersModule } from '@/common/filters/filters.module';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestIdMiddleware).forRoutes('*');
+    consumer.apply(RequestIdMiddleware, UserSessionAuditMiddleware).forRoutes('*');
   }
 }

@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 import { useApproveEntityMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveEntityMutation/useApproveEntityMutation';
 import { useDebounce } from '../../../../../../common/hooks/useDebounce/useDebounce';
 import { createInitials } from '../../../../../../common/utils/create-initials/create-initials';
-import { Action } from '../../../../../../common/enums';
 import { IUseActions } from './interfaces';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
@@ -87,6 +86,9 @@ export const useActions = ({ workflowId, fullName, websocketConnectionIsOpen }: 
   );
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
   const onTriggerAssignToMe = true;
+  const hasDecision =
+    workflow?.context?.documents?.length &&
+    workflow?.context?.documents?.every(document => !!document?.decision?.status);
 
   // useDocumentListener('keydown', event => {
   //   if (!event.ctrlKey || document.activeElement !== document.body) return;
@@ -132,5 +134,6 @@ export const useActions = ({ workflowId, fullName, websocketConnectionIsOpen }: 
     caseState,
     authenticatedUser,
     assignees,
+    hasDecision,
   };
 };

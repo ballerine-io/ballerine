@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
 import { NotFoundException, Query, Res } from '@nestjs/common';
@@ -11,7 +10,6 @@ import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
 import * as errors from '../errors';
 import { IntentDto } from './dtos/intent';
-import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
@@ -25,6 +23,7 @@ import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-gu
 import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
+import { ApiOkResponse } from '@nestjs/swagger';
 import axios from 'axios';
 import { env } from '@/env';
 
@@ -42,7 +41,6 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeOutputDto] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
-  @UseKeyAuthInDevGuard()
   async listWorkflowRuntimeData(
     @Query() query: GetWorkflowsRuntimeInputDto,
   ): Promise<GetWorkflowsRuntimeOutputDto> {
@@ -57,10 +55,11 @@ export class WorkflowControllerExternal {
     return plainToClass(GetWorkflowsRuntimeOutputDto, results);
   }
 
-  @common.Get('/metrics')
-  @UseKeyAuthInDevGuard()
-  async listWorkflowRuntimeMetric() {
-    return await this.service.listWorkflowsMetrics();
+  @common.Get('/workflow-definition/:id')
+  @ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async getWorkflowDefinition(@common.Param() params: WorkflowDefinitionWhereUniqueInput) {
+    return await this.service.getWorkflowDefinitionById(params.id);
   }
 
   @common.Get('/:id')

@@ -1,5 +1,7 @@
 import { TDocument } from '../types';
+
 const ghNationalIdNumber = '^$|^GHA-\\d{9}-\\d{1}$';
+const alphaNumeric = '^[a-zA-Z0-9]*$';
 
 export const certificateOfResidenceGH: TDocument = {
   category: 'proof_of_address',
@@ -20,7 +22,8 @@ export const certificateOfResidenceGH: TDocument = {
         pattern: ghNationalIdNumber,
       },
       docNumber: {
-        type: 'number',
+        type: 'string',
+        pattern: alphaNumeric,
       },
       userAddress: {
         type: 'string',
@@ -41,6 +44,39 @@ export const certificateOfResidenceGH: TDocument = {
 
 export const ghanaDocuments: TDocument[] = [
   {
+    category: 'financial_information',
+    type: 'mtn_statement',
+    issuer: {
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        accountNameHolder: {
+          type: 'string',
+        },
+        msisdn: {
+          type: 'string',
+          pattern: '^233[0-9]{9}$',
+        },
+        from: {
+          type: 'string',
+          format: 'date',
+        },
+        to: {
+          type: 'string',
+          format: 'date',
+        },
+        timeRun: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
     category: 'proof_of_address',
     type: 'water_bill',
     issuer: {
@@ -57,7 +93,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -94,7 +131,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -129,7 +167,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -164,7 +203,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         employeeName: {
           type: 'string',
@@ -199,7 +239,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         employeeName: {
           type: 'string',
@@ -231,7 +272,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -263,7 +305,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -295,7 +338,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -327,7 +371,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -363,7 +408,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         employeeName: {
           type: 'string',
@@ -395,7 +441,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         employeeName: {
           type: 'string',
@@ -430,7 +477,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',
@@ -462,7 +510,8 @@ export const ghanaDocuments: TDocument[] = [
           pattern: ghNationalIdNumber,
         },
         docNumber: {
-          type: 'number',
+          type: 'string',
+          pattern: alphaNumeric,
         },
         userAddress: {
           type: 'string',

@@ -1,4 +1,4 @@
-import { Header } from '@app/components/molecules/Header';
+import { Header } from '@app/components/organisms/Header';
 import { QueryParamProvider } from 'use-query-params';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 

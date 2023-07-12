@@ -191,7 +191,7 @@ async function seed(bcryptSalt: Salt) {
           ],
           properties: {
             nationalIdNumber: generateUserNationalId(),
-            docNumber: faker.finance.account(9),
+            docNumber: faker.random.alphaNumeric(9),
             employeeName: faker.name.fullName(),
             position: faker.name.jobTitle(),
             salaryAmount: faker.finance.amount(1000, 10000),
@@ -224,7 +224,7 @@ async function seed(bcryptSalt: Salt) {
           ],
           properties: {
             nationalIdNumber: generateUserNationalId(),
-            docNumber: faker.finance.account(9),
+            docNumber: faker.random.alphaNumeric(9),
             employeeName: faker.name.fullName(),
             position: faker.name.jobTitle(),
             salaryAmount: faker.finance.amount(1000, 10000),
@@ -776,7 +776,7 @@ async function seed(bcryptSalt: Salt) {
       },
     },
     where: {
-      workflowDefinitionId: manualMachineId,
+      workflowDefinitionId: riskScoreMachineKybId,
       endUserId: { not: null },
     },
   });
