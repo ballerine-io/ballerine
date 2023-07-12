@@ -8,7 +8,7 @@ interface Props {
   context: string;
 }
 
-export const ContextViewColumn = ({ context }: Props) => {
+export const JsonDialog = ({ context }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
