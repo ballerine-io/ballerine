@@ -17,7 +17,7 @@ export const UsersResolvingStatsList = ({ items, isLoading }: Props) => {
         {isLoading ? (
           <Skeleton className="h-full w-full" />
         ) : (
-          items.map(item => <ListItem item={item} />)
+          items.map(item => <ListItem key={item.id} item={item} />)
         )}
         {isEmpty ? <span className="font-inter">No activity found.</span> : null}
       </div>

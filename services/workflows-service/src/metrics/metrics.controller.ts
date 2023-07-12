@@ -63,7 +63,6 @@ export class MetricsController {
   ): Promise<UserWorkflowProcessingStatisticModel> {
     return await this.metricsService.getUserWorkflowProcessingStatistic({
       fromDate: query.fromDate,
-      userId: query.userId,
     });
   }
 
