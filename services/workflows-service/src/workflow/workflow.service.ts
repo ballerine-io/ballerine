@@ -57,6 +57,7 @@ import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
 import {
+  AnyRecord,
   DefaultContextSchema,
   getDocumentId,
   getDocumentsByCountry,
@@ -74,6 +75,10 @@ import {
   createWorkflow,
   ChildWorkflowCallback,
   ChildPluginCallbackOutput,
+  JmespathTransformer,
+  SerializableTransformer,
+  HelpersTransformer,
+  THelperFormatingLogic,
 } from '@ballerine/workflow-core';
 
 type TEntityId = string;
@@ -173,7 +178,10 @@ export class WorkflowService {
         state: workflow.state,
       },
       invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
-        const runnableChildWorkflow = await this.persistChildEvent(childPluginConfiguration);
+        const runnableChildWorkflow = await this.persistChildEvent(
+          childPluginConfiguration,
+          workflow,
+        );
         if (runnableChildWorkflow && childPluginConfiguration.initOptions.event) {
           await this.deliverChildChildEvent(
             runnableChildWorkflow.workflowRuntimeData.id,
@@ -217,14 +225,30 @@ export class WorkflowService {
     };
   }
 
-  async persistChildEvent(childPluginConfig: ChildPluginCallbackOutput) {
-    return (
+  async persistChildEvent(
+    childPluginConfig: ChildPluginCallbackOutput,
+    parentWorkflow: WorkflowRuntimeData,
+  ) {
+    const childWorkflow = (
       await this.createOrUpdateWorkflowRuntime({
         workflowDefinitionId: childPluginConfig.definitionId,
         context: childPluginConfig.initOptions.context as unknown as DefaultContextSchema,
         parentWorkflowId: childPluginConfig.parentWorkflowRuntimeId,
       })
     )[0];
+
+    if (childWorkflow) {
+      const parentContext = this.composeContextWithChildResponse(
+        parentWorkflow.context,
+        childWorkflow.workflowDefinition.name,
+        childWorkflow.workflowRuntimeData.id,
+        childWorkflow.ballerineEntityId!,
+        'active',
+      );
+      await this.updateWorkflowRuntimeData(parentWorkflow.id, { context: parentContext });
+    }
+
+    return childWorkflow;
   }
 
   async deliverChildChildEvent(workflowRuntimeId: string, event: string) {
@@ -863,7 +887,9 @@ export class WorkflowService {
               id: workflowDefinition.id,
             },
           },
-          parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
+          ...(parentWorkflowId && {
+            parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
+          }),
         },
       });
       newWorkflowCreated = true;
@@ -1068,6 +1094,18 @@ export class WorkflowService {
         state: workflowRuntimeData.state,
       },
       extensions: workflowDefinition.extensions,
+      invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
+        const runnableChildWorkflow = await this.persistChildEvent(
+          childPluginConfiguration,
+          workflowRuntimeData,
+        );
+        if (runnableChildWorkflow && childPluginConfiguration.initOptions.event) {
+          await this.deliverChildChildEvent(
+            runnableChildWorkflow.workflowRuntimeData.id,
+            childPluginConfiguration.initOptions.event,
+          );
+        }
+      },
     });
 
     await service.sendEvent({
@@ -1144,23 +1182,57 @@ export class WorkflowService {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(
       workflowRuntimeData.parentRuntimeDataId,
     );
-    const { transformers, action, event } =
-      workflowDefinition.parentWorkflowPersistenceLogic as ChildWorkflowCallback;
 
-    if (action === 'append') {
-      let contextToPersist = workflowRuntimeData.context;
-      for (const transformer of transformers || []) {
-        contextToPersist = await transformer.transform(contextToPersist);
-      }
-
-      await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, contextToPersist);
+    const { transformers, deliverEvent } = workflowDefinition.config
+      .callbackResult as ChildWorkflowCallback;
+    // @ts-ignore - fix as serializable transformer
+    const transformerInstance = transformers?.map(transformer => this.pickTransformer(transformer));
+    let contextToPersist = workflowRuntimeData.context;
+    for (const transformer of transformerInstance || []) {
+      contextToPersist = await transformer.transform(contextToPersist);
     }
-    if (event && parentWorkflowRuntime.state !== 'completed') {
+
+    const parentContext = this.composeContextWithChildResponse(
+      parentWorkflowRuntime.context,
+      workflowDefinition.name,
+      workflowRuntimeData.id,
+      workflowRuntimeData.context.entity.id,
+      'completed',
+      contextToPersist,
+    );
+    await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
+
+    if (deliverEvent && parentWorkflowRuntime.state !== 'completed') {
       await this.event({
         id: parentWorkflowRuntime.id,
-        name: event,
+        name: deliverEvent,
       });
     }
+  }
+
+  private pickTransformer(transformer: SerializableTransformer) {
+    if (transformer.transformer === 'jmespath')
+      return new JmespathTransformer(transformer.mapping as string);
+    if (transformer.transformer === 'helper')
+      return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
+
+    throw new Error(`No transformer found for ${transformer.transformer}`);
+  }
+
+  private composeContextWithChildResponse(
+    parentWorkflowContext: any,
+    definitionName: string,
+    runtimeId: string,
+    entityId: string,
+    status: 'active' | 'completed',
+    response?: any,
+  ) {
+    const childContextResult = { entityId: entityId, status: status, result: response };
+    parentWorkflowContext['childWorkflows'] ||= {};
+    parentWorkflowContext['childWorkflows'][definitionName] ||= {};
+
+    parentWorkflowContext['childWorkflows'][definitionName][runtimeId] = childContextResult;
+    return parentWorkflowContext;
   }
 
   private __fetchFromServiceProviders(document: TDefaultSchemaDocumentPage): {

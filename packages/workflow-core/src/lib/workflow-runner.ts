@@ -76,7 +76,7 @@ export class WorkflowRunner {
     // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
     // @ts-expect-error TODO: fix this
-    this.#__extensions.commonPlugins = this.initiateCommonPlugins(this.#__extensions.commonPlugins ?? [], [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat());
+    this.#__extensions.commonPlugins = this.initiateCommonPlugins(this.#__extensions.commonPlugins ?? [], [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat(1));
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
     this.#__runtimeId = runtimeId;
 

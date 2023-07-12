@@ -8,6 +8,7 @@ export type {
   TCreateWorkflow,
   ChildWorkflowCallback,
   ChildPluginCallbackOutput,
+  SerializableTransformer,
   WorkflowExtensions,
   Workflow,
   ObjectValues,
@@ -34,6 +35,6 @@ export type {
   TJsonSchema,
 } from './utils';
 export { WebhookPlugin, ApiPlugin } from './plugins';
-export { JmespathTransformer, JsonSchemaValidator } from './utils';
+export { THelperFormatingLogic, HelpersTransformer, JmespathTransformer, JsonSchemaValidator } from './utils';
 export { HttpError } from './errors';
 export { createWorkflow } from './create-workflow';
