@@ -52,6 +52,7 @@ export class MetricsService {
       this.metricsRepository.getUserApprovalRate(commonParams),
       this.metricsRepository.getUserAverageAssignmentTime(commonParams),
       this.metricsRepository.getUserAverageResolutionTime(commonParams),
+
       this.metricsRepository.getUserAverageReviewTime(commonParams),
     ]);
 
@@ -70,9 +71,9 @@ export class MetricsService {
     }
 
     statisticModel.approvalRate = approvalRateModel?.approvalRate || 0;
-    statisticModel.averageAssignmentTime = averageAssignmentTimeModel?.time || 0;
-    statisticModel.averageResolutionTime = averageResolutionTimeModel?.time || 0;
-    statisticModel.averageReviewTime = averageReviewTimeModel?.time || 0;
+    statisticModel.averageAssignmentTime = averageAssignmentTimeModel?.time || '0';
+    statisticModel.averageResolutionTime = averageResolutionTimeModel?.time || '0';
+    statisticModel.averageReviewTime = averageReviewTimeModel?.time || '0';
 
     return statisticModel;
   }

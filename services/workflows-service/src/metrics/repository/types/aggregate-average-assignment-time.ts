@@ -1,3 +1,3 @@
 export interface IAggregateAverageAssignmentTime {
-  time: number | null;
+  time: string | null;
 }

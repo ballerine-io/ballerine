@@ -5,11 +5,11 @@ select
 		when "createdAt" notnull and "assignedAt" notnull
 		then (extract(epoch from "assignedAt") - extract(epoch from "createdAt")) * 1000
 		else 0
-		end)::int as time
+		end)::bigint  as time
 	from "WorkflowRuntimeData"
 	where "assigneeId" = "User".id
 	and "assignedAt" >= $1)
-	)::int as time
+	)::varchar as time
 from
 	"User"
 where

@@ -8,11 +8,11 @@ export class UserWorkflowProcessingStatisticModel {
   approvalRate!: number;
 
   @ApiProperty({ description: 'Average resolution time in milliseconds' })
-  averageResolutionTime!: number;
+  averageResolutionTime!: string;
 
   @ApiProperty({ description: 'Average assignment time in milliseconds' })
-  averageAssignmentTime!: number;
+  averageAssignmentTime!: string;
 
   @ApiProperty({ description: 'Average review time in milliseconds' })
-  averageReviewTime!: number;
+  averageReviewTime!: string;
 }
