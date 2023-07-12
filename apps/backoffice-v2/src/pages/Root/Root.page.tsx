@@ -3,7 +3,7 @@ import { Providers } from '../../common/components/templates/Providers/Providers
 import { Toaster } from 'react-hot-toast';
 import { Layout } from '../../common/components/templates/Layout/Layout';
 import { FunctionComponent, lazy, Suspense } from 'react';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 import { queryClient } from '../../lib/react-query/query-client';
 import { workflowsQueryKeys } from '../../domains/workflows/query-keys';
 import { storageQueryKeys } from '../../domains/storage/query-keys';
@@ -19,7 +19,7 @@ const ReactQueryDevtools = lazy(() =>
 );
 
 export const Root: FunctionComponent = () => {
-  useWebSocket(`${env.WEBSOCKET_URL}/?testParams=55`, {
+  useWebSocket(`${env.WEBSOCKET_URL}`, {
     share: true,
     shouldReconnect: () => true,
     onOpen: () => {
@@ -44,7 +44,8 @@ export const Root: FunctionComponent = () => {
         }
       }
       if (queryKey) {
-        queryClient.invalidateQueries(queryKey);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        void queryClient.invalidateQueries(queryKey);
       }
     },
   });

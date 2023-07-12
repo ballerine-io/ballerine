@@ -12,6 +12,7 @@ export const env = createEnv({
     ENV_FILE_NAME: z.string().optional(),
     COMPOSE_PROJECT_NAME: z.string(),
     PORT: z.coerce.number(),
+    SESSION_SECRET: z.string(),
   },
   client: {},
   /**
