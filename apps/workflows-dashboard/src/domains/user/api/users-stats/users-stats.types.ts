@@ -11,5 +11,5 @@ export interface GetUsersCaseResolvingStats {
 }
 
 export interface GetUsersAssignedCasesStatsDto {
-  fromDate: number;
+  fromDate?: number;
 }

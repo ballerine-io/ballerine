@@ -1,4 +1,4 @@
-import { IUserStats } from '@app/domains/user/api/user-stats';
+import { UserStats as IUserStats } from '@app/domains/user/api/user-stats';
 import { DurationCard } from '@app/pages/Overview/components/molecules/UserStats/components/DurationCard';
 import { PercentageCard } from '@app/pages/Overview/components/molecules/UserStats/components/PercentageCard';
 

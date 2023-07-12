@@ -19,7 +19,7 @@ import { IAggregateAverageResolutionTime } from '@/metrics/repository/types/aggr
 import { GetUserAverageAssignmentTimeParams } from '@/metrics/repository/types/get-user-average-assignment-time.params';
 import { IAggregateAverageAssignmentTime } from '@/metrics/repository/types/aggregate-average-assignment-time';
 import { GetUserAverageReviewTimeParams } from '@/metrics/repository/types/get-user-average-review-time.params';
-import { UserAverageReviewTimeModel } from '@/metrics/repository/models/user-average-review-time.model';
+import { AverageReviewTimeModel } from '@/metrics/repository/models/average-review-time.model';
 import { IAggregateAverageReviewTime } from '@/metrics/repository/types/aggregate-average-review-time';
 import { ListUserCasesResolvedDailyParams } from '@/metrics/repository/types/list-user-cases-resolved-daily.params';
 import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
@@ -139,14 +139,14 @@ export class MetricsRepository {
 
   async getUserAverageReviewTime(
     params: GetUserAverageReviewTimeParams,
-  ): Promise<UserAverageReviewTimeModel | null> {
+  ): Promise<AverageReviewTimeModel | null> {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateAverageReviewTime[]>(
       aggregateAverageReviewTimeQuery,
       params.fromDate,
       params.userId,
     );
 
-    return results.length ? plainToClass(UserAverageReviewTimeModel, results.at(-1)) : null;
+    return results.length ? plainToClass(AverageReviewTimeModel, results.at(-1)) : null;
   }
 
   async listCasesResolvedDaily(

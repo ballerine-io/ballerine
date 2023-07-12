@@ -3,15 +3,26 @@ import {
   GetUserStatsDto,
   IResolvedCasesDailyMetric,
   IUserStats,
+  UserStats,
 } from '@app/domains/user/api/user-stats/user-stats.types';
 import { request } from '@app/lib/request';
 
-export const fetchUserStats = async (query: GetUserStatsDto): Promise<IUserStats> => {
+export const fetchUserStats = async (query: GetUserStatsDto): Promise<UserStats> => {
   const result = await request.get<IUserStats>(`/metrics/users/workflow-processing-statistic`, {
     params: query,
   });
 
-  return result.data;
+  const { approvalRate, averageAssignmentTime, averageResolutionTime, averageReviewTime } =
+    result.data || ({} as IUserStats);
+
+  const userStats: UserStats = {
+    approvalRate: approvalRate,
+    averageAssignmentTime: Number(averageAssignmentTime),
+    averageResolutionTime: Number(averageResolutionTime),
+    averageReviewTime: Number(averageReviewTime),
+  };
+
+  return userStats;
 };
 
 export const fetchUserDailyCasesResolvedStats = async (
