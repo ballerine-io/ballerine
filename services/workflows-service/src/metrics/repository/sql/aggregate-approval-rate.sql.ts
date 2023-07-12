@@ -1,27 +1,18 @@
 export const aggregateApprovalRateQuery = `
-select
-	(case
-		when "resolvedCount" > 0 and "approvedCount" > 0
-		then ("approvedCount"::numeric / "resolvedCount"::numeric * 100)
-		else 0 end
-		)::int as "approvalRate"
-from
-	(
-	select
-		(
-		select
-			count(*)
-		from
-			"WorkflowRuntimeData"
-		where "resolvedAt" >= $1
-		) as "resolvedCount",
-		(
-		select count(*)
-		from "WorkflowRuntimeData"
-		where "resolvedAt" >= $1
-		and "status" = 'completed'
-		) as "approvedCount"
-	from
-		"WorkflowRuntimeData"
-) as counts
+SELECT
+  (CASE
+    WHEN counts."resolvedCount" > 0 AND counts."approvedCount" > 0
+    THEN (counts."approvedCount"::int / counts."resolvedCount"::int * 100)
+    ELSE 0
+  END)::numeric(5, 2)::varchar AS "approvalRate"
+FROM (
+  SELECT
+    (SELECT COUNT(*)
+     FROM "WorkflowRuntimeData"
+     WHERE "resolvedAt" >= $1) AS "resolvedCount",
+    (SELECT COUNT(*)
+     FROM "WorkflowRuntimeData"
+     WHERE context -> 'documents' @> '[{"decision": {"status": "approved"}}]'
+       AND "resolvedAt" >= $1) AS "approvedCount"
+) AS counts;
 `;
