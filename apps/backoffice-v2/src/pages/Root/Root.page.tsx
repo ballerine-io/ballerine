@@ -19,7 +19,7 @@ const ReactQueryDevtools = lazy(() =>
 );
 
 export const Root: FunctionComponent = () => {
-  useWebSocket(`${env.WEBSOCKET_URL}`, {
+  useWebSocket(`${env.VITE_WEBSOCKET_URL}`, {
     share: true,
     shouldReconnect: () => true,
     onOpen: () => {
