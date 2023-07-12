@@ -13,7 +13,7 @@ inner join (
     count(*) as "casesCount"
   from
     "WorkflowRuntimeData"
-  where "assignedAt" >= $1
+  where "assignedAt" >= coalesce($1, '1900-01-01'::timestamp)
   group by "assigneeId"
 ) as agent_workflow_runtime on
 agent_workflow_runtime."assigneeId" = "id"

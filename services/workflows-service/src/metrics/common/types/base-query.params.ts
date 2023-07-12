@@ -1,3 +1,3 @@
 export interface BaseParams {
-  fromDate: Date;
+  fromDate?: Date;
 }
