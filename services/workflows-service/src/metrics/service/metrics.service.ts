@@ -44,7 +44,6 @@ export class MetricsService {
     params: GetUserWorkflowProcessingStatisticParams,
   ): Promise<UserWorkflowProcessingStatisticModel> {
     const commonParams = {
-      userId: params.userId,
       fromDate: params.fromDate,
     };
 
@@ -65,10 +64,6 @@ export class MetricsService {
 
     const statisticModel: UserWorkflowProcessingStatisticModel =
       new UserWorkflowProcessingStatisticModel();
-
-    if (params.userId) {
-      statisticModel.id = params.userId;
-    }
 
     statisticModel.approvalRate = approvalRateModel?.approvalRate || 0;
     statisticModel.averageAssignmentTime = averageAssignmentTimeModel?.time || '0';

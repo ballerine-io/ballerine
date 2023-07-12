@@ -14,16 +14,13 @@ from
 		from
 			"WorkflowRuntimeData"
 		where "resolvedAt" >= $1
-		and "assigneeId" = coalesce($2, "assigneeId")
 		) as "resolvedCount",
 		(
 		select count(*)
 		from "WorkflowRuntimeData"
 		where "resolvedAt" >= $1
-		and "assigneeId" = coalesce($2, "assigneeId")
 		and "status" = 'completed'
 		) as "approvedCount"
-
 	from
 		"WorkflowRuntimeData"
 	group by "resolvedCount", "approvedCount"
