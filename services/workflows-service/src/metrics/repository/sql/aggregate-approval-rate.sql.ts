@@ -23,7 +23,5 @@ from
 		) as "approvedCount"
 	from
 		"WorkflowRuntimeData"
-	group by "resolvedCount", "approvedCount"
-
 ) as counts
 `;
