@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.5.4
+
+### Patch Changes
+
+- Schema Changes (Docs)
+
 ## 0.5.3
 
 ### Patch Changes

@@ -4,7 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 
 export const useActiveUsersQuery = () => {
   const { filters } = useWorkflowFilters();
-  const { data = [], isLoading } = useQuery(usersKeys.activeUsers({ fromDate: filters.fromDate }));
+  const { data = [], isLoading } = useQuery({
+    ...usersKeys.activeUsers({ fromDate: filters.fromDate! }),
+    enabled: Boolean(filters.fromDate),
+  });
 
   return {
     data,

@@ -776,7 +776,7 @@ async function seed(bcryptSalt: Salt) {
       },
     },
     where: {
-      workflowDefinitionId: manualMachineId,
+      workflowDefinitionId: riskScoreMachineKybId,
       endUserId: { not: null },
     },
   });
