@@ -890,20 +890,19 @@ async function seed(bcryptSalt: Salt) {
   });
 
   await client.$transaction(async () =>
-    endUserIds.map(async (id, index) => {
-      let context = await createMockEndUserContextData(id, index + 1);
-      return client.endUser.create({
+    endUserIds.map(async (id, index) =>
+      client.endUser.create({
         /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
         data: generateEndUser({
           id,
           workflow: {
             workflowDefinitionId: manualMachineId,
             workflowDefinitionVersion: manualMachineVersion,
-            context: context,
+            context: await createMockEndUserContextData(id, index + 1),
           },
         }),
-      });
-    }),
+      }),
+    ),
   );
 
   await client.$transaction(async tx => {
