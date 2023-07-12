@@ -5,8 +5,9 @@ import {
   ISerializableHttpPluginParams
 } from './plugins/external-plugin/types';
 import { ISerializableCommonPluginParams } from "./plugins/common-plugin/types";
-import { TContext, Transformers } from './utils';
+import {TContext, Transformers} from './utils';
 import { ChildCallabackable } from "./workflow-runner";
+import {THelperFormatingLogic} from "./utils/context-transformers/types";
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
@@ -86,4 +87,11 @@ export type ChildPluginCallbackOutput = {
     context: TContext,
     event?: string;
   }
+}
+
+export type SerializableTransformer =
+{
+  transformer: string;
+  mapping: string | THelperFormatingLogic;
+  options: any
 }

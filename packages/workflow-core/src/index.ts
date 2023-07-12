@@ -10,9 +10,11 @@ export type {
   ChildPluginCallbackOutput,
   WorkflowContext,
   ExtensionRunOrder,
+  SerializableTransformer,
   ValidatableTransformer,
   SerializableValidatableTransformer,
-} from './lib';
+  THelperFormatingLogic
+  } from './lib';
 export {
   createWorkflow,
   Error,
@@ -20,4 +22,5 @@ export {
   HttpError,
   JmespathTransformer,
   JsonSchemaValidator,
+  HelpersTransformer,
 } from './lib';

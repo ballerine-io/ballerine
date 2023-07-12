@@ -75,6 +75,10 @@ import {
   createWorkflow,
   ChildWorkflowCallback,
   ChildPluginCallbackOutput,
+  JmespathTransformer,
+  SerializableTransformer,
+  HelpersTransformer,
+  THelperFormatingLogic,
 } from '@ballerine/workflow-core';
 
 type TEntityId = string;
@@ -236,12 +240,12 @@ export class WorkflowService {
     if (childWorkflow) {
       const parentContext = this.composeContextWithChildResponse(
         parentWorkflow.context,
-        childWorkflow.workflowDefinition.defintion.name,
+        childWorkflow.workflowDefinition.name,
         childWorkflow.workflowRuntimeData.id,
         childWorkflow.ballerineEntityId!,
         'active',
       );
-      await this.updateWorkflowRuntimeData(parentWorkflow.id, parentContext);
+      await this.updateWorkflowRuntimeData(parentWorkflow.id, {context: parentContext});
     }
 
     return childWorkflow;
@@ -1180,21 +1184,22 @@ export class WorkflowService {
     );
 
     const { transformers, deliverEvent } = workflowDefinition.config.callbackResult as ChildWorkflowCallback;
-
+    // @ts-ignore - fix as serializable transformer
+    const transformerInstance = transformers?.map(transformer => this.pickTransformer(transformer))
     let contextToPersist = workflowRuntimeData.context;
-    for (const transformer of transformers || []) {
+    for (const transformer of transformerInstance || []) {
       contextToPersist = await transformer.transform(contextToPersist);
     }
 
     const parentContext = this.composeContextWithChildResponse(
       parentWorkflowRuntime.context,
-      workflowDefinition.defintion.name,
+      workflowDefinition.name,
       workflowRuntimeData.id,
       workflowRuntimeData.context.entity.id,
       'completed',
       contextToPersist,
     );
-    await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, parentContext);
+    await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, {context: parentContext});
 
     if (deliverEvent && parentWorkflowRuntime.state !== 'completed') {
       await this.event({
@@ -1202,6 +1207,13 @@ export class WorkflowService {
         name: deliverEvent,
       });
     }
+  }
+
+  private pickTransformer(transformer: SerializableTransformer) {
+    if (transformer.transformer === 'jmespath') return new JmespathTransformer(transformer.mapping as string);
+    if (transformer.transformer === 'helper') return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
+
+    throw new Error(`No transformer found for ${transformer.transformer}`);
   }
 
   private composeContextWithChildResponse(
@@ -1213,6 +1225,9 @@ export class WorkflowService {
     response?: any,
   ) {
     const childContextResult = { entityId: entityId, status: status, result: response };
+      parentWorkflowContext['childWorkflows'] ||= {};
+      parentWorkflowContext['childWorkflows'][definitionName] ||= {};
+
     parentWorkflowContext['childWorkflows'][definitionName][runtimeId] = childContextResult;
     return parentWorkflowContext;
   }
