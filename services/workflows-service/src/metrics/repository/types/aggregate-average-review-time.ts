@@ -1,3 +1,3 @@
 export interface IAggregateAverageReviewTime {
-  time: string | null;
+  average_time: string | null;
 }
