@@ -6,7 +6,10 @@
       "type": "object",
       "properties": {
         "type": {
-          "enum": ["individual", "business"]
+          "enum": [
+            "individual",
+            "business"
+          ]
         },
         "data": {
           "type": "object",
@@ -24,13 +27,19 @@
           "type": "string"
         }
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "anyOf": [
         {
-          "required": ["id"]
+          "required": [
+            "id"
+          ]
         },
         {
-          "required": ["ballerineEntityId"]
+          "required": [
+            "ballerineEntityId"
+          ]
         }
       ],
       "additionalProperties": false
@@ -45,11 +54,17 @@
           },
           "category": {
             "type": "string",
-            "transform": ["trim", "toLowerCase"]
+            "transform": [
+              "trim",
+              "toLowerCase"
+            ]
           },
           "type": {
             "type": "string",
-            "transform": ["trim", "toLowerCase"]
+            "transform": [
+              "trim",
+              "toLowerCase"
+            ]
           },
           "issuer": {
             "type": "object",
@@ -62,7 +77,10 @@
               },
               "country": {
                 "type": "string",
-                "transform": ["trim", "toUpperCase"]
+                "transform": [
+                  "trim",
+                  "toUpperCase"
+                ]
               },
               "city": {
                 "type": "string"
@@ -71,7 +89,9 @@
                 "type": "object"
               }
             },
-            "required": ["country"],
+            "required": [
+              "country"
+            ],
             "additionalProperties": false
           },
           "issuingVersion": {
@@ -82,7 +102,13 @@
             "properties": {
               "status": {
                 "type": "string",
-                "enum": ["new", "pending", "revision", "approved", "rejected"]
+                "enum": [
+                  "new",
+                  "pending",
+                  "revision",
+                  "approved",
+                  "rejected"
+                ]
               },
               "rejectionReason": {
                 "anyOf": [
@@ -109,11 +135,19 @@
                   {
                     "type": "string",
                     "enum": [
-                      "Blurry image",
+                      "Wrong document",
+                      "Fake document",
+                      "Spam",
+                      "Ownership mismatch - Name",
+                      "Ownership mismatch - National ID",
+                      "Unknown document type",
+                      "Bad image quality",
                       "Missing page",
                       "Invalid document",
                       "Expired document",
-                      "Unreadable document"
+                      "Unreadable document",
+                      "Blurry image",
+                      "Other"
                     ]
                   }
                 ]
@@ -134,14 +168,24 @@
                 },
                 "provider": {
                   "type": "string",
-                  "enum": ["gcs", "http", "stream", "base64", "ftp"]
+                  "enum": [
+                    "gcs",
+                    "http",
+                    "stream",
+                    "base64",
+                    "ftp"
+                  ]
                 },
                 "uri": {
                   "type": "string",
                   "format": "uri"
                 },
                 "type": {
-                  "enum": ["pdf", "png", "jpg"]
+                  "enum": [
+                    "pdf",
+                    "png",
+                    "jpg"
+                  ]
                 },
                 "data": {
                   "type": "string"
@@ -159,7 +203,11 @@
                   "additionalProperties": false
                 }
               },
-              "required": ["provider", "uri", "type"],
+              "required": [
+                "provider",
+                "uri",
+                "type"
+              ],
               "additionalProperties": false
             }
           },
@@ -181,10 +229,19 @@
             }
           }
         },
-        "required": ["category", "type", "issuer", "pages", "properties"],
+        "required": [
+          "category",
+          "type",
+          "issuer",
+          "pages",
+          "properties"
+        ],
         "additionalProperties": false
       }
     }
   },
-  "required": ["entity", "documents"]
+  "required": [
+    "entity",
+    "documents"
+  ]
 }
