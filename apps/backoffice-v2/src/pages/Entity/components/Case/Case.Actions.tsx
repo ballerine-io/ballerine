@@ -50,7 +50,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
   fullName,
   showResolutionButtons = true,
 }) => {
-  const { readyState } = useWebSocket(`${env.WEBSOCKET_URL}`, {
+  const { readyState } = useWebSocket(`${env.VITE_WEBSOCKET_URL}`, {
     share: true,
     shouldReconnect: () => true,
   });

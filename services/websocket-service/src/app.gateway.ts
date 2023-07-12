@@ -10,7 +10,6 @@ import Keygrip from 'keygrip';
 import { env } from '@/env';
 
 @WebSocketGateway({
-  cors: true,
   transport: ['websocket'],
   verifyClient: (info: any, cb: (boolean) => void) => {
     const isUserAuthenticated = AppGateway.verifyToken(info.req.headers.cookie);
