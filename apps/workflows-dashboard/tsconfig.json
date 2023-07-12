@@ -9,6 +9,7 @@
     /* Bundler mode */
     "moduleResolution": "Node",
     "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -21,7 +22,8 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@app/*": ["./src/*"]
-    }
+    },
+    "types": ["node", "jest", "vite-plugin-terminal/client"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

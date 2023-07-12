@@ -73,7 +73,10 @@
   * {
     @apply border-border;
   }
-  body {
+  html,
+  body,
+  #root {
+    height: 100%;
     @apply bg-background text-foreground font-inter;
   }
 }

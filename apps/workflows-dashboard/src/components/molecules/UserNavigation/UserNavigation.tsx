@@ -13,7 +13,11 @@ import {
 import { Button } from '@app/components/atoms/Button';
 import { Avatar, AvatarFallback, AvatarImage } from '@app/components/atoms/Avatar';
 
-export function UserNavigation() {
+interface Props {
+  onLogout: () => void;
+}
+
+export function UserNavigation({ onLogout }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -54,7 +58,7 @@ export function UserNavigation() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onSelect={onLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>

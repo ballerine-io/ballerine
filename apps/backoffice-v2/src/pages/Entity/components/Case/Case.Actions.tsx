@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { IActionsProps } from './interfaces';
 import { ResubmissionReason, useActions } from './hooks/useActions/useActions';
 import { ctw } from '../../../../common/utils/ctw/ctw';
@@ -77,6 +76,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     isActionButtonDisabled,
     onTriggerAssignToMe,
     isAssignedToMe,
+    hasDecision,
   } = useActions({
     workflowId: id,
     fullName,
@@ -99,6 +99,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             onMutateAssignWorkflow(id, onTriggerAssignToMe);
           }}
           buttonType={'Assign'}
+          hasDecision={hasDecision}
         />
         <AssignButton
           assignees={assignees as Assignee[]}
@@ -108,6 +109,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             onMutateAssignWorkflow(id, !onTriggerAssignToMe);
           }}
           buttonType={'Re-Assign'}
+          hasDecision={hasDecision}
         />
       </div>
       <div className={`flex h-20 justify-between`}>
