@@ -56,7 +56,6 @@ import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
 import {
-  AnyRecord,
   DefaultContextSchema,
   getDocumentId,
   getDocumentsByCountry,
@@ -1176,7 +1175,7 @@ export class WorkflowService {
   }
 
   async persistChildWorkflowToParent(
-    updatedChildContext: AnyRecord,
+    updatedChildContext: any,
     workflowRuntimeData: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
   ) {
@@ -1196,7 +1195,7 @@ export class WorkflowService {
 
     // @ts-ignore - fix as serializable transformer
     const transformerInstance = transformers?.map(transformer =>
-      this.initiateTransformer(transformer),
+      this.initiateTransformer(transformer as unknown as SerializableTransformer),
     );
     let contextToPersist = updatedChildContext;
     for (const transformer of transformerInstance || []) {

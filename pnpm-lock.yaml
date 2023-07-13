@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -273,7 +269,7 @@ importers:
         version: 8.7.0(eslint@8.22.0)
       eslint-plugin-import:
         specifier: ^2.26.0
-        version: 2.27.5(@typescript-eslint/parser@5.59.0)(eslint@8.22.0)
+        version: 2.27.5(@typescript-eslint/parser@5.59.0)(eslint-import-resolver-typescript@3.5.3)(eslint@8.38.0)
       eslint-plugin-react:
         specifier: ^7.30.1
         version: 7.30.1(eslint@8.22.0)
@@ -709,6 +705,9 @@ importers:
 
   packages/rules-engine:
     dependencies:
+      jmespath:
+        specifier: ^0.16.0
+        version: 0.16.0
       json-logic-js:
         specifier: ^2.0.2
         version: 2.0.2
@@ -10819,7 +10818,7 @@ packages:
       esbuild-plugin-alias: 0.2.1
       express: 4.18.2
       find-cache-dir: 3.3.2
-      fs-extra: 11.1.0
+      fs-extra: 11.1.1
       process: 0.11.10
       util: 0.12.5
     transitivePeerDependencies:
@@ -11120,7 +11119,7 @@ packages:
       compression: 1.7.4
       detect-port: 1.5.1
       express: 4.18.2
-      fs-extra: 11.1.0
+      fs-extra: 11.1.1
       globby: 11.1.0
       ip: 2.0.0
       lodash: 4.17.21
@@ -11161,7 +11160,7 @@ packages:
       '@babel/types': 7.21.5
       '@storybook/csf': 0.1.1-next.0
       '@storybook/types': 7.0.0-rc.10
-      fs-extra: 11.1.0
+      fs-extra: 11.1.1
       recast: 0.23.2
       ts-dedent: 2.2.0
     transitivePeerDependencies:
@@ -11445,7 +11444,7 @@ packages:
       chalk: 4.1.2
       detect-package-manager: 2.0.1
       fetch-retry: 5.0.6
-      fs-extra: 11.1.0
+      fs-extra: 11.1.1
       isomorphic-unfetch: 3.1.0
       nanoid: 3.3.6
       read-pkg-up: 7.0.1
@@ -17014,35 +17013,6 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-module-utils@2.8.0(@typescript-eslint/parser@5.59.0)(eslint-import-resolver-node@0.3.7)(eslint@8.22.0):
-    resolution: {integrity: sha512-aWajIYfsqCKRDgUfjEXNN/JlrzauMuSEy5sbd7WXbtW3EH6A6MpwEh42c7qD+MqQo9QMJ6fWLAeIJynx0g6OAw==}
-    engines: {node: '>=4'}
-    peerDependencies:
-      '@typescript-eslint/parser': '*'
-      eslint: '*'
-      eslint-import-resolver-node: '*'
-      eslint-import-resolver-typescript: '*'
-      eslint-import-resolver-webpack: '*'
-    peerDependenciesMeta:
-      '@typescript-eslint/parser':
-        optional: true
-      eslint:
-        optional: true
-      eslint-import-resolver-node:
-        optional: true
-      eslint-import-resolver-typescript:
-        optional: true
-      eslint-import-resolver-webpack:
-        optional: true
-    dependencies:
-      '@typescript-eslint/parser': 5.59.0(eslint@8.22.0)(typescript@4.9.5)
-      debug: 3.2.7
-      eslint: 8.22.0
-      eslint-import-resolver-node: 0.3.7
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
   /eslint-plugin-astro@0.21.0(eslint@8.38.0):
     resolution: {integrity: sha512-7pEhTfYT+tlOMOSmQV77TNgCeuFZgqSAqJPTHh6LYlwLqYyBQLURc5RRtlQqCJkufSh4Fan4nsV3LXCT/vjpCA==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -17143,39 +17113,6 @@ packages:
       eslint: 8.38.0
       eslint-import-resolver-node: 0.3.7
       eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.59.0)(eslint-import-resolver-node@0.3.7)(eslint-import-resolver-typescript@3.5.3)(eslint@8.38.0)
-      has: 1.0.3
-      is-core-module: 2.12.1
-      is-glob: 4.0.3
-      minimatch: 3.1.2
-      object.values: 1.1.6
-      resolve: 1.22.2
-      semver: 6.3.0
-      tsconfig-paths: 3.14.2
-    transitivePeerDependencies:
-      - eslint-import-resolver-typescript
-      - eslint-import-resolver-webpack
-      - supports-color
-    dev: true
-
-  /eslint-plugin-import@2.27.5(@typescript-eslint/parser@5.59.0)(eslint@8.22.0):
-    resolution: {integrity: sha512-LmEt3GVofgiGuiE+ORpnvP+kAm3h6MLZJ4Q5HCyHADofsb4VzXFsRiWj3c0OFiV+3DWFh0qg3v9gcPlfc3zRow==}
-    engines: {node: '>=4'}
-    peerDependencies:
-      '@typescript-eslint/parser': '*'
-      eslint: ^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8
-    peerDependenciesMeta:
-      '@typescript-eslint/parser':
-        optional: true
-    dependencies:
-      '@typescript-eslint/parser': 5.59.0(eslint@8.22.0)(typescript@4.9.5)
-      array-includes: 3.1.6
-      array.prototype.flat: 1.3.1
-      array.prototype.flatmap: 1.3.1
-      debug: 3.2.7
-      doctrine: 2.1.0
-      eslint: 8.22.0
-      eslint-import-resolver-node: 0.3.7
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.59.0)(eslint-import-resolver-node@0.3.7)(eslint@8.22.0)
       has: 1.0.3
       is-core-module: 2.12.1
       is-glob: 4.0.3
@@ -28482,3 +28419,7 @@ packages:
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: false
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
