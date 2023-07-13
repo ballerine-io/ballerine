@@ -3,7 +3,7 @@ import { getWorkflowHealthStatus } from './utils/get-workflow-health-status';
 import { formatDate } from './utils/format-date';
 import { DataTableColumnHeader } from './components/DataTableColumnHeader';
 import { HealthIndicator } from '@components/atoms/HealthIndicator';
-import { ContextViewColumn } from './components/ContextViewColumn';
+import { JsonDialog } from './components/JsonDialog';
 
 export const defaultColumns: WorkflowTableColumnDef<WorkflowTableItem>[] = [
   {
@@ -42,7 +42,7 @@ export const defaultColumns: WorkflowTableColumnDef<WorkflowTableItem>[] = [
   {
     accessorKey: 'context',
     accessorFn: row => JSON.stringify(row.context),
-    cell: info => <ContextViewColumn context={info.getValue<string>()} />,
+    cell: info => <JsonDialog context={info.getValue<string>()} />,
     header: () => 'Context',
   },
   {

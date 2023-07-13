@@ -1,3 +1,3 @@
 export interface IAggregateAverageResolutionTime {
-  time: number | null;
+  average_time: string | null;
 }

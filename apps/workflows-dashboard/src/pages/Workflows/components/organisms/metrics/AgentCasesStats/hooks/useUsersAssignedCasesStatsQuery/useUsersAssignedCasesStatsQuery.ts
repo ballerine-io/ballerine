@@ -6,7 +6,7 @@ export const useUsersAssignedCasesStatsQuery = () => {
   const { filters } = useWorkflowFilters();
   const { data, isLoading } = useQuery({
     ...usersStatsQueryKeys.casesAssignedStats({
-      fromDate: filters.fromDate!,
+      // fromDate: filters.fromDate!,
     }),
     enabled: Boolean(filters.fromDate),
   });

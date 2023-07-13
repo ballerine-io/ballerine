@@ -17,5 +17,5 @@ export type ICasesPerStatusStats = Record<IWorkflowStatus, number>;
 
 export interface GetCasesPerStatusDto {
   // UNIX timestamp
-  fromDate: number;
+  fromDate?: number;
 }

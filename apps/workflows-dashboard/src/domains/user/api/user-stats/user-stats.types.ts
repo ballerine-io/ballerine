@@ -4,6 +4,13 @@ export interface IResolvedCasesDailyMetric {
 }
 
 export interface IUserStats {
+  approvalRate: string;
+  averageResolutionTime: string;
+  averageAssignmentTime: string;
+  averageReviewTime: string;
+}
+
+export interface UserStats {
   approvalRate: number;
   averageResolutionTime: number;
   averageAssignmentTime: number;
