@@ -1198,7 +1198,7 @@ export class WorkflowService {
     )
       // @ts-ignore - fix as childCallbackResults[number]
       ?.find(childCallbackResult => workflowDefinition.name == childCallbackResult.definitionName);
-    const { transformers, deliverEvent } = (callbackTransformation ||
+    const childWorkflowCallback = (callbackTransformation ||
       workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
     const childrenOfSameDefinition = (
       parentWorkflowRuntime.childWorkflowRuntimeDatas as Array<WorkflowRuntimeData>
@@ -1208,29 +1208,29 @@ export class WorkflowService {
     );
     const parentContext = await this.generateParentContextWithInjectedChildContext(
       childrenOfSameDefinition,
-      transformers,
+      childWorkflowCallback.transformers,
       parentWorkflowRuntime,
       workflowDefinition,
     );
 
     await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
 
-    if (deliverEvent && parentWorkflowRuntime.state !== 'completed') {
+    if (childWorkflowCallback.deliverEvent && parentWorkflowRuntime.state !== 'completed') {
       await this.event({
         id: parentWorkflowRuntime.id,
-        name: deliverEvent,
+        name: childWorkflowCallback.deliverEvent,
       });
     }
   }
 
   private async generateParentContextWithInjectedChildContext(
     childrenOfSameDefinition: WorkflowRuntimeData[],
-    transformers: Array<SerializableTransformer>,
+    transformers: ChildWorkflowCallback['transformers'],
     parentWorkflowRuntime: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
   ) {
-    const transformerInstance = transformers?.map(transformer =>
-      this.initiateTransformer(transformer as unknown as SerializableTransformer),
+    const transformerInstance = (transformers || []).map((transformer: SerializableTransformer) =>
+      this.initiateTransformer(transformer),
     );
 
     const contextToPersist: Record<string, any> = {};
