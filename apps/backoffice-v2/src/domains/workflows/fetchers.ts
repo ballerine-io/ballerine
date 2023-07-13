@@ -77,6 +77,8 @@ export const WorkflowByIdSchema = z.object({
   }).nullable(),
 });
 
+export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
+
 export const fetchWorkflowById = async ({
   workflowId,
   filterId,

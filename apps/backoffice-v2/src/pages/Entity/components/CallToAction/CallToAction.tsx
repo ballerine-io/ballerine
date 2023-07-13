@@ -6,7 +6,6 @@ import { DialogContent } from '../../../../common/components/organisms/Dialog/Di
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { DialogClose } from '@radix-ui/react-dialog';
-import { ICallToActionProps } from './interfaces';
 import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
 import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
@@ -14,8 +13,12 @@ import { SelectValue } from '../../../../common/components/atoms/Select/Select.V
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
 import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
+import { ExtractCellProps } from '@ballerine/blocks';
 
-export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
+export const CallToAction: FunctionComponent<ExtractCellProps<'callToAction'>> = ({
+  value,
+  data,
+}) => {
   const {
     onMutateUpdateWorkflowById,
     isLoadingUpdateWorkflowById,

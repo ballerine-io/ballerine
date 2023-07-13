@@ -3,11 +3,11 @@ import { EditableDetails } from '../EditableDetails/EditableDetails';
 import { Separator } from '../../../../common/components/atoms/Separator/Separator';
 import React, { FunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
-import { IDetailsProps } from './interfaces';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
+import { ExtractCellProps } from '@ballerine/blocks';
 
-export const Details: FunctionComponent<IDetailsProps> = ({ id, value }) => {
+export const Details: FunctionComponent<ExtractCellProps<'details'>> = ({ id, value }) => {
   const { entityId } = useParams();
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });

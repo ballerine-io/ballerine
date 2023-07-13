@@ -1,8 +1,11 @@
 import { NestedComponent } from '../NestedComponent/NestedComponent';
 import { FunctionComponent } from 'react';
-import { INestedDetailsProps } from './interfaces';
+import { ExtractCellProps } from '@ballerine/blocks';
 
-export const NestedDetails: FunctionComponent<INestedDetailsProps> = ({ id, value }) => {
+export const NestedDetails: FunctionComponent<ExtractCellProps<'nestedDetails'>> = ({
+  id,
+  value,
+}) => {
   if (!value?.data?.length) return;
 
   return (

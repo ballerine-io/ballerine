@@ -1,9 +1,9 @@
 import React, { FunctionComponent } from 'react';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { IContainerProps } from './interfaces';
 import { cells } from '../../hooks/useEntity/cells';
+import { ExtractCellProps } from '@ballerine/blocks';
 
-export const Container: FunctionComponent<IContainerProps> = ({ value, id }) => {
+export const Container: FunctionComponent<ExtractCellProps<'container'>> = ({ value, id }) => {
   return (
     <div
       className={ctw({

@@ -1,8 +1,10 @@
 import React, { FunctionComponent } from 'react';
-import { IMultiDocumentsProps } from './interfaces';
 import { Case } from '../Case/Case';
+import { ExtractCellProps } from '@ballerine/blocks';
 
-export const MultiDocuments: FunctionComponent<IMultiDocumentsProps> = ({ value }) => {
+export const MultiDocuments: FunctionComponent<ExtractCellProps<'multiDocuments'>> = ({
+  value,
+}) => {
   const documents = value?.data?.filter(({ imageUrl }) => !!imageUrl);
 
   return (

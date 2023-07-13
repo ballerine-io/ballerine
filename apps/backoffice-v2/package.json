@@ -48,6 +48,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@ballerine/blocks": "0.0.1",
     "@ballerine/common": "0.5.6",
     "@ballerine/workflow-browser-sdk": "^0.4.9",
     "@ballerine/workflow-node-sdk": "^0.4.3",
