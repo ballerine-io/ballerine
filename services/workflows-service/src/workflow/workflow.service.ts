@@ -154,6 +154,16 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.findById(id, args);
   }
 
+  async getWorkflowRuntimeWithChildrenDataById(
+    id: string,
+    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+  ) {
+    return await this.workflowRuntimeDataRepository.findById(id, {
+      ...args,
+      include: {childWorkflowRuntimeDatas: true}
+    });
+  }
+
   async getWorkflowByIdWithRelations(
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
@@ -1179,7 +1189,7 @@ export class WorkflowService {
     workflowRuntimeData: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
   ) {
-    const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(
+    const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       workflowRuntimeData.parentRuntimeDataId,
     );
     const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
@@ -1197,10 +1207,18 @@ export class WorkflowService {
     const transformerInstance = transformers?.map(transformer =>
       this.initiateTransformer(transformer as unknown as SerializableTransformer),
     );
-    let contextToPersist = updatedChildContext;
-    for (const transformer of transformerInstance || []) {
-      contextToPersist = await transformer.transform(contextToPersist);
-    }
+
+    // const contextToPersist = {}
+    // for (const childWorkflowRuntimeData of parentWorkflowDefinition.childWorkflowRuntimeDatas) {
+    //   let childContextToPersist = updatedChildContext;
+    //
+    //   for (const transformer of transformerInstance || []) {
+    //     childContextToPersist = await transformer.transform(contextToPersist);
+    //   }
+    //   const childContextResult = { entityId: childContextToPersist.entity.id, status: , result:  };
+    //
+    //   contextToPersist[childWorkflowRuntimeData.id] = childContextResult
+    // }
 
     const parentContext = this.composeContextWithChildResponse(
       parentWorkflowRuntime.context,
@@ -1219,7 +1237,6 @@ export class WorkflowService {
       });
     }
   }
-
   private initiateTransformer(transformer: SerializableTransformer) {
     if (transformer.transformer === 'jmespath')
       return new JmespathTransformer(transformer.mapping as string);
@@ -1228,7 +1245,6 @@ export class WorkflowService {
 
     throw new Error(`No transformer found for ${transformer.transformer}`);
   }
-
   private composeContextWithChildResponse(
     parentWorkflowContext: any,
     definitionName: string,
@@ -1237,7 +1253,6 @@ export class WorkflowService {
     status: 'active' | 'completed',
     response?: any,
   ) {
-    const childContextResult = { entityId: entityId, status: status, result: response };
     parentWorkflowContext['childWorkflows'] ||= {};
     parentWorkflowContext['childWorkflows'][definitionName] ||= {};
 

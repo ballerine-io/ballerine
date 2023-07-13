@@ -31,7 +31,7 @@ export const kybParentDynamicExample = {
             {
               target: 'manual_review',
               cond: {
-                type: 'jmes-path',
+                type: 'jmespath',
                 options: {
                   rule: 'length(childWorkflows.dynamic_kyc_example.*.[result][]) == length(childWorkflows.dynamic_kyc_example.*[])',
                 },
