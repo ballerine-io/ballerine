@@ -1199,7 +1199,7 @@ export class WorkflowService {
       // @ts-ignore - fix as childCallbackResults[number]
       ?.find(childCallbackResult => workflowDefinition.name == childCallbackResult.definitionName);
     const { transformers, deliverEvent } =
-      (callbackTransformation || workflowDefinition.config.callbackResult) as ChildWorkflowCallback ;
+      (callbackTransformation || workflowDefinition.config.callbackResult!) as ChildWorkflowCallback ;
     const childrenOfSameDefinition = (
       parentWorkflowRuntime.childWorkflowRuntimeDatas as Array<WorkflowRuntimeData>
     ).filter(
