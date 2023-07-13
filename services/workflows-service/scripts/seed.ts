@@ -443,7 +443,7 @@ async function seed(bcryptSalt: Salt) {
               target: 'rejected',
             },
             revision: {
-              target: 'review',
+              target: 'revision',
             },
           },
         },
@@ -452,6 +452,13 @@ async function seed(bcryptSalt: Salt) {
         },
         rejected: {
           type: 'final',
+        },
+        revision: {
+          on: {
+            review: {
+              target: 'review',
+            },
+          },
         },
       },
     },

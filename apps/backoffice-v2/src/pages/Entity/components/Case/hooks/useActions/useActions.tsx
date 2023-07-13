@@ -65,7 +65,7 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
     workflow?.nextEvents?.includes(Action.REVISION.toLowerCase()) &&
     someDocumentDecisionStatus(workflow?.context?.documents, 'revision');
   const canApprove =
-    caseState.actionButtonsEnabled &&
+    canTakeAction &&
     workflow?.nextEvents?.includes(Action.APPROVE.toLowerCase()) &&
     everyDocumentDecisionStatus(workflow?.context?.documents, 'approved');
 

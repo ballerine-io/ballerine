@@ -718,6 +718,13 @@ export class WorkflowService {
         },
       });
     } else {
+      if (manualReviewWorkflow.state === 'revision') {
+        await this.event({
+          name: 'review',
+          id: manualReviewWorkflow.id,
+        });
+      }
+
       await this.workflowRuntimeDataRepository.updateById(manualReviewWorkflow.id, {
         data: {
           context: {
