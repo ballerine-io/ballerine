@@ -1,4 +1,6 @@
 {
+  "logo": "/ballerine-logo.png",
+  "appName": "App",
   "theme": {
     "pallete": {
       "primary": {
@@ -32,6 +34,5 @@
       "input": "214.3 31.8% 91.4%",
       "radius": "0.5rem"
     }
-  },
-  "logo": "/ballerine-logo.png"
+  }
 }
