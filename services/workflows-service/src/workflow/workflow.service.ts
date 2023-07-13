@@ -1187,8 +1187,8 @@ export class WorkflowService {
     );
 
     const callbackTransformation = (
-      parentWorkflowDefinition?.config
-        ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
+      parentWorkflowDefinition?.config?.childCallbackResults as ChildToParentCallback['childCallbackResults']
+      // @ts-ignore - fix as childCallbackResults[number]
     )?.find(childCallbackResult => workflowDefinition.name == childCallbackResult.definitionName);
     const { transformers, deliverEvent } =
       callbackTransformation || (workflowDefinition.config.callbackResult as ChildWorkflowCallback);

@@ -27,15 +27,17 @@ export const kybParentDynamicExample = {
       },
       pending_kyc_response_to_finish: {
         on: {
-          KYC_RESPONDED: [{
-            target: 'manual_review',
-            cond: {
-              type: 'jmes-path',
-              options: {
-                rule: 'length(childWorkflows.dynamic_kyc_example.*.[result][]) == length(childWorkflows.dynamic_kyc_example.*[])',
+          KYC_RESPONDED: [
+            {
+              target: 'manual_review',
+              cond: {
+                type: 'jmes-path',
+                options: {
+                  rule: 'length(childWorkflows.dynamic_kyc_example.*.[result][]) == length(childWorkflows.dynamic_kyc_example.*[])',
+                },
               },
-            }
-          }],
+            },
+          ],
         },
       },
       manual_review: {
