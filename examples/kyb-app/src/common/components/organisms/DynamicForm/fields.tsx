@@ -3,4 +3,5 @@ import { RegistryFieldsType } from '@rjsf/utils';
 
 export const fields: RegistryFieldsType = {
   StringField: TextInput,
+  file: () => <div>file</div>,
 };
