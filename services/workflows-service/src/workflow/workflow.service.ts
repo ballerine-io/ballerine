@@ -56,6 +56,7 @@ import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
 import {
+  AnyRecord,
   DefaultContextSchema,
   getDocumentId,
   getDocumentsByCountry,
@@ -77,6 +78,7 @@ import {
   SerializableTransformer,
   HelpersTransformer,
   THelperFormatingLogic,
+  ChildToParentCallback,
 } from '@ballerine/workflow-core';
 
 type TEntityId = string;
@@ -1157,7 +1159,7 @@ export class WorkflowService {
     });
 
     if (isFinal && workflowRuntimeData.parentRuntimeDataId) {
-      await this.persistChildWorkflowToParent(workflowRuntimeData, workflowDefinition);
+      await this.persistChildWorkflowToParent(context, workflowRuntimeData, workflowDefinition);
     }
 
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
@@ -1174,18 +1176,29 @@ export class WorkflowService {
   }
 
   async persistChildWorkflowToParent(
+    updatedChildContext: AnyRecord,
     workflowRuntimeData: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(
       workflowRuntimeData.parentRuntimeDataId,
     );
+    const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
+      parentWorkflowRuntime.workflowDefinitionId,
+    );
 
-    const { transformers, deliverEvent } = workflowDefinition.config
-      .callbackResult as ChildWorkflowCallback;
+    const callbackTransformation = (
+      parentWorkflowDefinition?.config
+        ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
+    )?.find(childCallbackResult => workflowDefinition.name == childCallbackResult.definitionName);
+    const { transformers, deliverEvent } =
+      callbackTransformation || (workflowDefinition.config.callbackResult as ChildWorkflowCallback);
+
     // @ts-ignore - fix as serializable transformer
-    const transformerInstance = transformers?.map(transformer => this.pickTransformer(transformer));
-    let contextToPersist = workflowRuntimeData.context;
+    const transformerInstance = transformers?.map(transformer =>
+      this.initiateTransformer(transformer),
+    );
+    let contextToPersist = updatedChildContext;
     for (const transformer of transformerInstance || []) {
       contextToPersist = await transformer.transform(contextToPersist);
     }
@@ -1208,7 +1221,7 @@ export class WorkflowService {
     }
   }
 
-  private pickTransformer(transformer: SerializableTransformer) {
+  private initiateTransformer(transformer: SerializableTransformer) {
     if (transformer.transformer === 'jmespath')
       return new JmespathTransformer(transformer.mapping as string);
     if (transformer.transformer === 'helper')

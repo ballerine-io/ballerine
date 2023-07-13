@@ -12,9 +12,10 @@ export type {
   ExtensionRunOrder,
   SerializableTransformer,
   ValidatableTransformer,
+  ChildToParentCallback,
   SerializableValidatableTransformer,
-  THelperFormatingLogic
-  } from './lib';
+  THelperFormatingLogic,
+} from './lib';
 export {
   createWorkflow,
   Error,

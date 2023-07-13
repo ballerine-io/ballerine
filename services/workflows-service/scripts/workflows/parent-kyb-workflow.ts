@@ -69,6 +69,20 @@ export const kybParentDynamicExample = {
       },
     ],
   },
+  config: {
+    childCallbackResults: [
+      {
+        definitionName: kycDynamicExample.name,
+        transformers: [
+          {
+            transformer: 'jmespath',
+            mapping: '{childEntity: entity.data, veriff_result: pluginsOutput.request_kyc}', // jmespath
+          },
+        ],
+        deliverEvent: 'KYC_RESPONDED',
+      },
+    ],
+  },
 };
 export const generateParentKybWithKycs = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
