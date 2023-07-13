@@ -13,7 +13,7 @@ export const workflowKeys = createQueryKeys('workflows', {
     queryFn: () => fetchWorkflows(query, sorting),
   }),
   workflowDefinition: (query: GetWorkflowDefinitionDto) => ({
-    queryKey: [query],
+    queryKey: [{ query }],
     queryFn: () => fetchWorkflowDefinition(query),
   }),
 });

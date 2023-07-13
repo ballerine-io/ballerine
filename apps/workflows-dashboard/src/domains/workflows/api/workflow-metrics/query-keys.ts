@@ -11,7 +11,7 @@ export const workflowMetricsKeys = createQueryKeys('workflow-metrics', {
     queryFn: () => fetchWorkflowStats(),
   }),
   workflowCasesPerStatusStats: (query: GetCasesPerStatusDto) => ({
-    queryKey: [query],
+    queryKey: [{ query }],
     queryFn: () => fetchCasesPerStatusStats(query),
   }),
 });
