@@ -1,4 +1,4 @@
-export interface IUseActions {
+export interface IUseActionsLogic {
   workflowId: string;
   fullName: string;
 }
