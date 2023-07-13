@@ -1,9 +1,6 @@
 import '@ballerine/ui/lib/style.css';
 import { AppShell } from '@app/components/layouts/AppShell';
-import { Button } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import validator from '@rjsf/validator-ajv8';
-import Form from '@rjsf/core';
 import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
 
 const form: RJSFSchema = {
@@ -44,6 +41,9 @@ const form: RJSFSchema = {
 const uischema: UiSchema = {
   firstName: {
     'ui:placeholder': 'hello',
+  },
+  'ui:submitButtonOptions': {
+    submitText: 'Continue',
   },
 };
 
