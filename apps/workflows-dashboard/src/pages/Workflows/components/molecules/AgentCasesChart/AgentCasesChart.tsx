@@ -30,7 +30,6 @@ export const AgentCasesChart = memo(({ isLoading, data }: Props) => {
   return (
     <MetricListChart
       title="Assigned Cases per agent"
-      description="( last 1 hour )"
       isLoading={isLoading}
       items={chartItems}
       emptyPlaceholder={<div className="text-sm font-medium">No active cases.</div>}
