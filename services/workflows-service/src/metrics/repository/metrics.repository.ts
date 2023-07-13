@@ -107,10 +107,11 @@ export class MetricsRepository {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateApprovalRate[]>(
       aggregateApprovalRateQuery,
       params.fromDate,
-      // params.userId,
     );
 
-    return results.length ? plainToClass(ApprovalRateModel, results.at(-1)) : null;
+    return results.length
+      ? plainToClass(ApprovalRateModel, { approvalRate: results.at(-1)?.approvalRate })
+      : null;
   }
 
   async getUserAverageResolutionTime(
