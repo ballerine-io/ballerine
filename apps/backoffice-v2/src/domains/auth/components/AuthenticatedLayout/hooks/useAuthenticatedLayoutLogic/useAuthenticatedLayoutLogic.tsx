@@ -3,18 +3,20 @@ import { useAuthenticatedUserQuery } from '../../../../hooks/queries/useAuthenti
 import { useIsAuthenticated } from '../../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 import { env } from '../../../../../../common/env/env';
 import { useLocation } from 'react-router-dom';
+import { useMemo } from 'react';
 
 export const useAuthenticatedLayoutLogic = () => {
   const { redirectUnauthenticatedTo } = useAuthContext();
   const { isLoading } = useAuthenticatedUserQuery();
   const isAuthenticated = useIsAuthenticated();
   const location = useLocation();
-  const shouldRedirect = [
-    !isLoading,
-    !isAuthenticated,
-    !!redirectUnauthenticatedTo,
-    env.VITE_AUTH_ENABLED,
-  ].every(Boolean);
+  const shouldRedirect = useMemo(
+    () =>
+      [!isLoading, !isAuthenticated, !!redirectUnauthenticatedTo, env.VITE_AUTH_ENABLED].every(
+        Boolean,
+      ),
+    [isLoading, isAuthenticated, redirectUnauthenticatedTo],
+  );
 
   return {
     shouldRedirect,
