@@ -134,7 +134,7 @@ export const kycDynamicExample = {
           mapping: '{data: @}', // jmespath
         },
       ],
-      deliverEvent: 'KYC_RESPONDED',
+      deliverEvent: 'KYC_DONE',
     },
   },
 };

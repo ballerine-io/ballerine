@@ -22,6 +22,18 @@ export const ConfigSchema = z
         deliverEvent: z.string().optional(),
       })
       .optional(),
+    childCallbackResults: z
+      .array(
+        z
+          .object({
+            definitionName: z.string(),
+            transformers: z.array(z.any()),
+            action: z.string().optional(),
+            deliverEvent: z.string().optional(),
+          })
+          .optional(),
+      )
+      .optional(),
   })
   .strict()
   .optional();

@@ -2,12 +2,12 @@ import type { MachineConfig, MachineOptions } from 'xstate';
 import { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
 import {
   ISerializableChildPluginParams,
-  ISerializableHttpPluginParams
+  ISerializableHttpPluginParams,
 } from './plugins/external-plugin/types';
-import { ISerializableCommonPluginParams } from "./plugins/common-plugin/types";
-import {TContext, Transformers} from './utils';
-import { ChildCallabackable } from "./workflow-runner";
-import {THelperFormatingLogic} from "./utils/context-transformers/types";
+import { ISerializableCommonPluginParams } from './plugins/common-plugin/types';
+import { TContext, Transformers } from './utils';
+import { ChildCallabackable } from './workflow-runner';
+import { THelperFormatingLogic } from './utils/context-transformers/types';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
@@ -34,6 +34,9 @@ export interface ChildWorkflowCallback {
   transformers?: Transformers;
   action: 'append';
   deliverEvent?: string;
+}
+export interface ChildToParentCallback {
+  childCallbackResults?: Array<ChildWorkflowCallback & { definitionName: string }>;
 }
 export interface WorkflowContext {
   id?: string;
@@ -84,14 +87,13 @@ export type ChildPluginCallbackOutput = {
   parentWorkflowRuntimeId: string;
   definitionId: string;
   initOptions: {
-    context: TContext,
+    context: TContext;
     event?: string;
-  }
-}
+  };
+};
 
-export type SerializableTransformer =
-{
+export type SerializableTransformer = {
   transformer: string;
   mapping: string | THelperFormatingLogic;
-  options: any
-}
+  options: any;
+};
