@@ -25,7 +25,7 @@ export class ChildWorkflowPlugin {
   async invoke(context: TContext) {
     const childWorkflowContext = await this.transformData(this.transformers || [], context);
 
-    await this.action(
+    void this.action(
       {
         parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
         definitionId: this.definitionId,
@@ -35,6 +35,8 @@ export class ChildWorkflowPlugin {
         }
       }
     )
+
+    return Promise.resolve();
   }
 
 

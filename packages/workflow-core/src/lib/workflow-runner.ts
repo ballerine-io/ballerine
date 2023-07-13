@@ -34,6 +34,7 @@ import {
 import { TContext } from "./utils";
 import { IterativePlugin } from "./plugins/common-plugin/iterative-plugin";
 import { ChildWorkflowPlugin } from "./plugins/common-plugin/child-workflow-plugin";
+import { search } from "jmespath";
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
@@ -334,6 +335,18 @@ export class WorkflowRunner {
             },
           });
         }
+        return ruleResult;
+      },
+      'jmespath': (ctx, event, metadata) => {
+        const data = { ...ctx, ...event.payload };
+        // @ts-expect-error
+        const options = metadata.cond.options;
+
+        const ruleResult = search(
+          data,
+          options.rule
+        );
+
         return ruleResult;
       },
     };

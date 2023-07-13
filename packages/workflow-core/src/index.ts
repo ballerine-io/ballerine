@@ -10,6 +10,7 @@ export type {
   ChildPluginCallbackOutput,
   WorkflowContext,
   ExtensionRunOrder,
+  Transformer,
   SerializableTransformer,
   ValidatableTransformer,
   ChildToParentCallback,

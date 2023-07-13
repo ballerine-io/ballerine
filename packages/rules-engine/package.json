@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "json-logic-js": "^2.0.2",
+    "jmespath": "^0.16.0",
     "xstate": "^4.35.2"
   },
   "devDependencies": {
