@@ -17,6 +17,7 @@ import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
 import { generateParentKybWithKycs } from './workflows/parent-kyb-workflow';
+import { generateKybDefintion } from './workflows';
 
 if (require.main === module) {
   dotenv.config();
@@ -963,6 +964,7 @@ async function seed(bcryptSalt: Salt) {
 
   console.info('Seeding database with custom seed...');
   customSeed();
+  await generateKybDefintion(client);
   await generateKycForE2eTest(client);
   await generateParentKybWithKycs(client);
   console.info('Seeded database successfully');

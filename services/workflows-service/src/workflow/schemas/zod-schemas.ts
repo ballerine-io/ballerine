@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { ChildWorkflowCallback } from '@ballerine/workflow-core';
 
 const SubscriptionSchema = z
   .object({

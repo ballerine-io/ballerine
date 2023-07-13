@@ -5,7 +5,7 @@ import {
   ISerializableHttpPluginParams,
 } from './plugins/external-plugin/types';
 import { ISerializableCommonPluginParams } from './plugins/common-plugin/types';
-import { TContext, Transformers } from './utils';
+import { TContext } from './utils';
 import { ChildCallabackable } from './workflow-runner';
 import { THelperFormatingLogic } from './utils/context-transformers/types';
 
@@ -31,7 +31,7 @@ export interface WorkflowExtensions {
   childWorkflowPlugins?: Array<ISerializableChildPluginParams>;
 }
 export interface ChildWorkflowCallback {
-  transformers?: Transformers;
+  transformers?: Array<SerializableTransformer>;
   action: 'append';
   deliverEvent?: string;
 }
