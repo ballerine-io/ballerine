@@ -26,5 +26,5 @@ export const useSelectEntityFilterOnMount = () => {
         from: state?.from,
       },
     });
-  }, [entity, filterId, firstFilter, setSearchParams, prevFilterId]);
+  }, [entity, filterId, firstFilter, locale, navigate, prevFilterId, state?.from]);
 };
