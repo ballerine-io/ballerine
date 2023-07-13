@@ -15,6 +15,7 @@ import { someDocumentDecisionStatus } from '../../../../../../common/utils/some-
 import { everyDocumentDecisionStatus } from '../../../../../../common/utils/every-document-decision-status/every-document-decision-status';
 import { safeEvery } from '../../../../../../common/utils/safe-every/safe-every';
 import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
+import { Action } from '../../../../../../common/enums';
 
 export const useActions = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -55,13 +56,17 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
   const canReject =
-    canTakeAction && someDocumentDecisionStatus(workflow?.context?.documents, 'rejected');
+    canTakeAction &&
+    workflow?.nextEvents?.includes(Action.REJECT.toLowerCase()) &&
+    someDocumentDecisionStatus(workflow?.context?.documents, 'rejected');
   const canRevision =
     canTakeAction &&
     !canReject &&
+    workflow?.nextEvents?.includes(Action.REVISION.toLowerCase()) &&
     someDocumentDecisionStatus(workflow?.context?.documents, 'revision');
   const canApprove =
     caseState.actionButtonsEnabled &&
+    workflow?.nextEvents?.includes(Action.APPROVE.toLowerCase()) &&
     everyDocumentDecisionStatus(workflow?.context?.documents, 'approved');
 
   // Only display the button spinners if the request is longer than 300ms

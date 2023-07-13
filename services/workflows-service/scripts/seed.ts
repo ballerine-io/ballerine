@@ -91,7 +91,8 @@ async function seed(bcryptSalt: Salt) {
     });
   }
 
-  const manualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
+  const kycManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
+  const kybManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9bbb';
   const manualMachineVersion = 1;
 
   const onboardingMachineKycId = 'COLLECT_DOCS_b0002zpeid7bq9aaa';
@@ -425,40 +426,58 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  // Manual Review
-  await client.workflowDefinition.create({
-    data: {
-      id: manualMachineId,
-      name: 'manual_review',
-      version: manualMachineVersion,
-      definitionType: 'statechart-json',
-      definition: {
-        id: 'Manual Review',
-        initial: 'review',
-        states: {
-          review: {
-            on: {
-              approve: {
-                target: 'approved',
-              },
-              reject: {
-                target: 'rejected',
-              },
-              revision: {
-                target: 'review',
-              },
+  const baseManualReviewDefinition = {
+    name: 'manual_review',
+    version: manualMachineVersion,
+    definitionType: 'statechart-json',
+    definition: {
+      id: 'Manual Review',
+      initial: 'review',
+      states: {
+        review: {
+          on: {
+            approve: {
+              target: 'approved',
+            },
+            reject: {
+              target: 'rejected',
+            },
+            revision: {
+              target: 'review',
             },
           },
-          approved: {
-            type: 'final',
-          },
-          rejected: {
-            type: 'final',
-          },
+        },
+        approved: {
+          type: 'final',
+        },
+        rejected: {
+          type: 'final',
         },
       },
-      persistStates: [],
-      submitStates: [],
+    },
+    persistStates: [],
+    submitStates: [],
+  } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
+
+  // KYC Manual Review (workflowLevelResolution false)
+  await client.workflowDefinition.create({
+    data: {
+      ...baseManualReviewDefinition,
+      id: kycManualMachineId,
+      config: {
+        workflowLevelResolution: false,
+      },
+    },
+  });
+
+  // KYB Manual Review (workflowLevelResolution true)
+  await client.workflowDefinition.create({
+    data: {
+      ...baseManualReviewDefinition,
+      id: kybManualMachineId,
+      config: {
+        workflowLevelResolution: true,
+      },
     },
   });
 
@@ -466,7 +485,7 @@ async function seed(bcryptSalt: Salt) {
   await client.workflowDefinition.create({
     data: {
       id: onboardingMachineKycId, // should be auto generated normally
-      reviewMachineId: manualMachineId,
+      reviewMachineId: kycManualMachineId,
       name: 'kyc',
       version: 1,
       definitionType: 'statechart-json',
@@ -546,7 +565,7 @@ async function seed(bcryptSalt: Salt) {
   await client.workflowDefinition.create({
     data: {
       id: onboardingMachineKybId, // should be auto generated normally
-      reviewMachineId: manualMachineId,
+      reviewMachineId: kybManualMachineId,
       name: 'kyb',
       version: 1,
       definitionType: 'statechart-json',
@@ -641,12 +660,14 @@ async function seed(bcryptSalt: Salt) {
       assigneeId: true,
       createdAt: true,
       context: true,
+      state: true,
       workflowDefinition: {
         select: {
           id: true,
           name: true,
           contextSchema: true,
           config: true,
+          definition: true,
         },
       },
       business: {
@@ -694,12 +715,14 @@ async function seed(bcryptSalt: Salt) {
       assigneeId: true,
       context: true,
       createdAt: true,
+      state: true,
       workflowDefinition: {
         select: {
           id: true,
           name: true,
           contextSchema: true,
           config: true,
+          definition: true,
         },
       },
       endUser: {
@@ -729,7 +752,7 @@ async function seed(bcryptSalt: Salt) {
       },
     },
     where: {
-      workflowDefinitionId: manualMachineId,
+      workflowDefinitionId: kycManualMachineId,
       endUserId: { not: null },
     },
   });
@@ -741,12 +764,14 @@ async function seed(bcryptSalt: Salt) {
       assigneeId: true,
       createdAt: true,
       context: true,
+      state: true,
       workflowDefinition: {
         select: {
           id: true,
           name: true,
           contextSchema: true,
           config: true,
+          definition: true,
         },
       },
       endUser: {
@@ -776,7 +801,7 @@ async function seed(bcryptSalt: Salt) {
       },
     },
     where: {
-      workflowDefinitionId: manualMachineId,
+      workflowDefinitionId: kycManualMachineId,
       endUserId: { not: null },
     },
   });
@@ -788,12 +813,14 @@ async function seed(bcryptSalt: Salt) {
       assigneeId: true,
       createdAt: true,
       context: true,
+      state: true,
       workflowDefinition: {
         select: {
           id: true,
           name: true,
           contextSchema: true,
           config: true,
+          definition: true,
         },
       },
       business: {
@@ -841,12 +868,14 @@ async function seed(bcryptSalt: Salt) {
       assigneeId: true,
       createdAt: true,
       context: true,
+      state: true,
       workflowDefinition: {
         select: {
           id: true,
           name: true,
           contextSchema: true,
           config: true,
+          definition: true,
         },
       },
       business: {
@@ -882,7 +911,7 @@ async function seed(bcryptSalt: Salt) {
       },
     },
     where: {
-      workflowDefinitionId: manualMachineId,
+      workflowDefinitionId: kybManualMachineId,
       businessId: { not: null },
     },
   });
@@ -894,7 +923,7 @@ async function seed(bcryptSalt: Salt) {
         data: generateEndUser({
           id,
           workflow: {
-            workflowDefinitionId: manualMachineId,
+            workflowDefinitionId: kycManualMachineId,
             workflowDefinitionVersion: manualMachineVersion,
             context: await createMockEndUserContextData(id, index + 1),
           },

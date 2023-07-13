@@ -158,11 +158,11 @@ export class WorkflowService {
   private formatWorkflow(workflow: TWorkflowWithRelations) {
     const isIndividual = 'endUser' in workflow;
     const service = createWorkflow({
-      definition: workflow.workflowDefinition as any,
+      definition: workflow.workflowDefinition.definition,
       definitionType: workflow.workflowDefinition.definitionType,
       workflowContext: {
         machineContext: workflow.context,
-        state: workflow.state,
+        state: workflow.state ?? workflow.workflowDefinition.definition.initial,
       },
     });
 
@@ -496,6 +496,7 @@ export class WorkflowService {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
+    // TODO: Use snapshot.done instead
     const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
     if (
       ['active'].includes(data.status! || runtimeData.status) &&
@@ -1008,12 +1009,7 @@ export class WorkflowService {
     );
   }
 
-  async event({
-    name: type,
-    document,
-    resubmissionReason,
-    id,
-  }: WorkflowEventInput & IObjectWithId) {
+  async event({ name: type, id }: WorkflowEventInput & IObjectWithId) {
     this.logger.log('Workflow event received', { id, type });
     const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
     const workflow = await this.workflowDefinitionRepository.findById(
@@ -1039,6 +1035,7 @@ export class WorkflowService {
     const snapshot = service.getSnapshot();
     const currentState = snapshot.value;
     const context = snapshot.machine.context;
+    // TODO: Refactor to use snapshot.done instead
     const isFinal = snapshot.machine.states[currentState].type === 'final';
 
     this.logger.log('Workflow state transition', {
@@ -1046,35 +1043,6 @@ export class WorkflowService {
       from: runtimeData.state,
       to: currentState,
     });
-
-    // TODO: Update to work with changes related to revision
-    if (type === 'revision' && document) {
-      switch (resubmissionReason) {
-        case ResubmissionReason.BLURRY_IMAGE:
-          await this.workflowRuntimeDataRepository.updateById(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-            (runtimeData as any).context?.parentMachine?.id,
-            {
-              data: {
-                state: 'document_photo',
-                status: 'active',
-                context: {
-                  ...context,
-                  [document]: {
-                    ...context?.[document],
-                    resubmissionReason,
-                  },
-                },
-              },
-            },
-          );
-          break;
-        default:
-          throw new BadRequestException(
-            `Invalid resubmission reason ${resubmissionReason as string}`,
-          );
-      }
-    }
 
     await this.updateWorkflowRuntimeData(runtimeData.id, {
       context,
