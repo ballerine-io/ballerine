@@ -20,6 +20,7 @@ import { FormControl } from '../../common/components/organisms/Form/Form.Control
 import { FormMessage } from '../../common/components/organisms/Form/Form.Message';
 import { env } from '../../common/env/env';
 import { ErrorAlert } from '../../common/components/atoms/ErrorAlert/ErrorAlert';
+import { FullScreenLoader } from '../../common/components/molecules/FullScreenLoader/FullScreenLoader';
 
 export const SignIn: FunctionComponent = () => {
   const SignInSchema = z.object({
@@ -54,12 +55,12 @@ export const SignIn: FunctionComponent = () => {
   });
 
   // Handles a flash of content on sign in
-  if (isAuthenticated) return null;
+  if (isAuthenticated) return <FullScreenLoader />;
 
   return (
     <section className={`flex h-full flex-col items-center justify-center`}>
       <div className={`mb-16`}>
-        {!!env.VITE_IMAGE_LOGO_URL ? (
+        {env.VITE_IMAGE_LOGO_URL ? (
           <img className={`w-40`} src={env.VITE_IMAGE_LOGO_URL} />
         ) : (
           <BallerineLogo />
