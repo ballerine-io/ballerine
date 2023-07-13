@@ -13,7 +13,7 @@ FROM (
     "WorkflowRuntimeData"
     ON "User".id = "WorkflowRuntimeData"."assigneeId"
   WHERE
-    "WorkflowRuntimeData"."createdAt" IS NOT NULL
+    "WorkflowRuntimeData"."assignedAt" IS NOT NULL
     AND
     "WorkflowRuntimeData"."resolvedAt" >= $1
 ) AS T

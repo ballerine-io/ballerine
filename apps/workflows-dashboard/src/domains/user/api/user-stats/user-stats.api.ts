@@ -16,10 +16,10 @@ export const fetchUserStats = async (query: GetUserStatsDto): Promise<UserStats>
     result.data || ({} as IUserStats);
 
   const userStats: UserStats = {
-    approvalRate: approvalRate,
-    averageAssignmentTime: Number(averageAssignmentTime),
-    averageResolutionTime: Number(averageResolutionTime),
-    averageReviewTime: Number(averageReviewTime),
+    approvalRate: parseFloat(approvalRate),
+    averageAssignmentTime: parseInt(averageAssignmentTime),
+    averageResolutionTime: parseInt(averageResolutionTime),
+    averageReviewTime: parseInt(averageReviewTime),
   };
 
   return userStats;

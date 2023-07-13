@@ -65,7 +65,7 @@ export class MetricsService {
     const statisticModel: UserWorkflowProcessingStatisticModel =
       new UserWorkflowProcessingStatisticModel();
 
-    statisticModel.approvalRate = approvalRateModel?.approvalRate || 0;
+    statisticModel.approvalRate = approvalRateModel?.approvalRate || '0';
     statisticModel.averageAssignmentTime = averageAssignmentTimeModel?.time || '0';
     statisticModel.averageResolutionTime = averageResolutionTimeModel?.time || '0';
     statisticModel.averageReviewTime = averageReviewTimeModel?.time || '0';
