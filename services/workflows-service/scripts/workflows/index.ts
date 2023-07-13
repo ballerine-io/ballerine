@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 
 export const kybWithExternalRequestWorkflowExample = {
   id: 'kyb_external_request_example',
@@ -27,8 +27,8 @@ export const kybWithExternalRequestWorkflowExample = {
                 type: 'json-logic',
                 rule: {
                   '==': [
-                    {var: 'context.entity.companyName'},
-                    {var: 'response.data.registered_name'},
+                    { var: 'context.entity.companyName' },
+                    { var: 'response.data.registered_name' },
                   ],
                 },
               },
@@ -41,11 +41,11 @@ export const kybWithExternalRequestWorkflowExample = {
                 options: {
                   rule: {
                     '>': [
-                      {var: 'context.external_request_example.data.name_fuzziness_score'},
+                      { var: 'context.external_request_example.data.name_fuzziness_score' },
                       0.5,
                     ],
                   },
-                  onFailed: {manualReviewReason: 'name not matching ... '},
+                  onFailed: { manualReviewReason: 'name not matching ... ' },
                 },
               },
             },
@@ -55,7 +55,7 @@ export const kybWithExternalRequestWorkflowExample = {
               cond: {
                 type: 'json-logic',
                 rule: {
-                  '<': [{var: 'context.external_request_example.data.name_fuzziness_score'}, 0.5],
+                  '<': [{ var: 'context.external_request_example.data.name_fuzziness_score' }, 0.5],
                 },
               },
             },
@@ -66,7 +66,7 @@ export const kybWithExternalRequestWorkflowExample = {
               cond: {
                 type: 'json-logic',
                 rule: {
-                  '>=': [{var: 'context.external_request_example.httpStatus'}, 400],
+                  '>=': [{ var: 'context.external_request_example.httpStatus' }, 400],
                 },
               },
             },

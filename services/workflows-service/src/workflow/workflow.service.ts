@@ -78,6 +78,7 @@ import {
   HelpersTransformer,
   THelperFormatingLogic,
   ChildToParentCallback,
+  Transformer,
 } from '@ballerine/workflow-core';
 
 type TEntityId = string;
@@ -160,7 +161,7 @@ export class WorkflowService {
   ) {
     return await this.workflowRuntimeDataRepository.findById(id, {
       ...args,
-      include: {childWorkflowRuntimeDatas: true}
+      include: { childWorkflowRuntimeDatas: true },
     });
   }
 
@@ -247,14 +248,10 @@ export class WorkflowService {
     )[0];
 
     if (childWorkflow) {
-      const parentContext = this.composeContextWithChildResponse(
-        parentWorkflow.context,
-        childWorkflow.workflowDefinition.name,
-        childWorkflow.workflowRuntimeData.id,
-        childWorkflow.ballerineEntityId!,
-        'active',
+      await this.persistChildWorkflowToParent(
+        childWorkflow.workflowRuntimeData,
+        childWorkflow.workflowDefinition,
       );
-      await this.updateWorkflowRuntimeData(parentWorkflow.id, { context: parentContext });
     }
 
     return childWorkflow;
@@ -1168,7 +1165,7 @@ export class WorkflowService {
     });
 
     if (isFinal && workflowRuntimeData.parentRuntimeDataId) {
-      await this.persistChildWorkflowToParent(context, workflowRuntimeData, workflowDefinition);
+      await this.persistChildWorkflowToParent(workflowRuntimeData, workflowDefinition);
     }
 
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
@@ -1185,7 +1182,6 @@ export class WorkflowService {
   }
 
   async persistChildWorkflowToParent(
-    updatedChildContext: any,
     workflowRuntimeData: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
   ) {
@@ -1197,37 +1193,26 @@ export class WorkflowService {
     );
 
     const callbackTransformation = (
-      parentWorkflowDefinition?.config?.childCallbackResults as ChildToParentCallback['childCallbackResults']
+      parentWorkflowDefinition?.config
+        ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
+    )
       // @ts-ignore - fix as childCallbackResults[number]
-    )?.find(childCallbackResult => workflowDefinition.name == childCallbackResult.definitionName);
+      ?.find(childCallbackResult => workflowDefinition.name == childCallbackResult.definitionName);
     const { transformers, deliverEvent } =
       callbackTransformation || (workflowDefinition.config.callbackResult as ChildWorkflowCallback);
-
-    // @ts-ignore - fix as serializable transformer
-    const transformerInstance = transformers?.map(transformer =>
-      this.initiateTransformer(transformer as unknown as SerializableTransformer),
+    const childrenOfSameDefinition = (
+      parentWorkflowRuntime.childWorkflowRuntimeDatas as Array<WorkflowRuntimeData>
+    ).filter(
+      childWorkflow =>
+        childWorkflow.workflowDefinitionId == workflowRuntimeData.workflowDefinitionId,
+    );
+    const parentContext = await this.generateParentContextWithInjectedChildContext(
+      childrenOfSameDefinition,
+      transformers,
+      parentWorkflowRuntime,
+      workflowDefinition,
     );
 
-    // const contextToPersist = {}
-    // for (const childWorkflowRuntimeData of parentWorkflowDefinition.childWorkflowRuntimeDatas) {
-    //   let childContextToPersist = updatedChildContext;
-    //
-    //   for (const transformer of transformerInstance || []) {
-    //     childContextToPersist = await transformer.transform(contextToPersist);
-    //   }
-    //   const childContextResult = { entityId: childContextToPersist.entity.id, status: , result:  };
-    //
-    //   contextToPersist[childWorkflowRuntimeData.id] = childContextResult
-    // }
-
-    const parentContext = this.composeContextWithChildResponse(
-      parentWorkflowRuntime.context,
-      workflowDefinition.name,
-      workflowRuntimeData.id,
-      workflowRuntimeData.context.entity.id,
-      'completed',
-      contextToPersist,
-    );
     await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
 
     if (deliverEvent && parentWorkflowRuntime.state !== 'completed') {
@@ -1237,7 +1222,40 @@ export class WorkflowService {
       });
     }
   }
-  private initiateTransformer(transformer: SerializableTransformer) {
+
+  private async generateParentContextWithInjectedChildContext(
+    childrenOfSameDefinition: WorkflowRuntimeData[],
+    transformers: Array<SerializableTransformer>,
+    parentWorkflowRuntime: WorkflowRuntimeData,
+    workflowDefinition: WorkflowDefinition,
+  ) {
+    const transformerInstance = transformers?.map(transformer =>
+      this.initiateTransformer(transformer as unknown as SerializableTransformer),
+    );
+
+    const contextToPersist: Record<string, any> = {};
+    for (const childWorkflow of childrenOfSameDefinition) {
+      let childContextToPersist = childWorkflow.context;
+
+      for (const transformer of transformerInstance || []) {
+        childContextToPersist = await transformer.transform(childContextToPersist);
+      }
+      contextToPersist[childWorkflow.id] = {
+        entityId: childWorkflow.context.entity.id,
+        status: childContextToPersist.status,
+        result: childContextToPersist,
+      };
+    }
+
+    const parentContext = this.composeContextWithChildResponse(
+      parentWorkflowRuntime.context,
+      workflowDefinition.name,
+      contextToPersist,
+    );
+    return parentContext;
+  }
+
+  private initiateTransformer(transformer: SerializableTransformer): Transformer {
     if (transformer.transformer === 'jmespath')
       return new JmespathTransformer(transformer.mapping as string);
     if (transformer.transformer === 'helper')
@@ -1248,15 +1266,12 @@ export class WorkflowService {
   private composeContextWithChildResponse(
     parentWorkflowContext: any,
     definitionName: string,
-    runtimeId: string,
-    entityId: string,
-    status: 'active' | 'completed',
     response?: any,
   ) {
     parentWorkflowContext['childWorkflows'] ||= {};
     parentWorkflowContext['childWorkflows'][definitionName] ||= {};
 
-    parentWorkflowContext['childWorkflows'][definitionName][runtimeId] = childContextResult;
+    parentWorkflowContext['childWorkflows'][definitionName] = response;
     return parentWorkflowContext;
   }
 

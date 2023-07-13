@@ -17,7 +17,7 @@ import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
 import { generateParentKybWithKycs } from './workflows/parent-kyb-workflow';
-import { generateKybDefintion } from "./workflows";
+import { generateKybDefintion } from './workflows';
 
 if (require.main === module) {
   dotenv.config();
