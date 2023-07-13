@@ -5,7 +5,7 @@ export class UserWorkflowProcessingStatisticModel {
   id!: string;
 
   @ApiProperty()
-  approvalRate!: number;
+  approvalRate!: string;
 
   @ApiProperty({ description: 'Average resolution time in milliseconds' })
   averageResolutionTime!: string;
