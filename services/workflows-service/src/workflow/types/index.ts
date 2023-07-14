@@ -47,36 +47,6 @@ export type WorkflowRuntimeListQueryResult = WorkflowRuntimeData & {
   assignee: User | null;
 };
 
-export type WorkflowsApprovedChart = { workflowId: string; approvedDate: Date }[];
-
-export type WorkflowDefinitionStatsPerStatus = Record<WorkflowRuntimeDataStatus, number>;
-export interface WorkflowDefinitionStats {
-  id: string;
-  name: string;
-  stats: WorkflowDefinitionStatsPerStatus;
-}
-
-export interface WorkflowRuntimeAgentStats {
-  id: string;
-  firstName: string;
-  lastName: string;
-  casesCount: number;
-}
-
-export interface ListWorkflowRuntimeAgentCasesStatsParams {
-  fromDate?: Date;
-}
-
-export type WorkflowRuntimeCasesPerStatus = Record<WorkflowRuntimeDataStatus, number>;
-
-export interface GetWorkflowRuntimeCasesPerStatusParams {
-  fromDate?: Date;
-}
-
-export interface GetUserStatsParams {
-  fromDate?: Date | null;
-}
-
 export interface IWorkflowContextChangedEventData {
   eventName: 'workflow.context.changed';
   oldRuntimeData: WorkflowRuntimeData;
@@ -109,8 +79,10 @@ export type TWorkflowEventData =
   | IWorkflowContextChangedEventData
   | IWorkflowStateChangedEventData
   | IWorkflowCompletedEventData;
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type TEventName = TWorkflowEventData['eventName'] | (string & {});
+
 export type ExtractWorkflowEventData<TEvent extends TEventName> = Omit<
   Extract<
     TWorkflowEventData,

@@ -28,11 +28,6 @@ export const CasesPerStatusChart = ({ isLoading, data }: Props) => {
   );
 
   return (
-    <MetricListChart
-      title="Amount of cases per status"
-      description="( last 1 hour )"
-      isLoading={isLoading}
-      items={chartItems}
-    />
+    <MetricListChart title="Amount of cases per status" isLoading={isLoading} items={chartItems} />
   );
 };

@@ -18,7 +18,6 @@ import { FilterService } from '@/filter/filter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
-import { WorkflowMetricService } from '@/workflow/workflow-metric.service';
 import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-changed-webhook-caller';
 
 @Module({
@@ -40,7 +39,6 @@ import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-chang
     FilterService,
     UserService,
     UserRepository,
-    WorkflowMetricService,
   ],
   exports: [WorkflowService, ACLModule, AuthModule, StorageService, FileRepository],
 })

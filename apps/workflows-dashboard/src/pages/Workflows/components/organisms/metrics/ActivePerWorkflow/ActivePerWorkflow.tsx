@@ -14,7 +14,7 @@ export const ActivePerWorkflow = () => {
     (): ActivePerWorkflowChartData[] =>
       data.map((item, index) => ({
         workflowName: item.name,
-        count: item.stats.active,
+        count: item.active,
         fillColor: colorScheme[index] || '#000',
       })),
     [data],

@@ -15,7 +15,7 @@ export const ListItem = ({ item }: Props) => {
         <p className="text-sm font-medium leading-none">{`${item.firstName} ${item.lastName}`}</p>
         <p className="text-muted-foreground text-sm">{item.email}</p>
       </div>
-      <div className="ml-auto font-medium">{item.cases}</div>
+      <div className="ml-auto font-medium">{item.casesCount}</div>
     </div>
   );
 };

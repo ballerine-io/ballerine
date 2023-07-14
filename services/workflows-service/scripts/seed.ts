@@ -10,7 +10,7 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import defaultContextSchema from '@ballerine/common/src/schemas/documents/default-context-schema.json';
+import { defaultContextSchema } from '@ballerine/common';
 import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
@@ -808,7 +808,7 @@ async function seed(bcryptSalt: Salt) {
       },
     },
     where: {
-      workflowDefinitionId: kycManualMachineId,
+      workflowDefinitionId: riskScoreMachineKybId,
       endUserId: { not: null },
     },
   });
