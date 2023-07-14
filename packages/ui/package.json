@@ -23,6 +23,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@pqina/pintura": "^8.60.12",
     "@radix-ui/react-dialog": "^1.0.2",
     "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@radix-ui/react-label": "^2.0.1",
@@ -36,7 +37,9 @@
     "lucide-react": "^0.144.0",
     "react-error-boundary": "^4.0.10",
     "react-image": "^4.1.0",
+    "react-image-crop": "^10.0.9",
     "react-json-view": "^1.21.3",
+    "react-zoom-pan-pinch": "^3.0.8",
     "tailwind-merge": "^1.10.0"
   },
   "devDependencies": {

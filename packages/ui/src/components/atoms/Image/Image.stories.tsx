@@ -6,7 +6,7 @@ export default {
 
 export const Default = {
   args: {
-    src: 'https://via.placeholder.com/150',
+    src: 'https://picsum.photos/150',
     alt: 'Placeholder',
     width: '150px',
     height: '150px',
