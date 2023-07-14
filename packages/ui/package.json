@@ -34,6 +34,8 @@
     "dayjs": "^1.11.6",
     "lodash": "^4.17.21",
     "lucide-react": "^0.144.0",
+    "react-error-boundary": "^4.0.10",
+    "react-image": "^4.1.0",
     "react-json-view": "^1.21.3",
     "tailwind-merge": "^1.10.0"
   },
