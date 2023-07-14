@@ -8,13 +8,12 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { AxiosInstance } from 'axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { getDocumentId } from '@ballerine/common';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { getDynamicWebhookUrl } from '@/events/get-dynamic-webhook-url';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 
 @Injectable()
-export class DocumentChangedWebhookCaller {
+export class WorkflowStateChangedWebhookCaller {
   #__axios: AxiosInstance;
 
   constructor(
@@ -25,7 +24,7 @@ export class DocumentChangedWebhookCaller {
   ) {
     this.#__axios = this.httpService.axiosRef;
 
-    workflowEventEmitter.on('workflow.context.changed', async data => {
+    workflowEventEmitter.on('workflow.state.changed', async data => {
       try {
         await this.handleWorkflowEvent(data);
       } catch (error) {
@@ -35,57 +34,20 @@ export class DocumentChangedWebhookCaller {
     });
   }
 
-  async handleWorkflowEvent(data: ExtractWorkflowEventData<'workflow.context.changed'>) {
-    const oldDocuments = data.oldRuntimeData.context['documents'] || [];
-    const newDocuments = data.updatedRuntimeData.context?.['documents'] || [];
-
+  async handleWorkflowEvent(data: ExtractWorkflowEventData<'workflow.state.changed'>) {
     this.logger.log('handleWorkflowEvent:: ', {
       state: data.state,
       entityId: data.entityId,
       correlationId: data.correlationId,
-      id: data.updatedRuntimeData.id,
+      id: data.runtimeData.id,
     });
-
-    const newDocumentsByIdentifier = newDocuments.reduce((accumulator: any, doc: any) => {
-      const id = getDocumentId(doc, false);
-      this.logger.log('handleWorkflowEvent::newDocumentsByIdentifier::getDocumentId::  ', {
-        idDoc: id,
-      });
-      accumulator[id] = doc;
-      return accumulator;
-    }, {});
-
-    const anyDocumentStatusChanged = oldDocuments.some((oldDocument: any) => {
-      const id = getDocumentId(oldDocument, false);
-      this.logger.log('handleWorkflowEvent::anyDocumentStatusChanged::getDocumentId::  ', {
-        idDoc: id,
-      });
-      return (
-        (!oldDocument.decision && newDocumentsByIdentifier[id]?.decision) ||
-        (oldDocument.decision &&
-          oldDocument.decision.status &&
-          id in newDocumentsByIdentifier &&
-          oldDocument.decision.status !== newDocumentsByIdentifier[id].decision?.status)
-      );
-    });
-
-    if (!anyDocumentStatusChanged) {
-      this.logger.log('handleWorkflowEvent:: Skipped, ', {
-        anyDocumentStatusChanged,
-      });
-      return;
-    }
 
     const id = randomUUID();
     const environment = this.configService.get<string>('NODE_ENV');
     const url =
-      getDynamicWebhookUrl(data.updatedRuntimeData?.config, 'workflow.context.document.changed') ||
+      getDynamicWebhookUrl(data.runtimeData?.config, 'workflow.state.changed') ||
       this.configService.get<string>('WEBHOOK_URL')!;
     const authSecret = this.configService.get<string>('WEBHOOK_SECRET');
-
-    data.updatedRuntimeData.context.documents.forEach((doc: any) => {
-      delete doc.propertiesSchema;
-    });
 
     this.logger.log('Sending webhook', { id, url });
 
@@ -94,17 +56,18 @@ export class DocumentChangedWebhookCaller {
         url,
         {
           id,
-          eventName: 'workflow.context.document.changed',
+          eventName: 'workflow.state.changed',
+          state: data.state,
           apiVersion: 1,
           timestamp: new Date().toISOString(),
-          workflowCreatedAt: data.updatedRuntimeData.createdAt,
-          workflowResolvedAt: data.updatedRuntimeData.resolvedAt,
-          workflowDefinitionId: data.updatedRuntimeData.workflowDefinitionId,
-          workflowRuntimeId: data.updatedRuntimeData.id,
+          workflowCreatedAt: data.runtimeData.createdAt,
+          workflowResolvedAt: data.runtimeData.resolvedAt,
+          workflowDefinitionId: data.runtimeData.workflowDefinitionId,
+          workflowRuntimeId: data.runtimeData.id,
           ballerineEntityId: data.entityId,
           correlationId: data.correlationId,
           environment,
-          data: data.updatedRuntimeData.context,
+          data: data.runtimeData.context,
         },
         {
           headers: {
@@ -123,9 +86,7 @@ export class DocumentChangedWebhookCaller {
         state: data.state,
         entityId: data.entityId,
         correlationId: data.correlationId,
-        id: data.updatedRuntimeData.id,
-        newDocumentsByIdentifier,
-        oldDocuments,
+        id: data.runtimeData.id,
       });
       this.logger.error('Failed to send webhook', { id, message: error?.message, error });
       alertWebhookFailure(error);

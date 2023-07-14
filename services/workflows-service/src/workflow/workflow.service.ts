@@ -1044,6 +1044,8 @@ export class WorkflowService {
     const context = snapshot.machine.context;
     // TODO: Refactor to use snapshot.done instead
     const isFinal = snapshot.machine.states[currentState].type === 'final';
+    const entityType = context.entity.type === 'individual' ? 'endUser' : ('business' as const);
+    const entityId = runtimeData[`${entityType}Id`];
 
     this.logger.log('Workflow state transition', {
       id: id,
@@ -1051,18 +1053,23 @@ export class WorkflowService {
       to: currentState,
     });
 
-    await this.updateWorkflowRuntimeData(runtimeData.id, {
+    const updatedRuntimeData = await this.updateWorkflowRuntimeData(runtimeData.id, {
       context,
       state: currentState,
       status: isFinal ? 'completed' : runtimeData.status,
+    });
+
+    this.workflowEventEmitter.emit('workflow.state.changed', {
+      entityId,
+      state: updatedRuntimeData.state,
+      correlationId: updatedRuntimeData.correlationId,
+      runtimeData: updatedRuntimeData,
     });
 
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
       return;
     }
 
-    const entityType = context.entity.type === 'individual' ? 'endUser' : ('business' as const);
-    const entityId = runtimeData[`${entityType}Id`];
     const approvalState = ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState];
 
     if (!entityType) {

@@ -19,6 +19,7 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
 import { WorkflowMetricService } from '@/workflow/workflow-metric.service';
+import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-changed-webhook-caller';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
@@ -34,6 +35,7 @@ import { WorkflowMetricService } from '@/workflow/workflow-metric.service';
     FileService,
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
+    WorkflowStateChangedWebhookCaller,
     FilterRepository,
     FilterService,
     UserService,

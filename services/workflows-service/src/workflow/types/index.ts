@@ -76,3 +76,47 @@ export interface GetWorkflowRuntimeCasesPerStatusParams {
 export interface GetUserStatsParams {
   fromDate?: Date | null;
 }
+
+export interface IWorkflowContextChangedEventData {
+  eventName: 'workflow.context.changed';
+  oldRuntimeData: WorkflowRuntimeData;
+  updatedRuntimeData: WorkflowRuntimeData;
+  state: string;
+  entityId: string;
+  correlationId: string;
+}
+
+export interface IWorkflowCompletedEventData {
+  eventName: 'workflow.completed';
+  // TODO: Move to a shared package
+  entityId: string;
+  workflowDefinitionId: string;
+  workflowDefinitionVersion: number;
+  state: string;
+  result: unknown;
+  context: any;
+}
+
+export interface IWorkflowStateChangedEventData {
+  eventName: 'workflow.state.changed';
+  runtimeData: WorkflowRuntimeData;
+  state: string;
+  entityId: string;
+  correlationId: string;
+}
+
+export type TWorkflowEventData =
+  | IWorkflowContextChangedEventData
+  | IWorkflowStateChangedEventData
+  | IWorkflowCompletedEventData;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type TEventName = TWorkflowEventData['eventName'] | (string & {});
+export type ExtractWorkflowEventData<TEvent extends TEventName> = Omit<
+  Extract<
+    TWorkflowEventData,
+    {
+      eventName: TEvent;
+    }
+  >,
+  'eventName'
+>;
