@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-vite';
+
 const config: StorybookConfig = {
   core: {
     builder: '@storybook/builder-vite', // 👈 The builder enabled here.
@@ -8,7 +9,12 @@ const config: StorybookConfig = {
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
-    '@storybook/addon-styling',
+    {
+      name: '@storybook/addon-styling',
+      options: {
+        postCss: true,
+      },
+    },
   ],
   framework: {
     name: '@storybook/react-vite',
