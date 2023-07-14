@@ -8,6 +8,7 @@ export const Default = {
   args: {
     src: 'https://via.placeholder.com/150',
     alt: 'Placeholder',
-    className: 'w-[150px] h-[150px]',
+    width: '150px',
+    height: '150px',
   },
 };
