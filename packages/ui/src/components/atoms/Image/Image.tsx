@@ -1,7 +1,7 @@
 import { forwardRef, ImgHTMLAttributes, Suspense } from 'react';
 import { ctw } from '@utils/ctw';
 import { useImage, useImageProps } from 'react-image';
-import { TriggerSuspense } from '@components/atoms/TriggerSuspense';
+import { Skeleton } from '@components/atoms/Skeleton';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {
@@ -17,8 +17,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
     });
 
     return (
-      <Suspense fallback={'Loading...'}>
-        <TriggerSuspense />
+      <Suspense fallback={<Skeleton className={className} />}>
         <img className={ctw(className)} alt={alt} src={src} {...props} ref={ref} />
       </Suspense>
     );
