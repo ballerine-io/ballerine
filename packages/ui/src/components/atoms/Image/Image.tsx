@@ -17,7 +17,14 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
     });
 
     return (
-      <Suspense fallback={<Skeleton className={className} />}>
+      <Suspense
+        fallback={
+          <figure aria-live={`polite`}>
+            <Skeleton className={className} />
+            <figcaption className={`sr-only`}>Loading image...</figcaption>
+          </figure>
+        }
+      >
         <img className={ctw(className)} alt={alt} src={src} {...props} ref={ref} />
       </Suspense>
     );
