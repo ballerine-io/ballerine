@@ -48,7 +48,13 @@ export const TransformableImage: FunctionComponent<TransformableImageProps> = ({
         disabled={!isCropping || isDisabled}
       >
         <TransformWrapper onTransformed={onTransformed}>
-          <TransformComponent wrapperStyle={{ width, height }} contentStyle={{ width, height }}>
+          <TransformComponent
+            contentClass={ctw({
+              'hover:cursor-move': !isCropping,
+            })}
+            wrapperStyle={{ width, height }}
+            contentStyle={{ width, height }}
+          >
             <Image
               src={src}
               width={width}
