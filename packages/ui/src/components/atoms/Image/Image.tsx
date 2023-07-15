@@ -41,7 +41,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
             src={src}
             width={width}
             height={height}
-            className={ctw(`rounded-md`, className)}
+            className={ctw(`rounded-md object-contain`, className)}
             {...props}
             ref={ref}
           />

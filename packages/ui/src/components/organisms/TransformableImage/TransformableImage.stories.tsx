@@ -1,23 +1,34 @@
 import { TransformableImage } from './TransformableImage';
-import { Crop, PercentCrop } from 'react-image-crop';
+import { PercentCrop, PixelCrop } from 'react-image-crop';
 import { useCallback, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Button } from '@components/atoms/Button';
 
 const TransformableImageWrapper = args => {
-  const [crop, setCrop] = useState<Crop>();
+  const [crop, setCrop] = useState<PercentCrop>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [croppedImage, setCroppedImage] = useState('');
   const onCropDone = useCallback((dataUrl: string) => {
     setCroppedImage(dataUrl);
   }, []);
-  const onCrop = useCallback((crop: Crop | undefined, percentageCrop?: PercentCrop) => {
-    setCrop(crop);
+  const onCrop = useCallback((percentageCrop: PercentCrop) => {
+    setCrop(percentageCrop);
+  }, []);
+  const onCompletedCrop = useCallback((pixelCrop: PixelCrop) => {
+    setCompletedCrop(pixelCrop);
   }, []);
 
   return (
     <>
-      <TransformableImage {...args} crop={crop} onCrop={onCrop} onCropDone={onCropDone} />
-      {croppedImage && <img src={croppedImage} height={'150px'} width={`150px`} alt={'maow'} />}
+      <TransformableImage
+        {...args}
+        crop={crop}
+        onCrop={onCrop}
+        onCropDone={onCropDone}
+        completedCrop={completedCrop}
+        onCompletedCrop={onCompletedCrop}
+      />
+      {croppedImage && <img src={croppedImage} alt={'maow'} />}
     </>
   );
 };
@@ -30,11 +41,10 @@ export default meta;
 
 export const Default = {
   args: {
-    src: 'https://picsum.photos/600',
+    src: '/mock-id-90deg.png',
     alt: 'Placeholder',
-    width: '600px',
-    height: '600px',
-    crossOrigin: 'anonymous',
+    width: '853px',
+    height: '640px',
   },
 } satisfies StoryObj<typeof TransformableImage>;
 
