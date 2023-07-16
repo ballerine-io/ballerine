@@ -31,7 +31,7 @@ const entities = files
 const entries = Object.fromEntries(entities);
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), dts(), tailwindcss()],
+  plugins: [react(), dts({ copyDtsFiles: true }), tailwindcss()],
   resolve: {
     alias: {
       '@components': resolve(__dirname, './src/components'),

@@ -603,6 +603,9 @@ importers:
       '@rjsf/validator-ajv8':
         specifier: ^5.9.0
         version: 5.9.0(@rjsf/utils@5.9.0)
+      '@xstate/react':
+        specifier: ^3.2.2
+        version: 3.2.2(@types/react@18.2.14)(react@18.2.0)(xstate@4.38.1)
       clsx:
         specifier: ^1.2.1
         version: 1.2.1
@@ -615,6 +618,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      xstate:
+        specifier: ^4.38.1
+        version: 4.38.1
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -12920,7 +12926,6 @@ packages:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.3
       csstype: 3.1.2
-    dev: true
 
   /@types/readdir-glob@1.1.1:
     resolution: {integrity: sha512-ImM6TmoF8bgOwvehGviEj3tRdRBbQujr1N+0ypaln/GWjaerOB26jb93vsRHmdMtvVQZQebOlqt2HROark87mQ==}
@@ -14037,6 +14042,26 @@ packages:
       use-isomorphic-layout-effect: 1.1.2(@types/react@18.0.37)(react@18.2.0)
       use-sync-external-store: 1.2.0(react@18.2.0)
       xstate: 4.38.0
+    transitivePeerDependencies:
+      - '@types/react'
+    dev: false
+
+  /@xstate/react@3.2.2(@types/react@18.2.14)(react@18.2.0)(xstate@4.38.1):
+    resolution: {integrity: sha512-feghXWLedyq8JeL13yda3XnHPZKwYDN5HPBLykpLeuNpr9178tQd2/3d0NrH6gSd0sG5mLuLeuD+ck830fgzLQ==}
+    peerDependencies:
+      '@xstate/fsm': ^2.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      xstate: ^4.37.2
+    peerDependenciesMeta:
+      '@xstate/fsm':
+        optional: true
+      xstate:
+        optional: true
+    dependencies:
+      react: 18.2.0
+      use-isomorphic-layout-effect: 1.1.2(@types/react@18.2.14)(react@18.2.0)
+      use-sync-external-store: 1.2.0(react@18.2.0)
+      xstate: 4.38.1
     transitivePeerDependencies:
       - '@types/react'
     dev: false
@@ -27718,6 +27743,19 @@ packages:
       react: 18.2.0
     dev: false
 
+  /use-isomorphic-layout-effect@1.1.2(@types/react@18.2.14)(react@18.2.0):
+    resolution: {integrity: sha512-49L8yCO3iGT/ZF9QttjwLF/ZD9Iwto5LnH5LmEdk/6cFmXddqi2ulF0edxTwjj+7mqvpVVGQWvbXZdn32wRSHA==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@types/react': 18.2.14
+      react: 18.2.0
+    dev: false
+
   /use-latest@1.2.1(@types/react@18.0.37)(react@18.2.0):
     resolution: {integrity: sha512-xA+AVm/Wlg3e2P/JiItTziwS7FK92LWrDB0p+hgXloIMuVCeJJ8v6f0eeHyPZaJrM+usM1FkFfbNCrJGs8A/zw==}
     peerDependencies:
@@ -29247,6 +29285,10 @@ packages:
 
   /xstate@4.38.0:
     resolution: {integrity: sha512-oFjw2YZPyu6HeO0JWCSqfhAALsjFPURsrD2FUFN3u213dWwYU68RFuLtSHco+cEUhpQFW+hRG3PNYgq8HatudQ==}
+    dev: false
+
+  /xstate@4.38.1:
+    resolution: {integrity: sha512-1gBUcFWBj/rv/pRcP2Bedl5sNRGX2d36CaOx9z7fE9uSiHaOEHIWzLg1B853q2xdUHUA9pEiWKjLZ3can4SJaQ==}
     dev: false
 
   /xtend@4.0.2:

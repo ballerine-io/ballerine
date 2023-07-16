@@ -2,6 +2,9 @@ import '@ballerine/ui/lib/style.css';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
+import { useMachine } from '@xstate/react';
+import { createMachine } from 'xstate';
+import { KYBView } from '@app/components/organisms/KYBView';
 
 const form: RJSFSchema = {
   type: 'object',
@@ -40,7 +43,7 @@ const form: RJSFSchema = {
           type: 'string',
         },
       },
-      required: ['firstName', 'lastName', 'telephone'],
+      required: ['firstName', 'lastName', 'telephone', 'file'],
     },
     shareholders: {
       title: 'Shareholders/UBOs',
@@ -74,17 +77,19 @@ const uischema: UiSchema = {
   },
   personalInformation: {
     file: {
-      'ui:field': 'file',
+      'ui:field': 'FileInput',
     },
   },
 };
 
+const stateMachine = createMachine({
+  initial: 'personal_information',
+});
+
 export const App = () => {
   return (
     <AppShell>
-      <div>
-        <DynamicForm schema={form} uischema={uischema} />
-      </div>
+      <KYBView />
     </AppShell>
   );
 };
