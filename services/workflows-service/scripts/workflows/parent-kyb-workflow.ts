@@ -19,15 +19,16 @@ export const kybParentDynamicExample = {
           start: 'run_ubos',
         },
       },
-      run_kyb_enrichment: {
+      run_ubos: {
         on: {
-          KYB_DONE: [{ target: 'run_ubos' }],
+          CONTINUE: [{ target: 'run_kyb_enrichment' }],
           FAILED: [{ target: 'auto_reject' }],
         },
       },
-      run_ubos: {
+      run_kyb_enrichment: {
         on: {
-          PENDING_KYC: [{ target: 'pending_kyc_response_to_finish' }],
+          KYB_DONE: [{ target: 'pending_kyc_response_to_finish' }],
+          // TODO: add 404 handling
           FAILED: [{ target: 'auto_reject' }],
         },
       },
@@ -58,10 +59,10 @@ export const kybParentDynamicExample = {
     apiPlugins: [
       {
         name: 'open_corporates',
-        pluginType: 'kyb',
+        pluginKind: 'kyb',
         url: `{secret.KYB_API_URL}/companies`,
         method: 'GET',
-        stateNames: ['run_kyb'],
+        stateNames: ['run_kyb_enrichment'],
         successAction: 'KYB_DONE',
         errorAction: 'FAILED',
         headers: { Authorization: 'Bearer {secret.KYB_API_TOKEN}' },
@@ -70,8 +71,9 @@ export const kybParentDynamicExample = {
             {
               transformer: 'jmespath',
               mapping: `{
-              countryOfIncorporation: entity.countryOfIncorporation,
-              companyNumber: entity.companyName,
+              countryOfIncorporation: entity.data.countryOfIncorporation,
+              companyNumber: entity.data.taxIdentificationNumber,
+              vendor: 'open-corporates'
               }`, // jmespath
             },
           ],
@@ -101,7 +103,7 @@ export const kybParentDynamicExample = {
     ],
     commonPlugins: [
       {
-        pluginType: 'iterative',
+        pluginKind: 'iterative',
         name: 'ubos_iterractive',
         actionPluginName: 'veriff_kyc_child_plugin',
         stateNames: ['run_ubos'],
@@ -111,7 +113,7 @@ export const kybParentDynamicExample = {
             mapping: 'entity.data.additionalInfo.ubos',
           },
         ],
-        successAction: 'PENDING_KYC',
+        successAction: 'CONTINUE',
         errorAction: 'FAILED',
       },
     ],

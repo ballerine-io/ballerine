@@ -240,6 +240,7 @@ export class WorkflowService {
       await this.persistChildWorkflowToParent(
         childWorkflow.workflowRuntimeData,
         childWorkflow.workflowDefinition,
+        false
       );
     }
 
@@ -1144,7 +1145,7 @@ export class WorkflowService {
     });
 
     if (isFinal && workflowRuntimeData.parentRuntimeDataId) {
-      await this.persistChildWorkflowToParent(workflowRuntimeData, workflowDefinition);
+      await this.persistChildWorkflowToParent(workflowRuntimeData, workflowDefinition, isFinal);
     }
 
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
@@ -1163,6 +1164,7 @@ export class WorkflowService {
   async persistChildWorkflowToParent(
     workflowRuntimeData: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
+    isFinal: boolean
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       workflowRuntimeData.parentRuntimeDataId,
@@ -1190,11 +1192,12 @@ export class WorkflowService {
       childWorkflowCallback.transformers,
       parentWorkflowRuntime,
       workflowDefinition,
+      isFinal
     );
 
     await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
 
-    if (childWorkflowCallback.deliverEvent && parentWorkflowRuntime.state !== 'completed') {
+    if (childWorkflowCallback.deliverEvent && parentWorkflowRuntime.status !== 'completed' && isFinal) {
       await this.event({
         id: parentWorkflowRuntime.id,
         name: childWorkflowCallback.deliverEvent,
@@ -1207,7 +1210,13 @@ export class WorkflowService {
     transformers: ChildWorkflowCallback['transformers'],
     parentWorkflowRuntime: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
+    isFinal: boolean
   ) {
+    if (!isFinal) return this.composeContextWithChildResponse(
+      parentWorkflowRuntime.context,
+      workflowDefinition.name,
+    )
+
     const transformerInstance = (transformers || []).map((transformer: SerializableTransformer) =>
       this.initiateTransformer(transformer),
     );
@@ -1245,12 +1254,12 @@ export class WorkflowService {
   private composeContextWithChildResponse(
     parentWorkflowContext: any,
     definitionName: string,
-    response?: any,
+    contextToPersist?: any,
   ) {
     parentWorkflowContext['childWorkflows'] ||= {};
     parentWorkflowContext['childWorkflows'][definitionName] ||= {};
 
-    parentWorkflowContext['childWorkflows'][definitionName] = response;
+    parentWorkflowContext['childWorkflows'][definitionName] = contextToPersist;
     return parentWorkflowContext;
   }
 
