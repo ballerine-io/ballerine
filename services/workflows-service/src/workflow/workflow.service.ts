@@ -25,7 +25,6 @@ import { isEqual, merge } from 'lodash';
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
@@ -177,7 +176,7 @@ export class WorkflowService {
     return this.formatWorkflow(workflow);
   }
 
-  private formatWorkflow(workflow: TWorkflowWithRelations) {
+  private formatWorkflow(workflow: TWorkflowWithRelations): TWorkflowWithRelations {
     const isIndividual = 'endUser' in workflow;
     const service = createWorkflow({
       runtimeId: workflow.id,
@@ -189,6 +188,7 @@ export class WorkflowService {
       },
     });
 
+    // @ts-expect-error - typescript does not like recurrsion over types
     return {
       ...workflow,
       context: {
@@ -220,8 +220,8 @@ export class WorkflowService {
       endUser: undefined,
       business: undefined,
       nextEvents: service.getSnapshot().nextEvents,
-      childWorkflows: workflow.childWorkflowRuntimeDatas?.map((childWorkflow: TWorkflowWithRelations) => this.formatWorkflow(childWorkflow))
-  };
+      childWorkflows: workflow.childWorkflowRuntimeDatas?.map((childWorkflow) => this.formatWorkflow(childWorkflow))
+    };
   }
 
   async persistChildEvent(
