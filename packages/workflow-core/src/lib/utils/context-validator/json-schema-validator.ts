@@ -1,6 +1,7 @@
-import { BaseSchemaValidator, TSchemaValidatorResponse, TValidationLogic } from './types';
+import { TSchemaValidatorResponse, TValidationLogic } from './types';
 import Ajv from 'ajv';
 import { AnyRecord } from '@ballerine/common';
+import { BaseSchemaValidator } from './base-schema-validator';
 
 export class JsonSchemaValidator extends BaseSchemaValidator {
   name = 'json-schema-validator';

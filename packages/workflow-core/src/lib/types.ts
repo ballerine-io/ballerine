@@ -1,6 +1,16 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
-import { ApiPlugins, StatePlugins } from './plugins/types';
-import { IApiPluginParams } from './plugins/external-plugin/api-plugin';
+import { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
+import {
+  ISerializableChildPluginParams,
+  ISerializableHttpPluginParams,
+} from './plugins/external-plugin/types';
+import {
+  ChildWorkflowPluginParams,
+  ISerializableCommonPluginParams,
+} from './plugins/common-plugin/types';
+import { TContext } from './utils';
+import { ChildCallabackable } from './workflow-runner';
+import { THelperFormatingLogic } from './utils/context-transformers/types';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
@@ -19,7 +29,17 @@ export interface WorkflowEvent {
 
 export interface WorkflowExtensions {
   statePlugins?: StatePlugins;
-  apiPlugins?: ApiPlugins | IApiPluginParams[];
+  apiPlugins?: HttpPlugins | Array<ISerializableHttpPluginParams>;
+  commonPlugins?: CommonPlugins | Array<ISerializableCommonPluginParams>;
+  childWorkflowPlugins?: Array<ISerializableChildPluginParams>;
+}
+export interface ChildWorkflowCallback {
+  transformers?: Array<SerializableTransformer>;
+  action: 'append';
+  deliverEvent?: string;
+}
+export interface ChildToParentCallback {
+  childCallbackResults?: Array<ChildWorkflowCallback & { definitionName: string }>;
 }
 export interface WorkflowContext {
   id?: string;
@@ -29,19 +49,30 @@ export interface WorkflowContext {
   lockKey?: string;
 }
 
+export interface IUpdateContextEvent {
+  type: string;
+  payload: Record<PropertyKey, unknown>;
+}
 export interface WorkflowOptions {
+  runtimeId: string;
   definitionType: 'statechart-json' | 'bpmn-json';
   definition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
+  invokeChildWorkflowAction?: ChildCallabackable['invokeChildWorkflowAction'];
 }
 
+export interface CallbackInfo {
+  event: string;
+}
 export interface WorkflowRunnerArgs {
+  runtimeId: string;
   definition: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
+  invokeChildWorkflowAction?: ChildWorkflowPluginParams['action'];
 }
 
 export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
@@ -54,3 +85,18 @@ export const Error = {
 } as const;
 
 export const Errors = [Error.ERROR, Error.HTTP_ERROR] as const;
+
+export type ChildPluginCallbackOutput = {
+  parentWorkflowRuntimeId: string;
+  definitionId: string;
+  initOptions: {
+    context: TContext;
+    event?: string;
+  };
+};
+
+export type SerializableTransformer = {
+  transformer: string;
+  mapping: string | THelperFormatingLogic;
+  options: any;
+};
