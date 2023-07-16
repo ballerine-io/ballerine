@@ -1,0 +1,39 @@
+{
+  "name": "kyb-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ballerine/ui": "workspace:^",
+    "@rjsf/core": "^5.9.0",
+    "@rjsf/utils": "^5.9.0",
+    "@rjsf/validator-ajv8": "^5.9.0",
+    "@xstate/react": "^3.2.2",
+    "clsx": "^1.2.1",
+    "lucide-react": "^0.144.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "xstate": "^4.38.1",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "@vitejs/plugin-react": "^4.0.1",
+    "eslint": "^8.44.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.1",
+    "tailwindcss": "^3.3.2",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.0",
+    "vite-plugin-checker": "^0.6.1"
+  }
+}
