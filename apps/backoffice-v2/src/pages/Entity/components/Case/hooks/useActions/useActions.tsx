@@ -11,9 +11,11 @@ import { useRejectEntityMutation } from '../../../../../../domains/entities/hook
 import { useSelectNextEntity } from '../../../../../../domains/entities/hooks/useSelectNextEntity/useSelectNextEntity';
 import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
-import { someDocumentDecisionStatus } from '../../../../../../common/utils/some-document-decision-status/some-document-decision-status';
-import { everyDocumentDecisionStatus } from '../../../../../../common/utils/every-document-decision-status/every-document-decision-status';
-import { safeEvery } from '../../../../../../common/utils/safe-every/safe-every';
+import {
+  everyDocumentDecisionStatus,
+  safeEvery,
+  someDocumentDecisionStatus,
+} from '@ballerine/common';
 import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 import { Action } from '../../../../../../common/enums';
 

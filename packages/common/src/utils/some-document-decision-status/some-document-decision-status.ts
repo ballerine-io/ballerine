@@ -8,5 +8,5 @@ export const someDocumentDecisionStatus = <
   documents: Array<TItem>,
   status: string,
 ) => {
-  return documents.some(document => document?.decision?.status === status);
+  return documents?.some(document => document?.decision?.status === status);
 };
