@@ -1,5 +1,12 @@
 # @ballerine/workflows-service
 
+## 0.4.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.5.6
+
 ## 0.4.16
 
 ### Patch Changes

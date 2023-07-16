@@ -27,14 +27,14 @@ export const useEntity = (websocketConnectionIsOpen: boolean) => {
     websocketConnectionIsOpen,
   });
   const docsData = useStorageFilesQuery(
-    workflow.context.documents?.flatMap(({ pages }) =>
+    workflow?.context?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
     websocketConnectionIsOpen,
   );
 
   const results = [];
-  workflow.context.documents?.forEach((document, docIndex) => {
+  workflow?.context?.documents?.forEach((document, docIndex) => {
     document?.pages.forEach((page, pageIndex) => {
       if (!results[docIndex]) {
         results[docIndex] = [];
@@ -42,7 +42,7 @@ export const useEntity = (websocketConnectionIsOpen: boolean) => {
       results[docIndex][pageIndex] = docsData.shift().data;
     });
   });
-  const selectedEntity = workflow.entity;
+  const selectedEntity = workflow?.entity;
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
   const octetToFileType = (base64: string, fileType: string) =>

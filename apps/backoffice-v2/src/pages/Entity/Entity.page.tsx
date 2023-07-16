@@ -21,10 +21,10 @@ export const Entity = () => {
     <Case>
       {/* Reject and approve header */}
       <Case.Actions
-        id={workflow.id}
-        fullName={selectedEntity.name}
-        avatarUrl={selectedEntity.avatarUrl}
-        showResolutionButtons={workflow.workflowDefinition.config?.workflowLevelResolution}
+        id={workflow?.id}
+        fullName={selectedEntity?.name}
+        avatarUrl={selectedEntity?.avatarUrl}
+        showResolutionButtons={workflow?.workflowDefinition?.config?.workflowLevelResolution}
       />
       <Case.Content key={selectedEntity?.id}>
         {Array.isArray(tasks) &&
