@@ -20,7 +20,8 @@ import { ActionablePlugin, ActionablePlugins, StatePlugin } from './plugins/type
 import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 import {
-  IApiPluginParams, ISerializableChildPluginParams,
+  IApiPluginParams,
+  ISerializableChildPluginParams,
   ISerializableHttpPluginParams,
   SerializableValidatableTransformer,
 } from './plugins/external-plugin/types';
@@ -29,12 +30,13 @@ import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
 import { THelperFormatingLogic } from './utils/context-transformers/types';
 import {
   ChildWorkflowPluginParams,
-  ISerializableCommonPluginParams
-} from "./plugins/common-plugin/types";
-import { TContext } from "./utils";
-import { IterativePlugin } from "./plugins/common-plugin/iterative-plugin";
-import { ChildWorkflowPlugin } from "./plugins/common-plugin/child-workflow-plugin";
-import { search } from "jmespath";
+  ISerializableCommonPluginParams,
+} from './plugins/common-plugin/types';
+import { TContext } from './utils';
+import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
+import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
+import { search } from 'jmespath';
+import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
@@ -64,7 +66,14 @@ export class WorkflowRunner {
   }
 
   constructor(
-    { runtimeId, definition, workflowActions, workflowContext, extensions, invokeChildWorkflowAction }: WorkflowRunnerArgs,
+    {
+      runtimeId,
+      definition,
+      workflowActions,
+      workflowContext,
+      extensions,
+      invokeChildWorkflowAction,
+    }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
     // global and state specific extensions
@@ -73,11 +82,18 @@ export class WorkflowRunner {
     this.#__debugMode = debugMode;
     this.#__invokeChildWorkflowAction = invokeChildWorkflowAction;
     // @ts-expect-error TODO: fix this
-    this.#__extensions.childWorkflowPlugins = this.initiateChildPlugin(this.#__extensions.childWorkflowPlugins ?? [], runtimeId, invokeChildWorkflowAction);
+    this.#__extensions.childWorkflowPlugins = this.initiateChildPlugin(
+      this.#__extensions.childWorkflowPlugins ?? [],
+      runtimeId,
+      invokeChildWorkflowAction,
+    );
     // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
-    // @ts-expect-error TODO: fix this
-    this.#__extensions.commonPlugins = this.initiateCommonPlugins(this.#__extensions.commonPlugins ?? [], [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat(1));
+    this.#__extensions.commonPlugins = this.initiateCommonPlugins(
+      // @ts-expect-error TODO: fix this
+    this.#__extensions.commonPlugins ?? [],
+      [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat(1),
+    );
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
     this.#__runtimeId = runtimeId;
 
@@ -120,8 +136,8 @@ export class WorkflowRunner {
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
         headers: apiPluginSchema.headers,
-        request: {transformers: requestTransformer, schemaValidator: requestValidator},
-        response: {transformers: responseTransformer, schemaValidator: responseValidator},
+        request: { transformers: requestTransformer, schemaValidator: requestValidator },
+        response: { transformers: responseTransformer, schemaValidator: responseValidator },
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
       });
@@ -130,9 +146,15 @@ export class WorkflowRunner {
     });
   }
 
-  initiateChildPlugin(childPluginSchemas: Array<ISerializableChildPluginParams>, parentWorkflowRuntimeId: string, callbackAction: ChildWorkflowPluginParams['action']){
+  initiateChildPlugin(
+    childPluginSchemas: Array<ISerializableChildPluginParams>,
+    parentWorkflowRuntimeId: string,
+    callbackAction?: ChildWorkflowPluginParams['action'],
+  ) {
     return childPluginSchemas?.map(childPluginSchema => {
-      const transformers = this.fetchTransformers(childPluginSchema.transformers['transform'] || []);
+      const transformers = this.fetchTransformers(
+        childPluginSchema.transformers['transform'] || [],
+      );
 
       const apiPlugin = new ChildWorkflowPlugin({
         name: childPluginSchema.name,
@@ -141,37 +163,42 @@ export class WorkflowRunner {
         stateNames: childPluginSchema.stateNames,
         transformers: transformers,
         initEvent: childPluginSchema.initEvent,
-        action: callbackAction
+        action: callbackAction!,
       });
 
       return apiPlugin;
     });
   }
 
-  initiateCommonPlugins(pluginSchemas: Array<ISerializableCommonPluginParams>, actionPlugins: ActionablePlugins) {
+  initiateCommonPlugins(
+    pluginSchemas: Array<ISerializableCommonPluginParams>,
+    actionPlugins: ActionablePlugins,
+  ) {
     return pluginSchemas.map(pluginSchema => {
-        const actionPlugin = actionPlugins.find(actionPlugin => actionPlugin.name === pluginSchema.actionPluginName);
+      const actionPlugin = actionPlugins.find(
+        actionPlugin => actionPlugin.name === pluginSchema.actionPluginName,
+      );
 
-        return new IterativePlugin({
-            name: pluginSchema.name,
-            stateNames: pluginSchema.stateNames,
-            iterateOn: this.fetchTransformers(pluginSchema.iterateOn),
-            action: (context: TContext) => actionPlugin!.invoke(context),
-            successAction: pluginSchema.successAction,
-            errorAction: pluginSchema.errorAction
-          }
-        )
-      }
-    )
+      return new IterativePlugin({
+        name: pluginSchema.name,
+        stateNames: pluginSchema.stateNames,
+        iterateOn: this.fetchTransformers(pluginSchema.iterateOn),
+        action: (context: TContext) => actionPlugin!.invoke(context),
+        successAction: pluginSchema.successAction,
+        errorAction: pluginSchema.errorAction,
+      });
+    });
   }
 
   private pickApiPlugin(apiPluginSchema: ISerializableHttpPluginParams) {
     // @ts-ignore
-    if (apiPluginSchema.pluginKind == 'kyc') return KycPlugin;
+    if (apiPluginSchema.pluginKind === 'kyc') return KycPlugin;
     // @ts-ignore
-    if (apiPluginSchema.pluginKind == 'webhook') return WebhookPlugin;
+    if (apiPluginSchema.pluginKind === 'kyb') return KybPlugin;
     // @ts-ignore
-    if (apiPluginSchema.pluginKind == 'api') return ApiPlugin;
+    if (apiPluginSchema.pluginKind === 'webhook') return WebhookPlugin;
+    // @ts-ignore
+    if (apiPluginSchema.pluginKind === 'api') return ApiPlugin;
 
     // @ts-expect-error TODO: fix this
     const isApiPlugin = this.isApiPlugin(apiPluginSchema);
@@ -189,9 +216,9 @@ export class WorkflowRunner {
   ) {
     return (
       transformers?.map(transformer => {
-        if (transformer.transformer == 'jmespath')
+        if (transformer.transformer === 'jmespath')
           return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
-        if (transformer.transformer == 'helper') {
+        if (transformer.transformer === 'helper') {
           return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
         }
 
@@ -337,15 +364,12 @@ export class WorkflowRunner {
         }
         return ruleResult;
       },
-      'jmespath': (ctx, event, metadata) => {
+      jmespath: (ctx, event, metadata) => {
         const data = { ...ctx, ...event.payload };
         // @ts-expect-error
         const options = metadata.cond.options;
 
-        const ruleResult = search(
-          data,
-          options.rule
-        );
+        const ruleResult = search(data, options.rule);
 
         return ruleResult;
       },
@@ -427,7 +451,6 @@ export class WorkflowRunner {
 
     const postSendSnapshot = service.getSnapshot();
     this.#__context = postSendSnapshot.context;
-
 
     if (this.#__extensions.commonPlugins) {
       for (const commonPlugin of this.#__extensions.commonPlugins) {
