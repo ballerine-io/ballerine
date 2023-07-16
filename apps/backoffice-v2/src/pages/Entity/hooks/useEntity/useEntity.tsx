@@ -23,13 +23,13 @@ export const useEntity = () => {
 
   const { data: workflow, isLoading } = useWorkflowQuery({ workflowId: entityId, filterId });
   const docsData = useStorageFilesQuery(
-    workflow.context.documents?.flatMap(({ pages }) =>
+    workflow?.context?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
 
   const results = [];
-  workflow.context.documents?.forEach((document, docIndex) => {
+  workflow?.context?.documents?.forEach((document, docIndex) => {
     document?.pages.forEach((page, pageIndex) => {
       if (!results[docIndex]) {
         results[docIndex] = [];
@@ -37,7 +37,7 @@ export const useEntity = () => {
       results[docIndex][pageIndex] = docsData.shift().data;
     });
   });
-  const selectedEntity = workflow.entity;
+  const selectedEntity = workflow?.entity;
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
   const octetToFileType = (base64: string, fileType: string) =>
