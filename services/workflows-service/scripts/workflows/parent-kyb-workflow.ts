@@ -19,6 +19,12 @@ export const kybParentDynamicExample = {
           start: 'run_ubos',
         },
       },
+      run_kyb_enrichment: {
+        on: {
+          KYB_DONE: [{ target: 'run_ubos' }],
+          FAILED: [{ target: 'auto_reject' }],
+        },
+      },
       run_ubos: {
         on: {
           PENDING_KYC: [{ target: 'pending_kyc_response_to_finish' }],
@@ -49,6 +55,37 @@ export const kybParentDynamicExample = {
     },
   },
   extensions: {
+    apiPlugins: [
+      {
+        name: 'open_corporates',
+        pluginType: 'kyb',
+        url: `{secret.KYB_API_URL}/companies`,
+        method: 'GET',
+        stateNames: ['run_kyb'],
+        successAction: 'KYB_DONE',
+        errorAction: 'FAILED',
+        headers: { Authorization: 'Bearer {secret.KYB_API_TOKEN}' },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+              countryOfIncorporation: entity.countryOfIncorporation,
+              companyNumber: entity.companyName,
+              }`, // jmespath
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@', // jmespath
+            },
+          ],
+        },
+      },
+    ],
     childWorkflowPlugins: [
       {
         name: 'veriff_kyc_child_plugin',
