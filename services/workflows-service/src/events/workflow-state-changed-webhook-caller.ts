@@ -3,14 +3,13 @@
 
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { AxiosInstance } from 'axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
-import { getDynamicWebhookUrl } from '@/events/get-dynamic-webhook-url';
 import { ExtractWorkflowEventData } from '@/workflow/types';
+import { getWebhookInfo } from '@/events/get-webhook-info';
 
 @Injectable()
 export class WorkflowStateChangedWebhookCaller {
@@ -42,12 +41,7 @@ export class WorkflowStateChangedWebhookCaller {
       id: data.runtimeData.id,
     });
 
-    const id = randomUUID();
-    const environment = this.configService.get<string>('NODE_ENV');
-    const url =
-      getDynamicWebhookUrl(data.runtimeData?.config, 'workflow.state.changed') ||
-      this.configService.get<string>('WEBHOOK_URL')!;
-    const authSecret = this.configService.get<string>('WEBHOOK_SECRET');
+    const { id, environment, url, authSecret } = getWebhookInfo(data.runtimeData.config);
 
     this.logger.log('Sending webhook', { id, url });
 

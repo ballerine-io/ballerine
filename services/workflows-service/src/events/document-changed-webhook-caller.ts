@@ -3,15 +3,14 @@
 
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { AxiosInstance } from 'axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { getDocumentId } from '@ballerine/common';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
-import { getDynamicWebhookUrl } from '@/events/get-dynamic-webhook-url';
 import { ExtractWorkflowEventData } from '@/workflow/types';
+import { getWebhookInfo } from '@/events/get-webhook-info';
 
 @Injectable()
 export class DocumentChangedWebhookCaller {
@@ -76,12 +75,7 @@ export class DocumentChangedWebhookCaller {
       return;
     }
 
-    const id = randomUUID();
-    const environment = this.configService.get<string>('NODE_ENV');
-    const url =
-      getDynamicWebhookUrl(data.updatedRuntimeData?.config, 'workflow.context.document.changed') ||
-      this.configService.get<string>('WEBHOOK_URL')!;
-    const authSecret = this.configService.get<string>('WEBHOOK_SECRET');
+    const { id, environment, url, authSecret } = getWebhookInfo(data.updatedRuntimeData.config);
 
     data.updatedRuntimeData.context.documents.forEach((doc: any) => {
       delete doc.propertiesSchema;
