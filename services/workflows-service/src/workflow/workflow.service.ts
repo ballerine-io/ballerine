@@ -65,7 +65,8 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import { plainToClass } from 'class-transformer';
 import { SortOrder } from '@/common/query-filters/sort-order';
-import { aliasIndividualAsEndUser } from '@/common/utils/pick-entity-type/alias-individual-as-end-user';
+import { aliasIndividualAsEndUser } from '@/common/utils/alias-individual-as-end-user/alias-individual-as-end-user';
+import { EntityRepository } from '@/common/entity/entity.repository';
 
 type TEntityId = string;
 
@@ -112,6 +113,7 @@ export class WorkflowService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
     protected readonly businessRepository: BusinessRepository,
+    protected readonly entityRepository: EntityRepository,
     protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
@@ -1081,23 +1083,19 @@ export class WorkflowService {
     }
 
     if (entityType === 'endUser') {
-      await this.endUserRepository.updateById(entityId, {
+      await this.entityRepository[entityType].updateById(entityId, {
         data: {
           approvalState,
         },
       });
-
-      return;
     }
 
     if (entityType === 'business') {
-      await this.businessRepository.updateById(entityId, {
+      await this.entityRepository[entityType].updateById(entityId, {
         data: {
           approvalState,
         },
       });
-
-      return;
     }
   }
 
