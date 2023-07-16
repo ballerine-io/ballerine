@@ -23,7 +23,9 @@ import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-gu
 import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
+import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
 import { ApiOkResponse } from '@nestjs/swagger';
+import { Public } from '@/common/decorators/public.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -193,5 +195,33 @@ export class WorkflowControllerExternal {
 
       throw err;
     }
+  }
+
+  @common.Post('/:id/hook/:event')
+  @swagger.ApiOkResponse()
+  @common.HttpCode(200)
+  @Public()
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async hook(
+    @common.Param() params: WorkflowIdWithEventInput,
+    @common.Body() data: any,
+  ): Promise<void> {
+    try {
+      const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
+      const updatedContext = { ...workflowRuntime.context, hookResponse: data };
+      await this.service.updateWorkflowRuntimeData(params.id, { context: updatedContext });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
+
+    return await this.service.event({
+      id: params.id,
+      name: params.event,
+    });
+
+    return;
   }
 }

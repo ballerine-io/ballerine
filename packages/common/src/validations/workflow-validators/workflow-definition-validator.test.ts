@@ -41,13 +41,15 @@ describe('WorkflowDefinitionValidator', () => {
         successAction: 'API_CALL_SUCCESS',
         errorAction: 'API_CALL_FAILURE',
         request: {
-          transform: {
-            transformer: 'jq',
-            mapping: '{data: .entity.id}',
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '{data: entity.id}',
+            },
+          ],
         },
         response: {
-          transform: { transformer: 'jq', mapping: '{result: .}' },
+          transform: [{ transformer: 'jmespath', mapping: '{result: @}' }],
         },
       },
       {
@@ -57,10 +59,12 @@ describe('WorkflowDefinitionValidator', () => {
         headers: { some_header: 'some_value' },
         stateNames: ['checkBusinessScore'],
         request: {
-          transform: {
-            transformer: 'jq',
-            mapping: '{data: .entity.id}',
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '{data: entity.id}',
+            },
+          ],
         },
       },
     ];
