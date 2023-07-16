@@ -17,8 +17,9 @@ export const formSchema: RJSFSchema = {
       title: 'Company Email',
     },
     phone: {
-      type: 'number',
+      type: 'string',
       title: 'Phone Number',
+      format: '/^(?:+?d{1,3}[ -]?)?(?:(d{1,3})[ -]?)?d{3}[ -]?d{3}[ -]?d{4}$/',
     },
     companyName: {
       type: 'string',

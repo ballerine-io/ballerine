@@ -785,6 +785,7 @@ export class WorkflowService {
       workflowDefinitionId,
     );
     config = merge(workflowDefinition.config, config);
+    console.log('config', config);
     let validatedConfig: WorkflowConfig;
     try {
       validatedConfig = ConfigSchema.parse(config);

@@ -1,3 +1,3 @@
-export * from './StateProvider';
+export * from './ViewStateProvider';
 export * from './types';
 export * from './hooks/useViewState';

@@ -1,5 +1,3 @@
-// import { ViewStateSchema } from '@app/common/providers/ViewStateProvider';
-
 const intiialContext = {
   personalInformation: {},
   documents: {},
@@ -17,13 +15,24 @@ export const kybViewSchema = {
     },
     personalInformation: {
       on: {
+        SAVE_DATA: {
+          actions: ['updateStateData'],
+        },
         NEXT: {
           target: 'documents',
-          actions: ['updateStateData'],
         },
       },
     },
     errorResolving: {},
-    documents: {},
+    documents: {
+      on: {
+        NEXT: {
+          target: 'final',
+        },
+      },
+    },
+    final: {
+      type: 'final' as const,
+    },
   },
 };

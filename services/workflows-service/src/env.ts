@@ -23,6 +23,7 @@ export const env = createEnv({
     BACKOFFICE_CORS_ORIGIN: z.string().url(),
     HEADLESS_EXAMPLE_CORS_ORIGIN: z.string().url(),
     WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().url(),
+    KYB_EXAMPLE_CORS_ORIGIN: z.string().url(),
     AWS_S3_BUCKET_NAME: z.string().optional(),
     AWS_S3_BUCKET_KEY: z.string().optional(),
     AWS_S3_BUCKET_SECRET: z.string().optional(),

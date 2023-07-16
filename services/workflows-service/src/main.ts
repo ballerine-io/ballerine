@@ -24,6 +24,7 @@ const corsOrigins =
         env.BACKOFFICE_CORS_ORIGIN,
         env.HEADLESS_EXAMPLE_CORS_ORIGIN,
         env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
+        env.KYB_EXAMPLE_CORS_ORIGIN,
         /\.ballerine\.dev$/,
         /\.ballerine\.app$/,
       ];
