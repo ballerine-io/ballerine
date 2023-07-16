@@ -9,7 +9,8 @@ export const formSchema: RJSFSchema = {
       properties: {
         registrationNumber: {
           title: 'Registration number',
-          type: 'number',
+          type: 'string',
+          format: '/^d+$/',
         },
         website: {
           title: 'Website',
@@ -41,12 +42,12 @@ export const formSchema: RJSFSchema = {
           title: 'Utility bill as proof of address of the company',
           type: 'string',
         },
-        legal: {
-          title: 'Company extract showing directors & legal representatives',
-          type: 'string',
-        },
+        // legal: {
+        //   title: 'Company extract showing directors & legal representatives',
+        //   type: 'string',
+        // },
       },
-      required: ['registrationCertificate', 'bill', 'legal'],
+      required: ['registrationCertificate', 'bill'],
     },
     shareholders: {
       title: 'Shareholders/UBOs',

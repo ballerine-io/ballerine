@@ -7,6 +7,14 @@ import {
 import { AnyObject } from '@ballerine/ui';
 import { useContext } from 'react';
 
-export function useViewState<TSchema extends SchemaBase, TContext = AnyObject>() {
-  return useContext(stateContext) as ViewStateContext<TContext, SchemaStates<TSchema>>;
+export function useViewState<
+  TSchema extends SchemaBase,
+  TContext = AnyObject,
+  TViewContext = AnyObject,
+>() {
+  return useContext(stateContext) as ViewStateContext<
+    TContext,
+    TViewContext,
+    SchemaStates<TSchema>
+  >;
 }

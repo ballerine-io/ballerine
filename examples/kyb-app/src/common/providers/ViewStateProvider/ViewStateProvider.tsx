@@ -1,7 +1,7 @@
 import { useMachine } from '@xstate/react';
 import { stateContext } from './state.context';
 import { useCallback, useMemo } from 'react';
-import { AnyChildren, AnyObject } from '@ballerine/ui/lib/common/types';
+import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { ViewStateContext, ViewStateSchema } from '@app/common/providers/ViewStateProvider/types';
 import { createStateMachine } from '@app/common/providers/ViewStateProvider/helpers/createStateMachine';
 import { ViewResolver } from '@app/common/providers/ViewStateProvider/components/ViewResolver';
@@ -13,20 +13,22 @@ interface Props {
 }
 
 export const ViewStateProvider = ({ children, viewSchema }: Props) => {
-  const [machine, _send] = useMachine(createStateMachine<AnyObject>(viewSchema));
+  const [machine, _send, service] = useMachine(createStateMachine<AnyObject>(viewSchema));
 
-  const next = useCallback(
-    (payload: object) => {
-      _send('NEXT', { payload });
-    },
-    [_send],
-  );
+  const next = useCallback(() => {
+    _send('NEXT');
+  }, [_send]);
 
-  const prev = useCallback(
-    (payload?: object) => {
-      _send('PREV', { payload });
+  const prev = useCallback(() => {
+    _send('PREV');
+  }, [_send]);
+
+  const saveAndPerformTransition = useCallback(
+    (payload: object, shared?: object) => {
+      _send('SAVE_DATA', { payload, shared });
+      next();
     },
-    [_send],
+    [_send, next],
   );
 
   const send = useCallback(
@@ -48,13 +50,15 @@ export const ViewStateProvider = ({ children, viewSchema }: Props) => {
     const ctx: ViewStateContext<AnyObject> = {
       state: machine.value as string,
       stateData: stateContext,
+      context: machine.context as AnyObject,
+      saveAndPerformTransition,
       next,
       prev,
       send,
     };
 
     return ctx;
-  }, [machine.value, stateContext, next, prev, send]);
+  }, [machine.value, machine.context, stateContext, next, prev, send, saveAndPerformTransition]);
 
   return <Provider value={context}>{children}</Provider>;
 };

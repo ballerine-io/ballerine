@@ -54,6 +54,17 @@ export class EndUserControllerExternal {
     });
   }
 
+  @common.Post('/create-with-business')
+  @UseKeyAuthInDevGuard()
+  async createWithBusiness(@common.Body() data: EndUserCreateDto) {
+    const endUser = await this.service.createWithBusiness(data);
+
+    return {
+      endUserId: endUser.id,
+      businessId: endUser.businesses.at(-1)!.id,
+    };
+  }
+
   @common.Get()
   @swagger.ApiOkResponse({ type: [EndUserModel] })
   @swagger.ApiForbiddenResponse()

@@ -594,6 +594,9 @@ importers:
       '@ballerine/ui':
         specifier: workspace:^
         version: link:../../packages/ui
+      '@lukemorales/query-key-factory':
+        specifier: ^1.0.3
+        version: 1.0.3
       '@rjsf/core':
         specifier: ^5.9.0
         version: 5.9.0(@rjsf/utils@5.9.0)(react@18.2.0)
@@ -603,12 +606,21 @@ importers:
       '@rjsf/validator-ajv8':
         specifier: ^5.9.0
         version: 5.9.0(@rjsf/utils@5.9.0)
+      '@tanstack/react-query':
+        specifier: ^4.29.25
+        version: 4.29.25(react-dom@18.2.0)(react@18.2.0)
       '@xstate/react':
         specifier: ^3.2.2
         version: 3.2.2(@types/react@18.2.14)(react@18.2.0)(xstate@4.38.1)
       clsx:
         specifier: ^1.2.1
         version: 1.2.1
+      form-data-encoder:
+        specifier: ^3.0.0
+        version: 3.0.0
+      ky:
+        specifier: ^0.33.3
+        version: 0.33.3
       lucide-react:
         specifier: ^0.144.0
         version: 0.144.0(react@18.2.0)
@@ -618,6 +630,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      uuid:
+        specifier: ^9.0.0
+        version: 9.0.0
       xstate:
         specifier: ^4.38.1
         version: 4.38.1
@@ -631,6 +646,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.2.6
         version: 18.2.6
+      '@types/uuid':
+        specifier: ^9.0.2
+        version: 9.0.2
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.61.0
         version: 5.61.0(@typescript-eslint/parser@5.61.0)(eslint@8.44.0)(typescript@5.0.2)
@@ -8354,7 +8372,7 @@ packages:
       magic-string: 0.27.0
       react-docgen-typescript: 2.2.2(typescript@4.9.5)
       typescript: 4.9.5
-      vite: 4.4.0(@types/node@18.14.6)(less@4.1.3)
+      vite: 4.4.0(@types/node@20.4.1)(less@4.1.3)
     dev: true
 
   /@jridgewell/gen-mapping@0.3.3:
@@ -11808,7 +11826,7 @@ packages:
       react: 18.2.0
       react-docgen: 6.0.0-alpha.3
       react-dom: 18.2.0(react@18.2.0)
-      vite: 4.4.0(@types/node@18.14.6)(less@4.1.3)
+      vite: 4.4.0(@types/node@20.4.1)(less@4.1.3)
     transitivePeerDependencies:
       - '@preact/preset-vite'
       - encoding
@@ -12175,6 +12193,10 @@ packages:
   /@tanstack/query-core@4.27.0:
     resolution: {integrity: sha512-sm+QncWaPmM73IPwFlmWSKPqjdTXZeFf/7aEmWh00z7yl2FjqophPt0dE1EHW9P1giMC5rMviv7OUbSDmWzXXA==}
 
+  /@tanstack/query-core@4.29.25:
+    resolution: {integrity: sha512-DI4y4VC6Uw4wlTpOocEXDky69xeOScME1ezLKsj+hOk7DguC9fkqXtp6Hn39BVb9y0b5IBrY67q6kIX623Zj4Q==}
+    dev: false
+
   /@tanstack/react-query-devtools@4.22.0(@tanstack/react-query@4.28.0)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-YeYFBnfqvb+ZlA0IiJqiHNNSzepNhI1p2o9i8NlhQli9+Zrn230M47OBaBUs8qr3DD1dC2zGB1Dis50Ktz8gAA==}
     peerDependencies:
@@ -12206,6 +12228,24 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       use-sync-external-store: 1.2.0(react@18.2.0)
+
+  /@tanstack/react-query@4.29.25(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-c1+Ezu+XboYrdAMdusK2fTdRqXPMgPAnyoTrzHOZQqr8Hqz6PNvV9DSKl8agUo6nXX4np7fdWabIprt+838dLg==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@tanstack/query-core': 4.29.25
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
 
   /@tanstack/react-table@8.9.2(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-Irvw4wqVF9hhuYzmNrlae4IKdlmgSyoRWnApSLebvYzqHoi5tEsYzBj6YPd0hX78aB/L+4w/jgK2eBQVpGfThQ==}
@@ -13038,6 +13078,10 @@ packages:
   /@types/unist@2.0.7:
     resolution: {integrity: sha512-cputDpIbFgLUaGQn6Vqg3/YsJwxUwHLO13v3i5ouxT4lat0khip9AEWxtERujXV9wxIB1EyF97BSJFt6vpdI8g==}
 
+  /@types/uuid@9.0.2:
+    resolution: {integrity: sha512-kNnC1GFBLuhImSnV7w4njQkUiJi0ZXUycu1rUaouPqiKlXkh77JKgdRnTAp1x5eBwcIwbtI+3otwzuIDEuDoxQ==}
+    dev: true
+
   /@types/validator@13.7.17:
     resolution: {integrity: sha512-aqayTNmeWrZcvnG2MG9eGYI6b7S5fl+yKgPs6bAjOTwPS316R5SxBGKvtSExfyoJU7pIeHJfsHI0Ji41RVMkvQ==}
 
@@ -13588,7 +13632,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.22.5(@babel/core@7.22.9)
       magic-string: 0.27.0
       react-refresh: 0.14.0
-      vite: 4.4.0(@types/node@18.14.6)(less@4.1.3)
+      vite: 4.4.0(@types/node@20.4.1)(less@4.1.3)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -13603,7 +13647,7 @@ packages:
       '@babel/plugin-transform-react-jsx-self': 7.22.5(@babel/core@7.22.9)
       '@babel/plugin-transform-react-jsx-source': 7.22.5(@babel/core@7.22.9)
       react-refresh: 0.14.0
-      vite: 4.4.0(@types/node@18.14.6)(less@4.1.3)
+      vite: 4.4.0(@types/node@20.4.1)(less@4.1.3)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -18798,6 +18842,11 @@ packages:
       webpack: 5.76.2
     dev: true
 
+  /form-data-encoder@3.0.0:
+    resolution: {integrity: sha512-qPautpoQvO/kTxjKawxHlBQ5KUHdJy8c3z5ddUaF589k5nJDY+AjnvsxtzLXlZmkNNu64bA7YOuvwWb32TMbJw==}
+    engines: {node: '>= 16.5'}
+    dev: false
+
   /form-data@2.5.1:
     resolution: {integrity: sha512-m21N3WOmEEURgk6B9GLOE4RuWOFf28Lhh9qGYeNlGq4VDXUlJy2th2slBNU8Gp8EzloYZOibZJ7t5ecIrFSjVA==}
     engines: {node: '>= 0.12'}
@@ -21778,6 +21827,11 @@ packages:
 
   /kuler@2.0.0:
     resolution: {integrity: sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==}
+    dev: false
+
+  /ky@0.33.3:
+    resolution: {integrity: sha512-CasD9OCEQSFIam2U8efFK81Yeg8vNMTBUqtMOHlrcWQHqUX3HeCl9Dr31u4toV7emlH8Mymk5+9p0lL6mKb/Xw==}
+    engines: {node: '>=14.16'}
     dev: false
 
   /lazy-universal-dotenv@4.0.0:
@@ -28123,7 +28177,7 @@ packages:
       strip-ansi: 6.0.1
       tiny-invariant: 1.3.1
       typescript: 5.0.2
-      vite: 4.4.0(@types/node@18.14.6)(less@4.1.3)
+      vite: 4.4.0(@types/node@20.4.1)(less@4.1.3)
       vscode-languageclient: 7.0.0
       vscode-languageserver: 7.0.0
       vscode-languageserver-textdocument: 1.0.8
@@ -28199,7 +28253,7 @@ packages:
       kolorist: 1.8.0
       sirv: 2.0.3
       ufo: 1.1.2
-      vite: 4.4.0(@types/node@18.14.6)(less@4.1.3)
+      vite: 4.4.0(@types/node@20.4.1)(less@4.1.3)
     transitivePeerDependencies:
       - rollup
       - supports-color
