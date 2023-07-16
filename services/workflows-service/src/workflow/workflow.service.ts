@@ -1197,14 +1197,14 @@ export class WorkflowService {
         ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
     )
       // @ts-ignore - fix as childCallbackResults[number]
-      ?.find(childCallbackResult => workflowDefinition.name == childCallbackResult.definitionName);
+      ?.find(childCallbackResult => workflowDefinition.name === childCallbackResult.definitionName);
     const childWorkflowCallback = (callbackTransformation ||
       workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
     const childrenOfSameDefinition = (
       parentWorkflowRuntime.childWorkflowRuntimeDatas as Array<WorkflowRuntimeData>
     ).filter(
       childWorkflow =>
-        childWorkflow.workflowDefinitionId == workflowRuntimeData.workflowDefinitionId,
+        childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
     );
     const parentContext = await this.generateParentContextWithInjectedChildContext(
       childrenOfSameDefinition,
