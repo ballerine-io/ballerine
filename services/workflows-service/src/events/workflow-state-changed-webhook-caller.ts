@@ -41,7 +41,13 @@ export class WorkflowStateChangedWebhookCaller {
       id: data.runtimeData.id,
     });
 
-    const { id, environment, url, authSecret } = getWebhookInfo(data.runtimeData.config);
+    const { id, environment, url, authSecret, apiVersion } = getWebhookInfo(
+      data.runtimeData.config,
+    );
+
+    if (!url) {
+      throw new Error(`No webhook url found for a workflow runtime data with an id of "${id}"`);
+    }
 
     this.logger.log('Sending webhook', { id, url });
 
@@ -52,7 +58,7 @@ export class WorkflowStateChangedWebhookCaller {
           id,
           eventName: 'workflow.state.changed',
           state: data.state,
-          apiVersion: 1,
+          apiVersion,
           timestamp: new Date().toISOString(),
           workflowCreatedAt: data.runtimeData.createdAt,
           workflowResolvedAt: data.runtimeData.resolvedAt,

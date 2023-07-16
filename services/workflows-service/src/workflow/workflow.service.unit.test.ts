@@ -14,6 +14,8 @@ import { DocumentChangedWebhookCaller } from '../events/document-changed-webhook
 import { Test, TestingModule } from '@nestjs/testing';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import packageJson from '../../package.json';
+import { env } from '@/env';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -34,6 +36,12 @@ class FakeBusinessRepo extends BaseFakeRepository {
 }
 
 class FakeEndUserRepo extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
+class FakeEntityRepo extends BaseFakeRepository {
   constructor() {
     super(Object);
   }
@@ -81,6 +89,7 @@ describe('WorkflowService', () => {
   let workflowRuntimeDataRepo;
   let businessRepo;
   let endUserRepo;
+  let entityRepo;
   const numbUserInfo = Symbol();
   let fakeHttpService;
   let testingModule: TestingModule;
@@ -96,6 +105,7 @@ describe('WorkflowService', () => {
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
     businessRepo = new FakeBusinessRepo();
     endUserRepo = new FakeEndUserRepo();
+    entityRepo = new FakeEntityRepo();
 
     fakeHttpService = {
       requests: [],
@@ -120,20 +130,9 @@ describe('WorkflowService', () => {
       },
     };
 
-    const env = {
-      WEBHOOK_URL: 'https://example.com',
-      WEBHOOK_SECRET: 'some-secret',
-      NODE_ENV: 'some-node-env',
-
-      get<T>(name) {
-        return this[name];
-      },
-    };
-
     const documentChangedWebhookCaller = new DocumentChangedWebhookCaller(
       fakeHttpService,
       eventEmitter as any,
-      env as any,
       testingModule.get(AppLoggerService),
     );
 
@@ -142,6 +141,7 @@ describe('WorkflowService', () => {
       workflowRuntimeDataRepo,
       endUserRepo,
       businessRepo,
+      entityRepo,
       {} as any,
       {} as any,
       eventEmitter as any,
@@ -225,7 +225,7 @@ describe('WorkflowService', () => {
 
       expect(fakeHttpService.requests).toEqual([
         {
-          url: 'https://example.com',
+          url: env.WEBHOOK_URL,
           data: {
             id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
             eventName: 'workflow.context.document.changed',
@@ -234,17 +234,17 @@ describe('WorkflowService', () => {
             workflowResolvedAt: null,
             ballerineEntityId: undefined,
             correlationId: '',
-            apiVersion: 1,
+            apiVersion: packageJson.version,
             timestamp: expect.stringMatching(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/),
             workflowRuntimeId: '2',
-            environment: 'some-node-env',
+            environment: 'test',
             data: {
               ...newContext,
             },
           },
           config: {
             headers: {
-              'X-Authorization': 'some-secret',
+              'X-Authorization': env.WEBHOOK_SECRET,
             },
           },
         },
@@ -272,7 +272,7 @@ describe('WorkflowService', () => {
 
       expect(fakeHttpService.requests).toEqual([
         {
-          url: 'https://example.com',
+          url: env.WEBHOOK_URL,
           data: {
             id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
             eventName: 'workflow.context.document.changed',
@@ -280,18 +280,18 @@ describe('WorkflowService', () => {
             workflowResolvedAt: null,
             workflowCreatedAt: undefined,
             correlationId: '',
-            apiVersion: 1,
+            apiVersion: packageJson.version,
             timestamp: expect.stringMatching(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/),
             workflowRuntimeId: '2',
             workflowDefinitionId: '2',
-            environment: 'some-node-env',
+            environment: 'test',
             data: {
               ...newContext,
             },
           },
           config: {
             headers: {
-              'X-Authorization': 'some-secret',
+              'X-Authorization': env.WEBHOOK_SECRET,
             },
           },
         },

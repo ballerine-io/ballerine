@@ -4,7 +4,6 @@
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 import { AxiosInstance } from 'axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { getDocumentId } from '@ballerine/common';
@@ -19,7 +18,6 @@ export class DocumentChangedWebhookCaller {
   constructor(
     private httpService: HttpService,
     private workflowEventEmitter: WorkflowEventEmitterService,
-    private configService: ConfigService,
     private readonly logger: AppLoggerService,
   ) {
     this.#__axios = this.httpService.axiosRef;
@@ -75,7 +73,13 @@ export class DocumentChangedWebhookCaller {
       return;
     }
 
-    const { id, environment, url, authSecret } = getWebhookInfo(data.updatedRuntimeData.config);
+    const { id, environment, url, authSecret, apiVersion } = getWebhookInfo(
+      data.updatedRuntimeData.config,
+    );
+
+    if (!url) {
+      throw new Error(`No webhook url found for a workflow runtime data with an id of "${id}"`);
+    }
 
     data.updatedRuntimeData.context.documents.forEach((doc: any) => {
       delete doc.propertiesSchema;
@@ -89,7 +93,7 @@ export class DocumentChangedWebhookCaller {
         {
           id,
           eventName: 'workflow.context.document.changed',
-          apiVersion: 1,
+          apiVersion,
           timestamp: new Date().toISOString(),
           workflowCreatedAt: data.updatedRuntimeData.createdAt,
           workflowResolvedAt: data.updatedRuntimeData.resolvedAt,

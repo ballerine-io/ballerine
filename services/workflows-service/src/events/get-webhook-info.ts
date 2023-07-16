@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import { env } from '@/env';
 import { getDynamicWebhookUrl } from '@/events/get-dynamic-webhook-url';
 import { WorkflowDefinition } from '@prisma/client';
+import packageJson from '../../package.json';
 
 export const getWebhookInfo = (config: WorkflowDefinition['config']) => {
   const id = randomUUID();
@@ -9,5 +10,5 @@ export const getWebhookInfo = (config: WorkflowDefinition['config']) => {
   const url = getDynamicWebhookUrl(config, 'workflow.context.document.changed') || env.WEBHOOK_URL;
   const authSecret = env.WEBHOOK_SECRET;
 
-  return { id, environment, url, authSecret };
+  return { id, environment, url, authSecret, apiVersion: packageJson.version };
 };

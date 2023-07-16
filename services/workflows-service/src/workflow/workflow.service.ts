@@ -1046,7 +1046,7 @@ export class WorkflowService {
     const context = snapshot.machine.context;
     // TODO: Refactor to use snapshot.done instead
     const isFinal = snapshot.machine.states[currentState].type === 'final';
-    const entityType = aliasIndividualAsEndUser(context.entity.type);
+    const entityType = aliasIndividualAsEndUser(context?.entity?.type);
     const entityId = runtimeData[`${entityType}Id`];
 
     this.logger.log('Workflow state transition', {
