@@ -21,21 +21,18 @@ export const kycDynamicExample = {
       run_kyc: {
         on: {
           PENDING_KYC: [{ target: 'pending_kyc_response' }],
-          API_CALL_ERROR: [{ target: 'auto_reject' }],
+          API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
         },
       },
       pending_kyc_response: {
         on: {
-          KYC_RESPONDED: [{ target: 'manual_review' }],
+          KYC_RESPONDED: [{ target: 'kyc_manual_review' }],
         },
       },
-      manual_review: {
+      kyc_manual_review: {
         type: 'final' as const,
       },
-      auto_approve: {
-        type: 'final' as const,
-      },
-      auto_reject: {
+      kyc_auto_reject: {
         type: 'final' as const,
       },
       reject: {
@@ -50,7 +47,7 @@ export const kycDynamicExample = {
     apiPlugins: [
       {
         name: 'request_kyc',
-        pluginType: 'kyc',
+        pluginKind: 'kyc',
         url: `{secret.KYC_API_URL}/individual-verifications`,
         method: 'POST',
         stateNames: ['run_kyc'],

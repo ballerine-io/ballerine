@@ -1,5 +1,5 @@
 import { TContext, Transformer, Transformers, Validator } from '../../utils';
-import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
+import {AnyRecord, isErrorWithMessage} from '@ballerine/common';
 import { IApiPluginParams } from './types';
 
 export class ApiPlugin {
@@ -118,7 +118,7 @@ export class ApiPlugin {
         `Error transforming data: ${
           isErrorWithMessage(error) ? error.message : ''
           // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        } for transformer mapping: ${transformer.mapping}`,
+        } for transformer mapping: ${JSON.stringify(transformer.mapping)}`,
       );
     }
   }
@@ -176,3 +176,4 @@ export class ApiPlugin {
     }, record as unknown);
   }
 }
+

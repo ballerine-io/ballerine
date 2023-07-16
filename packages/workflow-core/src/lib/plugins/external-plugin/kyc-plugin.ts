@@ -89,7 +89,7 @@ export class KycPlugin extends ApiPlugin {
     transformedRequest: AnyRecord,
     validationContext: TValidationContext,
   ) {
-    if (validationContext == 'Request') {
+    if (validationContext === 'Request') {
       return super.validateContent(
         new JsonSchemaValidator(kycIndividualRequestSchema),
         transformedRequest,
