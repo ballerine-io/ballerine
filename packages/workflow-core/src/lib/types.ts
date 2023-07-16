@@ -4,7 +4,10 @@ import {
   ISerializableChildPluginParams,
   ISerializableHttpPluginParams,
 } from './plugins/external-plugin/types';
-import { ISerializableCommonPluginParams } from './plugins/common-plugin/types';
+import {
+  ChildWorkflowPluginParams,
+  ISerializableCommonPluginParams
+} from './plugins/common-plugin/types';
 import { TContext } from './utils';
 import { ChildCallabackable } from './workflow-runner';
 import { THelperFormatingLogic } from './utils/context-transformers/types';
@@ -69,7 +72,7 @@ export interface WorkflowRunnerArgs {
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
-  invokeChildWorkflowAction?: ChildCallabackable['invokeChildWorkflowAction'];
+  invokeChildWorkflowAction?: ChildWorkflowPluginParams['action'];
 }
 
 export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;

@@ -89,9 +89,9 @@ export class WorkflowRunner {
     );
     // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
-    // @ts-expect-error TODO: fix this
     this.#__extensions.commonPlugins = this.initiateCommonPlugins(
-      this.#__extensions.commonPlugins ?? [],
+      // @ts-expect-error TODO: fix this
+    this.#__extensions.commonPlugins ?? [],
       [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat(1),
     );
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
@@ -149,7 +149,7 @@ export class WorkflowRunner {
   initiateChildPlugin(
     childPluginSchemas: Array<ISerializableChildPluginParams>,
     parentWorkflowRuntimeId: string,
-    callbackAction: ChildWorkflowPluginParams['action'],
+    callbackAction?: ChildWorkflowPluginParams['action'],
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
       const transformers = this.fetchTransformers(
@@ -163,7 +163,7 @@ export class WorkflowRunner {
         stateNames: childPluginSchema.stateNames,
         transformers: transformers,
         initEvent: childPluginSchema.initEvent,
-        action: callbackAction,
+        action: callbackAction!,
       });
 
       return apiPlugin;
@@ -192,13 +192,13 @@ export class WorkflowRunner {
 
   private pickApiPlugin(apiPluginSchema: ISerializableHttpPluginParams) {
     // @ts-ignore
-    if (apiPluginSchema.pluginKind == 'kyc') return KycPlugin;
+    if (apiPluginSchema.pluginKind === 'kyc') return KycPlugin;
     // @ts-ignore
-    if (apiPluginSchema.pluginKind == 'kyb') return KybPlugin;
+    if (apiPluginSchema.pluginKind === 'kyb') return KybPlugin;
     // @ts-ignore
-    if (apiPluginSchema.pluginKind == 'webhook') return WebhookPlugin;
+    if (apiPluginSchema.pluginKind === 'webhook') return WebhookPlugin;
     // @ts-ignore
-    if (apiPluginSchema.pluginKind == 'api') return ApiPlugin;
+    if (apiPluginSchema.pluginKind === 'api') return ApiPlugin;
 
     // @ts-expect-error TODO: fix this
     const isApiPlugin = this.isApiPlugin(apiPluginSchema);
@@ -216,9 +216,9 @@ export class WorkflowRunner {
   ) {
     return (
       transformers?.map(transformer => {
-        if (transformer.transformer == 'jmespath')
+        if (transformer.transformer === 'jmespath')
           return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
-        if (transformer.transformer == 'helper') {
+        if (transformer.transformer === 'helper') {
           return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
         }
 
