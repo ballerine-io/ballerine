@@ -65,6 +65,7 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import { plainToClass } from 'class-transformer';
 import { SortOrder } from '@/common/query-filters/sort-order';
+import { aliasIndividualAsEndUser } from '@/common/utils/pick-entity-type/alias-individual-as-end-user';
 
 type TEntityId = string;
 
@@ -1043,7 +1044,7 @@ export class WorkflowService {
     const context = snapshot.machine.context;
     // TODO: Refactor to use snapshot.done instead
     const isFinal = snapshot.machine.states[currentState].type === 'final';
-    const entityType = context.entity.type === 'individual' ? 'endUser' : ('business' as const);
+    const entityType = aliasIndividualAsEndUser(context.entity.type);
     const entityId = runtimeData[`${entityType}Id`];
 
     this.logger.log('Workflow state transition', {
