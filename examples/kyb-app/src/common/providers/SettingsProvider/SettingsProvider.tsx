@@ -1,10 +1,11 @@
+import { AnyChildren } from '@ballerine/ui';
 import { settingsProviderContext } from './settings-provider.context';
 import { ISettings } from '@app/common/types/settings';
 const { Provider } = settingsProviderContext;
 
 interface Props {
   settings: ISettings;
-  children: React.ReactNode | React.ReactNode[];
+  children: AnyChildren;
 }
 
 export const SettingsProvider = ({ settings, children }: Props) => {

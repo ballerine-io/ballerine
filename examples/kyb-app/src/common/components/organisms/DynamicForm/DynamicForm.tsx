@@ -1,29 +1,35 @@
-import { RJSFSchema, UiSchema, WidgetProps } from '@rjsf/utils';
+import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import Form from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { fields } from '@app/common/components/organisms/DynamicForm/fields';
 import { templates } from '@app/common/components/organisms/DynamicForm/templates';
 
-const MyCustomWidget = (props: WidgetProps) => {
-  return <div>hello world</div>;
-};
-
-interface Props {
+interface Props<TFormData> {
   schema: RJSFSchema;
-  uischema?: UiSchema;
+  uiSchema?: UiSchema;
+  className?: string;
+  initialData?: object;
+  onSubmit: (formData: TFormData) => void;
 }
 
-export const DynamicForm = (props: Props) => {
-  console.log('props', props);
+export function DynamicForm<TFormData extends object>({
+  schema,
+  uiSchema,
+  className,
+  initialData,
+  onSubmit,
+}: Props<TFormData>) {
   return (
     <Form
-      schema={props.schema}
-      uiSchema={props.uischema}
-      onError={errors => console.log({ errors })}
+      className={className}
+      schema={schema}
+      formData={initialData}
+      uiSchema={uiSchema}
+      onSubmit={data => onSubmit(data.formData ? (data.formData as TFormData) : ({} as TFormData))}
       validator={validator}
       fields={fields}
       templates={templates}
       showErrorList={false}
     />
   );
-};
+}

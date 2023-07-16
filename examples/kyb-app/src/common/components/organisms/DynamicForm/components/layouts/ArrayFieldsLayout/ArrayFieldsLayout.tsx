@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button } from '@ballerine/ui';
+import { Button } from '@ballerine/ui/lib/components/atoms/Button';
 import { ArrayFieldTemplateProps } from '@rjsf/utils';
 import { Plus } from 'lucide-react';
 
@@ -13,7 +13,7 @@ export const ArrayFieldsLayout = ({
   return (
     <div>
       <p className="pb-1 text-xl font-semibold">{title}</p>
-      <p className="text-muted-foreground pb-4  text-sm text-xl">{schema.description}</p>
+      <p className="text-muted-foreground pb-4 text-sm">{schema.description}</p>
       {items.map(element => (
         <React.Fragment key={element.index}>{element.children}</React.Fragment>
       ))}

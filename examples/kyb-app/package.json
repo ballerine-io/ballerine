@@ -14,10 +14,12 @@
     "@rjsf/core": "^5.9.0",
     "@rjsf/utils": "^5.9.0",
     "@rjsf/validator-ajv8": "^5.9.0",
+    "@xstate/react": "^3.2.2",
     "clsx": "^1.2.1",
     "lucide-react": "^0.144.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "xstate": "^4.38.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {

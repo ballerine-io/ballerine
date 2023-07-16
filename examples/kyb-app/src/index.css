@@ -25,9 +25,6 @@
   #root {
     height: 100%;
   }
-  body {
-    @apply overflow-hidden;
-  }
 
   .tooltip::before {
     @apply bg-base-100 text-base-content shadow !important;

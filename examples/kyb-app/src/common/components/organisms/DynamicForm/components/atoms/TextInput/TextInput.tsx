@@ -1,14 +1,14 @@
+import { Input } from '@ballerine/ui/lib/components/atoms/Input';
 import { FieldProps } from '@rjsf/utils';
-import { Input } from '@ballerine/ui';
 
-export const TextInput = ({ id, name, value, uiSchema, onChange }: FieldProps) => {
+export const TextInput = ({ id, name, uiSchema, formData, onChange }: FieldProps<string>) => {
   return (
     <Input
       id={id}
       name={name}
-      value={value}
+      value={formData ? formData : ''}
       placeholder={uiSchema['ui:placeholder']}
-      onChange={onChange}
+      onChange={event => onChange(event.target.value) as void}
     />
   );
 };

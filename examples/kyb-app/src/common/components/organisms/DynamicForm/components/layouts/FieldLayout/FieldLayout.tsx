@@ -1,6 +1,6 @@
 import { ErrorsList } from '@app/common/components/organisms/DynamicForm/components/molecules/ErrorsList';
 import { Label } from '@ballerine/ui';
-import { FieldTemplateProps, ValidatorType } from '@rjsf/utils';
+import { FieldTemplateProps } from '@rjsf/utils';
 
 export const FieldLayout = ({
   id,
