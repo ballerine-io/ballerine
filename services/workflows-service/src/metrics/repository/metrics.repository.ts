@@ -107,10 +107,11 @@ export class MetricsRepository {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateApprovalRate[]>(
       aggregateApprovalRateQuery,
       params.fromDate,
-      params.userId,
     );
 
-    return results.length ? plainToClass(ApprovalRateModel, results.at(-1)) : null;
+    return results.length
+      ? plainToClass(ApprovalRateModel, { approvalRate: results.at(-1)?.approvalRate })
+      : null;
   }
 
   async getUserAverageResolutionTime(
@@ -119,10 +120,11 @@ export class MetricsRepository {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateAverageResolutionTime[]>(
       aggregateAverageResolutionTimeQuery,
       params.fromDate,
-      params.userId,
     );
 
-    return results.length ? plainToClass(AverageResolutionTimeModel, results.at(-1)) : null;
+    return results.length
+      ? plainToClass(AverageResolutionTimeModel, { time: results.at(-1)?.average_time })
+      : null;
   }
 
   async getUserAverageAssignmentTime(
@@ -131,10 +133,11 @@ export class MetricsRepository {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateAverageAssignmentTime[]>(
       aggregateAverageAssignmentTimeQuery,
       params.fromDate,
-      params.userId,
     );
 
-    return results.length ? plainToClass(AverageAssignmentTimeModel, results.at(-1)) : null;
+    return results.length
+      ? plainToClass(AverageAssignmentTimeModel, { time: results.at(-1)?.average_time })
+      : null;
   }
 
   async getUserAverageReviewTime(
@@ -143,10 +146,11 @@ export class MetricsRepository {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateAverageReviewTime[]>(
       aggregateAverageReviewTimeQuery,
       params.fromDate,
-      params.userId,
     );
 
-    return results.length ? plainToClass(AverageReviewTimeModel, results.at(-1)) : null;
+    return results.length
+      ? plainToClass(AverageReviewTimeModel, { time: results.at(-1)?.average_time })
+      : null;
   }
 
   async listCasesResolvedDaily(

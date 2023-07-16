@@ -1,5 +1,6 @@
 export { type DefaultContextSchema } from './documents/context';
 export { type TDefaultSchemaDocumentPage } from './documents/default-context-page-schema';
+export { defaultContextSchema } from './documents/default-context-schema';
 export {
   ghanaDocuments,
   certificateOfResidenceGH,

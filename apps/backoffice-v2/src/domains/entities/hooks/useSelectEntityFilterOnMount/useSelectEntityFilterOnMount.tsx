@@ -1,8 +1,9 @@
 import { useFiltersQuery } from '../../../filters/hooks/queries/useFiltersQuery/useFiltersQuery';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
+import { searchParamsToObject } from '../../../../common/hooks/useZodSearchParams/utils/search-params-to-object';
 
 export const useSelectEntityFilterOnMount = (websocketConnectionIsOpen: boolean) => {
   const { data: filters } = useFiltersQuery(websocketConnectionIsOpen);
@@ -11,10 +12,19 @@ export const useSelectEntityFilterOnMount = (websocketConnectionIsOpen: boolean)
   const entity = useEntityType();
   const navigate = useNavigate();
   const [firstFilter] = filters ?? [];
+  const { state } = useLocation();
+  const prevFilterId = useMemo(
+    () => searchParamsToObject(new URLSearchParams(state?.from?.search))?.filterId,
+    [state?.from?.search],
+  );
 
   useEffect(() => {
-    if ((entity && filterId) || !firstFilter) return;
+    if ((entity && filterId) || (!firstFilter && !prevFilterId)) return;
 
-    navigate(`/${locale}/case-management/entities?filterId=${firstFilter?.id}`);
-  }, [entity, filterId, firstFilter, setSearchParams]);
+    navigate(`/${locale}/case-management/entities?filterId=${prevFilterId || firstFilter?.id}`, {
+      state: {
+        from: state?.from,
+      },
+    });
+  }, [entity, filterId, firstFilter, locale, navigate, prevFilterId, state?.from]);
 };

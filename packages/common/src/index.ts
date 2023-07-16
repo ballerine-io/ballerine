@@ -24,4 +24,5 @@ export {
   getDocumentsByCountry,
   getDocumentId,
   type TDocument,
+  defaultContextSchema,
 } from './schemas';
