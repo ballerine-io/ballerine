@@ -1,10 +1,10 @@
-import { env } from '../../common/env/env';
-import { authQueryKeys } from '../../domains/auth/query-keys';
-import { queryClient } from '../../lib/react-query/query-client';
-import { filtersQueryKeys } from '../../domains/filters/query-keys';
+import { env } from '../../../../common/env/env';
+import { authQueryKeys } from '../../query-keys';
+import { queryClient } from '../../../../lib/react-query/query-client';
+import { filtersQueryKeys } from '../../../filters/query-keys';
 import { LoaderFunction } from 'react-router-dom';
 
-export const localeLoader: LoaderFunction = async () => {
+export const authenticatedLayoutLoader: LoaderFunction = async () => {
   if (!env.VITE_AUTH_ENABLED) return null;
 
   const authenticatedUser = authQueryKeys.authenticatedUser();
