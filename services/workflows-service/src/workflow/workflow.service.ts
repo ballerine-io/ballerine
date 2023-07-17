@@ -159,7 +159,9 @@ export class WorkflowService {
   ) {
     return await this.workflowRuntimeDataRepository.findById(id, {
       ...args,
-      include: { childWorkflowsRuntimeData: true },
+      select: {
+        ...args?.select,
+      },
     });
   }
 
@@ -167,10 +169,32 @@ export class WorkflowService {
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
-    const workflow = (await this.workflowRuntimeDataRepository.findById(id, {
-      ...args,
-      include: { childWorkflowsRuntimeData: true },
-    })) as TWorkflowWithRelations;
+    const safeArgs = (() => {
+      if (args?.include) {
+        return {
+          ...args,
+          include: {
+            ...args?.include,
+            childWorkflowsRuntimeData: true,
+          },
+        };
+      }
+
+      if (args?.select) {
+        return {
+          ...args,
+          select: {
+            ...args?.select,
+            childWorkflowsRuntimeData: true,
+          },
+        };
+      }
+    })();
+    const workflow = (await this.workflowRuntimeDataRepository.findById(
+      id,
+      // @ts-ignore - Prisma throws when passing both select and include
+      safeArgs,
+    )) as TWorkflowWithRelations;
 
     return this.formatWorkflow(workflow);
   }
