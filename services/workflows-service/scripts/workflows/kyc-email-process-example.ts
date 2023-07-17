@@ -17,11 +17,11 @@ export const kycEmailSessionDefinition = {
       },
       get_kyc_session: {
         on: {
-          SEND_EMAIL: [{ target: 'send_email' }],
+          SEND_EMAIL: [{ target: 'email_sent' }],
           API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
         },
       },
-      send_email: {
+      email_sent: {
         on: {
           KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }],
         },
@@ -78,7 +78,7 @@ export const kycEmailSessionDefinition = {
         pluginKind: 'email',
         url: `{secret.EMAIL_API_URL}`,
         method: 'POST',
-        stateNames: ['send_email'],
+        stateNames: ['email_sent'],
         headers: { Authorization: 'Bearer {secret.EMAIL_API_TOKEN}', 'Content-Type': 'application/json' },
         request: {
           transform: [
@@ -87,10 +87,12 @@ export const kycEmailSessionDefinition = {
               mapping: `{
               kybCompanyName: entity.data.additionalInfo.companyName,
               customerCompanyName: entity.data.additionalInfo.customerCompany,
+              firstName: entity.data.firstName,
+              kycLink: pluginsOutput.kyc_session.url,
               from: 'no-reply@ballerine.com',
               receivers: [entity.data.email],
-              subject: '{entity.data.additionalInfo.customerCompany} activation, Action needed.',
-              preheader: 'Verify your identity for Happy Home Goods activation with {entity.data.additionalInfo.customerCompany}.',
+              subject: '{customerCompanyName} activation, Action needed.',
+              preheader: 'Verify your identity for Happy Home Goods activation with {customerCompanyName}.',
               templateId: 'd-61c568cfa5b145b5916ff89790fe2065'
               }`, // jmespath
             },

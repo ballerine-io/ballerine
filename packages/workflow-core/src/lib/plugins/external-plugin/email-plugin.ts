@@ -15,8 +15,9 @@ export class EmailPlugin extends ApiPlugin {
     payload: AnyRecord,
     headers: HeadersInit,
   ) {
-    const from = {email: payload.from}
-    const subject = {subject: payload.subject}
+    const from = {from: {email: payload.from}}
+    const subject = {subject: this.replaceValuePlaceholders(payload.subject as string, payload)}
+    const preheader = payload.preheader ? {preheader: this.replaceValuePlaceholders(payload.preheader as string, payload)} : {}
     const receivers = (payload.receivers as string[]).map(receiver => {
       return {email: receiver}
     });
@@ -24,13 +25,14 @@ export class EmailPlugin extends ApiPlugin {
     const templateId = {template_id: payload.templateId}
 
     const emailPayload = {
-      personalizations: {
-        ...from,
+      ...from,
+      ...subject,
+      ...preheader,
+      personalizations: [{
         ...to,
-        ...subject,
         ...{dynamic_template_data: payload},
-        ...templateId
-      }
+      }],
+      ...templateId
     }
 
     return await super.makeApiRequest(url, method, emailPayload, headers);
