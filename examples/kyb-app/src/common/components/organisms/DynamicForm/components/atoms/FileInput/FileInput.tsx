@@ -1,6 +1,6 @@
 import { useFileStorage } from '@app/common/providers/FileStorageProvider';
-import { Input } from '@ballerine/ui/dist/components/atoms/Input';
-import { Label } from '@ballerine/ui/dist/components/atoms/Label';
+import { Input } from '@ballerine/ui';
+import { Label } from '@ballerine/ui';
 import { FieldProps } from '@rjsf/utils';
 import { useCallback, useEffect, useRef } from 'react';
 
