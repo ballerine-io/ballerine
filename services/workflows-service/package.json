@@ -10,7 +10,7 @@
     "lint": "eslint . --fix",
     "start": "nest start",
     "dev": "npm run start:watch",
-    "prod": "npm run db:migrate-up && node dist/main",
+    "prod": "npm run db:migrate-up && node dist/src/main",
     "start:watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "build": "nest build --path=tsconfig.build.json",
