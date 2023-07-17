@@ -15,4 +15,11 @@ export class WorkflowIdWithEventInput {
   })
   @IsString()
   event!: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  resultDestination?: string;
 }

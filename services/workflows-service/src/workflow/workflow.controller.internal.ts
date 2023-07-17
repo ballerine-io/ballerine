@@ -213,7 +213,8 @@ export class WorkflowControllerInternal {
   ): Promise<void> {
     try {
       const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
-      const updatedContext = { ...workflowRuntime.context, hookResponse: data };
+      const persistenceParamKey = data.resultDestination || 'hookResponse'
+      const updatedContext = { ...workflowRuntime.context, [persistenceParamKey]: data };
       await this.service.updateWorkflowRuntimeData(params.id, { context: updatedContext });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
