@@ -18,7 +18,7 @@ export const AgentsActivityChart = ({ isLoading, data }: Props) => {
   const chartItems = useMemo(
     () =>
       data.map(item => {
-        const hourDifference = dayjs(item.lastActiveAt).diff(Date.now(), 'hour');
+        const hourDifference = Math.abs(dayjs(item.lastActiveAt).diff(Date.now(), 'hour'));
 
         return (
           <div
@@ -41,7 +41,6 @@ export const AgentsActivityChart = ({ isLoading, data }: Props) => {
   return (
     <MetricListChart
       title="Online/Offline Agents"
-      description={'( last 1 hour )'}
       isLoading={isLoading}
       items={chartItems}
       emptyPlaceholder={<div>No recent activity found.</div>}
