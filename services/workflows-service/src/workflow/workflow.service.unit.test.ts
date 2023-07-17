@@ -15,7 +15,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import packageJson from '../../package.json';
-import { env } from '@/env';
 import { ConfigService } from '@nestjs/config';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
@@ -99,10 +98,10 @@ describe('WorkflowService', () => {
     WEBHOOK_SECRET: 'webhook_secret',
     NODE_ENV: 'test',
 
-    get(key: string) {
-      return this[key as Exclude<keyof typeof this, 'get'>];
+    get(key: Exclude<keyof typeof this, 'get'>) {
+      return this[key];
     },
-  } as unknown as ConfigService;
+  };
 
   beforeAll(async () => {
     testingModule = await Test.createTestingModule({
@@ -142,7 +141,7 @@ describe('WorkflowService', () => {
 
     const documentChangedWebhookCaller = new DocumentChangedWebhookCaller(
       fakeHttpService,
-      configService,
+      configService as unknown as ConfigService,
       eventEmitter as any,
       testingModule.get(AppLoggerService),
     );
@@ -236,7 +235,7 @@ describe('WorkflowService', () => {
 
       expect(fakeHttpService.requests).toEqual([
         {
-          url: env.WEBHOOK_URL,
+          url: configService.get('WEBHOOK_URL'),
           data: {
             id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
             eventName: 'workflow.context.document.changed',
@@ -255,7 +254,7 @@ describe('WorkflowService', () => {
           },
           config: {
             headers: {
-              'X-Authorization': env.WEBHOOK_SECRET,
+              'X-Authorization': configService.get('WEBHOOK_SECRET'),
             },
           },
         },
@@ -283,7 +282,7 @@ describe('WorkflowService', () => {
 
       expect(fakeHttpService.requests).toEqual([
         {
-          url: env.WEBHOOK_URL,
+          url: configService.get('WEBHOOK_URL'),
           data: {
             id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
             eventName: 'workflow.context.document.changed',
@@ -302,7 +301,7 @@ describe('WorkflowService', () => {
           },
           config: {
             headers: {
-              'X-Authorization': env.WEBHOOK_SECRET,
+              'X-Authorization': configService.get('WEBHOOK_SECRET'),
             },
           },
         },
