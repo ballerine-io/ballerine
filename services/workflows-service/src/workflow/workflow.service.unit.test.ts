@@ -93,6 +93,14 @@ describe('WorkflowService', () => {
   const numbUserInfo = Symbol();
   let fakeHttpService;
   let testingModule: TestingModule;
+  const configService = {
+    WEBHOOK_URL: 'https://example.com',
+    WEBHOOK_SECRET: 'webhook_secret',
+
+    get<T>(key: string) {
+      return this[key as Exclude<keyof typeof this, 'get'>] as T | undefined;
+    },
+  };
 
   beforeAll(async () => {
     testingModule = await Test.createTestingModule({
@@ -132,6 +140,7 @@ describe('WorkflowService', () => {
 
     const documentChangedWebhookCaller = new DocumentChangedWebhookCaller(
       fakeHttpService,
+      configService,
       eventEmitter as any,
       testingModule.get(AppLoggerService),
     );

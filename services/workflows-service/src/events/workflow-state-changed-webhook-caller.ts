@@ -43,6 +43,9 @@ export class WorkflowStateChangedWebhookCaller {
 
     const { id, environment, url, authSecret, apiVersion } = getWebhookInfo(
       data.runtimeData.config,
+      this.configService.get('NODE_ENV'),
+      this.configService.get('WEBHOOK_URL'),
+      this.configService.get('WEBHOOK_SECRET'),
     );
 
     if (!url) {

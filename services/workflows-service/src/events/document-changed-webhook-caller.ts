@@ -10,6 +10,7 @@ import { getDocumentId } from '@ballerine/common';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhookInfo } from '@/events/get-webhook-info';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class DocumentChangedWebhookCaller {
@@ -17,6 +18,7 @@ export class DocumentChangedWebhookCaller {
 
   constructor(
     private httpService: HttpService,
+    private readonly configService: ConfigService,
     private workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
   ) {
@@ -75,6 +77,9 @@ export class DocumentChangedWebhookCaller {
 
     const { id, environment, url, authSecret, apiVersion } = getWebhookInfo(
       data.updatedRuntimeData.config,
+      this.configService.get('NODE_ENV'),
+      this.configService.get('WEBHOOK_URL'),
+      this.configService.get('WEBHOOK_SECRET'),
     );
 
     if (!url) {
