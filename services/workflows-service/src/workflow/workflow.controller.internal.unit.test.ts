@@ -39,6 +39,12 @@ class FakeEndUserRepo extends BaseFakeRepository {
   }
 }
 
+class FakeEntityRepo extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
 function buildWorkflowDeifintion(sequenceNum) {
   return {
     id: sequenceNum.toString(),
@@ -72,6 +78,7 @@ describe('WorkflowControllerInternal', () => {
   let workflowRuntimeDataRepo;
   let businessRepo;
   let endUserRepo;
+  let entityRepo;
   let eventEmitterSpy;
   const numbUserInfo = Symbol();
   let testingModule: TestingModule;
@@ -87,6 +94,7 @@ describe('WorkflowControllerInternal', () => {
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
     businessRepo = new FakeBusinessRepo();
     endUserRepo = new FakeEndUserRepo();
+    entityRepo = new FakeEntityRepo();
 
     eventEmitterSpy = {
       emitted: [],
@@ -100,7 +108,7 @@ describe('WorkflowControllerInternal', () => {
       workflowRuntimeDataRepo,
       endUserRepo,
       businessRepo,
-      {} as any,
+      entityRepo,
       {} as any,
       eventEmitterSpy,
       testingModule.get(AppLoggerService),
