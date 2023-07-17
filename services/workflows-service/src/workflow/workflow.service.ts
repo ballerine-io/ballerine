@@ -160,7 +160,7 @@ export class WorkflowService {
   ) {
     return await this.workflowRuntimeDataRepository.findById(id, {
       ...args,
-      include: { childWorkflowRuntimeDatas: true },
+      include: { childWorkflowsRuntimeData: true },
     });
   }
 
@@ -170,7 +170,7 @@ export class WorkflowService {
   ) {
     const workflow = (await this.workflowRuntimeDataRepository.findById(id, {
       ...args,
-      include: { childWorkflowRuntimeDatas: true },
+      include: { childWorkflowsRuntimeData: true },
     })) as TWorkflowWithRelations;
 
     return this.formatWorkflow(workflow);
@@ -220,7 +220,7 @@ export class WorkflowService {
       endUser: undefined,
       business: undefined,
       nextEvents: service.getSnapshot().nextEvents,
-      childWorkflows: workflow.childWorkflowRuntimeDatas?.map((childWorkflow) => this.formatWorkflow(childWorkflow))
+      childWorkflows: workflow.childWorkflowsRuntimeData?.map((childWorkflow) => this.formatWorkflow(childWorkflow))
     };
   }
 
@@ -1182,7 +1182,7 @@ export class WorkflowService {
     const childWorkflowCallback = (callbackTransformation ||
       workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
     const childrenOfSameDefinition = (
-      parentWorkflowRuntime.childWorkflowRuntimeDatas as Array<WorkflowRuntimeData>
+      parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>
     ).filter(
       childWorkflow =>
         childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,

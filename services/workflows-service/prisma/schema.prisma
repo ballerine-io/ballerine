@@ -123,12 +123,6 @@ model Business {
   @@index([correlationId])
 }
 
-enum CheckPolicy {
-  always
-  sometimes
-  never
-}
-
 model WorkflowDefinition {
   id              String  @id @default(cuid())
   reviewMachineId String?
@@ -182,7 +176,7 @@ model WorkflowRuntimeData {
 
   parentRuntimeDataId       String?               @map("parent_runtime_data_id")
   parentWorkflowRuntimeData WorkflowRuntimeData?  @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
-  childWorkflowRuntimeDatas WorkflowRuntimeData[] @relation("ParentChild")
+  childWorkflowsRuntimeData WorkflowRuntimeData[] @relation("ParentChild")
 
   @@index([assigneeId, status])
   @@index([endUserId, status])
