@@ -1,9 +1,12 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 export const kybWithDynamicExternalRequestWorkflowExample = {
   id: 'dynamic_external_request_example',
   name: 'dynamic_external_request_example',
   version: 1,
+  config: {
+    workflowLevelResolution: true,
+  },
   definitionType: 'statechart-json',
   definition: {
     id: 'kyb_example_v1',
@@ -210,7 +213,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
       },
     ],
   },
-};
+} as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
 export const generateDynamicDefinitionForE2eTest = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
     data: kybWithDynamicExternalRequestWorkflowExample,

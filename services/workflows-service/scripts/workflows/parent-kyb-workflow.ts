@@ -19,12 +19,6 @@ export const kybParentDynamicExample = {
           start: 'run_ubos',
         },
       },
-      run_kyb_enrichment: {
-        on: {
-          KYB_DONE: [{ target: 'run_ubos' }],
-          FAILED: [{ target: 'auto_reject' }],
-        },
-      },
       run_ubos: {
         on: {
           CONTINUE: [{ target: 'run_kyb_enrichment' }],

@@ -64,15 +64,17 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import { plainToClass } from 'class-transformer';
 import { SortOrder } from '@/common/query-filters/sort-order';
+import { aliasIndividualAsEndUser } from '@/common/utils/alias-individual-as-end-user/alias-individual-as-end-user';
+import { EntityRepository } from '@/common/entity/entity.repository';
 import {
-  createWorkflow,
-  ChildWorkflowCallback,
   ChildPluginCallbackOutput,
+  ChildToParentCallback,
+  ChildWorkflowCallback,
+  createWorkflow,
+  HelpersTransformer,
   JmespathTransformer,
   SerializableTransformer,
-  HelpersTransformer,
   THelperFormatingLogic,
-  ChildToParentCallback,
   Transformer,
 } from '@ballerine/workflow-core';
 
@@ -121,6 +123,7 @@ export class WorkflowService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
     protected readonly businessRepository: BusinessRepository,
+    protected readonly entityRepository: EntityRepository,
     protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
@@ -176,11 +179,11 @@ export class WorkflowService {
     const isIndividual = 'endUser' in workflow;
     const service = createWorkflow({
       runtimeId: workflow.id,
-      definition: workflow.workflowDefinition as any,
+      definition: workflow.workflowDefinition.definition,
       definitionType: workflow.workflowDefinition.definitionType,
       workflowContext: {
         machineContext: workflow.context,
-        state: workflow.state,
+        state: workflow.state ?? workflow.workflowDefinition.definition.initial,
       },
     });
 
@@ -222,10 +225,7 @@ export class WorkflowService {
     };
   }
 
-  async persistChildEvent(
-    childPluginConfig: ChildPluginCallbackOutput,
-    parentWorkflow: WorkflowRuntimeData,
-  ) {
+  async persistChildEvent(childPluginConfig: ChildPluginCallbackOutput) {
     const childWorkflow = (
       await this.createOrUpdateWorkflowRuntime({
         workflowDefinitionId: childPluginConfig.definitionId,
@@ -538,6 +538,7 @@ export class WorkflowService {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
+    // TODO: Use snapshot.done instead
     const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
     if (
       ['active'].includes(data.status! || runtimeData.status) &&
@@ -759,6 +760,13 @@ export class WorkflowService {
         },
       });
     } else {
+      if (manualReviewWorkflow.state === 'revision') {
+        await this.event({
+          name: 'review',
+          id: manualReviewWorkflow.id,
+        });
+      }
+
       await this.workflowRuntimeDataRepository.updateById(manualReviewWorkflow.id, {
         data: {
           context: {
@@ -1058,12 +1066,7 @@ export class WorkflowService {
     );
   }
 
-  async event({
-    name: type,
-    document,
-    resubmissionReason,
-    id,
-  }: WorkflowEventInput & IObjectWithId) {
+  async event({ name: type, id }: WorkflowEventInput & IObjectWithId) {
     this.logger.log('Workflow event received', { id, type });
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(id);
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
@@ -1080,10 +1083,7 @@ export class WorkflowService {
       },
       extensions: workflowDefinition.extensions,
       invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
-        const runnableChildWorkflow = await this.persistChildEvent(
-          childPluginConfiguration,
-          workflowRuntimeData,
-        );
+        const runnableChildWorkflow = await this.persistChildEvent(childPluginConfiguration);
         if (runnableChildWorkflow && childPluginConfiguration.initOptions.event) {
           await this.event({
             id: runnableChildWorkflow.workflowRuntimeData.id,
@@ -1100,44 +1100,17 @@ export class WorkflowService {
     const snapshot = service.getSnapshot();
     const currentState = snapshot.value;
     const context = snapshot.machine.context;
+    // TODO: Refactor to use snapshot.done instead
     const isFinal = snapshot.machine.states[currentState].type === 'final';
+    const entityType = aliasIndividualAsEndUser(context?.entity?.type);
+    const entityId = workflowRuntimeData[`${entityType}Id`];
 
     this.logger.log('Workflow state transition', {
       id: id,
       from: workflowRuntimeData.state,
       to: currentState,
     });
-
-    // TODO: Update to work with changes related to revision
-    if (type === 'resubmit' && document) {
-      switch (resubmissionReason) {
-        case ResubmissionReason.BLURRY_IMAGE:
-          await this.workflowRuntimeDataRepository.updateById(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-            (workflowRuntimeData as any).context?.parentMachine?.id,
-            {
-              data: {
-                state: 'document_photo',
-                status: 'active',
-                context: {
-                  ...context,
-                  [document]: {
-                    ...context?.[document],
-                    resubmissionReason,
-                  },
-                },
-              },
-            },
-          );
-          break;
-        default:
-          throw new BadRequestException(
-            `Invalid resubmission reason ${resubmissionReason as string}`,
-          );
-      }
-    }
-
-    await this.updateWorkflowRuntimeData(workflowRuntimeData.id, {
+    const updatedRuntimeData = await this.updateWorkflowRuntimeData(workflowRuntimeData.id, {
       context,
       state: currentState,
       status: isFinal ? 'completed' : workflowRuntimeData.status,
@@ -1147,17 +1120,42 @@ export class WorkflowService {
       await this.persistChildWorkflowToParent(workflowRuntimeData, workflowDefinition, isFinal);
     }
 
+    this.workflowEventEmitter.emit('workflow.state.changed', {
+      entityId,
+      state: updatedRuntimeData.state,
+      correlationId: updatedRuntimeData.correlationId,
+      runtimeData: updatedRuntimeData,
+    });
+
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
       return;
     }
 
-    if (!workflowRuntimeData.endUserId) return;
+    const approvalState = ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState];
 
-    await this.endUserRepository.updateById(workflowRuntimeData.endUserId, {
-      data: {
-        approvalState: ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState],
-      },
-    });
+    if (!entityType) {
+      throw new BadRequestException(`entity.type is required`);
+    }
+
+    if (!entityId) {
+      throw new BadRequestException(`entity.${entityType}Id is required`);
+    }
+
+    if (entityType === 'endUser') {
+      await this.entityRepository[entityType].updateById(entityId, {
+        data: {
+          approvalState,
+        },
+      });
+    }
+
+    if (entityType === 'business') {
+      await this.entityRepository[entityType].updateById(entityId, {
+        data: {
+          approvalState,
+        },
+      });
+    }
   }
 
   async persistChildWorkflowToParent(
@@ -1226,6 +1224,7 @@ export class WorkflowService {
     );
 
     const contextToPersist: Record<string, any> = {};
+
     for (const childWorkflow of childrenOfSameDefinition) {
       let childContextToPersist = childWorkflow.context;
 
@@ -1244,6 +1243,7 @@ export class WorkflowService {
       workflowDefinition.name,
       contextToPersist,
     );
+
     return parentContext;
   }
 
@@ -1255,6 +1255,7 @@ export class WorkflowService {
 
     throw new Error(`No transformer found for ${transformer.transformer}`);
   }
+
   private composeContextWithChildResponse(
     parentWorkflowContext: any,
     definitionName: string,
