@@ -41,7 +41,7 @@ export const useCallToActionLogic = () => {
         {
           approved: 'approve_document',
           rejected: 'reject_document',
-          revision: 'ask_resubmit_document',
+          revision: 'ask_revision_document',
         } as const
       )[payload.approvalStatus];
 

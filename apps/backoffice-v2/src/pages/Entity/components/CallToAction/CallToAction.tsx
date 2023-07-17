@@ -113,12 +113,12 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
             <button
               className={ctw(`btn-error btn justify-center`)}
               // onClick={onMutateRejectEntity({
-              //   action: Action.RESUBMIT,
+              //   action: Action.REVISION,
               // Currently hardcoded to documentOne.
-              // documentToResubmit,
-              // resubmissionReason,
+              // documentToRevision,
+              // revisionReason,
               // })}
-              // disabled={!resubmissionReason}
+              // disabled={!revisionReason}
               onClick={onMutateUpdateWorkflowById({
                 id: data?.id,
                 approvalStatus: action,

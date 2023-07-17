@@ -116,7 +116,7 @@ describe('workflow-runner', () => {
         ).toEqual({
           ballerineEnrichment: {
             error:
-              'Error transforming data: Unexpected token type: Colon, value: : for transformer mapping: dsa: .unknwonvalue.id}',
+              'Error transforming data: Unexpected token type: Colon, value: : for transformer mapping: "dsa: .unknwonvalue.id}"',
           },
         });
       });
@@ -155,7 +155,7 @@ describe('workflow-runner', () => {
           ).toEqual({
             ballerineEnrichment: {
               error:
-                "must have required property 'business_name' | must have required property 'registration_number'",
+                " - must have required property 'business_name' |  - must have required property 'registration_number'",
             },
           });
         });
