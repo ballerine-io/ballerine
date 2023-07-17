@@ -112,3 +112,20 @@
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 }
+
+@layer components {
+  .animated-path {
+    stroke-dasharray: 320;
+    stroke-dashoffset: 0;
+    animation: animate-stroke 5s linear alternate infinite;
+  }
+
+  @keyframes animate-stroke {
+    from {
+      stroke-dashoffset: 320;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+}
