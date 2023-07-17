@@ -1,13 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 import { kycDynamicExample } from './kyc-dynamic-process-example';
+import {kycEmailSessionDefinition} from "./kyc-email-process-example";
 
-export const kybParentDynamicExample = {
-  id: 'dynamic_kyb_parent_example',
-  name: 'dynamic_kyb_parent_example',
+export const parentKybWithSessionWorkflowDefinition = {
+  id: 'kyb_parent_kyc_session_example',
+  name: 'kyb_parent_kyc_session_example',
   version: 1,
   definitionType: 'statechart-json',
   definition: {
-    id: 'kyb_parent_example_v1',
+    id: 'kyb_parent_kyc_session_example_v1',
     predictableActionArguments: true,
     initial: 'idle',
     context: {
@@ -92,7 +93,7 @@ export const kybParentDynamicExample = {
       {
         pluginKind: 'child',
         name: 'veriff_kyc_child_plugin',
-        definitionId: kycDynamicExample.id,
+        definitionId: kycEmailSessionDefinition.id,
         transformers: [
           {
             transformer: 'jmespath',
@@ -122,11 +123,11 @@ export const kybParentDynamicExample = {
   config: {
     childCallbackResults: [
       {
-        definitionId: kycDynamicExample.id,
+        definitionId: kycEmailSessionDefinition.name,
         transformers: [
           {
             transformer: 'jmespath',
-            mapping: '{childResult: entity.data, vendorResult: hook.data}', // jmespath
+            mapping: '{childResult: entity.data, vendorResult: vendorResult.data}', // jmespath
           },
         ],
         deliverEvent: 'KYC_RESPONDED',
@@ -134,8 +135,8 @@ export const kybParentDynamicExample = {
     ],
   },
 };
-export const generateParentKybWithKycs = async (prismaClient: PrismaClient) => {
+export const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
-    data: kybParentDynamicExample,
+    data: parentKybWithSessionWorkflowDefinition,
   });
 };

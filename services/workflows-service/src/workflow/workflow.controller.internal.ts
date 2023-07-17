@@ -209,11 +209,12 @@ export class WorkflowControllerInternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async hook(
     @common.Param() params: WorkflowIdWithEventInput,
+    @common.Query() query: { resultDestination?: string },
     @common.Body() data: any,
   ): Promise<void> {
     try {
       const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
-      const persistenceParamKey = data.resultDestination || 'hookResponse'
+      const persistenceParamKey = query.resultDestination || 'hookResponse'
       const updatedContext = { ...workflowRuntime.context, [persistenceParamKey]: data };
       await this.service.updateWorkflowRuntimeData(params.id, { context: updatedContext });
     } catch (error) {

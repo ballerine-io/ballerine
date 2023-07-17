@@ -38,6 +38,7 @@ import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plug
 import { search } from 'jmespath';
 import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
 import {KycSessionPlugin} from "./plugins/external-plugin/kyc-session-plugin";
+import {EmailPlugin} from "./plugins/external-plugin/email-plugin";
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
@@ -202,6 +203,8 @@ export class WorkflowRunner {
     if (apiPluginSchema.pluginKind === 'webhook') return WebhookPlugin;
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'api') return ApiPlugin;
+    // @ts-ignore
+    if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
 
     // @ts-expect-error TODO: fix this
     const isApiPlugin = this.isApiPlugin(apiPluginSchema);

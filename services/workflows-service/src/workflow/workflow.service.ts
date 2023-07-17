@@ -1178,7 +1178,7 @@ export class WorkflowService {
         ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
     )
       // @ts-ignore - fix as childCallbackResults[number]
-      ?.find(childCallbackResult => workflowDefinition.name === childCallbackResult.definitionName);
+      ?.find(childCallbackResult => workflowDefinition.id === childCallbackResult.definitionId);
     const childWorkflowCallback = (callbackTransformation ||
       workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
     const childrenOfSameDefinition = (
@@ -1219,7 +1219,7 @@ export class WorkflowService {
     if (!isFinal)
       return this.composeContextWithChildResponse(
         parentWorkflowRuntime.context,
-        workflowDefinition.name,
+        workflowDefinition.id,
       );
 
     const transformerInstance = (transformers || []).map((transformer: SerializableTransformer) =>
@@ -1242,7 +1242,7 @@ export class WorkflowService {
 
     const parentContext = this.composeContextWithChildResponse(
       parentWorkflowRuntime.context,
-      workflowDefinition.name,
+      workflowDefinition.id,
       contextToPersist,
     );
     return parentContext;
@@ -1258,13 +1258,13 @@ export class WorkflowService {
   }
   private composeContextWithChildResponse(
     parentWorkflowContext: any,
-    definitionName: string,
+    definitionId: string,
     contextToPersist?: any,
   ) {
     parentWorkflowContext['childWorkflows'] ||= {};
-    parentWorkflowContext['childWorkflows'][definitionName] ||= {};
+    parentWorkflowContext['childWorkflows'][definitionId] ||= {};
 
-    parentWorkflowContext['childWorkflows'][definitionName] = contextToPersist;
+    parentWorkflowContext['childWorkflows'][definitionId] = contextToPersist;
     return parentWorkflowContext;
   }
 
