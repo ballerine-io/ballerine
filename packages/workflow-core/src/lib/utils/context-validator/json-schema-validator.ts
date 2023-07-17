@@ -20,7 +20,9 @@ export class JsonSchemaValidator extends BaseSchemaValidator {
     const validationResult = validator.validate(this.schema, data);
 
     if (!validationResult) {
-      const validationErrorMessage = validator.errors?.map(error => error.message).join(' | ');
+      const validationErrorMessage = validator.errors
+        ?.map(error => `${error.instancePath} - ${error.message}`)
+        .join(' | ');
       return { isValid: false, errorMessage: validationErrorMessage };
     }
 

@@ -1,15 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `childWorkflows` on the `WorkflowDefinition` table. All the data in the column will be lost.
-
-*/
--- CreateEnum
-CREATE TYPE "CheckPolicy" AS ENUM ('always', 'sometimes', 'never');
-
--- AlterTable
-ALTER TABLE "WorkflowDefinition" DROP COLUMN "childWorkflows";
-
 -- AlterTable
 ALTER TABLE "WorkflowRuntimeData" ADD COLUMN     "parent_runtime_data_id" TEXT;
 
