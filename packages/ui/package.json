@@ -3,15 +3,15 @@
   "private": false,
   "version": "0.0.2",
   "type": "module",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./lib/index.js",
-      "types": "./lib/index.d.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
-    "./components/*": "./lib/components/*",
-    "./lib/style.css": "./lib/style.css"
+    "./components/*": "./dist/components/*",
+    "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
     "dev": "vite build --watch",
