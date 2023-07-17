@@ -6,6 +6,7 @@ import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
 import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
 import * as errors from '../errors';
@@ -24,7 +25,6 @@ import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
-import { ApiOkResponse } from '@nestjs/swagger';
 import { Public } from '@/common/decorators/public.decorator';
 
 @swagger.ApiBearerAuth()
