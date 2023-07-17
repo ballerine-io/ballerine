@@ -65,14 +65,14 @@ export const kybParentDynamicExample = {
         stateNames: ['run_kyb_enrichment'],
         successAction: 'KYB_DONE',
         errorAction: 'FAILED',
-        headers: { Authorization: 'Bearer {secret.KYB_API_TOKEN}' },
+        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
             {
               transformer: 'jmespath',
               mapping: `{
               countryOfIncorporation: entity.data.countryOfIncorporation,
-              companyNumber: entity.data.taxIdentificationNumber,
+              companyNumber: entity.data.registrationNumber,
               vendor: 'open-corporates'
               }`, // jmespath
             },

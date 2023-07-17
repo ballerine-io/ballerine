@@ -53,7 +53,7 @@ export const kycDynamicExample = {
         stateNames: ['run_kyc'],
         successAction: 'PENDING_KYC',
         errorAction: 'API_CALL_ERROR',
-        headers: { Authorization: 'Bearer {secret.KYC_API_TOKEN}' },
+        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
             {
