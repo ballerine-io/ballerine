@@ -16,6 +16,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": false,
+    "declaration": true,
     "types": ["node"],
     "paths": {
       "@components/*": ["./src/components/*"],
