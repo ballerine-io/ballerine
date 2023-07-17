@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button } from '@ballerine/ui/lib/components/atoms/Button';
+import { Button } from '@ballerine/ui/dist/components/atoms/Button';
 import { ArrayFieldTemplateProps } from '@rjsf/utils';
 import { Plus } from 'lucide-react';
 
