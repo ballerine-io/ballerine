@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -592,7 +592,7 @@ importers:
   examples/kyb-app:
     dependencies:
       '@ballerine/ui':
-        specifier: workspace:^
+        specifier: 0.0.1
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
