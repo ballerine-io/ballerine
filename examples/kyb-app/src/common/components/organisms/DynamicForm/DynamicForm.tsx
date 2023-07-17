@@ -35,6 +35,7 @@ export function DynamicForm<TFormData extends object>({
         }
         validator={validator}
         fields={fields}
+        autoComplete="on"
         templates={templates}
         showErrorList={false}
       />
@@ -43,6 +44,7 @@ export function DynamicForm<TFormData extends object>({
     <Form
       className={className}
       schema={schema}
+      autoComplete="on"
       formData={initialData}
       uiSchema={uiSchema}
       onSubmit={data => onSubmit(data.formData ? (data.formData as TFormData) : ({} as TFormData))}
