@@ -1,4 +1,4 @@
-import '@ballerine/ui/lib/style.css';
+import '@ballerine/ui/dist/style.css';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { KYBView } from '@app/components/organisms/KYBView';

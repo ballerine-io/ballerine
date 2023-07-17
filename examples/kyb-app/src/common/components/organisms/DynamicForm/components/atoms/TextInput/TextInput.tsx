@@ -1,4 +1,4 @@
-import { Input } from '@ballerine/ui/dist/components/atoms/Input';
+import { Input } from '@ballerine/ui';
 import { FieldProps } from '@rjsf/utils';
 
 export const TextInput = ({ id, name, uiSchema, formData, onChange }: FieldProps<string>) => {
