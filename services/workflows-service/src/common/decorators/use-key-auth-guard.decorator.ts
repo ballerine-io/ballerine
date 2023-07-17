@@ -5,7 +5,4 @@ import { env } from '@/env';
 import { applyDecorators, UseGuards } from '@nestjs/common';
 
 export const UseKeyAuthGuard = () =>
-  applyDecorators(
-    UseGuards(env.NODE_ENV === 'demo' ? DemoGuard : KeyAuthGuard),
-    disableSessionAuth(),
-  );
+  applyDecorators(UseGuards(env.IS_DEMO ? DemoGuard : KeyAuthGuard), disableSessionAuth());
