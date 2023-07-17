@@ -8,7 +8,7 @@ export const env = createEnv({
    */
   clientPrefix: 'PUBLIC_',
   server: {
-    NODE_ENV: z.enum(['development', 'production', 'test', 'local', 'demo']),
+    NODE_ENV: z.enum(['development', 'production', 'test', 'local']),
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
     COMPOSE_PROJECT_NAME: z.string(),
@@ -31,6 +31,7 @@ export const env = createEnv({
     SENTRY_DSN: z.string().nullable().optional(),
     WEBHOOK_URL: z.string().url().optional(),
     WEBHOOK_SECRET: z.string().optional(),
+    IS_DEMO: z.string().optional(),
   },
   client: {},
   /**

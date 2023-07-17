@@ -13,7 +13,9 @@ interface Props {
 }
 
 export const ViewStateProvider = ({ children, viewSchema }: Props) => {
-  const [machine, _send, service] = useMachine(createStateMachine<AnyObject>(viewSchema));
+  const stateMachine = useMemo(() => createStateMachine<AnyObject>(viewSchema), [viewSchema]);
+
+  const [machine, _send] = useMachine(stateMachine);
 
   const next = useCallback(() => {
     _send('NEXT');
