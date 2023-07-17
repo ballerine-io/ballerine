@@ -16,6 +16,7 @@ import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import packageJson from '../../package.json';
 import { env } from '@/env';
+import { ConfigService } from '@nestjs/config';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -96,11 +97,12 @@ describe('WorkflowService', () => {
   const configService = {
     WEBHOOK_URL: 'https://example.com',
     WEBHOOK_SECRET: 'webhook_secret',
+    NODE_ENV: 'test',
 
-    get<T>(key: string) {
-      return this[key as Exclude<keyof typeof this, 'get'>] as T | undefined;
+    get(key: string) {
+      return this[key as Exclude<keyof typeof this, 'get'>];
     },
-  };
+  } as unknown as ConfigService;
 
   beforeAll(async () => {
     testingModule = await Test.createTestingModule({
