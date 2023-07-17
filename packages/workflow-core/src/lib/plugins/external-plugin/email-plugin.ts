@@ -26,9 +26,9 @@ export class EmailPlugin extends ApiPlugin {
 
     const emailPayload = {
       ...from,
-      ...subject,
-      ...preheader,
       personalizations: [{
+        ...preheader,
+        ...subject,
         ...to,
         ...{dynamic_template_data: payload},
       }],
