@@ -22,12 +22,7 @@ import {
 } from './types';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
@@ -161,7 +156,7 @@ export class WorkflowService {
   ) {
     return await this.workflowRuntimeDataRepository.findById(id, {
       ...args,
-      include: { childWorkflowRuntimeDatas: true },
+      include: { childWorkflowsRuntimeData: true },
     });
   }
 
@@ -171,13 +166,13 @@ export class WorkflowService {
   ) {
     const workflow = (await this.workflowRuntimeDataRepository.findById(id, {
       ...args,
-      include: { childWorkflowRuntimeDatas: true },
+      include: { childWorkflowsRuntimeData: true },
     })) as TWorkflowWithRelations;
 
     return this.formatWorkflow(workflow);
   }
 
-  private formatWorkflow(workflow: TWorkflowWithRelations) {
+  private formatWorkflow(workflow: TWorkflowWithRelations): TWorkflowWithRelations {
     const isIndividual = 'endUser' in workflow;
     const service = createWorkflow({
       runtimeId: workflow.id,
@@ -189,6 +184,7 @@ export class WorkflowService {
       },
     });
 
+    // @ts-expect-error - typescript does not like recurrsion over types
     return {
       ...workflow,
       context: {
@@ -220,8 +216,8 @@ export class WorkflowService {
       endUser: undefined,
       business: undefined,
       nextEvents: service.getSnapshot().nextEvents,
-      childWorkflows: workflow.childWorkflowRuntimeDatas?.map(
-        (childWorkflow: TWorkflowWithRelations) => this.formatWorkflow(childWorkflow),
+      childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
+        this.formatWorkflow(childWorkflow),
       ),
     };
   }
@@ -242,6 +238,7 @@ export class WorkflowService {
       await this.persistChildWorkflowToParent(
         childWorkflow.workflowRuntimeData,
         childWorkflow.workflowDefinition,
+        false,
       );
     }
 
@@ -1147,7 +1144,7 @@ export class WorkflowService {
     });
 
     if (isFinal && workflowRuntimeData.parentRuntimeDataId) {
-      await this.persistChildWorkflowToParent(workflowRuntimeData, workflowDefinition);
+      await this.persistChildWorkflowToParent(workflowRuntimeData, workflowDefinition, isFinal);
     }
 
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
@@ -1166,6 +1163,7 @@ export class WorkflowService {
   async persistChildWorkflowToParent(
     workflowRuntimeData: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
+    isFinal: boolean,
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       workflowRuntimeData.parentRuntimeDataId,
@@ -1183,7 +1181,7 @@ export class WorkflowService {
     const childWorkflowCallback = (callbackTransformation ||
       workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
     const childrenOfSameDefinition = (
-      parentWorkflowRuntime.childWorkflowRuntimeDatas as Array<WorkflowRuntimeData>
+      parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>
     ).filter(
       childWorkflow =>
         childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
@@ -1193,11 +1191,16 @@ export class WorkflowService {
       childWorkflowCallback.transformers,
       parentWorkflowRuntime,
       workflowDefinition,
+      isFinal,
     );
 
     await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
 
-    if (childWorkflowCallback.deliverEvent && parentWorkflowRuntime.state !== 'completed') {
+    if (
+      childWorkflowCallback.deliverEvent &&
+      parentWorkflowRuntime.status !== 'completed' &&
+      isFinal
+    ) {
       await this.event({
         id: parentWorkflowRuntime.id,
         name: childWorkflowCallback.deliverEvent,
@@ -1210,7 +1213,14 @@ export class WorkflowService {
     transformers: ChildWorkflowCallback['transformers'],
     parentWorkflowRuntime: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
+    isFinal: boolean,
   ) {
+    if (!isFinal)
+      return this.composeContextWithChildResponse(
+        parentWorkflowRuntime.context,
+        workflowDefinition.name,
+      );
+
     const transformerInstance = (transformers || []).map((transformer: SerializableTransformer) =>
       this.initiateTransformer(transformer),
     );
@@ -1248,12 +1258,12 @@ export class WorkflowService {
   private composeContextWithChildResponse(
     parentWorkflowContext: any,
     definitionName: string,
-    response?: any,
+    contextToPersist?: any,
   ) {
     parentWorkflowContext['childWorkflows'] ||= {};
     parentWorkflowContext['childWorkflows'][definitionName] ||= {};
 
-    parentWorkflowContext['childWorkflows'][definitionName] = response;
+    parentWorkflowContext['childWorkflows'][definitionName] = contextToPersist;
     return parentWorkflowContext;
   }
 

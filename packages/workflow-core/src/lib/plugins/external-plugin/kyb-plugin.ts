@@ -16,6 +16,7 @@ export class KybPlugin extends ApiPlugin {
   ) {
     const countryOfIncorporation = payload.countryOfIncorporation;
     const companyNumber = payload.companyNumber;
+    const vendor = payload.vendor;
     // TODO: for  US, Canada, and UAE - state code is required
     // const optionalState = payload.state;
 
@@ -25,6 +26,6 @@ export class KybPlugin extends ApiPlugin {
     const countryCode = countries.getAlpha2Code(countryOfIncorporation, 'en');
     const formattedUrl = `${url}/${countryCode}/${companyNumber}`;
 
-    return await super.makeApiRequest(formattedUrl, method, payload, headers);
+    return await super.makeApiRequest(formattedUrl, method, { vendor: vendor }, headers);
   }
 }

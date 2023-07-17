@@ -118,7 +118,7 @@ export class ApiPlugin {
         `Error transforming data: ${
           isErrorWithMessage(error) ? error.message : ''
           // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        } for transformer mapping: ${transformer.mapping}`,
+        } for transformer mapping: ${JSON.stringify(transformer.mapping)}`,
       );
     }
   }
