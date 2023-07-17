@@ -1,10 +1,18 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./components/*": "./dist/components/*",
+    "./dist/style.css": "./dist/style.css"
+  },
   "scripts": {
     "dev": "vite build --watch",
     "build": "tsc && vite build",
