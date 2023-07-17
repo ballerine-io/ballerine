@@ -214,7 +214,7 @@ export class WorkflowControllerInternal {
   ): Promise<void> {
     try {
       const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
-      const persistenceParamKey = query.resultDestination || 'hookResponse'
+      const persistenceParamKey = query.resultDestination || 'hookResponse';
       const updatedContext = { ...workflowRuntime.context, [persistenceParamKey]: data };
       await this.service.updateWorkflowRuntimeData(params.id, { context: updatedContext });
     } catch (error) {

@@ -79,7 +79,10 @@ export const kycEmailSessionDefinition = {
         url: `{secret.EMAIL_API_URL}`,
         method: 'POST',
         stateNames: ['email_sent'],
-        headers: { Authorization: 'Bearer {secret.EMAIL_API_TOKEN}', 'Content-Type': 'application/json' },
+        headers: {
+          Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
+          'Content-Type': 'application/json',
+        },
         request: {
           transform: [
             {
@@ -100,8 +103,8 @@ export const kycEmailSessionDefinition = {
         },
         response: {
           transform: [],
-        }
-      }
+        },
+      },
     ],
   },
   config: {

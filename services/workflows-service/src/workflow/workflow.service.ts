@@ -22,11 +22,7 @@ import {
 } from './types';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
@@ -220,7 +216,9 @@ export class WorkflowService {
       endUser: undefined,
       business: undefined,
       nextEvents: service.getSnapshot().nextEvents,
-      childWorkflows: workflow.childWorkflowsRuntimeData?.map((childWorkflow) => this.formatWorkflow(childWorkflow))
+      childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
+        this.formatWorkflow(childWorkflow),
+      ),
     };
   }
 

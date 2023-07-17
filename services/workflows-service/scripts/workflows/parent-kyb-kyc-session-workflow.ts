@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { kycDynamicExample } from './kyc-dynamic-process-example';
-import {kycEmailSessionDefinition} from "./kyc-email-process-example";
+import { kycEmailSessionDefinition } from './kyc-email-process-example';
 
 export const parentKybWithSessionWorkflowDefinition = {
   id: 'kyb_parent_kyc_session_example',
