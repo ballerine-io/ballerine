@@ -1,5 +1,11 @@
 # @ballerine/rules-engine-lib
 
+## 0.4.4
+
+### Patch Changes
+
+- Update packages
+
 ## 0.4.3
 
 ### Patch Changes
