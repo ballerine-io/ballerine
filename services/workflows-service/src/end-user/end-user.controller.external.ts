@@ -18,6 +18,8 @@ import { WorkflowDefinitionModel } from '@/workflow/workflow-definition.model';
 import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definition-find-many-args';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
+import { Public } from '@/common/decorators/public.decorator';
+import { DemoGuard } from '@/common/guards/demo.guard';
 
 @swagger.ApiTags('external/end-users')
 @common.Controller('external/end-users')

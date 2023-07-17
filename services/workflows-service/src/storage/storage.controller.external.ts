@@ -13,6 +13,8 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import * as os from 'os';
 import * as path from 'path';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { DemoGuard } from '@/common/guards/demo.guard';
+import { Public } from '@/common/decorators/public.decorator';
 
 // Temporarily identical to StorageControllerInternal
 @swagger.ApiTags('Storage')
