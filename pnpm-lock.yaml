@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -61,13 +57,13 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.6
+        specifier: 0.5.7
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: ^0.4.9
+        specifier: ^0.4.10
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: ^0.4.3
+        specifier: ^0.4.4
         version: link:../../sdks/workflow-node-sdk
       '@formkit/auto-animate':
         specifier: 1.0.0-beta.5
@@ -273,7 +269,7 @@ importers:
         version: 8.8.0(eslint@8.22.0)
       eslint-plugin-import:
         specifier: ^2.26.0
-        version: 2.27.5(@typescript-eslint/parser@5.56.0)(eslint@8.22.0)
+        version: 2.27.5(@typescript-eslint/parser@5.56.0)(eslint-import-resolver-typescript@3.5.3)(eslint@8.36.0)
       eslint-plugin-react:
         specifier: ^7.30.1
         version: 7.32.2(eslint@8.22.0)
@@ -501,10 +497,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.6
+        specifier: 0.5.7
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: ^0.4.9
+        specifier: ^0.4.10
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1061,7 +1057,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.6
+        specifier: 0.5.7
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1203,7 +1199,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.6
+        specifier: 0.5.7
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -1324,10 +1320,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.6
+        specifier: 0.5.7
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: ^0.4.16
+        specifier: ^0.4.17
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1454,7 +1450,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: ^0.4.9
+        specifier: ^0.4.17
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -1672,13 +1668,13 @@ importers:
         specifier: 3.325.0
         version: 3.325.0(@aws-sdk/abort-controller@3.347.0)(@aws-sdk/client-s3@3.325.0)
       '@ballerine/common':
-        specifier: 0.5.6
+        specifier: 0.5.7
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: ^0.4.13
+        specifier: ^0.4.17
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: ^0.4.2
+        specifier: ^0.4.4
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -1943,7 +1939,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@2.7.2)(tailwindcss@3.3.2)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: 0.5.6
+        specifier: 0.5.7
         version: link:../../packages/common
       '@docsearch/css':
         specifier: ^3.1.0
@@ -6650,7 +6646,7 @@ packages:
       '@babel/helper-plugin-utils': 7.20.2
       '@babel/plugin-proposal-unicode-property-regex': 7.18.6(@babel/core@7.21.3)
       '@babel/plugin-transform-dotall-regex': 7.18.6(@babel/core@7.21.3)
-      '@babel/types': 7.22.5
+      '@babel/types': 7.21.3
       esutils: 2.0.3
     dev: true
 
@@ -6663,7 +6659,7 @@ packages:
       '@babel/helper-plugin-utils': 7.20.2
       '@babel/plugin-proposal-unicode-property-regex': 7.18.6(@babel/core@7.22.5)
       '@babel/plugin-transform-dotall-regex': 7.18.6(@babel/core@7.22.5)
-      '@babel/types': 7.22.5
+      '@babel/types': 7.21.3
       esutils: 2.0.3
     dev: true
 
@@ -9152,7 +9148,7 @@ packages:
       tsconfig-paths: 4.1.2
       tsconfig-paths-webpack-plugin: 4.0.1
       typescript: 4.9.5
-      webpack: 5.76.2
+      webpack: 5.76.2(esbuild@0.17.19)
       webpack-node-externals: 3.0.0
     transitivePeerDependencies:
       - '@swc/core'
@@ -19776,7 +19772,7 @@ packages:
       '@typescript-eslint/parser': 5.61.0(eslint@8.44.0)(typescript@4.9.5)
       eslint: 8.44.0
       eslint-config-standard: 17.0.0(eslint-plugin-import@2.27.5)(eslint-plugin-n@15.6.1)(eslint-plugin-promise@6.1.1)(eslint@8.44.0)
-      eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.61.0)(eslint@8.44.0)
+      eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.56.0)(eslint-import-resolver-typescript@3.5.3)(eslint@8.36.0)
       eslint-plugin-n: 15.6.1(eslint@8.44.0)
       eslint-plugin-promise: 6.1.1(eslint@8.44.0)
       typescript: 4.9.5
@@ -19793,7 +19789,7 @@ packages:
       eslint-plugin-promise: ^6.0.0
     dependencies:
       eslint: 8.44.0
-      eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.61.0)(eslint@8.44.0)
+      eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.56.0)(eslint-import-resolver-typescript@3.5.3)(eslint@8.36.0)
       eslint-plugin-n: 15.6.1(eslint@8.44.0)
       eslint-plugin-promise: 6.1.1(eslint@8.44.0)
     dev: true
@@ -19854,64 +19850,6 @@ packages:
       eslint: 8.36.0
       eslint-import-resolver-node: 0.3.7
       eslint-import-resolver-typescript: 3.5.3(eslint-plugin-import@2.27.5)(eslint@8.36.0)
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
-  /eslint-module-utils@2.7.4(@typescript-eslint/parser@5.56.0)(eslint-import-resolver-node@0.3.7)(eslint@8.22.0):
-    resolution: {integrity: sha512-j4GT+rqzCoRKHwURX7pddtIPGySnX9Si/cgMI5ztrcqOPtk5dDEeZ34CQVPphnqkJytlc97Vuk05Um2mJ3gEQA==}
-    engines: {node: '>=4'}
-    peerDependencies:
-      '@typescript-eslint/parser': '*'
-      eslint: '*'
-      eslint-import-resolver-node: '*'
-      eslint-import-resolver-typescript: '*'
-      eslint-import-resolver-webpack: '*'
-    peerDependenciesMeta:
-      '@typescript-eslint/parser':
-        optional: true
-      eslint:
-        optional: true
-      eslint-import-resolver-node:
-        optional: true
-      eslint-import-resolver-typescript:
-        optional: true
-      eslint-import-resolver-webpack:
-        optional: true
-    dependencies:
-      '@typescript-eslint/parser': 5.56.0(eslint@8.22.0)(typescript@4.9.5)
-      debug: 3.2.7
-      eslint: 8.22.0
-      eslint-import-resolver-node: 0.3.7
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
-  /eslint-module-utils@2.7.4(@typescript-eslint/parser@5.61.0)(eslint-import-resolver-node@0.3.7)(eslint@8.44.0):
-    resolution: {integrity: sha512-j4GT+rqzCoRKHwURX7pddtIPGySnX9Si/cgMI5ztrcqOPtk5dDEeZ34CQVPphnqkJytlc97Vuk05Um2mJ3gEQA==}
-    engines: {node: '>=4'}
-    peerDependencies:
-      '@typescript-eslint/parser': '*'
-      eslint: '*'
-      eslint-import-resolver-node: '*'
-      eslint-import-resolver-typescript: '*'
-      eslint-import-resolver-webpack: '*'
-    peerDependenciesMeta:
-      '@typescript-eslint/parser':
-        optional: true
-      eslint:
-        optional: true
-      eslint-import-resolver-node:
-        optional: true
-      eslint-import-resolver-typescript:
-        optional: true
-      eslint-import-resolver-webpack:
-        optional: true
-    dependencies:
-      '@typescript-eslint/parser': 5.61.0(eslint@8.44.0)(typescript@4.9.5)
-      debug: 3.2.7
-      eslint: 8.44.0
-      eslint-import-resolver-node: 0.3.7
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -20022,72 +19960,6 @@ packages:
       eslint: 8.36.0
       eslint-import-resolver-node: 0.3.7
       eslint-module-utils: 2.7.4(@typescript-eslint/parser@5.56.0)(eslint-import-resolver-node@0.3.7)(eslint-import-resolver-typescript@3.5.3)(eslint@8.36.0)
-      has: 1.0.3
-      is-core-module: 2.11.0
-      is-glob: 4.0.3
-      minimatch: 3.1.2
-      object.values: 1.1.6
-      resolve: 1.22.1
-      semver: 6.3.0
-      tsconfig-paths: 3.14.2
-    transitivePeerDependencies:
-      - eslint-import-resolver-typescript
-      - eslint-import-resolver-webpack
-      - supports-color
-    dev: true
-
-  /eslint-plugin-import@2.27.5(@typescript-eslint/parser@5.56.0)(eslint@8.22.0):
-    resolution: {integrity: sha512-LmEt3GVofgiGuiE+ORpnvP+kAm3h6MLZJ4Q5HCyHADofsb4VzXFsRiWj3c0OFiV+3DWFh0qg3v9gcPlfc3zRow==}
-    engines: {node: '>=4'}
-    peerDependencies:
-      '@typescript-eslint/parser': '*'
-      eslint: ^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8
-    peerDependenciesMeta:
-      '@typescript-eslint/parser':
-        optional: true
-    dependencies:
-      '@typescript-eslint/parser': 5.56.0(eslint@8.22.0)(typescript@4.9.5)
-      array-includes: 3.1.6
-      array.prototype.flat: 1.3.1
-      array.prototype.flatmap: 1.3.1
-      debug: 3.2.7
-      doctrine: 2.1.0
-      eslint: 8.22.0
-      eslint-import-resolver-node: 0.3.7
-      eslint-module-utils: 2.7.4(@typescript-eslint/parser@5.56.0)(eslint-import-resolver-node@0.3.7)(eslint@8.22.0)
-      has: 1.0.3
-      is-core-module: 2.11.0
-      is-glob: 4.0.3
-      minimatch: 3.1.2
-      object.values: 1.1.6
-      resolve: 1.22.1
-      semver: 6.3.0
-      tsconfig-paths: 3.14.2
-    transitivePeerDependencies:
-      - eslint-import-resolver-typescript
-      - eslint-import-resolver-webpack
-      - supports-color
-    dev: true
-
-  /eslint-plugin-import@2.27.5(@typescript-eslint/parser@5.61.0)(eslint@8.44.0):
-    resolution: {integrity: sha512-LmEt3GVofgiGuiE+ORpnvP+kAm3h6MLZJ4Q5HCyHADofsb4VzXFsRiWj3c0OFiV+3DWFh0qg3v9gcPlfc3zRow==}
-    engines: {node: '>=4'}
-    peerDependencies:
-      '@typescript-eslint/parser': '*'
-      eslint: ^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8
-    peerDependenciesMeta:
-      '@typescript-eslint/parser':
-        optional: true
-    dependencies:
-      '@typescript-eslint/parser': 5.61.0(eslint@8.44.0)(typescript@4.9.5)
-      array-includes: 3.1.6
-      array.prototype.flat: 1.3.1
-      array.prototype.flatmap: 1.3.1
-      debug: 3.2.7
-      doctrine: 2.1.0
-      eslint: 8.44.0
-      eslint-import-resolver-node: 0.3.7
-      eslint-module-utils: 2.7.4(@typescript-eslint/parser@5.61.0)(eslint-import-resolver-node@0.3.7)(eslint@8.44.0)
       has: 1.0.3
       is-core-module: 2.11.0
       is-glob: 4.0.3
@@ -21277,7 +21149,7 @@ packages:
       semver: 7.5.3
       tapable: 2.2.1
       typescript: 4.9.5
-      webpack: 5.76.2
+      webpack: 5.76.2(esbuild@0.17.19)
     dev: true
 
   /form-data-encoder@3.0.0:
@@ -29623,30 +29495,6 @@ packages:
       webpack: 5.76.2(esbuild@0.17.19)
     dev: true
 
-  /terser-webpack-plugin@5.3.7(webpack@5.76.2):
-    resolution: {integrity: sha512-AfKwIktyP7Cu50xNjXF/6Qb5lBNzYaWpU6YfoX3uZicTx0zTy0stDDCsvjDapKsSDvOeWo5MEq4TmdBy2cNoHw==}
-    engines: {node: '>= 10.13.0'}
-    peerDependencies:
-      '@swc/core': '*'
-      esbuild: '*'
-      uglify-js: '*'
-      webpack: ^5.1.0
-    peerDependenciesMeta:
-      '@swc/core':
-        optional: true
-      esbuild:
-        optional: true
-      uglify-js:
-        optional: true
-    dependencies:
-      '@jridgewell/trace-mapping': 0.3.17
-      jest-worker: 27.5.1
-      schema-utils: 3.1.1
-      serialize-javascript: 6.0.1
-      terser: 5.16.8
-      webpack: 5.76.2
-    dev: true
-
   /terser@5.16.8:
     resolution: {integrity: sha512-QI5g1E/ef7d+PsDifb+a6nnVgC4F22Bg6T0xrBrz6iloVB4PUkkunp6V8nzoOOZJIzjWVdAGqCdlKlhLq/TbIA==}
     engines: {node: '>=10'}
@@ -30036,7 +29884,7 @@ packages:
       micromatch: 4.0.5
       semver: 7.3.8
       typescript: 4.9.5
-      webpack: 5.76.2
+      webpack: 5.76.2(esbuild@0.17.19)
     dev: true
 
   /ts-morph@17.0.1:
@@ -31902,46 +31750,6 @@ packages:
     resolution: {integrity: sha512-5tyDlKLqPfMqjT3Q9TAqf2YqjwmnUleZwzJi1A5qXnlBCdj2AtOJ6wAWdglTIDOPgOiOrXeBeFcsQ8+aGQ6QbA==}
     dev: true
 
-  /webpack@5.76.2:
-    resolution: {integrity: sha512-Th05ggRm23rVzEOlX8y67NkYCHa9nTNcwHPBhdg+lKG+mtiW7XgggjAeeLnADAe7mLjJ6LUNfgHAuRRh+Z6J7w==}
-    engines: {node: '>=10.13.0'}
-    hasBin: true
-    peerDependencies:
-      webpack-cli: '*'
-    peerDependenciesMeta:
-      webpack-cli:
-        optional: true
-    dependencies:
-      '@types/eslint-scope': 3.7.4
-      '@types/estree': 0.0.51
-      '@webassemblyjs/ast': 1.11.1
-      '@webassemblyjs/wasm-edit': 1.11.1
-      '@webassemblyjs/wasm-parser': 1.11.1
-      acorn: 8.9.0
-      acorn-import-assertions: 1.8.0(acorn@8.9.0)
-      browserslist: 4.21.5
-      chrome-trace-event: 1.0.3
-      enhanced-resolve: 5.12.0
-      es-module-lexer: 0.9.3
-      eslint-scope: 5.1.1
-      events: 3.3.0
-      glob-to-regexp: 0.4.1
-      graceful-fs: 4.2.11
-      json-parse-even-better-errors: 2.3.1
-      loader-runner: 4.3.0
-      mime-types: 2.1.35
-      neo-async: 2.6.2
-      schema-utils: 3.1.1
-      tapable: 2.2.1
-      terser-webpack-plugin: 5.3.7(webpack@5.76.2)
-      watchpack: 2.4.0
-      webpack-sources: 3.2.3
-    transitivePeerDependencies:
-      - '@swc/core'
-      - esbuild
-      - uglify-js
-    dev: true
-
   /webpack@5.76.2(esbuild@0.17.19):
     resolution: {integrity: sha512-Th05ggRm23rVzEOlX8y67NkYCHa9nTNcwHPBhdg+lKG+mtiW7XgggjAeeLnADAe7mLjJ6LUNfgHAuRRh+Z6J7w==}
     engines: {node: '>=10.13.0'}
@@ -32429,3 +32237,7 @@ packages:
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: false
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false

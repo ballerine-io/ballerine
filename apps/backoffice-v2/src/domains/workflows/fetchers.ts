@@ -65,6 +65,12 @@ export const WorkflowByIdSchema = z.object({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),
     }).optional(),
     pluginsOutput: z.record(zPropertyKey, z.any()).optional(),
+    childWorkflows: z
+      .array(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        z.lazy(() => WorkflowByIdSchema),
+      )
+      .optional(),
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),

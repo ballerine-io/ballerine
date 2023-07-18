@@ -14,44 +14,28 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from './utils';
-import { getDocumentsByCountry } from '@ballerine/common';
+import { getDocumentsByCountry, isObject } from '@ballerine/common';
 import { getAddressDeep } from './utils/get-address-deep/get-address-deep';
 
-export const useEntity = () => {
-  const { entityId } = useParams();
-  const filterId = useFilterId();
+export const octetToFileType = (base64: string, fileType: string) =>
+  base64?.replace(/application\/octet-stream/gi, fileType);
 
-  const { data: workflow, isLoading } = useWorkflowQuery({ workflowId: entityId, filterId });
-  const docsData = useStorageFilesQuery(
-    workflow?.context?.documents?.flatMap(({ pages }) =>
-      pages?.map(({ ballerineFileId }) => ballerineFileId),
-    ),
-  );
-
-  const results = [];
-  workflow?.context?.documents?.forEach((document, docIndex) => {
-    document?.pages.forEach((page, pageIndex) => {
-      if (!results[docIndex]) {
-        results[docIndex] = [];
-      }
-      results[docIndex][pageIndex] = docsData.shift().data;
-    });
-  });
-  const selectedEntity = workflow?.entity;
-  const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-  const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
-  const octetToFileType = (base64: string, fileType: string) =>
-    base64?.replace(/application\/octet-stream/gi, fileType);
-  const { data: session } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(session?.user, workflow);
-  const {
-    documents: contextDocuments,
-    entity: contextEntity,
-    pluginsOutput,
-  } = workflow?.context ?? {};
+export const makeTasks = ({
+  workflow,
+  entity,
+  pluginsOutput,
+  documents,
+  parentMachine,
+  docsData,
+  results,
+  caseState,
+}) => {
   const pluginsOutputKeys = Object.keys(pluginsOutput ?? {});
   const address = getAddressDeep(pluginsOutput);
-  const tasks = contextEntity
+  const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
+  const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
+
+  return entity
     ? [
         ...(Object.keys(pluginsOutput ?? {}).length === 0
           ? []
@@ -73,7 +57,7 @@ export const useEntity = () => {
                   },
                 },
               ])),
-        ...(contextDocuments?.map(
+        ...(documents?.map(
           (
             { id, type: docType, category, issuer, properties, propertiesSchema, decision },
             docIndex,
@@ -82,8 +66,7 @@ export const useEntity = () => {
               isExistingSchemaForDocument(documentsSchemas) &&
               composePickableCategoryType(category, docType, documentsSchemas);
             const isDoneWithRevision =
-              decision?.status === 'revision' &&
-              workflow?.context?.parentMachine?.status === 'completed';
+              decision?.status === 'revision' && parentMachine?.status === 'completed';
 
             return [
               {
@@ -178,42 +161,40 @@ export const useEntity = () => {
                 value: {
                   isLoading: docsData?.some(({ isLoading }) => isLoading),
                   data:
-                    contextDocuments?.[docIndex]?.pages?.map(
-                      ({ type, metadata, data }, pageIndex) => ({
-                        title: `${convertSnakeCaseToTitleCase(
-                          category,
-                        )} - ${convertSnakeCaseToTitleCase(docType)}${
-                          metadata?.side ? ` - ${metadata?.side}` : ''
-                        }`,
-                        imageUrl:
-                          type === 'pdf'
-                            ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
-                            : results[docIndex][pageIndex],
-                        fileType: type,
-                      }),
-                    ) ?? [],
+                    documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
+                      title: `${convertSnakeCaseToTitleCase(
+                        category,
+                      )} - ${convertSnakeCaseToTitleCase(docType)}${
+                        metadata?.side ? ` - ${metadata?.side}` : ''
+                      }`,
+                      imageUrl:
+                        type === 'pdf'
+                          ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
+                          : results[docIndex][pageIndex],
+                      fileType: type,
+                    })) ?? [],
                 },
               },
             ];
           },
         ) ?? []),
-        Object.keys(contextEntity?.data ?? {}).length === 0
+        Object.keys(entity?.data ?? {}).length === 0
           ? []
           : [
               {
                 type: 'heading',
-                value: `${toStartCase(contextEntity?.type)} Information`,
+                value: `${toStartCase(entity?.type)} Information`,
               },
               {
                 id: 'entity-details',
                 type: 'details',
                 value: {
-                  title: `${toStartCase(contextEntity?.type)} Information`,
+                  title: `${toStartCase(entity?.type)} Information`,
                   data: [
                     ...Object.entries(
-                      omitPropsFromObject(contextEntity?.data, 'additionalInfo', 'address') ?? {},
+                      omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
                     ),
-                    ...Object.entries(contextEntity?.data?.additionalInfo ?? {}),
+                    ...Object.entries(entity?.data?.additionalInfo ?? {}),
                   ]?.map(([title, value]) => ({
                     title,
                     value,
@@ -233,12 +214,12 @@ export const useEntity = () => {
                   {
                     id: 'map-header',
                     type: 'heading',
-                    value: `${toStartCase(contextEntity?.type)} Address`,
+                    value: `${toStartCase(entity?.type)} Address`,
                   },
                   {
                     type: 'details',
                     value: {
-                      title: `${toStartCase(contextEntity?.type)} Address`,
+                      title: `${toStartCase(entity?.type)} Address`,
                       data: Object.entries(address ?? {})?.map(([title, value]) => ({
                         title,
                         value,
@@ -255,11 +236,125 @@ export const useEntity = () => {
             ],
       ]
     : [];
+};
+
+export const makeTasksDeep = (workflows: any[]) => {
+  return workflows?.flatMap(workflow => {
+    const { childWorkflows, ...restWorkflow } = workflow;
+    let children = [];
+
+    if (isObject(workflow) && childWorkflows) {
+      children = [...children, ...makeTasksDeep(childWorkflows)];
+    }
+
+    return [...makeTasks(restWorkflow), ...children];
+  });
+};
+
+export const useEntity = () => {
+  const { entityId } = useParams();
+  const filterId = useFilterId();
+
+  const { data: workflow, isLoading } = useWorkflowQuery({ workflowId: entityId, filterId });
+  const docsData = useStorageFilesQuery(
+    workflow?.context?.documents?.flatMap(({ pages }) =>
+      pages?.map(({ ballerineFileId }) => ballerineFileId),
+    ),
+  );
+
+  const results = [];
+  workflow?.context?.documents?.forEach((document, docIndex) => {
+    document?.pages.forEach((page, pageIndex) => {
+      if (!results[docIndex]) {
+        results[docIndex] = [];
+      }
+      results[docIndex][pageIndex] = docsData.shift().data;
+    });
+  });
+  const selectedEntity = workflow?.entity;
+  const { data: session } = useAuthenticatedUserQuery();
+  const caseState = useCaseState(session?.user, workflow);
+  const {
+    documents: contextDocuments,
+    entity: contextEntity,
+    pluginsOutput,
+  } = workflow?.context ?? {};
+  const childWorkflows = [
+    {
+      workflow,
+      documents: contextDocuments,
+      entity: contextEntity,
+      pluginsOutput,
+      childWorkflows: [
+        {
+          workflow,
+          documents: contextDocuments,
+          entity: contextEntity,
+          pluginsOutput,
+          caseState,
+          docsData,
+          results,
+        },
+        {
+          workflow,
+          documents: contextDocuments,
+          entity: contextEntity,
+          pluginsOutput,
+          caseState,
+          docsData,
+          results,
+        },
+      ],
+      caseState,
+      docsData,
+      results,
+    },
+    {
+      workflow,
+      documents: contextDocuments,
+      entity: contextEntity,
+      pluginsOutput,
+      childWorkflows: [
+        {
+          workflow,
+          documents: contextDocuments,
+          entity: contextEntity,
+          pluginsOutput,
+          caseState,
+          docsData,
+          results,
+        },
+        {
+          workflow,
+          documents: contextDocuments,
+          entity: contextEntity,
+          pluginsOutput,
+          caseState,
+          docsData,
+          results,
+        },
+      ],
+      caseState,
+      docsData,
+      results,
+    },
+  ];
+  const tasks = makeTasks({
+    workflow,
+    entity: contextEntity,
+    documents: contextDocuments,
+    pluginsOutput,
+    docsData,
+    results,
+    caseState,
+  });
+
+  const childTasks = makeTasksDeep(childWorkflows);
 
   return {
     selectedEntity,
     cells,
-    tasks,
+    tasks: [...tasks, ...childTasks],
     workflow,
     isLoading,
   };
