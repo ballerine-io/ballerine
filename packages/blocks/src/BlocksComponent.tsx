@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ForwardedRef, forwardRef, Fragment } from 'react';
 import type { BlocksProps } from './types';
 
-export const Blocks = forwardRef(
+export const BlocksComponent = forwardRef(
   ({ cells, blocks, children, Block = Fragment }: BlocksProps, ref: ForwardedRef<typeof Block>) => {
     return (
       <>
@@ -17,7 +17,7 @@ export const Blocks = forwardRef(
                   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                   block
                 }
-                // @ts-expect-error - `Fragment` does not expect a `ref` prop
+                // @ts-expect-error - `Fragment` does not have a `ref` prop.
                 ref={ref}
               >
                 {Array.isArray(block) &&
@@ -49,4 +49,4 @@ export const Blocks = forwardRef(
     );
   },
 );
-Blocks.displayName = 'Blocks';
+BlocksComponent.displayName = 'Blocks';

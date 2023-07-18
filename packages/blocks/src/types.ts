@@ -77,6 +77,6 @@ export interface BlocksProps {
   children: (
     Cell: CellsMap[keyof CellsMap],
     cell: Cells,
-    block: Array<Array<Cells>>,
+    block: Array<Cells>,
   ) => ReactNode | Array<ReactNode>;
 }
