@@ -48,7 +48,9 @@ export const fetchWorkflows = async (params: {
   return handleZodError(error, workflows);
 };
 
-export const WorkflowByIdSchema = z.object({
+export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
+
+export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
   status: z.string(),
   nextEvents: z.array(z.any()),
@@ -65,12 +67,6 @@ export const WorkflowByIdSchema = z.object({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),
     }).optional(),
     pluginsOutput: z.record(zPropertyKey, z.any()).optional(),
-    childWorkflows: z
-      .array(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        z.lazy(() => WorkflowByIdSchema),
-      )
-      .optional(),
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),
@@ -81,6 +77,12 @@ export const WorkflowByIdSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
   }).nullable(),
+});
+
+export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
+  context: BaseWorkflowByIdSchema.shape.context.extend({
+    childWorkflows: z.array(BaseWorkflowByIdSchema).optional(),
+  }),
 });
 
 export const fetchWorkflowById = async ({

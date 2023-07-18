@@ -20,6 +20,7 @@ import { SelectTrigger } from '../../../../common/components/atoms/Select/Select
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
+import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -38,12 +39,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   workflowId,
 }) => {
   const [formData, setFormData] = useState(data);
-  const useInitialCategorySetValue = () => {
-    useEffect(() => {
-      const categoryValue = form.getValues('category');
-      form.setValue('category', categoryValue);
-    }, [form, data, setFormData]);
-  };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
@@ -125,7 +120,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
           {formData?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
             isDecisionComponent && !value ? null : (
               <FormField
-                key={title}
+                key={keyFactory(valueId, title, `form-field`)}
                 control={form.control}
                 name={title}
                 render={({ field }) => (
@@ -145,7 +140,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                         <SelectContent>
                           {dropdownOptions?.map(({ label, value }) => {
                             return (
-                              <SelectItem key={value} value={value}>
+                              <SelectItem
+                                key={keyFactory(valueId, label, `select-item`)}
+                                value={value}
+                              >
                                 {label}
                               </SelectItem>
                             );

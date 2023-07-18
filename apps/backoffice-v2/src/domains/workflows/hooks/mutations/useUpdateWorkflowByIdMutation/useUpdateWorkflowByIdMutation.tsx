@@ -1,10 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { fetchUpdateWorkflowById, WorkflowByIdSchema } from '../../../fetchers';
+import { fetchUpdateWorkflowById, TWorkflowById } from '../../../fetchers';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { workflowsQueryKeys } from '../../../query-keys';
-import { z } from 'zod';
 
 export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: string }) => {
   const queryClient = useQueryClient();
@@ -34,18 +33,15 @@ export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: stri
       });
       const previousWorkflow = queryClient.getQueryData(workflowById.queryKey);
 
-      queryClient.setQueryData(
-        workflowById.queryKey,
-        (oldWorkflow: z.output<typeof WorkflowByIdSchema>) => {
-          return {
-            ...oldWorkflow,
-            context: {
-              ...oldWorkflow?.context,
-              ...context,
-            },
-          };
-        },
-      );
+      queryClient.setQueryData(workflowById.queryKey, (oldWorkflow: TWorkflowById) => {
+        return {
+          ...oldWorkflow,
+          context: {
+            ...oldWorkflow?.context,
+            ...context,
+          },
+        };
+      });
 
       return { previousWorkflow };
     },
