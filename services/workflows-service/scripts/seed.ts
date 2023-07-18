@@ -871,7 +871,7 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  await createFilter('KYB with UBO\'s', 'businesses', {
+  await createFilter("KYB with UBO's", 'businesses', {
     select: {
       id: true,
       status: true,
