@@ -1,7 +1,7 @@
 import { FunctionComponentWithChildren } from '../../../../common/types';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { convertSnakeCaseToTitleCase } from '../../hooks/useEntity/utils';
-import { isObject } from '@ballerine/common';
+import { isNullish, isObject } from '@ballerine/common';
 import { FunctionComponent } from 'react';
 import { INestedComponentProps } from './interfaces';
 
@@ -44,7 +44,9 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
               />
             )}
             {Array.isArray(value) && <p>{value.join(', ')}</p>}
-            {!isObject(value) && !Array.isArray(value) && <p>{value}</p>}
+            {!isObject(value) && !Array.isArray(value) && (
+              <p>{isNullish(value) ? '' : value?.toString()}</p>
+            )}
           </div>
         );
       })}
