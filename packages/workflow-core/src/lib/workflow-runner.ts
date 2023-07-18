@@ -377,7 +377,7 @@ export class WorkflowRunner {
 
         const ruleResult = search(data, options.rule);
 
-        return ruleResult;
+        return !!ruleResult;
       },
     };
 

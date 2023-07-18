@@ -858,7 +858,7 @@ export class WorkflowService {
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
     if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
-      contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
         data: {
           ...entityConnect,
@@ -883,7 +883,7 @@ export class WorkflowService {
         context.documents,
       );
 
-      contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
         existingWorkflowRuntimeData.id,
         {
@@ -916,7 +916,7 @@ export class WorkflowService {
     ];
   }
 
-  private async __copyFileAndCreate(
+  async copyFileAndCreate(
     context: DefaultContextSchema,
     entityId: TEntityId,
   ): Promise<DefaultContextSchema> {

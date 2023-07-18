@@ -1,18 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
+import { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 
-export class WorkflowIdWithEventInput {
+export class WorkflowHookQuery {
   @ApiProperty({
-    required: true,
+    required: false,
     type: String,
   })
   @IsString()
-  id!: string;
+  resultDestination?: string;
 
   @ApiProperty({
-    required: true,
+    required: false,
     type: String,
   })
   @IsString()
-  event!: string;
+  processName?: UnifiedCallbackNames;
 }

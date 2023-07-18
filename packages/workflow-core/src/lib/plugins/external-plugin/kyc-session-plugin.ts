@@ -40,4 +40,18 @@ export class KycSessionPlugin extends ApiPlugin {
       return super.validateContent(schemaValidator, transformedRequest, validationContext);
     }
   }
+
+  async makeApiRequest(
+    url: string,
+    method: ApiPlugin['method'],
+    payload: AnyRecord,
+    headers: HeadersInit,
+  ) {
+    const callbackUrlWithPlaceholder = this.replaceValuePlaceholders(payload['callbackUrl'] as string, payload);
+    const callbackUrl = new URL(callbackUrlWithPlaceholder);
+    callbackUrl.searchParams.set('processName', 'kyc-unified-api')
+    payload['callbackUrl'] = callbackUrl.toString()
+
+    return super.makeApiRequest(url, method, payload, headers)
+  }
 }

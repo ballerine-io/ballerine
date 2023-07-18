@@ -58,7 +58,7 @@ export const kycEmailSessionDefinition = {
               mapping: `{
               firstName: entity.data.firstName,
               lastName: entity.data.lastName,
-              callbackUrl: join('',['http://localhost:3000/api/v1/internal/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED', '?resultDestination=vendorResult']),
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/internal/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED', '?resultDestination=vendorResult']),
               vendor: 'veriff'
               }`, // jmespath
             },
