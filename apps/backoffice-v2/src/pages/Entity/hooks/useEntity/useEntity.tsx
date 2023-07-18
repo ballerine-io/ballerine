@@ -15,49 +15,8 @@ export const useEntity = () => {
     documents: contextDocuments,
     entity: contextEntity,
     pluginsOutput,
+    childWorkflowsRuntimeData,
   } = workflow?.context ?? {};
-  const childWorkflows = [
-    {
-      workflow,
-      documents: contextDocuments,
-      entity: contextEntity,
-      pluginsOutput,
-      childWorkflows: [
-        {
-          workflow,
-          documents: contextDocuments,
-          entity: contextEntity,
-          pluginsOutput,
-        },
-        {
-          workflow,
-          documents: contextDocuments,
-          entity: contextEntity,
-          pluginsOutput,
-        },
-      ],
-    },
-    {
-      workflow,
-      documents: contextDocuments,
-      entity: contextEntity,
-      pluginsOutput,
-      childWorkflows: [
-        {
-          workflow,
-          documents: contextDocuments,
-          entity: contextEntity,
-          pluginsOutput,
-        },
-        {
-          workflow,
-          documents: contextDocuments,
-          entity: contextEntity,
-          pluginsOutput,
-        },
-      ],
-    },
-  ];
   const tasks = useTasks({
     workflow,
     entity: contextEntity,
@@ -65,8 +24,7 @@ export const useEntity = () => {
     pluginsOutput,
     parentMachine: workflow?.context?.parentMachine,
   });
-
-  const childTasks = useTasksDeep(childWorkflows);
+  const childTasks = useTasksDeep(childWorkflowsRuntimeData ?? []);
 
   return {
     selectedEntity,

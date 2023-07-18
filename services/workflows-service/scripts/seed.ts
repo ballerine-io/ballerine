@@ -919,9 +919,10 @@ async function seed(bcryptSalt: Salt) {
           lastName: true,
         },
       },
+      childWorkflowsRuntimeData: true,
     },
     where: {
-      workflowDefinitionId: kybManualMachineId,
+      workflowDefinitionId: 'dynamic_kyb_parent_example',
       businessId: { not: null },
     },
   });

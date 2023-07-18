@@ -157,13 +157,58 @@ export class WorkflowService {
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
+    const childSelect = {
+      id: true,
+      status: true,
+      assigneeId: true,
+      context: true,
+      createdAt: true,
+      state: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+          definition: true,
+        },
+      },
+      endUser: {
+        select: {
+          id: true,
+          correlationId: true,
+          endUserType: true,
+          approvalState: true,
+          stateReason: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          dateOfBirth: true,
+          avatarUrl: true,
+          additionalInfo: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      parentRuntimeDataId: true,
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    } satisfies NonNullable<Parameters<WorkflowRuntimeDataRepository['findById']>[1]>['select'];
     const safeArgs = (() => {
       if (args?.include) {
         return {
           ...args,
           include: {
             ...args?.include,
-            childWorkflowsRuntimeData: true,
+            childWorkflowsRuntimeData: {
+              select: childSelect,
+            },
           },
         };
       }
@@ -173,7 +218,9 @@ export class WorkflowService {
           ...args,
           select: {
             ...args?.select,
-            childWorkflowsRuntimeData: true,
+            childWorkflowsRuntimeData: {
+              select: childSelect,
+            },
           },
         };
       }
@@ -181,7 +228,9 @@ export class WorkflowService {
       return {
         ...args,
         include: {
-          childWorkflowsRuntimeData: true,
+          childWorkflowsRuntimeData: {
+            select: childSelect,
+          },
         },
       };
     })();
@@ -196,15 +245,60 @@ export class WorkflowService {
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
+    const childSelect = {
+      id: true,
+      status: true,
+      assigneeId: true,
+      context: true,
+      createdAt: true,
+      state: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+          definition: true,
+        },
+      },
+      endUser: {
+        select: {
+          id: true,
+          correlationId: true,
+          endUserType: true,
+          approvalState: true,
+          stateReason: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          dateOfBirth: true,
+          avatarUrl: true,
+          additionalInfo: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      parentRuntimeDataId: true,
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    } satisfies NonNullable<Parameters<WorkflowRuntimeDataRepository['findById']>[1]>['select'];
     const safeArgs = (() => {
       if (args?.include) {
         return {
           ...args,
           include: {
             ...args?.include,
-            childWorkflowsRuntimeData: true,
+            childWorkflowsRuntimeData: {
+              select: childSelect,
+            },
           },
-        };
+        } satisfies Parameters<WorkflowRuntimeDataRepository['findById']>[1];
       }
 
       if (args?.select) {
@@ -212,10 +306,21 @@ export class WorkflowService {
           ...args,
           select: {
             ...args?.select,
-            childWorkflowsRuntimeData: true,
+            childWorkflowsRuntimeData: {
+              select: childSelect,
+            },
           },
-        };
+        } satisfies Parameters<WorkflowRuntimeDataRepository['findById']>[1];
       }
+
+      return {
+        ...args,
+        include: {
+          childWorkflowsRuntimeData: {
+            select: childSelect,
+          },
+        },
+      } satisfies Parameters<WorkflowRuntimeDataRepository['findById']>[1];
     })();
     const workflow = (await this.workflowRuntimeDataRepository.findById(
       id,
