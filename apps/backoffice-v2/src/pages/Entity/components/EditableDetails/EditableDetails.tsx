@@ -21,6 +21,10 @@ import { SelectValue } from '../../../../common/components/atoms/Select/Select.V
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
+import { isObject } from '@ballerine/common';
+import { Util } from 'leaflet';
+import { JsonDialog } from '@ballerine/ui';
+import isArray = Util.isArray;
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -117,69 +121,81 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
             'grid-cols-3': id === 'entity-details',
           })}
         >
-          {formData?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
-            isDecisionComponent && !value ? null : (
+          {formData?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) => {
+            return (
               <FormField
                 key={keyFactory(valueId, title, `form-field`)}
                 control={form.control}
                 name={title}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
-                    {dropdownOptions ? (
-                      <Select
-                        disabled={!isEditable}
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {dropdownOptions?.map(({ label, value }) => {
-                            return (
-                              <SelectItem
-                                key={keyFactory(valueId, label, `select-item`)}
-                                value={value}
-                              >
-                                {label}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <FormControl>
-                        <Input
-                          type={!format ? (type === 'string' ? 'text' : type) : format}
+                render={({ field }) => {
+                  if (isDecisionComponent && !value) return null;
+
+                  if (isObject(value) || isArray(value)) {
+                    return (
+                      <div>
+                        <JsonDialog json={JSON.stringify(value)} />
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <FormItem>
+                      <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
+                      {dropdownOptions ? (
+                        <Select
                           disabled={!isEditable}
-                          className={ctw(
-                            `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
-                            {
-                              'font-bold text-success': isDecisionPositive(
-                                isDecisionComponent,
-                                field.value,
-                              ),
-                              'font-bold text-destructive': isDecisionNegative(
-                                isDecisionComponent,
-                                field.value,
-                              ),
-                            },
-                          )}
-                          pattern={pattern}
-                          autoComplete={'off'}
-                          {...field}
-                        />
-                      </FormControl>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {dropdownOptions?.map(({ label, value }) => {
+                              return (
+                                <SelectItem
+                                  key={keyFactory(valueId, label, `select-item`)}
+                                  value={value}
+                                >
+                                  {label}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <FormControl>
+                          <Input
+                            type={!format ? (type === 'string' ? 'text' : type) : format}
+                            disabled={!isEditable}
+                            className={ctw(
+                              `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
+                              {
+                                'font-bold text-success': isDecisionPositive(
+                                  isDecisionComponent,
+                                  field.value,
+                                ),
+                                'font-bold text-destructive': isDecisionNegative(
+                                  isDecisionComponent,
+                                  field.value,
+                                ),
+                              },
+                            )}
+                            pattern={pattern}
+                            autoComplete={'off'}
+                            {...field}
+                          />
+                        </FormControl>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
-            ),
-          )}
+            );
+          })}
         </div>
         <div className={`flex justify-end`}>
           {data?.some(({ isEditable }) => isEditable) && (
