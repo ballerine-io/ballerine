@@ -7,7 +7,7 @@ import { DocumentsContext, KYBContext } from '@app/components/organisms/KYBView/
 import { formSchema } from '@app/components/organisms/KYBView/views/DocumentsView/form.schema';
 import { serializeViewData } from '@app/components/organisms/KYBView/views/DocumentsView/helpers/serialize-view-data';
 import { updateBusiness } from '@app/domains/business';
-import { runWorkflowRequset } from '@app/domains/workflows';
+import { runAndStartWorkflowRequest } from '@app/domains/workflows';
 import { useCallback } from 'react';
 import { v4 } from 'uuid';
 
@@ -20,8 +20,8 @@ export const DocumentsView = () => {
     async (values: DocumentsContext): Promise<void> => {
       const serializedData = await serializeViewData(values, context.shared.businessId, storage);
       await updateBusiness(serializedData);
-      await runWorkflowRequset({
-        workflowId: 'dynamic_kyb_parent_example',
+      await runAndStartWorkflowRequest({
+        workflowId: 'dynamic_external_request_example',
         context: {
           entity: {
             id: v4(),

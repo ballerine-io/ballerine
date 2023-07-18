@@ -31,6 +31,7 @@ export const env = createEnv({
     SENTRY_DSN: z.string().nullable().optional(),
     WEBHOOK_URL: z.string().url().optional(),
     WEBHOOK_SECRET: z.string().optional(),
+    IS_DEMO: z.string().optional(),
   },
   client: {},
   /**
