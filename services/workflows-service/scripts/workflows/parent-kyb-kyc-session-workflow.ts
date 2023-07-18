@@ -41,7 +41,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: 'length(childWorkflows.kyc_email_session_example.*.[result][]) == length(childWorkflows.kyc_email_session_example.*[])',
+                  rule: 'length(childWorkflows.kyc_email_session_example.*.[vendorResult][]) == length(childWorkflows.kyc_email_session_example.*[])',
                 },
               },
             },
@@ -127,7 +127,7 @@ export const parentKybWithSessionWorkflowDefinition = {
         transformers: [
           {
             transformer: 'jmespath',
-            mapping: '{childResult: entity.data, vendorResult: vendorResult.data}', // jmespath
+            mapping: '{childResult: entity.data, vendorResult: vendorResult}', // jmespath
           },
         ],
         deliverEvent: 'KYC_RESPONDED',
