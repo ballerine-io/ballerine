@@ -64,7 +64,8 @@ export class ApiPlugin {
         }
         return;
       } else {
-        return this.returnErrorResponse('Request Failed: ' + apiResponse.statusText);
+        const errorResponse = await apiResponse.json();
+        return this.returnErrorResponse('Request Failed: ' + apiResponse.statusText + " Error: " + JSON.stringify(errorResponse));
       }
     } catch (error) {
       return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');

@@ -18,6 +18,7 @@ import { FilterService } from '@/filter/filter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
+import { UnifiedApiCallbackNormalizeService } from '@/workflow/unified-api-callback-normalize.service';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
@@ -30,6 +31,7 @@ import { UserRepository } from '@/user/user.repository';
     StorageService,
     FileRepository,
     WorkflowService,
+    UnifiedApiCallbackNormalizeService,
     FileService,
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
@@ -38,6 +40,13 @@ import { UserRepository } from '@/user/user.repository';
     UserService,
     UserRepository,
   ],
-  exports: [WorkflowService, ACLModule, AuthModule, StorageService, FileRepository],
+  exports: [
+    WorkflowService,
+    UnifiedApiCallbackNormalizeService,
+    ACLModule,
+    AuthModule,
+    StorageService,
+    FileRepository,
+  ],
 })
 export class WorkflowModule {}

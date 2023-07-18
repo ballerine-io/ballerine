@@ -25,7 +25,7 @@ export type TWorkflowWithRelations = WorkflowRuntimeData & {
   workflowDefinition: WorkflowDefinition;
   assignee: User;
   parentRuntimeId?: string;
-  childWorkflowsRuntimeData?: Array<TWorkflowWithRelations>,
+  childWorkflowsRuntimeData?: Array<TWorkflowWithRelations>;
 } & ({ endUser: EndUser } | { business: Business });
 
 export interface ListWorkflowsRuntimeParams {

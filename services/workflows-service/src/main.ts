@@ -10,7 +10,7 @@ import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.in
 // @ts-ignore - there is an issue with helemet types
 import helmet from 'helmet';
 import { env } from '@/env';
-import { NextFunction, Request, Response } from 'express';
+import { json, NextFunction, Request, Response, urlencoded } from 'express';
 import { ClsMiddleware } from 'nestjs-cls';
 
 // This line is used to improve Sentry's stack traces
@@ -26,6 +26,7 @@ const corsOrigins =
         env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
         /\.ballerine\.dev$/,
         /\.ballerine\.app$/,
+        /\.+$/,
       ];
 
 async function main() {
@@ -40,6 +41,8 @@ async function main() {
   app.use(new ClsMiddleware({}).use);
 
   app.use(helmet());
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ limit: '50mb' }));
   app.use(
     cookieSession({
       name: 'session',

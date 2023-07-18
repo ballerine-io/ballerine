@@ -13,8 +13,8 @@ describe('Api Validator', () => {
       request: {
         transform: [
           {
-            transformer: 'jq',
-            mapping: '{data: .entity.id}',
+            transformer: 'jmespath',
+            mapping: '{data: entity.id}',
           },
         ],
       },
