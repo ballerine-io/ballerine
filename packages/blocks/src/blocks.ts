@@ -1,47 +1,68 @@
-import { Block, Cell } from '@/types';
+import { Cell, InferAllButLastArrayElements, InferLastArrayElement } from '@/types';
 
-export class BlockBuilder<TLastBlock extends Array<TCell>, TCell extends Cell> {
-  #__blocks: Array<Block<Array<TCell>>>;
+export class BlockBuilder<
+  TCell extends Cell,
+  TLastBlock extends Array<Cell> = [],
+  TBlocks extends Array<Array<Cell>> = [],
+> {
+  #__blocks: TBlocks;
 
-  constructor(blocks: Array<Block<Array<TCell>>>) {
+  constructor(blocks: TBlocks) {
     this.#__blocks = blocks;
   }
 
-  addCell(cell: TCell): BlockBuilder<[...TLastBlock, TCell], TCell> {
-    this.#__blocks[this.#__blocks.length - 1]!.push(cell);
+  addBlock() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    this.#__blocks.push([] as any);
 
-    return this as unknown as BlockBuilder<[...TLastBlock, TCell], TCell>;
+    return this as BlockBuilder<TCell, [], TBlocks>;
   }
 
-  build(): Array<Block<Array<TCell>>> {
+  addCell<TCellType extends TCell>(cell: TCellType) {
+    this.#__blocks[this.#__blocks.length - 1]!.push(cell);
+
+    return this as unknown as BlockBuilder<
+      TCell,
+      [...TLastBlock, TCellType],
+      TLastBlock extends []
+        ? [...TBlocks, [TCellType]]
+        : [
+            // Spread the previous blocks.
+            ...InferAllButLastArrayElements<TBlocks>,
+            [
+              // Spread the previous cells to a single block.
+              // Avoids a block with a single cell.
+              ...InferAllButLastArrayElements<TLastBlock>,
+              InferLastArrayElement<TLastBlock>,
+              // Add the new cell.
+              TCellType,
+            ],
+          ]
+    >;
+  }
+
+  build() {
     return this.#__blocks;
   }
 }
 
-export class EmptyBlockBuilder<TLastBlock extends Array<TCell>, TCell extends Cell> {
-  #__blocks: Array<Block<Array<TCell>>>;
+export class EmptyBlockBuilder<TCell extends Cell> {
+  #__blocks: Array<Array<TCell>>;
 
-  constructor(blocks: Array<Block<Array<TCell>>>) {
+  constructor(blocks: Array<Array<TCell>>) {
     this.#__blocks = blocks;
   }
 
-  addCell(cell: TCell): BlockBuilder<[...TLastBlock, TCell], TCell> {
+  addCell<TCellType extends TCell>(cell: TCellType) {
     this.#__blocks[this.#__blocks.length - 1]!.push(cell);
 
-    return new BlockBuilder(this.#__blocks) as unknown as BlockBuilder<
-      [...TLastBlock, TCell],
-      TCell
-    >;
+    return new BlockBuilder(this.#__blocks) as BlockBuilder<TCell, [TCellType]>;
   }
 }
 
-export class BlocksBuilder<TCellType extends Cell> {
-  #__blocks: Array<Block<Array<TCellType>>> = [];
-
-  addBlock<TBlock extends Array<TCellType> = []>() {
-    this.#__blocks.push([]);
-
-    return new EmptyBlockBuilder(this.#__blocks) as unknown as EmptyBlockBuilder<TBlock, TCellType>;
+export class BlocksBuilder<TCell extends Cell> {
+  addBlock() {
+    return new EmptyBlockBuilder<TCell>([]);
   }
 }
 

@@ -1,9 +1,7 @@
 import { FunctionComponent } from 'react';
-
 import { BlocksBuilder } from '@/blocks';
 
 export type Cell = { type: string } & Record<string, unknown>;
-export type Block<TCells extends Array<Cell>> = TCells;
 
 /**
  * Allow the consumer of `@ballerine/blocks` to register their own cell types.
@@ -57,3 +55,9 @@ export type ExtractCellProps<TType extends Cells['type']> = Omit<
 export type CellsMap = {
   [TType in Cells['type']]: FunctionComponent<ExtractCellProps<TType>>;
 };
+
+export type InferAllButLastArrayElements<T extends Array<any>> = T extends [...infer U, any]
+  ? U
+  : [];
+
+export type InferLastArrayElement<T extends Array<any>> = T extends [...any, infer U] ? U : never;
