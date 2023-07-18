@@ -4,6 +4,7 @@ import { convertSnakeCaseToTitleCase } from '../../hooks/useEntity/utils';
 import { isNullish, isObject } from '@ballerine/common';
 import { FunctionComponent } from 'react';
 import { INestedComponentProps } from './interfaces';
+import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 
 export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
   id,
@@ -43,7 +44,48 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
                 }}
               />
             )}
-            {Array.isArray(value) && <p>{value.join(', ')}</p>}
+            {Array.isArray(value) &&
+              value?.map((item, index) => {
+                if (isObject(item)) {
+                  return (
+                    <NestedComponent
+                      key={keyFactory(index?.toString(), id, title, `nested-component`)}
+                      isNested
+                      id={id}
+                      value={{
+                        data: Object.entries(item)?.map(([title, value]) => ({
+                          title,
+                          value,
+                        })),
+                      }}
+                    />
+                  );
+                }
+
+                if (Array.isArray(item)) {
+                  return (
+                    <NestedComponent
+                      key={keyFactory(index?.toString(), id, title, `nested-component`)}
+                      isNested
+                      id={id}
+                      value={{
+                        data: item?.map(item => ({
+                          title: 'Custom Property',
+                          value: item,
+                        })),
+                      }}
+                    />
+                  );
+                }
+
+                if (!isObject(item) && !Array.isArray(item)) {
+                  return (
+                    <p key={keyFactory(index?.toString(), id, title, `nested-component`)}>
+                      {isNullish(item) ? '' : item?.toString()}
+                    </p>
+                  );
+                }
+              })}
             {!isObject(value) && !Array.isArray(value) && (
               <p>{isNullish(value) ? '' : value?.toString()}</p>
             )}
