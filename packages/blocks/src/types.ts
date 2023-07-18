@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode } from 'react';
+import { ComponentProps, FunctionComponent, ReactNode } from 'react';
 import { BlocksBuilder } from '@/blocks';
 
 export type Cell = { type: string } & Record<string, unknown>;
@@ -67,16 +67,34 @@ export type InferAllButLastArrayElements<T extends Array<any>> = T extends [...i
 
 export type InferLastArrayElement<T extends Array<any>> = T extends [...any, infer U] ? U : never;
 
-export interface BlocksProps {
+export interface BlocksProps<TCell extends Cells> {
+  /**
+   * @description A map of cell components
+   * @example
+   * const cells: CellsMap = {
+   *    text: TextCell,
+   *    image: ImageCell,
+   *  }
+   */
   cells: CellsMap;
-  blocks: Array<Array<Cells>>;
+  /**
+   * @description Output of `createBlocks.build()`
+   * @see {@link BlockBuilder.build}
+   */
+  blocks: Array<Array<TCell>>;
   Block: FunctionComponent<{
     children: ReactNode | Array<ReactNode>;
-    block: Array<Cells>;
+    block: Array<TCell>;
   }>;
+  /**
+   * @description children as a function - provides access to the current block and cell
+   * @param Cell
+   * @param cell
+   * @param block
+   */
   children: (
     Cell: CellsMap[keyof CellsMap],
-    cell: Cells,
-    block: Array<Cells>,
+    cell: ComponentProps<CellsMap[keyof CellsMap]>,
+    block: Array<TCell>,
   ) => ReactNode | Array<ReactNode>;
 }

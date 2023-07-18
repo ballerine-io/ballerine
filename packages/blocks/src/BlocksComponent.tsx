@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { ForwardedRef, forwardRef, Fragment } from 'react';
-import type { BlocksProps } from './types';
+import type { BlocksProps, Cells } from './types';
 
 export const BlocksComponent = forwardRef(
-  ({ cells, blocks, children, Block = Fragment }: BlocksProps, ref: ForwardedRef<typeof Block>) => {
+  <TCell extends Cells>(
+    { cells, blocks, children, Block = Fragment }: BlocksProps<TCell>,
+    ref: ForwardedRef<typeof Block>,
+  ) => {
     return (
       <>
         {Array.isArray(blocks) &&
@@ -22,9 +25,9 @@ export const BlocksComponent = forwardRef(
               >
                 {Array.isArray(block) &&
                   !!block?.length &&
-                  block?.map(cell => {
+                  block?.map(({ type, ...cell }) => {
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-                    const Cell = cells[cell?.type];
+                    const Cell = cells[type];
 
                     return (
                       <Fragment

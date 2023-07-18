@@ -3,8 +3,9 @@ import { ComponentProps } from 'react';
 import { Card } from '../../common/components/atoms/Card/Card';
 import { CardContent } from '../../common/components/atoms/Card/Card.Content';
 import { ctw } from '../../common/utils/ctw/ctw';
+import { TCell } from './hooks/useEntity/blocks';
 
-export const TaskContainer = ({ children, block }: ComponentProps<BlocksProps['Block']>) => {
+export const TaskContainer = ({ children, block }: ComponentProps<BlocksProps<TCell>['Block']>) => {
   return (
     <Card className={`me-4`}>
       <CardContent
