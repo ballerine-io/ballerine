@@ -46,17 +46,21 @@ export class BlockBuilder<
   }
 }
 
-export class EmptyBlockBuilder<TCell extends Cell> {
-  #__blocks: Array<Array<TCell>>;
+export class EmptyBlockBuilder<TCell extends Cell, TLastBlock extends Array<Cell> = []> {
+  #__blocks: Array<Array<Cell>> = [];
 
-  constructor(blocks: Array<Array<TCell>>) {
-    this.#__blocks = blocks;
+  constructor(block: Array<Cell>) {
+    this.#__blocks.push(block);
   }
 
   addCell<TCellType extends TCell>(cell: TCellType) {
     this.#__blocks[this.#__blocks.length - 1]!.push(cell);
 
-    return new BlockBuilder(this.#__blocks) as BlockBuilder<TCell, [TCellType]>;
+    return new BlockBuilder(this.#__blocks) as BlockBuilder<
+      TCell,
+      [...TLastBlock, TCellType],
+      [[...TLastBlock, TCellType]]
+    >;
   }
 }
 

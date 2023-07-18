@@ -34,7 +34,7 @@ const umdDevPlugin = (type: 'development' | 'production') =>
 const babelPlugin = babel({
   babelHelpers: 'bundled',
   exclude: /node_modules/,
-  extensions: ['.ts'],
+  extensions: ['.ts', '.tsx'],
 });
 
 export default function rollup(options: RollupOptions): RollupOptions[] {
@@ -75,6 +75,7 @@ function buildConfigs(opts: {
     external: [
       ...Object.keys(packageJson.dependencies ?? {}),
       ...Object.keys(packageJson.peerDependencies ?? {}),
+      'react',
     ],
     umdExternal: Object.keys(packageJson.peerDependencies ?? {}),
     banner,
@@ -104,7 +105,7 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
     },
     plugins: [
       babelPlugin,
-      nodeResolve({ extensions: ['.ts'] }),
+      nodeResolve({ extensions: ['.ts', '.tsx'] }),
       typescriptPaths({ preserveExtensions: true }),
     ],
   };
@@ -127,7 +128,7 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
       babelPlugin,
       typescriptPaths({ preserveExtensions: true }),
       commonjs(),
-      nodeResolve({ extensions: ['.ts'] }),
+      nodeResolve({ extensions: ['.ts', '.tsx'] }),
     ],
   };
 }
@@ -148,7 +149,7 @@ function umdDev({ input, umdExternal, packageDir, banner, jsName }: Options): Ro
       babelPlugin,
       typescriptPaths({ preserveExtensions: true }),
       commonjs(),
-      nodeResolve({ extensions: ['.ts'] }),
+      nodeResolve({ extensions: ['.ts', '.tsx'] }),
       umdDevPlugin('development'),
     ],
   };
@@ -170,7 +171,7 @@ function umdProd({ input, umdExternal, packageDir, banner, jsName }: Options): R
       babelPlugin,
       typescriptPaths({ preserveExtensions: true }),
       commonjs(),
-      nodeResolve({ extensions: ['.ts'] }),
+      nodeResolve({ extensions: ['.ts', '.tsx'] }),
       umdDevPlugin('production'),
       terser(),
       size({}),

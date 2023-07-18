@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, ReactNode } from 'react';
 import { BlocksBuilder } from '@/blocks';
 
 export type Cell = { type: string } & Record<string, unknown>;
@@ -29,17 +29,22 @@ type InferBlocksBuilderGeneric<TClass extends BlocksBuilder<any>> = TClass exten
 /**
  * Infer the generic passed into the instance of `BlocksBuilder` registered by the consumer of `@ballerine/blocks`.
  */
-type Cells =
+export type Cells =
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   InferBlocksBuilderGeneric<Blocks['cells']>;
+
+/**
+ * Extract the type of cell from the registered cells.
+ */
+export type CellType = Cells['type'];
 
 /**
  * Extract the props of a cell by type from the registered cells.
  * @example
  * const Cell: FunctionComponent<ExtractCellProps<'text'>> = ({ text }) => <p>{text}</p>;
  */
-export type ExtractCellProps<TType extends Cells['type']> = Omit<
+export type ExtractCellProps<TType extends CellType> = Omit<
   Extract<Cells, { type: TType }>,
   'type'
 >;
@@ -53,7 +58,7 @@ export type ExtractCellProps<TType extends Cells['type']> = Omit<
  *  }
  */
 export type CellsMap = {
-  [TType in Cells['type']]: FunctionComponent<ExtractCellProps<TType>>;
+  [TType in CellType]: FunctionComponent<ExtractCellProps<TType>>;
 };
 
 export type InferAllButLastArrayElements<T extends Array<any>> = T extends [...infer U, any]
@@ -61,3 +66,17 @@ export type InferAllButLastArrayElements<T extends Array<any>> = T extends [...i
   : [];
 
 export type InferLastArrayElement<T extends Array<any>> = T extends [...any, infer U] ? U : never;
+
+export interface BlocksProps {
+  cells: CellsMap;
+  blocks: Array<Array<Cells>>;
+  Block: FunctionComponent<{
+    children: ReactNode | Array<ReactNode>;
+    block: Array<Cells>;
+  }>;
+  children: (
+    Cell: CellsMap[keyof CellsMap],
+    cell: Cells,
+    block: Array<Array<Cells>>,
+  ) => ReactNode | Array<ReactNode>;
+}

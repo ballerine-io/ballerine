@@ -39,7 +39,7 @@ export const useTasks = ({
   const address = getAddressDeep(pluginsOutput);
 
   return useMemo(() => {
-    let tasks;
+    let tasks = blocks;
 
     if (Object.keys(pluginsOutput ?? {}).length) {
       const nonEmptyPluginsOutputKeys = pluginsOutputKeys?.filter(
@@ -47,14 +47,18 @@ export const useTasks = ({
       );
 
       nonEmptyPluginsOutputKeys?.forEach(key => {
-        tasks = blocks
+        tasks = tasks
           .addBlock()
           .addCell({
             id: 'nested-details-heading',
+            keyProp: 'key',
+            key: `nested-details-heading:${key}`,
             type: 'heading',
             value: convertSnakeCaseToTitleCase(key),
           })
           .addCell({
+            keyProp: 'key',
+            key: `nested-details:${key}`,
             type: 'nestedDetails',
             value: {
               data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
@@ -78,11 +82,13 @@ export const useTasks = ({
           const isDoneWithRevision =
             decision?.status === 'revision' && parentMachine?.status === 'completed';
 
-          tasks = blocks
+          tasks = tasks
             .addBlock()
             .addCell({
               id: 'header',
               type: 'container',
+              keyProp: 'key',
+              key: `header:container:${id}`,
               value: [
                 {
                   type: 'heading',
@@ -118,6 +124,8 @@ export const useTasks = ({
             })
             .addCell({
               type: 'container',
+              keyProp: 'key',
+              key: `container:${id}`,
               value: [
                 {
                   id: 'decision',
@@ -169,6 +177,8 @@ export const useTasks = ({
             })
             .addCell({
               type: 'multiDocuments',
+              keyProp: 'key',
+              key: `multiDocuments:${id}`,
               value: {
                 isLoading: docsData?.some(({ isLoading }) => isLoading),
                 data:
@@ -191,9 +201,11 @@ export const useTasks = ({
     }
 
     if (address) {
-      tasks = blocks.addBlock().addCell({
+      tasks = tasks.addBlock().addCell({
         id: 'map-container',
         type: 'container',
+        keyProp: 'key',
+        key: `map-container:container:${entity?.id}}`,
         value: [
           {
             id: 'map-header',
@@ -220,15 +232,19 @@ export const useTasks = ({
     }
 
     if (Object.keys(entity ?? {}).length) {
-      tasks = blocks
+      tasks = tasks
         .addBlock()
         .addCell({
           type: 'heading',
           value: `${toStartCase(entity?.type)} Information`,
+          keyProp: 'key',
+          key: `heading:${entity?.id}`,
         })
         .addCell({
           id: 'entity-details',
           type: 'details',
+          keyProp: 'key',
+          key: `entity-details:details:${entity?.id}`,
           value: {
             title: `${toStartCase(entity?.type)} Information`,
             data: [

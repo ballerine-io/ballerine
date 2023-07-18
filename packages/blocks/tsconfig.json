@@ -18,7 +18,8 @@
     "pretty": true,
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "jsx": "react-jsx"
   },
   "files": ["src/index.ts"],
   "include": ["src"]

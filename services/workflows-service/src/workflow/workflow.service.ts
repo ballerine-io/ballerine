@@ -163,6 +163,7 @@ export class WorkflowService {
         machineContext: workflow.context,
         state: workflow.state,
       },
+      runtimeId: workflow.id,
     });
 
     return {
@@ -1029,6 +1030,7 @@ export class WorkflowService {
         state: runtimeData.state,
       },
       extensions: workflow.extensions,
+      runtimeId: id,
     });
 
     await service.sendEvent({
