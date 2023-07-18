@@ -871,7 +871,7 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  await createFilter('KYB', 'businesses', {
+  await createFilter("KYB with UBO's", 'businesses', {
     select: {
       id: true,
       status: true,
@@ -921,7 +921,7 @@ async function seed(bcryptSalt: Salt) {
       },
     },
     where: {
-      workflowDefinitionId: kybManualMachineId,
+      workflowDefinitionId: 'dynamic_kyb_parent_example',
       businessId: { not: null },
     },
   });
