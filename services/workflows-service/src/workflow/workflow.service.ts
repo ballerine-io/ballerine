@@ -22,11 +22,7 @@ import {
 } from './types';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
@@ -220,7 +216,9 @@ export class WorkflowService {
       endUser: undefined,
       business: undefined,
       nextEvents: service.getSnapshot().nextEvents,
-      childWorkflows: workflow.childWorkflowsRuntimeData?.map((childWorkflow) => this.formatWorkflow(childWorkflow))
+      childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
+        this.formatWorkflow(childWorkflow),
+      ),
     };
   }
 
@@ -860,7 +858,7 @@ export class WorkflowService {
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
     if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
-      contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
         data: {
           ...entityConnect,
@@ -885,7 +883,7 @@ export class WorkflowService {
         context.documents,
       );
 
-      contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
         existingWorkflowRuntimeData.id,
         {
@@ -918,7 +916,7 @@ export class WorkflowService {
     ];
   }
 
-  private async __copyFileAndCreate(
+  async copyFileAndCreate(
     context: DefaultContextSchema,
     entityId: TEntityId,
   ): Promise<DefaultContextSchema> {
@@ -1178,7 +1176,7 @@ export class WorkflowService {
         ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
     )
       // @ts-ignore - fix as childCallbackResults[number]
-      ?.find(childCallbackResult => workflowDefinition.name === childCallbackResult.definitionName);
+      ?.find(childCallbackResult => workflowDefinition.id === childCallbackResult.definitionId);
     const childWorkflowCallback = (callbackTransformation ||
       workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
     const childrenOfSameDefinition = (
@@ -1219,7 +1217,7 @@ export class WorkflowService {
     if (!isFinal)
       return this.composeContextWithChildResponse(
         parentWorkflowRuntime.context,
-        workflowDefinition.name,
+        workflowDefinition.id,
       );
 
     const transformerInstance = (transformers || []).map((transformer: SerializableTransformer) =>
@@ -1242,7 +1240,7 @@ export class WorkflowService {
 
     const parentContext = this.composeContextWithChildResponse(
       parentWorkflowRuntime.context,
-      workflowDefinition.name,
+      workflowDefinition.id,
       contextToPersist,
     );
     return parentContext;
@@ -1258,13 +1256,13 @@ export class WorkflowService {
   }
   private composeContextWithChildResponse(
     parentWorkflowContext: any,
-    definitionName: string,
+    definitionId: string,
     contextToPersist?: any,
   ) {
     parentWorkflowContext['childWorkflows'] ||= {};
-    parentWorkflowContext['childWorkflows'][definitionName] ||= {};
+    parentWorkflowContext['childWorkflows'][definitionId] ||= {};
 
-    parentWorkflowContext['childWorkflows'][definitionName] = contextToPersist;
+    parentWorkflowContext['childWorkflows'][definitionId] = contextToPersist;
     return parentWorkflowContext;
   }
 
