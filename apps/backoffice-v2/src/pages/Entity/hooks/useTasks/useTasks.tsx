@@ -230,7 +230,7 @@ export const useTasks = ({
                   type: 'container',
                   value: [
                     {
-                      id: 'map-header',
+                      id: 'header',
                       type: 'heading',
                       value: `${toStartCase(entity?.type)} Address`,
                     },
