@@ -4,9 +4,4 @@ export interface UpdateBusinessDto {
   registrationNumber?: string;
   address?: string;
   website?: string;
-  documents?: {
-    registrationDocument?: string;
-    financialStatement?: string;
-  };
-  shareholderStructure?: { name: string }[];
 }

@@ -23,7 +23,6 @@ export const kybViewSchema = {
         },
       },
     },
-    errorResolving: {},
     documents: {
       on: {
         NEXT: {
@@ -31,6 +30,8 @@ export const kybViewSchema = {
         },
       },
     },
+    errorResolving: {},
+    revision: {},
     final: {
       type: 'final' as const,
     },

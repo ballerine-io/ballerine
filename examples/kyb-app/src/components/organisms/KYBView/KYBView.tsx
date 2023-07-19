@@ -18,6 +18,7 @@ export const KYBView = () => {
       personalInformation: PersonalInformationView,
       documents: DocumentsView,
       errorResolving: () => <div>Not implemented</div>,
+      revision: () => <div>Not implemented</div>,
       final: FinalView,
     };
     return views;

@@ -1,4 +1,4 @@
-import { AnyChildren } from '@ballerine/ui';
+import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { fileStorageContext } from './file-storage.context';
 import { FileStorage } from '@app/common/utils/file-storage';
 import { useMemo } from 'react';

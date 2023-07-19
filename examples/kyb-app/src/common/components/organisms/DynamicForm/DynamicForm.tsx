@@ -30,6 +30,7 @@ export function DynamicForm<TFormData extends object>({
         schema={schema}
         formData={initialData}
         uiSchema={uiSchema}
+        onChange={values => console.log('values', values)}
         onSubmit={data =>
           onSubmit(data.formData ? (data.formData as TFormData) : ({} as TFormData))
         }
