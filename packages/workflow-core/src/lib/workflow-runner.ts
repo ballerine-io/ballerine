@@ -215,7 +215,7 @@ export class WorkflowRunner {
     },
   ) {
     return (
-      transformers?.map(transformer => {
+      (Array.isArray(transformers) ? transformers : []).map(transformer => {
         if (transformer.transformer === 'jmespath')
           return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
         if (transformer.transformer === 'helper') {

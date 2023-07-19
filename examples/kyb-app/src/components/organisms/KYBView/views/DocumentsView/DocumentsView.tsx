@@ -7,9 +7,10 @@ import { DocumentsContext, KYBContext } from '@app/components/organisms/KYBView/
 import { formSchema } from '@app/components/organisms/KYBView/views/DocumentsView/form.schema';
 import { serializeViewData } from '@app/components/organisms/KYBView/views/DocumentsView/helpers/serialize-view-data';
 import { updateBusiness } from '@app/domains/business';
-import { runWorkflowRequset } from '@app/domains/workflows';
+import { runAndStartWorkflowRequest } from '@app/domains/workflows';
 import { useCallback } from 'react';
-import { v4 } from 'uuid';
+import { validate } from 'uuid';
+// import { v4 } from 'uuid';
 
 export const DocumentsView = () => {
   const { context, next } = useViewState<typeof kybViewSchema, KYBContext>();
@@ -20,15 +21,38 @@ export const DocumentsView = () => {
     async (values: DocumentsContext): Promise<void> => {
       const serializedData = await serializeViewData(values, context.shared.businessId, storage);
       await updateBusiness(serializedData);
-      await runWorkflowRequset({
+      await runAndStartWorkflowRequest({
         workflowId: 'dynamic_kyb_parent_example',
         context: {
           entity: {
-            id: v4(),
             endUserId: context.shared.endUserId,
             ballerineEntityId: context.shared.businessId,
             type: 'business',
-            data: {},
+            data: {
+              website: values.information.website,
+              registrationNumber: values.information.registrationNumber,
+              companyName: context.personalInformation.companyName,
+              address: {
+                text: values.address.address,
+              },
+              additionalInfo: {
+                // @ts-ignore
+                ubos: values.shareholders.map(shareholder => ({
+                  entity: {
+                    type: 'individual',
+                    data: {
+                      firstName: shareholder.firstName,
+                      lastName: shareholder.lastName,
+                      email: shareholder.email,
+                      additionalInfo: {
+                        companyName: context.personalInformation.companyName,
+                        customerCompany: 'Ballerine',
+                      },
+                    },
+                  },
+                })),
+              },
+            },
           },
         },
       });

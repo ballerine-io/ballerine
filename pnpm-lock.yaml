@@ -57,13 +57,13 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.7
+        specifier: 0.5.8
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: ^0.4.10
+        specifier: ^0.4.11
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: ^0.4.4
+        specifier: ^0.4.5
         version: link:../../sdks/workflow-node-sdk
       '@formkit/auto-animate':
         specifier: 1.0.0-beta.5
@@ -294,6 +294,9 @@ importers:
       storybook:
         specifier: ^7.0.0-rc.10
         version: 7.0.0-rc.10
+      storybook-addon-react-router-v6:
+        specifier: ^1.0.2
+        version: 1.0.2(@storybook/blocks@7.0.0-rc.10)(@storybook/components@7.0.27)(@storybook/core-events@7.0.27)(@storybook/manager-api@7.0.27)(@storybook/preview-api@7.0.27)(@storybook/theming@7.0.27)(@storybook/types@7.0.27)(react-dom@18.2.0)(react-router-dom@6.11.2)(react-router@6.11.2)(react@18.2.0)
       tailwindcss:
         specifier: ^3.2.4
         version: 3.2.7(postcss@8.4.21)(ts-node@10.9.1)
@@ -497,10 +500,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.7
+        specifier: 0.5.8
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: ^0.4.10
+        specifier: ^0.4.11
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -588,7 +591,7 @@ importers:
   examples/kyb-app:
     dependencies:
       '@ballerine/ui':
-        specifier: 0.1.1
+        specifier: 0.1.2
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -1057,7 +1060,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.7
+        specifier: 0.5.8
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1199,7 +1202,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.7
+        specifier: 0.5.8
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -1320,10 +1323,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.7
+        specifier: 0.5.8
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: ^0.4.17
+        specifier: ^0.4.18
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1450,7 +1453,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: ^0.4.17
+        specifier: ^0.4.18
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -1668,13 +1671,13 @@ importers:
         specifier: 3.325.0
         version: 3.325.0(@aws-sdk/abort-controller@3.347.0)(@aws-sdk/client-s3@3.325.0)
       '@ballerine/common':
-        specifier: 0.5.7
+        specifier: 0.5.8
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: ^0.4.17
+        specifier: ^0.4.18
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: ^0.4.4
+        specifier: ^0.4.5
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -1939,7 +1942,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@2.7.2)(tailwindcss@3.3.2)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: 0.5.7
+        specifier: 0.5.8
         version: link:../../packages/common
       '@docsearch/css':
         specifier: ^3.1.0
@@ -6646,7 +6649,7 @@ packages:
       '@babel/helper-plugin-utils': 7.20.2
       '@babel/plugin-proposal-unicode-property-regex': 7.18.6(@babel/core@7.21.3)
       '@babel/plugin-transform-dotall-regex': 7.18.6(@babel/core@7.21.3)
-      '@babel/types': 7.21.3
+      '@babel/types': 7.22.5
       esutils: 2.0.3
     dev: true
 
@@ -6659,7 +6662,7 @@ packages:
       '@babel/helper-plugin-utils': 7.20.2
       '@babel/plugin-proposal-unicode-property-regex': 7.18.6(@babel/core@7.22.5)
       '@babel/plugin-transform-dotall-regex': 7.18.6(@babel/core@7.22.5)
-      '@babel/types': 7.21.3
+      '@babel/types': 7.22.5
       esutils: 2.0.3
     dev: true
 
@@ -11252,7 +11255,6 @@ packages:
   /@remix-run/router@1.6.2:
     resolution: {integrity: sha512-LzqpSrMK/3JBAVBI9u3NWtOhWNw5AMQfrUFYB0+bDHTSw17z++WJLsPsxAuK+oSddsxk4d7F/JcdDPM1M5YAhA==}
     engines: {node: '>=14'}
-    dev: false
 
   /@rjsf/core@5.9.0(@rjsf/utils@5.9.0)(react@18.2.0):
     resolution: {integrity: sha512-HYgnWKTGVfbj6bs1O9SYyw4VgBfoISZeQti259aiKK08XDVH+tgThxBMX4CyMjC/K9I4ralRV9KRlGO1un0DzQ==}
@@ -27333,7 +27335,6 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-router: 6.11.2(react@18.2.0)
-    dev: false
 
   /react-router@6.11.2(react@18.2.0):
     resolution: {integrity: sha512-74z9xUSaSX07t3LM+pS6Un0T55ibUE/79CzfZpy5wsPDZaea1F8QkrsiyRnA2YQ7LwE/umaydzXZV80iDCPkMg==}
@@ -27343,7 +27344,6 @@ packages:
     dependencies:
       '@remix-run/router': 1.6.2
       react: 18.2.0
-    dev: false
 
   /react-sizeme@3.0.2:
     resolution: {integrity: sha512-xOIAOqqSSmKlKFJLO3inBQBdymzDuXx4iuwkNcJmC96jeiOg5ojByvL+g3MW9LPEsojLbC6pf68zOfobK8IPlw==}
@@ -28749,6 +28749,40 @@ packages:
     resolution: {integrity: sha512-siT1RiqlfQnGqgT/YzXVUNsom9S0H1OX+dpdGN1xkyYATo4I6sep5NmsRD/40s3IIOvlCq6akxkqG82urIZW1w==}
     dev: true
 
+  /storybook-addon-react-router-v6@1.0.2(@storybook/blocks@7.0.0-rc.10)(@storybook/components@7.0.27)(@storybook/core-events@7.0.27)(@storybook/manager-api@7.0.27)(@storybook/preview-api@7.0.27)(@storybook/theming@7.0.27)(@storybook/types@7.0.27)(react-dom@18.2.0)(react-router-dom@6.11.2)(react-router@6.11.2)(react@18.2.0):
+    resolution: {integrity: sha512-38W+9D2sIrYAi+oRSbsLhR/umNoLVw2DWF84Jp4f/ZoB8Cg0Qtbvwk043oHqzNOpZrfgj0FaV006oaJBVpE8Kw==}
+    peerDependencies:
+      '@storybook/blocks': ^7.0.0
+      '@storybook/components': ^7.0.0
+      '@storybook/core-events': ^7.0.0
+      '@storybook/manager-api': ^7.0.0
+      '@storybook/preview-api': ^7.0.0
+      '@storybook/theming': ^7.0.0
+      '@storybook/types': ^7.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-router: ^6.3.0
+      react-router-dom: ^6.3.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      '@storybook/blocks': 7.0.0-rc.10(react-dom@18.2.0)(react@18.2.0)
+      '@storybook/components': 7.0.27(react-dom@18.2.0)(react@18.2.0)
+      '@storybook/core-events': 7.0.27
+      '@storybook/manager-api': 7.0.27(react-dom@18.2.0)(react@18.2.0)
+      '@storybook/preview-api': 7.0.27
+      '@storybook/theming': 7.0.27(react-dom@18.2.0)(react@18.2.0)
+      '@storybook/types': 7.0.27
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-inspector: 6.0.1(react@18.2.0)
+      react-router: 6.11.2(react@18.2.0)
+      react-router-dom: 6.11.2(react-dom@18.2.0)(react@18.2.0)
+    dev: true
+
   /storybook@7.0.0-rc.10:
     resolution: {integrity: sha512-lVX1N8+VMs9E/mm+YLrCPfvFvKsJ4AVMfWg548MiJR7OZpPC2bDK8mSEnVDAeJaehIK6IprB4Y0W1FvvvjGIsw==}
     hasBin: true
@@ -29262,7 +29296,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.2.7(postcss@8.4.24)(ts-node@10.9.1)
+      tailwindcss: 3.2.7(postcss@8.4.21)(ts-node@10.9.1)
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.2):

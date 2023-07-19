@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom';
 import { cells } from './cells';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
-import { useTasksDeep } from '../useTasksDeep/useTasksDeep';
 import { useTasks } from '../useTasks/useTasks';
 
 export const useEntity = () => {
@@ -16,48 +15,6 @@ export const useEntity = () => {
     entity: contextEntity,
     pluginsOutput,
   } = workflow?.context ?? {};
-  const childWorkflows = [
-    {
-      workflow,
-      documents: contextDocuments,
-      entity: contextEntity,
-      pluginsOutput,
-      childWorkflows: [
-        {
-          workflow,
-          documents: contextDocuments,
-          entity: contextEntity,
-          pluginsOutput,
-        },
-        {
-          workflow,
-          documents: contextDocuments,
-          entity: contextEntity,
-          pluginsOutput,
-        },
-      ],
-    },
-    {
-      workflow,
-      documents: contextDocuments,
-      entity: contextEntity,
-      pluginsOutput,
-      childWorkflows: [
-        {
-          workflow,
-          documents: contextDocuments,
-          entity: contextEntity,
-          pluginsOutput,
-        },
-        {
-          workflow,
-          documents: contextDocuments,
-          entity: contextEntity,
-          pluginsOutput,
-        },
-      ],
-    },
-  ];
   const tasks = useTasks({
     workflow,
     entity: contextEntity,
@@ -66,12 +23,10 @@ export const useEntity = () => {
     parentMachine: workflow?.context?.parentMachine,
   });
 
-  const childTasks = useTasksDeep(childWorkflows);
-
   return {
     selectedEntity,
     cells,
-    tasks: [...tasks, ...childTasks],
+    tasks,
     workflow,
     isLoading,
   };
