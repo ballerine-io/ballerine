@@ -26,6 +26,8 @@ import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runt
 import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Public } from '@/common/decorators/public.decorator';
+import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
+import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -33,6 +35,7 @@ import { Public } from '@/common/decorators/public.decorator';
 export class WorkflowControllerExternal {
   constructor(
     protected readonly service: WorkflowService,
+    protected readonly normalizeService: HookCallbackHandlerService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -204,12 +207,17 @@ export class WorkflowControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async hook(
     @common.Param() params: WorkflowIdWithEventInput,
-    @common.Body() data: any,
+    @common.Query() query: WorkflowHookQuery,
+    @common.Body() hookResponse: any,
   ): Promise<void> {
     try {
       const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
-      const updatedContext = { ...workflowRuntime.context, hookResponse: data };
-      await this.service.updateWorkflowRuntimeData(params.id, { context: updatedContext });
+      await this.normalizeService.handleHookResponse({
+        workflowRuntime: workflowRuntime,
+        data: hookResponse,
+        resultDestinationPath: query.resultDestination || 'hookResponse',
+        processName: query.processName,
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
