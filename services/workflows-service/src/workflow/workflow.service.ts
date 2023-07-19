@@ -1165,6 +1165,7 @@ export class WorkflowService {
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       workflowRuntimeData.parentRuntimeDataId,
+      {include: {childWorkflowsRuntimeData: true}}
     );
     const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
       parentWorkflowRuntime.workflowDefinitionId,
@@ -1180,7 +1181,7 @@ export class WorkflowService {
       workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
     const childrenOfSameDefinition = (
       parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>
-    ).filter(
+    )?.filter(
       childWorkflow =>
         childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
     );
