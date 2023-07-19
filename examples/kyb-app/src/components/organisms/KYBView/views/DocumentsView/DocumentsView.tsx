@@ -46,7 +46,7 @@ export const DocumentsView = () => {
                       email: shareholder.email,
                       additionalInfo: {
                         companyName: context.personalInformation.companyName,
-                        customerCompany: context.personalInformation.companyName,
+                        customerCompany: 'Ballerine',
                       },
                     },
                   },
