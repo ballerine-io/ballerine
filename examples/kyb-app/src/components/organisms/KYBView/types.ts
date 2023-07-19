@@ -16,8 +16,7 @@ export interface DocumentsContext {
   };
   documents: {
     registrationCertificate: string;
-    bill: string;
-    legal: string;
+    addressProof: string;
   };
   shareholders: {
     firstName: string;
