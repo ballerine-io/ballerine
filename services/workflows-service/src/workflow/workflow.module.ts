@@ -20,7 +20,7 @@ import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
 import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-changed-webhook-caller';
 import { EntityRepository } from '@/common/entity/entity.repository';
-import { UnifiedApiCallbackNormalizeService } from '@/workflow/unified-api-callback-normalize.service';
+import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
@@ -34,7 +34,7 @@ import { UnifiedApiCallbackNormalizeService } from '@/workflow/unified-api-callb
     StorageService,
     FileRepository,
     WorkflowService,
-    UnifiedApiCallbackNormalizeService,
+    HookCallbackHandlerService,
     FileService,
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
@@ -46,7 +46,7 @@ import { UnifiedApiCallbackNormalizeService } from '@/workflow/unified-api-callb
   ],
   exports: [
     WorkflowService,
-    UnifiedApiCallbackNormalizeService,
+    HookCallbackHandlerService,
     ACLModule,
     AuthModule,
     StorageService,

@@ -58,7 +58,7 @@ export const kycEmailSessionDefinition = {
               mapping: `{
               firstName: entity.data.firstName,
               lastName: entity.data.lastName,
-              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/internal/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED', '?resultDestination=vendorResult']),
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED', '?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
               vendor: 'veriff'
               }`, // jmespath
             },
@@ -68,7 +68,7 @@ export const kycEmailSessionDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: '@', // jmespath
+              mapping: "{kyc_session_1: {vendor: 'veriff', type: 'kyc', result: {metadata: @}}}", // jmespath
             },
           ],
         },
@@ -91,7 +91,7 @@ export const kycEmailSessionDefinition = {
               kybCompanyName: entity.data.additionalInfo.companyName,
               customerCompanyName: entity.data.additionalInfo.customerCompany,
               firstName: entity.data.firstName,
-              kycLink: pluginsOutput.kyc_session.url,
+              kycLink: pluginsOutput.kyc_session.kyc_session_1.result.metadata.url,
               from: 'no-reply@ballerine.com',
               receivers: [entity.data.email],
               subject: '{customerCompanyName} activation, Action needed.',
