@@ -923,7 +923,7 @@ async function seed(bcryptSalt: Salt) {
       },
     },
     where: {
-      workflowDefinitionId: 'dynamic_kyb_parent_example',
+      workflowDefinitionId: 'kyb_parent_kyc_session_example',
       businessId: { not: null },
     },
   });
