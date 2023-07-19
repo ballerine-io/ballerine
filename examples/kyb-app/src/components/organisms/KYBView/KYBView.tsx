@@ -7,6 +7,7 @@ import { DocumentsView } from '@app/components/organisms/KYBView/views/Documents
 import { FinalView } from '@app/components/organisms/KYBView/views/FinalView';
 import { MainView } from '@app/components/organisms/KYBView/views/MainView';
 import { PersonalInformationView } from '@app/components/organisms/KYBView/views/PersonalInformationView';
+import { RevisionView } from '@app/components/organisms/KYBView/views/RevisionView';
 import { useMemo } from 'react';
 
 export const KYBView = () => {
@@ -17,8 +18,7 @@ export const KYBView = () => {
       idle: MainView,
       personalInformation: PersonalInformationView,
       documents: DocumentsView,
-      errorResolving: () => <div>Not implemented</div>,
-      revision: () => <div>Not implemented</div>,
+      revision: RevisionView,
       final: FinalView,
     };
     return views;

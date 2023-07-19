@@ -7,6 +7,16 @@ import {
   Workflow,
 } from '@app/domains/workflows/types';
 
+export const runWorkflowRequest = async (dto: RunWorkflowDto): Promise<void> => {
+  const runPayload = runAndStartWorkflowSerialize(dto);
+
+  await request
+    .post('external/workflows/run', {
+      json: runPayload,
+    })
+    .json<{ workflowRuntimeId: string }>();
+};
+
 export const runAndStartWorkflowRequest = async (dto: RunWorkflowDto): Promise<void> => {
   const runPayload = runAndStartWorkflowSerialize(dto);
 

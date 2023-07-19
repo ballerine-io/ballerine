@@ -10,7 +10,7 @@ export const kybViewSchema = {
     idle: {
       on: {
         NEXT: 'personalInformation',
-        ERROR_RESOLVING: 'errorResolving',
+        revision: 'revision',
       },
     },
     personalInformation: {
@@ -30,8 +30,13 @@ export const kybViewSchema = {
         },
       },
     },
-    errorResolving: {},
-    revision: {},
+    revision: {
+      on: {
+        NEXT: {
+          target: 'final',
+        },
+      },
+    },
     final: {
       type: 'final' as const,
     },

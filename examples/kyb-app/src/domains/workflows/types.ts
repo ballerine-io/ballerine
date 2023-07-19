@@ -86,19 +86,48 @@ export interface GetWofklowDto {
   id: string;
 }
 
+export interface WorkflowDocumentPage {
+  ballerineFileId: string;
+}
+
 export interface WorkflowDocument {
   id: string;
+  type: string;
+  category: string;
   decision: {
     status: string;
     revisionReason: string;
     rejectionReason: string;
   };
+  issuer: {
+    country: string;
+  };
   propertiesSchema: RJSFSchema;
+  pages: WorkflowDocumentPage[];
 }
 
 export interface Workflow {
   id: string;
-  documents: WorkflowDocument[];
+  workflowDefinitionId: string;
+  businessId: string;
+  endUserId: string;
+  context: {
+    documents: WorkflowDocument[];
+    entity: {
+      ballerineEntityId: string;
+      data: {
+        address: {
+          text: string;
+        };
+        website: string;
+        registrationNumber: string;
+        additionalInfo: {
+          ubos: WorkflowUBO[];
+        };
+        companyName: string;
+      };
+    };
+  };
 }
 
 export interface GetWorkflowResponse {
