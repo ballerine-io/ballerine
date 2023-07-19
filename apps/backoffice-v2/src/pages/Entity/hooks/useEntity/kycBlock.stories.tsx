@@ -205,7 +205,7 @@ const kycBlock = [
                       dropdownOptions: undefined,
                     },
                     {
-                      title: 'Document type',
+                      title: 'Document number',
                       value: 'MORGA753116SM9IJ',
                       type: 'text',
                       format: 'text',
@@ -233,7 +233,7 @@ const kycBlock = [
                     },
                     {
                       title: 'Date Issued',
-                      value: 'value',
+                      value: '12 July 2016',
                       type: 'text',
                       format: 'text',
                       pattern: '',
@@ -242,7 +242,7 @@ const kycBlock = [
                     },
                     {
                       title: 'Valid Until',
-                      value: 'value',
+                      value: '12 July 2024',
                       type: 'text',
                       format: 'text',
                       pattern: '',
@@ -251,7 +251,7 @@ const kycBlock = [
                     },
                     {
                       title: 'Issuing Authority',
-                      value: 'value',
+                      value: 'Secretary of State USA',
                       type: 'text',
                       format: 'text',
                       pattern: '',
@@ -260,7 +260,7 @@ const kycBlock = [
                     },
                     {
                       title: 'Place of Issue',
-                      value: 'value',
+                      value: 'Jerry',
                       type: 'text',
                       format: 'text',
                       pattern: '',
@@ -269,7 +269,7 @@ const kycBlock = [
                     },
                     {
                       title: 'Full address',
-                      value: 'value',
+                      value: '1234 Snowy Ridge Road, Indiana, 56789, USA',
                       type: 'text',
                       format: 'text',
                       pattern: '',
@@ -298,7 +298,7 @@ const kycBlock = [
                   data: [
                     {
                       title: 'Verified With',
-                      value: 'value',
+                      value: 'Veriff',
                       type: 'text',
                       format: 'text',
                       pattern: '',
@@ -307,7 +307,7 @@ const kycBlock = [
                     },
                     {
                       title: 'Result',
-                      value: 'value',
+                      value: 'Clear',
                       type: 'text',
                       format: 'text',
                       pattern: '',
@@ -316,7 +316,7 @@ const kycBlock = [
                     },
                     {
                       title: 'Selfie face match',
-                      value: 'value',
+                      value: 'Clear',
                       type: 'text',
                       format: 'text',
                       pattern: '',
@@ -325,7 +325,7 @@ const kycBlock = [
                     },
                     {
                       title: 'Issues',
-                      value: 'value',
+                      value: 'none',
                       type: 'text',
                       format: 'text',
                       pattern: '',
