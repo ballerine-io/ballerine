@@ -15,7 +15,7 @@ export const serializeWorkflowRunData = async (
   const { endUserId, businessId } = context.shared;
 
   const data: RunWorkflowDto = {
-    workflowId: 'dynamic_kyb_parent_example',
+    workflowId: import.meta.env.VITE_KYB_DEFINITION_ID as string,
     endUserId,
     businessId,
     entity: {

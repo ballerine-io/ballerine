@@ -1,6 +1,8 @@
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { kybViewSchema } from '@app/components/organisms/KYBView/kyb-view.schema';
 import { useLayoutEffect } from 'react';
+import { useQueryValues } from '@app/components/organisms/KYBView/hooks/useQueryParams';
+import { KYBQueryParams } from '@app/components/organisms/KYBView/types';
 
 // Main idea behing this component to:
 // - mount
@@ -9,17 +11,18 @@ import { useLayoutEffect } from 'react';
 
 export const MainView = () => {
   const { next, send } = useViewState<typeof kybViewSchema>();
+  const { workflowRuntimeId } = useQueryValues<KYBQueryParams>();
 
   useLayoutEffect(() => {
-    const isErrorResolving = false;
+    const isRevision = Boolean(workflowRuntimeId);
 
-    if (isErrorResolving) {
-      send('errorResolving');
+    if (isRevision) {
+      send('revision');
       return;
     }
 
     next();
-  }, [next, send]);
+  }, [workflowRuntimeId, next, send]);
 
   return null;
 };

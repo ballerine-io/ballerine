@@ -33,3 +33,7 @@ export interface KYBContext {
     businessId?: string;
   };
 }
+
+export interface KYBQueryParams {
+  workflowRuntimeId?: string;
+}
