@@ -177,6 +177,13 @@ export class WorkflowService {
           },
         };
       }
+
+      return {
+        ...args,
+        include: {
+          childWorkflowsRuntimeData: true,
+        },
+      };
     })();
     return await this.workflowRuntimeDataRepository.findById(
       id,
