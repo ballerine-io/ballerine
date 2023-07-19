@@ -154,6 +154,51 @@ export class WorkflowService {
   }
 
   async getWorkflowRuntimeWithChildrenDataById(
+    // daniel
+    id: string,
+    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+  ) {
+    const safeArgs = (() => {
+      if (args?.include) {
+        return {
+          ...args,
+          include: {
+            ...args?.include,
+            childWorkflowsRuntimeData: {
+              select: {
+                workflowDefinition: true,
+              },
+            },
+          },
+        };
+      }
+
+      if (args?.select) {
+        return {
+          ...args,
+          select: {
+            ...args?.select,
+            childWorkflowsRuntimeData: true,
+          },
+        };
+      }
+
+      return {
+        ...args,
+        include: {
+          childWorkflowsRuntimeData: true,
+        },
+      };
+    })();
+    return await this.workflowRuntimeDataRepository.findById(
+      id,
+      // @ts-ignore - Prisma throws when passing both select and include
+      safeArgs,
+    );
+  }
+
+  async getWorkflowByIdWithRelations(
+    //
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
@@ -185,38 +230,6 @@ export class WorkflowService {
         },
       };
     })();
-    return await this.workflowRuntimeDataRepository.findById(
-      id,
-      // @ts-ignore - Prisma throws when passing both select and include
-      safeArgs,
-    );
-  }
-
-  async getWorkflowByIdWithRelations(
-    id: string,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
-  ) {
-    const safeArgs = (() => {
-      if (args?.include) {
-        return {
-          ...args,
-          include: {
-            ...args?.include,
-            childWorkflowsRuntimeData: true,
-          },
-        };
-      }
-
-      if (args?.select) {
-        return {
-          ...args,
-          select: {
-            ...args?.select,
-            childWorkflowsRuntimeData: true,
-          },
-        };
-      }
-    })();
     const workflow = (await this.workflowRuntimeDataRepository.findById(
       id,
       // @ts-ignore - Prisma throws when passing both select and include
@@ -226,17 +239,26 @@ export class WorkflowService {
     return this.formatWorkflow(workflow);
   }
 
-  private formatWorkflow(workflow: TWorkflowWithRelations): TWorkflowWithRelations {
+  private formatWorkflow(
+    workflow: TWorkflowWithRelations,
+    addNextEvents = true,
+  ): TWorkflowWithRelations {
     const isIndividual = 'endUser' in workflow;
-    const service = createWorkflow({
-      runtimeId: workflow.id,
-      definition: workflow.workflowDefinition.definition,
-      definitionType: workflow.workflowDefinition.definitionType,
-      workflowContext: {
-        machineContext: workflow.context,
-        state: workflow.state ?? workflow.workflowDefinition.definition.initial,
-      },
-    });
+
+    let nextEvents;
+    if (addNextEvents) {
+      const service = createWorkflow({
+        runtimeId: workflow.id,
+        definition: workflow.workflowDefinition.definition,
+        definitionType: workflow.workflowDefinition.definitionType,
+        workflowContext: {
+          machineContext: workflow.context,
+          state: workflow.state ?? workflow.workflowDefinition.definition.initial,
+        },
+      });
+
+      nextEvents = service.getSnapshot().nextEvents;
+    }
 
     // @ts-expect-error - typescript does not like recurrsion over types
     return {
@@ -269,9 +291,9 @@ export class WorkflowService {
       },
       endUser: undefined,
       business: undefined,
-      nextEvents: service.getSnapshot().nextEvents,
+      nextEvents,
       childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
-        this.formatWorkflow(childWorkflow),
+        this.formatWorkflow(childWorkflow, false),
       ),
     };
   }
@@ -918,7 +940,7 @@ export class WorkflowService {
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
     if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
-      contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
         data: {
           ...entityConnect,
@@ -943,7 +965,7 @@ export class WorkflowService {
         context.documents,
       );
 
-      contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
         existingWorkflowRuntimeData.id,
         {
@@ -976,7 +998,7 @@ export class WorkflowService {
     ];
   }
 
-  private async __copyFileAndCreate(
+  async copyFileAndCreate(
     context: DefaultContextSchema,
     entityId: TEntityId,
   ): Promise<DefaultContextSchema> {
@@ -1226,7 +1248,7 @@ export class WorkflowService {
         ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
     )
       // @ts-ignore - fix as childCallbackResults[number]
-      ?.find(childCallbackResult => workflowDefinition.name === childCallbackResult.definitionName);
+      ?.find(childCallbackResult => workflowDefinition.id === childCallbackResult.definitionId);
     const childWorkflowCallback = (callbackTransformation ||
       workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
     const childrenOfSameDefinition = (
@@ -1267,7 +1289,7 @@ export class WorkflowService {
     if (!isFinal)
       return this.composeContextWithChildResponse(
         parentWorkflowRuntime.context,
-        workflowDefinition.name,
+        workflowDefinition.id,
       );
 
     const transformerInstance = (transformers || []).map((transformer: SerializableTransformer) =>
@@ -1291,7 +1313,7 @@ export class WorkflowService {
 
     const parentContext = this.composeContextWithChildResponse(
       parentWorkflowRuntime.context,
-      workflowDefinition.name,
+      workflowDefinition.id,
       contextToPersist,
     );
 
@@ -1309,13 +1331,13 @@ export class WorkflowService {
 
   private composeContextWithChildResponse(
     parentWorkflowContext: any,
-    definitionName: string,
+    definitionId: string,
     contextToPersist?: any,
   ) {
     parentWorkflowContext['childWorkflows'] ||= {};
-    parentWorkflowContext['childWorkflows'][definitionName] ||= {};
+    parentWorkflowContext['childWorkflows'][definitionId] ||= {};
 
-    parentWorkflowContext['childWorkflows'][definitionName] = contextToPersist;
+    parentWorkflowContext['childWorkflows'][definitionId] = contextToPersist;
     return parentWorkflowContext;
   }
 

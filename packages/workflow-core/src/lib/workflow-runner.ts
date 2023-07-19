@@ -37,6 +37,8 @@ import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
 import { search } from 'jmespath';
 import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
+import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
+import { EmailPlugin } from './plugins/external-plugin/email-plugin';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
@@ -156,7 +158,7 @@ export class WorkflowRunner {
         childPluginSchema.transformers['transform'] || [],
       );
 
-      const apiPlugin = new ChildWorkflowPlugin({
+      const childWorkflowPlugin = new ChildWorkflowPlugin({
         name: childPluginSchema.name,
         parentWorkflowRuntimeId: parentWorkflowRuntimeId,
         definitionId: childPluginSchema.definitionId,
@@ -166,7 +168,7 @@ export class WorkflowRunner {
         action: callbackAction!,
       });
 
-      return apiPlugin;
+      return childWorkflowPlugin;
     });
   }
 
@@ -194,11 +196,15 @@ export class WorkflowRunner {
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'kyc') return KycPlugin;
     // @ts-ignore
+    if (apiPluginSchema.pluginKind === 'kyc-session') return KycSessionPlugin;
+    // @ts-ignore
     if (apiPluginSchema.pluginKind === 'kyb') return KybPlugin;
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'webhook') return WebhookPlugin;
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'api') return ApiPlugin;
+    // @ts-ignore
+    if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
 
     // @ts-expect-error TODO: fix this
     const isApiPlugin = this.isApiPlugin(apiPluginSchema);
@@ -371,7 +377,7 @@ export class WorkflowRunner {
 
         const ruleResult = search(data, options.rule);
 
-        return ruleResult;
+        return !!ruleResult;
       },
     };
 

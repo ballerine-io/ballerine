@@ -25,7 +25,7 @@ export const ConfigSchema = z
       .array(
         z
           .object({
-            definitionName: z.string(),
+            definitionId: z.string(),
             transformers: z.array(z.any()),
             action: z.string().optional(),
             deliverEvent: z.string().optional(),

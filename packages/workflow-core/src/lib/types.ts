@@ -39,7 +39,7 @@ export interface ChildWorkflowCallback {
   deliverEvent?: string;
 }
 export interface ChildToParentCallback {
-  childCallbackResults?: Array<ChildWorkflowCallback & { definitionName: string }>;
+  childCallbackResults?: Array<ChildWorkflowCallback & { definitionId: string }>;
 }
 export interface WorkflowContext {
   id?: string;
