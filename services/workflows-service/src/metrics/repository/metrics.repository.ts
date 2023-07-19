@@ -25,8 +25,7 @@ import { ListUserCasesResolvedDailyParams } from '@/metrics/repository/types/lis
 import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
 import { IAggregateCasesResolvedDaily } from '@/metrics/repository/types/aggregate-cases-resolved-daily';
 import { aggregateDailyCasesResolvedQuery } from '@/metrics/repository/sql/aggregate-daily-cases-resolved.sql';
-import { ListActiveUsersParams } from '@/metrics/repository/types/list-active-users.params';
-import { ActiveUserModel } from '@/metrics/repository/models/active-user.model';
+import { MetricsUserModel } from '@/metrics/repository/models/metrics-user.model';
 import { ISelectActiveUser } from '@/metrics/repository/types/select-active-user';
 import { selectActiveUsersQuery } from '@/metrics/repository/sql/select-active-users.sql';
 import { FindUsersAssignedCasesStatisticParams } from '@/metrics/repository/types/find-users-assigned-cases-statistic.params';
@@ -172,12 +171,11 @@ export class MetricsRepository {
     );
   }
 
-  async listActiveUsers(params: ListActiveUsersParams): Promise<ActiveUserModel[]> {
+  async listUsers(): Promise<MetricsUserModel[]> {
     const results = await this.prismaService.$queryRawUnsafe<ISelectActiveUser[]>(
       selectActiveUsersQuery,
-      params.fromDate,
     );
 
-    return results.map(result => plainToClass(ActiveUserModel, result));
+    return results.map(result => plainToClass(MetricsUserModel, result));
   }
 }
