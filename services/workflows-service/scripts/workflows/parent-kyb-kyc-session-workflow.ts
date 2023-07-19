@@ -127,7 +127,8 @@ export const parentKybWithSessionWorkflowDefinition = {
         transformers: [
           {
             transformer: 'jmespath',
-            mapping: '{childResult: entity.data, vendorResult: vendorResult}', // jmespath
+            mapping:
+              '{childEntity: entity.data, vendorResult: pluginsOutput.kyc_session.kyc_session_1.result}', // jmespath
           },
         ],
         deliverEvent: 'KYC_RESPONDED',
