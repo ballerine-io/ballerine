@@ -158,43 +158,9 @@ export class WorkflowService {
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
-    const safeArgs = (() => {
-      if (args?.include) {
-        return {
-          ...args,
-          include: {
-            ...args?.include,
-            childWorkflowsRuntimeData: {
-              select: {
-                workflowDefinition: true,
-              },
-            },
-          },
-        };
-      }
-
-      if (args?.select) {
-        return {
-          ...args,
-          select: {
-            ...args?.select,
-            childWorkflowsRuntimeData: true,
-          },
-        };
-      }
-
-      return {
-        ...args,
-        include: {
-          childWorkflowsRuntimeData: true,
-        },
-      };
-    })();
-    return await this.workflowRuntimeDataRepository.findById(
-      id,
-      // @ts-ignore - Prisma throws when passing both select and include
-      safeArgs,
-    );
+    return await this.workflowRuntimeDataRepository.findById(id, {
+      ...args
+    });
   }
 
   async getWorkflowByIdWithRelations(
@@ -202,39 +168,10 @@ export class WorkflowService {
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
-    const safeArgs = (() => {
-      if (args?.include) {
-        return {
-          ...args,
-          include: {
-            ...args?.include,
-            childWorkflowsRuntimeData: true,
-          },
-        };
-      }
-
-      if (args?.select) {
-        return {
-          ...args,
-          select: {
-            ...args?.select,
-            childWorkflowsRuntimeData: true,
-          },
-        };
-      }
-
-      return {
-        ...args,
-        include: {
-          childWorkflowsRuntimeData: true,
-        },
-      };
-    })();
-    const workflow = (await this.workflowRuntimeDataRepository.findById(
-      id,
-      // @ts-ignore - Prisma throws when passing both select and include
-      safeArgs,
-    )) as TWorkflowWithRelations;
+    const workflow = (await this.workflowRuntimeDataRepository.findById(id, {
+      ...args,
+      select: {...(args?.select || {}), childWorkflowsRuntimeData: {...args}  }
+    })) as TWorkflowWithRelations;
 
     return this.formatWorkflow(workflow);
   }
@@ -1238,6 +1175,7 @@ export class WorkflowService {
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       workflowRuntimeData.parentRuntimeDataId,
+      {include: {childWorkflowsRuntimeData: true}}
     );
     const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
       parentWorkflowRuntime.workflowDefinitionId,
@@ -1253,7 +1191,7 @@ export class WorkflowService {
       workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
     const childrenOfSameDefinition = (
       parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>
-    ).filter(
+    )?.filter(
       childWorkflow =>
         childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
     );
