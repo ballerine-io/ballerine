@@ -31,11 +31,6 @@ import {
 } from '@/workflow/dtos/find-workflow.dto';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
-import { WorkflowWebhookInput } from '@/workflow/dtos/workflow-webhook-input';
-import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
-import { Public } from '@/common/decorators/public.decorator';
-import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
-import { UnifiedApiCallbackNormalizeService } from '@/workflow/unified-api-callback-normalize.service';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -43,7 +38,6 @@ export class WorkflowControllerInternal {
   constructor(
     protected readonly service: WorkflowService,
     protected readonly filterService: FilterService,
-    protected readonly normalizeService: UnifiedApiCallbackNormalizeService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -203,40 +197,5 @@ export class WorkflowControllerInternal {
       }
       throw error;
     }
-  }
-
-  @common.Post('/:id/hook/:event')
-  @swagger.ApiOkResponse()
-  @common.HttpCode(200)
-  @Public()
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async hook(
-    @common.Param() params: WorkflowIdWithEventInput,
-    @common.Query() query: WorkflowHookQuery,
-    @common.Body() data: any,
-  ): Promise<void> {
-    try {
-      const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
-      const normalizedData = await this.normalizeService.normalizeHookCallback(
-        workflowRuntime,
-        data,
-        query.processName,
-      );
-      const persistenceParamKey = query.resultDestination || 'hookResponse';
-      const updatedContext = { ...workflowRuntime.context, [persistenceParamKey]: normalizedData };
-      await this.service.updateWorkflowRuntimeData(params.id, { context: updatedContext });
-    } catch (error) {
-      if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
-      }
-      throw error;
-    }
-
-    return await this.service.event({
-      id: params.id,
-      name: params.event,
-    });
-
-    return;
   }
 }
