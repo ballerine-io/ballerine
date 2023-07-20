@@ -63,6 +63,7 @@ export interface TRunWorkflowDto {
         website: string;
         correlationId?: string;
         companyName: string;
+        countryOfIncorporation: string;
         address: {
           street?: string;
           postalCode?: string;
@@ -74,8 +75,6 @@ export interface TRunWorkflowDto {
         };
         registrationNumber: string;
         additionalInfo?: {
-          companyName: string;
-          customerCompany: 'Ballerine';
           ubos: WorkflowUBO[];
         };
       };
