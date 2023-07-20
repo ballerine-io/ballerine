@@ -159,7 +159,7 @@ export class WorkflowService {
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
     return await this.workflowRuntimeDataRepository.findById(id, {
-      ...args
+      ...args,
     });
   }
 
@@ -170,7 +170,7 @@ export class WorkflowService {
   ) {
     const workflow = (await this.workflowRuntimeDataRepository.findById(id, {
       ...args,
-      select: {...(args?.select || {}), childWorkflowsRuntimeData: {...args}  }
+      select: { ...(args?.select || {}), childWorkflowsRuntimeData: { ...args } },
     })) as TWorkflowWithRelations;
 
     return this.formatWorkflow(workflow);
@@ -1175,7 +1175,7 @@ export class WorkflowService {
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       workflowRuntimeData.parentRuntimeDataId,
-      {include: {childWorkflowsRuntimeData: true}}
+      { include: { childWorkflowsRuntimeData: true } },
     );
     const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
       parentWorkflowRuntime.workflowDefinitionId,
