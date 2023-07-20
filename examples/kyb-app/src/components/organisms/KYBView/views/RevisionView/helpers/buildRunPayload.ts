@@ -15,7 +15,7 @@ const transformFormDataFilesToFileIds = async (
       object[documentType] = Object.entries(documentFileRefs).reduce((refs, [key, fileData]) => {
         const { type, name, file } = parseBase64FileWithMetadata(fileData as string);
         const fileElement = base64ToFile(file, name, type);
-        refs[key] = getFilesId(fileElement) as Promise<string>;
+        refs[key] = getFilesId(fileElement).then(val => (refs[key] = val)) as Promise<string>;
 
         return refs;
       }, {});
@@ -40,6 +40,9 @@ export const buildRunPayload = async (
   formData: Record<string, AnyObject>,
 ): Promise<RunWorkflowDto> => {
   const formDataWithFileIds = await transformFormDataFilesToFileIds(formData);
+  const documents = workflow.context.documents.filter(
+    document => document.decision && document.decision.status === 'revision',
+  );
 
   const payload: RunWorkflowDto = {
     workflowId: workflow.workflowDefinitionId,
@@ -54,7 +57,7 @@ export const buildRunPayload = async (
       customerCompany: 'Ballerine',
       ubos: workflow.context.entity.data.additionalInfo?.ubos || [],
     },
-    documents: workflow.context.documents.map(workflowDocument => {
+    documents: documents.map(workflowDocument => {
       return {
         type: workflowDocument.type,
         category: workflowDocument.category,
@@ -62,8 +65,8 @@ export const buildRunPayload = async (
         pages: workflowDocument.pages.map((page, index) => {
           const pageName = createPageFieldName({ ...page, index });
           const documentPages = formDataWithFileIds[workflowDocument.type];
+          //@ts-ignore
           const pageFileId = documentPages[pageName];
-
           return {
             fileId: pageFileId,
           };

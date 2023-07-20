@@ -4,18 +4,20 @@ import { AnyObject } from '@ballerine/ui';
 import { UiSchema } from '@rjsf/utils';
 
 export const createUISchema = (workflow: Workflow): UiSchema => {
-  const uiSchema: UiSchema = workflow.context.documents.reduce((schema, document) => {
-    schema[document.type] = document.pages.reduce((schema, page, index) => {
-      const propertyName = createPageFieldName({ ...page, index });
-      schema[propertyName] = {
-        'ui:field': 'FileInput',
-      };
+  const uiSchema: UiSchema = workflow.context.documents
+    .filter(document => document.decision && document.decision.status === 'revision')
+    .reduce((schema, document) => {
+      schema[document.type] = document.pages.reduce((schema, page, index) => {
+        const propertyName = createPageFieldName({ ...page, index });
+        schema[propertyName] = {
+          'ui:field': 'FileInput',
+        };
+
+        return schema;
+      }, {} as AnyObject);
 
       return schema;
-    }, {} as AnyObject);
-
-    return schema;
-  }, {} as UiSchema);
+    }, {} as UiSchema);
 
   return uiSchema;
 };

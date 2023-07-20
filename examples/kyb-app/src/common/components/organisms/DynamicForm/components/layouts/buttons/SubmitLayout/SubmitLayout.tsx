@@ -8,7 +8,13 @@ export const SubmitLayout = ({ uiSchema }: SubmitButtonProps) => {
 
   return (
     <div className="flex justify-end">
-      <Button type="submit">{submitText}</Button>
+      <Button
+        // TO DO: checkout why variant isnt working as intended
+        className="bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm"
+        type="submit"
+      >
+        {submitText}
+      </Button>
     </div>
   );
 };

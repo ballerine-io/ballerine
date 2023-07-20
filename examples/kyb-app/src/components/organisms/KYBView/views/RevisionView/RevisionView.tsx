@@ -23,7 +23,6 @@ export const RevisionView = () => {
   const handleSubmit = useCallback(
     async (values: AnyObject) => {
       const runPayload = await buildRunPayload(workflow, values);
-
       await runWorkflowRequest(runPayload);
     },
     [workflow],
@@ -56,7 +55,7 @@ export const RevisionView = () => {
           schema={formAssets.schema}
           uiSchema={formAssets.uiSchema}
           onChange={update}
-          onSubmit={void handleSubmit}
+          onSubmit={values => void handleSubmit(values)}
         />
       ) : null}
     </AppShell.FormContainer>
