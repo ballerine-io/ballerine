@@ -5,10 +5,10 @@ import { AppShell } from '@app/components/layouts/AppShell';
 import { useQueryValues } from '@app/components/organisms/KYBView/hooks/useQueryParams';
 import { kybViewSchema } from '@app/components/organisms/KYBView/kyb-view.schema';
 import { KYBQueryParams } from '@app/components/organisms/KYBView/types';
-import { buildRunPayload } from '@app/components/organisms/KYBView/views/RevisionView/helpers/buildRunPayload';
+import { buildUpdatePayload } from '@app/components/organisms/KYBView/views/RevisionView/helpers/buildUpdatePayload';
 import { createFormAssets } from '@app/components/organisms/KYBView/views/RevisionView/helpers/createFormAssets';
 import { useWorkflowQuery } from '@app/components/organisms/KYBView/views/RevisionView/hooks/useWorkflowQuery';
-import { runWorkflowRequest } from '@app/domains/workflows';
+import { updateWorkflow } from '@app/domains/workflows';
 import { AnyObject } from '@ballerine/ui';
 import { useCallback, useLayoutEffect, useMemo } from 'react';
 
@@ -22,11 +22,10 @@ export const RevisionView = () => {
 
   const handleSubmit = useCallback(
     async (values: AnyObject) => {
-      const runPayload = await buildRunPayload(workflow, values);
-
-      await runWorkflowRequest(runPayload);
+      const updatedWorkflow = await buildUpdatePayload(workflow, values);
+      await updateWorkflow({ workflowId: workflowRuntimeId, payload: updatedWorkflow });
     },
-    [workflow],
+    [workflow, workflowRuntimeId],
   );
 
   useLayoutEffect(() => {
@@ -56,7 +55,7 @@ export const RevisionView = () => {
           schema={formAssets.schema}
           uiSchema={formAssets.uiSchema}
           onChange={update}
-          onSubmit={void handleSubmit}
+          onSubmit={values => void handleSubmit(values)}
         />
       ) : null}
     </AppShell.FormContainer>

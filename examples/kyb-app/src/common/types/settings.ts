@@ -6,5 +6,9 @@ export interface ITheme {
 export interface ISettings {
   logo: string;
   appName: string;
+  title: string;
+  subtitle: string;
+  contactInformation: string;
+  leaveText: string;
   theme: ITheme;
 }
