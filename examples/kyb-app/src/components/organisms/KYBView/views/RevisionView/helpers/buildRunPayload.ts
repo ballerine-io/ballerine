@@ -1,4 +1,5 @@
-import { FileStorage } from '@app/common/utils/file-storage';
+import { base64ToFile } from '@app/common/utils/base64-to-file';
+import { parseBase64FileWithMetadata } from '@app/common/utils/parse-base64-file-with-metadata';
 import { getFilesId } from '@app/components/organisms/KYBView/views/DocumentsView/helpers/get-file-ids';
 import { createPageFieldName } from '@app/components/organisms/KYBView/views/RevisionView/helpers/page-utils';
 import { RunWorkflowDto, Workflow } from '@app/domains/workflows/types';
@@ -6,15 +7,15 @@ import { AnyObject } from '@ballerine/ui';
 
 type FileIdsByDocumentType = Record<string, Record<string, string>>;
 
-const transformFormDataFileRefsToFileIds = async (
+const transformFormDataFilesToFileIds = async (
   formData: Record<string, AnyObject>,
-  storage: FileStorage,
 ): Promise<FileIdsByDocumentType> => {
   const pendingFiles = Object.entries(formData).reduce(
     (object, [documentType, documentFileRefs]) => {
-      object[documentType] = Object.entries(documentFileRefs).reduce((refs, [key, fileRef]) => {
-        const file = storage.get(fileRef as string);
-        refs[key] = getFilesId(file) as Promise<string>;
+      object[documentType] = Object.entries(documentFileRefs).reduce((refs, [key, fileData]) => {
+        const { type, name, file } = parseBase64FileWithMetadata(fileData as string);
+        const fileElement = base64ToFile(file, name, type);
+        refs[key] = getFilesId(fileElement) as Promise<string>;
 
         return refs;
       }, {});
@@ -37,9 +38,8 @@ const transformFormDataFileRefsToFileIds = async (
 export const buildRunPayload = async (
   workflow: Workflow,
   formData: Record<string, AnyObject>,
-  storage: FileStorage,
 ): Promise<RunWorkflowDto> => {
-  const formDataWithFileIds = await transformFormDataFileRefsToFileIds(formData, storage);
+  const formDataWithFileIds = await transformFormDataFilesToFileIds(formData);
 
   const payload: RunWorkflowDto = {
     workflowId: workflow.workflowDefinitionId,

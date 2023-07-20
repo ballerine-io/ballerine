@@ -1,17 +1,20 @@
 import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
-import { FileStorageProvider, useFileStorage } from '@app/common/providers/FileStorageProvider';
+import { useSnapshot } from '@app/common/providers/SnapshotProvider/hooks/useSnapshot';
+import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { useQueryValues } from '@app/components/organisms/KYBView/hooks/useQueryParams';
+import { kybViewSchema } from '@app/components/organisms/KYBView/kyb-view.schema';
 import { KYBQueryParams } from '@app/components/organisms/KYBView/types';
 import { buildRunPayload } from '@app/components/organisms/KYBView/views/RevisionView/helpers/buildRunPayload';
 import { createFormAssets } from '@app/components/organisms/KYBView/views/RevisionView/helpers/createFormAssets';
 import { useWorkflowQuery } from '@app/components/organisms/KYBView/views/RevisionView/hooks/useWorkflowQuery';
 import { runWorkflowRequest } from '@app/domains/workflows';
 import { AnyObject } from '@ballerine/ui';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useLayoutEffect, useMemo } from 'react';
 
 export const RevisionView = () => {
-  const { storage } = useFileStorage();
+  const { clear } = useSnapshot();
+  const { context, state, update } = useViewState<typeof kybViewSchema>();
   const { workflowRuntimeId } = useQueryValues<KYBQueryParams>();
   const { isFailedToLoad, isLoading, error, workflow } = useWorkflowQuery(workflowRuntimeId);
 
@@ -19,12 +22,19 @@ export const RevisionView = () => {
 
   const handleSubmit = useCallback(
     async (values: AnyObject) => {
-      const runPayload = await buildRunPayload(workflow, values, storage);
+      const runPayload = await buildRunPayload(workflow, values);
 
       await runWorkflowRequest(runPayload);
     },
-    [workflow, storage],
+    [workflow],
   );
+
+  useLayoutEffect(() => {
+    if (!workflowRuntimeId) {
+      void clear();
+      location.href = '/';
+    }
+  }, [workflowRuntimeId, clear]);
 
   return (
     <AppShell.FormContainer>
@@ -40,14 +50,14 @@ export const RevisionView = () => {
         </>
       ) : null}
       {formAssets ? (
-        <FileStorageProvider storage={storage}>
-          <DynamicForm
-            className="max-w-[384px]"
-            schema={formAssets.schema}
-            uiSchema={formAssets.uiSchema}
-            onSubmit={values => void handleSubmit(values)}
-          />
-        </FileStorageProvider>
+        <DynamicForm
+          className="max-w-[384px]"
+          formData={context[state] as object}
+          schema={formAssets.schema}
+          uiSchema={formAssets.uiSchema}
+          onChange={update}
+          onSubmit={void handleSubmit}
+        />
       ) : null}
     </AppShell.FormContainer>
   );
