@@ -8,3 +8,7 @@ export interface INestedComponentProps {
   };
   isNested?: boolean;
 }
+
+export interface INestedContainerProps {
+  isNested?: boolean;
+}

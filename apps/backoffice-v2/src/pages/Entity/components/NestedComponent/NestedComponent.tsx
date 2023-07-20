@@ -1,10 +1,10 @@
-import { FunctionComponentWithChildren } from '../../../../common/types';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { isNullish, isObject } from '@ballerine/common';
 import { FunctionComponent } from 'react';
 import { INestedComponentProps } from './interfaces';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
+import { NestedContainer } from './NestedContainer';
 
 export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
   id,
@@ -13,17 +13,11 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
 }) => {
   if (!value?.data?.length) return;
 
-  const Container: FunctionComponentWithChildren = ({ children }) => {
-    if (!isNested) return <>{children}</>;
-
-    return <div className={`mb-4 grid grid-cols-2 gap-4`}>{children}</div>;
-  };
-
   return (
-    <Container>
+    <NestedContainer isNested={isNested}>
       {value?.data?.map(({ title, value }) => {
         return (
-          <div key={title}>
+          <div key={title} className={`my-1`}>
             <h4
               className={ctw(`mb-1 text-lg font-bold capitalize`, {
                 'text-2xl': !isNested,
@@ -92,6 +86,6 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
           </div>
         );
       })}
-    </Container>
+    </NestedContainer>
   );
 };
