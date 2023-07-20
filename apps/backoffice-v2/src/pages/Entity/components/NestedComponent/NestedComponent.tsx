@@ -1,10 +1,11 @@
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { isNullish, isObject } from '@ballerine/common';
+import { isObject } from '@ballerine/common';
 import { FunctionComponent } from 'react';
 import { INestedComponentProps } from './interfaces';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { NestedContainer } from './NestedContainer';
+import { handleNestedValue } from './handle-nested-value';
 
 export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
   id,
@@ -81,18 +82,14 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
                       className={`leading-7 [&:not(:first-child)]:mt-2`}
                       key={keyFactory(index?.toString(), id, title, `nested-component`)}
                     >
-                      {value === undefined && showUndefined && 'undefined'}
-                      {value === null && showNull && 'null'}
-                      {!isNullish(value) && value?.toString()}
+                      {handleNestedValue({ value, showUndefined, showNull })}
                     </p>
                   );
                 }
               })}
             {!isObject(value) && !Array.isArray(value) && (
               <p className={`leading-7 [&:not(:first-child)]:mt-2`}>
-                {value === undefined && showUndefined && 'undefined'}
-                {value === null && showNull && 'null'}
-                {!isNullish(value) && value?.toString()}
+                {handleNestedValue({ value, showUndefined, showNull })}
               </p>
             )}
           </div>

@@ -86,11 +86,16 @@ export const useCases = () => {
   }, []);
 
   useDocumentListener('keydown', event => {
-    if (!event.ctrlKey) return;
+    console.log({ key: event.key, ctrlKey: event.ctrlKey, shiftKey: event.shiftKey });
+    if (!event.ctrlKey || !event.shiftKey) return;
+
+    const listeners = ['k', 's', 'f'] as const;
+
+    if (!listeners.includes(event.key?.toLowerCase() as (typeof listeners)[number])) return;
 
     event.preventDefault();
 
-    switch (event.key) {
+    switch (event.key?.toLowerCase()) {
       case 'k':
         if (!searchRef.current) break;
 
