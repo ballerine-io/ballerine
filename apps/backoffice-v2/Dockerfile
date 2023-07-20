@@ -1,5 +1,5 @@
 
-FROM node:18.15 AS base
+FROM node:18.17 AS base
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN rm -rf /app/node_modules
 RUN npm install 1> /dev/null
 RUN npm run build 1> /dev/null
 
-FROM node:18.15 AS prod
+FROM node:18.17 AS prod
 
 WORKDIR /app
 
