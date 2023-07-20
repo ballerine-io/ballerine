@@ -1,10 +1,10 @@
 import { FunctionComponentWithChildren } from '../../../../common/types';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { convertSnakeCaseToTitleCase } from '../../hooks/useEntity/utils';
 import { isNullish, isObject } from '@ballerine/common';
 import { FunctionComponent } from 'react';
 import { INestedComponentProps } from './interfaces';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
+import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 
 export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
   id,
@@ -25,12 +25,12 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
         return (
           <div key={title}>
             <h4
-              className={ctw(`mb-1 text-lg font-bold`, {
+              className={ctw(`mb-1 text-lg font-bold capitalize`, {
                 'text-2xl': !isNested,
                 'text-slate-400': isNested,
               })}
             >
-              {convertSnakeCaseToTitleCase(title)}
+              {camelCaseToSpace(title)}
             </h4>
             {isObject(value) && (
               <NestedComponent
