@@ -1,6 +1,8 @@
 import { SnapshotProvider } from '@app/common/providers/SnapshotProvider';
 import { ViewStateProvider } from '@app/common/providers/ViewStateProvider';
 import { Views } from '@app/common/providers/ViewStateProvider/components/ViewResolver/types';
+import { AppShell } from '@app/components/layouts/AppShell';
+import { BackButton } from '@app/components/organisms/KYBView/components/BackButton';
 import { SnapshotSynchronizer } from '@app/components/organisms/KYBView/components/SnapshotSynchronizer';
 import { serializeSnapshotData } from '@app/components/organisms/KYBView/helpers/serializeSnapshotData';
 import { kybViewSchema } from '@app/components/organisms/KYBView/kyb-view.schema';
@@ -34,8 +36,10 @@ export const KYBView = () => {
   return (
     <SnapshotProvider storage={snapshotStorage} onBeforeSave={beforeSnapshotSave}>
       <ViewStateProvider viewSchema={kybViewSchema} initialContext={snapshotStorage.getData()}>
-        <SnapshotSynchronizer />
-        <ViewStateProvider.ViewResolver schema={kybViewSchema} paths={views} />
+        <AppShell backButton={<BackButton />}>
+          <SnapshotSynchronizer />
+          <ViewStateProvider.ViewResolver schema={kybViewSchema} paths={views} />
+        </AppShell>
       </ViewStateProvider>
     </SnapshotProvider>
   );

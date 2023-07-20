@@ -4,6 +4,7 @@ import {
   GetWofklowDto,
   GetWorkflowResponse,
   RunWorkflowDto,
+  UpdateWorkflowDto,
   Workflow,
 } from '@app/domains/workflows/types';
 
@@ -37,4 +38,14 @@ export const fetchWorkflow = async (query: GetWofklowDto): Promise<Workflow> => 
   const result = await request.get(`external/workflows/${query.id}`).json<GetWorkflowResponse>();
 
   return result.workflowRuntimeData;
+};
+
+export const updateWorkflow = async (dto: UpdateWorkflowDto) => {
+  await request.patch(`internal/workflows/${dto.workflowId}`, {
+    json: {
+      context: {
+        documents: dto.payload.context.documents,
+      },
+    },
+  });
 };
