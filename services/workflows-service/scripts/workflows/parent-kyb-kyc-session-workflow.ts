@@ -41,7 +41,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: 'length(childWorkflows.kyc_email_session_example.*.[vendorResult][]) == length(childWorkflows.kyc_email_session_example.*[])',
+                  rule: 'length(childWorkflows.kyc_email_session_example.*.[result.vendorResult][]) == length(childWorkflows.kyc_email_session_example.*[])',
                 },
               },
             },
