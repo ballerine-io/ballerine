@@ -28,6 +28,8 @@ import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event
 import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
+import { db } from '../db';
+import { workflowRuntimeData } from '@/db/schema';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -39,6 +41,12 @@ export class WorkflowControllerExternal {
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
+
+  @common.Get('/hello')
+  async hello() {
+    return db.select().from(workflowRuntimeData).limit(1);
+  }
+
   // GET /workflows
   @common.Get('/')
   @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeOutputDto] })
