@@ -1,0 +1,966 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "id": "f95076b6-e944-49fd-9e2b-b73f32bf16cb",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "Business": {
+      "name": "Business",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "correlationId": {
+          "name": "correlationId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "companyName": {
+          "name": "companyName",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "registrationNumber": {
+          "name": "registrationNumber",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "legalForm": {
+          "name": "legalForm",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country": {
+          "name": "country",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "countryOfIncorporation": {
+          "name": "countryOfIncorporation",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dateOfIncorporation": {
+          "name": "dateOfIncorporation",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phoneNumber": {
+          "name": "phoneNumber",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "website": {
+          "name": "website",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "industry": {
+          "name": "industry",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "taxIdentificationNumber": {
+          "name": "taxIdentificationNumber",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vatNumber": {
+          "name": "vatNumber",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shareholderStructure": {
+          "name": "shareholderStructure",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "numberOfEmployees": {
+          "name": "numberOfEmployees",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "businessPurpose": {
+          "name": "businessPurpose",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "documents": {
+          "name": "documents",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "avatarUrl": {
+          "name": "avatarUrl",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "additionalInfo": {
+          "name": "additionalInfo",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bankInformation": {
+          "name": "bankInformation",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "approvalState": {
+          "name": "approvalState",
+          "type": "ApprovalState",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'APPROVED'"
+        }
+      },
+      "indexes": {
+        "Business_companyName_idx": {
+          "name": "Business_companyName_idx",
+          "columns": ["companyName"],
+          "isUnique": false
+        },
+        "Business_approvalState_idx": {
+          "name": "Business_approvalState_idx",
+          "columns": ["approvalState"],
+          "isUnique": false
+        },
+        "Business_correlationId_idx": {
+          "name": "Business_correlationId_idx",
+          "columns": ["correlationId"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Business_correlationId_unique": {
+          "name": "Business_correlationId_unique",
+          "nullsNotDistinct": false,
+          "columns": ["correlationId"]
+        }
+      }
+    },
+    "EndUser": {
+      "name": "EndUser",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "isContactPerson": {
+          "name": "isContactPerson",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "correlationId": {
+          "name": "correlationId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "endUserType": {
+          "name": "endUserType",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'individual'"
+        },
+        "approvalState": {
+          "name": "approvalState",
+          "type": "ApprovalState",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'APPROVED'"
+        },
+        "stateReason": {
+          "name": "stateReason",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "firstName": {
+          "name": "firstName",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country": {
+          "name": "country",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dateOfBirth": {
+          "name": "dateOfBirth",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "avatarUrl": {
+          "name": "avatarUrl",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nationalId": {
+          "name": "nationalId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "additionalInfo": {
+          "name": "additionalInfo",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "EndUser_endUserType_idx": {
+          "name": "EndUser_endUserType_idx",
+          "columns": ["endUserType"],
+          "isUnique": false
+        },
+        "EndUser_approvalState_idx": {
+          "name": "EndUser_approvalState_idx",
+          "columns": ["approvalState"],
+          "isUnique": false
+        },
+        "EndUser_createdAt_idx": {
+          "name": "EndUser_createdAt_idx",
+          "columns": ["createdAt"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "EndUser_correlationId_unique": {
+          "name": "EndUser_correlationId_unique",
+          "nullsNotDistinct": false,
+          "columns": ["correlationId"]
+        }
+      }
+    },
+    "EndUsersOnBusinesses": {
+      "name": "EndUsersOnBusinesses",
+      "schema": "",
+      "columns": {
+        "endUserId": {
+          "name": "endUserId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "businessId": {
+          "name": "businessId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "EndUsersOnBusinesses_endUserId_EndUser_id_fk": {
+          "name": "EndUsersOnBusinesses_endUserId_EndUser_id_fk",
+          "tableFrom": "EndUsersOnBusinesses",
+          "tableTo": "EndUser",
+          "columnsFrom": ["endUserId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "EndUsersOnBusinesses_businessId_Business_id_fk": {
+          "name": "EndUsersOnBusinesses_businessId_Business_id_fk",
+          "tableFrom": "EndUsersOnBusinesses",
+          "tableTo": "Business",
+          "columnsFrom": ["businessId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "EndUsersOnBusinesses_endUserId_businessId": {
+          "name": "EndUsersOnBusinesses_endUserId_businessId",
+          "columns": ["endUserId", "businessId"]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "Entities": {
+      "name": "Entities",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "firstName": {
+          "name": "firstName",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "roles": {
+          "name": "roles",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Entities_email_unique": {
+          "name": "Entities_email_unique",
+          "nullsNotDistinct": false,
+          "columns": ["email"]
+        },
+        "Entities_phone_unique": {
+          "name": "Entities_phone_unique",
+          "nullsNotDistinct": false,
+          "columns": ["phone"]
+        }
+      }
+    },
+    "File": {
+      "name": "File",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fileNameOnDisk": {
+          "name": "fileNameOnDisk",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uri": {
+          "name": "uri",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fileNameInBucket": {
+          "name": "fileNameInBucket",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'SYSTEM'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "Filter": {
+      "name": "Filter",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity": {
+          "name": "entity",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "query": {
+          "name": "query",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'SYSTEM'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Filter_name_unique": {
+          "name": "Filter_name_unique",
+          "nullsNotDistinct": false,
+          "columns": ["name"]
+        }
+      }
+    },
+    "Policy": {
+      "name": "Policy",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tasks": {
+          "name": "tasks",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rulesSets": {
+          "name": "rulesSets",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "User": {
+      "name": "User",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "firstName": {
+          "name": "firstName",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "roles": {
+          "name": "roles",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "lastActiveAt": {
+          "name": "lastActiveAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "User_email_unique": {
+          "name": "User_email_unique",
+          "nullsNotDistinct": false,
+          "columns": ["email"]
+        },
+        "User_phone_unique": {
+          "name": "User_phone_unique",
+          "nullsNotDistinct": false,
+          "columns": ["phone"]
+        }
+      }
+    },
+    "WorkflowDefinition": {
+      "name": "WorkflowDefinition",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "reviewMachineId": {
+          "name": "reviewMachineId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
+        },
+        "definitionType": {
+          "name": "definitionType",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "definition": {
+          "name": "definition",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contextSchema": {
+          "name": "contextSchema",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "config": {
+          "name": "config",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "supportedPlatforms": {
+          "name": "supportedPlatforms",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extensions": {
+          "name": "extensions",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "backend": {
+          "name": "backend",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "persistStates": {
+          "name": "persistStates",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "submitStates": {
+          "name": "submitStates",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'SYSTEM'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "WorkflowRuntimeData": {
+      "name": "WorkflowRuntimeData",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "endUserId": {
+          "name": "endUserId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "businessId": {
+          "name": "businessId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assigneeId": {
+          "name": "assigneeId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "workflowDefinitionId": {
+          "name": "workflowDefinitionId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "workflowDefinitionVersion": {
+          "name": "workflowDefinitionVersion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "context": {
+          "name": "context",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "config": {
+          "name": "config",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "WorkflowRuntimeDataStatus",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'active'"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'SYSTEM'"
+        },
+        "resolvedAt": {
+          "name": "resolvedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assignedAt": {
+          "name": "assignedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_runtime_data_id": {
+          "name": "parent_runtime_data_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "WorkflowRuntimeData_endUserId_EndUser_id_fk": {
+          "name": "WorkflowRuntimeData_endUserId_EndUser_id_fk",
+          "tableFrom": "WorkflowRuntimeData",
+          "tableTo": "EndUser",
+          "columnsFrom": ["endUserId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "WorkflowRuntimeData_businessId_Business_id_fk": {
+          "name": "WorkflowRuntimeData_businessId_Business_id_fk",
+          "tableFrom": "WorkflowRuntimeData",
+          "tableTo": "Business",
+          "columnsFrom": ["businessId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "WorkflowRuntimeData_assigneeId_User_id_fk": {
+          "name": "WorkflowRuntimeData_assigneeId_User_id_fk",
+          "tableFrom": "WorkflowRuntimeData",
+          "tableTo": "User",
+          "columnsFrom": ["assigneeId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {
+    "ApprovalState": {
+      "name": "ApprovalState",
+      "values": {
+        "NEW": "NEW",
+        "APPROVED": "APPROVED",
+        "REJECTED": "REJECTED",
+        "PROCESSING": "PROCESSING"
+      }
+    },
+    "WorkflowRuntimeDataStatus": {
+      "name": "WorkflowRuntimeDataStatus",
+      "values": {
+        "active": "active",
+        "completed": "completed",
+        "failed": "failed"
+      }
+    }
+  },
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}
