@@ -16,9 +16,8 @@ import { AuthenticatedLayout } from '../domains/auth/components/AuthenticatedLay
 import { UnauthenticatedLayout } from '../domains/auth/components/UnauthenticatedLayout';
 import { Locale } from '../pages/Locale/Locale.page';
 import { unauthenticatedLayoutLoader } from '../domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
-import { KycBlock } from '../pages/Entity/hooks/useEntity/kycBlock.stories';
 
-const _router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: '/',
     element: <Root />,
@@ -84,16 +83,6 @@ const _router = createBrowserRouter([
         ],
       },
     ],
-  },
-]);
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <KycBlock />,
-  },
-  {
-    path: '/en/auth/sign-in',
-    element: <KycBlock />,
   },
 ]);
 

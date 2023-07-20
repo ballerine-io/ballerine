@@ -31,7 +31,6 @@ import {
 } from '@/workflow/dtos/find-workflow.dto';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
-import { WorkflowWebhookInput } from '@/workflow/dtos/workflow-webhook-input';
 import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
 import { Public } from '@/common/decorators/public.decorator';
 

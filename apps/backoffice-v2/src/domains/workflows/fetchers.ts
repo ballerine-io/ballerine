@@ -80,10 +80,13 @@ export const BaseWorkflowByIdSchema = z.object({
 });
 
 export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
-  context: BaseWorkflowByIdSchema.shape.context.extend({
-    // childWorkflows: z.array(BaseWorkflowByIdSchema).optional(),
-    childWorkflowsRuntimeData: z.array(BaseWorkflowByIdSchema).optional(),
-  }),
+  childWorkflows: z
+    .array(
+      BaseWorkflowByIdSchema.omit({
+        nextEvents: true,
+      }),
+    )
+    .optional(),
 });
 
 export const fetchWorkflowById = async ({

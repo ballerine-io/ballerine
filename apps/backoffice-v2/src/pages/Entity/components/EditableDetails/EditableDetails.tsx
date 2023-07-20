@@ -132,8 +132,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
                   if (isObject(value) || isArray(value)) {
                     return (
-                      <div>
-                        <JsonDialog json={JSON.stringify(value)} />
+                      <div className={`flex items-end justify-end`}>
+                        <JsonDialog
+                          dialogButtonText={`View Information`}
+                          json={JSON.stringify(value)}
+                        />
                       </div>
                     );
                   }
