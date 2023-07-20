@@ -14,6 +14,7 @@ export const useEntity = () => {
     documents: contextDocuments,
     entity: contextEntity,
     pluginsOutput,
+    childWorkflowsRuntimeData,
   } = workflow?.context ?? {};
   const tasks = useTasks({
     workflow,

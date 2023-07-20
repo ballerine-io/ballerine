@@ -11,7 +11,7 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import { getDocumentsByCountry } from '@ballerine/common';
+import { getDocumentsByCountry, isObject } from '@ballerine/common';
 import { useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 
@@ -238,11 +238,19 @@ export const useTasks = ({
                       type: 'details',
                       value: {
                         title: `${toStartCase(entity?.type)} Address`,
-                        data: Object.entries(address ?? {})?.map(([title, value]) => ({
-                          title,
-                          value,
-                          isEditable: false,
-                        })),
+                        data: !isObject(address)
+                          ? [
+                              {
+                                title: 'Address',
+                                value: address,
+                                isEditable: false,
+                              },
+                            ]
+                          : Object.entries(address ?? {})?.map(([title, value]) => ({
+                              title,
+                              value,
+                              isEditable: false,
+                            })),
                       },
                     },
                     {

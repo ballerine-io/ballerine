@@ -2,6 +2,9 @@ const { plugins, ...config } = require('../../packages/config/prettierrc.base.cj
 
 module.exports = {
   ...config,
-  plugins: [...(plugins ?? []), require('prettier-plugin-tailwindcss')],
+  plugins: [
+    ...(plugins ?? []),
+    // require('prettier-plugin-tailwindcss')
+  ],
   pluginSearchDirs: false,
 };
