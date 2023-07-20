@@ -49,6 +49,8 @@ export const buildUpdatePayload = async (
 
     if (!updatedDocumentPages) return document;
 
+    document.decision = { status: '', revisionReason: '', rejectionReason: '' };
+
     document.pages = document.pages.map((page, index) => {
       const pageName = createPageFieldName({ ...page, index });
 

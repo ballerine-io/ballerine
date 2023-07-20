@@ -5,7 +5,7 @@ import { AppShell } from '@app/components/layouts/AppShell';
 import { useQueryValues } from '@app/components/organisms/KYBView/hooks/useQueryParams';
 import { kybViewSchema } from '@app/components/organisms/KYBView/kyb-view.schema';
 import { KYBQueryParams } from '@app/components/organisms/KYBView/types';
-import { buildUpdatePayload } from '@app/components/organisms/KYBView/views/RevisionView/helpers/buildRunPayload';
+import { buildUpdatePayload } from '@app/components/organisms/KYBView/views/RevisionView/helpers/buildUpdatePayload';
 import { createFormAssets } from '@app/components/organisms/KYBView/views/RevisionView/helpers/createFormAssets';
 import { useWorkflowQuery } from '@app/components/organisms/KYBView/views/RevisionView/hooks/useWorkflowQuery';
 import { updateWorkflow } from '@app/domains/workflows';
