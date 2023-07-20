@@ -2,45 +2,100 @@ version: '3'
 services:
   backoffice:
     build:
-      context: ../apps/backoffice-v2/
+      context: ..
+      dockerfile: apps/backoffice-v2/Dockerfile
+      args:
+        NPM_LOG_LEVEL: notice
+    depends_on:
+      - service
+    ports:
+      - ${BACKOFFICE_PORT}:80
+    restart: on-failure
+  headless-example:
+    build:
+      context: ..
+      dockerfile: examples/headless-example/Dockerfile
+      args:
+        NPM_LOG_LEVEL: notice
+    depends_on:
+      - service
+    ports:
+      - ${HEADLESS_SVC_PORT}:80
+  workflows-dashboard:
+    build:
+      context: ..
+      dockerfile: apps/workflows-dashboard/Dockerfile
       args:
         NPM_LOG_LEVEL: notice
     ports:
-      - ${BACKOFFICE_PORT}:5173
+      - ${WORKFLOW_DASHBOARD_PORT}:80
+    depends_on:
+      - service
+    restart: on-failure
+  websocket-service:
+    build:
+      context: ..
+      dockerfile: services/websocket-service/Dockerfile
+      args:
+        NPM_LOG_LEVEL: notice
+    ports:
+      - ${WEBSOCKET_SVC_PORT}:${WEBSOCKET_SVC_PORT}
+    depends_on:
+      - service
+    restart: on-failure
   service:
     build:
-      context: ../services/workflows-service/
+      context: ..
+      dockerfile: services/workflows-service/Dockerfile
       args:
         NPM_LOG_LEVEL: notice
     ports:
-      - ${SERVICE_PORT}:3000
+      - ${WORKFLOW_SVC_PORT}:${WORKFLOW_SVC_PORT}
     environment:
       BCRYPT_SALT: ${BCRYPT_SALT}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}
+      API_KEY: ${API_KEY}
+      NODE_ENV: ${NODE_ENV}
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SESSION_SECRET: ${SESSION_SECRET}
+      BACKOFFICE_CORS_ORIGIN: http://localhost:${BACKOFFICE_PORT}
+      HEADLESS_EXAMPLE_CORS_ORIGIN: http://localhost:${HEADLESS_SVC_PORT}
+      WORKFLOW_DASHBOARD_CORS_ORIGIN: http://localhost:${WORKFLOW_DASHBOARD_PORT}
+      PORT: ${WORKFLOW_SVC_PORT}
     depends_on:
-      - db
+      - migrate
+  migrate:
+    build:
+      context: ..
+      dockerfile: services/workflows-service/Dockerfile
+      args:
+        NPM_LOG_LEVEL: notice
+    command: pnpm run db:init
+    environment:
+      BCRYPT_SALT: ${BCRYPT_SALT}
+      DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
   db:
     image: postgres:12
     ports:
-      - ${DB_PORT}:5432
+      - ${DB_PORT}:${DB_PORT}
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - ./postgres:/var/lib/postgresql/data
     healthcheck:
       test:
         - CMD
         - pg_isready
-        - -q
-        - -d
-        - ${DB_NAME}
-        - -U
-        - ${DB_USER}
       timeout: 45s
       interval: 10s
       retries: 10
-volumes:
-  postgres: ~
