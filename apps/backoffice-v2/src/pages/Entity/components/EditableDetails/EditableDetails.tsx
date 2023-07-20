@@ -4,7 +4,7 @@ import { ctw } from '../../../../common/utils/ctw/ctw';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
-import { Button } from '../../../../common/components/atoms/Button/Button';
+import { Button, buttonVariants } from '../../../../common/components/atoms/Button/Button';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
@@ -24,6 +24,7 @@ import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { isObject } from '@ballerine/common';
 import { Util } from 'leaflet';
 import { JsonDialog } from '@ballerine/ui';
+import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import isArray = Util.isArray;
 
 const useInitialCategorySetValue = ({ form, data }) => {
@@ -121,85 +122,109 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
             'grid-cols-3': id === 'entity-details',
           })}
         >
-          {formData?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) => {
-            return (
-              <FormField
-                key={keyFactory(valueId, title, `form-field`)}
-                control={form.control}
-                name={title}
-                render={({ field }) => {
-                  if (isDecisionComponent && !value) return null;
+          {formData?.map(
+            ({ title, isEditable, type, format, pattern, value, valueAlias, dropdownOptions }) => {
+              return (
+                <FormField
+                  key={keyFactory(valueId, title, `form-field`)}
+                  control={form.control}
+                  name={title}
+                  render={({ field }) => {
+                    if (isDecisionComponent && !value) return null;
 
-                  if (isObject(value) || isArray(value)) {
+                    const isInput = [
+                      !isValidUrl(value) || isEditable,
+                      !isObject(value),
+                      !isArray(value),
+                    ].every(Boolean);
+                    const isSelect = isInput && !!dropdownOptions;
+
                     return (
-                      <div className={`flex items-end justify-end`}>
-                        <JsonDialog
-                          dialogButtonText={`View Information`}
-                          json={JSON.stringify(value)}
-                        />
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <FormItem>
-                      <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
-                      {dropdownOptions ? (
-                        <Select
-                          disabled={!isEditable}
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {dropdownOptions?.map(({ label, value }) => {
-                              return (
-                                <SelectItem
-                                  key={keyFactory(valueId, label, `select-item`)}
-                                  value={value}
-                                >
-                                  {label}
-                                </SelectItem>
-                              );
+                      <FormItem>
+                        <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
+                        {(isObject(value) || isArray(value)) && (
+                          <div
+                            className={`flex items-end justify-start`}
+                            key={keyFactory(valueId, title, `form-field`)}
+                          >
+                            <JsonDialog
+                              dialogButtonText={`View Information`}
+                              json={JSON.stringify(value)}
+                            />
+                          </div>
+                        )}
+                        {isValidUrl(value) && !isEditable && (
+                          <a
+                            key={keyFactory(valueId, title, `form-field`)}
+                            className={buttonVariants({
+                              variant: 'link',
+                              className: '!block cursor-pointer !p-0',
                             })}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <FormControl>
-                          <Input
-                            type={!format ? (type === 'string' ? 'text' : type) : format}
+                            target={'_blank'}
+                            rel={'noopener noreferrer'}
+                            href={value}
+                          >
+                            {(valueAlias as string) ?? value}
+                          </a>
+                        )}
+                        {isSelect && (
+                          <Select
                             disabled={!isEditable}
-                            className={ctw(
-                              `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
-                              {
-                                '!h-[unset] !p-0': !isEditable,
-                                'font-bold text-success': isDecisionPositive(
-                                  isDecisionComponent,
-                                  field.value,
-                                ),
-                                'font-bold text-destructive': isDecisionNegative(
-                                  isDecisionComponent,
-                                  field.value,
-                                ),
-                              },
-                            )}
-                            pattern={pattern}
-                            autoComplete={'off'}
-                            {...field}
-                          />
-                        </FormControl>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            );
-          })}
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {dropdownOptions?.map(({ label, value }) => {
+                                return (
+                                  <SelectItem
+                                    key={keyFactory(valueId, label, `select-item`)}
+                                    value={value}
+                                  >
+                                    {label}
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectContent>
+                          </Select>
+                        )}
+                        {isInput && !isSelect && (
+                          <FormControl>
+                            <Input
+                              type={!format ? (type === 'string' ? 'text' : type) : format}
+                              disabled={!isEditable}
+                              className={ctw(
+                                `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
+                                {
+                                  '!h-[unset] !p-0': !isEditable,
+                                  'font-bold text-success': isDecisionPositive(
+                                    isDecisionComponent,
+                                    field.value,
+                                  ),
+                                  'font-bold text-destructive': isDecisionNegative(
+                                    isDecisionComponent,
+                                    field.value,
+                                  ),
+                                },
+                              )}
+                              pattern={pattern}
+                              autoComplete={'off'}
+                              {...field}
+                            />
+                          </FormControl>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              );
+            },
+          )}
         </div>
         <div className={`flex justify-end`}>
           {data?.some(({ isEditable }) => isEditable) && (
