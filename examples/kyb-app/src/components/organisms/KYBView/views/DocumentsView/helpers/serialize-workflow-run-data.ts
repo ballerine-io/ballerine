@@ -3,6 +3,7 @@ import { parseBase64FileWithMetadata } from '@app/common/utils/parse-base64-file
 import { KYBContext } from '@app/components/organisms/KYBView/types';
 import { getFilesId } from '@app/components/organisms/KYBView/views/DocumentsView/helpers/get-file-ids';
 import { RunWorkflowDto } from '@app/domains/workflows/types';
+import { v4 as uuidv4 } from 'uuid';
 
 export const serializeWorkflowRunData = async (context: KYBContext): Promise<RunWorkflowDto> => {
   const proofOfAddressFileData = parseBase64FileWithMetadata(
@@ -41,6 +42,7 @@ export const serializeWorkflowRunData = async (context: KYBContext): Promise<Run
       ubos: context.documents.shareholders.map(({ firstName, lastName, email }) => ({
         entity: {
           type: 'individual',
+          id: uuidv4(),
           data: {
             firstName,
             lastName,

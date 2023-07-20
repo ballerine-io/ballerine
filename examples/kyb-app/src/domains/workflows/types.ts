@@ -4,6 +4,7 @@ import { RJSFSchema } from '@rjsf/utils';
 export interface WorkflowUBO {
   entity: {
     type: 'individual';
+    id: string;
     data: {
       firstName: string;
       lastName: string;
