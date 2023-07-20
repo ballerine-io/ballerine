@@ -9,6 +9,7 @@ export interface WorkflowUBO {
       firstName: string;
       lastName: string;
       email: string;
+      additionalInfo?: Record<PropertyKey, unknown>;
     };
   };
 }
