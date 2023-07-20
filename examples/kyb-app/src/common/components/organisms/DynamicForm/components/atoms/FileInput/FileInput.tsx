@@ -1,41 +1,59 @@
-import { useFileStorage } from '@app/common/providers/FileStorageProvider';
+import { base64ToFile } from '@app/common/utils/base64-to-file';
+import { fileToBase64 } from '@app/common/utils/file-to-base64';
+import { isBase64 } from '@app/utils/is-base-64';
 import { Input } from '@ballerine/ui';
 import { Label } from '@ballerine/ui';
 import { FieldProps } from '@rjsf/utils';
 import { useCallback, useEffect, useRef } from 'react';
 
-export const FileInput = ({ id, name, uiSchema, schema, formData, onChange }: FieldProps) => {
-  const { storage } = useFileStorage();
-
+export const FileInput = ({
+  id,
+  name,
+  uiSchema,
+  schema,
+  formData,
+  onChange,
+}: FieldProps<string>) => {
   const inputRef = useRef<HTMLInputElement>(null);
-
-  if (!storage) {
-    throw new Error('It seems FileInput is used but FileStorage not provided.');
-  }
 
   useEffect(() => {
     if (!inputRef.current) return;
 
-    const fileId = formData as string;
-
-    if (!inputRef.current.files.length && storage.isExists(fileId)) {
+    if (!inputRef.current.files.length) {
       const files = new DataTransfer();
-      files.items.add(storage.get(fileId));
+
+      if (!formData) return;
+
+      const isBase64Value = typeof formData === 'string' && isBase64(formData);
+      let file: null | File = null;
+
+      if (isBase64Value) {
+        const fileMetadata = JSON.parse(atob(formData)) as {
+          name: string;
+          type: string;
+          file: string;
+        };
+
+        file = base64ToFile(fileMetadata.file, fileMetadata.name, fileMetadata.type);
+        files.items.add(file);
+      }
 
       inputRef.current.files = files.files;
     }
-  }, [inputRef]);
+  }, [formData, inputRef, onChange]);
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files[0];
       if (!file) return;
 
-      const fileId = storage.add(file);
+      const base64File = btoa(
+        JSON.stringify({ type: file.type, name: file.name, file: fileToBase64(file) }),
+      );
 
-      onChange(fileId);
+      onChange(base64File);
     },
-    [storage, onChange],
+    [onChange],
   );
 
   return (

@@ -1,15 +1,28 @@
-import { FileStorage } from '@app/common/utils/file-storage';
+import { base64ToFile } from '@app/common/utils/base64-to-file';
+import { parseBase64FileWithMetadata } from '@app/common/utils/parse-base64-file-with-metadata';
 import { KYBContext } from '@app/components/organisms/KYBView/types';
 import { getFilesId } from '@app/components/organisms/KYBView/views/DocumentsView/helpers/get-file-ids';
 import { RunWorkflowDto } from '@app/domains/workflows/types';
 
-export const serializeWorkflowRunData = async (
-  context: KYBContext,
-  storage: FileStorage,
-): Promise<RunWorkflowDto> => {
+export const serializeWorkflowRunData = async (context: KYBContext): Promise<RunWorkflowDto> => {
+  const proofOfAddressFileData = parseBase64FileWithMetadata(
+    context.documents.documents.addressProof,
+  );
+  const registrationDocumentFileData = parseBase64FileWithMetadata(
+    context.documents.documents.registrationCertificate,
+  );
+
   const [proofOfAddressFileId, registrationDocumentFileId] = await getFilesId([
-    storage.get(context.documents.documents.addressProof),
-    storage.get(context.documents.documents.registrationCertificate),
+    base64ToFile(
+      proofOfAddressFileData.file,
+      proofOfAddressFileData.name,
+      proofOfAddressFileData.type,
+    ),
+    base64ToFile(
+      registrationDocumentFileData.file,
+      registrationDocumentFileData.name,
+      registrationDocumentFileData.type,
+    ),
   ]);
 
   const { endUserId, businessId } = context.shared;

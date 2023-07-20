@@ -10,6 +10,7 @@ export function createStateMachine<TContext extends object>(schema: ViewStateSch
         meta,
       ) => {
         context[meta.state.value as string] = event.payload;
+        context['state'] = meta.state.value;
 
         if (event.shared) {
           context['shared'] = { ...context['shared'], ...event.shared };

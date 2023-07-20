@@ -5,6 +5,10 @@ export type SchemaBase = { states: AnyObject };
 
 export type SchemaStates<TSchema extends SchemaBase> = keyof TSchema['states'];
 
+export interface InitialContext<TSchema extends SchemaBase> {
+  state: SchemaStates<TSchema>;
+}
+
 export interface ViewStateContext<
   TGlobalContext = AnyObject,
   TViewContext = AnyObject,
@@ -12,9 +16,11 @@ export interface ViewStateContext<
 > {
   next: () => void;
   prev: () => void;
+  update: (data: object, shared?: object) => void;
+  updateAsync: (data: object, shared?: object) => void;
   saveAndPerformTransition: (data: object, shared?: object) => void;
   send: (type: TStates, formData?: object) => void;
-  state: string;
+  state: TStates;
   stateData: TViewContext;
   context: TGlobalContext;
 }
