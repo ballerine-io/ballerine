@@ -134,3 +134,8 @@ export interface Workflow {
 export interface GetWorkflowResponse {
   workflowRuntimeData: Workflow;
 }
+
+export interface UpdateWorkflowDto {
+  workflowId: string;
+  payload: Workflow;
+}

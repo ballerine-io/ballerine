@@ -2,8 +2,9 @@ import { base64ToFile } from '@app/common/utils/base64-to-file';
 import { parseBase64FileWithMetadata } from '@app/common/utils/parse-base64-file-with-metadata';
 import { getFilesId } from '@app/components/organisms/KYBView/views/DocumentsView/helpers/get-file-ids';
 import { createPageFieldName } from '@app/components/organisms/KYBView/views/RevisionView/helpers/page-utils';
-import { RunWorkflowDto, Workflow } from '@app/domains/workflows/types';
+import { Workflow } from '@app/domains/workflows/types';
 import { AnyObject } from '@ballerine/ui';
+import cloneDeep from 'lodash/cloneDeep';
 
 type FileIdsByDocumentType = Record<string, Record<string, string>>;
 
@@ -15,7 +16,7 @@ const transformFormDataFilesToFileIds = async (
       object[documentType] = Object.entries(documentFileRefs).reduce((refs, [key, fileData]) => {
         const { type, name, file } = parseBase64FileWithMetadata(fileData as string);
         const fileElement = base64ToFile(file, name, type);
-        refs[key] = getFilesId(fileElement) as Promise<string>;
+        refs[key] = getFilesId(fileElement).then(val => (refs[key] = val)) as Promise<string>;
 
         return refs;
       }, {});
@@ -35,42 +36,36 @@ const transformFormDataFilesToFileIds = async (
   return pendingFiles;
 };
 
-export const buildRunPayload = async (
-  workflow: Workflow,
+export const buildUpdatePayload = async (
+  _workflow: Workflow,
   formData: Record<string, AnyObject>,
-): Promise<RunWorkflowDto> => {
+): Promise<Workflow> => {
+  const workflow = cloneDeep(_workflow);
+
   const formDataWithFileIds = await transformFormDataFilesToFileIds(formData);
 
-  const payload: RunWorkflowDto = {
-    workflowId: workflow.workflowDefinitionId,
-    businessId: workflow.businessId,
-    endUserId: workflow.endUserId,
-    entity: {
-      type: 'business',
-      website: workflow.context.entity.data.website,
-      companyName: workflow.context.entity.data.companyName,
-      address: workflow.context.entity.data.address.text,
-      registrationNumber: workflow.context.entity.data.registrationNumber,
-      customerCompany: 'Ballerine',
-      ubos: workflow.context.entity.data.additionalInfo?.ubos || [],
-    },
-    documents: workflow.context.documents.map(workflowDocument => {
+  workflow.context.documents = workflow.context.documents.map(document => {
+    const updatedDocumentPages = formDataWithFileIds[document.type];
+
+    if (!updatedDocumentPages) return document;
+
+    document.decision = { status: '', revisionReason: '', rejectionReason: '' };
+
+    document.pages = document.pages.map((page, index) => {
+      const pageName = createPageFieldName({ ...page, index });
+
+      const updatedPageFileId = updatedDocumentPages[pageName];
+
+      if (!updatedPageFileId) return page;
+
       return {
-        type: workflowDocument.type,
-        category: workflowDocument.category,
-        country: workflowDocument.issuer.country,
-        pages: workflowDocument.pages.map((page, index) => {
-          const pageName = createPageFieldName({ ...page, index });
-          const documentPages = formDataWithFileIds[workflowDocument.type];
-          const pageFileId = documentPages[pageName];
-
-          return {
-            fileId: pageFileId,
-          };
-        }),
+        ...page,
+        ballerineFileId: updatedPageFileId,
       };
-    }),
-  };
+    });
 
-  return payload;
+    return document;
+  });
+
+  return workflow;
 };

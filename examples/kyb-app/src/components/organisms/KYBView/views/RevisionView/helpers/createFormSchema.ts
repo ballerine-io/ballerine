@@ -13,10 +13,13 @@ const DEFAULT_TITLE = 'Revision';
 
 export const createFormSchema = (workflow: Workflow): RJSFSchema => {
   const schema: RJSFSchema = {};
+  const documents = workflow.context.documents.filter(
+    document => document.decision && document.decision.status === 'revision',
+  );
 
   schema.type = 'object';
   schema.title = (titlesMap[workflow.workflowDefinitionId] || DEFAULT_TITLE) as string;
-  schema.properties = workflow.context.documents.reduce((properties, document) => {
+  schema.properties = documents.reduce((properties, document) => {
     properties[document.type] = {
       type: 'object',
       title: '',
@@ -30,12 +33,12 @@ export const createFormSchema = (workflow: Workflow): RJSFSchema => {
 
         return properties;
       }, {} as RJSFSchema['properties']),
-      required: document.pages.map((_, index) => `page:${index}`),
+      // required: document.pages.map((_, index) => `page:${index}`),
     };
     return properties;
   }, {} as RJSFSchema['properties']);
 
-  schema.required = workflow.context.documents.map(doc => doc.type);
+  // schema.required = documents.map(doc => doc.type);
 
   return schema;
 };

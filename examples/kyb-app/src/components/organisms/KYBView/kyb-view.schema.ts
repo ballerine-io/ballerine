@@ -51,6 +51,9 @@ export const kybViewSchema = {
         SAVE_DATA: {
           actions: ['updateStateData'],
         },
+        PREV: {
+          target: 'personalInformation',
+        },
         NEXT: {
           target: 'final',
         },

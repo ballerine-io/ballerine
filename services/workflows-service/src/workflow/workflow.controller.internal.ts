@@ -31,6 +31,9 @@ import {
 } from '@/workflow/dtos/find-workflow.dto';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
+import { env } from '@/env';
+import { DemoGuard } from '@/common/guards/demo.guard';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -125,6 +128,7 @@ export class WorkflowControllerInternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseKeyAuthInDevGuard()
   @UseGuards(WorkflowAssigneeGuard)
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
