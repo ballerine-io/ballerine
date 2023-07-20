@@ -11,7 +11,7 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
 /**
- * @description Checks if a passed string is a date by checking if creating a new Date object from it returns NaN.
+ * @description Checks if a passed value is a valid ISO 8601 date string.
  * @param value
  */
 export const isValidIsoDate = (value: unknown): value is string => {

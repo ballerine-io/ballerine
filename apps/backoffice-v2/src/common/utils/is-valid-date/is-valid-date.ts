@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /**
- * @description Checks if a passed string is a datetime string.
+ * @description Checks if a passed value is a datetime string.
  * @param value
  * @param strict - If false, will return true for strings that match the format YYYY-MM-DD.
  */

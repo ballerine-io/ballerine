@@ -6,6 +6,8 @@ import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { NestedContainer } from './NestedContainer';
 import { handleNestedValue } from './handle-nested-value';
+import { isValidUrl } from '../../../../common/utils/is-valid-url';
+import { buttonVariants } from '../../../../common/components/atoms/Button/Button';
 
 export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
   id,
@@ -16,7 +18,9 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
 
   return (
     <NestedContainer isNested={isNested}>
-      {value?.data?.map(({ title, value, showNull, showUndefined }) => {
+      {value?.data?.map(({ title, value, showNull, showUndefined, anchorUrls }) => {
+        const Component = anchorUrls && isValidUrl(value) ? 'a' : 'p';
+
         return (
           <div key={title}>
             <h4
@@ -38,6 +42,9 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
                   data: Object.entries(value)?.map(([title, value]) => ({
                     title,
                     value,
+                    showUndefined,
+                    showNull,
+                    anchorUrls,
                   })),
                 }}
               />
@@ -54,6 +61,9 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
                         data: Object.entries(item)?.map(([title, value]) => ({
                           title,
                           value,
+                          showUndefined,
+                          showNull,
+                          anchorUrls,
                         })),
                       }}
                     />
@@ -70,6 +80,9 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
                         data: item?.map(item => ({
                           title: 'Custom Property',
                           value: item,
+                          showUndefined,
+                          showNull,
+                          anchorUrls,
                         })),
                       }}
                     />
@@ -78,19 +91,30 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
 
                 if (!isObject(item) && !Array.isArray(item)) {
                   return (
-                    <p
+                    <Component
                       className={`leading-7 [&:not(:first-child)]:mt-2`}
                       key={keyFactory(index?.toString(), id, title, `nested-component`)}
                     >
                       {handleNestedValue({ value, showUndefined, showNull })}
-                    </p>
+                    </Component>
                   );
                 }
               })}
             {!isObject(value) && !Array.isArray(value) && (
-              <p className={`leading-7 [&:not(:first-child)]:mt-2`}>
+              <Component
+                className={`leading-7 [&:not(:first-child)]:mt-2`}
+                {...(Component === 'a'
+                  ? {
+                      // Component === 'a' only if `value` is a string.
+                      href: value as string,
+                      target: '_blank',
+                      rel: 'noopener noreferrer',
+                      className: buttonVariants({ variant: 'link', className: '!p-0' }),
+                    }
+                  : {})}
+              >
                 {handleNestedValue({ value, showUndefined, showNull })}
-              </p>
+              </Component>
             )}
           </div>
         );

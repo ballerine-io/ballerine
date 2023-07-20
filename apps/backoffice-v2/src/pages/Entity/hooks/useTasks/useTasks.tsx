@@ -73,6 +73,7 @@ export const useTasks = ({
                         value,
                         // Can be part of the response or from a config in the future.
                         showNull: true,
+                        anchorUrls: true,
                       })),
                     },
                   },
