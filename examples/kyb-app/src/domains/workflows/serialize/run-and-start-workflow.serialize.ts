@@ -18,7 +18,15 @@ export const runAndStartWorkflowSerialize = (data: RunWorkflowDto): TRunWorkflow
           additionalInfo: {
             customerCompany: 'Ballerine',
             companyName: data.entity.companyName,
-            ubos: data.entity.ubos,
+            ubos: data.entity.ubos.map(ubo => {
+              ubo.entity.data.additionalInfo = {
+                ...ubo.entity.data.addtionalInfo,
+                companyName: data.entity.companyName,
+                customerCompany: 'Ballerine',
+              };
+
+              return ubo;
+            }),
           },
         },
       },
