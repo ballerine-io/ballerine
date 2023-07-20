@@ -90,6 +90,7 @@ export const kybParentDynamicExample = {
     ],
     childWorkflowPlugins: [
       {
+        pluginKind: 'child',
         name: 'veriff_kyc_child_plugin',
         definitionId: kycDynamicExample.id,
         transformers: [
@@ -121,11 +122,11 @@ export const kybParentDynamicExample = {
   config: {
     childCallbackResults: [
       {
-        definitionName: kycDynamicExample.name,
+        definitionId: kycDynamicExample.id,
         transformers: [
           {
             transformer: 'jmespath',
-            mapping: '{childEntity: entity.data, veriff_result: pluginsOutput.request_kyc}', // jmespath
+            mapping: '{childResult: entity.data, vendorResult: hook.data}', // jmespath
           },
         ],
         deliverEvent: 'KYC_RESPONDED',

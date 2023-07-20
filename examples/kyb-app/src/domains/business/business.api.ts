@@ -6,7 +6,12 @@ export const updateBusiness = async (dto: UpdateBusinessDto) => {
   const { businessId, ...restDto } = dto;
 
   const result = await request
-    .put(`external/businesses/${businessId}`, { json: restDto })
+    .put(`external/businesses/${businessId}`, {
+      json: {
+        shareholderStructure: [],
+        ...restDto,
+      },
+    })
     .json<AnyObject>();
 
   return result;

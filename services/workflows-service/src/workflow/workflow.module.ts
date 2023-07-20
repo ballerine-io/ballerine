@@ -20,6 +20,7 @@ import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
 import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-changed-webhook-caller';
 import { EntityRepository } from '@/common/entity/entity.repository';
+import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
@@ -33,6 +34,7 @@ import { EntityRepository } from '@/common/entity/entity.repository';
     StorageService,
     FileRepository,
     WorkflowService,
+    HookCallbackHandlerService,
     FileService,
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
@@ -42,6 +44,13 @@ import { EntityRepository } from '@/common/entity/entity.repository';
     UserService,
     UserRepository,
   ],
-  exports: [WorkflowService, ACLModule, AuthModule, StorageService, FileRepository],
+  exports: [
+    WorkflowService,
+    HookCallbackHandlerService,
+    ACLModule,
+    AuthModule,
+    StorageService,
+    FileRepository,
+  ],
 })
 export class WorkflowModule {}

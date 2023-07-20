@@ -7,7 +7,7 @@ import { formSchema } from '@app/components/organisms/KYBView/views/PersonalInfo
 import { useCallback } from 'react';
 
 export const PersonalInformationView = () => {
-  const { saveAndPerformTransition } = useViewState();
+  const { context, state, saveAndPerformTransition, update } = useViewState();
   const { createUserAsync } = useCreateEndUserMutation();
 
   const handleSubmit = useCallback(
@@ -20,7 +20,7 @@ export const PersonalInformationView = () => {
           });
         })
         .catch(e => {
-          console.log('failed to create user', e);
+          console.log('Failed to create user', e);
         });
     },
     [saveAndPerformTransition, createUserAsync],
@@ -28,8 +28,9 @@ export const PersonalInformationView = () => {
 
   return (
     <AppShell.FormContainer>
-      <DynamicForm
+      <DynamicForm<PersonalInformationContext>
         className="max-w-[384px]"
+        formData={context[state] as PersonalInformationContext}
         uiSchema={{
           'ui:options': {
             submitButtonOptions: {
@@ -37,6 +38,7 @@ export const PersonalInformationView = () => {
             },
           },
         }}
+        onChange={update}
         schema={formSchema}
         onSubmit={handleSubmit}
       />

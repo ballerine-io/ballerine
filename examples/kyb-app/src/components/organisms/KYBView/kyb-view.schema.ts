@@ -1,16 +1,39 @@
-const intiialContext = {
-  personalInformation: {},
-  documents: {},
+import { KYBContext } from '@app/components/organisms/KYBView/types';
+
+export const intiialKybContext: KYBContext = {
+  state: 'idle',
+  personalInformation: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    companyName: '',
+  },
+  documents: {
+    information: {
+      registrationNumber: '',
+      website: '',
+    },
+    address: {
+      address: '',
+    },
+    documents: {
+      registrationCertificate: '',
+      addressProof: '',
+    },
+    shareholders: [],
+  },
+  shared: {},
 };
 
 export const kybViewSchema = {
   initial: 'idle',
-  context: intiialContext,
+  context: intiialKybContext,
   states: {
     idle: {
       on: {
         NEXT: 'personalInformation',
-        ERROR_RESOLVING: 'errorResolving',
+        revision: 'revision',
       },
     },
     personalInformation: {
@@ -23,9 +46,24 @@ export const kybViewSchema = {
         },
       },
     },
-    errorResolving: {},
     documents: {
       on: {
+        SAVE_DATA: {
+          actions: ['updateStateData'],
+        },
+        PREV: {
+          target: 'personalInformation',
+        },
+        NEXT: {
+          target: 'final',
+        },
+      },
+    },
+    revision: {
+      on: {
+        SAVE_DATA: {
+          actions: ['updateStateData'],
+        },
         NEXT: {
           target: 'final',
         },

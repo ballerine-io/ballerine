@@ -1,3 +1,6 @@
+import { SchemaStates } from '@app/common/providers/ViewStateProvider';
+import { kybViewSchema } from '@app/components/organisms/KYBView/kyb-view.schema';
+
 export interface PersonalInformationContext {
   firstName: string;
   lastName: string;
@@ -16,8 +19,7 @@ export interface DocumentsContext {
   };
   documents: {
     registrationCertificate: string;
-    bill: string;
-    legal: string;
+    addressProof: string;
   };
   shareholders: {
     firstName: string;
@@ -27,10 +29,15 @@ export interface DocumentsContext {
 }
 
 export interface KYBContext {
+  state: SchemaStates<typeof kybViewSchema>;
   personalInformation: PersonalInformationContext | null;
   documents: DocumentsContext | null;
   shared: {
     endUserId?: string;
     businessId?: string;
   };
+}
+
+export interface KYBQueryParams {
+  workflowRuntimeId?: string;
 }

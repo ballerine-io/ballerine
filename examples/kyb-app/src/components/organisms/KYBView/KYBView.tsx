@@ -1,33 +1,46 @@
-import { FileStorageProvider } from '@app/common/providers/FileStorageProvider';
+import { SnapshotProvider } from '@app/common/providers/SnapshotProvider';
 import { ViewStateProvider } from '@app/common/providers/ViewStateProvider';
 import { Views } from '@app/common/providers/ViewStateProvider/components/ViewResolver/types';
-import { FileStorage } from '@app/common/utils/file-storage';
+import { AppShell } from '@app/components/layouts/AppShell';
+import { BackButton } from '@app/components/organisms/KYBView/components/BackButton';
+import { SnapshotSynchronizer } from '@app/components/organisms/KYBView/components/SnapshotSynchronizer';
+import { serializeSnapshotData } from '@app/components/organisms/KYBView/helpers/serializeSnapshotData';
 import { kybViewSchema } from '@app/components/organisms/KYBView/kyb-view.schema';
+import { KYBStorageService } from '@app/components/organisms/KYBView/services/kyb-storage-service';
+import { KYBContext } from '@app/components/organisms/KYBView/types';
 import { DocumentsView } from '@app/components/organisms/KYBView/views/DocumentsView';
 import { FinalView } from '@app/components/organisms/KYBView/views/FinalView';
 import { MainView } from '@app/components/organisms/KYBView/views/MainView';
 import { PersonalInformationView } from '@app/components/organisms/KYBView/views/PersonalInformationView';
-import { useMemo } from 'react';
+import { RevisionView } from '@app/components/organisms/KYBView/views/RevisionView';
+import { useCallback, useMemo } from 'react';
 
 export const KYBView = () => {
-  const fileStorage = useMemo(() => new FileStorage(), []);
+  const snapshotStorage = useMemo(() => new KYBStorageService(), []);
+
+  const beforeSnapshotSave = useCallback((context: KYBContext) => {
+    return serializeSnapshotData(context);
+  }, []);
 
   const views = useMemo(() => {
     const views: Views<typeof kybViewSchema> = {
       idle: MainView,
       personalInformation: PersonalInformationView,
       documents: DocumentsView,
-      errorResolving: () => <div>Not implemented</div>,
+      revision: RevisionView,
       final: FinalView,
     };
     return views;
   }, []);
 
   return (
-    <FileStorageProvider storage={fileStorage}>
-      <ViewStateProvider viewSchema={kybViewSchema}>
-        <ViewStateProvider.ViewResolver schema={kybViewSchema} paths={views} />
+    <SnapshotProvider storage={snapshotStorage} onBeforeSave={beforeSnapshotSave}>
+      <ViewStateProvider viewSchema={kybViewSchema} initialContext={snapshotStorage.getData()}>
+        <AppShell backButton={<BackButton />}>
+          <SnapshotSynchronizer />
+          <ViewStateProvider.ViewResolver schema={kybViewSchema} paths={views} />
+        </AppShell>
       </ViewStateProvider>
-    </FileStorageProvider>
+    </SnapshotProvider>
   );
 };

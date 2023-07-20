@@ -38,16 +38,12 @@ export const formSchema: RJSFSchema = {
           title: 'Company Certificate of Registration',
           type: 'string',
         },
-        bill: {
+        addressProof: {
           title: 'Utility bill as proof of address of the company',
           type: 'string',
         },
-        // legal: {
-        //   title: 'Company extract showing directors & legal representatives',
-        //   type: 'string',
-        // },
       },
-      required: ['registrationCertificate', 'bill'],
+      required: ['registrationCertificate', 'addressProof'],
     },
     shareholders: {
       title: 'Shareholders/UBOs',

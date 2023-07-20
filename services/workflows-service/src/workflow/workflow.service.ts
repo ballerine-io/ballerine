@@ -157,191 +157,51 @@ export class WorkflowService {
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
-    const childSelect = {
-      id: true,
-      status: true,
-      assigneeId: true,
-      context: true,
-      createdAt: true,
-      state: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
-          definition: true,
-        },
-      },
-      endUser: {
-        select: {
-          id: true,
-          correlationId: true,
-          endUserType: true,
-          approvalState: true,
-          stateReason: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          phone: true,
-          dateOfBirth: true,
-          avatarUrl: true,
-          additionalInfo: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      parentRuntimeDataId: true,
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
-      },
-    } satisfies NonNullable<Parameters<WorkflowRuntimeDataRepository['findById']>[1]>['select'];
-    const safeArgs = (() => {
-      if (args?.include) {
-        return {
-          ...args,
-          include: {
-            ...args?.include,
-            childWorkflowsRuntimeData: {
-              select: childSelect,
-            },
-          },
-        };
-      }
-
-      if (args?.select) {
-        return {
-          ...args,
-          select: {
-            ...args?.select,
-            childWorkflowsRuntimeData: {
-              select: childSelect,
-            },
-          },
-        };
-      }
-
-      return {
-        ...args,
-        include: {
-          childWorkflowsRuntimeData: {
-            select: childSelect,
-          },
-        },
-      };
-    })();
-    return await this.workflowRuntimeDataRepository.findById(
-      id,
-      // @ts-ignore - Prisma throws when passing both select and include
-      safeArgs,
-    );
+    return await this.workflowRuntimeDataRepository.findById(id, {
+      ...args,
+    });
   }
 
   async getWorkflowByIdWithRelations(
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
-    const childSelect = {
-      id: true,
-      status: true,
-      assigneeId: true,
-      context: true,
-      createdAt: true,
-      state: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
-          definition: true,
-        },
+    const allEntities = { endUser: true, business: true };
+    const childWorkflowSelectArgs = {
+      select: { ...args?.select, ...allEntities },
+      include: args?.include,
+    };
+    const workflow = (await this.workflowRuntimeDataRepository.findById(id, {
+      ...args,
+      select: {
+        ...(args?.select || {}),
+        childWorkflowsRuntimeData: { ...childWorkflowSelectArgs },
       },
-      endUser: {
-        select: {
-          id: true,
-          correlationId: true,
-          endUserType: true,
-          approvalState: true,
-          stateReason: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          phone: true,
-          dateOfBirth: true,
-          avatarUrl: true,
-          additionalInfo: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      parentRuntimeDataId: true,
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
-      },
-    } satisfies NonNullable<Parameters<WorkflowRuntimeDataRepository['findById']>[1]>['select'];
-    const safeArgs = (() => {
-      if (args?.include) {
-        return {
-          ...args,
-          include: {
-            ...args?.include,
-            childWorkflowsRuntimeData: {
-              select: childSelect,
-            },
-          },
-        } satisfies Parameters<WorkflowRuntimeDataRepository['findById']>[1];
-      }
-
-      if (args?.select) {
-        return {
-          ...args,
-          select: {
-            ...args?.select,
-            childWorkflowsRuntimeData: {
-              select: childSelect,
-            },
-          },
-        } satisfies Parameters<WorkflowRuntimeDataRepository['findById']>[1];
-      }
-
-      return {
-        ...args,
-        include: {
-          childWorkflowsRuntimeData: {
-            select: childSelect,
-          },
-        },
-      } satisfies Parameters<WorkflowRuntimeDataRepository['findById']>[1];
-    })();
-    const workflow = (await this.workflowRuntimeDataRepository.findById(
-      id,
-      // @ts-ignore - Prisma throws when passing both select and include
-      safeArgs,
-    )) as TWorkflowWithRelations;
+    })) as TWorkflowWithRelations;
 
     return this.formatWorkflow(workflow);
   }
 
-  private formatWorkflow(workflow: TWorkflowWithRelations): TWorkflowWithRelations {
+  private formatWorkflow(
+    workflow: TWorkflowWithRelations,
+    addNextEvents = true,
+  ): TWorkflowWithRelations {
     const isIndividual = 'endUser' in workflow;
-    const service = createWorkflow({
-      runtimeId: workflow.id,
-      definition: workflow.workflowDefinition.definition,
-      definitionType: workflow.workflowDefinition.definitionType,
-      workflowContext: {
-        machineContext: workflow.context,
-        state: workflow.state ?? workflow.workflowDefinition.definition.initial,
-      },
-    });
+
+    let nextEvents;
+    if (addNextEvents) {
+      const service = createWorkflow({
+        runtimeId: workflow.id,
+        definition: workflow.workflowDefinition.definition,
+        definitionType: workflow.workflowDefinition.definitionType,
+        workflowContext: {
+          machineContext: workflow.context,
+          state: workflow.state ?? workflow.workflowDefinition.definition.initial,
+        },
+      });
+
+      nextEvents = service.getSnapshot().nextEvents;
+    }
 
     // @ts-expect-error - typescript does not like recurrsion over types
     return {
@@ -374,9 +234,9 @@ export class WorkflowService {
       },
       endUser: undefined,
       business: undefined,
-      nextEvents: service.getSnapshot().nextEvents,
+      nextEvents,
       childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
-        this.formatWorkflow(childWorkflow),
+        this.formatWorkflow(childWorkflow, false),
       ),
     };
   }
@@ -1023,7 +883,7 @@ export class WorkflowService {
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
     if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
-      contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
         data: {
           ...entityConnect,
@@ -1048,7 +908,7 @@ export class WorkflowService {
         context.documents,
       );
 
-      contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
         existingWorkflowRuntimeData.id,
         {
@@ -1081,7 +941,7 @@ export class WorkflowService {
     ];
   }
 
-  private async __copyFileAndCreate(
+  async copyFileAndCreate(
     context: DefaultContextSchema,
     entityId: TEntityId,
   ): Promise<DefaultContextSchema> {
@@ -1321,6 +1181,7 @@ export class WorkflowService {
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       workflowRuntimeData.parentRuntimeDataId,
+      { include: { childWorkflowsRuntimeData: true } },
     );
     const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
       parentWorkflowRuntime.workflowDefinitionId,
@@ -1331,12 +1192,12 @@ export class WorkflowService {
         ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
     )
       // @ts-ignore - fix as childCallbackResults[number]
-      ?.find(childCallbackResult => workflowDefinition.name === childCallbackResult.definitionName);
+      ?.find(childCallbackResult => workflowDefinition.id === childCallbackResult.definitionId);
     const childWorkflowCallback = (callbackTransformation ||
       workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
     const childrenOfSameDefinition = (
       parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>
-    ).filter(
+    )?.filter(
       childWorkflow =>
         childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
     );
@@ -1372,7 +1233,7 @@ export class WorkflowService {
     if (!isFinal)
       return this.composeContextWithChildResponse(
         parentWorkflowRuntime.context,
-        workflowDefinition.name,
+        workflowDefinition.id,
       );
 
     const transformerInstance = (transformers || []).map((transformer: SerializableTransformer) =>
@@ -1396,7 +1257,7 @@ export class WorkflowService {
 
     const parentContext = this.composeContextWithChildResponse(
       parentWorkflowRuntime.context,
-      workflowDefinition.name,
+      workflowDefinition.id,
       contextToPersist,
     );
 
@@ -1414,13 +1275,13 @@ export class WorkflowService {
 
   private composeContextWithChildResponse(
     parentWorkflowContext: any,
-    definitionName: string,
+    definitionId: string,
     contextToPersist?: any,
   ) {
     parentWorkflowContext['childWorkflows'] ||= {};
-    parentWorkflowContext['childWorkflows'][definitionName] ||= {};
+    parentWorkflowContext['childWorkflows'][definitionId] ||= {};
 
-    parentWorkflowContext['childWorkflows'][definitionName] = contextToPersist;
+    parentWorkflowContext['childWorkflows'][definitionId] = contextToPersist;
     return parentWorkflowContext;
   }
 

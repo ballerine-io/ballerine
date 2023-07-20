@@ -1,11 +1,10 @@
 import { NotFoundException } from '@/errors';
-import { GetActiveUsersDto } from '@/metrics/dto/get-active-users.dto';
 import { GetUserCasesResolvedDailyDto } from '@/metrics/dto/get-user-cases-resolved-daily.dto';
 import { GetUserWorkflowProcessingStatisticDto } from '@/metrics/dto/get-user-workflow-processing-statistic.dto';
 import { GetUsersAssignedCasesStatisticDto } from '@/metrics/dto/get-users-assigned-cases-statistic.dto';
 import { GetUsersResolvedCasesStatisticDto } from '@/metrics/dto/get-users-resolved-cases-statistic.dto';
 import { GetWorkflowRuntimesStatusCountDto } from '@/metrics/dto/get-workflow-runtimes-status-count.dto';
-import { ActiveUserModel } from '@/metrics/repository/models/active-user.model';
+import { MetricsUserModel } from '@/metrics/repository/models/metrics-user.model';
 import { UserAssignedCasesStatisticModel } from '@/metrics/repository/models/user-assigned-cases-statistic.model';
 import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
 import { UserResolvedCasesStatisticModel } from '@/metrics/repository/models/user-resolved-cases-statistic.model';
@@ -78,10 +77,10 @@ export class MetricsController {
     });
   }
 
-  @ApiOkResponse({ type: [ActiveUserModel] })
+  @ApiOkResponse({ type: [MetricsUserModel] })
   @common.HttpCode(200)
-  @common.Get('/users/active-users')
-  async getActiveUsers(@common.Query() query: GetActiveUsersDto): Promise<ActiveUserModel[]> {
-    return await this.metricsService.listActiveUsers(query);
+  @common.Get('/users')
+  async getActiveUsers(): Promise<MetricsUserModel[]> {
+    return await this.metricsService.listActiveUsers();
   }
 }
