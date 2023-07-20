@@ -86,7 +86,6 @@ export const useCases = () => {
   }, []);
 
   useDocumentListener('keydown', event => {
-    console.log({ key: event.key, ctrlKey: event.ctrlKey, shiftKey: event.shiftKey });
     if (!event.ctrlKey || !event.shiftKey) return;
 
     const listeners = ['k', 's', 'f'] as const;
