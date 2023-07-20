@@ -154,7 +154,6 @@ export class WorkflowService {
   }
 
   async getWorkflowRuntimeWithChildrenDataById(
-    // daniel
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
@@ -164,13 +163,20 @@ export class WorkflowService {
   }
 
   async getWorkflowByIdWithRelations(
-    //
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
+    const allEntities = { endUser: true, business: true };
+    const childWorkflowSelectArgs = {
+      select: { ...args?.select, ...allEntities },
+      include: args?.include,
+    };
     const workflow = (await this.workflowRuntimeDataRepository.findById(id, {
       ...args,
-      select: { ...(args?.select || {}), childWorkflowsRuntimeData: { ...args } },
+      select: {
+        ...(args?.select || {}),
+        childWorkflowsRuntimeData: { ...childWorkflowSelectArgs },
+      },
     })) as TWorkflowWithRelations;
 
     return this.formatWorkflow(workflow);
