@@ -4,6 +4,8 @@ export interface INestedComponentProps {
     data: Array<{
       title: string;
       value: unknown;
+      showNull?: boolean;
+      showUndefined?: boolean;
     }>;
   };
   isNested?: boolean;

@@ -71,6 +71,8 @@ export const useTasks = ({
                       data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
                         title,
                         value,
+                        // Can be part of the response or from a config in the future.
+                        showNull: true,
                       })),
                     },
                   },

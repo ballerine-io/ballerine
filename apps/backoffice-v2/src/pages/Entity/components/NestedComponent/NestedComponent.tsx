@@ -15,14 +15,17 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
 
   return (
     <NestedContainer isNested={isNested}>
-      {value?.data?.map(({ title, value }) => {
+      {value?.data?.map(({ title, value, showNull, showUndefined }) => {
         return (
-          <div key={title} className={`my-1`}>
+          <div key={title}>
             <h4
-              className={ctw(`mb-1 text-lg font-bold capitalize`, {
-                'text-2xl': !isNested,
-                'text-slate-400': isNested,
-              })}
+              className={ctw(
+                `text-lg font-medium capitalize leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70`,
+                {
+                  'text-xl': !isNested,
+                  'mb-4 text-2xl': isObject(value) || Array.isArray(value),
+                },
+              )}
             >
               {camelCaseToSpace(title)}
             </h4>
@@ -74,14 +77,23 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
 
                 if (!isObject(item) && !Array.isArray(item)) {
                   return (
-                    <p key={keyFactory(index?.toString(), id, title, `nested-component`)}>
-                      {isNullish(item) ? '' : item?.toString()}
+                    <p
+                      className={`leading-7 [&:not(:first-child)]:mt-2`}
+                      key={keyFactory(index?.toString(), id, title, `nested-component`)}
+                    >
+                      {value === undefined && showUndefined && 'undefined'}
+                      {value === null && showNull && 'null'}
+                      {!isNullish(value) && value?.toString()}
                     </p>
                   );
                 }
               })}
             {!isObject(value) && !Array.isArray(value) && (
-              <p>{isNullish(value) ? '' : value?.toString()}</p>
+              <p className={`leading-7 [&:not(:first-child)]:mt-2`}>
+                {value === undefined && showUndefined && 'undefined'}
+                {value === null && showNull && 'null'}
+                {!isNullish(value) && value?.toString()}
+              </p>
             )}
           </div>
         );
