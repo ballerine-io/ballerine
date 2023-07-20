@@ -6,6 +6,7 @@ import { Card } from '../../../../common/components/atoms/Card/Card';
 import { cells } from './cells';
 import { withRouter } from 'storybook-addon-react-router-v6';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '../../../../lib/react-query/query-client';
 
 const childWorkflows = [
   {
@@ -356,23 +357,25 @@ const kycBlock = [
   },
 ];
 
-const KycBlock = () => {
+export const KycBlock = () => {
   return (
-    <div className={`h-screen overflow-y-auto`}>
-      <Card className={`me-4`}>
-        <CardContent
-          className={ctw('grid gap-2', {
-            'grid-cols-2': []?.some(cell => cell?.type === 'multiDocuments'),
-          })}
-        >
-          {kycBlock?.map((cell, index) => {
-            const Cell = cells[cell?.type];
+    <QueryClientProvider client={queryClient}>
+      <div className={`h-screen overflow-y-auto p-4`}>
+        <Card className={`me-4`}>
+          <CardContent
+            className={ctw('grid gap-2', {
+              'grid-cols-2': []?.some(cell => cell?.type === 'multiDocuments'),
+            })}
+          >
+            {kycBlock?.map((cell, index) => {
+              const Cell = cells[cell?.type];
 
-            return <Cell key={index} {...cell} />;
-          })}
-        </CardContent>
-      </Card>
-    </div>
+              return <Cell key={index} {...cell} />;
+            })}
+          </CardContent>
+        </Card>
+      </div>
+    </QueryClientProvider>
   );
 };
 

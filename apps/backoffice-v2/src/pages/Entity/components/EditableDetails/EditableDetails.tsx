@@ -117,7 +117,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
           {title}
         </legend>
         <div
-          className={ctw(`grid grid-cols-2 gap-4`, {
+          className={ctw(`grid grid-cols-2 gap-4 gap-y-6`, {
             'grid-cols-3': id === 'entity-details',
           })}
         >
@@ -173,6 +173,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             className={ctw(
                               `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
                               {
+                                '!h-[unset] !p-0': !isEditable,
                                 'font-bold text-success': isDecisionPositive(
                                   isDecisionComponent,
                                   field.value,
