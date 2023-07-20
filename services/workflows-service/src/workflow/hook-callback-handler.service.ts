@@ -62,10 +62,10 @@ export class HookCallbackHandlerService {
     const result = {
       entity: entity,
       decision: decision,
-      documents: persistedDocuments,
     };
 
     this.setNestedProperty(context, attributePath, result);
+    context.documents = [context.documents, persistedDocuments].flat(1)
     await this.workflowService.updateWorkflowRuntimeData(workflowRuntime.id, { context: context });
   }
 
