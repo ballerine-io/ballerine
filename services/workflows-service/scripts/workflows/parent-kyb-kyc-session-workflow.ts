@@ -41,7 +41,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: 'length(childWorkflows.kyc_email_session_example.*.[vendorResult][]) == length(childWorkflows.kyc_email_session_example.*[])',
+                  rule: 'length(childWorkflows.kyc_email_session_example.*.[result.vendorResult.decision][]) == length(childWorkflows.kyc_email_session_example.*[])',
                 },
               },
             },
@@ -49,6 +49,19 @@ export const parentKybWithSessionWorkflowDefinition = {
         },
       },
       manual_review: {
+        on: {
+          approve: 'approve',
+          reject: 'reject',
+          revision: 'revision',
+        },
+      },
+      approve: {
+        type: 'final' as const,
+      },
+      revision: {
+        type: 'final' as const,
+      },
+      reject: {
         type: 'final' as const,
       },
       auto_reject: {
