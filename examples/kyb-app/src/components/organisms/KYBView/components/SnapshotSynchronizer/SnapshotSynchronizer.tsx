@@ -10,7 +10,6 @@ export const SnapshotSynchronizer = () => {
 
   // Clearing snapshot when machine is ended (Thank you screen)
   useEffect(() => {
-    console.log('state', state);
     if (state === 'final') {
       void clear();
     }
