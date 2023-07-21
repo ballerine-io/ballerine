@@ -31,6 +31,18 @@ export class BlockBuilder<
     return this.#__lastBlock?.[this.#__lastBlock.length - 1];
   }
 
+  get blocksCount() {
+    return this.#__blocks?.length ?? 0;
+  }
+
+  cellsCount(blockIndex: number) {
+    return this.#__blocks[blockIndex]?.length ?? 0;
+  }
+
+  blockAt(index: number) {
+    return this.#__blocks[index];
+  }
+
   constructor(blocks: TBlocks, options: BlocksOptions) {
     this.#__blocks = blocks;
     this.#__options = options;
@@ -81,7 +93,9 @@ export class BlockBuilder<
         message,
         options: this.#__options,
         block: dump(this.#__lastBlock),
+        blocksCount: this.blocksCount,
         cell: dump(this.#__lastCell),
+        cellsCount: this.cellsCount(this.#__lastBlockIndex),
         ...(this.#__options.verbose ? { blocks: dump(this.#__blocks) } : {}),
       });
     } catch (error) {
@@ -108,6 +122,18 @@ export class EmptyBlockBuilder<TCell extends Cell, TLastBlock extends Array<Cell
 
   get #__lastCell(): Cell | undefined {
     return this.#__lastBlock?.[this.#__lastBlock.length - 1];
+  }
+
+  get blocksCount() {
+    return this.#__blocks?.length ?? 0;
+  }
+
+  cellsCount(blockIndex: number) {
+    return this.#__blocks[blockIndex]?.length ?? 0;
+  }
+
+  blockAt(index: number) {
+    return this.#__blocks[index];
   }
 
   constructor(blocks: Array<Array<Cell>>, options: BlocksOptions) {
@@ -143,7 +169,9 @@ export class EmptyBlockBuilder<TCell extends Cell, TLastBlock extends Array<Cell
         message,
         options: this.#__options,
         block: dump(this.#__lastBlock),
+        blocksCount: this.blocksCount,
         cell: dump(this.#__lastCell),
+        cellsCount: this.cellsCount(this.#__lastBlockIndex),
         ...(this.#__options.verbose ? { blocks: dump(this.#__blocks)?.replace(/\n/g, '') } : {}),
       });
     } catch (error) {
@@ -166,6 +194,18 @@ export class BlocksBuilder<TCell extends Cell> {
 
   set #__lastBlock(block: Array<Cell>) {
     this.#__blocks[this.#__lastBlockIndex] = block;
+  }
+
+  get blocksCount() {
+    return this.#__blocks?.length ?? 0;
+  }
+
+  cellsCount(blockIndex: number) {
+    return this.#__blocks[blockIndex]?.length ?? 0;
+  }
+
+  blockAt(index: number) {
+    return this.#__blocks[index];
   }
 
   constructor(options: BlocksOptions) {
@@ -196,7 +236,9 @@ export class BlocksBuilder<TCell extends Cell> {
         message,
         options: this.#__options,
         block: dump(this.#__lastBlock),
+        blocksCount: this.blocksCount,
         cell: undefined,
+        cellsCount: this.cellsCount(this.#__lastBlockIndex),
         ...(this.#__options.verbose ? { blocks: dump(this.#__blocks) } : {}),
       });
     } catch (error) {

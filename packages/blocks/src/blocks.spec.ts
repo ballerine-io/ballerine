@@ -78,6 +78,32 @@ describe('blocks', () => {
       // Assert
       expect(blocksBuild).toThrow('Attempted to call `build` before calling `addCell`');
     });
+
+    it('should add a single block when calling `addBlock`', () => {
+      // Arrange
+      const blocksBuilder = createTestBlocks();
+
+      // Act
+      const blocks = blocksBuilder.addBlock();
+      const blocksCount = blocks.blocksCount;
+
+      // Assert
+      expect(blocksCount).toBe(1);
+    });
+
+    it('should not add a cell when calling `addBlock`', () => {
+      // Arrange
+      const blocksBuilder = createTestBlocks();
+
+      // Act
+      const blocks = blocksBuilder.addBlock();
+      const firstBlock = blocks.blockAt(0);
+      const cellsCount = blocks.cellsCount(0);
+
+      // Assert
+      expect(firstBlock).toEqual([]);
+      expect(cellsCount).toBe(0);
+    });
   });
 
   describe('when a cell is added', () => {
@@ -172,6 +198,115 @@ describe('blocks', () => {
         { type: 'heading', value: blockThreeCellOne },
         { type: 'headings', value: blockThreeCellTwo },
       ]);
+    });
+  });
+
+  describe('when accessing `blocksCount`', () => {
+    it('should return 0 when no blocks have been added', () => {
+      // Arrange
+      const blocksBuilder = createTestBlocks();
+
+      // Act
+      const blocksCount = blocksBuilder.blocksCount;
+
+      // Assert
+      expect(blocksCount).toBe(0);
+    });
+
+    it('should return 1 when a single block has been added', () => {
+      // Arrange
+      const blocksBuilder = createTestBlocks();
+
+      // Act
+      const blocksCount = blocksBuilder.addBlock().blocksCount;
+
+      // Assert
+      expect(blocksCount).toBe(1);
+    });
+
+    it('should not change when a cell is added', () => {
+      // Arrange
+      const blocksBuilder = createTestBlocks();
+
+      // Act
+      const blocksCount = blocksBuilder
+        .addBlock()
+        .addCell({ type: 'heading', value: 'test' }).blocksCount;
+
+      // Assert
+      expect(blocksCount).toBe(1);
+    });
+  });
+
+  describe('when calling `cellsCount`', () => {
+    it('should return 0 when no cells have been added', () => {
+      // Arrange
+      const blocksBuilder = createTestBlocks();
+
+      // Act
+      const cellsCount = blocksBuilder.cellsCount(0);
+
+      // Assert
+      expect(cellsCount).toBe(0);
+    });
+
+    it('should increment when adding cells', () => {
+      // Arrange
+      const blocksBuilder = createTestBlocks();
+
+      // Act
+      const blockWithOneCell = blocksBuilder.addBlock().addCell({ type: 'heading', value: 'test' });
+      const blockWithOneCellCount = blockWithOneCell.cellsCount(0);
+      const blockWithTwoCells = blockWithOneCell.addCell({ type: 'heading', value: 'test' });
+      const blockWithTwoCellsCount = blockWithTwoCells.cellsCount(0);
+
+      // Assert
+      expect(blockWithOneCellCount).toBe(1);
+      expect(blockWithTwoCellsCount).toBe(2);
+    });
+
+    it('should not return a cells count belonging to another block', () => {
+      // Arrange
+      const blocksBuilder = createTestBlocks();
+
+      // Act
+      const blocksWithOneBlock = blocksBuilder
+        .addBlock()
+        .addCell({ type: 'heading', value: 'test' });
+      const blocksWithOneBlockCount = blocksWithOneBlock.cellsCount(0);
+      const blocksWithTwoBlocks = blocksWithOneBlock.addBlock();
+      const blocksWithTwoBlocksCount = blocksWithTwoBlocks.cellsCount(1);
+
+      // Assert
+      expect(blocksWithOneBlockCount).toBe(1);
+      expect(blocksWithTwoBlocksCount).toBe(0);
+    });
+  });
+
+  describe('when calling `blockAt`', () => {
+    it('should return the block at the given index', () => {
+      // Arrange
+      const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
+      const blockTwoCellOne = [generateCellValue({ block: 2, cell: 1 })];
+      const blocksBuilder = createTestBlocks()
+        .addBlock()
+        .addCell({
+          type: 'heading',
+          value: blockOneCellOne,
+        })
+        .addBlock()
+        .addCell({
+          type: 'headings',
+          value: blockTwoCellOne,
+        });
+
+      // Act
+      const firstBlock = blocksBuilder.blockAt(0);
+      const secondBlock = blocksBuilder.blockAt(1);
+
+      // Assert
+      expect(firstBlock).toEqual([{ type: 'heading', value: blockOneCellOne }]);
+      expect(secondBlock).toEqual([{ type: 'headings', value: blockTwoCellOne }]);
     });
   });
 });
