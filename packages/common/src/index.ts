@@ -12,18 +12,18 @@ export {
   sleep,
   uniqueArray,
   raise,
-  type IErrorWithMessage,
+  log,
+  dump,
 } from './utils';
 
-export { type AnyRecord } from './types';
+export type { IErrorWithMessage } from './utils';
+export type { Serializable, AnyRecord } from './types';
+export type { DefaultContextSchema, TDefaultSchemaDocumentPage, TDocument } from './schemas';
 
 export {
-  type DefaultContextSchema,
-  type TDefaultSchemaDocumentPage,
   ghanaDocuments,
   certificateOfResidenceGH,
   getDocumentsByCountry,
   getDocumentId,
-  type TDocument,
   defaultContextSchema,
 } from './schemas';

@@ -11,6 +11,12 @@ type TCell =
       value: string[];
     };
 
+const createTestBlocks = () =>
+  createBlocks<TCell>({
+    debug: true,
+    verbose: true,
+  });
+
 /**
  * @description Provides an easy way of identifying a cell.
  * @param block
@@ -23,7 +29,7 @@ describe('blocks', () => {
   describe('when creating an instance of `createBlocks`', () => {
     it('should throw an error when calling `build` with no blocks', () => {
       // Arrange
-      const blocksBuilder = createBlocks<TCell>();
+      const blocksBuilder = createTestBlocks();
 
       // Act
       // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -35,10 +41,10 @@ describe('blocks', () => {
 
     it('should throw an error when calling `addCell` with no blocks', () => {
       // Arrange
-      const blocksBuilder = createBlocks<TCell>();
+      const blocksBuilder = createTestBlocks();
 
       // Act
-      // eslint-disable-next-line @typescript-eslint/unbound-method,@typescript-eslint/no-unsafe-assignment
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       const blocksAddCell = blocksBuilder.addCell;
 
       // Assert
@@ -49,7 +55,7 @@ describe('blocks', () => {
   describe('when a block is added', () => {
     it('should throw an error when calling `addBlock` consecutively', () => {
       // Arrange
-      const blocksBuilder = createBlocks<TCell>();
+      const blocksBuilder = createTestBlocks();
 
       // Act
       // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -63,7 +69,7 @@ describe('blocks', () => {
 
     it('should throw an error when calling `build` with no cells', () => {
       // Arrange
-      const blocksBuilder = createBlocks<TCell>();
+      const blocksBuilder = createTestBlocks();
 
       // Act
       // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -77,7 +83,7 @@ describe('blocks', () => {
   describe('when a cell is added', () => {
     it('should return a single block with a single cell when calling `build`', () => {
       // Arrange
-      const blocksBuilder = createBlocks<TCell>();
+      const blocksBuilder = createTestBlocks();
       const cellOne = generateCellValue({ block: 1, cell: 1 });
 
       // Act
@@ -89,7 +95,7 @@ describe('blocks', () => {
 
     it('should return a single block with multiple cells when calling `build`', () => {
       // Arrange
-      const blocksBuilder = createBlocks<TCell>();
+      const blocksBuilder = createTestBlocks();
       const cellOne = generateCellValue({ block: 1, cell: 1 });
       const cellTwo = [generateCellValue({ block: 1, cell: 2 })];
 
@@ -113,7 +119,7 @@ describe('blocks', () => {
   describe('when multiple blocks are added', () => {
     it('should return multiple blocks with a single cell when calling `build`', () => {
       // Arrange
-      const blocksBuilder = createBlocks<TCell>();
+      const blocksBuilder = createTestBlocks();
       const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
       const blockTwoCellOne = [generateCellValue({ block: 2, cell: 1 })];
 
@@ -134,7 +140,7 @@ describe('blocks', () => {
 
     it('should always add the last cell to the last block', () => {
       // Arrange
-      const blocksBuilder = createBlocks<TCell>();
+      const blocksBuilder = createTestBlocks();
       const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
       const blockOneCellTwo = [generateCellValue({ block: 1, cell: 2 })];
       const blockTwoCellOne = generateCellValue({ block: 2, cell: 1 });

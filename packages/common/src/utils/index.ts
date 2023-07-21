@@ -11,4 +11,6 @@ export { sleep } from './sleep';
 export { uniqueArray } from './unique-array';
 export { zodErrorToReadable } from './zod-error-to-readable';
 export { raise } from './raise';
+export { log } from './log';
+export { dump } from './dump';
 export { type IErrorWithMessage } from './is-error-with-message';

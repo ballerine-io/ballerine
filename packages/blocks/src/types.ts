@@ -98,3 +98,11 @@ export interface BlocksProps<TCell extends Cells> {
     block: Array<TCell>,
   ) => ReactNode | Array<ReactNode>;
 }
+
+export type InvalidCellMessage =
+  "Please provide a union of available cell types discriminated by '{ type: string; }'";
+
+export interface BlocksOptions {
+  debug?: boolean;
+  verbose?: boolean;
+}
