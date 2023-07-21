@@ -1,0 +1,171 @@
+import { describe, expect, it } from 'vitest';
+import { createBlocks } from '@/blocks';
+
+type TCell =
+  | {
+      type: 'heading';
+      value: string;
+    }
+  | {
+      type: 'headings';
+      value: string[];
+    };
+
+/**
+ * @description Provides an easy way of identifying a cell.
+ * @param block
+ * @param cell
+ */
+const generateCellValue = ({ block, cell }: { block: number; cell: number }) =>
+  `block:${block}:cell:${cell}`;
+
+describe('blocks', () => {
+  describe('when creating an instance of `createBlocks`', () => {
+    it('should throw an error when calling `build` with no blocks', () => {
+      // Arrange
+      const blocksBuilder = createBlocks<TCell>();
+
+      // Act
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      const blocksBuild = blocksBuilder.build;
+
+      // Assert
+      expect(blocksBuild).toThrow('Attempted to call `build` before calling `addBlock`');
+    });
+
+    it('should throw an error when calling `addCell` with no blocks', () => {
+      // Arrange
+      const blocksBuilder = createBlocks<TCell>();
+
+      // Act
+      // eslint-disable-next-line @typescript-eslint/unbound-method,@typescript-eslint/no-unsafe-assignment
+      const blocksAddCell = blocksBuilder.addCell;
+
+      // Assert
+      expect(blocksAddCell).toThrow('Attempted to call `addCell` before calling `addBlock`');
+    });
+  });
+
+  describe('when a block is added', () => {
+    it('should throw an error when calling `addBlock` consecutively', () => {
+      // Arrange
+      const blocksBuilder = createBlocks<TCell>();
+
+      // Act
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      const blocksAddBlockConsecutively = blocksBuilder.addBlock().addBlock;
+
+      // Assert
+      expect(blocksAddBlockConsecutively).toThrow(
+        'Attempted to call `addBlock` before calling `addCell`',
+      );
+    });
+
+    it('should throw an error when calling `build` with no cells', () => {
+      // Arrange
+      const blocksBuilder = createBlocks<TCell>();
+
+      // Act
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      const blocksBuild = blocksBuilder.addBlock().build;
+
+      // Assert
+      expect(blocksBuild).toThrow('Attempted to call `build` before calling `addCell`');
+    });
+  });
+
+  describe('when a cell is added', () => {
+    it('should return a single block with a single cell when calling `build`', () => {
+      // Arrange
+      const blocksBuilder = createBlocks<TCell>();
+      const cellOne = generateCellValue({ block: 1, cell: 1 });
+
+      // Act
+      const blocks = blocksBuilder.addBlock().addCell({ type: 'heading', value: cellOne }).build();
+
+      // Assert
+      expect(blocks).toEqual([[{ type: 'heading', value: cellOne }]]);
+    });
+
+    it('should return a single block with multiple cells when calling `build`', () => {
+      // Arrange
+      const blocksBuilder = createBlocks<TCell>();
+      const cellOne = generateCellValue({ block: 1, cell: 1 });
+      const cellTwo = [generateCellValue({ block: 1, cell: 2 })];
+
+      // Act
+      const blocks = blocksBuilder
+        .addBlock()
+        .addCell({ type: 'heading', value: cellOne })
+        .addCell({ type: 'headings', value: cellTwo })
+        .build();
+
+      // Assert
+      expect(blocks).toEqual([
+        [
+          { type: 'heading', value: cellOne },
+          { type: 'headings', value: cellTwo },
+        ],
+      ]);
+    });
+  });
+
+  describe('when multiple blocks are added', () => {
+    it('should return multiple blocks with a single cell when calling `build`', () => {
+      // Arrange
+      const blocksBuilder = createBlocks<TCell>();
+      const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
+      const blockTwoCellOne = [generateCellValue({ block: 2, cell: 1 })];
+
+      // Act
+      const blocks = blocksBuilder
+        .addBlock()
+        .addCell({ type: 'heading', value: blockOneCellOne })
+        .addBlock()
+        .addCell({ type: 'headings', value: blockTwoCellOne })
+        .build();
+
+      // Assert
+      expect(blocks).toEqual([
+        [{ type: 'heading', value: blockOneCellOne }],
+        [{ type: 'headings', value: blockTwoCellOne }],
+      ]);
+    });
+
+    it('should always add the last cell to the last block', () => {
+      // Arrange
+      const blocksBuilder = createBlocks<TCell>();
+      const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
+      const blockOneCellTwo = [generateCellValue({ block: 1, cell: 2 })];
+      const blockTwoCellOne = generateCellValue({ block: 2, cell: 1 });
+      const blockTwoCellTwo = [generateCellValue({ block: 2, cell: 2 })];
+      const blockThreeCellOne = generateCellValue({ block: 3, cell: 1 });
+      const blockThreeCellTwo = [generateCellValue({ block: 3, cell: 2 })];
+
+      // Act
+      const blocks = blocksBuilder
+        .addBlock()
+        .addCell({ type: 'heading', value: blockOneCellOne })
+        .addCell({ type: 'headings', value: blockOneCellTwo })
+        .addBlock()
+        .addCell({ type: 'heading', value: blockTwoCellOne })
+        .addCell({ type: 'headings', value: blockTwoCellTwo })
+        .addBlock()
+        .addCell({ type: 'heading', value: blockThreeCellOne })
+        .addCell({ type: 'headings', value: blockThreeCellTwo })
+        .build();
+      const firstBlock = blocks[0];
+      const lastBlock = blocks[blocks.length - 1];
+
+      // Assert
+      expect(firstBlock).toEqual([
+        { type: 'heading', value: blockOneCellOne },
+        { type: 'headings', value: blockOneCellTwo },
+      ]);
+      expect(lastBlock).toEqual([
+        { type: 'heading', value: blockThreeCellOne },
+        { type: 'headings', value: blockThreeCellTwo },
+      ]);
+    });
+  });
+});

@@ -1,4 +1,5 @@
 import { Cell, InferAllButLastArrayElements, InferLastArrayElement } from '@/types';
+import { raise } from '@ballerine/common';
 
 export class BlockBuilder<
   TCell extends Cell,
@@ -62,15 +63,37 @@ export class EmptyBlockBuilder<TCell extends Cell, TLastBlock extends Array<Cell
       [[...TLastBlock, TCellType]]
     >;
   }
+
+  addBlock() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+    return raise('Attempted to call `addBlock` before calling `addCell`');
+  }
+
+  build() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+    return raise('Attempted to call `build` before calling `addCell`');
+  }
 }
 
 export class BlocksBuilder<TCell extends Cell> {
   addBlock() {
     return new EmptyBlockBuilder<TCell>([]);
   }
+
+  addCell() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+    return raise('Attempted to call `addCell` before calling `addBlock`');
+  }
+
+  build() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+    return raise('Attempted to call `build` before calling `addBlock`');
+  }
 }
 
-export const createBlocks = <
-  // @ts-expect-error - A generic should always be provided.
-  TCellType extends Cell = "Please provide a union of available cell types discriminated by '{ type: string; }'",
->() => new BlocksBuilder<TCellType>();
+export type InvalidCellMessage =
+  "Please provide a union of available cell types discriminated by '{ type: string; }'";
+
+export const createBlocks = <TCellType extends Cell | InvalidCellMessage = InvalidCellMessage>() =>
+  new BlocksBuilder<// @ts-expect-error - A generic should always be provided.
+  TCellType>();

@@ -11,6 +11,7 @@ export {
   zodErrorToReadable,
   sleep,
   uniqueArray,
+  raise,
   type IErrorWithMessage,
 } from './utils';
 

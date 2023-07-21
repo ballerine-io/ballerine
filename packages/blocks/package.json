@@ -20,8 +20,9 @@
   "scripts": {
     "build": "rollup --config rollup.config.js",
     "watch": "concurrently --kill-others \"rollup --config rollup.config.js -w\" \"tsc -b --watch\"",
-    "test": "vitest --passWithNoTests",
-    "test:unit": "vitest --passWithNoTests",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "test:unit": "vitest run --passWithNoTests",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --fix",
@@ -68,6 +69,10 @@
     "ts-node": "^10.9.1",
     "typescript": "5.1.6",
     "vite": "^4.1.1",
+    "vite-tsconfig-paths": "^4.0.7",
     "vitest": "^0.28.4"
+  },
+  "dependencies": {
+    "@ballerine/common": "workspace:0.5.6"
   }
 }
