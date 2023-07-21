@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBlocks } from '@/blocks';
+import { Blocks } from '@/types';
 
 type TCell =
   | {
@@ -11,10 +12,11 @@ type TCell =
       value: string[];
     };
 
-const createTestBlocks = () =>
+const createTestBlocks = (initialBlocks?: Blocks) =>
   createBlocks<TCell>({
     debug: true,
     verbose: true,
+    initialBlocks,
   });
 
 /**
@@ -49,6 +51,63 @@ describe('blocks', () => {
 
       // Assert
       expect(blocksAddCell).toThrow('Attempted to call `addCell` before calling `addBlock`');
+    });
+
+    it('should be able to start with initial blocks', () => {
+      // Arrange
+      const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
+      const blockOneCellTwo = [generateCellValue({ block: 1, cell: 1 })];
+      const blockTwoCellOne = generateCellValue({ block: 2, cell: 1 });
+      const blockTwoCellTwo = [generateCellValue({ block: 2, cell: 2 })];
+      const blocksBuilder = createTestBlocks([
+        [
+          {
+            type: 'heading',
+            value: blockOneCellOne,
+          },
+          {
+            type: 'headings',
+            value: blockOneCellTwo,
+          },
+        ],
+        [
+          {
+            type: 'heading',
+            value: blockTwoCellOne,
+          },
+          {
+            type: 'headings',
+            value: blockTwoCellTwo,
+          },
+        ],
+      ]);
+
+      // Act
+      const blocks = blocksBuilder.build();
+
+      // Assert
+      expect(blocks).toEqual([
+        [
+          {
+            type: 'heading',
+            value: blockOneCellOne,
+          },
+          {
+            type: 'headings',
+            value: blockOneCellTwo,
+          },
+        ],
+        [
+          {
+            type: 'heading',
+            value: blockTwoCellOne,
+          },
+          {
+            type: 'headings',
+            value: blockTwoCellTwo,
+          },
+        ],
+      ]);
     });
   });
 

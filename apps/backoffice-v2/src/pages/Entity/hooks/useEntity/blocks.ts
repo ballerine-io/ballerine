@@ -88,7 +88,7 @@ export const useBlocks = () => {
 };
 
 declare module '@ballerine/blocks' {
-  interface Blocks {
+  interface BlocksClient {
     cells: ReturnType<typeof useBlocks>;
   }
 }

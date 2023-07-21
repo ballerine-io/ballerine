@@ -3,17 +3,21 @@ import { BlocksBuilder } from '@/blocks';
 
 export type Cell = { type: string } & Record<string, unknown>;
 
+export type Block = Array<Cell>;
+
+export type Blocks = Array<Block>;
+
 /**
  * Allow the consumer of `@ballerine/blocks` to register their own cell types.
  * @example
  * declare module '@ballerine/blocks' {
- *    interface Blocks {
+ *    interface BlocksClient {
  *      cells: typeof blocks; // createBlocks<TCell>();
  *    }
  *  }
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Blocks {
+export interface BlocksClient {
   // cells: ReturnType<typeof createBlocks>;
 }
 
@@ -105,4 +109,5 @@ export type InvalidCellMessage =
 export interface BlocksOptions {
   debug?: boolean;
   verbose?: boolean;
+  initialBlocks?: Blocks;
 }

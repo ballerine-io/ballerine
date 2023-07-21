@@ -1,4 +1,6 @@
 import {
+  Block,
+  Blocks,
   BlocksOptions,
   Cell,
   InferAllButLastArrayElements,
@@ -9,8 +11,8 @@ import { dump, log, raise } from '@ballerine/common';
 
 export class BlockBuilder<
   TCell extends Cell,
-  TLastBlock extends Array<Cell> = [],
-  TBlocks extends Array<Array<Cell>> = [],
+  TLastBlock extends Block = [],
+  TBlocks extends Blocks = [],
 > {
   #__options: BlocksOptions;
   #__blocks: TBlocks;
@@ -19,11 +21,11 @@ export class BlockBuilder<
     return this.#__blocks?.length - 1;
   }
 
-  get #__lastBlock(): Array<Cell> | undefined {
+  get #__lastBlock(): Block | undefined {
     return this.#__blocks[this.#__lastBlockIndex];
   }
 
-  set #__lastBlock(block: Array<Cell>) {
+  set #__lastBlock(block: Block) {
     this.#__blocks[this.#__lastBlockIndex] = block;
   }
 
@@ -47,13 +49,13 @@ export class BlockBuilder<
     this.#__blocks = blocks;
     this.#__options = options;
 
-    this.#__logger('Created an instance of `BlockBuilder`');
+    this.#__logger('`BlockBuilder`: Created an instance');
   }
 
   addBlock() {
     this.#__blocks.push([] as any);
 
-    this.#__logger('Added a block');
+    this.#__logger('`BlockBuilder`: Added a block');
 
     return this as BlockBuilder<TCell, [], TBlocks>;
   }
@@ -61,7 +63,7 @@ export class BlockBuilder<
   addCell<TCellType extends TCell>(cell: TCellType) {
     this.#__lastBlock!.push(cell);
 
-    this.#__logger('Added a cell a block');
+    this.#__logger('`BlockBuilder`: Added a cell a block');
 
     return this as unknown as BlockBuilder<
       TCell,
@@ -99,24 +101,24 @@ export class BlockBuilder<
         ...(this.#__options.verbose ? { blocks: dump(this.#__blocks) } : {}),
       });
     } catch (error) {
-      raise("Failed to serialize `BlockBuilder`'s logger payload", error);
+      raise("`BlockBuilder`: Failed to serialize `BlockBuilder`'s logger payload", error);
     }
   }
 }
 
-export class EmptyBlockBuilder<TCell extends Cell, TLastBlock extends Array<Cell> = []> {
+export class EmptyBlockBuilder<TCell extends Cell, TLastBlock extends Block = []> {
   #__options: BlocksOptions;
-  #__blocks: Array<Array<Cell>> = [];
+  #__blocks: Blocks = [];
 
   get #__lastBlockIndex() {
     return this.#__blocks?.length - 1;
   }
 
-  get #__lastBlock(): Array<Cell> | undefined {
+  get #__lastBlock(): Block | undefined {
     return this.#__blocks[this.#__lastBlockIndex];
   }
 
-  set #__lastBlock(block: Array<Cell>) {
+  set #__lastBlock(block: Block) {
     this.#__blocks[this.#__lastBlockIndex] = block;
   }
 
@@ -136,17 +138,17 @@ export class EmptyBlockBuilder<TCell extends Cell, TLastBlock extends Array<Cell
     return this.#__blocks[index];
   }
 
-  constructor(blocks: Array<Array<Cell>>, options: BlocksOptions) {
+  constructor(blocks: Blocks, options: BlocksOptions) {
     this.#__blocks = blocks;
     this.#__options = options;
 
-    this.#__logger('Created an instance of `EmptyBlockBuilder`');
+    this.#__logger('`EmptyBlockBuilder`: Created an instance');
   }
 
   addCell<TCellType extends TCell>(cell: TCellType) {
     this.#__lastBlock!.push(cell);
 
-    this.#__logger('Added a cell a block');
+    this.#__logger('`EmptyBlockBuilder`: Added a cell a block');
 
     return new BlockBuilder(this.#__blocks, this.#__options) as BlockBuilder<
       TCell,
@@ -175,24 +177,24 @@ export class EmptyBlockBuilder<TCell extends Cell, TLastBlock extends Array<Cell
         ...(this.#__options.verbose ? { blocks: dump(this.#__blocks)?.replace(/\n/g, '') } : {}),
       });
     } catch (error) {
-      raise("Failed to serialize `EmptyBlockBuilder`'s logger payload", error);
+      raise('`EmptyBlockBuilder`: Failed to serialize logger payload', error);
     }
   }
 }
 
 export class BlocksBuilder<TCell extends Cell> {
   #__options: BlocksOptions;
-  #__blocks: Array<Array<Cell>> = [];
+  #__blocks: Blocks = [];
 
   get #__lastBlockIndex() {
     return this.#__blocks?.length - 1;
   }
 
-  get #__lastBlock(): Array<Cell> | undefined {
+  get #__lastBlock(): Block | undefined {
     return this.#__blocks[this.#__lastBlockIndex];
   }
 
-  set #__lastBlock(block: Array<Cell>) {
+  set #__lastBlock(block: Block) {
     this.#__blocks[this.#__lastBlockIndex] = block;
   }
 
@@ -211,13 +213,21 @@ export class BlocksBuilder<TCell extends Cell> {
   constructor(options: BlocksOptions) {
     this.#__options = options;
 
-    this.#__logger('Created an instance of `BlocksBuilder`');
+    this.#__logger('`BlocksBuilder`: Created an instance');
+
+    if (Array.isArray(this.#__options?.initialBlocks)) {
+      this.#__blocks = this.#__options.initialBlocks;
+
+      this.#__logger('`BlocksBuilder`: Added initial blocks');
+    }
+
+    this.build = this.build.bind(this);
   }
 
   addBlock() {
     this.#__blocks.push([] as any);
 
-    this.#__logger('Added first block.');
+    this.#__logger('`BlocksBuilder`: Added first block.');
 
     return new EmptyBlockBuilder<TCell>(this.#__blocks, this.#__options);
   }
@@ -227,7 +237,11 @@ export class BlocksBuilder<TCell extends Cell> {
   }
 
   build() {
-    return raise('Attempted to call `build` before calling `addBlock`');
+    if (!Array.isArray(this.#__options?.initialBlocks)) {
+      return raise('Attempted to call `build` before calling `addBlock`');
+    }
+
+    return this.#__blocks;
   }
 
   #__logger(message: string) {
@@ -242,7 +256,7 @@ export class BlocksBuilder<TCell extends Cell> {
         ...(this.#__options.verbose ? { blocks: dump(this.#__blocks) } : {}),
       });
     } catch (error) {
-      raise("Failed to serialize `BlocksBuilder`'s logger payload", error);
+      raise('`BlocksBuilder`: Failed to serialize logger payload', error);
     }
   }
 }
