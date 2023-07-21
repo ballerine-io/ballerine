@@ -260,6 +260,33 @@ describe('blocks', () => {
     });
   });
 
+  describe('when `addBlocks` is called', () => {
+    it('should merge passed blocks with existing blocks', () => {
+      // Arrange
+      const blocksOneBuilder = createTestBlocks();
+      const blocksTwoBuilder = createTestBlocks();
+      const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
+      const blockTwoCellOne = [generateCellValue({ block: 2, cell: 1 })];
+
+      // Act
+      const blocksOne = blocksOneBuilder
+        .addBlock()
+        .addCell({ type: 'heading', value: blockOneCellOne })
+        .build();
+      const blocksTwo = blocksTwoBuilder
+        .addBlock()
+        .addCell({ type: 'headings', value: blockTwoCellOne })
+        .addBlocks(blocksOne)
+        .build();
+
+      // Assert
+      expect(blocksTwo).toEqual([
+        [{ type: 'headings', value: blockTwoCellOne }],
+        [{ type: 'heading', value: blockOneCellOne }],
+      ]);
+    });
+  });
+
   describe('when accessing `blocksCount`', () => {
     it('should return 0 when no blocks have been added', () => {
       // Arrange

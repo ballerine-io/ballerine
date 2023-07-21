@@ -71,6 +71,8 @@ export type InferAllButLastArrayElements<T extends Array<any>> = T extends [...i
 
 export type InferLastArrayElement<T extends Array<any>> = T extends [...any, infer U] ? U : never;
 
+export type InferArrayElement<T extends Array<any>> = T extends Array<infer U> ? U : never;
+
 export interface BlocksProps<TCell extends Cells> {
   /**
    * @description A map of cell components
