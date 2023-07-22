@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install -g pnpm; pnpm install; cd apps/workflows-dashboard; pnpm run build
+RUN npm install -g pnpm; pnpm install; cd /app/apps/workflows-dashboard; pnpm run build
 
 
 FROM nginx:stable-alpine as prod
