@@ -59,6 +59,36 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           file: apps/workflows-dashboard/Dockerfile
 
+      - name: Build and push Docker image for Dev Branch
+        if: github.ref == 'refs/heads/dev'
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          file: apps/workflows-dashboard/Dockerfile
+
+      - name: Build and push Docker image for Test Branch
+        if: github.ref == 'refs/heads/test'
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          file: apps/workflows-dashboard/Dockerfile
+
+      - name: Build and push Docker image for Test Branch
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          file: apps/workflows-dashboard/Dockerfile
+
 #       - name: Install pnpm
 #         uses: pnpm/action-setup@v2
 #         id: pnpm-install
