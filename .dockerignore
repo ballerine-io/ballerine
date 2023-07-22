@@ -2,7 +2,6 @@
 docker-compose.yml
 Dockerfile
 dist/
-node_modules
 apps/workflows-dashboard/node_modules
 .gitignore
 .prettierignore
