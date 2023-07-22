@@ -1,34 +1,32 @@
-FROM node:18.12.1 AS base
-
-RUN apt-get update && apt-get install -y --no-install-recommends dumb-init
+FROM node:18.15 as dev
 
 WORKDIR /app
-
-COPY package.json ./
-
-RUN npm install
-
-COPY prisma/schema.prisma ./prisma/
-
-RUN npm run prisma:generate
 
 COPY . .
 
-RUN npm run build
+RUN npm install -g pnpm; pnpm install; cd services/workflows-service; pnpm run prisma:generate; pnpm run build
 
-FROM node:18.12.1 AS prod
+FROM node:18.16-alpine3.17 as prod
 
 WORKDIR /app
 
-COPY --from=base /usr/bin/dumb-init /usr/bin/dumb-init
-COPY --from=base /app/node_modules/ ./node_modules
-COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/dist ./dist
-COPY --from=base /app/prisma ./prisma
-COPY --from=base /app/scripts ./scripts
-COPY --from=base /app/src ./src
-COPY --from=base /app/tsconfig* ./
+RUN npm install -g pnpm; mkdir -p /app/services/workflows-service;
 
-EXPOSE 3007
+COPY services/workflows-service/.env.example ./services/workflows-service/.env
 
-CMD [ "dumb-init", "npm", "run", "prod" ]
+COPY --from=dev /app/node_modules ./node_modules
+COPY --from=dev /app/services/workflows-service/dist ./services/workflows-service/dist
+COPY --from=dev /app/services/workflows-service/node_modules ./services/workflows-service/node_modules
+COPY --from=dev /app/sdks ./sdks
+COPY --from=dev /app/packages ./packages
+COPY --from=dev /app/services/workflows-service/prisma ./services/workflows-service/prisma
+COPY --from=dev /app/services/workflows-service/scripts ./services/workflows-service/scripts
+COPY --from=dev /app/services/workflows-service/package.json ./services/workflows-service/package.json
+
+ENV PATH="$PATH:/app/services/workflows-service/node_modules/.bin"
+
+EXPOSE 3000
+
+WORKDIR /app/services/workflows-service
+
+CMD ["pnpm", "run", "prod"]
