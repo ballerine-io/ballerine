@@ -111,6 +111,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     data,
   });
 
+  // Ensures that the form is reset when the data changes from other instances of `useUpdateWorkflowByIdMutation` i.e. in `useCallToActionLogic`.
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [form.reset, defaultValues]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={`flex h-full flex-col`}>
