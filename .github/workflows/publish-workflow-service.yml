@@ -1,4 +1,4 @@
-name: Publish workflow-service image - dev
+name: Publish workflow-service image
 
 on:
   workflow_dispatch:
