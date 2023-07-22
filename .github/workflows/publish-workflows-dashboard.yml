@@ -59,20 +59,20 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           file: apps/workflows-dashboard/Dockerfile
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: true
+#       - name: Install pnpm
+#         uses: pnpm/action-setup@v2
+#         id: pnpm-install
+#         with:
+#           version: 8
+#           run_install: true
 
-      - name: Build
-        run: pnpm build
+#       - name: Build
+#         run: pnpm build
 
-      - name: Upload sourcemaps
-        run: pnpm upload-sourcemaps
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_WORKFLOWS_SERVICE_PROJECT }}
-          SENTRY_RELEASE: ${{ steps.get_version.outputs.version }}-dev-${{ github.sha }}
+#       - name: Upload sourcemaps
+#         run: pnpm upload-sourcemaps
+#         env:
+#           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+#           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+#           SENTRY_PROJECT: ${{ secrets.SENTRY_WORKFLOWS_SERVICE_PROJECT }}
+#           SENTRY_RELEASE: ${{ steps.get_version.outputs.version }}-dev-${{ github.sha }}
