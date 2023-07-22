@@ -82,6 +82,7 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
   ): Promise<RunnableWorkflowData> {
     const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(params.id);
+
     if (!workflowRuntimeData) {
       throw new NotFoundException(`No resource with id [${params.id}] was found`);
     }
@@ -220,6 +221,11 @@ export class WorkflowControllerExternal {
   ): Promise<void> {
     try {
       const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
+
+      if (!workflowRuntimeData) {
+        throw new NotFoundException(`Workflow runtime data with an id of "${params.id}" not found`);
+      }
+
       await this.normalizeService.handleHookResponse({
         workflowRuntime: workflowRuntime,
         data: hookResponse,
