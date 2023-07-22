@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, NotFoundException } from '@nestjs/common';
 import { Request } from 'express';
 import { WorkflowService } from '@/workflow/workflow.service';
 
@@ -9,8 +9,14 @@ export class WorkflowAssigneeGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const workflowId = request.params.id;
     const requestingUserId = request.user!.id;
-    const workflowRuntime = await this.service.getWorkflowRuntimeDataById(workflowId as string);
+    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(workflowId as string);
 
-    return workflowRuntime.assigneeId === requestingUserId;
+    if (!workflowRuntimeData) {
+      throw new NotFoundException(
+        `Workflow runtime data with an id of "${workflowId as string}" not found`,
+      );
+    }
+
+    return workflowRuntimeData.assigneeId === requestingUserId;
   }
 }

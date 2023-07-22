@@ -2,8 +2,11 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma, WorkflowRuntimeData, WorkflowRuntimeDataStatus } from '@prisma/client';
 import { TEntityType } from '@/workflow/types';
-import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
+import { db } from '@/db';
+import { eq } from 'drizzle-orm';
+import { workflowRuntimeData } from '@/db/schema';
+import merge from 'lodash/merge';
 
 @Injectable()
 export class WorkflowRuntimeDataRepository {
@@ -36,11 +39,13 @@ export class WorkflowRuntimeDataRepository {
     return await this.prisma.workflowRuntimeData.findFirst(args);
   }
 
-  async findById<T extends Omit<Prisma.WorkflowRuntimeDataFindUniqueOrThrowArgs, 'where'>>(
+  async findById(
     id: string,
-    args?: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataFindUniqueOrThrowArgs, 'where'>>,
-  ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.findFirstOrThrow(merge(args, { where: { id } }));
+    args?: Omit<Parameters<(typeof db)['query']['workflowRuntimeData']['findFirst']>[0], 'where'>,
+  ) {
+    return await db.query.workflowRuntimeData.findFirst(
+      merge(args, { where: eq(workflowRuntimeData.id, id) }),
+    );
   }
 
   async updateById<T extends Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>(

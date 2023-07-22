@@ -173,6 +173,10 @@ export class WorkflowService {
       select: { ...(args?.select || {}), childWorkflowsRuntimeData: { ...args } },
     })) as TWorkflowWithRelations;
 
+    if (!workflow) {
+      throw new NotFoundException(`Workflow runtime data with an id of "${id}" not found`);
+    }
+
     return this.formatWorkflow(workflow);
   }
 
@@ -492,6 +496,13 @@ export class WorkflowService {
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
+
+    if (!runtimeData) {
+      throw new NotFoundException(
+        `Workflow runtime data with an id of "${workflowRuntimeId}" not found`,
+      );
+    }
+
     const workflowDef = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
     );
@@ -590,6 +601,12 @@ export class WorkflowService {
         },
       );
 
+      if (!parentMachine) {
+        throw new NotFoundException(
+          `Workflow runtime data with an id of "${runtimeData?.context?.parentMachine?.id}" not found`,
+        );
+      }
+
       // Updates the collect documents workflow with the manual review workflow's decision.
       await this.workflowRuntimeDataRepository.updateById(parentMachine?.id, {
         data: {
@@ -655,6 +672,13 @@ export class WorkflowService {
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
       workflowRuntimeId,
     );
+
+    if (!workflowRuntimeData) {
+      throw new NotFoundException(
+        `Workflow runtime data with an id of "${workflowRuntimeId}" not found`,
+      );
+    }
+
     const hasDecision =
       workflowRuntimeData?.context?.documents?.length &&
       workflowRuntimeData?.context?.documents?.every(
@@ -1079,6 +1103,11 @@ export class WorkflowService {
   async event({ name: type, id }: WorkflowEventInput & IObjectWithId) {
     this.logger.log('Workflow event received', { id, type });
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(id);
+
+    if (!workflowRuntimeData) {
+      throw new NotFoundException(`Workflow runtime data with an id of "${id}" not found`);
+    }
+
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowRuntimeData.workflowDefinitionId,
     );
