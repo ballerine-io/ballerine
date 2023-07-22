@@ -57,7 +57,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          dockerfile: apps/workflows-dashboard/Dockerfile
+          file: apps/workflows-dashboard/Dockerfile
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
