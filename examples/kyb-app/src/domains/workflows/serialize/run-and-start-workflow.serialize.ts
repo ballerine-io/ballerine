@@ -12,7 +12,7 @@ export const runAndStartWorkflowSerialize = (data: RunWorkflowDto): TRunWorkflow
           website: data.entity.website,
           registrationNumber: data.entity.registrationNumber,
           companyName: data.entity.companyName,
-          countryOfIncorporation: "Great Britain", // TODO: this needs to be extracted from address
+          countryOfIncorporation: 'Great Britain', // TODO: this needs to be extracted from address
           address: {
             text: data.entity.address,
           },

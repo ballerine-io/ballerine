@@ -48,7 +48,9 @@ export const fetchWorkflows = async (params: {
   return handleZodError(error, workflows);
 };
 
-export const WorkflowByIdSchema = z.object({
+export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
+
+export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
   status: z.string(),
   nextEvents: z.array(z.any()),
@@ -75,6 +77,16 @@ export const WorkflowByIdSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
   }).nullable(),
+});
+
+export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
+  childWorkflows: z
+    .array(
+      BaseWorkflowByIdSchema.omit({
+        nextEvents: true,
+      }),
+    )
+    .optional(),
 });
 
 export const fetchWorkflowById = async ({
