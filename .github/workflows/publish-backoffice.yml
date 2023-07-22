@@ -1,4 +1,4 @@
-name: Publish workflows-dashboard image
+name: Publish backoffice image
 
 on:
   workflow_dispatch:
