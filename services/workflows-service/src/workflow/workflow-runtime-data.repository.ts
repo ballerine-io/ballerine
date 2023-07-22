@@ -10,10 +10,12 @@ import merge from 'lodash/merge';
 
 @Injectable()
 export class WorkflowRuntimeDataRepository {
+  db = db;
+
   constructor(protected readonly prisma: PrismaService) {}
 
   async create(data: WorkflowRuntimeDataCreate) {
-    return await db
+    return await this.db
       .insert(workflowRuntimeData)
       .values({
         ...data,
@@ -25,10 +27,8 @@ export class WorkflowRuntimeDataRepository {
       .returning();
   }
 
-  async findMany<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
-    args?: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindManyArgs>,
-  ) {
-    return await this.prisma.workflowRuntimeData.findMany(args);
+  async findMany(args?: Parameters<(typeof db)['query']['workflowRuntimeData']['findMany']>[0]) {
+    return await this.db.query.workflowRuntimeData.findMany(args);
   }
 
   async findOne<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(

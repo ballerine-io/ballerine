@@ -77,6 +77,8 @@ import {
   THelperFormatingLogic,
   Transformer,
 } from '@ballerine/workflow-core';
+import { eq, inArray } from 'drizzle-orm';
+import { workflowRuntimeData } from '@/db/schema';
 
 type TEntityId = string;
 
@@ -274,7 +276,7 @@ export class WorkflowService {
 
   async listActiveWorkflowsRuntimeStates() {
     return await this.workflowRuntimeDataRepository.findMany({
-      select: {
+      columns: {
         state: true,
         endUserId: true,
         businessId: true,
@@ -375,9 +377,9 @@ export class WorkflowService {
     });
   }
 
-  async listWorkflowRuntimeDataByUserId(userId: string) {
+  async listWorkflowRuntimeDataByEndUserId(endUserId: string) {
     return await this.workflowRuntimeDataRepository.findMany({
-      where: { endUserId: userId },
+      where: eq(workflowRuntimeData.endUserId, endUserId),
     });
   }
 
@@ -389,10 +391,8 @@ export class WorkflowService {
     entity: TEntityType;
   }) {
     return await this.workflowRuntimeDataRepository.findMany({
-      where: {
-        [`${entity}Id`]: entityId,
-      },
-      include: { workflowDefinition: true },
+      where: eq(workflowRuntimeData[`${entity}Id`], entityId),
+      with: { workflowDefinition: true },
     });
   }
 
@@ -404,22 +404,21 @@ export class WorkflowService {
     orderDirection,
   }: ListWorkflowsRuntimeParams): Promise<ListRuntimeDataResult> {
     const query = {
-      where: {
-        ...(status ? { status: { in: status } } : undefined),
-      },
+      ...(status ? { where: inArray(workflowRuntimeData.status, status) } : {}),
     };
 
     const [workflowsRuntimeCount, workflowsRuntime] = await Promise.all([
       this.workflowRuntimeDataRepository.count(query),
       this.workflowRuntimeDataRepository.findMany({
         ...query,
-        skip: page && size ? (page - 1) * size : undefined,
-        take: size,
-        include: {
+        offset: page && size ? (page - 1) * size : undefined,
+        limit: size,
+        with: {
           workflowDefinition: true,
           assignee: true,
         },
-        orderBy: this._resolveOrderByParams(orderBy, orderDirection),
+        // TODO: add support for orderBy with Drizzle
+        // orderBy: this._resolveOrderByParams(orderBy, orderDirection),
       }),
     ]);
 
