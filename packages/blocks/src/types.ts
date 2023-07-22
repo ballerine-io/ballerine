@@ -108,8 +108,8 @@ export interface BlocksProps<TCell extends Cells> {
 export type InvalidCellMessage =
   "Please provide a union of available cell types discriminated by '{ type: string; }'";
 
-export interface BlocksOptions {
+export interface BlocksOptions<TInitialBlocks extends Blocks = []> {
   debug?: boolean;
   verbose?: boolean;
-  initialBlocks?: Blocks;
+  initialBlocks?: TInitialBlocks;
 }

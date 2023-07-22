@@ -25,7 +25,7 @@ type TCell =
       value: Array<TCell>;
     };
 
-const defaultBlocks = createBlocks<TCell>()
+const defaultBlocks = createBlocks<TCell>()()
   .addBlock()
   .addCell({
     type: 'heading',
@@ -37,7 +37,7 @@ const defaultBlocks = createBlocks<TCell>()
   })
   .build();
 
-const containerBlocks = createBlocks<TCell>()
+const containerBlocks = createBlocks<TCell>()()
   .addBlock()
   .addCell({
     type: 'container',
@@ -49,7 +49,7 @@ const containerBlocks = createBlocks<TCell>()
   })
   .build();
 
-const nestedContainerBlocks = createBlocks<TCell>()
+const nestedContainerBlocks = createBlocks<TCell>()()
   .addBlock()
   .addCell({
     type: 'container',
@@ -76,9 +76,10 @@ const Paragraph: FunctionComponent<ExtractCellProps<'paragraph'>> = ({ value }) 
 const Container: FunctionComponent<ExtractCellProps<'container'>> = ({ value }) => {
   return (
     <div key={`container`}>
-      {value?.map((cell, index) => {
+      {(value as Array<TCell>)?.map((cell, index) => {
         const Cell = cells[cell?.type];
 
+        // @ts-ignore
         return <Cell key={index} {...cell} />;
       })}
     </div>

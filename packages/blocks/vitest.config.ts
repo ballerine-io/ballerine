@@ -5,6 +5,9 @@ export default defineConfig({
   plugins: [tsconfigPaths() as Plugin],
   test: {
     include: ['src/**/*.(test|spec).ts'],
+    typecheck: {
+      include: ['src/**/*.(test|spec|spec-d).ts'],
+    },
     coverage: {
       provider: 'istanbul',
     },

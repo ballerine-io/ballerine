@@ -1,4 +1,4 @@
-import {
+import type {
   Block,
   Blocks,
   BlocksOptions,
@@ -9,207 +9,24 @@ import {
 } from '@/types';
 import { dump, log, raise } from '@ballerine/common';
 
-export const createBlocks = <TCellType extends Cell | InvalidCellMessage = InvalidCellMessage>(
-  options: BlocksOptions = {},
-) =>
-  new BlocksBuilder<// @ts-expect-error - A generic should always be provided.
-  TCellType>(options);
-
-export class BlocksBuilder<TCell extends Cell> {
-  #__options: BlocksOptions;
-  #__blocks: Blocks = [];
-
-  get #__lastBlockIndex() {
-    return this.#__blocks?.length - 1;
-  }
-
-  get #__lastBlock(): Block | undefined {
-    return this.#__blocks[this.#__lastBlockIndex];
-  }
-
-  set #__lastBlock(block: Block) {
-    this.#__blocks[this.#__lastBlockIndex] = block;
-  }
-
-  get blocksCount() {
-    return this.#__blocks?.length ?? 0;
-  }
-
-  cellsCount(blockIndex: number) {
-    return this.#__blocks[blockIndex]?.length ?? 0;
-  }
-
-  blockAt(index: number) {
-    return this.#__blocks[index];
-  }
-
-  constructor(options: BlocksOptions) {
-    this.#__options = options;
-
-    this.#__logger('`BlocksBuilder`: Created an instance');
-
-    if (Array.isArray(this.#__options?.initialBlocks)) {
-      this.#__blocks = this.#__options.initialBlocks;
-
-      this.#__logger('`BlocksBuilder`: Added initial blocks');
-    }
-
-    this.build = this.build.bind(this);
-  }
-
-  addBlock() {
-    this.#__blocks.push([] as any);
-
-    this.#__logger('`BlocksBuilder`: Added first block.');
-
-    return new EmptyBlockBuilder<TCell>(this.#__blocks, this.#__options);
-  }
-
-  addCell() {
-    return raise(
-      'Attempted to call `addCell` before calling `addBlock`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
-    );
-  }
-
-  addBlocks<TBlocksType extends Blocks>(blocks: TBlocksType) {
-    this.#__blocks.push(...blocks);
-
-    this.#__logger('`BlockBuilder`: Added blocks');
-
-    return this as unknown as BlockBuilder<
+export const createBlocks =
+  <TCell extends Cell | InvalidCellMessage = InvalidCellMessage>() =>
+  <TInitialBlocks extends Blocks = []>(options: BlocksOptions<TInitialBlocks> = {}) =>
+    new BlocksBuilder<
+      // @ts-expect-error - A generic should always be provided.
       TCell,
-      InferLastArrayElement<TBlocksType> extends Block ? InferLastArrayElement<TBlocksType> : [],
-      TBlocksType
-    >;
-  }
+      InferLastArrayElement<TInitialBlocks>,
+      [],
+      TInitialBlocks
+    >([], options);
 
-  build() {
-    if (!Array.isArray(this.#__options?.initialBlocks)) {
-      return raise(
-        'Attempted to call `build` before calling `addBlock`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
-      );
-    }
-
-    return this.#__blocks;
-  }
-
-  #__logger(message: string) {
-    try {
-      log(!!this.#__options?.debug, {
-        message,
-        options: this.#__options,
-        block: dump(this.#__lastBlock),
-        blocksCount: this.blocksCount,
-        cell: undefined,
-        cellsCount: this.cellsCount(this.#__lastBlockIndex),
-        ...(this.#__options.verbose ? { blocks: dump(this.#__blocks) } : {}),
-      });
-    } catch (error) {
-      raise('`BlocksBuilder`: Failed to serialize logger payload', error);
-    }
-  }
-}
-
-export class EmptyBlockBuilder<TCell extends Cell, TLastBlock extends Block = []> {
-  #__options: BlocksOptions;
-  #__blocks: Blocks = [];
-
-  get #__lastBlockIndex() {
-    return this.#__blocks?.length - 1;
-  }
-
-  get #__lastBlock(): Block | undefined {
-    return this.#__blocks[this.#__lastBlockIndex];
-  }
-
-  set #__lastBlock(block: Block) {
-    this.#__blocks[this.#__lastBlockIndex] = block;
-  }
-
-  get #__lastCell(): Cell | undefined {
-    return this.#__lastBlock?.[this.#__lastBlock.length - 1];
-  }
-
-  get blocksCount() {
-    return this.#__blocks?.length ?? 0;
-  }
-
-  cellsCount(blockIndex: number) {
-    return this.#__blocks[blockIndex]?.length ?? 0;
-  }
-
-  blockAt(index: number) {
-    return this.#__blocks[index];
-  }
-
-  constructor(blocks: Blocks, options: BlocksOptions) {
-    this.#__blocks = blocks;
-    this.#__options = options;
-
-    this.#__logger('`EmptyBlockBuilder`: Created an instance');
-  }
-
-  addBlock() {
-    return raise(
-      'Attempted to call `addBlock` before calling `addCell`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
-    );
-  }
-
-  addCell<TCellType extends TCell>(cell: TCellType) {
-    this.#__lastBlock!.push(cell);
-
-    this.#__logger('`EmptyBlockBuilder`: Added a cell a block');
-
-    return new BlockBuilder(this.#__blocks, this.#__options) as BlockBuilder<
-      TCell,
-      [...TLastBlock, TCellType],
-      [[...TLastBlock, TCellType]]
-    >;
-  }
-
-  addBlocks<TBlocksType extends Blocks>(blocks: TBlocksType) {
-    this.#__blocks.push(...blocks);
-
-    this.#__logger('`BlockBuilder`: Added blocks');
-
-    return this as unknown as BlockBuilder<
-      TCell,
-      InferLastArrayElement<[TLastBlock, ...TBlocksType]> extends Block
-        ? InferLastArrayElement<[TLastBlock, ...TBlocksType]>
-        : [],
-      [TLastBlock, ...TBlocksType]
-    >;
-  }
-
-  build() {
-    return raise(
-      'Attempted to call `build` before calling `addCell`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
-    );
-  }
-
-  #__logger(message: string) {
-    try {
-      log(!!this.#__options?.debug, {
-        message,
-        options: this.#__options,
-        block: dump(this.#__lastBlock),
-        blocksCount: this.blocksCount,
-        cell: dump(this.#__lastCell),
-        cellsCount: this.cellsCount(this.#__lastBlockIndex),
-        ...(this.#__options.verbose ? { blocks: dump(this.#__blocks)?.replace(/\n/g, '') } : {}),
-      });
-    } catch (error) {
-      raise('`EmptyBlockBuilder`: Failed to serialize logger payload', error);
-    }
-  }
-}
-
-export class BlockBuilder<
+export class BlocksBuilder<
   TCell extends Cell,
   TLastBlock extends Block = [],
   TBlocks extends Blocks = [],
+  TInitialBlocks extends Blocks = [],
 > {
-  #__options: BlocksOptions;
+  #__options: BlocksOptions<TInitialBlocks>;
   #__blocks: TBlocks;
 
   get #__lastBlockIndex() {
@@ -236,31 +53,60 @@ export class BlockBuilder<
     return this.#__blocks[blockIndex]?.length ?? 0;
   }
 
-  blockAt(index: number) {
+  blockAt<TIndex extends number>(index: TIndex) {
     return this.#__blocks[index];
   }
 
-  constructor(blocks: TBlocks, options: BlocksOptions) {
+  cellAt<TBlockIndex extends number, TCellIndex extends number>(
+    blockIndex: TBlockIndex,
+    cellIndex: TCellIndex,
+  ) {
+    return this.#__blocks[blockIndex]?.[cellIndex];
+  }
+
+  constructor(blocks: TBlocks, options: BlocksOptions<TInitialBlocks>) {
     this.#__blocks = blocks;
     this.#__options = options;
 
-    this.#__logger('`BlockBuilder`: Created an instance');
+    this.#__logger('`BlocksBuilder`: Created an instance');
+
+    if (Array.isArray(this.#__options?.initialBlocks)) {
+      this.#__blocks.push(...this.#__options.initialBlocks);
+
+      this.#__logger('`BlocksBuilder`: Added initial blocks');
+    }
+
+    this.build = this.build.bind(this);
+    this.addCell = this.addCell.bind(this);
+    this.addBlock = this.addBlock.bind(this);
   }
 
   addBlock() {
+    if (this.#__lastBlock && !this.#__lastCell) {
+      return raise(
+        'Attempted to call `addBlock` before calling `addCell`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
+      );
+    }
+
     this.#__blocks.push([] as any);
 
-    this.#__logger('`BlockBuilder`: Added a block');
+    this.#__logger('`BlocksBuilder`: Added a block');
 
-    return this as BlockBuilder<TCell, [], TBlocks>;
+    return this as BlocksBuilder<TCell, [], TBlocks, TInitialBlocks>;
   }
 
   addCell<TCellType extends TCell>(cell: TCellType) {
-    this.#__lastBlock!.push(cell);
+    if (!this.#__lastBlock) {
+      return raise(
+        'Attempted to call `addCell` before calling `addBlock`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
+      );
+    }
 
-    this.#__logger('`BlockBuilder`: Added a cell a block');
+    this.#__lastBlock.push(cell);
 
-    return this as unknown as BlockBuilder<
+    this.#__logger('`BlocksBuilder`: Added a cell a block');
+
+    return this as unknown as BlocksBuilder<
       TCell,
       [...TLastBlock, TCellType],
       TLastBlock extends []
@@ -282,18 +128,29 @@ export class BlockBuilder<
   addBlocks<TBlocksType extends Blocks>(blocks: TBlocksType) {
     this.#__blocks.push(...blocks);
 
-    this.#__logger('`BlockBuilder`: Added blocks');
+    this.#__logger('`BlocksBuilder`: Added blocks');
 
-    return this as unknown as BlockBuilder<
+    return this as unknown as BlocksBuilder<
       TCell,
-      InferLastArrayElement<[...TBlocks, ...TBlocksType]> extends Block
-        ? InferLastArrayElement<[...TBlocks, ...TBlocksType]>
-        : [],
-      [...TBlocks, ...TBlocksType]
+      InferLastArrayElement<TBlocksType> extends Block ? InferLastArrayElement<TBlocksType> : never,
+      TBlocksType,
+      TBlocksType
     >;
   }
 
   build() {
+    if (!this.#__lastBlock) {
+      return raise(
+        'Attempted to call `build` before calling `addBlock`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?   ',
+      );
+    }
+
+    if (!this.#__lastCell) {
+      return raise(
+        'Attempted to call `build` before calling `addCell`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
+      );
+    }
+
     return this.#__blocks;
   }
 
@@ -306,10 +163,10 @@ export class BlockBuilder<
         blocksCount: this.blocksCount,
         cell: dump(this.#__lastCell),
         cellsCount: this.cellsCount(this.#__lastBlockIndex),
-        ...(this.#__options.verbose ? { blocks: dump(this.#__blocks) } : {}),
+        ...(this.#__options.verbose ? { blocks: dump(this.#__blocks)?.replace(/\n/g, '') } : {}),
       });
     } catch (error) {
-      raise("`BlockBuilder`: Failed to serialize `BlockBuilder`'s logger payload", error);
+      raise('`BlocksBuilder`: Failed to serialize logger payload', error);
     }
   }
 }

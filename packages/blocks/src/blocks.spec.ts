@@ -9,11 +9,11 @@ type TCell =
     }
   | {
       type: 'headings';
-      value: string[];
+      value: Array<string>;
     };
 
 const createTestBlocks = (initialBlocks?: Blocks) =>
-  createBlocks<TCell>({
+  createBlocks<TCell>()({
     debug: true,
     verbose: true,
     initialBlocks,
@@ -27,7 +27,7 @@ const createTestBlocks = (initialBlocks?: Blocks) =>
 const generateCellValue = ({ block, cell }: { block: number; cell: number }) =>
   `block:${block}:cell:${cell}`;
 
-describe('blocks', () => {
+describe('blocks #integration', () => {
   describe('when creating an instance of `createBlocks`', () => {
     it('should throw an error when calling `build` with no blocks', () => {
       // Arrange
@@ -38,7 +38,9 @@ describe('blocks', () => {
       const blocksBuild = blocksBuilder.build;
 
       // Assert
-      expect(blocksBuild).toThrow('Attempted to call `build` before calling `addBlock`');
+      expect(blocksBuild).toThrow(
+        'Attempted to call `build` before calling `addBlock`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
+      );
     });
 
     it('should throw an error when calling `addCell` with no blocks', () => {
@@ -122,7 +124,7 @@ describe('blocks', () => {
 
       // Assert
       expect(blocksAddBlockConsecutively).toThrow(
-        'Attempted to call `addBlock` before calling `addCell`',
+        'Attempted to call `addBlock` before calling `addCell`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
       );
     });
 
@@ -135,7 +137,9 @@ describe('blocks', () => {
       const blocksBuild = blocksBuilder.addBlock().build;
 
       // Assert
-      expect(blocksBuild).toThrow('Attempted to call `build` before calling `addCell`');
+      expect(blocksBuild).toThrow(
+        'Attempted to call `build` before calling `addCell`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
+      );
     });
 
     it('should add a single block when calling `addBlock`', () => {
