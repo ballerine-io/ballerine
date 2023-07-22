@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/websocket-service
+  IMAGE_NAME: ${{ github.repository_owner }}/websocket
 
 jobs:
   build-and-push-image:
