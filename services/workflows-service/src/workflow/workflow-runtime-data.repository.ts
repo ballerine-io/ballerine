@@ -5,26 +5,24 @@ import { TEntityType } from '@/workflow/types';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { db } from '@/db';
 import { eq } from 'drizzle-orm';
-import { workflowRuntimeData } from '@/db/schema';
+import { workflowRuntimeData, WorkflowRuntimeDataCreate } from '@/db/schema';
 import merge from 'lodash/merge';
 
 @Injectable()
 export class WorkflowRuntimeDataRepository {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
-  ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.create<T>({
-      ...args,
-      data: {
-        ...args.data,
+  async create(data: WorkflowRuntimeDataCreate) {
+    return await db
+      .insert(workflowRuntimeData)
+      .values({
+        ...data,
         context: {
-          ...((args.data?.context ?? {}) as any),
-          documents: assignIdToDocuments((args.data?.context as any)?.documents),
+          ...(data?.context ?? {}),
+          documents: assignIdToDocuments(data?.context?.documents),
         },
-      },
-    });
+      })
+      .returning();
   }
 
   async findMany<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
