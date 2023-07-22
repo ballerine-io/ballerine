@@ -23,7 +23,7 @@ export const useEntity = () => {
     pluginsOutput,
     parentMachine: workflow?.context?.parentMachine,
   });
-  const childTasks = useKycBlocks(workflow?.childWorkflows);
+  const childTasks = useKycBlocks(workflow?.childWorkflows) || [];
 
   return {
     selectedEntity,
