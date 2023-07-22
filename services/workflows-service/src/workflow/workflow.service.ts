@@ -779,19 +779,17 @@ export class WorkflowService {
 
     if (!manualReviewWorkflow) {
       await this.workflowRuntimeDataRepository.create({
-        data: {
-          ...entitySearch,
-          workflowDefinitionVersion: workflow.version,
-          workflowDefinitionId: workflow.reviewMachineId,
-          context: {
-            ...context,
-            parentMachine: {
-              id: runtime.id,
-              status: 'completed',
-            },
+        ...entitySearch,
+        workflowDefinitionVersion: workflow.version,
+        workflowDefinitionId: workflow.reviewMachineId,
+        context: {
+          ...context,
+          parentMachine: {
+            id: runtime.id,
+            status: 'completed',
           },
-          status: 'active',
         },
+        status: 'active',
       });
     } else {
       if (manualReviewWorkflow.state === 'revision') {
@@ -903,21 +901,19 @@ export class WorkflowService {
     if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
       contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
-        data: {
-          ...entityConnect,
-          workflowDefinitionVersion: workflowDefinition.version,
-          context: contextToInsert as InputJsonValue,
-          config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
-          status: 'active',
-          workflowDefinition: {
-            connect: {
-              id: workflowDefinition.id,
-            },
+        ...entityConnect,
+        workflowDefinitionVersion: workflowDefinition.version,
+        context: contextToInsert as InputJsonValue,
+        config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
+        status: 'active',
+        workflowDefinition: {
+          connect: {
+            id: workflowDefinition.id,
           },
-          ...(parentWorkflowId && {
-            parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
-          }),
         },
+        ...(parentWorkflowId && {
+          parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
+        }),
       });
       newWorkflowCreated = true;
     } else {
