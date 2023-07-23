@@ -1,7 +1,12 @@
 import { ComponentProps, FunctionComponent, ReactNode } from 'react';
 import { BlocksBuilder } from '@/blocks';
 
-export type Cell = { type: string } & Record<string, unknown>;
+/**
+ * A cell may have any property as long as it has a `type` property to discriminate a union by.
+ */
+export type Cell = { type: string } & {
+  [key: string]: unknown;
+};
 
 export type Block = Array<Cell>;
 
@@ -88,7 +93,7 @@ export interface BlocksProps<TCell extends Cells> {
    * @see {@link BlockBuilder.build}
    */
   blocks: Array<Array<TCell>>;
-  Block: FunctionComponent<{
+  Block?: FunctionComponent<{
     children: ReactNode | Array<ReactNode>;
     block: Array<TCell>;
   }>;

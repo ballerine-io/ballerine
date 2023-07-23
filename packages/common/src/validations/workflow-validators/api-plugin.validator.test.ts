@@ -11,13 +11,15 @@ describe('Api Validator', () => {
       successAction: 'API_CALL_SUCCESS',
       errorAction: 'API_CALL_FAILURE',
       request: {
-        transform: {
-          transformer: 'jq',
-          mapping: '{data: .entity.id}',
-        },
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: '{data: entity.id}',
+          },
+        ],
       },
       response: {
-        transform: { transformer: 'jq', mapping: '{result: .}' },
+        transform: [{ transformer: 'jmespath', mapping: '{result: @}' }],
       },
     };
 
@@ -29,7 +31,7 @@ describe('Api Validator', () => {
 
     describe('when invalid plugin is valid - invalid request', () => {
       it('does not throw validation exception', async () => {
-        let failingPlugin = structuredClone(apiPlugin);
+        const failingPlugin = structuredClone(apiPlugin);
         failingPlugin.request.transform.transformer = { someObjectKey: 'someObjectValue' };
         expect(() => validate(failingPlugin)).toThrowError(ZodError);
       });
@@ -37,7 +39,7 @@ describe('Api Validator', () => {
 
     describe('when invalid plugin is valid - missing callback', () => {
       it('does not throw validation exception', async () => {
-        let failingPlugin = structuredClone(apiPlugin);
+        const failingPlugin = structuredClone(apiPlugin);
         failingPlugin.errorAction = undefined;
         expect(() => validate(failingPlugin)).toThrowError(ZodError);
       });
@@ -45,7 +47,7 @@ describe('Api Validator', () => {
 
     describe('when invalid plugin is valid - stateNames is string', () => {
       it('does not throw validation exception', async () => {
-        let failingPlugin = structuredClone(apiPlugin);
+        const failingPlugin = structuredClone(apiPlugin);
         failingPlugin.stateNames = 'someState';
         expect(() => validate(failingPlugin)).toThrowError(ZodError);
       });

@@ -18,7 +18,7 @@ export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: stri
       action:
         | 'approve_document'
         | 'reject_document'
-        | 'ask_resubmit_document'
+        | 'ask_revision_document'
         | 'update_document_properties';
     }) =>
       fetchUpdateWorkflowById({

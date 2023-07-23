@@ -1,271 +1,272 @@
-import { useBlocks } from '../useEntity/blocks';
+import { TWorkflowById } from '../../../../domains/workflows/fetchers';
+import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
+import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
-import { useMemo } from 'react';
 import {
   composePickableCategoryType,
   convertSnakeCaseToTitleCase,
+  extractCountryCodeFromWorkflow,
   getIsEditable,
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import { octetToFileType } from '../../../../common/utils/octet-to-file-type/octet-to-file-type';
+import { getDocumentsByCountry, isObject } from '@ballerine/common';
+import { useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
-import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
-import { TWorkflowById } from '../../../../domains/workflows/fetchers';
-import { TDocument } from '@ballerine/common';
-import { UseQueryResult } from '@tanstack/react-query';
+
+import { octetToFileType } from '../../../../common/octet-to-file-type/octet-to-file-type';
 
 export const useTasks = ({
-  pluginsOutput,
+  workflow,
   entity,
+  pluginsOutput,
   documents,
-  documentsSchemas,
   parentMachine,
-  caseState,
-  docsData,
-  results,
 }: {
-  pluginsOutput: TWorkflowById['context']['pluginsOutput'];
+  workflow: TWorkflowById;
   entity: TWorkflowById['context']['entity'];
+  pluginsOutput: TWorkflowById['context']['pluginsOutput'];
   documents: TWorkflowById['context']['documents'];
-  documentsSchemas: Array<TDocument>;
   parentMachine: TWorkflowById['context']['parentMachine'];
-  caseState: ReturnType<typeof useCaseState>;
-  docsData: UseQueryResult<string, unknown>[];
-  results: Array<Record<string, unknown>>;
 }) => {
-  const blocks = useBlocks();
+  const { data: session } = useAuthenticatedUserQuery();
+  const caseState = useCaseState(session?.user, workflow);
+  const docsData = useStorageFilesQuery(
+    workflow?.context?.documents?.flatMap(({ pages }) =>
+      pages?.map(({ ballerineFileId }) => ballerineFileId),
+    ),
+  );
+
+  const results = [];
+  workflow?.context?.documents?.forEach((document, docIndex) => {
+    document?.pages.forEach((page, pageIndex) => {
+      if (!results[docIndex]) {
+        results[docIndex] = [];
+      }
+      results[docIndex][pageIndex] = docsData.shift().data;
+    });
+  });
   const pluginsOutputKeys = Object.keys(pluginsOutput ?? {});
   const address = getAddressDeep(pluginsOutput);
+  const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
+  const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
 
   return useMemo(() => {
-    let tasks = blocks;
+    return entity
+      ? [
+          ...(Object.keys(pluginsOutput ?? {}).length === 0
+            ? []
+            : pluginsOutputKeys
+                ?.filter(key => !!Object.keys(pluginsOutput[key] ?? {})?.length)
+                ?.map(key => [
+                  {
+                    id: 'nested-details-heading',
+                    type: 'heading',
+                    value: convertSnakeCaseToTitleCase(key),
+                  },
+                  {
+                    type: 'nestedDetails',
+                    value: {
+                      data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
+                        title,
+                        value,
+                        // Can be part of the response or from a config in the future.
+                        showNull: true,
+                        anchorUrls: true,
+                      })),
+                    },
+                  },
+                ])),
+          ...(documents?.map(
+            (
+              { id, type: docType, category, issuer, properties, propertiesSchema, decision },
+              docIndex,
+            ) => {
+              const additionProperties =
+                isExistingSchemaForDocument(documentsSchemas) &&
+                composePickableCategoryType(category, docType, documentsSchemas);
+              const isDoneWithRevision =
+                decision?.status === 'revision' && parentMachine?.status === 'completed';
 
-    if (Object.keys(pluginsOutput ?? {}).length) {
-      const nonEmptyPluginsOutputKeys = pluginsOutputKeys?.filter(
-        key => !!Object.keys(pluginsOutput[key] ?? {})?.length,
-      );
-
-      nonEmptyPluginsOutputKeys?.forEach(key => {
-        tasks = tasks
-          .addBlock()
-          .addCell({
-            id: 'nested-details-heading',
-            keyProp: 'key',
-            key: `nested-details-heading:${key}`,
-            type: 'heading',
-            value: convertSnakeCaseToTitleCase(key),
-          })
-          .addCell({
-            keyProp: 'key',
-            key: `nested-details:${key}`,
-            type: 'nestedDetails',
-            value: {
-              data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
-                title,
-                value,
-              })),
-            },
-          });
-      });
-    }
-
-    if (documents?.length) {
-      documents?.forEach(
-        (
-          { id, type: docType, category, issuer, properties, propertiesSchema, decision },
-          docIndex,
-        ) => {
-          const additionProperties =
-            isExistingSchemaForDocument(documentsSchemas) &&
-            composePickableCategoryType(category, docType, documentsSchemas);
-          const isDoneWithRevision =
-            decision?.status === 'revision' && parentMachine?.status === 'completed';
-
-          tasks = tasks
-            .addBlock()
-            .addCell({
-              id: 'header',
-              type: 'container',
-              keyProp: 'key',
-              key: `header:container:${id}`,
-              value: [
+              return [
                 {
-                  type: 'heading',
-                  value: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
-                    docType,
-                  )}`,
-                },
-                {
-                  id: 'actions',
+                  id: 'header',
                   type: 'container',
                   value: [
                     {
-                      type: 'callToAction',
-                      value: 'Reject',
-                      data: {
+                      type: 'heading',
+                      value: `${convertSnakeCaseToTitleCase(
+                        category,
+                      )} - ${convertSnakeCaseToTitleCase(docType)}`,
+                    },
+                    {
+                      id: 'actions',
+                      type: 'container',
+                      value: [
+                        {
+                          type: 'callToAction',
+                          value: 'Reject',
+                          data: {
+                            id,
+                            disabled: !isDoneWithRevision && Boolean(decision?.status),
+                            approvalStatus: 'rejected',
+                          },
+                        },
+                        {
+                          type: 'callToAction',
+                          value: 'Approve',
+                          data: {
+                            id,
+                            disabled: !isDoneWithRevision && Boolean(decision?.status),
+                            approvalStatus: 'approved',
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  type: 'container',
+                  value: [
+                    {
+                      id: 'decision',
+                      type: 'details',
+                      value: {
                         id,
-                        disabled: !isDoneWithRevision && Boolean(decision?.status),
-                        approvalStatus: 'rejected',
+                        title: `${category} - ${docType}`,
+                        data: Object.entries(
+                          {
+                            ...additionProperties,
+                            ...propertiesSchema?.properties,
+                          } ?? {},
+                        )?.map(
+                          ([
+                            title,
+                            { type, format, pattern, isEditable = true, dropdownOptions, value },
+                          ]) => {
+                            const fieldValue = value || (properties?.[title] ?? '');
+                            const isEditableDecision = isDoneWithRevision || !decision?.status;
+
+                            return {
+                              title,
+                              value: fieldValue,
+                              type,
+                              format,
+                              pattern,
+                              isEditable:
+                                isEditableDecision &&
+                                caseState.writeEnabled &&
+                                getIsEditable(isEditable, title),
+                              dropdownOptions,
+                            };
+                          },
+                        ),
                       },
                     },
                     {
-                      type: 'callToAction',
-                      value: 'Approve',
-                      data: {
+                      type: 'details',
+                      value: {
                         id,
-                        disabled: !isDoneWithRevision && Boolean(decision?.status),
-                        approvalStatus: 'approved',
+                        title: 'Decision',
+                        data: Object.entries(decision ?? {}).map(([title, value]) => ({
+                          title,
+                          value,
+                        })),
                       },
                     },
                   ],
                 },
-              ],
-            })
-            .addCell({
-              type: 'container',
-              keyProp: 'key',
-              key: `container:${id}`,
-              value: [
                 {
-                  id: 'decision',
-                  type: 'details',
+                  type: 'multiDocuments',
                   value: {
-                    id,
-                    title: `${category} - ${docType}`,
-                    data: Object.entries(
-                      {
-                        ...additionProperties,
-                        ...propertiesSchema?.properties,
-                      } ?? {},
-                    )?.map(
-                      ([
-                        title,
-                        { type, format, pattern, isEditable = true, dropdownOptions, value },
-                      ]) => {
-                        const fieldValue = value || (properties?.[title] ?? '');
-                        const isEditableDecision = isDoneWithRevision || !decision?.status;
-
-                        return {
-                          title,
-                          value: fieldValue,
-                          type,
-                          format,
-                          pattern,
-                          isEditable:
-                            isEditableDecision &&
-                            caseState.writeEnabled &&
-                            getIsEditable(isEditable, title),
-                          dropdownOptions,
-                        };
-                      },
-                    ),
+                    isLoading: docsData?.some(({ isLoading }) => isLoading),
+                    data:
+                      documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
+                        title: `${convertSnakeCaseToTitleCase(
+                          category,
+                        )} - ${convertSnakeCaseToTitleCase(docType)}${
+                          metadata?.side ? ` - ${metadata?.side}` : ''
+                        }`,
+                        imageUrl:
+                          type === 'pdf'
+                            ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
+                            : results[docIndex][pageIndex],
+                        fileType: type,
+                      })) ?? [],
                   },
                 },
+              ];
+            },
+          ) ?? []),
+          Object.keys(entity?.data ?? {}).length === 0
+            ? []
+            : [
                 {
+                  type: 'heading',
+                  value: `${toStartCase(entity?.type)} Information`,
+                },
+                {
+                  id: 'entity-details',
                   type: 'details',
                   value: {
-                    id,
-                    title: 'Decision',
-                    data: Object.entries(decision ?? {}).map(([title, value]) => ({
+                    title: `${toStartCase(entity?.type)} Information`,
+                    data: [
+                      ...Object.entries(
+                        omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
+                      ),
+                      ...Object.entries(entity?.data?.additionalInfo ?? {}),
+                    ]?.map(([title, value]) => ({
                       title,
                       value,
+                      type: 'string',
+                      isEditable: false,
                     })),
                   },
                 },
               ],
-            })
-            .addCell({
-              type: 'multiDocuments',
-              keyProp: 'key',
-              key: `multiDocuments:${id}`,
-              value: {
-                isLoading: docsData?.some(({ isLoading }) => isLoading),
-                data:
-                  documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-                    title: `${convertSnakeCaseToTitleCase(
-                      category,
-                    )} - ${convertSnakeCaseToTitleCase(docType)}${
-                      metadata?.side ? ` - ${metadata?.side}` : ''
-                    }`,
-                    imageUrl:
-                      type === 'pdf'
-                        ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
-                        : results[docIndex][pageIndex],
-                    fileType: type,
-                  })) ?? [],
-              },
-            });
-        },
-      );
-    }
-
-    if (address) {
-      tasks = tasks.addBlock().addCell({
-        id: 'map-container',
-        type: 'container',
-        keyProp: 'key',
-        key: `map-container:container:${entity?.id}}`,
-        value: [
-          {
-            id: 'map-header',
-            type: 'heading',
-            value: `${toStartCase(entity?.type)} Address`,
-          },
-          {
-            type: 'details',
-            value: {
-              title: `${toStartCase(entity?.type)} Address`,
-              data: Object.entries(address ?? {})?.map(([title, value]) => ({
-                title,
-                value,
-                isEditable: false,
-              })),
-            },
-          },
-          {
-            type: 'map',
-            value: address,
-          },
-        ],
-      });
-    }
-
-    if (Object.keys(entity ?? {}).length) {
-      tasks = tasks
-        .addBlock()
-        .addCell({
-          type: 'heading',
-          value: `${toStartCase(entity?.type)} Information`,
-          keyProp: 'key',
-          key: `heading:${entity?.id}`,
-        })
-        .addCell({
-          id: 'entity-details',
-          type: 'details',
-          keyProp: 'key',
-          key: `entity-details:details:${entity?.id}`,
-          value: {
-            title: `${toStartCase(entity?.type)} Information`,
-            data: [
-              ...Object.entries(
-                omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
-              ),
-              ...Object.entries(entity?.data?.additionalInfo ?? {}),
-            ]?.map(([title, value]) => ({
-              title,
-              value,
-              type: 'string',
-              isEditable: false,
-            })),
-          },
-        });
-    }
-
-    return tasks.build();
+          Object.keys(address ?? {})?.length === 0
+            ? []
+            : [
+                {
+                  id: 'map-container',
+                  type: 'container',
+                  value: [
+                    {
+                      id: 'header',
+                      type: 'heading',
+                      value: `${toStartCase(entity?.type)} Address`,
+                    },
+                    {
+                      type: 'details',
+                      value: {
+                        title: `${toStartCase(entity?.type)} Address`,
+                        data: !isObject(address)
+                          ? [
+                              {
+                                title: 'Address',
+                                value: address,
+                                isEditable: false,
+                              },
+                            ]
+                          : Object.entries(address ?? {})?.map(([title, value]) => ({
+                              title,
+                              value,
+                              isEditable: false,
+                            })),
+                      },
+                    },
+                    {
+                      type: 'map',
+                      value: address,
+                    },
+                  ],
+                },
+              ],
+        ]
+      : [];
   }, [
     address,
-    blocks,
     caseState.writeEnabled,
     docsData,
     documents,

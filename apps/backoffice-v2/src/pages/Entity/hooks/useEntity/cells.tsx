@@ -7,9 +7,8 @@ import { Details } from '../../components/Details/Details';
 import { MultiDocuments } from '../../components/MultiDocuments/MultiDocuments';
 import { NestedDetails } from '../../components/NestedDetails/NestedDetails';
 import { MapCell } from '../../components/MapCell/MapCell';
-import { CellsMap } from '@ballerine/blocks';
 
-export const cells: CellsMap = {
+export const cells = {
   heading: Heading,
   alert: Alert,
   container: Container,
