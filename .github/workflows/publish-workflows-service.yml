@@ -1,11 +1,11 @@
-name: Publish headless-example image
+name: Publish workflows-service image
 
 on:
   workflow_dispatch:
   push:
-    # Run this pipeline only if there are changes in specified path
     paths:
-      - "examples/**"
+      # Run this pipeline only if there are changes in specified path
+      - "services/**"
     branches:
       - dev
       - test
@@ -13,7 +13,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/headless-example
+  IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
 
 jobs:
   build-and-push-image:
@@ -39,7 +39,7 @@ jobs:
       - name: Get package version from package.json
         id: get_version
         run: |
-          PACKAGE_VERSION=$(jq -r '.version' examples/headless-example/package.json)
+          PACKAGE_VERSION=$(jq -r '.version' services/workflows-service/package.json)
           echo "::set-output name=version::$PACKAGE_VERSION"
 
       - name: Print the version
@@ -78,7 +78,8 @@ jobs:
             type=raw,value=commit-${{ github.sha }}-prod
             type=raw,value=${{ steps.get_version.outputs.version }}-prod
 
-      - name: Build and push Docker image for Dev Branch
+
+      - name: Build and push Docker image for Dev
         if: github.ref == 'refs/heads/dev'
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
@@ -86,9 +87,9 @@ jobs:
           push: true
           tags: ${{ steps.devmeta.outputs.tags }}
           labels: ${{ steps.devmeta.outputs.labels }}
-          file: examples/headless-example/Dockerfile
+          file: services/workflows-service/Dockerfile
 
-      - name: Build and push Docker image for Test Branch
+      - name: Build and push Docker image for Test
         if: github.ref == 'refs/heads/test'
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
@@ -96,9 +97,9 @@ jobs:
           push: true
           tags: ${{ steps.testmeta.outputs.tags }}
           labels: ${{ steps.testmeta.outputs.labels }}
-          file: examples/headless-example/Dockerfile
+          file: services/workflows-service/Dockerfile
 
-      - name: Build and push Docker image for Prod Branch
+      - name: Build and push Docker image for Prod
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
@@ -106,4 +107,4 @@ jobs:
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
           labels: ${{ steps.prodmeta.outputs.labels }}
-          file: examples/headless-example/Dockerfile
+          file: services/workflows-service/Dockerfile
