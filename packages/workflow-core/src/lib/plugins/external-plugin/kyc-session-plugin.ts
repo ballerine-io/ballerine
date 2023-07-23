@@ -22,23 +22,35 @@ const kycSessionRequestSchema = {
   },
   required: ['firstName', 'lastName', 'callbackUrl', 'vendor'],
 };
+
+const kycSessionResponseSchema = {
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+    },
+    url: {
+      type: 'string',
+    },
+  },
+  required: ['id', 'url'],
+};
+
 export class KycSessionPlugin extends ApiPlugin {
   public static pluginType = 'http';
   public static pluginKind = 'kyc-session';
+
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
     schemaValidator: Validator | undefined,
     transformedRequest: AnyRecord,
     validationContext: TValidationContext,
   ) {
-    if (validationContext === 'Request') {
-      return super.validateContent(
-        new JsonSchemaValidator(kycSessionRequestSchema),
-        transformedRequest,
-        validationContext,
-      );
-    } else {
-      return super.validateContent(schemaValidator, transformedRequest, validationContext);
-    }
+    return super.validateContent(
+      new JsonSchemaValidator(validationContext === 'Request' ? kycSessionRequestSchema : kycSessionResponseSchema),
+      transformedRequest,
+      validationContext,
+    );
   }
 
   async makeApiRequest(
