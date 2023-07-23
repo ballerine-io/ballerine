@@ -144,7 +144,7 @@ export class HookCallbackHandlerService {
   }
 
   formatPages(data: AnyRecord) {
-    const documentImages = [];
+    const documentImages: AnyRecord[] = [];
     for (const image of data.images as { context?: string; content: string }[]) {
       const tmpFile = tmp.fileSync().name;
       const data = Buffer.from(image.content, 'base64');
