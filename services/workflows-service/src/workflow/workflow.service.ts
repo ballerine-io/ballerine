@@ -198,7 +198,6 @@ export class WorkflowService {
           machineContext: workflow.context,
           state: workflow.state ?? workflow.workflowDefinition.definition.initial,
         },
-        runtimeId: workflow.id,
       });
 
       nextEvents = service.getSnapshot().nextEvents;

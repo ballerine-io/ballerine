@@ -75,7 +75,7 @@ const Paragraph: FunctionComponent<ExtractCellProps<'paragraph'>> = ({ value }) 
 
 const Container: FunctionComponent<ExtractCellProps<'container'>> = ({ value }) => {
   return (
-    <div key={`container`}>
+    <div>
       {(value as Array<TCell>)?.map((cell, index) => {
         const Cell = cells[cell?.type];
 
