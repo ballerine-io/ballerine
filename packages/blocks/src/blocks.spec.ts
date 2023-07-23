@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { createBlocks } from '@/blocks';
-import { Blocks } from '@/types';
 
 type TCell =
   | {
@@ -12,11 +11,10 @@ type TCell =
       value: Array<string>;
     };
 
-const createTestBlocks = (initialBlocks?: Blocks) =>
-  createBlocks<TCell>()({
+const createTestBlocks = () =>
+  createBlocks<TCell>({
     debug: true,
     verbose: true,
-    initialBlocks,
   });
 
 /**
@@ -24,8 +22,13 @@ const createTestBlocks = (initialBlocks?: Blocks) =>
  * @param block
  * @param cell
  */
-const generateCellValue = ({ block, cell }: { block: number; cell: number }) =>
-  `block:${block}:cell:${cell}`;
+const generateCellValue = <TBlock extends number, TCell extends number>({
+  block,
+  cell,
+}: {
+  block: TBlock;
+  cell: TCell;
+}) => `block:${block}:cell:${cell}` as const;
 
 describe('blocks #integration', () => {
   describe('when creating an instance of `createBlocks`', () => {
@@ -38,9 +41,7 @@ describe('blocks #integration', () => {
       const blocksBuild = blocksBuilder.build;
 
       // Assert
-      expect(blocksBuild).toThrow(
-        'Attempted to call `build` before calling `addBlock`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
-      );
+      expect(blocksBuild).toThrow('Attempted to call `build` before calling `addBlock`.');
     });
 
     it('should throw an error when calling `addCell` with no blocks', () => {
@@ -53,63 +54,6 @@ describe('blocks #integration', () => {
 
       // Assert
       expect(blocksAddCell).toThrow('Attempted to call `addCell` before calling `addBlock`');
-    });
-
-    it('should be able to start with initial blocks', () => {
-      // Arrange
-      const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
-      const blockOneCellTwo = [generateCellValue({ block: 1, cell: 1 })];
-      const blockTwoCellOne = generateCellValue({ block: 2, cell: 1 });
-      const blockTwoCellTwo = [generateCellValue({ block: 2, cell: 2 })];
-      const blocksBuilder = createTestBlocks([
-        [
-          {
-            type: 'heading',
-            value: blockOneCellOne,
-          },
-          {
-            type: 'headings',
-            value: blockOneCellTwo,
-          },
-        ],
-        [
-          {
-            type: 'heading',
-            value: blockTwoCellOne,
-          },
-          {
-            type: 'headings',
-            value: blockTwoCellTwo,
-          },
-        ],
-      ]);
-
-      // Act
-      const blocks = blocksBuilder.build();
-
-      // Assert
-      expect(blocks).toEqual([
-        [
-          {
-            type: 'heading',
-            value: blockOneCellOne,
-          },
-          {
-            type: 'headings',
-            value: blockOneCellTwo,
-          },
-        ],
-        [
-          {
-            type: 'heading',
-            value: blockTwoCellOne,
-          },
-          {
-            type: 'headings',
-            value: blockTwoCellTwo,
-          },
-        ],
-      ]);
     });
   });
 
@@ -124,7 +68,7 @@ describe('blocks #integration', () => {
 
       // Assert
       expect(blocksAddBlockConsecutively).toThrow(
-        'Attempted to call `addBlock` before calling `addCell`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
+        'Attempted to call `addBlock` before calling `addCell`.',
       );
     });
 
@@ -137,9 +81,7 @@ describe('blocks #integration', () => {
       const blocksBuild = blocksBuilder.addBlock().build;
 
       // Assert
-      expect(blocksBuild).toThrow(
-        'Attempted to call `build` before calling `addCell`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
-      );
+      expect(blocksBuild).toThrow('Attempted to call `build` before calling `addCell`.');
     });
 
     it('should add a single block when calling `addBlock`', () => {
@@ -264,33 +206,6 @@ describe('blocks #integration', () => {
     });
   });
 
-  describe('when `addBlocks` is called', () => {
-    it('should merge passed blocks with existing blocks', () => {
-      // Arrange
-      const blocksOneBuilder = createTestBlocks();
-      const blocksTwoBuilder = createTestBlocks();
-      const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
-      const blockTwoCellOne = [generateCellValue({ block: 2, cell: 1 })];
-
-      // Act
-      const blocksOne = blocksOneBuilder
-        .addBlock()
-        .addCell({ type: 'heading', value: blockOneCellOne })
-        .build();
-      const blocksTwo = blocksTwoBuilder
-        .addBlock()
-        .addCell({ type: 'headings', value: blockTwoCellOne })
-        .addBlocks(blocksOne)
-        .build();
-
-      // Assert
-      expect(blocksTwo).toEqual([
-        [{ type: 'headings', value: blockTwoCellOne }],
-        [{ type: 'heading', value: blockOneCellOne }],
-      ]);
-    });
-  });
-
   describe('when accessing `blocksCount`', () => {
     it('should return 0 when no blocks have been added', () => {
       // Arrange
@@ -397,6 +312,33 @@ describe('blocks #integration', () => {
       // Assert
       expect(firstBlock).toEqual([{ type: 'heading', value: blockOneCellOne }]);
       expect(secondBlock).toEqual([{ type: 'headings', value: blockTwoCellOne }]);
+    });
+  });
+
+  describe('when calling `cellAt`', () => {
+    it('should return the cell at the given index', () => {
+      // Arrange
+      const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
+      const blockTwoCellOne = [generateCellValue({ block: 2, cell: 1 })];
+      const blocksBuilder = createTestBlocks()
+        .addBlock()
+        .addCell({
+          type: 'heading',
+          value: blockOneCellOne,
+        })
+        .addBlock()
+        .addCell({
+          type: 'headings',
+          value: blockTwoCellOne,
+        });
+
+      // Act
+      const firstCell = blocksBuilder.cellAt(0, 0);
+      const secondCell = blocksBuilder.cellAt(1, 0);
+
+      // Assert
+      expect(firstCell).toEqual({ type: 'heading', value: blockOneCellOne });
+      expect(secondCell).toEqual({ type: 'headings', value: blockTwoCellOne });
     });
   });
 });

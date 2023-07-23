@@ -9,24 +9,18 @@ import type {
 } from '@/types';
 import { dump, log, raise } from '@ballerine/common';
 
-export const createBlocks =
-  <TCell extends Cell | InvalidCellMessage = InvalidCellMessage>() =>
-  <TInitialBlocks extends Blocks = []>(options: BlocksOptions<TInitialBlocks> = {}) =>
-    new BlocksBuilder<
-      // @ts-expect-error - A generic should always be provided.
-      TCell,
-      InferLastArrayElement<TInitialBlocks>,
-      [],
-      TInitialBlocks
-    >([], options);
+export const createBlocks = <TCell extends Cell | InvalidCellMessage = InvalidCellMessage>(
+  options: BlocksOptions = {},
+) =>
+  new BlocksBuilder<// @ts-expect-error - A generic should always be provided.
+  TCell>([], options);
 
 export class BlocksBuilder<
   TCell extends Cell,
   TLastBlock extends Block = [],
   TBlocks extends Blocks = [],
-  TInitialBlocks extends Blocks = [],
 > {
-  #__options: BlocksOptions<TInitialBlocks>;
+  #__options: BlocksOptions;
   #__blocks: TBlocks;
 
   get #__lastBlockIndex() {
@@ -61,20 +55,14 @@ export class BlocksBuilder<
     blockIndex: TBlockIndex,
     cellIndex: TCellIndex,
   ) {
-    return this.#__blocks[blockIndex]?.[cellIndex];
+    return this.#__blocks[blockIndex]?.[cellIndex] as TBlocks[TBlockIndex][TCellIndex];
   }
 
-  constructor(blocks: TBlocks, options: BlocksOptions<TInitialBlocks>) {
+  constructor(blocks: TBlocks, options: BlocksOptions) {
     this.#__blocks = blocks;
     this.#__options = options;
 
     this.#__logger('`BlocksBuilder`: Created an instance');
-
-    if (Array.isArray(this.#__options?.initialBlocks)) {
-      this.#__blocks.push(...this.#__options.initialBlocks);
-
-      this.#__logger('`BlocksBuilder`: Added initial blocks');
-    }
 
     this.build = this.build.bind(this);
     this.addCell = this.addCell.bind(this);
@@ -83,23 +71,19 @@ export class BlocksBuilder<
 
   addBlock() {
     if (this.#__lastBlock && !this.#__lastCell) {
-      return raise(
-        'Attempted to call `addBlock` before calling `addCell`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
-      );
+      return raise('Attempted to call `addBlock` before calling `addCell`.');
     }
 
     this.#__blocks.push([] as any);
 
     this.#__logger('`BlocksBuilder`: Added a block');
 
-    return this as BlocksBuilder<TCell, [], TBlocks, TInitialBlocks>;
+    return this as BlocksBuilder<TCell, [], TBlocks>;
   }
 
   addCell<TCellType extends TCell>(cell: TCellType) {
     if (!this.#__lastBlock) {
-      return raise(
-        'Attempted to call `addCell` before calling `addBlock`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
-      );
+      return raise('Attempted to call `addCell` before calling `addBlock`.');
     }
 
     this.#__lastBlock.push(cell);
@@ -125,30 +109,14 @@ export class BlocksBuilder<
           ]
     >;
   }
-  addBlocks<TBlocksType extends Blocks>(blocks: TBlocksType) {
-    this.#__blocks.push(...blocks);
-
-    this.#__logger('`BlocksBuilder`: Added blocks');
-
-    return this as unknown as BlocksBuilder<
-      TCell,
-      InferLastArrayElement<TBlocksType> extends Block ? InferLastArrayElement<TBlocksType> : never,
-      TBlocksType,
-      TBlocksType
-    >;
-  }
 
   build() {
     if (!this.#__lastBlock) {
-      return raise(
-        'Attempted to call `build` before calling `addBlock`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?   ',
-      );
+      return raise('Attempted to call `build` before calling `addBlock`.');
     }
 
     if (!this.#__lastCell) {
-      return raise(
-        'Attempted to call `build` before calling `addCell`. Did you mean to pass `initialBlocks` to `createBlocks` or call `addBlocks`?',
-      );
+      return raise('Attempted to call `build` before calling `addCell`.');
     }
 
     return this.#__blocks;

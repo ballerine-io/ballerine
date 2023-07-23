@@ -1,6 +1,5 @@
 import { describe, expectTypeOf, it } from 'vitest';
 import { BlocksBuilder, createBlocks } from '@/blocks';
-import { Blocks } from '@/types';
 
 type TCell =
   | {
@@ -12,11 +11,10 @@ type TCell =
       value: Array<string>;
     };
 
-const createTestBlocks = <TInitialBlocks extends Blocks = []>(initialBlocks?: TInitialBlocks) =>
-  createBlocks<TCell>()({
+const createTestBlocks = () =>
+  createBlocks<TCell>({
     debug: true,
     verbose: true,
-    initialBlocks,
   });
 
 /**
@@ -24,8 +22,13 @@ const createTestBlocks = <TInitialBlocks extends Blocks = []>(initialBlocks?: TI
  * @param block
  * @param cell
  */
-const generateCellValue = ({ block, cell }: { block: number; cell: number }) =>
-  `block:${block}:cell:${cell}`;
+const generateCellValue = <TBlock extends number, TCell extends number>({
+  block,
+  cell,
+}: {
+  block: TBlock;
+  cell: TCell;
+}) => `block:${block}:cell:${cell}` as const;
 
 describe('blocks #types', () => {
   describe('when adding a block', () => {
@@ -34,20 +37,20 @@ describe('blocks #types', () => {
       const blocks = createTestBlocks().addBlock();
 
       // Assert
-      expectTypeOf<typeof blocks>().toEqualTypeOf<BlocksBuilder<TCell, [], []>>();
+      expectTypeOf<typeof blocks>().toEqualTypeOf<BlocksBuilder<TCell, []>>();
     });
   });
 
-  describe('when passing `initialBlocks` into `createBlocks`', () => {
-    it.todo('should infer the initial blocks', () => {
+  describe('when adding a cell', () => {
+    it('should infer a block with a cell', () => {
       // Arrange
-      const blockOneCellOne = generateCellValue({ block: 1, cell: 1 }) as `block:1:cell:1`;
-      const blocks = createBlocks<TCell>()({
-        initialBlocks: [
-          [{ type: 'heading', value: blockOneCellOne }],
-          [{ type: 'heading', value: blockOneCellOne }],
-          [{ type: 'headings', value: blockOneCellOne }],
-        ],
+      const blockOneCellOne = generateCellValue({
+        block: 1,
+        cell: 1,
+      });
+      const blocks = createTestBlocks().addBlock().addCell({
+        type: 'heading',
+        value: blockOneCellOne,
       });
 
       // Act
@@ -57,97 +60,34 @@ describe('blocks #types', () => {
       expectTypeOf<typeof blocks>().toEqualTypeOf<
         BlocksBuilder<
           TCell,
-          [{ type: 'heading'; value: string }],
-          [[{ type: 'heading'; value: string }]],
-          [[{ type: 'heading'; value: string }]]
+          [{ type: 'heading'; value: typeof blockOneCellOne }],
+          [[{ type: 'heading'; value: typeof blockOneCellOne }]]
         >
       >();
-      expectTypeOf<typeof builtBlocks>().toEqualTypeOf<[[{ type: 'heading'; value: string }]]>();
-    });
-  });
-
-  describe('when calling `addBlocks`', () => {
-    it.todo('should infer the old blocks', () => {
-      // Arrange
-      const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
-      const blockTwoCellOne = generateCellValue({ block: 2, cell: 1 });
-      const blocks = createBlocks<TCell>()()
-        .addCell({
-          type: 'heading',
-          value: blockOneCellOne,
-        })
-        .addBlocks([
-          [{ type: 'heading', value: blockTwoCellOne }],
-          [{ type: 'headings', value: blockTwoCellOne }],
-        ]);
-
-      // Act
-      const builtBlocks = blocks.build();
-
-      // Assert
-      expectTypeOf<typeof blocks>().toEqualTypeOf<
-        BlocksBuilder<
-          TCell,
-          [{ type: 'heading'; value: string }],
-          [[{ type: 'heading'; value: string }]]
-        >
+      expectTypeOf<typeof builtBlocks>().toEqualTypeOf<
+        [[{ type: 'heading'; value: typeof blockOneCellOne }]]
       >();
-      expectTypeOf<typeof builtBlocks>().toEqualTypeOf<[[{ type: 'heading'; value: string }]]>();
-    });
-
-    it.todo('should infer the new blocks', () => {
-      // Arrange
-      const blocks = createTestBlocks()
-        .addBlock()
-        .addCell({
-          type: 'heading',
-          value: 'Hello',
-        })
-        .addBlocks([[{ type: 'heading', value: 'Hello' }]]);
-
-      // Act
-      const builtBlocks = blocks.build();
-
-      // Assert
-      expectTypeOf<typeof blocks>().toEqualTypeOf<
-        BlocksBuilder<
-          TCell,
-          [{ type: 'heading'; value: string }],
-          [[{ type: 'heading'; value: string }]]
-        >
-      >();
-      expectTypeOf<typeof builtBlocks>().toEqualTypeOf<[[{ type: 'heading'; value: string }]]>();
-    });
-  });
-
-  describe('when adding a cell', () => {
-    it('should infer a block with a cell', () => {
-      // Arrange
-      const blocks = createTestBlocks().addBlock().addCell({ type: 'heading', value: 'Hello' });
-
-      // Act
-      const builtBlocks = blocks.build();
-
-      // Assert
-      expectTypeOf<typeof blocks>().toEqualTypeOf<
-        BlocksBuilder<
-          TCell,
-          [{ type: 'heading'; value: string }],
-          [[{ type: 'heading'; value: string }]]
-        >
-      >();
-      expectTypeOf<typeof builtBlocks>().toEqualTypeOf<[[{ type: 'heading'; value: string }]]>();
     });
   });
 
   describe('when adding multiple blocks', () => {
     it('should infer multiple blocks with a cell', () => {
       // Arrange
+      const blockOneCellOne = generateCellValue({
+        block: 1,
+        cell: 1,
+      });
+      const blockTwoCellOne = [
+        generateCellValue({
+          block: 2,
+          cell: 1,
+        }),
+      ];
       const blocks = createTestBlocks()
         .addBlock()
-        .addCell({ type: 'heading', value: 'Hello' })
+        .addCell({ type: 'heading', value: blockOneCellOne })
         .addBlock()
-        .addCell({ type: 'headings', value: ['Hello1'] });
+        .addCell({ type: 'headings', value: blockTwoCellOne });
 
       // Act
       const builtBlocks = blocks.build();
@@ -156,12 +96,18 @@ describe('blocks #types', () => {
       expectTypeOf<typeof blocks>().toEqualTypeOf<
         BlocksBuilder<
           TCell,
-          [{ type: 'heading'; value: string }],
-          [[{ type: 'heading'; value: string }], [{ type: 'headings'; value: string[] }]]
+          [{ type: 'heading'; value: typeof blockOneCellOne }],
+          [
+            [{ type: 'heading'; value: typeof blockOneCellOne }],
+            [{ type: 'headings'; value: typeof blockTwoCellOne }],
+          ]
         >
       >();
       expectTypeOf<typeof builtBlocks>().toEqualTypeOf<
-        [[{ type: 'heading'; value: string }], [{ type: 'headings'; value: string[] }]]
+        [
+          [{ type: 'heading'; value: typeof blockOneCellOne }],
+          [{ type: 'headings'; value: typeof blockTwoCellOne }],
+        ]
       >();
     });
   });
@@ -169,10 +115,20 @@ describe('blocks #types', () => {
   describe('when adding multiple cells', () => {
     it('should infer a block with multiple cells', () => {
       // Arrange
+      const blockOneCellOne = generateCellValue({
+        block: 1,
+        cell: 1,
+      });
+      const blockOneCellTwo = [
+        generateCellValue({
+          block: 1,
+          cell: 2,
+        }),
+      ];
       const blocks = createTestBlocks()
         .addBlock()
-        .addCell({ type: 'heading', value: 'Hello' })
-        .addCell({ type: 'headings', value: ['Hello'] });
+        .addCell({ type: 'heading', value: blockOneCellOne })
+        .addCell({ type: 'headings', value: blockOneCellTwo });
 
       // Act
       const builtBlocks = blocks.build();
@@ -181,12 +137,25 @@ describe('blocks #types', () => {
       expectTypeOf<typeof blocks>().toEqualTypeOf<
         BlocksBuilder<
           TCell,
-          [{ type: 'heading'; value: string }, { type: 'headings'; value: string[] }],
-          [[{ type: 'heading'; value: string }, { type: 'headings'; value: string[] }]]
+          [
+            { type: 'heading'; value: typeof blockOneCellOne },
+            { type: 'headings'; value: typeof blockOneCellTwo },
+          ],
+          [
+            [
+              { type: 'heading'; value: typeof blockOneCellOne },
+              { type: 'headings'; value: typeof blockOneCellTwo },
+            ],
+          ]
         >
       >();
       expectTypeOf<typeof builtBlocks>().toEqualTypeOf<
-        [[{ type: 'heading'; value: string }, { type: 'headings'; value: string[] }]]
+        [
+          [
+            { type: 'heading'; value: typeof blockOneCellOne },
+            { type: 'headings'; value: typeof blockOneCellTwo },
+          ],
+        ]
       >();
     });
   });
@@ -194,13 +163,33 @@ describe('blocks #types', () => {
   describe('when adding multiple blocks and multiple cells', () => {
     it('should infer multiple blocks with multiple cells', () => {
       // Arrange
+      const blockOneCellOne = generateCellValue({
+        block: 1,
+        cell: 1,
+      });
+      const blockOneCellTwo = [
+        generateCellValue({
+          block: 1,
+          cell: 2,
+        }),
+      ];
+      const blockTwoCellOne = [
+        generateCellValue({
+          block: 2,
+          cell: 1,
+        }),
+      ];
+      const blockTwoCellTwo = generateCellValue({
+        block: 2,
+        cell: 2,
+      });
       const blocks = createTestBlocks()
         .addBlock()
-        .addCell({ type: 'heading', value: 'Hello' })
-        .addCell({ type: 'headings', value: ['Hello'] })
+        .addCell({ type: 'heading', value: blockOneCellOne })
+        .addCell({ type: 'headings', value: blockOneCellTwo })
         .addBlock()
-        .addCell({ type: 'headings', value: ['Hello'] })
-        .addCell({ type: 'heading', value: 'Hello' });
+        .addCell({ type: 'headings', value: blockTwoCellOne })
+        .addCell({ type: 'heading', value: blockTwoCellTwo });
 
       // Act
       const builtBlocks = blocks.build();
@@ -209,19 +198,120 @@ describe('blocks #types', () => {
       expectTypeOf<typeof blocks>().toEqualTypeOf<
         BlocksBuilder<
           TCell,
-          [{ type: 'heading'; value: string }, { type: 'headings'; value: string[] }],
           [
-            [{ type: 'heading'; value: string }, { type: 'headings'; value: string[] }],
-            [{ type: 'headings'; value: string[] }, { type: 'heading'; value: string }],
+            { type: 'heading'; value: typeof blockOneCellOne },
+            { type: 'headings'; value: typeof blockOneCellTwo },
+          ],
+          [
+            [
+              { type: 'heading'; value: typeof blockOneCellOne },
+              { type: 'headings'; value: typeof blockOneCellTwo },
+            ],
+            [
+              { type: 'headings'; value: typeof blockTwoCellOne },
+              { type: 'heading'; value: typeof blockTwoCellTwo },
+            ],
           ]
         >
       >();
       expectTypeOf<typeof builtBlocks>().toEqualTypeOf<
         [
-          [{ type: 'heading'; value: string }, { type: 'headings'; value: string[] }],
-          [{ type: 'headings'; value: string[] }, { type: 'heading'; value: string }],
+          [
+            { type: 'heading'; value: typeof blockOneCellOne },
+            { type: 'headings'; value: typeof blockOneCellTwo },
+          ],
+          [
+            { type: 'headings'; value: typeof blockTwoCellOne },
+            { type: 'heading'; value: typeof blockTwoCellTwo },
+          ],
         ]
       >();
+    });
+  });
+
+  describe('when calling `blockAt`', () => {
+    it('should infer the block at the specified index', () => {
+      // Arrange
+      const blockOneCellOne = generateCellValue({
+        block: 1,
+        cell: 1,
+      });
+      const blockOneCellTwo = [
+        generateCellValue({
+          block: 1,
+          cell: 2,
+        }),
+      ];
+      const blockTwoCellOne = [
+        generateCellValue({
+          block: 2,
+          cell: 1,
+        }),
+      ];
+      const blockTwoCellTwo = generateCellValue({
+        block: 2,
+        cell: 2,
+      });
+      const blocks = createTestBlocks()
+        .addBlock()
+        .addCell({ type: 'heading', value: blockOneCellOne })
+        .addCell({ type: 'headings', value: blockOneCellTwo })
+        .addBlock()
+        .addCell({ type: 'headings', value: blockTwoCellOne })
+        .addCell({ type: 'heading', value: blockTwoCellTwo });
+
+      // Act
+      const block = blocks.blockAt(0);
+
+      // Assert
+      expectTypeOf<typeof block>().toEqualTypeOf<
+        [
+          { type: 'heading'; value: typeof blockOneCellOne },
+          { type: 'headings'; value: typeof blockOneCellTwo },
+        ]
+      >();
+    });
+  });
+
+  describe('when calling `cellAt`', () => {
+    it('should infer the cell at the specified index', () => {
+      // Arrange
+      const blockOneCellOne = generateCellValue({
+        block: 1,
+        cell: 1,
+      });
+      const blockOneCellTwo = [
+        generateCellValue({
+          block: 1,
+          cell: 2,
+        }),
+      ];
+      const blockTwoCellOne = [
+        generateCellValue({
+          block: 2,
+          cell: 1,
+        }),
+      ];
+      const blockTwoCellTwo = generateCellValue({
+        block: 2,
+        cell: 2,
+      });
+      const blocks = createTestBlocks()
+        .addBlock()
+        .addCell({ type: 'heading', value: blockOneCellOne })
+        .addCell({ type: 'headings', value: blockOneCellTwo })
+        .addBlock()
+        .addCell({ type: 'headings', value: blockTwoCellOne })
+        .addCell({ type: 'heading', value: blockTwoCellTwo });
+
+      // Act
+      const cell = blocks.cellAt(0, 0);
+
+      // Assert
+      expectTypeOf<typeof cell>().toEqualTypeOf<{
+        type: 'heading';
+        value: typeof blockOneCellOne;
+      }>();
     });
   });
 });

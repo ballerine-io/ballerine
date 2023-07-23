@@ -6,7 +6,7 @@ export default defineConfig({
   test: {
     include: ['src/**/*.(test|spec).ts'],
     typecheck: {
-      include: ['src/**/*.(test|spec|spec-d).ts'],
+      include: ['src/**/*.spec-d.ts'],
     },
     coverage: {
       provider: 'istanbul',
