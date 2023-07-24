@@ -23,7 +23,7 @@ import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { isObject } from '@ballerine/common';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
-import { JsonDialog } from '@ballerine/ui';
+import { JsonDialog } from '../../../../common/components/molecules/JsonDialog/JsonDialog';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
