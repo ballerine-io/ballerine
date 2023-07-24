@@ -11,11 +11,12 @@ export function useViewsDataRepository<T extends ViewsData>(initial = {} as T) {
         setData(prev => {
           const nextData = {
             ...prev,
-            [key]: { ...(prev[key] as AnyObject), ...data },
+            flowData: {
+              ...prev.flowData,
+              [key]: { ...(prev.flowData[key] as AnyObject), ...data },
+            },
             shared: shared ? { ...prev.shared, ...shared } : prev.shared,
           };
-
-          console.log('update next data', nextData);
 
           resolve(nextData);
 

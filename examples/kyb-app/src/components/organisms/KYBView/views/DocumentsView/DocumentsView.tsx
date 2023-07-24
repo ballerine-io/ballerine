@@ -20,7 +20,7 @@ export const DocumentsView = () => {
       <DynamicForm<DocumentsContext>
         className="max-w-[384px]"
         schema={formSchema}
-        formData={context[state] as DocumentsContext}
+        formData={context.flowData[state] as DocumentsContext}
         uiSchema={{
           registrationCertificate: {
             'ui:field': 'FileInput',

@@ -6,9 +6,13 @@ import { RunWorkflowDto } from '@app/domains/workflows/types';
 import { v4 as uuidv4 } from 'uuid';
 
 export const serializeWorkflowRunData = async (context: KYBContext): Promise<RunWorkflowDto> => {
-  const proofOfAddressFileData = parseBase64FileWithMetadata(context.documents.addressProof);
+  const { endUserId, businessId } = context.shared;
+  const { businessAddress, businessInformation, personalInformation, ubos, documents } =
+    context.flowData;
+
+  const proofOfAddressFileData = parseBase64FileWithMetadata(documents.addressProof);
   const registrationDocumentFileData = parseBase64FileWithMetadata(
-    context.documents.registrationCertificate,
+    documents.registrationCertificate,
   );
 
   const [proofOfAddressFileId, registrationDocumentFileId] = await getFilesId([
@@ -24,22 +28,18 @@ export const serializeWorkflowRunData = async (context: KYBContext): Promise<Run
     ),
   ]);
 
-  const { endUserId, businessId } = context.shared;
-
-  console.log('context', context);
-
   const data: RunWorkflowDto = {
     workflowId: import.meta.env.VITE_KYB_DEFINITION_ID as string,
     endUserId,
     businessId,
     entity: {
       type: 'business',
-      website: context.businessInformation.website,
-      companyName: context.personalInformation.companyName,
-      address: context.businessAddress.address,
-      registrationNumber: context.businessInformation.registrationNumber,
+      website: businessInformation.website,
+      companyName: personalInformation.companyName,
+      address: businessAddress.address,
+      registrationNumber: businessInformation.registrationNumber,
       customerCompany: 'Ballerine',
-      ubos: (context.ubos || []).map(({ firstName, lastName, email }) => ({
+      ubos: (ubos || []).map(({ firstName, lastName, email }) => ({
         entity: {
           type: 'individual',
           id: uuidv4(),

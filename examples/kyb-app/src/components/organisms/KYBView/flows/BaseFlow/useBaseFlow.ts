@@ -1,32 +1,31 @@
 import { attachStatusesToViews } from '@app/components/organisms/KYBView/flows/BaseFlow/helpers/attachStatusesToViews';
-import { KYBStorageService } from '@app/components/organisms/KYBView/services/kyb-storage-service';
+import { useFlowContext } from '@app/components/organisms/KYBView/hooks/useFlowContext';
 import { KYBContext } from '@app/components/organisms/KYBView/types';
 import { kybViews } from '@app/components/organisms/KYBView/views';
 import { useCallback, useMemo } from 'react';
 
 export const useBaseFlow = () => {
-  const snapshotStorage = useMemo(() => new KYBStorageService<KYBContext>(), []);
-  const persistedContext = useMemo(() => snapshotStorage.getData<KYBContext>(), [snapshotStorage]);
+  const { storage, context, save } = useFlowContext();
 
   const handleViewUpdate = useCallback(
     (payload: KYBContext): void => {
-      void snapshotStorage.save(payload);
+      void save(payload);
     },
-    [snapshotStorage],
+    [save],
   );
 
   const handleViewChange = useCallback(
     (viewKey: string) => {
-      void snapshotStorage.save({ ...snapshotStorage.getData(), currentView: viewKey });
+      void save({ ...storage.getData(), currentView: viewKey });
     },
-    [snapshotStorage],
+    [storage, save],
   );
 
-  const views = useMemo(() => attachStatusesToViews(kybViews, persistedContext), []);
+  const views = useMemo(() => attachStatusesToViews(kybViews, context), [context]);
 
   return {
-    storage: snapshotStorage,
-    context: persistedContext,
+    storage,
+    context,
     views,
     handleViewChange,
     handleViewUpdate,

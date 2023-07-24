@@ -5,13 +5,14 @@ export const serializeBusinessData = (
   context: KYBContext,
   businessId: string,
 ): UpdateBusinessDto => {
-  console.log('context', context);
+  const { businessAddress, businessInformation } = context.flowData;
+  console.log('flow data', context.flowData);
 
   const dto: UpdateBusinessDto = {
     businessId,
-    registrationNumber: context.businessInformation.registrationNumber,
-    address: context.businessAddress.address,
-    website: context.businessInformation.website,
+    registrationNumber: businessInformation.registrationNumber,
+    address: businessAddress.address,
+    website: businessInformation.website,
   };
 
   return dto;

@@ -30,14 +30,16 @@ export interface UBOSContext {
 
 export interface KYBContext extends ViewsData {
   state: string;
-  personalInformation: PersonalInformationContext | null;
-  businessInformation: BusinessInformationContext | null;
-  businessAddress: BusinessAddressContext | null;
-  documents: DocumentsContext | null;
-  ubos: UBOSContext[] | null;
   shared: {
     endUserId?: string;
     businessId?: string;
+  };
+  flowData: {
+    personalInformation: PersonalInformationContext | null;
+    businessInformation: BusinessInformationContext | null;
+    businessAddress: BusinessAddressContext | null;
+    documents: DocumentsContext | null;
+    ubos: UBOSContext[] | null;
   };
 }
 

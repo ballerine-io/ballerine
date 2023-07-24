@@ -1,12 +1,13 @@
 import { IStep } from '@app/common/hooks/useStepper';
-import { AnyObject } from '@ballerine/ui';
+import { ViewsData } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository/types';
 
-export const getInitialStepIndexFromContext = (steps: IStep[], context: AnyObject): number => {
+export const getInitialStepIndexFromContext = (steps: IStep[], context: ViewsData): number => {
   for (let i = 0; i < steps.length; i++) {
     const step = steps[i];
     const isCompleted =
-      typeof context[step.dataAlias] === 'object' &&
-      Object.keys(context[step.dataAlias] as object).length;
+      context &&
+      typeof context.flowData[step.dataAlias] === 'object' &&
+      Object.keys(context.flowData[step.dataAlias] as object).length;
 
     if (isCompleted) continue;
 
