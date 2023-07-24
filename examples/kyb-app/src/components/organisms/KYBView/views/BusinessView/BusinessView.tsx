@@ -20,7 +20,7 @@ export const BusinessView = () => {
       <DynamicForm<BusinessInformationContext>
         className="max-w-[384px]"
         schema={formSchema}
-        formData={context[state] as BusinessInformationContext}
+        formData={context.flowData[state] as BusinessInformationContext}
         onSubmit={handleSubmit}
       />
     </AppShell.FormContainer>

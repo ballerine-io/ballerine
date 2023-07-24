@@ -9,10 +9,11 @@ import { AnyChildren } from '@ballerine/ui';
 interface Props {
   children: React.ReactNode | React.ReactNode[];
   backButton?: AnyChildren;
+  isLoading?: boolean;
   onBackButtonClick?: () => void;
 }
 
-export const AppShell = ({ children, backButton, onBackButtonClick }: Props) => {
+export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }: Props) => {
   const settings = useSettings();
   const { steps, state, context } = useViewState();
 
@@ -26,20 +27,22 @@ export const AppShell = ({ children, backButton, onBackButtonClick }: Props) => 
               <img src={settings.logo} alt={settings.appName} />
             </div>
             <div className="h-[236px]">
-              <Stepper>
-                <VerticalLayout>
-                  {steps.map(step => {
-                    return (
-                      <Item
-                        key={`step-${step.index}`}
-                        active={state === step.dataAlias}
-                        label={step.label}
-                        status={step.meta?.status}
-                      />
-                    );
-                  })}
-                </VerticalLayout>
-              </Stepper>
+              {isLoading ? null : (
+                <Stepper>
+                  <VerticalLayout>
+                    {steps.map(step => {
+                      return (
+                        <Item
+                          key={`step-${step.index}`}
+                          active={state === step.dataAlias}
+                          label={step.label}
+                          status={step.meta?.status}
+                        />
+                      );
+                    })}
+                  </VerticalLayout>
+                </Stepper>
+              )}
             </div>
           </div>
           <div>

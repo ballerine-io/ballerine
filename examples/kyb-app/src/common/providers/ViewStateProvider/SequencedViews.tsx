@@ -11,7 +11,7 @@ import { ViewsData } from '@app/common/providers/ViewStateProvider/hooks/useView
 import { useViewsDataRepository } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository';
 
 const { Provider } = stateContext;
-interface Props<TContext> {
+interface Props<TContext extends ViewsData> {
   views: View[];
   viewWrapper: React.ComponentType<{ children: AnyChildren }>;
   initialContext?: TContext;
@@ -30,20 +30,22 @@ export function SequencedViews<TContext extends ViewsData>({
   const paths = useMemo(() => convertViewsToPaths(views), [views]);
 
   const initialSteps = useMemo(() => convertViewsToSteps(views), [views]);
-  const initialStep = useMemo(
-    () => getInitialStepIndexFromContext(initialSteps, initialContext || {}),
-    [initialSteps, initialContext],
-  );
+  const initialStep = useMemo(() => {
+    const predefinedActiveView = views.findIndex(view => view.active);
+
+    if (predefinedActiveView != -1) return predefinedActiveView;
+
+    return getInitialStepIndexFromContext(initialSteps, initialContext || ({} as TContext));
+  }, [views, initialSteps, initialContext]);
 
   const { steps, currentStep, nextStep, prevStep, completeCurrent } = useStepper(initialSteps, {
     initialStepIndex: initialStep,
   });
+
   const { data: viewsData, update: _update } = useViewsDataRepository(initialContext);
-  console.log('data', viewsData);
 
   useEffect(() => {
     if (viewsData.currentView !== currentStep.dataAlias) {
-      console.log('effect', currentStep.dataAlias);
       onViewChange && onViewChange(currentStep.dataAlias);
     }
   }, [currentStep.dataAlias, viewsData.currentView, onViewChange]);

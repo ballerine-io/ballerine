@@ -4,13 +4,14 @@ import { KYBContext } from '@app/components/organisms/KYBView/types';
 export const attachStatusesToViews = (views: View[], context: KYBContext): View[] => {
   return views.map(view => {
     const isCompleted = Boolean(
-      Object.keys((context && (context[view.key] as object)) || {}).length,
+      Object.keys((context && context.flowData && (context.flowData[view.key] as object)) || {})
+        .length,
     );
 
     return {
       ...view,
       meta: {
-        status: isCompleted ? 'completed' : undefined,
+        status: isCompleted && !view.meta?.status ? 'completed' : view.meta?.status,
       },
     };
   });

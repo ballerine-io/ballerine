@@ -17,14 +17,23 @@ export const ShareholdersView = () => {
   const handleSubmit = useCallback(
     async (values: UBOSContext[]): Promise<void> => {
       const serializedBusinessPayload = serializeBusinessData(
-        { ...context, ubos: values },
+        {
+          ...context,
+          flowData: {
+            ...context.flowData,
+            ubos: values,
+          },
+        },
         context.shared.businessId,
       );
       await updateBusiness(serializedBusinessPayload);
 
       const serializedRunPayload = await serializeWorkflowRunData({
         ...context,
-        ubos: values,
+        flowData: {
+          ...context.flowData,
+          ubos: values,
+        },
       });
 
       await runAndStartWorkflowRequest(serializedRunPayload);
@@ -38,7 +47,7 @@ export const ShareholdersView = () => {
       <DynamicForm<UBOSContext[]>
         className="max-w-[384px]"
         schema={formSchema}
-        formData={(context[state] as UBOSContext[]) || []}
+        formData={(context.flowData[state] as UBOSContext[]) || []}
         onSubmit={values => void handleSubmit(values)}
       />
     </AppShell.FormContainer>

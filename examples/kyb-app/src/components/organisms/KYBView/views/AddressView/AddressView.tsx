@@ -20,7 +20,7 @@ export const AddressView = () => {
       <DynamicForm<BusinessAddressContext>
         className="max-w-[384px]"
         schema={formSchema}
-        formData={context[state] as BusinessAddressContext}
+        formData={context.flowData[state] as BusinessAddressContext}
         onSubmit={handleSubmit}
       />
     </AppShell.FormContainer>
