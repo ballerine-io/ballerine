@@ -20,7 +20,7 @@ export const Item = ({ status = 'idle', label, active, onClick }: Props) => {
       className="flex flex-row items-center gap-4 first:bg-white last:bg-white"
       onClick={onClick}
     >
-      {(active && status === 'idle') || status === 'warning' ? (
+      {active && status === 'idle' ? (
         <Current />
       ) : IndicatorComponent ? (
         <IndicatorComponent />

@@ -9,41 +9,50 @@ export function useStepper(_steps: IStep[], params: StepperParams): UseStepperHo
     meta: {},
   });
 
+  const {
+    prevStepAction,
+    nextStepAction,
+    completeCurrentStepAction,
+    invalidateStepAction,
+    warningStepAction,
+    updateStepDataAction,
+  } = actions;
+
   const currentStep = useMemo(() => {
     return state.steps[state.activeStep];
   }, [state.steps, state.activeStep]);
 
   const prevStep = useCallback(() => {
-    dispatch(actions.prevStepAction());
-  }, [actions.prevStepAction, dispatch]);
+    dispatch(prevStepAction());
+  }, [prevStepAction, dispatch]);
 
   const nextStep = useCallback(() => {
-    dispatch(actions.nextStepAction());
-  }, [actions.nextStepAction, dispatch]);
+    dispatch(nextStepAction());
+  }, [nextStepAction, dispatch]);
 
   const completeCurrent = useCallback(() => {
-    dispatch(actions.completeCurrentStepAction());
-  }, [actions.completeCurrentStepAction, dispatch]);
+    dispatch(completeCurrentStepAction());
+  }, [completeCurrentStepAction, dispatch]);
 
   const invalidate = useCallback(
     (index: number, reason?: string) => {
-      dispatch(actions.invalidateStepAction(index, reason));
+      dispatch(invalidateStepAction(index, reason));
     },
-    [actions.invalidateStepAction, dispatch],
+    [invalidateStepAction, dispatch],
   );
 
   const warning = useCallback(
     (index: number, reason?: string) => {
-      dispatch(actions.warningStepAction(index, reason));
+      dispatch(warningStepAction(index, reason));
     },
-    [actions.warningStepAction, dispatch],
+    [warningStepAction, dispatch],
   );
 
   const update = useCallback(
     (stepIndex: number, payload: object) => {
-      dispatch(actions.updateStepDataAction(stepIndex, payload));
+      dispatch(updateStepDataAction(stepIndex, payload));
     },
-    [actions.updateStepDataAction, dispatch],
+    [updateStepDataAction, dispatch],
   );
 
   return {

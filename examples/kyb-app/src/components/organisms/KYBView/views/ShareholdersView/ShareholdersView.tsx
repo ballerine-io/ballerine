@@ -8,9 +8,11 @@ import { serializeBusinessData } from '@app/components/organisms/KYBView/views/S
 import { serializeWorkflowRunData } from '@app/components/organisms/KYBView/views/ShareholdersView/helpers/serialize-workflow-run-data';
 import { updateBusiness } from '@app/domains/business';
 import { runAndStartWorkflowRequest } from '@app/domains/workflows';
+import { useSnapshot } from '@app/common/providers/SnapshotProvider/hooks/useSnapshot';
 
 export const ShareholdersView = () => {
-  const { context, state, update, saveAndPerformTransition } = useViewState<KYBContext>();
+  const { context, state } = useViewState<KYBContext>();
+  const { clear } = useSnapshot();
 
   const handleSubmit = useCallback(
     async (values: UBOSContext[]): Promise<void> => {
@@ -26,11 +28,10 @@ export const ShareholdersView = () => {
       });
 
       await runAndStartWorkflowRequest(serializedRunPayload);
+      void clear();
     },
-    [context],
+    [context, clear],
   );
-
-  console.log(context[state]);
 
   return (
     <AppShell.FormContainer>

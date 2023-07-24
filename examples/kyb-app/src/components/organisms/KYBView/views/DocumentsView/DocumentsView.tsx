@@ -6,11 +6,11 @@ import { formSchema } from '@app/components/organisms/KYBView/views/DocumentsVie
 import { useCallback } from 'react';
 
 export const DocumentsView = () => {
-  const { context, state, update, saveAndPerformTransition } = useViewState<KYBContext>();
+  const { context, state, saveAndPerformTransition } = useViewState<KYBContext>();
 
   const handleSubmit = useCallback(
     (values: DocumentsContext) => {
-      saveAndPerformTransition(values);
+      void saveAndPerformTransition(values);
     },
     [saveAndPerformTransition],
   );
@@ -29,7 +29,6 @@ export const DocumentsView = () => {
             'ui:field': 'FileInput',
           },
         }}
-        onChange={update}
         onSubmit={values => {
           void handleSubmit(values);
         }}
