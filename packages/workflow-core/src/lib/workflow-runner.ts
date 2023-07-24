@@ -207,11 +207,11 @@ export class WorkflowRunner {
     if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
 
     // @ts-expect-error TODO: fix this
-    const isApiPlugin = this.isApiPlugin(apiPluginSchema);
+    const isApiPlugin = this.isPluginWithCallbackAction(apiPluginSchema);
     return isApiPlugin ? ApiPlugin : WebhookPlugin;
   }
 
-  private isApiPlugin(apiPluginSchema: IApiPluginParams) {
+  private isPluginWithCallbackAction(apiPluginSchema: IApiPluginParams) {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
@@ -479,7 +479,7 @@ export class WorkflowRunner {
 
         const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
         // @ts-expect-error - update webhook plugin to use serializable interface
-        if (!this.isApiPlugin(apiPlugin)) continue;
+        if (!this.isPluginWithCallbackAction(apiPlugin)) continue;
 
         this.#__context.pluginsOutput = {
           ...(this.#__context.pluginsOutput || {}),
