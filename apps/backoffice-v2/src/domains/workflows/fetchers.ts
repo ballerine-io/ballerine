@@ -61,7 +61,7 @@ export const BaseWorkflowByIdSchema = z.object({
   }),
   createdAt: z.string().datetime(),
   context: z.object({
-    documents: z.array(z.any()),
+    documents: z.array(z.any()).default([]),
     entity: z.record(z.any(), z.any()),
     parentMachine: ObjectWithIdSchema.extend({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),
