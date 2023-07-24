@@ -6,11 +6,11 @@ import { formSchema } from './form.schema';
 import { useCallback } from 'react';
 
 export const AddressView = () => {
-  const { context, state, update, saveAndPerformTransition } = useViewState<KYBContext>();
+  const { context, state, saveAndPerformTransition } = useViewState<KYBContext>();
 
   const handleSubmit = useCallback(
     (values: BusinessAddressContext) => {
-      saveAndPerformTransition(values);
+      void saveAndPerformTransition(values);
     },
     [saveAndPerformTransition],
   );
@@ -21,7 +21,6 @@ export const AddressView = () => {
         className="max-w-[384px]"
         schema={formSchema}
         formData={context[state] as BusinessAddressContext}
-        onChange={update}
         onSubmit={handleSubmit}
       />
     </AppShell.FormContainer>

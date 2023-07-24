@@ -6,11 +6,11 @@ import { formSchema } from './form.schema';
 import { useCallback } from 'react';
 
 export const BusinessView = () => {
-  const { context, state, update, saveAndPerformTransition } = useViewState<KYBContext>();
+  const { context, state, saveAndPerformTransition } = useViewState<KYBContext>();
 
   const handleSubmit = useCallback(
     (values: BusinessInformationContext) => {
-      saveAndPerformTransition(values);
+      void saveAndPerformTransition(values);
     },
     [saveAndPerformTransition],
   );
@@ -21,7 +21,6 @@ export const BusinessView = () => {
         className="max-w-[384px]"
         schema={formSchema}
         formData={context[state] as BusinessInformationContext}
-        onChange={update}
         onSubmit={handleSubmit}
       />
     </AppShell.FormContainer>

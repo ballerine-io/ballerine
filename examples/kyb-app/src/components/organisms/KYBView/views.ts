@@ -9,9 +9,6 @@ export const kybViews: View[] = [
   {
     label: 'Personal Information',
     key: 'personalInformation',
-    meta: {
-      status: 'warning',
-    },
     Component: PersonalInformationView,
   },
   {

@@ -1,5 +1,4 @@
-import { SchemaStates } from '@app/common/providers/ViewStateProvider';
-import { kybViewSchema } from '@app/components/organisms/KYBView/kyb-view.schema';
+import { ViewsData } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository/types';
 
 export interface PersonalInformationContext {
   firstName: string;
@@ -29,7 +28,7 @@ export interface UBOSContext {
   email: string;
 }
 
-export interface KYBContext {
+export interface KYBContext extends ViewsData {
   state: string;
   personalInformation: PersonalInformationContext | null;
   businessInformation: BusinessInformationContext | null;

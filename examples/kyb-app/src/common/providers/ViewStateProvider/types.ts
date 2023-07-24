@@ -13,9 +13,8 @@ export interface InitialContext<TSchema extends SchemaBase> {
 export interface ViewStateContext<TGlobalContext = AnyObject> {
   next: () => void;
   prev: () => void;
-  update: (data: object, shared?: object) => void;
-  updateAsync: (data: object, shared?: object) => void;
-  saveAndPerformTransition: (data: object, shared?: object) => void;
+  update: (data: object, shared?: object) => Promise<object>;
+  saveAndPerformTransition: (data: object, shared?: object) => Promise<void>;
   context: TGlobalContext;
   state: string | number;
   steps: IStep[];
@@ -26,6 +25,7 @@ export type ViewStateSchema = MachineConfig<any, any, any>;
 export interface View {
   label: string;
   key: string;
+  active?: boolean;
   Component: React.ComponentType;
   meta?: StepMetadata;
 }

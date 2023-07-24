@@ -1,6 +1,8 @@
 import { KYBContext } from '@app/components/organisms/KYBView/types';
+import { kybViews } from '@app/components/organisms/KYBView/views';
 
 export const intiialKybContext: KYBContext = {
+  currentView: kybViews[0].key || '',
   state: 'idle',
   personalInformation: {
     firstName: '',
