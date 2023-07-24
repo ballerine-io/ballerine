@@ -1,4 +1,8 @@
 import { useSettings } from '@app/common/providers/SettingsProvider/hooks/useSettings';
+import { useViewState } from '@app/common/providers/ViewStateProvider';
+import { Stepper } from '@app/components/atoms/Stepper';
+import { Item } from '@app/components/atoms/Stepper/Item';
+import { VerticalLayout } from '@app/components/atoms/Stepper/layouts/Vertical';
 import { FormContainer } from '@app/components/layouts/AppShell/FormContainer';
 import { AnyChildren } from '@ballerine/ui';
 
@@ -10,6 +14,7 @@ interface Props {
 
 export const AppShell = ({ children, backButton, onBackButtonClick }: Props) => {
   const settings = useSettings();
+  const { steps, state, context } = useViewState();
 
   return (
     <div className="w-ful flex h-screen flex-nowrap">
@@ -17,17 +22,32 @@ export const AppShell = ({ children, backButton, onBackButtonClick }: Props) => 
         <div className="font-inter flex h-full flex-col">
           <div className="flex flex-1 flex-col pb-16">
             <div onClick={onBackButtonClick}>{backButton}</div>
-            <div className="pt-24">
+            <div className="pt-24 pb-16">
               <img src={settings.logo} alt={settings.appName} />
             </div>
-            <div className="flex-1 pt-12">
-              <h1 className="text-3xl font-bold">{settings.title}</h1>
-              <h2 className="mt-6">{settings.subtitle}</h2>
+            <div className="h-[236px]">
+              <Stepper>
+                <VerticalLayout>
+                  {steps.map(step => {
+                    return (
+                      <Item
+                        key={`step-${step.index}`}
+                        active={state === step.dataAlias}
+                        label={step.label}
+                        status={step.meta?.status}
+                      />
+                    );
+                  })}
+                </VerticalLayout>
+              </Stepper>
             </div>
-            <span dangerouslySetInnerHTML={{ __html: settings.contactInformation }}></span>
           </div>
           <div>
-            <img src={'/poweredby.svg'} />
+            <div
+              dangerouslySetInnerHTML={{ __html: settings.contactInformation }}
+              className="border-b pb-12"
+            ></div>
+            <img src={'/poweredby.svg'} className="mt-6" />
           </div>
         </div>
       </div>

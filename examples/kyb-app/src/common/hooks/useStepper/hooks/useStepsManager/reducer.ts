@@ -2,7 +2,6 @@ import {
   StepsManagerActions,
   StepsRepositoryState,
 } from '@app/common/hooks/useStepper/hooks/useStepsManager/types';
-import { StepStatus } from '@app/components/atoms/Stepper/types';
 
 const initialState: StepsRepositoryState = {
   activeStep: 0,
@@ -16,48 +15,32 @@ export function stepsRepisotoryReducer(
 ): StepsRepositoryState {
   if (action.type === 'NEXT') {
     const nextStepIndex = state.activeStep + 1;
+    const isInRange = Boolean(state.steps[nextStepIndex]);
 
     return {
       ...state,
-      steps: state.steps
-        .map((step, index) => ({
-          ...step,
-          status: (state.activeStep === index && step.status === 'completed'
-            ? step.status
-            : 'idle') as StepStatus,
-        }))
-        .map((step, index) => ({
-          ...step,
-          status: index === nextStepIndex ? 'current' : step.status,
-        })),
-      activeStep: state.activeStep + 1,
+      activeStep: isInRange ? nextStepIndex : state.activeStep,
     };
   }
 
   if (action.type === 'PREV') {
+    const prevStepIndex = state.activeStep - 1;
+    const isInRange = Boolean(state.steps[prevStepIndex]);
+
     return {
       ...state,
-      steps: state.steps.map((step, index) => ({
-        ...step,
-        status: index === state.activeStep - 1 ? 'current' : 'idle',
-      })),
-      activeStep: state.activeStep - 1,
+      activeStep: isInRange ? prevStepIndex : state.activeStep,
     };
   }
 
   if (action.type === 'COMPLETE-CURRENT') {
     return {
       ...state,
-      meta: {
-        ...state.meta,
-        [state.activeStep]: {
-          data: action.data,
-        },
-      },
-      steps: state.steps.map((step, index) => ({
-        ...step,
-        status: state.activeStep === index ? 'completed' : step.status,
-      })),
+      steps: state.steps.map(step =>
+        step.index === state.activeStep
+          ? { ...step, meta: { ...step.meta, status: 'completed' } }
+          : step,
+      ),
     };
   }
 
@@ -70,6 +53,7 @@ export function stepsRepisotoryReducer(
         ...state.meta,
         [stepIndex]: {
           ...state.meta[stepIndex],
+          status: 'error',
           errorReason: reason,
         },
       },
@@ -85,6 +69,7 @@ export function stepsRepisotoryReducer(
         ...state,
         [stepIndex]: {
           ...state.meta[stepIndex],
+          status: 'warning',
           warningReason: reason,
         },
       },
