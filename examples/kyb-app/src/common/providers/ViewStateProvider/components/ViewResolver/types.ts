@@ -1,6 +1,1 @@
-import { SchemaBase, SchemaStates } from '@app/common/providers/ViewStateProvider/types';
-
-export type Views<TSchema extends SchemaBase> = Record<
-  SchemaStates<TSchema>,
-  React.ComponentType<unknown>
->;
+export type Views<TKeys extends PropertyKey> = Record<TKeys, React.ComponentType<unknown>>;

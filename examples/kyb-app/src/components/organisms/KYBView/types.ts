@@ -10,28 +10,32 @@ export interface PersonalInformationContext {
 }
 
 export interface DocumentsContext {
-  information: {
-    registrationNumber: string;
-    website: string;
-  };
-  address: {
-    address: string;
-  };
-  documents: {
-    registrationCertificate: string;
-    addressProof: string;
-  };
-  shareholders: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  }[];
+  registrationCertificate: string;
+  addressProof: string;
+}
+
+export interface BusinessInformationContext {
+  registrationNumber: string;
+  website: string;
+}
+
+export interface BusinessAddressContext {
+  address: string;
+}
+
+export interface UBOSContext {
+  firstName: string;
+  lastName: string;
+  email: string;
 }
 
 export interface KYBContext {
-  state: SchemaStates<typeof kybViewSchema>;
+  state: string;
   personalInformation: PersonalInformationContext | null;
+  businessInformation: BusinessInformationContext | null;
+  businessAddress: BusinessAddressContext | null;
   documents: DocumentsContext | null;
+  ubos: UBOSContext[] | null;
   shared: {
     endUserId?: string;
     businessId?: string;

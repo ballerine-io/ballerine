@@ -10,17 +10,8 @@ export function useStepper(_steps: IStep[], params: StepperParams): UseStepperHo
   });
 
   const currentStep = useMemo(() => {
-    const current = state.steps.find(step => step.status === 'current');
-
-    if (current) return current;
-
-    const completed = state.steps.find(step => step.status === 'completed');
-    if (completed) return completed;
-
-    const idleFallback = state.steps.find(step => step.status === 'idle');
-
-    return idleFallback;
-  }, [state.steps]);
+    return state.steps[state.activeStep];
+  }, [state.steps, state.activeStep]);
 
   const prevStep = useCallback(() => {
     dispatch(actions.prevStepAction());
@@ -48,11 +39,21 @@ export function useStepper(_steps: IStep[], params: StepperParams): UseStepperHo
     [actions.warningStepAction, dispatch],
   );
 
+  const update = useCallback(
+    (stepIndex: number, payload: object) => {
+      dispatch(actions.updateStepDataAction(stepIndex, payload));
+    },
+    [actions.updateStepDataAction, dispatch],
+  );
+
   return {
     currentStep,
     steps: state.steps,
     prevStep,
     nextStep,
+    invalidate,
+    warning,
     completeCurrent,
+    update,
   };
 }

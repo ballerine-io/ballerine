@@ -8,14 +8,7 @@ export const BackButton = () => {
   const { state, prev } = useViewState<typeof kybViewSchema>();
   const { leaveText } = useSettings();
 
-  const isExit = useMemo(
-    () =>
-      state === 'idle' ||
-      state === 'personalInformation' ||
-      state === 'final' ||
-      state === 'revision',
-    [state],
-  );
+  const isExit = useMemo(() => state === 'personalInformation', [state]);
 
   return (
     <div>

@@ -9,19 +9,17 @@ export const intiialKybContext: KYBContext = {
     phone: '',
     companyName: '',
   },
+  businessInformation: {
+    registrationNumber: '',
+    website: '',
+  },
+  businessAddress: {
+    address: '',
+  },
+  ubos: [],
   documents: {
-    information: {
-      registrationNumber: '',
-      website: '',
-    },
-    address: {
-      address: '',
-    },
-    documents: {
-      registrationCertificate: '',
-      addressProof: '',
-    },
-    shareholders: [],
+    registrationCertificate: '',
+    addressProof: '',
   },
   shared: {},
 };

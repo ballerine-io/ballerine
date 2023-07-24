@@ -1,15 +1,15 @@
 import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
-import { DocumentsContext, KYBContext } from '@app/components/organisms/KYBView/types';
-import { formSchema } from '@app/components/organisms/KYBView/views/DocumentsView/form.schema';
+import { BusinessAddressContext, KYBContext } from '@app/components/organisms/KYBView/types';
+import { formSchema } from './form.schema';
 import { useCallback } from 'react';
 
-export const DocumentsView = () => {
+export const AddressView = () => {
   const { context, state, update, saveAndPerformTransition } = useViewState<KYBContext>();
 
   const handleSubmit = useCallback(
-    (values: DocumentsContext) => {
+    (values: BusinessAddressContext) => {
       saveAndPerformTransition(values);
     },
     [saveAndPerformTransition],
@@ -17,22 +17,12 @@ export const DocumentsView = () => {
 
   return (
     <AppShell.FormContainer>
-      <DynamicForm<DocumentsContext>
+      <DynamicForm<BusinessAddressContext>
         className="max-w-[384px]"
         schema={formSchema}
-        formData={context[state] as DocumentsContext}
-        uiSchema={{
-          registrationCertificate: {
-            'ui:field': 'FileInput',
-          },
-          addressProof: {
-            'ui:field': 'FileInput',
-          },
-        }}
+        formData={context[state] as BusinessAddressContext}
         onChange={update}
-        onSubmit={values => {
-          void handleSubmit(values);
-        }}
+        onSubmit={handleSubmit}
       />
     </AppShell.FormContainer>
   );

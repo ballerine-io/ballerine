@@ -9,21 +9,20 @@ import { Provider } from './stepper.context';
 import { Idle } from './components/atoms/indicators/Idle';
 import { Warning } from './components/atoms/indicators/Warning';
 import { Completed } from './components/atoms/indicators/Completed';
-import { Current } from './components/atoms/indicators/Current';
 import { BaseLabel } from '@app/components/atoms/Stepper/components/atoms/BaseLabel/BaseLabel';
 
 const baseIndicators: StepperIndicatorMap = {
   idle: Idle,
   warning: Warning,
+  error: Warning,
   completed: Completed,
-  current: Current,
 };
 
 const baseLabelsMap: StepperLabelsMap = {
   idle: ({ text }) => <BaseLabel variant="idle" text={text} />,
   warning: ({ text }) => <BaseLabel variant="warning" text={text} />,
+  error: ({ text }) => <BaseLabel variant="warning" text={text} />,
   completed: ({ text }) => <BaseLabel variant="completed" text={text} />,
-  current: ({ text }) => <BaseLabel variant="current" text={text} />,
 };
 
 interface Props {
@@ -49,7 +48,7 @@ export const Stepper = ({ children, indicators, labels }: Props) => {
 
   return (
     <Provider value={context}>
-      <div className="flex h-full w-full p-4">{children}</div>
+      <div className="flex h-full w-full">{children}</div>
     </Provider>
   );
 };

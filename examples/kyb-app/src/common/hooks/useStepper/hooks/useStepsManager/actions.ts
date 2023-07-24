@@ -3,6 +3,7 @@ import {
   InvalidateStepActionPayload,
   NextStepActionPayload,
   PrevStepActionPayload,
+  UpdateStepDataAction,
   WarningStepActionPayload,
 } from '@app/common/hooks/useStepper/hooks/useStepsManager/types';
 
@@ -19,6 +20,12 @@ export const warningStepAction = (
   stepIndex: number,
   reason?: string,
 ): WarningStepActionPayload => ({ type: 'WARNING', stepIndex, reason });
+
+export const updateStepDataAction = (stepIndex: number, payload: object): UpdateStepDataAction => ({
+  type: 'UPDATE-DATA',
+  stepIndex,
+  payload,
+});
 
 export const nextStepAction = (): NextStepActionPayload => ({ type: 'NEXT' });
 

@@ -1,3 +1,4 @@
+import { IStep, StepMetadata } from '@app/common/hooks/useStepper';
 import { AnyObject } from '@ballerine/ui';
 import { MachineConfig } from 'xstate';
 
@@ -9,20 +10,22 @@ export interface InitialContext<TSchema extends SchemaBase> {
   state: SchemaStates<TSchema>;
 }
 
-export interface ViewStateContext<
-  TGlobalContext = AnyObject,
-  TViewContext = AnyObject,
-  TStates = unknown,
-> {
+export interface ViewStateContext<TGlobalContext = AnyObject> {
   next: () => void;
   prev: () => void;
   update: (data: object, shared?: object) => void;
   updateAsync: (data: object, shared?: object) => void;
   saveAndPerformTransition: (data: object, shared?: object) => void;
-  send: (type: TStates, formData?: object) => void;
-  state: TStates;
-  stateData: TViewContext;
   context: TGlobalContext;
+  state: string | number;
+  steps: IStep[];
 }
 
 export type ViewStateSchema = MachineConfig<any, any, any>;
+
+export interface View {
+  label: string;
+  key: string;
+  Component: React.ComponentType;
+  meta?: StepMetadata;
+}

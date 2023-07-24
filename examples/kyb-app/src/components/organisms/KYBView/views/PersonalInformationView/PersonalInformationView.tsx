@@ -7,7 +7,7 @@ import { formSchema } from '@app/components/organisms/KYBView/views/PersonalInfo
 import { useCallback } from 'react';
 
 export const PersonalInformationView = () => {
-  const { context, state, saveAndPerformTransition, update } = useViewState();
+  const { context, state, saveAndPerformTransition } = useViewState();
   const { createUserAsync } = useCreateEndUserMutation();
 
   const handleSubmit = useCallback(
@@ -38,7 +38,6 @@ export const PersonalInformationView = () => {
             },
           },
         }}
-        onChange={update}
         schema={formSchema}
         onSubmit={handleSubmit}
       />
