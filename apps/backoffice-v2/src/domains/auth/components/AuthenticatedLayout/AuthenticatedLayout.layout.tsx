@@ -1,6 +1,6 @@
 import { Header } from '../../../../common/components/organisms/Header';
 import { useAuthenticatedLayoutLogic } from './hooks/useAuthenticatedLayoutLogic/useAuthenticatedLayoutLogic';
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { FunctionComponent } from 'react';
 import { FullScreenLoader } from '../../../../common/components/molecules/FullScreenLoader/FullScreenLoader';
 
@@ -10,17 +10,17 @@ export const AuthenticatedLayout: FunctionComponent = () => {
 
   if (isLoading) return <FullScreenLoader />;
 
-  // if (shouldRedirect) {
-  //   return (
-  //     <Navigate
-  //       to={redirectUnauthenticatedTo}
-  //       replace
-  //       state={{
-  //         from: location,
-  //       }}
-  //     />
-  //   );
-  // }
+  if (shouldRedirect) {
+    return (
+      <Navigate
+        to={redirectUnauthenticatedTo}
+        replace
+        state={{
+          from: location,
+        }}
+      />
+    );
+  }
 
   return (
     <div className="drawer-mobile drawer">

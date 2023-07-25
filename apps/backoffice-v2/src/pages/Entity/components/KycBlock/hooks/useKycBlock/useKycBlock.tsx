@@ -1,10 +1,11 @@
-import { TWorkflowById } from '../../../../domains/workflows/fetchers';
-import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { convertSnakeCaseToTitleCase, omitPropsFromObject } from './utils';
-import { octetToFileType } from '../../../../common/octet-to-file-type/octet-to-file-type';
-
-export const capitalize = (str: string) =>
-  str?.charAt(0)?.toUpperCase() + str?.slice(1)?.toLowerCase();
+import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
+import {
+  convertSnakeCaseToTitleCase,
+  omitPropsFromObject,
+} from '../../../../hooks/useEntity/utils';
+import { octetToFileType } from '../../../../../../common/octet-to-file-type/octet-to-file-type';
+import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 
 export const useKycBlock = (childWorkflow: TWorkflowById['childWorkflows'][number]) => {
   const docsData = useStorageFilesQuery(
@@ -12,6 +13,15 @@ export const useKycBlock = (childWorkflow: TWorkflowById['childWorkflows'][numbe
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
+  const results = [];
+  childWorkflow?.context?.documents?.forEach((document, docIndex) => {
+    document?.pages?.forEach((page, pageIndex) => {
+      if (!results[docIndex]) {
+        results[docIndex] = [];
+      }
+      results[docIndex][pageIndex] = docsData?.shift()?.data;
+    });
+  });
   const decision = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.length
     ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.flatMap(key => [
         {
@@ -35,15 +45,6 @@ export const useKycBlock = (childWorkflow: TWorkflowById['childWorkflows'][numbe
           dropdownOptions: undefined,
         },
         {
-          title: 'Selfie face match',
-          value: 'approved',
-          type: 'text',
-          format: 'text',
-          pattern: '',
-          isEditable: false,
-          dropdownOptions: undefined,
-        },
-        {
           title: 'Issues',
           value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.decision
             ?.riskLabels?.length
@@ -59,8 +60,7 @@ export const useKycBlock = (childWorkflow: TWorkflowById['childWorkflows'][numbe
         },
         {
           title: 'Full report',
-          value: 'https://www.veriff.com',
-          valueAlias: 'View',
+          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key],
           type: 'text',
           format: 'text',
           pattern: '',
@@ -122,16 +122,6 @@ export const useKycBlock = (childWorkflow: TWorkflowById['childWorkflows'][numbe
         fileType: type,
       })) ?? [],
   );
-
-  const results = [];
-  childWorkflow?.context?.documents?.forEach((document, docIndex) => {
-    document?.pages?.forEach((page, pageIndex) => {
-      if (!results[docIndex]) {
-        results[docIndex] = [];
-      }
-      results[docIndex][pageIndex] = docsData?.shift()?.data;
-    });
-  });
 
   return [
     [
