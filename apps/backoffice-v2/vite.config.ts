@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react-swc';
 import { resolve } from 'path';
 import { defineConfig } from 'vitest/config';
 import terminal from 'vite-plugin-terminal';
+import mkcert from 'vite-plugin-mkcert';
 
 export default defineConfig(configEnv => {
   const isDevelopment = configEnv.mode === 'development';
@@ -10,7 +11,8 @@ export default defineConfig(configEnv => {
     server: {
       open: true,
       host: true,
-      port: 5137,
+      port: 443,
+      https: true,
     },
     plugins: [
       terminal({
@@ -18,6 +20,7 @@ export default defineConfig(configEnv => {
         strip: false,
       }),
       react(),
+      mkcert(),
     ],
     resolve: {
       alias: {
