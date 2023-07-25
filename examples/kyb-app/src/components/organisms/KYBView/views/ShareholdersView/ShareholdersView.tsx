@@ -4,51 +4,37 @@ import { AppShell } from '@app/components/layouts/AppShell';
 import { KYBContext, UBOSContext } from '@app/components/organisms/KYBView/types';
 import { useCallback } from 'react';
 import { formSchema } from './form.schema';
-import { serializeBusinessData } from '@app/components/organisms/KYBView/views/ShareholdersView/helpers/serialize-business-data';
-import { serializeWorkflowRunData } from '@app/components/organisms/KYBView/views/ShareholdersView/helpers/serialize-workflow-run-data';
-import { updateBusiness } from '@app/domains/business';
-import { runAndStartWorkflowRequest } from '@app/domains/workflows';
 import { useSnapshot } from '@app/common/providers/SnapshotProvider/hooks/useSnapshot';
+import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
 
 export const ShareholdersView = () => {
-  const { context, state } = useViewState<KYBContext>();
+  const { context, state, saveAndPerformTransition, finish } = useViewState<KYBContext>();
   const { clear } = useSnapshot();
 
   const handleSubmit = useCallback(
-    async (values: UBOSContext[]): Promise<void> => {
-      const serializedBusinessPayload = serializeBusinessData(
-        {
-          ...context,
-          flowData: {
-            ...context.flowData,
-            ubos: values,
-          },
-        },
-        context.shared.businessId,
-      );
-      await updateBusiness(serializedBusinessPayload);
-
-      const serializedRunPayload = await serializeWorkflowRunData({
+    (values: UBOSContext[]) => {
+      const finalContext = {
         ...context,
         flowData: {
           ...context.flowData,
           ubos: values,
         },
-      });
+      };
 
-      await runAndStartWorkflowRequest(serializedRunPayload);
+      void saveAndPerformTransition(values);
+      finish(finalContext);
       void clear();
     },
-    [context, clear],
+    [context, clear, saveAndPerformTransition, finish],
   );
 
   return (
-    <AppShell.FormContainer>
+    <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<UBOSContext[]>
         className="max-w-[384px]"
         schema={formSchema}
         formData={(context.flowData[state] as UBOSContext[]) || []}
-        onSubmit={values => void handleSubmit(values)}
+        onSubmit={values => handleSubmit(values)}
       />
     </AppShell.FormContainer>
   );

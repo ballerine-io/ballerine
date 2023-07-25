@@ -1,6 +1,7 @@
 import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
+import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
 import { DocumentsContext, KYBContext } from '@app/components/organisms/KYBView/types';
 import { formSchema } from '@app/components/organisms/KYBView/views/DocumentsView/form.schema';
 import { useCallback } from 'react';
@@ -16,7 +17,7 @@ export const DocumentsView = () => {
   );
 
   return (
-    <AppShell.FormContainer>
+    <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<DocumentsContext>
         className="max-w-[384px]"
         schema={formSchema}

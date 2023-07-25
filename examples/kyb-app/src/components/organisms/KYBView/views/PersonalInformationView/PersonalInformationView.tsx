@@ -1,6 +1,7 @@
 import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
+import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
 import { useCreateEndUserMutation } from '@app/components/organisms/KYBView/hooks/useCreateEndUserMutation';
 import { KYBContext, PersonalInformationContext } from '@app/components/organisms/KYBView/types';
 import { formSchema } from '@app/components/organisms/KYBView/views/PersonalInformationView/form.schema';
@@ -27,7 +28,7 @@ export const PersonalInformationView = () => {
   );
 
   return (
-    <AppShell.FormContainer>
+    <AppShell.FormContainer header={<ViewHeader progressBar={false} />}>
       <DynamicForm<PersonalInformationContext>
         className="max-w-[384px]"
         formData={context.flowData[state] as PersonalInformationContext}

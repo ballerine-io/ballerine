@@ -4,7 +4,8 @@ import { ViewWrapper } from '@app/components/organisms/KYBView/flows/BaseFlow/co
 import { useBaseFlow } from '@app/components/organisms/KYBView/flows/BaseFlow/useBaseFlow';
 
 export const BaseFlow = () => {
-  const { storage, context, views, handleViewChange, handleViewUpdate } = useBaseFlow();
+  const { storage, context, views, handleViewChange, handleViewUpdate, handleFinish } =
+    useBaseFlow();
 
   return (
     <SnapshotProvider storage={storage}>
@@ -14,6 +15,7 @@ export const BaseFlow = () => {
         viewWrapper={ViewWrapper}
         afterUpdate={handleViewUpdate}
         onViewChange={handleViewChange}
+        onFinish={data => void handleFinish(data)}
       />
     </SnapshotProvider>
   );

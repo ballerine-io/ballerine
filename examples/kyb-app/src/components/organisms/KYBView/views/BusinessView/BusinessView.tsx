@@ -4,6 +4,7 @@ import { AppShell } from '@app/components/layouts/AppShell';
 import { BusinessInformationContext, KYBContext } from '@app/components/organisms/KYBView/types';
 import { formSchema } from './form.schema';
 import { useCallback } from 'react';
+import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
 
 export const BusinessView = () => {
   const { context, state, saveAndPerformTransition } = useViewState<KYBContext>();
@@ -16,7 +17,7 @@ export const BusinessView = () => {
   );
 
   return (
-    <AppShell.FormContainer>
+    <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<BusinessInformationContext>
         className="max-w-[384px]"
         schema={formSchema}

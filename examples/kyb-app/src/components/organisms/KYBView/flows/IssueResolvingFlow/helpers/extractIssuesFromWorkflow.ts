@@ -11,7 +11,7 @@ export const extractIssuesFromWorkflow = (workflow: Workflow) => {
 
   const isHasDocumentsIssues =
     workflow.context.documents.length &&
-    workflow.context.documents.some(document => document.decision.status === 'revision');
+    workflow.context.documents.some(document => document.decision?.status === 'revision');
 
   if (isHasDocumentsIssues) {
     const documentTypesToPropertyNamesMap: Record<string, string> = {
