@@ -84,7 +84,7 @@ describe('workflow-runner', () => {
         // @ts-expect-error - see the comments on `webhookPluginsSchemas`
         webhookPluginsSchemas,
       );
-      it('it transitions to successAction and persist response to context', async () => {
+      it('transitions to successAction and persist response to context', async () => {
         // @ts-expect-error - we are testing the plugin
         await workflow.sendEvent('ALL_GOOD');
         expect(serverRequestUrl).toEqual(

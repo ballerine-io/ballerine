@@ -27,7 +27,7 @@ const kycIndividualRequestSchema = {
         },
         gender: {
           type: 'string',
-          enum: ['male', 'female', 'other'],
+          enum: ['male', 'female'],
         },
         dateOfBirth: {
           type: 'string',

@@ -1,5 +1,6 @@
 import { BaseContextTransformer, THelperFormatingLogic } from './types';
 import { TContext } from '../types';
+import imageType from 'image-type';
 
 export type THelperMethod = 'regex' | 'imageUrlToBase64';
 export class HelpersTransformer extends BaseContextTransformer {
@@ -31,20 +32,28 @@ export class HelpersTransformer extends BaseContextTransformer {
     return context;
   }
 
-  async regex(attribute: string, value: string) {
+  regex(attribute: string, value: string) {
     const result = attribute.match(new RegExp(value));
 
-    return Promise.resolve(result ? result[0] : null);
+    return result ? result[0] : null;
   }
 
   async imageUrlToBase64(url: string, _value: string) {
     const response = await fetch(url);
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const Base64Image = buffer.toString('base64');
-    const base64Prefix = 'data:image/png;base64,';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+    const type = await imageType(buffer);
 
-    return base64Prefix + Base64Image;
+    if (!type) {
+      throw new Error('Could not detect image type');
+    }
+
+    const base64Image = buffer.toString('base64');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/restrict-template-expressions
+    const base64Prefix = `data:${type.mime};base64,`;
+
+    return base64Prefix + base64Image;
   }
 
   getNestedProperty(record: Record<string, any>, path: Array<string>) {
