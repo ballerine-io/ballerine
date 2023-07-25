@@ -6,16 +6,25 @@ export function useViewsDataRepository<T extends ViewsData>(initial = {} as T) {
   const [data, setData] = useState<T>(initial);
 
   const update = useCallback(
-    (key: string | number, data: T[any], shared?: AnyObject): Promise<AnyObject> => {
+    (
+      key: string | number,
+      data: T[any],
+      shared: AnyObject = {},
+      completed = false,
+    ): Promise<AnyObject> => {
       return new Promise(resolve => {
         setData(prev => {
-          const nextData = {
+          const nextData: T = {
             ...prev,
             flowData: {
               ...prev.flowData,
               [key]: { ...(prev.flowData[key] as AnyObject), ...data },
             },
             shared: shared ? { ...prev.shared, ...shared } : prev.shared,
+            completionMap: {
+              ...prev.completionMap,
+              [key]: completed,
+            },
           };
 
           resolve(nextData);

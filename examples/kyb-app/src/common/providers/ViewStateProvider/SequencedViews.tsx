@@ -51,8 +51,8 @@ export function SequencedViews<TContext extends ViewsData>({
   }, [currentStep.dataAlias, viewsData.currentView, onViewChange]);
 
   const update = useCallback(
-    async (payload: object, shared?: object): Promise<object> => {
-      const updatedData = await _update(currentStep.dataAlias, payload, shared);
+    async (payload: object, shared: object = {}, completed?: boolean): Promise<object> => {
+      const updatedData = await _update(currentStep.dataAlias, payload, shared, completed);
       afterUpdate && afterUpdate(updatedData);
       return updatedData;
     },
@@ -61,7 +61,7 @@ export function SequencedViews<TContext extends ViewsData>({
 
   const saveAndPerformTransition = useCallback(
     async (payload: object, shared?: object) => {
-      await update(payload, shared);
+      await update(payload, shared, true);
       completeCurrent();
       nextStep();
     },

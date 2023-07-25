@@ -12,8 +12,6 @@ export const IssueResolvingFlow = () => {
   if (isLoading) return <LoadingPlaceholder />;
   if (loadError) return <FailedToLoadPlaceholder message={loadError.message} />;
 
-  console.log('ctx', context);
-
   return (
     <SnapshotProvider storage={storage}>
       <SequencedViews
