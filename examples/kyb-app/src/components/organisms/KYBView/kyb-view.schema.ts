@@ -26,4 +26,5 @@ export const intiialKybContext: KYBContext = {
     },
   },
   shared: {},
+  completionMap: {},
 };

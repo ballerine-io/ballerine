@@ -14,8 +14,6 @@ export const PersonalInformationView = () => {
     (values: PersonalInformationContext) => {
       createUserAsync(values)
         .then(result => {
-          console.log('valuies', values);
-
           void saveAndPerformTransition(values, {
             endUserId: result.endUserId,
             businessId: result.businessId,

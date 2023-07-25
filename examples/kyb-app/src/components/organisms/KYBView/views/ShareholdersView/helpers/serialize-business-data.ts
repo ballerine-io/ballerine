@@ -6,7 +6,6 @@ export const serializeBusinessData = (
   businessId: string,
 ): UpdateBusinessDto => {
   const { businessAddress, businessInformation } = context.flowData;
-  console.log('flow data', context.flowData);
 
   const dto: UpdateBusinessDto = {
     businessId,
