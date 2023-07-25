@@ -5,7 +5,7 @@ import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 
-export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat';
+export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
 @Injectable()
 export class WorkflowRuntimeDataRepository {
