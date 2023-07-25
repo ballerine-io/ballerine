@@ -22,10 +22,8 @@ import { Select } from '../../../../common/components/atoms/Select/Select';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { isObject } from '@ballerine/common';
-import { Util } from 'leaflet';
-import { JsonDialog } from '@ballerine/ui';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
-import isArray = Util.isArray;
+import { JsonDialog } from '../../../../common/components/molecules/JsonDialog/JsonDialog';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -140,14 +138,14 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                     const isInput = [
                       !isValidUrl(value) || isEditable,
                       !isObject(value),
-                      !isArray(value),
+                      !Array.isArray(value),
                     ].every(Boolean);
                     const isSelect = isInput && !!dropdownOptions;
 
                     return (
                       <FormItem>
                         <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
-                        {(isObject(value) || isArray(value)) && (
+                        {(isObject(value) || Array.isArray(value)) && (
                           <div
                             className={`flex items-end justify-start`}
                             key={keyFactory(valueId, title, `form-field`)}

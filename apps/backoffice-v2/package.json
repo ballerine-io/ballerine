@@ -85,6 +85,7 @@
     "react-hot-toast": "^2.4.0",
     "react-i18next": "^12.1.4",
     "react-image-crop": "^10.0.9",
+    "react-json-view": "^1.21.3",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.11.2",
     "react-zoom-pan-pinch": "^3.0.8",
@@ -136,6 +137,10 @@
     "vite": "^4.3.9",
     "vite-plugin-mkcert": "^1.16.0",
     "vitest": "^0.29.8"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0"
   },
   "msw": {
     "workerDirectory": "public"
