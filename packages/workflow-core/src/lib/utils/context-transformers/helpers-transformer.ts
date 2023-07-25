@@ -1,6 +1,6 @@
 import { BaseContextTransformer, THelperFormatingLogic } from './types';
 import { TContext } from '../types';
-import imageType from 'image-type';
+import * as FileType from 'file-type';
 
 export type THelperMethod = 'regex' | 'imageUrlToBase64';
 export class HelpersTransformer extends BaseContextTransformer {
@@ -42,15 +42,13 @@ export class HelpersTransformer extends BaseContextTransformer {
     const response = await fetch(url);
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-    const type = await imageType(buffer);
+    const type = await FileType.fileTypeFromBuffer(buffer);
 
     if (!type) {
       throw new Error('Could not detect image type');
     }
 
     const base64Image = buffer.toString('base64');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/restrict-template-expressions
     const base64Prefix = `data:${type.mime};base64,`;
 
     return base64Prefix + base64Image;
