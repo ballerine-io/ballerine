@@ -53,9 +53,9 @@ async function main() {
     cookieSession({
       name: 'session',
       keys: [env.SESSION_SECRET],
-      httpOnly: true,
+      httpOnly: env.NODE_ENV === 'production' ? true : false,
       secure: false,
-      sameSite: 'strict',
+      sameSite: env.NODE_ENV === 'production' ? 'strict' : false,
       maxAge: 1000 * 60 * 60 * 1, // 1 hour(s),
     }),
   );
