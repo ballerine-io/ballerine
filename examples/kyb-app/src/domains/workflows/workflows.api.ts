@@ -18,7 +18,9 @@ export const runWorkflowRequest = async (dto: RunWorkflowDto): Promise<void> => 
     .json<{ workflowRuntimeId: string }>();
 };
 
-export const runAndStartWorkflowRequest = async (dto: RunWorkflowDto): Promise<void> => {
+export const runAndStartWorkflowRequest = async (
+  dto: RunWorkflowDto,
+): Promise<{ workflowRuntimeId: string }> => {
   const runPayload = runAndStartWorkflowSerialize(dto);
 
   const runResult = await request
@@ -32,6 +34,8 @@ export const runAndStartWorkflowRequest = async (dto: RunWorkflowDto): Promise<v
       name: 'start',
     },
   });
+
+  return runResult;
 };
 
 export const fetchWorkflow = async (query: GetWofklowDto): Promise<Workflow> => {

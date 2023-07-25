@@ -5,11 +5,12 @@ import { enableActiveOnFirstViewWithIssue } from '@app/components/organisms/KYBV
 import { useFlowContext } from '@app/components/organisms/KYBView/hooks/useFlowContext';
 import { useQueryValues } from '@app/components/organisms/KYBView/hooks/useQueryParams';
 import { intiialKybContext } from '@app/components/organisms/KYBView/kyb-view.schema';
+import { RevisionStorageService } from '@app/components/organisms/KYBView/services/revision-storage-service/revision-storage-service';
 import { KYBContext, KYBQueryParams } from '@app/components/organisms/KYBView/types';
 import { kybViews } from '@app/components/organisms/KYBView/views';
 import { useWorkflowQuery } from '@app/components/organisms/KYBView/views/RevisionView/hooks/useWorkflowQuery';
 import { AnyObject } from '@ballerine/ui';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 export const useIssueResolvingFlow = () => {
   const { workflowRuntimeId } = useQueryValues<KYBQueryParams>();
@@ -28,7 +29,18 @@ export const useIssueResolvingFlow = () => {
     return context;
   };
 
-  const { storage, context, save } = useFlowContext(eraseContextWithIssues);
+  const revisionStorage = useMemo(
+    () => new RevisionStorageService(workflowRuntimeId),
+    [workflowRuntimeId],
+  );
+
+  const { storage, context, save } = useFlowContext(revisionStorage, eraseContextWithIssues);
+
+  useEffect(() => {
+    if (!storage.getData()) {
+      location.href = '/';
+    }
+  }, [storage]);
 
   const processedViews = useMemo(() => {
     let views = kybViews;

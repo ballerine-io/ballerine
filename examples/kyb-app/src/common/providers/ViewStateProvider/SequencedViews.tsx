@@ -17,6 +17,7 @@ interface Props<TContext extends ViewsData> {
   initialContext?: TContext;
   afterUpdate?: (viewsData: AnyObject) => void;
   onViewChange?: (viewKey: string) => void;
+  onFinish?: (context: TContext) => void;
 }
 
 export function SequencedViews<TContext extends ViewsData>({
@@ -25,6 +26,7 @@ export function SequencedViews<TContext extends ViewsData>({
   viewWrapper,
   onViewChange,
   afterUpdate,
+  onFinish,
 }: Props<TContext>) {
   const ViewWrapperComponent = viewWrapper;
   const paths = useMemo(() => convertViewsToPaths(views), [views]);
@@ -68,11 +70,23 @@ export function SequencedViews<TContext extends ViewsData>({
     [update, nextStep, completeCurrent],
   );
 
+  const finish = useCallback(
+    (context: TContext) => {
+      onFinish && onFinish(context);
+    },
+    [onFinish],
+  );
+
   const context = useMemo(() => {
     const ctx: ViewStateContext<AnyObject> = {
       context: viewsData,
       state: currentStep.dataAlias,
       steps: steps,
+      stepper: {
+        currentStep: currentStep.index + 1,
+        totalSteps: steps.length,
+      },
+      finish,
       update,
       saveAndPerformTransition,
       next: nextStep,
@@ -80,7 +94,7 @@ export function SequencedViews<TContext extends ViewsData>({
     };
 
     return ctx;
-  }, [viewsData, currentStep, steps, update, nextStep, prevStep, saveAndPerformTransition]);
+  }, [viewsData, currentStep, steps, update, nextStep, prevStep, saveAndPerformTransition, finish]);
 
   return (
     <Provider value={context}>

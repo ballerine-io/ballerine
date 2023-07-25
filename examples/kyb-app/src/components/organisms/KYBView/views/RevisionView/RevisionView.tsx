@@ -13,7 +13,7 @@ import { useCallback, useLayoutEffect, useMemo } from 'react';
 
 export const RevisionView = () => {
   const { clear } = useSnapshot();
-  const { context, state, update } = useViewState();
+  const { context, state } = useViewState();
   const { workflowRuntimeId } = useQueryValues<KYBQueryParams>();
   const { isFailedToLoad, isLoading, error, workflow } = useWorkflowQuery(workflowRuntimeId);
 
@@ -53,7 +53,6 @@ export const RevisionView = () => {
           formData={context[state] as object}
           schema={formAssets.schema}
           uiSchema={formAssets.uiSchema}
-          onChange={update}
           onSubmit={values => void handleSubmit(values)}
         />
       ) : null}

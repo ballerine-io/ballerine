@@ -5,6 +5,7 @@ export const formSchema: RJSFSchema = {
   description:
     'Add all natural persons that own or control, directly or Indirectly more than 25% of the Company.',
   type: 'array',
+  minItems: 1,
   items: {
     title: 'Shareholder',
     type: 'object',

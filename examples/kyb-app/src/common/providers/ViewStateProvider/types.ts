@@ -10,14 +10,21 @@ export interface InitialContext<TSchema extends SchemaBase> {
   state: SchemaStates<TSchema>;
 }
 
+export interface StepperParams {
+  currentStep: number;
+  totalSteps: number;
+}
+
 export interface ViewStateContext<TGlobalContext = AnyObject> {
   next: () => void;
   prev: () => void;
   update: (data: object, shared?: object) => Promise<object>;
   saveAndPerformTransition: (data: object, shared?: object) => Promise<void>;
+  finish: (context: TGlobalContext) => void;
   context: TGlobalContext;
   state: string | number;
   steps: IStep[];
+  stepper: StepperParams;
 }
 
 export type ViewStateSchema = MachineConfig<any, any, any>;
