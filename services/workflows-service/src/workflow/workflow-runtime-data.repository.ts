@@ -5,6 +5,8 @@ import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 
+export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat';
+
 @Injectable()
 export class WorkflowRuntimeDataRepository {
   constructor(protected readonly prisma: PrismaService) {}
@@ -51,6 +53,23 @@ export class WorkflowRuntimeDataRepository {
       where: { id },
       ...args,
     });
+  }
+
+  async updateContextById(
+    id: string,
+    newContext: any,
+    arrayMergeOption: ArrayMergeOption = 'by_id',
+  ): Promise<WorkflowRuntimeData> {
+    const stringifiedContext = JSON.stringify(newContext);
+    const affectedRows = await this.prisma
+      .$executeRaw`UPDATE "WorkflowRuntimeData" SET "context" = jsonb_deep_merge_with_options("context", ${stringifiedContext}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id}`;
+
+    // Retrieve and return the updated record
+    if (affectedRows === 0) {
+      throw new Error(`No workflowRuntimeData found with the id "${id}"`);
+    }
+
+    return this.findById(id);
   }
 
   async deleteById<T extends Omit<Prisma.WorkflowRuntimeDataDeleteArgs, 'where'>>(

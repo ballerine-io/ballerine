@@ -24,13 +24,17 @@ RETURNS jsonb AS $$
     });
   };
 
-  const mergeArraysByIndex = (arr1, arr2) => {
+ const mergeArraysByIndex = (arr1, arr2) => {
     const maxLength = Math.max(arr1.length, arr2.length);
     const result = new Array(maxLength);
 
     for (let i = 0; i < maxLength; i++) {
       if (i < arr1.length && i < arr2.length) {
-        result[i] = mergeObjects(arr1[i], arr2[i]);
+        if (typeof arr1[i] !== 'object' && typeof arr2[i] !== 'object') {
+          result[i] = arr2[i];
+        } else {
+          result[i] = mergeObjects(arr1[i], arr2[i]);
+        }
       } else {
         result[i] = arr1[i] || arr2[i];
       }
