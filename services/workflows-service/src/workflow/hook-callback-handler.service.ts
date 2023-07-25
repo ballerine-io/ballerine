@@ -147,7 +147,7 @@ export class HookCallbackHandlerService {
     const documentImages: AnyRecord[] = [];
     for (const image of data.images as { context?: string; content: string }[]) {
       const tmpFile = tmp.fileSync().name;
-      const base64ImageContent = image.content.split(",")[1];
+      const base64ImageContent = image.content.split(',')[1];
       const data = Buffer.from(base64ImageContent as string, 'base64');
       fs.writeFileSync(tmpFile, data);
 
