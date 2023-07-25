@@ -6,16 +6,23 @@ import {
 } from '../../../../hooks/useEntity/utils';
 import { octetToFileType } from '../../../../../../common/octet-to-file-type/octet-to-file-type';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
+import { safeEvery } from '@ballerine/common';
 
-export const useKycBlock = (childWorkflow: TWorkflowById['childWorkflows'][number]) => {
+export const useKycBlock = ({
+  parentWorkflowId,
+  childWorkflow,
+}: {
+  childWorkflow: TWorkflowById['childWorkflows'][number];
+  parentWorkflowId: string;
+}) => {
   const docsData = useStorageFilesQuery(
     childWorkflow?.context?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
-  const results = [];
+  const results: Array<Array<string>> = [];
   childWorkflow?.context?.documents?.forEach((document, docIndex) => {
-    document?.pages?.forEach((page, pageIndex) => {
+    document?.pages?.forEach((page, pageIndex: number) => {
       if (!results[docIndex]) {
         results[docIndex] = [];
       }
@@ -76,7 +83,7 @@ export const useKycBlock = (childWorkflow: TWorkflowById['childWorkflows'][numbe
         id: 'decision',
         type: 'details',
         value: {
-          id: 1,
+          id: childWorkflow?.id,
           title: `Details`,
           data: Object.entries({
             ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
@@ -122,6 +129,10 @@ export const useKycBlock = (childWorkflow: TWorkflowById['childWorkflows'][numbe
         fileType: type,
       })) ?? [],
   );
+  const hasDecision = safeEvery(
+    childWorkflow?.context?.documents,
+    document => !!document?.decision?.status,
+  );
 
   return [
     [
@@ -138,20 +149,24 @@ export const useKycBlock = (childWorkflow: TWorkflowById['childWorkflows'][numbe
             type: 'container',
             value: [
               {
-                type: 'callToAction',
+                type: 'caseCallToAction',
                 value: 'Reject',
                 data: {
-                  id: 1,
-                  disabled: true,
+                  parentWorkflowId: parentWorkflowId,
+                  childWorkflowId: childWorkflow?.id,
+                  childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
+                  disabled: hasDecision,
                   approvalStatus: 'rejected',
                 },
               },
               {
-                type: 'callToAction',
+                type: 'caseCallToAction',
                 value: 'Approve',
                 data: {
-                  id: 1,
-                  disabled: false,
+                  parentWorkflowId: parentWorkflowId,
+                  childWorkflowId: childWorkflow?.id,
+                  childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
+                  disabled: hasDecision,
                   approvalStatus: 'approved',
                 },
               },

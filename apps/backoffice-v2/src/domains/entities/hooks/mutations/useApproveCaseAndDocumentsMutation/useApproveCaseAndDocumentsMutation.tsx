@@ -1,23 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
+import { fetchWorkflowEventDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { Action } from '../../../../../common/enums';
 
-// @TODO: Refactor to be under cases/workflows domain
-export const useApproveEntityMutation = ({
-  workflowId,
-  onSelectNextEntity,
-}: {
-  workflowId: string;
-  onSelectNextEntity?: VoidFunction;
-}) => {
+export const useApproveCaseAndDocumentsMutation = ({ workflowId }: { workflowId: string }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () =>
-      fetchWorkflowEvent({
+      fetchWorkflowEventDecision({
         workflowId,
         body: {
           name: Action.APPROVE.toLowerCase(),
@@ -28,9 +21,6 @@ export const useApproveEntityMutation = ({
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
       toast.success(t('toast:approve_case.success'));
-
-      // TODO: Re-implement
-      // onSelectNextEntity();
     },
     onError: () => {
       toast.error(t('toast:approve_case.error'));

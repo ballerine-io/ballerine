@@ -7,9 +7,14 @@ import { ctw } from '../../../../common/utils/ctw/ctw';
 import { cells } from '../../hooks/useEntity/cells';
 
 export const KycBlock: FunctionComponent<{
+  parentWorkflowId: string;
   childWorkflow: TWorkflowById['childWorkflows'][number];
-}> = ({ childWorkflow }) => {
-  const childTasks = useKycBlock(childWorkflow) ?? [];
+}> = ({ parentWorkflowId, childWorkflow }) => {
+  const childTasks =
+    useKycBlock({
+      parentWorkflowId,
+      childWorkflow,
+    }) ?? [];
 
   return (
     <>

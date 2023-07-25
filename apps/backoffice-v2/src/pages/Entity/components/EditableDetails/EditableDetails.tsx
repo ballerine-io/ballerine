@@ -44,7 +44,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 }) => {
   const [formData, setFormData] = useState(data);
   const POSITIVE_VALUE_INDICATOR = ['approved'];
-  const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
+  const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected', 'declined'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
     return isDecisionComponent && value && POSITIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
@@ -110,7 +110,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     data,
   });
 
-  // Ensures that the form is reset when the data changes from other instances of `useUpdateWorkflowByIdMutation` i.e. in `useCallToActionLogic`.
+  // Ensures that the form is reset when the data changes from other instances of `useUpdateWorkflowByIdMutation` i.e. in `useCaseCallToActionLogic`.
   useEffect(() => {
     form.reset(defaultValues);
   }, [form.reset, data]);

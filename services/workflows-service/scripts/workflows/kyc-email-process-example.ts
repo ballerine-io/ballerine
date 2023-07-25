@@ -27,15 +27,30 @@ export const kycEmailSessionDefinition = {
         },
       },
       kyc_manual_review: {
-        type: 'final' as const,
+        on: {
+          approve: {
+            target: 'approved',
+          },
+          reject: {
+            target: 'rejected',
+          },
+          revision: {
+            target: 'revision',
+          },
+        },
+      },
+      revision: {
+        on: {
+          review: 'kyc_manual_review',
+        },
       },
       kyc_auto_reject: {
         type: 'final' as const,
       },
-      reject: {
+      rejected: {
         type: 'final' as const,
       },
-      approve: {
+      approved: {
         type: 'final' as const,
       },
     },

@@ -38,9 +38,9 @@ export const useTasks = ({
     ),
   );
 
-  const results = [];
+  const results: Array<Array<string>> = [];
   workflow?.context?.documents?.forEach((document, docIndex) => {
-    document?.pages?.forEach((page, pageIndex) => {
+    document?.pages?.forEach((page, pageIndex: number) => {
       if (!results[docIndex]) {
         results[docIndex] = [];
       }

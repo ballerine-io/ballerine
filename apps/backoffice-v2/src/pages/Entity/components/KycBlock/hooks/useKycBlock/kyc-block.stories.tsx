@@ -12,7 +12,11 @@ export const KycBlocks = () => {
         {Array.isArray(workflow?.childWorkflows) &&
           workflow?.childWorkflows?.length > 0 &&
           workflow?.childWorkflows?.map(childWorkflow => (
-            <KycBlock childWorkflow={childWorkflow} key={childWorkflow?.id} />
+            <KycBlock
+              parentWorkflowId={workflow?.id}
+              childWorkflow={childWorkflow}
+              key={childWorkflow?.id}
+            />
           ))}
       </div>
     </QueryClientProvider>
