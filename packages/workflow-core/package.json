@@ -34,7 +34,8 @@
     "i18n-iso-countries": "^7.6.0",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
-    "xstate": "^4.35.2"
+    "xstate": "^4.35.2",
+    "image-type": "^5.2.0"
   },
   "devDependencies": {
     "@babel/core": "7.17.9",
