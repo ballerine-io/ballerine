@@ -42,6 +42,12 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   workflowId,
 }) => {
   const [formData, setFormData] = useState(data);
+  const useInitialCategorySetValue = () => {
+    useEffect(() => {
+      const categoryValue = form.getValues('category');
+      form.setValue('category', categoryValue);
+    }, [form, data, setFormData]);
+  };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
@@ -108,11 +114,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     form,
     data,
   });
-
-  // Ensures that the form is reset when the data changes from other instances of `useUpdateWorkflowByIdMutation` i.e. in `useCallToActionLogic`.
-  useEffect(() => {
-    form.reset(defaultValues);
-  }, [form.reset, defaultValues]);
 
   return (
     <Form {...form}>
