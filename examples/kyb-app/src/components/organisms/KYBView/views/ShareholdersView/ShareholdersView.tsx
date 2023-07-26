@@ -1,15 +1,13 @@
 import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
-import { KYBContext, UBOSContext } from '@app/components/organisms/KYBView/types';
 import { useCallback } from 'react';
 import { formSchema } from './form.schema';
-import { useSnapshot } from '@app/common/providers/SnapshotProvider/hooks/useSnapshot';
 import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
+import { UBOSContext, WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 
 export const ShareholdersView = () => {
-  const { context, state, saveAndPerformTransition, finish } = useViewState<KYBContext>();
-  const { clear } = useSnapshot();
+  const { context, state, saveAndPerformTransition, finish } = useViewState<WorkflowFlowData>();
 
   const handleSubmit = useCallback(
     (values: UBOSContext[]) => {
@@ -23,9 +21,8 @@ export const ShareholdersView = () => {
 
       void saveAndPerformTransition(values);
       finish(finalContext);
-      void clear();
     },
-    [context, clear, saveAndPerformTransition, finish],
+    [context, saveAndPerformTransition, finish],
   );
 
   return (

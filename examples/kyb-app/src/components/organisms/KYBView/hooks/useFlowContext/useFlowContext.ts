@@ -1,26 +1,31 @@
-import { ISnapshotStore } from '@app/common/providers/SnapshotProvider';
-import { intiialKybContext } from '@app/components/organisms/KYBView/kyb-view.schema';
-import { KYBContext } from '@app/components/organisms/KYBView/types';
+import { useFlowDataQuery } from '@app/components/organisms/KYBView/hooks/useFlowDataQuery';
+import { useFlowDataMutation } from '@app/components/organisms/KYBView/hooks/useFlowMutation';
+import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { useCallback, useMemo } from 'react';
 
-export const useFlowContext = (
-  storage: ISnapshotStore<KYBContext>,
-  processContext?: (context: KYBContext) => KYBContext,
-) => {
+interface FlowContextParams {
+  processContext?: (context: WorkflowFlowData) => void;
+  workflowId?: string;
+}
+
+export const useFlowContext = ({ processContext, workflowId }: FlowContextParams) => {
+  const { flowData } = useFlowDataQuery(workflowId);
+  const { mutate: updateFlowData } = useFlowDataMutation();
+
   const persistedContext = useMemo(() => {
-    const storageData = storage.getData<KYBContext>();
-    if (storageData && storageData.flowData) {
-      return processContext ? processContext(storageData) : storageData;
-    }
+    return flowData ? (processContext ? processContext(flowData) : flowData) : flowData;
+  }, [flowData, processContext]);
 
-    return intiialKybContext;
-  }, [storage, processContext]);
-
-  const save = useCallback((payload: KYBContext) => storage.save(payload), [storage]);
+  const save = useCallback(
+    (payload: WorkflowFlowData) => {
+      updateFlowData({ payload, workflowId });
+    },
+    [workflowId, updateFlowData],
+  );
 
   return {
     context: persistedContext,
-    storage,
+    flowData,
     save,
   };
 };

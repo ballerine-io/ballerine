@@ -2,12 +2,12 @@ import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
-import { DocumentsContext, KYBContext } from '@app/components/organisms/KYBView/types';
 import { formSchema } from '@app/components/organisms/KYBView/views/DocumentsView/form.schema';
+import { DocumentsContext, WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { useCallback } from 'react';
 
 export const DocumentsView = () => {
-  const { context, state, saveAndPerformTransition } = useViewState<KYBContext>();
+  const { context, state, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
 
   const handleSubmit = useCallback(
     (values: DocumentsContext) => {

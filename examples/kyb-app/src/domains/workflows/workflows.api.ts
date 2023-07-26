@@ -1,9 +1,15 @@
 import { request } from '@app/common/utils/request';
+import { defaultFlowData } from '@app/domains/workflows/default-flow-data';
+import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { runAndStartWorkflowSerialize } from '@app/domains/workflows/serialize/run-and-start-workflow.serialize';
+import { KYBStorageService } from '@app/domains/workflows/storages/kyb-storage-service';
+import { RevisionStorageService } from '@app/domains/workflows/storages/revision-storage-service/revision-storage-service';
 import {
+  GetFlowDataDto,
   GetWofklowDto,
   GetWorkflowResponse,
   RunWorkflowDto,
+  UpdateFlowDataDto,
   UpdateWorkflowDto,
   Workflow,
 } from '@app/domains/workflows/types';
@@ -52,4 +58,22 @@ export const updateWorkflow = async (dto: UpdateWorkflowDto) => {
       },
     },
   });
+};
+
+export const fetchFlowData = (dto: GetFlowDataDto): WorkflowFlowData => {
+  const { workflowId } = dto;
+
+  const storage = workflowId ? new RevisionStorageService(workflowId) : new KYBStorageService();
+
+  return storage.getData() || defaultFlowData;
+};
+
+export const updateFlowData = async (dto: UpdateFlowDataDto): Promise<WorkflowFlowData> => {
+  const { workflowId, payload } = dto;
+
+  const storage = workflowId ? new RevisionStorageService(workflowId) : new KYBStorageService();
+
+  await storage.save(payload);
+
+  return dto.payload;
 };

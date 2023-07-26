@@ -4,13 +4,12 @@ import { extractIssuesFromWorkflow } from '@app/components/organisms/KYBView/flo
 import { enableActiveOnFirstViewWithIssue } from '@app/components/organisms/KYBView/flows/IssueResolvingFlow/helpers/toggleActiveOnFirstViewWithIssue';
 import { useFlowContext } from '@app/components/organisms/KYBView/hooks/useFlowContext';
 import { useQueryValues } from '@app/components/organisms/KYBView/hooks/useQueryParams';
-import { intiialKybContext } from '@app/components/organisms/KYBView/kyb-view.schema';
-import { RevisionStorageService } from '@app/components/organisms/KYBView/services/revision-storage-service/revision-storage-service';
-import { KYBContext, KYBQueryParams } from '@app/components/organisms/KYBView/types';
+import { KYBQueryParams } from '@app/components/organisms/KYBView/types';
 import { kybViews } from '@app/components/organisms/KYBView/views';
 import { useWorkflowQuery } from '@app/components/organisms/KYBView/views/RevisionView/hooks/useWorkflowQuery';
+import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { AnyObject } from '@ballerine/ui';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export const useIssueResolvingFlow = () => {
   const { workflowRuntimeId } = useQueryValues<KYBQueryParams>();
@@ -21,30 +20,22 @@ export const useIssueResolvingFlow = () => {
     return extractIssuesFromWorkflow(workflow);
   }, [workflow]);
 
-  const eraseContextWithIssues = (context: KYBContext) => {
+  const eraseContextWithIssues = (context: WorkflowFlowData) => {
     viewsIssues.forEach(issue => {
-      context.flowData[issue.name] = intiialKybContext.flowData[issue.name] as AnyObject;
+      context.flowData[issue.name] = context[issue.name] as AnyObject;
     });
 
     return context;
   };
 
-  const revisionStorage = useMemo(
-    () => new RevisionStorageService(workflowRuntimeId),
-    [workflowRuntimeId],
-  );
-
-  const { storage, context, save } = useFlowContext(revisionStorage, eraseContextWithIssues);
-
-  useEffect(() => {
-    if (!storage.getData()) {
-      location.href = '/';
-    }
-  }, [storage]);
+  const { context, save } = useFlowContext({
+    processContext: eraseContextWithIssues,
+    workflowId: workflowRuntimeId,
+  });
 
   const processedViews = useMemo(() => {
     let views = kybViews;
-    views = attachStatusesToViews(views, context);
+    views = context ? attachStatusesToViews(views, context) : views;
     views = attachWorkflowIssuesToViews(views, viewsIssues);
     views = enableActiveOnFirstViewWithIssue(views);
 
@@ -52,7 +43,7 @@ export const useIssueResolvingFlow = () => {
   }, [viewsIssues, context]);
 
   const handleViewUpdate = useCallback(
-    (payload: KYBContext): void => {
+    (payload: WorkflowFlowData): void => {
       void save(payload);
     },
     [save],
@@ -60,16 +51,15 @@ export const useIssueResolvingFlow = () => {
 
   const handleViewChange = useCallback(
     (viewKey: string) => {
-      void save({ ...storage.getData(), currentView: viewKey });
+      void save({ ...(context as WorkflowFlowData), currentView: viewKey });
     },
-    [storage, save],
+    [context, save],
   );
 
   return {
     views: processedViews,
     isLoading: isLoading,
     loadError: error,
-    storage,
     context,
     handleViewUpdate,
     handleViewChange,
