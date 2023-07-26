@@ -24,6 +24,7 @@ import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { isObject } from '@ballerine/common';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { JsonDialog } from '../../../../common/components/molecules/JsonDialog/JsonDialog';
+import { FileJson2 } from 'lucide-react';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -49,7 +50,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     }, [form, data, setFormData]);
   };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
-  const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
+  const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected', 'declined'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
     return isDecisionComponent && value && POSITIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
@@ -115,6 +116,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     data,
   });
 
+  // Ensures that the form is reset when the data changes from other instances of `useUpdateWorkflowByIdMutation` i.e. in `useCaseCallToActionLogic`.
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [form.reset, data]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={`flex h-full flex-col`}>
@@ -152,6 +158,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             key={keyFactory(valueId, title, `form-field`)}
                           >
                             <JsonDialog
+                              buttonProps={{
+                                variant: 'link',
+                                className: 'p-0 text-blue-500',
+                              }}
+                              rightIcon={<FileJson2 size={`16`} />}
                               dialogButtonText={`View Information`}
                               json={JSON.stringify(value)}
                             />
