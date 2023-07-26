@@ -5,7 +5,7 @@ import { LoadingPlaceholder } from '@app/components/organisms/KYBView/flows/Issu
 import { useIssueResolvingFlow } from '@app/components/organisms/KYBView/flows/IssueResolvingFlow/useIssueResolvingFlow';
 
 export const IssueResolvingFlow = () => {
-  const { isLoading, views, loadError, context, handleViewChange, handleViewUpdate } =
+  const { isLoading, views, loadError, context, warnings, handleViewChange, handleViewUpdate } =
     useIssueResolvingFlow();
 
   if (isLoading) return <LoadingPlaceholder />;
@@ -23,7 +23,7 @@ export const IssueResolvingFlow = () => {
       views={views}
       initialContext={context}
       onViewChange={handleViewChange}
-      afterUpdate={handleViewUpdate}
+      warnings={warnings}
     />
   ) : null;
 };

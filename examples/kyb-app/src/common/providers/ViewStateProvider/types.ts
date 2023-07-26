@@ -1,3 +1,4 @@
+import { InputsWarnings } from '@app/common/components/organisms/DynamicForm';
 import { IStep, StepMetadata } from '@app/common/hooks/useStepper';
 import { AnyObject } from '@ballerine/ui';
 import { MachineConfig } from 'xstate';
@@ -25,6 +26,7 @@ export interface ViewStateContext<TGlobalContext = AnyObject> {
   state: string | number;
   steps: IStep[];
   stepper: StepperParams;
+  warnings?: InputsWarnings;
 }
 
 export type ViewStateSchema = MachineConfig<any, any, any>;

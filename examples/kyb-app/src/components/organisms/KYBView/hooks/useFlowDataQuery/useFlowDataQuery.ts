@@ -1,11 +1,10 @@
-import { workflowsQueryKeys } from '@app/domains/workflows/query-keys';
-import { useQuery } from '@tanstack/react-query';
+import { fetchFlowData } from '@app/domains/workflows';
+import { useMemo } from 'react';
 
 export const useFlowDataQuery = (workflowId?: string) => {
-  const { isLoading, data: flowData } = useQuery(workflowsQueryKeys.getFlowData({ workflowId }));
+  const flowData = useMemo(() => fetchFlowData({ workflowId }), [workflowId]);
 
   return {
-    isLoading,
     flowData,
   };
 };

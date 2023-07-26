@@ -7,7 +7,7 @@ import { DocumentsContext, WorkflowFlowData } from '@app/domains/workflows/flow-
 import { useCallback } from 'react';
 
 export const DocumentsView = () => {
-  const { context, state, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
+  const { context, state, warnings, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
 
   const handleSubmit = useCallback(
     (values: DocumentsContext) => {
@@ -33,6 +33,7 @@ export const DocumentsView = () => {
         onSubmit={values => {
           void handleSubmit(values);
         }}
+        warnings={warnings}
       />
     </AppShell.FormContainer>
   );

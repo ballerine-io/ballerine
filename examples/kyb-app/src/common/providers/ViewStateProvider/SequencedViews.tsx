@@ -1,5 +1,5 @@
 import { stateContext } from './state.context';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { View, ViewStateContext } from '@app/common/providers/ViewStateProvider/types';
 import { ViewResolver } from '@app/common/providers/ViewStateProvider/components/ViewResolver';
@@ -9,14 +9,16 @@ import { getInitialStepIndexFromContext } from '@app/common/providers/ViewStateP
 import { convertViewsToPaths } from '@app/common/providers/ViewStateProvider/utils/convertViewsToPaths';
 import { ViewsData } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository/types';
 import { useViewsDataRepository } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository';
+import { InputsWarnings } from '@app/common/components/organisms/DynamicForm';
 
 const { Provider } = stateContext;
 interface Props<TContext extends ViewsData> {
   views: View[];
   viewWrapper: React.ComponentType<{ children: AnyChildren }>;
   initialContext?: TContext;
+  warnings?: InputsWarnings;
   afterUpdate?: (viewsData: AnyObject) => void;
-  onViewChange?: (viewKey: string) => void;
+  onViewChange?: (context: TContext, viewKey: string) => void;
   onFinish?: (context: TContext) => void;
 }
 
@@ -24,6 +26,7 @@ export function SequencedViews<TContext extends ViewsData>({
   views,
   initialContext,
   viewWrapper,
+  warnings,
   onViewChange,
   afterUpdate,
   onFinish,
@@ -46,11 +49,17 @@ export function SequencedViews<TContext extends ViewsData>({
 
   const { data: viewsData, update: _update } = useViewsDataRepository(initialContext);
 
+  const contextRef = useRef(viewsData);
+
+  useEffect(() => {
+    contextRef.current = viewsData;
+  }, [viewsData]);
+
   useEffect(() => {
     if (viewsData.currentView !== currentStep.dataAlias) {
-      onViewChange && onViewChange(currentStep.dataAlias);
+      onViewChange && onViewChange(contextRef.current, currentStep.dataAlias);
     }
-  }, [currentStep.dataAlias, viewsData.currentView, onViewChange]);
+  }, [contextRef, currentStep.dataAlias, viewsData.currentView, onViewChange]);
 
   const update = useCallback(
     async (payload: object, shared: object = {}, completed?: boolean): Promise<object> => {
@@ -86,6 +95,7 @@ export function SequencedViews<TContext extends ViewsData>({
         currentStep: currentStep.index + 1,
         totalSteps: steps.length,
       },
+      warnings,
       finish,
       update,
       saveAndPerformTransition,
@@ -94,7 +104,17 @@ export function SequencedViews<TContext extends ViewsData>({
     };
 
     return ctx;
-  }, [viewsData, currentStep, steps, update, nextStep, prevStep, saveAndPerformTransition, finish]);
+  }, [
+    viewsData,
+    currentStep,
+    steps,
+    warnings,
+    update,
+    nextStep,
+    prevStep,
+    saveAndPerformTransition,
+    finish,
+  ]);
 
   return (
     <Provider value={context}>
