@@ -16,6 +16,15 @@ export const PersonalInformationView = () => {
 
   const handleSubmit = useCallback(
     (values: PersonalInformationContext) => {
+      if (context.shared.endUserId && context.shared.businessId) {
+        void saveAndPerformTransition(values, {
+          endUserId: context.shared.endUserId,
+          businessId: context.shared.businessId,
+        });
+
+        return;
+      }
+
       createUserAsync(values)
         .then(result => {
           void saveAndPerformTransition(values, {
@@ -27,7 +36,7 @@ export const PersonalInformationView = () => {
           console.log('Failed to create user', e);
         });
     },
-    [saveAndPerformTransition, createUserAsync],
+    [context, saveAndPerformTransition, createUserAsync],
   );
 
   return (

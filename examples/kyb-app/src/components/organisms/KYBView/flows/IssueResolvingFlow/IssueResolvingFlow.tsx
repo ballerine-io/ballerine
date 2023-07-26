@@ -22,6 +22,7 @@ export const IssueResolvingFlow = () => {
       }
       views={views}
       initialContext={context}
+      afterUpdate={handleViewUpdate}
       onViewChange={handleViewChange}
       warnings={warnings}
     />

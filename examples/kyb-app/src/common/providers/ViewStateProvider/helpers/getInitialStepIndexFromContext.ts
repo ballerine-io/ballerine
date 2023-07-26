@@ -13,5 +13,5 @@ export const getInitialStepIndexFromContext = (steps: IStep[], context: ViewsDat
     return i;
   }
 
-  return 0;
+  return steps.length - 1;
 };
