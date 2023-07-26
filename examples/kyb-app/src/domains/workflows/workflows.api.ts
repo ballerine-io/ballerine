@@ -65,15 +65,25 @@ export const fetchFlowData = (dto: GetFlowDataDto): WorkflowFlowData => {
 
   const storage = workflowId ? new RevisionStorageService(workflowId) : new KYBStorageService();
 
-  return storage.getData() || defaultFlowData;
+  const data = storage.getData() || defaultFlowData;
+
+  return data as WorkflowFlowData;
 };
 
 export const updateFlowData = async (dto: UpdateFlowDataDto): Promise<WorkflowFlowData> => {
   const { workflowId, payload } = dto;
 
-  const storage = workflowId ? new RevisionStorageService(workflowId) : new KYBStorageService();
+  const flowStorage = new KYBStorageService();
+  const workflowStorage = new RevisionStorageService(workflowId);
+  const storage = workflowId ? workflowStorage : flowStorage;
 
   await storage.save(payload);
+
+  const isShouldClearFlowStorage = Boolean(workflowId);
+
+  if (isShouldClearFlowStorage) {
+    flowStorage.clear();
+  }
 
   return dto.payload;
 };

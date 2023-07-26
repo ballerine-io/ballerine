@@ -15,11 +15,11 @@ interface Props {
 
 export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }: Props) => {
   const settings = useSettings();
-  const { steps, state, context } = useViewState();
+  const { steps, state } = useViewState();
 
   return (
     <div className="w-ful flex h-screen flex-nowrap">
-      <div className="bg-primary col-span-2 w-[24%] px-10 pt-14 pb-4">
+      <div className="bg-primary col-span-2 w-[24%] max-w-[418px] px-10 pt-14 pb-4">
         <div className="font-inter flex h-full flex-col">
           <div className="flex flex-1 flex-col pb-16">
             <div onClick={onBackButtonClick}>{backButton}</div>
@@ -54,7 +54,7 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
           </div>
         </div>
       </div>
-      <div className="col-span-8 h-full w-[76%] overflow-auto bg-[#F2F5FF] p-4">{children}</div>
+      <div className="col-span-8 h-full w-[100%] overflow-auto bg-[#F2F5FF] p-4">{children}</div>
     </div>
   );
 };

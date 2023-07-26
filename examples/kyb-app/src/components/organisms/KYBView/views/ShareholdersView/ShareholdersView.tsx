@@ -20,7 +20,8 @@ export const ShareholdersView = () => {
       };
 
       void saveAndPerformTransition(values);
-      finish(finalContext);
+
+      setTimeout(() => finish(finalContext), 50);
     },
     [context, saveAndPerformTransition, finish],
   );

@@ -50,10 +50,22 @@ export const useIssueResolvingFlow = () => {
   );
 
   const handleViewChange = useCallback(
-    (viewKey: string) => {
-      void save({ ...(context as WorkflowFlowData), currentView: viewKey });
+    (context: WorkflowFlowData, viewKey: string) => {
+      void save({ ...context, currentView: viewKey });
     },
     [context, save],
+  );
+
+  const warnings = useMemo(
+    () =>
+      viewsIssues.reduce((warnings, issue) => {
+        Object.keys(issue.properties).forEach(propertyName => {
+          warnings[propertyName] = issue.properties[propertyName].reason;
+        });
+
+        return warnings;
+      }, {}),
+    [viewsIssues],
   );
 
   return {
@@ -61,6 +73,7 @@ export const useIssueResolvingFlow = () => {
     isLoading: isLoading,
     loadError: error,
     context,
+    warnings,
     handleViewUpdate,
     handleViewChange,
   };

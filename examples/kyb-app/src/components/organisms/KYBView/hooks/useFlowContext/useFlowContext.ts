@@ -17,8 +17,8 @@ export const useFlowContext = ({ processContext, workflowId }: FlowContextParams
   }, [flowData, processContext]);
 
   const save = useCallback(
-    (payload: WorkflowFlowData) => {
-      updateFlowData({ payload, workflowId });
+    async (payload: WorkflowFlowData) => {
+      await updateFlowData({ payload, workflowId });
     },
     [workflowId, updateFlowData],
   );

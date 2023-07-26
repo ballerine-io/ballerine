@@ -14,7 +14,7 @@ export const ErrorsList = ({ errors, type = 'error', className }: Props) => {
         <li key={`error-list-item-${index}`}>
           <ErrorMessage
             text={error}
-            className={type === 'warning' ? 'text-amber-500' : undefined}
+            className={type === 'warning' ? 'text-amber-400' : undefined}
           />
         </li>
       ))}
