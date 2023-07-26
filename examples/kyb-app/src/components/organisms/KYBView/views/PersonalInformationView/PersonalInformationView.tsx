@@ -3,12 +3,15 @@ import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
 import { useCreateEndUserMutation } from '@app/components/organisms/KYBView/hooks/useCreateEndUserMutation';
-import { KYBContext, PersonalInformationContext } from '@app/components/organisms/KYBView/types';
 import { formSchema } from '@app/components/organisms/KYBView/views/PersonalInformationView/form.schema';
+import {
+  PersonalInformationContext,
+  WorkflowFlowData,
+} from '@app/domains/workflows/flow-data.type';
 import { useCallback } from 'react';
 
 export const PersonalInformationView = () => {
-  const { context, state, saveAndPerformTransition } = useViewState<KYBContext>();
+  const { context, state, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
   const { createUserAsync } = useCreateEndUserMutation();
 
   const handleSubmit = useCallback(

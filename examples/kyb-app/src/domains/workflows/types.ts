@@ -1,3 +1,4 @@
+import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema } from '@rjsf/utils';
 
@@ -138,4 +139,13 @@ export interface GetWorkflowResponse {
 export interface UpdateWorkflowDto {
   workflowId: string;
   payload: Workflow;
+}
+
+export interface GetFlowDataDto {
+  workflowId?: string;
+}
+
+export interface UpdateFlowDataDto {
+  workflowId?: string;
+  payload: WorkflowFlowData;
 }

@@ -1,8 +1,8 @@
-import { KYBContext } from '@app/components/organisms/KYBView/types';
 import { UpdateBusinessDto } from '@app/domains/business';
+import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 
 export const serializeBusinessData = (
-  context: KYBContext,
+  context: WorkflowFlowData,
   businessId: string,
 ): UpdateBusinessDto => {
   const { businessAddress, businessInformation } = context.flowData;

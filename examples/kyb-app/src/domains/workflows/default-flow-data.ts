@@ -1,9 +1,8 @@
-import { KYBContext } from '@app/components/organisms/KYBView/types';
 import { kybViews } from '@app/components/organisms/KYBView/views';
+import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 
-export const intiialKybContext: KYBContext = {
+export const defaultFlowData: WorkflowFlowData = {
   currentView: kybViews[0].key || '',
-  state: 'idle',
   flowData: {
     personalInformation: {
       firstName: '',

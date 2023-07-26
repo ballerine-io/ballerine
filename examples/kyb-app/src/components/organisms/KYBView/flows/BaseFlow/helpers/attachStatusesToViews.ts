@@ -1,7 +1,7 @@
 import { View } from '@app/common/providers/ViewStateProvider';
-import { KYBContext } from '@app/components/organisms/KYBView/types';
+import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 
-export const attachStatusesToViews = (views: View[], context: KYBContext): View[] => {
+export const attachStatusesToViews = (views: View[], context: WorkflowFlowData): View[] => {
   return views.map(view => {
     const isCompleted = Boolean(context.completionMap[view.key]);
 

@@ -1,13 +1,16 @@
 import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
-import { BusinessInformationContext, KYBContext } from '@app/components/organisms/KYBView/types';
 import { formSchema } from './form.schema';
 import { useCallback } from 'react';
 import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
+import {
+  BusinessInformationContext,
+  WorkflowFlowData,
+} from '@app/domains/workflows/flow-data.type';
 
 export const BusinessView = () => {
-  const { context, state, saveAndPerformTransition } = useViewState<KYBContext>();
+  const { context, state, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
 
   const handleSubmit = useCallback(
     (values: BusinessInformationContext) => {
