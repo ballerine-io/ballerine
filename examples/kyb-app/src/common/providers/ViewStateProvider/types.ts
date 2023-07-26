@@ -20,13 +20,15 @@ export interface ViewStateContext<TGlobalContext = AnyObject> {
   next: () => void;
   prev: () => void;
   update: (data: object, shared?: object) => Promise<object>;
-  saveAndPerformTransition: (data: object, shared?: object) => Promise<void>;
+  save: <T>(data: T, shared?: object) => Promise<TGlobalContext>;
+  saveAndPerformTransition: <T>(data: T, shared?: object) => Promise<TGlobalContext>;
   finish: (context: TGlobalContext) => void;
   context: TGlobalContext;
   state: string | number;
   steps: IStep[];
   stepper: StepperParams;
   warnings?: InputsWarnings;
+  isFinished: boolean;
 }
 
 export type ViewStateSchema = MachineConfig<any, any, any>;

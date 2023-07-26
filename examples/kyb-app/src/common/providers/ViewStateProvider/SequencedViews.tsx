@@ -1,5 +1,5 @@
 import { stateContext } from './state.context';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { View, ViewStateContext } from '@app/common/providers/ViewStateProvider/types';
 import { ViewResolver } from '@app/common/providers/ViewStateProvider/components/ViewResolver';
@@ -32,6 +32,8 @@ export function SequencedViews<TContext extends ViewsData>({
   onFinish,
 }: Props<TContext>) {
   const ViewWrapperComponent = viewWrapper;
+
+  const [isFinished, setFinished] = useState(false);
   const paths = useMemo(() => convertViewsToPaths(views), [views]);
 
   const initialSteps = useMemo(() => convertViewsToSteps(views), [views]);
@@ -64,23 +66,37 @@ export function SequencedViews<TContext extends ViewsData>({
   const update = useCallback(
     async (payload: object, shared: object = {}, completed?: boolean): Promise<object> => {
       const updatedData = await _update(currentStep.dataAlias, payload, shared, completed);
+
       afterUpdate && afterUpdate(updatedData);
       return updatedData;
     },
     [currentStep, _update, afterUpdate],
   );
 
+  const save = useCallback(
+    async (payload: Partial<TContext['flowData']>, shared?: AnyObject): Promise<TContext> => {
+      const saveResult = await update(payload, shared, true);
+      completeCurrent();
+
+      return saveResult as TContext;
+    },
+    [update, completeCurrent],
+  );
+
   const saveAndPerformTransition = useCallback(
-    async (payload: object, shared?: object) => {
-      await update(payload, shared, true);
+    async (payload: Partial<TContext['flowData']>, shared?: object): Promise<TContext> => {
+      const savedData = await save(payload, shared);
       completeCurrent();
       nextStep();
+
+      return savedData;
     },
-    [update, nextStep, completeCurrent],
+    [save, nextStep, completeCurrent],
   );
 
   const finish = useCallback(
     (context: TContext) => {
+      setFinished(true);
       onFinish && onFinish(context);
     },
     [onFinish],
@@ -96,8 +112,10 @@ export function SequencedViews<TContext extends ViewsData>({
         totalSteps: steps.length,
       },
       warnings,
+      isFinished,
       finish,
       update,
+      save,
       saveAndPerformTransition,
       next: nextStep,
       prev: prevStep,
@@ -109,7 +127,9 @@ export function SequencedViews<TContext extends ViewsData>({
     currentStep,
     steps,
     warnings,
+    isFinished,
     update,
+    save,
     nextStep,
     prevStep,
     saveAndPerformTransition,

@@ -26,9 +26,13 @@ export function useStepper(_steps: IStep[], params: StepperParams): UseStepperHo
     dispatch(prevStepAction());
   }, [prevStepAction, dispatch]);
 
-  const nextStep = useCallback(() => {
+  const nextStep = useCallback((): IStep | null => {
+    const predictedNextStep = state.steps[state.activeStep + 1];
+
     dispatch(nextStepAction());
-  }, [nextStepAction, dispatch]);
+
+    return predictedNextStep ? predictedNextStep : null;
+  }, [state.steps, state.activeStep, nextStepAction, dispatch]);
 
   const completeCurrent = useCallback(() => {
     dispatch(completeCurrentStepAction());

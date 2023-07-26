@@ -5,28 +5,21 @@ import { useCallback } from 'react';
 import { formSchema } from './form.schema';
 import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
 import { UBOSContext, WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
+import { FinalView } from '@app/components/organisms/KYBView/views/ShareholdersView/components/FinalView';
 
 export const ShareholdersView = () => {
-  const { context, state, saveAndPerformTransition, finish } = useViewState<WorkflowFlowData>();
+  const { context, state, isFinished, save, finish } = useViewState<WorkflowFlowData>();
 
   const handleSubmit = useCallback(
     (values: UBOSContext[]) => {
-      const finalContext = {
-        ...context,
-        flowData: {
-          ...context.flowData,
-          ubos: values,
-        },
-      };
-
-      void saveAndPerformTransition(values);
-
-      setTimeout(() => finish(finalContext), 50);
+      void save(values).then(finalContext => {
+        finish(finalContext);
+      });
     },
-    [context, saveAndPerformTransition, finish],
+    [save, finish],
   );
 
-  return (
+  return !isFinished ? (
     <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<UBOSContext[]>
         className="max-w-[384px]"
@@ -35,5 +28,7 @@ export const ShareholdersView = () => {
         onSubmit={values => handleSubmit(values)}
       />
     </AppShell.FormContainer>
+  ) : (
+    <FinalView />
   );
 };

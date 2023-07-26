@@ -9,10 +9,9 @@ import { createFormAssets } from '@app/components/organisms/KYBView/views/Revisi
 import { useWorkflowQuery } from '@app/components/organisms/KYBView/views/RevisionView/hooks/useWorkflowQuery';
 import { updateWorkflow } from '@app/domains/workflows';
 import { AnyObject } from '@ballerine/ui';
-import { useCallback, useLayoutEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export const RevisionView = () => {
-  const { clear } = useSnapshot();
   const { context, state } = useViewState();
   const { workflowRuntimeId } = useQueryValues<KYBQueryParams>();
   const { isFailedToLoad, isLoading, error, workflow } = useWorkflowQuery(workflowRuntimeId);
@@ -26,13 +25,6 @@ export const RevisionView = () => {
     },
     [workflow, workflowRuntimeId],
   );
-
-  useLayoutEffect(() => {
-    if (!workflowRuntimeId) {
-      void clear();
-      location.href = '/';
-    }
-  }, [workflowRuntimeId, clear]);
 
   return (
     <AppShell.FormContainer>
