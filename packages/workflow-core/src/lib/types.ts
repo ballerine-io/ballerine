@@ -36,6 +36,7 @@ export interface WorkflowExtensions {
 export interface ChildWorkflowCallback {
   transformers?: Array<SerializableTransformer>;
   action: 'append';
+  persistenceStates?: Array<string>;
   deliverEvent?: string;
 }
 export interface ChildToParentCallback {

@@ -144,6 +144,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               '{childEntity: entity.data, vendorResult: pluginsOutput.kyc_session.kyc_session_1.result}', // jmespath
           },
         ],
+        persistenceStates: ['kyc_manual_review'],
         deliverEvent: 'KYC_RESPONDED',
       },
     ],
