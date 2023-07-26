@@ -62,7 +62,7 @@ describe('#EndUserControllerExternal', () => {
   });
 
   describe('POST /end-user', () => {
-    it('it creates an end-user', async () => {
+    it('creates an end-user', async () => {
       expect(await endUserService.list({})).toHaveLength(0);
 
       const response = await request(app.getHttpServer()).post('/external/end-users').send({

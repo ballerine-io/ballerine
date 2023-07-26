@@ -1,5 +1,5 @@
 import { TContext, Transformer, Transformers, Validator } from '../../utils';
-import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
+import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
 import { IApiPluginParams } from './types';
 
 export class ApiPlugin {
@@ -171,7 +171,7 @@ export class ApiPlugin {
 
     return pathToValue.reduce((acc: unknown, pathKey: string) => {
       // eslint-disable-next-line no-prototype-builtins
-      if (typeof acc === 'object' && acc !== null && acc.hasOwnProperty(pathKey)) {
+      if (isObject(acc)) {
         return (acc as AnyRecord)[pathKey];
       } else {
         return undefined;

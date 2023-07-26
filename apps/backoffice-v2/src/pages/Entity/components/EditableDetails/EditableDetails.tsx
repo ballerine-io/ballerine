@@ -22,10 +22,8 @@ import { Select } from '../../../../common/components/atoms/Select/Select';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { isObject } from '@ballerine/common';
-import { Util } from 'leaflet';
-import { JsonDialog } from '@ballerine/ui';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
-import isArray = Util.isArray;
+import { JsonDialog } from '../../../../common/components/molecules/JsonDialog/JsonDialog';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -44,6 +42,12 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   workflowId,
 }) => {
   const [formData, setFormData] = useState(data);
+  const useInitialCategorySetValue = () => {
+    useEffect(() => {
+      const categoryValue = form.getValues('category');
+      form.setValue('category', categoryValue);
+    }, [form, data, setFormData]);
+  };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
@@ -111,11 +115,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     data,
   });
 
-  // Ensures that the form is reset when the data changes from other instances of `useUpdateWorkflowByIdMutation` i.e. in `useCallToActionLogic`.
-  useEffect(() => {
-    form.reset(defaultValues);
-  }, [form.reset, defaultValues]);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={`flex h-full flex-col`}>
@@ -140,14 +139,14 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                     const isInput = [
                       !isValidUrl(value) || isEditable,
                       !isObject(value),
-                      !isArray(value),
+                      !Array.isArray(value),
                     ].every(Boolean);
                     const isSelect = isInput && !!dropdownOptions;
 
                     return (
                       <FormItem>
                         <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
-                        {(isObject(value) || isArray(value)) && (
+                        {(isObject(value) || Array.isArray(value)) && (
                           <div
                             className={`flex items-end justify-start`}
                             key={keyFactory(valueId, title, `form-field`)}

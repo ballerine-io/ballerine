@@ -16,7 +16,13 @@ import type {
 import { Error as ErrorEnum } from './types';
 import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
-import { ActionablePlugin, ActionablePlugins, StatePlugin } from './plugins/types';
+import {
+  ActionablePlugin,
+  ActionablePlugins,
+  CommonPlugins,
+  HttpPlugins,
+  StatePlugin
+} from './plugins/types';
 import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 import {
@@ -207,11 +213,11 @@ export class WorkflowRunner {
     if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
 
     // @ts-expect-error TODO: fix this
-    const isApiPlugin = this.isApiPlugin(apiPluginSchema);
+    const isApiPlugin = this.isPluginWithCallbackAction(apiPluginSchema);
     return isApiPlugin ? ApiPlugin : WebhookPlugin;
   }
 
-  private isApiPlugin(apiPluginSchema: IApiPluginParams) {
+  private isPluginWithCallbackAction(apiPluginSchema: IApiPluginParams) {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
@@ -458,10 +464,14 @@ export class WorkflowRunner {
     const postSendSnapshot = service.getSnapshot();
     this.#__context = postSendSnapshot.context;
 
-    if (this.#__extensions.commonPlugins) {
-      for (const commonPlugin of this.#__extensions.commonPlugins) {
-        if (!commonPlugin.stateNames.includes(this.#__currentState)) continue;
+    let commonPlugins = (this.#__extensions.commonPlugins as CommonPlugins)
+      ?.filter(plugin => plugin.stateNames.includes(this.#__currentState));
+    const stateApiPlugins = (this.#__extensions.apiPlugins as HttpPlugins)
+      ?.filter(plugin => plugin.stateNames.includes(this.#__currentState));
 
+    if (commonPlugins) {
+      for (const commonPlugin of commonPlugins) {
+        // @ts-expect-error - multiple types of plugins return different responses
         const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context);
         if (!!error) {
           this.#__context.pluginsOutput = {
@@ -469,17 +479,15 @@ export class WorkflowRunner {
             ...{ [commonPlugin.name]: { error: error } },
           };
         }
-        if (callbackAction) await this.sendEvent(callbackAction);
+        if (callbackAction) await this.sendEvent({type: callbackAction});
       }
     }
 
-    if (this.#__extensions.apiPlugins) {
-      for (const apiPlugin of this.#__extensions.apiPlugins) {
-        if (!apiPlugin.stateNames.includes(this.#__currentState)) continue;
-
+    if (stateApiPlugins) {
+      for (const apiPlugin of stateApiPlugins) {
+        // @ts-expect-error - multiple types of plugins return different responses
         const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
-        // @ts-expect-error - update webhook plugin to use serializable interface
-        if (!this.isApiPlugin(apiPlugin)) continue;
+        if (!this.isPluginWithCallbackAction(apiPlugin)) continue;
 
         this.#__context.pluginsOutput = {
           ...(this.#__context.pluginsOutput || {}),
