@@ -1,3 +1,6 @@
+import { Button } from '@components/atoms';
+import { ComponentProps } from 'react';
+
 export interface JsonDialogProps {
   json: string;
   /**
@@ -5,4 +8,7 @@ export interface JsonDialogProps {
    * @default "View JSON"
    */
   dialogButtonText?: string;
+  buttonProps?: ComponentProps<typeof Button>;
+  leftIcon?: JSX.Element;
+  rightIcon?: JSX.Element;
 }

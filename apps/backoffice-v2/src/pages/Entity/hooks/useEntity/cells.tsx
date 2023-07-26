@@ -7,6 +7,7 @@ import { Details } from '../../components/Details/Details';
 import { MultiDocuments } from '../../components/MultiDocuments/MultiDocuments';
 import { NestedDetails } from '../../components/NestedDetails/NestedDetails';
 import { MapCell } from '../../components/MapCell/MapCell';
+import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAction';
 
 export const cells = {
   heading: Heading,
@@ -18,4 +19,5 @@ export const cells = {
   nestedDetails: NestedDetails,
   multiDocuments: MultiDocuments,
   map: MapCell,
+  caseCallToAction: CaseCallToAction,
 };
