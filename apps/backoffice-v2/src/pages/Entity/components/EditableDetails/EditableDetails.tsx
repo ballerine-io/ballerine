@@ -43,6 +43,12 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   workflowId,
 }) => {
   const [formData, setFormData] = useState(data);
+  const useInitialCategorySetValue = () => {
+    useEffect(() => {
+      const categoryValue = form.getValues('category');
+      form.setValue('category', categoryValue);
+    }, [form, data, setFormData]);
+  };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected', 'declined'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {

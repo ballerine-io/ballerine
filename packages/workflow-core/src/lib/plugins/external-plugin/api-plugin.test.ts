@@ -67,7 +67,7 @@ describe('workflow-runner', () => {
 
     describe('when api plugin tranforms and makes a request to an external api', () => {
       const workflow = createWorkflowRunner(definition, apiPluginsSchemas);
-      it('it transitions to successAction and persist response to context', async () => {
+      it('transitions to successAction and persist response to context', async () => {
         // @ts-expect-error - `sendEvent` is not supposed to receive a string
         await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
@@ -102,7 +102,7 @@ describe('workflow-runner', () => {
       const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
       apiPluginsSchemasCopy[0]!.request.transform[0].mapping = 'dsa: .unknwonvalue.id}';
       const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
-      it('it returns error for transformation and transition to testManually', async () => {
+      it('returns error for transformation and transition to testManually', async () => {
         // @ts-expect-error - `sendEvent` is not supposed to receive a string
         await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
@@ -141,7 +141,7 @@ describe('workflow-runner', () => {
         };
         const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
 
-        it('it returns error for transformation and transition to testManually', async () => {
+        it('returns error for transformation and transition to testManually', async () => {
           // @ts-expect-error - `sendEvent` is not supposed to receive a string
           await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
@@ -177,7 +177,7 @@ describe('workflow-runner', () => {
         };
         const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
 
-        it('it transitions to successAction and persist success (response) to context', async () => {
+        it('transitions to successAction and persist success (response) to context', async () => {
           // @ts-expect-error - `sendEvent` is not supposed to receive a string
           await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
