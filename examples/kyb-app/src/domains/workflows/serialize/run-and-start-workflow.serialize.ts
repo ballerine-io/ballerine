@@ -1,6 +1,6 @@
-import { RunWorkflowDto, TRunWorkflowDto } from '@app/domains/workflows/types';
+import { TRunWorkflowDto, WorkflowUpdatePayload } from '@app/domains/workflows/types';
 
-export const runAndStartWorkflowSerialize = (data: RunWorkflowDto): TRunWorkflowDto => {
+export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRunWorkflowDto => {
   const payload: TRunWorkflowDto = {
     workflowId: data.workflowId,
     context: {
@@ -35,6 +35,7 @@ export const runAndStartWorkflowSerialize = (data: RunWorkflowDto): TRunWorkflow
         issuer: {
           country,
         },
+        decision: { status: '', revisionReason: '', rejectionReason: '' },
         pages: pages.map(({ fileId }) => ({ ballerineFileId: fileId })),
         properies: {},
         version: '1',

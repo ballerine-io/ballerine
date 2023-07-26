@@ -6,10 +6,13 @@ import { useFlowContext } from '@app/components/organisms/KYBView/hooks/useFlowC
 import { useQueryValues } from '@app/components/organisms/KYBView/hooks/useQueryParams';
 import { KYBQueryParams } from '@app/components/organisms/KYBView/types';
 import { kybViews } from '@app/components/organisms/KYBView/views';
-import { useWorkflowQuery } from '@app/components/organisms/KYBView/views/RevisionView/hooks/useWorkflowQuery';
+import { useWorkflowQuery } from '@app/components/organisms/KYBView/hooks/useWorkflowQuery';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { AnyObject } from '@ballerine/ui';
 import { useCallback, useMemo } from 'react';
+import { updateWorkflow } from '@app/domains/workflows';
+import { serializeWorkflowUpdatePayload } from '@app/domains/workflows/serialize/run-and-start-workflow.serialize';
+import { serializeWorkflowRunData } from '@app/components/organisms/KYBView/flows/BaseFlow/helpers/serialize-workflow-run-data';
 
 export const useIssueResolvingFlow = () => {
   const { workflowRuntimeId } = useQueryValues<KYBQueryParams>();
@@ -68,6 +71,15 @@ export const useIssueResolvingFlow = () => {
     [viewsIssues],
   );
 
+  const handleFinish = useCallback(
+    async (context: WorkflowFlowData) => {
+      const serializedUpdatePayload = await serializeWorkflowRunData(context);
+
+      await updateWorkflow({ workflowId: workflowRuntimeId, payload: serializedUpdatePayload });
+    },
+    [workflowRuntimeId],
+  );
+
   return {
     views: processedViews,
     isLoading: isLoading,
@@ -76,5 +88,6 @@ export const useIssueResolvingFlow = () => {
     warnings,
     handleViewUpdate,
     handleViewChange,
+    handleFinish,
   };
 };
