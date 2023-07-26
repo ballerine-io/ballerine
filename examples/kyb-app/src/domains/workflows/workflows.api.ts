@@ -1,21 +1,21 @@
 import { request } from '@app/common/utils/request';
 import { defaultFlowData } from '@app/domains/workflows/default-flow-data';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
-import { runAndStartWorkflowSerialize } from '@app/domains/workflows/serialize/run-and-start-workflow.serialize';
+import { serializeWorkflowUpdatePayload } from '@app/domains/workflows/serialize/run-and-start-workflow.serialize';
 import { KYBStorageService } from '@app/domains/workflows/storages/kyb-storage-service';
 import { RevisionStorageService } from '@app/domains/workflows/storages/revision-storage-service/revision-storage-service';
 import {
   GetFlowDataDto,
   GetWofklowDto,
   GetWorkflowResponse,
-  RunWorkflowDto,
+  WorkflowUpdatePayload,
   UpdateFlowDataDto,
   UpdateWorkflowDto,
   Workflow,
 } from '@app/domains/workflows/types';
 
-export const runWorkflowRequest = async (dto: RunWorkflowDto): Promise<void> => {
-  const runPayload = runAndStartWorkflowSerialize(dto);
+export const runWorkflowRequest = async (dto: WorkflowUpdatePayload): Promise<void> => {
+  const runPayload = serializeWorkflowUpdatePayload(dto);
 
   await request
     .post('external/workflows/run', {
@@ -25,9 +25,9 @@ export const runWorkflowRequest = async (dto: RunWorkflowDto): Promise<void> => 
 };
 
 export const runAndStartWorkflowRequest = async (
-  dto: RunWorkflowDto,
+  dto: WorkflowUpdatePayload,
 ): Promise<{ workflowRuntimeId: string }> => {
-  const runPayload = runAndStartWorkflowSerialize(dto);
+  const runPayload = serializeWorkflowUpdatePayload(dto);
 
   const runResult = await request
     .post('external/workflows/run', {
@@ -51,12 +51,10 @@ export const fetchWorkflow = async (query: GetWofklowDto): Promise<Workflow> => 
 };
 
 export const updateWorkflow = async (dto: UpdateWorkflowDto) => {
+  const { workflowId: _, ...payload } = serializeWorkflowUpdatePayload(dto.payload);
+
   await request.patch(`internal/workflows/${dto.workflowId}`, {
-    json: {
-      context: {
-        documents: dto.payload.context.documents,
-      },
-    },
+    json: payload,
   });
 };
 

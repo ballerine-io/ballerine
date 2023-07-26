@@ -24,7 +24,7 @@ export interface WorkflowRunDocument {
   }[];
 }
 
-export interface RunWorkflowDto {
+export interface WorkflowUpdatePayload {
   workflowId: string;
   endUserId: string;
   businessId: string;
@@ -138,7 +138,7 @@ export interface GetWorkflowResponse {
 
 export interface UpdateWorkflowDto {
   workflowId: string;
-  payload: Workflow;
+  payload: WorkflowUpdatePayload;
 }
 
 export interface GetFlowDataDto {
