@@ -16,7 +16,6 @@
     "@rjsf/utils": "^5.9.0",
     "@rjsf/validator-ajv8": "^5.9.0",
     "@tanstack/react-query": "^4.29.25",
-    "@xstate/react": "^3.2.2",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
     "form-data-encoder": "^3.0.0",
@@ -27,7 +26,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "uuid": "^9.0.0",
-    "xstate": "^4.38.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {
