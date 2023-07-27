@@ -1348,8 +1348,8 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: ^0.4.9
-        version: 0.4.19
+        specifier: 0.4.9
+        version: 0.4.9
       json-logic-js:
         specifier: ^2.0.2
         version: 2.0.2
@@ -6710,6 +6710,11 @@ packages:
     resolution: {integrity: sha512-wMue2Sy4GAVTk6Ic4tJVcnfdau+gx2EnG7S+uAEe+TWJFqE4YoWN4/H8MSLj4eYJKxGg26lZwboEniNiNwZQ6Q==}
     dev: true
 
+  /@ballerine/common@0.4.3:
+    resolution: {integrity: sha512-MV7i5eYQ4yAg0ZI3p0oel1Erz4W+nZ7mjc8tXyr0XZszckvxkWuTPCnTDggIKOsf7c26I0JMsbHlY9vpBFcSHQ==}
+    engines: {node: '>=12'}
+    dev: false
+
   /@ballerine/common@0.5.9:
     resolution: {integrity: sha512-5tPfpsQ0ibg/H2qSOQ1aeRDDaAig7A+p8nsX6CNTEMUZ/8Pa4Hs02DgRjCWGlQjmczOWblCfwA0+AVj25Ht5qg==}
     engines: {node: '>=12'}
@@ -6726,6 +6731,15 @@ packages:
       ajv: 8.12.0
       i18n-iso-countries: 7.6.0
       jmespath: 0.16.0
+      json-logic-js: 2.0.2
+      xstate: 4.38.0
+    dev: false
+
+  /@ballerine/workflow-core@0.4.9:
+    resolution: {integrity: sha512-+GKxU0ZK2TtBRUfroivNzxF8avm99oJKriZKq0IWwWNkFndG9ot9CBH43zY5Do55yuFBAzQqgFx6crtyT5c6Qg==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@ballerine/common': 0.4.3
       json-logic-js: 2.0.2
       xstate: 4.38.0
     dev: false
