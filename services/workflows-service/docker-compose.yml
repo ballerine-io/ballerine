@@ -46,7 +46,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres15:/var/lib/postgresql/data
     healthcheck:
       test:
         - CMD
@@ -60,4 +60,4 @@ services:
       interval: 10s
       retries: 10
 volumes:
-  postgres: ~
+  postgres15: ~
