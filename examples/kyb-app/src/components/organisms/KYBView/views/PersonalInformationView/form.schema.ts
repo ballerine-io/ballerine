@@ -2,6 +2,7 @@ import { RJSFSchema } from '@rjsf/utils';
 
 export const formSchema: RJSFSchema = {
   type: 'object',
+  title: 'Personal information',
   properties: {
     firstName: {
       type: 'string',

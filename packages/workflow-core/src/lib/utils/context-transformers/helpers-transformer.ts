@@ -39,7 +39,7 @@ export class HelpersTransformer extends BaseContextTransformer {
 
   async imageUrlToBase64(url: string, _value: string) {
     const response = await fetch(url);
-    const imageType =  response?.headers?.get("Content-Type")?.split(';')?.[0] || 'image/png'
+    const imageType = response?.headers?.get('Content-Type')?.split(';')?.[0] || 'image/png';
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 

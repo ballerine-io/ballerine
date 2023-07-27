@@ -21,7 +21,7 @@ import {
   ActionablePlugins,
   CommonPlugins,
   HttpPlugins,
-  StatePlugin
+  StatePlugin,
 } from './plugins/types';
 import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
@@ -464,10 +464,12 @@ export class WorkflowRunner {
     const postSendSnapshot = service.getSnapshot();
     this.#__context = postSendSnapshot.context;
 
-    let commonPlugins = (this.#__extensions.commonPlugins as CommonPlugins)
-      ?.filter(plugin => plugin.stateNames.includes(this.#__currentState));
-    const stateApiPlugins = (this.#__extensions.apiPlugins as HttpPlugins)
-      ?.filter(plugin => plugin.stateNames.includes(this.#__currentState));
+    let commonPlugins = (this.#__extensions.commonPlugins as CommonPlugins)?.filter(plugin =>
+      plugin.stateNames.includes(this.#__currentState),
+    );
+    const stateApiPlugins = (this.#__extensions.apiPlugins as HttpPlugins)?.filter(plugin =>
+      plugin.stateNames.includes(this.#__currentState),
+    );
 
     if (commonPlugins) {
       for (const commonPlugin of commonPlugins) {
@@ -479,7 +481,7 @@ export class WorkflowRunner {
             ...{ [commonPlugin.name]: { error: error } },
           };
         }
-        if (callbackAction) await this.sendEvent({type: callbackAction});
+        if (callbackAction) await this.sendEvent({ type: callbackAction });
       }
     }
 
