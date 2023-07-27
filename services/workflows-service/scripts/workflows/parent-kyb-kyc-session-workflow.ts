@@ -136,7 +136,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               customerCompanyName: entity.data.companyName,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
               resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}/workflowRuntimeId=',workflowRuntimeId, '?resubmitEvent=RESUBMITTED']),
-              supportEmail: 'paylynk@support.com',
+              supportEmail: join('',['PayLynk','@support.com']),
               from: 'no-reply@ballerine.com',
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
               templateId: 'd-7305991b3e5840f9a14feec767ea7301',
