@@ -250,13 +250,17 @@ export class WorkflowService {
       })
     )[0];
 
-    const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(childPluginConfig.parentWorkflowRuntimeId);
+    const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(
+      childPluginConfig.parentWorkflowRuntimeId,
+    );
 
     if (childWorkflow) {
-      const contextToPersist = {[childWorkflow.workflowRuntimeData.id]:{
-        entityId: childWorkflow.workflowRuntimeData.context.entity.id,
-        status: childWorkflow.workflowRuntimeData.status || 'active',
-      }}
+      const contextToPersist = {
+        [childWorkflow.workflowRuntimeData.id]: {
+          entityId: childWorkflow.workflowRuntimeData.context.entity.id,
+          status: childWorkflow.workflowRuntimeData.status || 'active',
+        },
+      };
       const parentContext = this.composeContextWithChildResponse(
         parentWorkflowRuntime.context,
         childWorkflow.workflowDefinition.id,

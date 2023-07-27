@@ -47,15 +47,17 @@ export const parentKybWithSessionWorkflowDefinition = {
             },
           ],
         },
-        always: [{
-          target: 'manual_review',
-          cond: {
-            type: 'jmespath',
-            options: {
-              rule: 'entity.data.additionalInfo.ubos == null || length(entity.data.additionalInfo.ubos) == `0`',
+        always: [
+          {
+            target: 'manual_review',
+            cond: {
+              type: 'jmespath',
+              options: {
+                rule: 'entity.data.additionalInfo.ubos == null || length(entity.data.additionalInfo.ubos) == `0`',
+              },
             },
-          }
-        }]
+          },
+        ],
       },
       manual_review: {
         on: {
@@ -67,15 +69,17 @@ export const parentKybWithSessionWorkflowDefinition = {
       pending_resubmission: {
         on: {
           RESUBMITTED: 'manual_review',
-        }
+        },
       },
       approve: {
         type: 'final' as const,
       },
       revision: {
-        always: [{
-          target: 'pending_resubmission'
-        }],
+        always: [
+          {
+            target: 'pending_resubmission',
+          },
+        ],
       },
       reject: {
         type: 'final' as const,
@@ -148,7 +152,7 @@ export const parentKybWithSessionWorkflowDefinition = {
         response: {
           transform: [],
         },
-      }
+      },
     ],
     childWorkflowPlugins: [
       {
