@@ -65,9 +65,7 @@ export class HookCallbackHandlerService {
     };
 
     this.setNestedProperty(context, attributePath, result);
-    context.documents = [context.documents, persistedDocuments]
-      .flat(1)
-      .filter(document => !!document);
+    context.documents = persistedDocuments;
     await this.workflowService.updateWorkflowRuntimeData(workflowRuntime.id, { context: context });
   }
 

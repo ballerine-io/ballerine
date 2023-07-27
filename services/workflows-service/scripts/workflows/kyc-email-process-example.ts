@@ -40,9 +40,11 @@ export const kycEmailSessionDefinition = {
         },
       },
       revision: {
-        on: {
-          review: 'kyc_manual_review',
-        },
+        always: [
+          {
+            target: 'get_kyc_session',
+          },
+        ],
       },
       kyc_auto_reject: {
         type: 'final' as const,
@@ -111,7 +113,8 @@ export const kycEmailSessionDefinition = {
               receivers: [entity.data.email],
               subject: '{customerCompanyName} activation, Action needed.',
               preheader: 'Verify your identity for Happy Home Goods activation with {customerCompanyName}.',
-              templateId: 'd-61c568cfa5b145b5916ff89790fe2065'
+              templateId: 'd-61c568cfa5b145b5916ff89790fe2065',
+              revisionReason: documents[].decision[].revisionReason | [0]
               }`, // jmespath
             },
           ],

@@ -1198,8 +1198,13 @@ export class WorkflowService {
       status: isFinal ? 'completed' : workflowRuntimeData.status,
     });
 
-    if (isFinal && workflowRuntimeData.parentRuntimeDataId) {
-      await this.persistChildWorkflowToParent(workflowRuntimeData, workflowDefinition, isFinal);
+    if (workflowRuntimeData.parentRuntimeDataId) {
+      await this.persistChildWorkflowToParent(
+        workflowRuntimeData,
+        workflowDefinition,
+        isFinal,
+        currentState,
+      );
     }
 
     this.workflowEventEmitter.emit('workflow.state.changed', {
@@ -1244,6 +1249,7 @@ export class WorkflowService {
     workflowRuntimeData: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
     isFinal: boolean,
+    childRuntimeState?: string,
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       workflowRuntimeData.parentRuntimeDataId,
@@ -1267,12 +1273,20 @@ export class WorkflowService {
       childWorkflow =>
         childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
     );
+    const isPersistableState =
+      !!(
+        childRuntimeState &&
+        childWorkflowCallback.persistenceStates &&
+        childWorkflowCallback.persistenceStates.includes(childRuntimeState)
+      ) || isFinal;
+    if (!isPersistableState) return;
+
     const parentContext = await this.generateParentContextWithInjectedChildContext(
       childrenOfSameDefinition,
       childWorkflowCallback.transformers,
       parentWorkflowRuntime,
       workflowDefinition,
-      isFinal,
+      isPersistableState,
     );
 
     await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
@@ -1280,7 +1294,7 @@ export class WorkflowService {
     if (
       childWorkflowCallback.deliverEvent &&
       parentWorkflowRuntime.status !== 'completed' &&
-      isFinal
+      isPersistableState
     ) {
       await this.event({
         id: parentWorkflowRuntime.id,
@@ -1294,9 +1308,9 @@ export class WorkflowService {
     transformers: ChildWorkflowCallback['transformers'],
     parentWorkflowRuntime: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
-    isFinal: boolean,
+    isPersistableToParent: boolean,
   ) {
-    if (!isFinal)
+    if (!isPersistableToParent)
       return this.composeContextWithChildResponse(
         parentWorkflowRuntime.context,
         workflowDefinition.id,
