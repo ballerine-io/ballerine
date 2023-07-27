@@ -1,7 +1,10 @@
+import {
+  PersonalInformationContext,
+  WorkflowFlowData,
+} from '@app/domains/workflows/flow-data.type';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema } from '@rjsf/utils';
-import {CreateEndUserDto} from "@app/domains/end-user";
-import {PersonalInformationContext} from "@app/components/organisms/KYBView/types";
+import { CreateEndUserDto } from '@app/domains/end-user';
 
 export interface WorkflowUBO {
   entity: {
@@ -25,7 +28,7 @@ export interface WorkflowRunDocument {
   }[];
 }
 
-export interface RunWorkflowDto {
+export interface WorkflowUpdatePayload {
   workflowId: string;
   endUserId: string;
   businessId: string;
@@ -34,10 +37,11 @@ export interface RunWorkflowDto {
     website: string;
     companyName: string;
     address: string;
+    country: string;
     registrationNumber: string;
     customerCompany: string;
     ubos: WorkflowUBO[];
-    mainRepresentative: PersonalInformationContext,
+    mainRepresentative: PersonalInformationContext;
   };
   documents: WorkflowRunDocument[];
 }
@@ -78,7 +82,7 @@ export interface TRunWorkflowDto {
         };
         registrationNumber: string;
         additionalInfo?: {
-          mainRepresentative: CreateEndUserDto,
+          mainRepresentative: CreateEndUserDto;
           ubos: WorkflowUBO[];
         };
       };
@@ -141,5 +145,14 @@ export interface GetWorkflowResponse {
 
 export interface UpdateWorkflowDto {
   workflowId: string;
-  payload: Workflow;
+  payload: WorkflowUpdatePayload;
+}
+
+export interface GetFlowDataDto {
+  workflowId?: string;
+}
+
+export interface UpdateFlowDataDto {
+  workflowId?: string;
+  payload: WorkflowFlowData;
 }
