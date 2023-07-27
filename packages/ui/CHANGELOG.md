@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.1.6
+
+### Patch Changes
+
+- moved react & @types/react to dependecies from dev-deps
+
 ## 0.1.5
 
 ### Patch Changes
