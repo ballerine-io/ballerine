@@ -8,6 +8,6 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres15:/var/lib/postgresql/data
 volumes:
-  postgres: ~
+  postgres15: ~
