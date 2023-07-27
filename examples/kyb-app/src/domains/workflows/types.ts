@@ -33,6 +33,7 @@ export interface WorkflowUpdatePayload {
     website: string;
     companyName: string;
     address: string;
+    country: string;
     registrationNumber: string;
     customerCompany: string;
     ubos: WorkflowUBO[];

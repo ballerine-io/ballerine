@@ -20,6 +20,7 @@ export interface BusinessInformationContext {
 
 export interface BusinessAddressContext {
   address: string;
+  country: string;
 }
 
 export interface UBOSContext {

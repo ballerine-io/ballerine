@@ -17,6 +17,7 @@ export const defaultFlowData: WorkflowFlowData = {
     },
     businessAddress: {
       address: '',
+      country: '',
     },
     ubos: [],
     documents: {
