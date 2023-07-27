@@ -47,6 +47,15 @@ export const parentKybWithSessionWorkflowDefinition = {
             },
           ],
         },
+        always: [{
+          target: 'manual_review',
+          cond: {
+            type: 'jmespath',
+            options: {
+              rule: 'entity.data.additionalInfo.ubos == null || length(entity.data.additionalInfo.ubos) == `0`',
+            },
+          }
+        }]
       },
       manual_review: {
         on: {
@@ -55,11 +64,18 @@ export const parentKybWithSessionWorkflowDefinition = {
           revision: 'revision',
         },
       },
+      pending_resubmission: {
+        on: {
+          RESUBMITTED: 'manual_review',
+        }
+      },
       approve: {
         type: 'final' as const,
       },
       revision: {
-        type: 'final' as const,
+        always: [{
+          target: 'pending_resubmission'
+        }],
       },
       reject: {
         type: 'final' as const,
@@ -101,6 +117,38 @@ export const parentKybWithSessionWorkflowDefinition = {
           ],
         },
       },
+      {
+        name: 'resubmission_email',
+        pluginKind: 'email',
+        url: `{secret.EMAIL_API_URL}`,
+        method: 'POST',
+        stateNames: ['pending_resubmission'],
+        headers: {
+          Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
+          'Content-Type': 'application/json',
+        },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+              kybCompanyName: 'PayLynk',
+              customerCompanyName: entity.data.companyName,
+              firstName: entity.data.additionalInfo.mainRepresentative.firstName,
+              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}/workflowRuntimeId=',workflowRuntimeId, '?resubmitEvent=RESUBMITTED']),
+              supportEmail: 'paylynk@support.com',
+              from: 'no-reply@ballerine.com',
+              receivers: [entity.data.additionalInfo.mainRepresentative.email],
+              templateId: 'd-7305991b3e5840f9a14feec767ea7301',
+              revisionReason: documents[].decision[].revisionReason | [0]
+              }`, // jmespath
+            },
+          ],
+        },
+        response: {
+          transform: [],
+        },
+      }
     ],
     childWorkflowPlugins: [
       {
