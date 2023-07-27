@@ -496,6 +496,72 @@ export class WorkflowService {
     return await this.workflowDefinitionRepository.findMany({ ...args, select });
   }
 
+  async updateDecisionAndSendEvent({
+    id,
+    name,
+    reason,
+  }: {
+    id: string;
+    name: string;
+    reason?: string;
+  }) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
+    // `name` is always `approve` and not `approved` etc.
+    const Status = {
+      approve: 'approved',
+      reject: 'rejected',
+      revision: 'revision',
+    } as const;
+    const status = Status[name as keyof typeof Status];
+    const decision = (() => {
+      if (status === 'approved') {
+        return {
+          revisionReason: null,
+          rejectionReason: null,
+        };
+      }
+
+      if (status === 'rejected') {
+        return {
+          revisionReason: null,
+          rejectionReason: reason,
+        };
+      }
+
+      if (status === 'revision') {
+        return {
+          revisionReason: reason,
+          rejectionReason: null,
+        };
+      }
+
+      throw new BadRequestException(`Invalid decision status: ${status}`);
+    })();
+    const documentsWithDecision = runtimeData?.context?.documents?.map(
+      (document: DefaultContextSchema['documents'][number]) => ({
+        ...document,
+        decision: {
+          ...document?.decision,
+          ...decision,
+          status,
+        },
+      }),
+    );
+    const updatedWorkflow = await this.updateWorkflowRuntimeData(id, {
+      context: {
+        ...runtimeData?.context,
+        documents: documentsWithDecision,
+      },
+    });
+
+    await this.event({
+      id,
+      name,
+    });
+
+    return updatedWorkflow;
+  }
+
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
     const workflowDef = await this.workflowDefinitionRepository.findById(
@@ -1132,8 +1198,13 @@ export class WorkflowService {
       status: isFinal ? 'completed' : workflowRuntimeData.status,
     });
 
-    if (isFinal && workflowRuntimeData.parentRuntimeDataId) {
-      await this.persistChildWorkflowToParent(workflowRuntimeData, workflowDefinition, isFinal);
+    if (workflowRuntimeData.parentRuntimeDataId) {
+      await this.persistChildWorkflowToParent(
+        workflowRuntimeData,
+        workflowDefinition,
+        isFinal,
+        currentState,
+      );
     }
 
     this.workflowEventEmitter.emit('workflow.state.changed', {
@@ -1178,6 +1249,7 @@ export class WorkflowService {
     workflowRuntimeData: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
     isFinal: boolean,
+    childRuntimeState?: string,
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       workflowRuntimeData.parentRuntimeDataId,
@@ -1201,12 +1273,20 @@ export class WorkflowService {
       childWorkflow =>
         childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
     );
+    const isPersistableState =
+      !!(
+        childRuntimeState &&
+        childWorkflowCallback.persistenceStates &&
+        childWorkflowCallback.persistenceStates.includes(childRuntimeState)
+      ) || isFinal;
+    if (!isPersistableState) return;
+
     const parentContext = await this.generateParentContextWithInjectedChildContext(
       childrenOfSameDefinition,
       childWorkflowCallback.transformers,
       parentWorkflowRuntime,
       workflowDefinition,
-      isFinal,
+      isPersistableState,
     );
 
     await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
@@ -1214,7 +1294,7 @@ export class WorkflowService {
     if (
       childWorkflowCallback.deliverEvent &&
       parentWorkflowRuntime.status !== 'completed' &&
-      isFinal
+      isPersistableState
     ) {
       await this.event({
         id: parentWorkflowRuntime.id,
@@ -1228,9 +1308,9 @@ export class WorkflowService {
     transformers: ChildWorkflowCallback['transformers'],
     parentWorkflowRuntime: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
-    isFinal: boolean,
+    isPersistableToParent: boolean,
   ) {
-    if (!isFinal)
+    if (!isPersistableToParent)
       return this.composeContextWithChildResponse(
         parentWorkflowRuntime.context,
         workflowDefinition.id,

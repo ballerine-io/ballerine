@@ -44,12 +44,12 @@ export const FileInput = ({
   }, [formData, inputRef, onChange]);
 
   const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files[0];
       if (!file) return;
 
       const base64File = btoa(
-        JSON.stringify({ type: file.type, name: file.name, file: fileToBase64(file) }),
+        JSON.stringify({ type: file.type, name: file.name, file: await fileToBase64(file) }),
       );
 
       onChange(base64File);
@@ -66,7 +66,7 @@ export const FileInput = ({
         id={id}
         name={name}
         placeholder={uiSchema['ui:placeholder']}
-        onChange={handleChange}
+        onChange={e => void handleChange(e)}
         accept="image/jpeg, image/png, application/pdf, .docx"
       />
     </div>

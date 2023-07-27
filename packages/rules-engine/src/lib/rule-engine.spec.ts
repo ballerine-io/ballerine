@@ -21,8 +21,9 @@ test('Simple Server Workflow', t => {
 test('Simple Jmespath rule', t => {
   const engine = createRuleEngine({ Provider: 'jmespath' });
   const someRule = 'foo.bar == foo.baz';
-
   const data = { foo: { bar: 1, baz: 1 } };
 
-  expect(engine.logicRule(someRule).evaluate(data)).toBe(true);
+  const result = engine.logicRule(someRule).evaluate(data);
+
+  expect(result).toBe(true);
 });

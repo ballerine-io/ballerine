@@ -83,7 +83,7 @@ describe('WorkflowDefinitionValidator', () => {
     });
 
     describe('when api plugin is invalid', () => {
-      it('it returns invalid response', async () => {
+      it('returns invalid response', async () => {
         workflowDefinition.extensions.apiPlugins[0].request = 'dwadwad';
         const validationResponse = validateWorkflowDefinition(workflowDefinition);
 
