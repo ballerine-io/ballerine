@@ -31,9 +31,8 @@ import {
 } from '@/workflow/dtos/find-workflow.dto';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
-import { env } from '@/env';
-import { DemoGuard } from '@/common/guards/demo.guard';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { WorkflowEventDecisionInput } from '@/workflow/dtos/workflow-event-decision-input';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -121,6 +120,31 @@ export class WorkflowControllerInternal {
       ...data,
       id: params.id,
     });
+  }
+
+  // PATCH /workflows/:id/event-decision
+  @common.Patch('/:id/event-decision')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseKeyAuthInDevGuard()
+  @UseGuards(WorkflowAssigneeGuard)
+  async updateDecisionAndSendEventById(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @common.Body() data: WorkflowEventDecisionInput,
+  ): Promise<WorkflowRuntimeData> {
+    try {
+      return this.service.updateDecisionAndSendEvent({
+        id: params?.id,
+        name: data?.name,
+        reason: data?.reason,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
   }
 
   // PATCH /workflows/:id

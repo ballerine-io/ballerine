@@ -62,30 +62,36 @@ describe('workflow-runner', () => {
 
     describe('when webhook plugin hits state', () => {
       const server = setupServer();
+      let serverRequestUrl: string;
 
+      // Arrange
       beforeEach(() => {
         server.listen();
+
+        server.use(
+          rest.get(webhookUrl, (req, res, ctx) => {
+            serverRequestUrl = req.url.toString();
+            return res(ctx.json({ result: 'someResult' }));
+          }),
+        );
       });
+
       afterEach(() => {
         server.close();
       });
 
-      let serverRequestUrl: string;
+      it('transitions to successAction and persist response to context', async () => {
+        const workflow = createWorkflowRunner(
+          definition,
+          // @ts-expect-error - see the comments on `webhookPluginsSchemas`
+          webhookPluginsSchemas,
+        );
 
-      server.use(
-        rest.get(webhookUrl, (req, res, ctx) => {
-          serverRequestUrl = req.url.toString();
-          return res(ctx.json({ result: 'someResult' }));
-        }),
-      );
-      const workflow = createWorkflowRunner(
-        definition,
-        // @ts-expect-error - see the comments on `webhookPluginsSchemas`
-        webhookPluginsSchemas,
-      );
-      it('it transitions to successAction and persist response to context', async () => {
+        // Act
         // @ts-expect-error - we are testing the plugin
         await workflow.sendEvent('ALL_GOOD');
+
+        // Assert
         expect(serverRequestUrl).toEqual(
           'https://sometesturl.com/ballerine/test/url/123?id=some_id',
         );

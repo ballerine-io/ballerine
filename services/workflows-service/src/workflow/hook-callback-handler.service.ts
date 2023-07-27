@@ -65,9 +65,7 @@ export class HookCallbackHandlerService {
     };
 
     this.setNestedProperty(context, attributePath, result);
-    context.documents = [context.documents, persistedDocuments]
-      .flat(1)
-      .filter(document => !!document);
+    context.documents = persistedDocuments;
     await this.workflowService.updateWorkflowRuntimeData(workflowRuntime.id, { context: context });
   }
 
@@ -147,7 +145,8 @@ export class HookCallbackHandlerService {
     const documentImages: AnyRecord[] = [];
     for (const image of data.images as { context?: string; content: string }[]) {
       const tmpFile = tmp.fileSync().name;
-      const data = Buffer.from(image.content, 'base64');
+      const base64ImageContent = image.content.split(',')[1];
+      const data = Buffer.from(base64ImageContent as string, 'base64');
       fs.writeFileSync(tmpFile, data);
 
       documentImages.push({
