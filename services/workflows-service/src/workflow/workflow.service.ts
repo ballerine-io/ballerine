@@ -250,12 +250,24 @@ export class WorkflowService {
       })
     )[0];
 
+    const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(
+      childPluginConfig.parentWorkflowRuntimeId,
+    );
+
     if (childWorkflow) {
-      await this.persistChildWorkflowToParent(
-        childWorkflow.workflowRuntimeData,
-        childWorkflow.workflowDefinition,
-        false,
+      const contextToPersist = {
+        [childWorkflow.workflowRuntimeData.id]: {
+          entityId: childWorkflow.workflowRuntimeData.context.entity.id,
+          status: childWorkflow.workflowRuntimeData.status || 'active',
+        },
+      };
+      const parentContext = this.composeContextWithChildResponse(
+        parentWorkflowRuntime.context,
+        childWorkflow.workflowDefinition.id,
+        contextToPersist,
       );
+
+      await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
     }
 
     return childWorkflow;
@@ -1166,7 +1178,9 @@ export class WorkflowService {
       extensions: workflowDefinition.extensions,
       invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
         const runnableChildWorkflow = await this.persistChildEvent(childPluginConfiguration);
+
         if (runnableChildWorkflow && childPluginConfiguration.initOptions.event) {
+          // TODO: Review the issue if return child workflow id for parent and not "send event"
           await this.event({
             id: runnableChildWorkflow.workflowRuntimeData.id,
             name: childPluginConfiguration.initOptions.event,
