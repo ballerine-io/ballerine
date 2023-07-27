@@ -39,6 +39,7 @@ export const serializeWorkflowRunData = async (context: KYBContext): Promise<Run
       address: context.documents.address.address,
       registrationNumber: context.documents.information.registrationNumber,
       customerCompany: 'Ballerine',
+      mainRepresentative: context.personalInformation,
       ubos: context.documents.shareholders.map(({ firstName, lastName, email }) => ({
         entity: {
           type: 'individual',

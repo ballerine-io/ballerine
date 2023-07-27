@@ -16,7 +16,7 @@ export class EmailPlugin extends ApiPlugin {
     headers: HeadersInit,
   ) {
     const from = { from: { email: payload.from } };
-    const subject = { subject: this.replaceValuePlaceholders(payload.subject as string, payload) };
+    const subject = payload.subject ? {subject: this.replaceValuePlaceholders(payload.subject as string, payload)} : {};
     const preheader = payload.preheader
       ? { preheader: this.replaceValuePlaceholders(payload.preheader as string, payload) }
       : {};
@@ -26,6 +26,11 @@ export class EmailPlugin extends ApiPlugin {
     const to = { to: receivers };
     const templateId = { template_id: payload.templateId };
 
+    Object.keys(payload).forEach(key => {
+      if (typeof payload[key] === 'string'){
+        payload[key] = this.replaceValuePlaceholders(payload[key] as string, payload)
+      }
+    })
     const emailPayload = {
       ...from,
       personalizations: [
