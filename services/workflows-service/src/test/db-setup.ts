@@ -6,7 +6,9 @@ import { execSync } from 'child_process';
 module.exports = async () => {
   if (process.env.SKIP_DB_SETUP_TEARDOWN) return;
 
-  const container = await new PostgreSqlContainer().withDatabase('test').start();
+  const container = await new PostgreSqlContainer('sibedge/postgres-plv8:15.3-3.1.7')
+    .withDatabase('test')
+    .start();
   process.env.TEST_DATABASE_SCHEMA_NAME = container.getDatabase();
   process.env.DB_URL = container.getConnectionUri();
   console.log('\nStarting database container on: ' + container.getConnectionUri());
