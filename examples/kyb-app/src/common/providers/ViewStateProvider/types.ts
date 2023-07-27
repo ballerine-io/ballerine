@@ -1,7 +1,6 @@
 import { InputsWarnings } from '@app/common/components/organisms/DynamicForm';
 import { IStep, StepMetadata } from '@app/common/hooks/useStepper';
 import { AnyObject } from '@ballerine/ui';
-import { MachineConfig } from 'xstate';
 
 export type SchemaBase = { states: AnyObject };
 
@@ -30,8 +29,6 @@ export interface ViewStateContext<TGlobalContext = AnyObject> {
   warnings?: InputsWarnings;
   isFinished: boolean;
 }
-
-export type ViewStateSchema = MachineConfig<any, any, any>;
 
 export interface View {
   label: string;

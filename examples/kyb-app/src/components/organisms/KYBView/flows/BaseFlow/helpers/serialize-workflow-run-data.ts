@@ -39,6 +39,7 @@ export const serializeWorkflowRunData = async (
       website: businessInformation.website,
       companyName: personalInformation.companyName,
       address: businessAddress.address,
+      country: businessAddress.country,
       registrationNumber: businessInformation.registrationNumber,
       customerCompany: 'Ballerine',
       ubos: (Array.from(ubos) || []).map(({ firstName, lastName, email }) => ({
