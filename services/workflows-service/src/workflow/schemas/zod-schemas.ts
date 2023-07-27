@@ -19,6 +19,7 @@ export const ConfigSchema = z
         transformers: z.array(z.any()),
         action: z.string().optional(),
         deliverEvent: z.string().optional(),
+        persistenceStates: z.array(z.string()).optional(),
       })
       .optional(),
     childCallbackResults: z
