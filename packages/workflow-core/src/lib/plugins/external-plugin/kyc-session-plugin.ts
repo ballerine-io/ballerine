@@ -39,7 +39,7 @@ export class KycSessionPlugin extends ApiPlugin {
         validationContext,
       );
     }
-    return super.validateContent(schemaValidator, transformedRequest, validationContext)
+    return super.validateContent(schemaValidator, transformedRequest, validationContext);
   }
 
   async makeApiRequest(

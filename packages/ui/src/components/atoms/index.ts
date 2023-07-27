@@ -7,3 +7,5 @@ export * from './Input';
 export * from './Label';
 export * from './ScrollArea';
 export * from './Table';
+export * from './Command';
+export * from './Popover';

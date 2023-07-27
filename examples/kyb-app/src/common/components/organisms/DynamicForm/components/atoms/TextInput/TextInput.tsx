@@ -1,14 +1,22 @@
-import { Input } from '@ballerine/ui';
+import { SelectInput } from '@app/common/components/atoms/SelectInput';
+import { SelectField } from '@app/common/components/organisms/DynamicForm/components/atoms/TextInput/components/SelectField';
+import { TextField } from '@app/common/components/organisms/DynamicForm/components/atoms/TextInput/components/TextField';
+import { detectFieldType } from '@app/common/components/organisms/DynamicForm/components/atoms/TextInput/helpers/detectFieldType';
+import { TextInputFieldType } from '@app/common/components/organisms/DynamicForm/components/atoms/TextInput/types';
 import { FieldProps } from '@rjsf/utils';
+import { useMemo } from 'react';
 
-export const TextInput = ({ id, name, uiSchema, formData, onChange }: FieldProps<string>) => {
-  return (
-    <Input
-      id={id}
-      name={name}
-      value={formData ? formData : ''}
-      placeholder={uiSchema['ui:placeholder']}
-      onChange={event => onChange(event.target.value) as void}
-    />
-  );
+export const TextInput = (props: FieldProps<string>) => {
+  const InputComponent = useMemo(() => {
+    const fieldsMap: Record<TextInputFieldType, React.ComponentType<FieldProps<string>>> = {
+      text: TextField,
+      select: SelectField,
+    };
+
+    const fieldType = detectFieldType(props);
+
+    return fieldsMap[fieldType];
+  }, [props]);
+
+  return <InputComponent {...props} />;
 };

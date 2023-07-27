@@ -28,7 +28,9 @@ export const SnapshotProvider = ({ children, storage, onBeforeSave, onAfterSave 
     [storage, onBeforeSave, onAfterSave],
   );
 
-  const clear = useCallback(() => storage.clear(), [storage]);
+  const clear = useCallback(() => {
+    storage.clear();
+  }, [storage]);
 
   const context = useMemo(() => {
     const ctx: SnapshotContext = {

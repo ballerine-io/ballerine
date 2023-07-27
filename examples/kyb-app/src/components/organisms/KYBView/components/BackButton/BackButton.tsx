@@ -1,21 +1,13 @@
 import { useSettings } from '@app/common/providers/SettingsProvider/hooks/useSettings';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
-import { kybViewSchema } from '@app/components/organisms/KYBView/kyb-view.schema';
 import { ArrowLeft } from 'lucide-react';
 import { useMemo } from 'react';
 
 export const BackButton = () => {
-  const { state, prev } = useViewState<typeof kybViewSchema>();
+  const { state, prev } = useViewState();
   const { leaveText } = useSettings();
 
-  const isExit = useMemo(
-    () =>
-      state === 'idle' ||
-      state === 'personalInformation' ||
-      state === 'final' ||
-      state === 'revision',
-    [state],
-  );
+  const isExit = useMemo(() => state === 'personalInformation', [state]);
 
   return (
     <div>
