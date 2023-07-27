@@ -17,6 +17,7 @@ export const runAndStartWorkflowSerialize = (data: RunWorkflowDto): TRunWorkflow
             text: data.entity.address,
           },
           additionalInfo: {
+            mainRepresentative: data.entity.mainRepresentative,
             ubos: data.entity.ubos.map(ubo => {
               ubo.entity.data.additionalInfo = {
                 ...(ubo.entity.data.additionalInfo || {}),
