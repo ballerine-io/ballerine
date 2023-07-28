@@ -1,5 +1,5 @@
 import { MetricsRepository } from '@/metrics/repository/metrics.repository';
-import { ActiveUserModel } from '@/metrics/repository/models/active-user.model';
+import { MetricsUserModel } from '@/metrics/repository/models/metrics-user.model';
 import { UserAssignedCasesStatisticModel } from '@/metrics/repository/models/user-assigned-cases-statistic.model';
 import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
 import { UserResolvedCasesStatisticModel } from '@/metrics/repository/models/user-resolved-cases-statistic.model';
@@ -8,7 +8,6 @@ import { WorkflowRuntimeStatusCaseCountModel } from '@/metrics/repository/models
 import { FindUsersAssignedCasesStatisticParams } from '@/metrics/repository/types/find-users-assigned-cases-statistic.params';
 import { FindUsersResolvedCasesStatisticParams } from '@/metrics/repository/types/find-users-resolved-cases-statistic.params';
 import { GetRuntimeStatusCaseCountParams } from '@/metrics/repository/types/get-runtime-status-case-count.params';
-import { ListActiveUsersParams } from '@/metrics/repository/types/list-active-users.params';
 import { ListUserCasesResolvedDailyParams } from '@/metrics/repository/types/list-user-cases-resolved-daily.params';
 import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/user-workflow-processing-statistic.model';
 import { GetUserWorkflowProcessingStatisticParams } from '@/metrics/service/types/get-user-workflow-processing-statistic.params';
@@ -79,7 +78,7 @@ export class MetricsService {
     return await this.metricsRepository.listCasesResolvedDaily(params);
   }
 
-  async listActiveUsers(params: ListActiveUsersParams): Promise<ActiveUserModel[]> {
-    return await this.metricsRepository.listActiveUsers(params);
+  async listActiveUsers(): Promise<MetricsUserModel[]> {
+    return await this.metricsRepository.listUsers();
   }
 }

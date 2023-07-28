@@ -40,10 +40,10 @@ export default defineConfig({
     },
   },
   test: {
-    exclude: ['node_modules', 'lib'],
+    exclude: ['node_modules', 'dist'],
   },
   build: {
-    outDir: 'lib',
+    outDir: 'dist',
     lib: {
       entry: {
         ...entries,
