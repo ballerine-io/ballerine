@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 
 export const useActivePerWorkflowStatsQuery = () => {
   const { data = [], isLoading, isFetching } = useQuery(workflowMetricsKeys.workflowRuntimeStats());
-  console.log('data', data);
 
   return {
     data,
