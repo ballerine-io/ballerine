@@ -31,8 +31,10 @@ import {
 } from '@/workflow/dtos/find-workflow.dto';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
-import axios from 'axios';
-import { env } from '@/env';
+import {
+  NotificationType,
+  WebsocketNotifierService,
+} from '@/common/websocket/notifier/websocket-notifier.service';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -42,6 +44,7 @@ export class WorkflowControllerInternal {
     protected readonly filterService: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly websocketNotifierService: WebsocketNotifierService,
   ) {}
 
   @common.Post()
@@ -52,9 +55,7 @@ export class WorkflowControllerInternal {
     @common.Body() data: WorkflowDefinitionCreateDto,
   ) {
     const createdWorkflowDefinition = await this.service.createWorkflowDefinition(data);
-    const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=workflows_list`;
-    // todo is it important to await this?
-    await axios.post(websocketServerNotifyUri);
+    this.websocketNotifierService.notify(NotificationType.WORKFLOWS_LIST);
     return createdWorkflowDefinition;
   }
 
@@ -124,9 +125,7 @@ export class WorkflowControllerInternal {
       ...data,
       id: params.id,
     });
-    const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=workflows_list`;
-    // todo is it important to await this?
-    await axios.post(websocketServerNotifyUri);
+    this.websocketNotifierService.notify(NotificationType.WORKFLOWS_LIST);
     return createdEvent;
   }
 
@@ -142,9 +141,7 @@ export class WorkflowControllerInternal {
   ): Promise<WorkflowRuntimeData> {
     try {
       const updatedWorkflow = await this.service.updateWorkflowRuntimeData(params.id, data);
-      const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=workflows_list`;
-      // todo is it important to await this?
-      await axios.post(websocketServerNotifyUri);
+      this.websocketNotifierService.notify(NotificationType.WORKFLOWS_LIST);
       return updatedWorkflow;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -169,9 +166,7 @@ export class WorkflowControllerInternal {
   ): Promise<WorkflowRuntimeData> {
     try {
       const assignedWorkflow = await this.service.assignWorkflowToUser(params.id, data);
-      const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=workflows_list`;
-      // todo is it important to await this?
-      await axios.post(websocketServerNotifyUri);
+      this.websocketNotifierService.notify(NotificationType.WORKFLOWS_LIST);
       return assignedWorkflow;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -209,9 +204,7 @@ export class WorkflowControllerInternal {
           submitStates: true,
         },
       });
-      const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=workflows_list`;
-      // todo is it important to await this?
-      await axios.post(websocketServerNotifyUri);
+      this.websocketNotifierService.notify(NotificationType.WORKFLOWS_LIST);
       return deletedWorkflow;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
