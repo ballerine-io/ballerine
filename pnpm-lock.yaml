@@ -174,6 +174,9 @@ importers:
       react-router-dom:
         specifier: ^6.11.2
         version: 6.11.2(react-dom@18.2.0)(react@18.2.0)
+      react-use-websocket:
+        specifier: ^4.3.1
+        version: 4.3.1(react-dom@18.2.0)(react@18.2.0)
       react-zoom-pan-pinch:
         specifier: ^3.0.8
         version: 3.0.8(react-dom@18.2.0)(react@18.2.0)
@@ -1222,7 +1225,7 @@ importers:
         version: link:../../packages/common
       '@ballerine/workflow-core':
         specifier: ^0.4.16
-        version: 0.4.19
+        version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
         version: 4.37.1
@@ -1477,9 +1480,15 @@ importers:
       '@t3-oss/env-core':
         specifier: ^0.3.1
         version: 0.3.1(typescript@4.9.5)(zod@3.21.4)
+      '@types/keygrip':
+        specifier: ^1.0.2
+        version: 1.0.2
       '@types/ws':
         specifier: ^8.5.4
         version: 8.5.4
+      keygrip:
+        specifier: ^1.1.0
+        version: 1.1.0
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.13
@@ -6713,26 +6722,6 @@ packages:
   /@ballerine/common@0.4.3:
     resolution: {integrity: sha512-MV7i5eYQ4yAg0ZI3p0oel1Erz4W+nZ7mjc8tXyr0XZszckvxkWuTPCnTDggIKOsf7c26I0JMsbHlY9vpBFcSHQ==}
     engines: {node: '>=12'}
-    dev: false
-
-  /@ballerine/common@0.5.9:
-    resolution: {integrity: sha512-5tPfpsQ0ibg/H2qSOQ1aeRDDaAig7A+p8nsX6CNTEMUZ/8Pa4Hs02DgRjCWGlQjmczOWblCfwA0+AVj25Ht5qg==}
-    engines: {node: '>=12'}
-    dependencies:
-      ajv: 8.12.0
-      json-schema-to-zod: 0.6.3
-    dev: false
-
-  /@ballerine/workflow-core@0.4.19:
-    resolution: {integrity: sha512-F+VeepJVsEp83S7R6F2JoDQzpEq4dgIxPdbqBm2pK7idJo+z9W+yEODsNRURuWuy68GxEmAP5AFFDgRs7HcJ6Q==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@ballerine/common': 0.5.9
-      ajv: 8.12.0
-      i18n-iso-countries: 7.6.0
-      jmespath: 0.16.0
-      json-logic-js: 2.0.2
-      xstate: 4.38.0
     dev: false
 
   /@ballerine/workflow-core@0.4.9:
@@ -14449,7 +14438,6 @@ packages:
 
   /@types/keygrip@1.0.2:
     resolution: {integrity: sha512-GJhpTepz2udxGexqos8wgaBx4I/zWIDPh/KOGEwAqtuGDkOUJu5eFvwmdBX4AmB8Odsr+9pHCQqiAqDL/yKMKw==}
-    dev: true
 
   /@types/leaflet@1.9.3:
     resolution: {integrity: sha512-Caa1lYOgKVqDkDZVWkto2Z5JtVo09spEaUt2S69LiugbBpoqQu92HYFMGUbYezZbnBkyOxMNPXHSgRrRY5UyIA==}
@@ -18478,10 +18466,6 @@ packages:
     resolution: {integrity: sha512-KqFl6pOgOW+Y6wJgu80rHpo2/3H07vr8ntR9rkkFIRETewbf5GaYYcakYfiKz89K+sLsuPkQIZaXDMjUObZwWg==}
     dev: false
 
-  /diacritics@1.3.0:
-    resolution: {integrity: sha512-wlwEkqcsaxvPJML+rDh/2iS824jbREk6DUMUKkEaSlxdYHeS43cClJtsWglvw2RfeXGm6ohKDqsXteJ5sP5enA==}
-    dev: false
-
   /didyoumean@1.2.2:
     resolution: {integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==}
 
@@ -21695,13 +21679,6 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
     dev: true
-
-  /i18n-iso-countries@7.6.0:
-    resolution: {integrity: sha512-HPKjOUKS0BkjiY4ayrsuFbu7Ock++pXLs+FAOYl4WfTL5L0ploEH68fiRAP6Zev5g/jvMFt54KcPGJcb942wbg==}
-    engines: {node: '>= 12'}
-    dependencies:
-      diacritics: 1.3.0
-    dev: false
 
   /i18next-browser-languagedetector@7.0.1:
     resolution: {integrity: sha512-Pa5kFwaczXJAeHE56CHG2aWzFBMJNUNghf0Pm4SwSrEMps/PTKqW90EYWlIvhuYStf3Sn1K0vw+gH3+TLdkH1g==}
@@ -27058,6 +27035,16 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-lifecycles-compat: 3.0.4
+    dev: false
+
+  /react-use-websocket@4.3.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-zHPLWrgcqydJaak2O5V9hiz4q2dwkwqNQqpgFVmSuPxLZdsZlnDs8DVHy3WtHH+A6ms/8aHIyX7+7ulOcrnR0Q==}
+    peerDependencies:
+      react: '>= 18.0.0'
+      react-dom: '>= 18.0.0'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /react-zoom-pan-pinch@3.0.8(react-dom@18.2.0)(react@18.2.0):
