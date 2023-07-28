@@ -31,9 +31,6 @@ export const Root: FunctionComponent = () => {
           case 'filters':
             queryKey = filtersQueryKeys._def;
             break;
-          case 'storage':
-            queryKey = storageQueryKeys._def;
-            break;
           case 'workflow':
             queryKey = workflowsQueryKeys.byId._def;
             break;

@@ -3,10 +3,7 @@ import { isString } from '../../../../../common/utils/is-string/is-string';
 import { storageQueryKeys } from '../../../query-keys';
 import { useIsAuthenticated } from '../../../../auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
-export const useStorageFilesQuery = (
-  fileIds: Array<string>,
-  websocketConnectionIsOpen: boolean,
-) => {
+export const useStorageFilesQuery = (fileIds: Array<string>) => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQueries({
@@ -15,7 +12,7 @@ export const useStorageFilesQuery = (
         ...storageQueryKeys.fileById(fileId),
         enabled: isString(fileId) && !!fileId?.length && isAuthenticated,
         staleTime: 100_000,
-        refetchInterval: () => (websocketConnectionIsOpen ? false : 100_000),
+        refetchInterval: 100_000,
       })) ?? [],
   });
 };

@@ -16,9 +16,10 @@ import { FilterCreateDto } from '@/filter/dtos/filter-create';
 import { FilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
 import { InputJsonValue } from '@/types';
 import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
-import axios, { AxiosResponse } from 'axios';
-import { Readable } from 'stream';
-import { env } from '@/env';
+import {
+  NotificationType,
+  WebsocketNotifierService,
+} from '@/common/websocket/notifier/websocket-notifier.service';
 
 @swagger.ApiTags('external/filters')
 @common.Controller('external/filters')
@@ -27,6 +28,7 @@ export class FilterControllerExternal {
     protected readonly service: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly websocketNotifierService: WebsocketNotifierService,
   ) {}
 
   @common.Get()
@@ -68,9 +70,8 @@ export class FilterControllerExternal {
         query: data?.query as InputJsonValue,
       },
     });
-    const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=filters`;
-    // todo is it important to await this?
-    await axios.post(websocketServerNotifyUri);
+
+    this.websocketNotifierService.notify(NotificationType.FILTERS);
     return createdFilter;
   }
 }

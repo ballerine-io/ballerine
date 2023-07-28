@@ -14,7 +14,6 @@ import { BusinessModel } from '@/business/business.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { Test, TestingModule } from '@nestjs/testing';
-import axios from 'axios';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -122,7 +121,6 @@ describe('WorkflowControllerInternal', () => {
             numb: 'context',
           },
         };
-        axios.post = jest.fn().mockResolvedValue({});
         await workflowRuntimeDataRepo.create({
           data: initialRuntimeData,
         });

@@ -26,6 +26,10 @@ import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runt
 import { ApiOkResponse } from '@nestjs/swagger';
 import axios from 'axios';
 import { env } from '@/env';
+import {
+  NotificationType,
+  WebsocketNotifierService,
+} from '@/common/websocket/notifier/websocket-notifier.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -35,6 +39,7 @@ export class WorkflowControllerExternal {
     protected readonly service: WorkflowService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly websocketNotifierService: WebsocketNotifierService,
   ) {}
   // GET /workflows
   @common.Get('/')
@@ -97,9 +102,7 @@ export class WorkflowControllerExternal {
   ): Promise<WorkflowRuntimeData> {
     try {
       const updatedWorkflow = await this.service.updateWorkflowRuntimeData(params.id, data);
-      const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=workflows_list`;
-      // todo is it important to await this?
-      await axios.post(websocketServerNotifyUri);
+      this.websocketNotifierService.notify(NotificationType.WORKFLOWS_LIST);
       return updatedWorkflow;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -163,9 +166,7 @@ export class WorkflowControllerExternal {
       ...data,
       id,
     });
-    const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=workflows_list`;
-    // todo is it important to await this?
-    await axios.post(websocketServerNotifyUri);
+    this.websocketNotifierService.notify(NotificationType.WORKFLOWS_LIST);
     return createdEvent;
   }
 
@@ -184,9 +185,7 @@ export class WorkflowControllerExternal {
       ...data,
       id,
     });
-    const websocketServerNotifyUri = `${env.WEBSOCKET_URL}/notify?type=workflows_list`;
-    // todo is it important to await this?
-    await axios.post(websocketServerNotifyUri);
+    this.websocketNotifierService.notify(NotificationType.WORKFLOWS_LIST);
     return createdEvent;
   }
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context

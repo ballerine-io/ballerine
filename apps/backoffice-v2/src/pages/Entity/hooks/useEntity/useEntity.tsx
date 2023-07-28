@@ -30,7 +30,6 @@ export const useEntity = (websocketConnectionIsOpen: boolean) => {
     workflow?.context?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
-    websocketConnectionIsOpen,
   );
 
   const results = [];
