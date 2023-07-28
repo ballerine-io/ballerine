@@ -14,6 +14,7 @@ import { BusinessModel } from '@/business/business.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { Test, TestingModule } from '@nestjs/testing';
+import { WebsocketNotifierService } from '@/common/websocket/notifier/websocket-notifier.service';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -79,7 +80,11 @@ describe('WorkflowControllerInternal', () => {
   beforeAll(async () => {
     testingModule = await Test.createTestingModule({
       imports: commonTestingModules,
-    }).compile();
+      providers: [WebsocketNotifierService],
+    })
+      .overrideProvider(WebsocketNotifierService)
+      .useValue({ notify: jest.fn() })
+      .compile();
   });
 
   beforeEach(() => {
@@ -107,8 +112,13 @@ describe('WorkflowControllerInternal', () => {
     );
     const filterService = {} as any;
     const rolesBuilder = {} as any;
-
-    controller = new WorkflowControllerInternal(service, filterService, rolesBuilder);
+    const websocketNotifierService = testingModule.get(WebsocketNotifierService);
+    controller = new WorkflowControllerInternal(
+      service,
+      filterService,
+      rolesBuilder,
+      websocketNotifierService,
+    );
   });
 
   describe('.event', () => {
@@ -121,6 +131,7 @@ describe('WorkflowControllerInternal', () => {
             numb: 'context',
           },
         };
+
         await workflowRuntimeDataRepo.create({
           data: initialRuntimeData,
         });
