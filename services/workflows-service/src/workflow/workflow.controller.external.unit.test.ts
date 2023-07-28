@@ -10,6 +10,7 @@ import { WorkflowControllerExternal } from './workflow.controller.external';
 import { WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import { WebsocketNotifierService } from '@/common/websocket/notifier/websocket-notifier.service';
 
 const acGuard = {
   canActivate: () => {
@@ -32,6 +33,7 @@ describe('Workflow (external)', () => {
   let app: INestApplication;
   let moduleRef: TestingModule;
   let wfService: WorkflowService;
+  let websocketNotifierService: WebsocketNotifierService;
 
   beforeEach(async () => {
     wfService = {
@@ -40,11 +42,19 @@ describe('Workflow (external)', () => {
       getWorkflowDefinitionById: jest.fn() as unknown,
     } as WorkflowService;
 
+    websocketNotifierService = {
+      notify: jest.fn() as unknown,
+    } as WebsocketNotifierService;
+
     moduleRef = await Test.createTestingModule({
       providers: [
         {
           provide: WorkflowService,
           useValue: wfService,
+        },
+        {
+          provide: WebsocketNotifierService,
+          useValue: websocketNotifierService,
         },
         {
           provide: EventEmitter2,
