@@ -1486,6 +1486,9 @@ importers:
       '@types/ws':
         specifier: ^8.5.4
         version: 8.5.4
+      class-validator:
+        specifier: 0.14.0
+        version: 0.14.0
       keygrip:
         specifier: ^1.1.0
         version: 1.1.0
@@ -28865,7 +28868,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.2.7(postcss@8.4.24)(ts-node@10.9.1)
+      tailwindcss: 3.2.7(postcss@8.4.21)(ts-node@10.9.1)
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.2):
