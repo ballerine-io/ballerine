@@ -1,15 +1,6 @@
 import type { SubmitContext } from '@felte/core';
 import type { z, ZodSchema } from 'zod';
 
-export type Serializable =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | Array<Serializable>
-  | { [key: PropertyKey]: Serializable };
-
 export type ObjectValues<TObject> = TObject[keyof TObject];
 
 export type TOnPrev<TSchema extends ZodSchema> = (data: z.infer<TSchema>) => () => void;
