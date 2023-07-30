@@ -1,13 +1,9 @@
-export const base64ToFile = (base64: string, fileName: string, mimeType: string): File => {
-  const byteCharacters = base64;
-  const byteArrays = new Uint8Array(byteCharacters.length);
-
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteArrays[i] = byteCharacters.charCodeAt(i);
-  }
-
-  const blob = new Blob([byteArrays], { type: mimeType });
-  const file = new File([blob], fileName, { type: mimeType });
-
-  return file;
+export const base64ToFile = async (
+  base64: string,
+  fileName: string,
+  mimeType: string,
+): Promise<File> => {
+  return await fetch(base64)
+    .then(res => res.blob())
+    .then(blob => new File([blob], fileName, { type: mimeType }));
 };

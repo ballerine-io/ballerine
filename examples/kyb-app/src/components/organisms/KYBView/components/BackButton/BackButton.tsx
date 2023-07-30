@@ -10,12 +10,9 @@ export const BackButton = () => {
   const isExit = useMemo(() => state === 'personalInformation', [state]);
 
   return (
-    <div>
+    <div className="select-none" onClick={!isExit ? prev : () => alert('Not implemented')}>
       <ArrowLeft className="inline" />
-      <span
-        className="cursor-pointer pl-2 align-middle text-sm font-bold"
-        onClick={!isExit ? prev : () => alert('Not implemented')}
-      >
+      <span className="cursor-pointer pl-2 align-middle text-sm font-bold">
         {isExit ? leaveText : 'Back'}
       </span>
     </div>
