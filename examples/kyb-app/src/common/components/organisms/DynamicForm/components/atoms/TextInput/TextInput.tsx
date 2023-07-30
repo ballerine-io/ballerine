@@ -1,4 +1,3 @@
-import { SelectInput } from '@app/common/components/atoms/SelectInput';
 import { SelectField } from '@app/common/components/organisms/DynamicForm/components/atoms/TextInput/components/SelectField';
 import { TextField } from '@app/common/components/organisms/DynamicForm/components/atoms/TextInput/components/TextField';
 import { detectFieldType } from '@app/common/components/organisms/DynamicForm/components/atoms/TextInput/helpers/detectFieldType';

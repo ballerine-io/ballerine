@@ -1,4 +1,3 @@
-import { useWarnings } from '@app/common/components/organisms/DynamicForm/hooks/useWarnings/useWarnings';
 import { base64ToFile } from '@app/common/utils/base64-to-file';
 import { fileToBase64 } from '@app/common/utils/file-to-base64';
 import { isBase64 } from '@app/utils/is-base-64';
@@ -26,7 +25,6 @@ export const FileInput = ({
       if (!formData) return;
 
       const isBase64Value = typeof formData === 'string' && isBase64(formData);
-      let file: null | File = null;
 
       if (isBase64Value) {
         const fileMetadata = JSON.parse(atob(formData)) as {
@@ -35,11 +33,11 @@ export const FileInput = ({
           file: string;
         };
 
-        file = base64ToFile(fileMetadata.file, fileMetadata.name, fileMetadata.type);
-        files.items.add(file);
+        void base64ToFile(fileMetadata.file, fileMetadata.name, fileMetadata.type).then(file => {
+          files.items.add(file);
+          inputRef.current.files = files.files;
+        });
       }
-
-      inputRef.current.files = files.files;
     }
   }, [formData, inputRef, onChange]);
 
@@ -48,11 +46,15 @@ export const FileInput = ({
       const file = event.target.files[0];
       if (!file) return;
 
-      const base64File = btoa(
-        JSON.stringify({ type: file.type, name: file.name, file: await fileToBase64(file) }),
+      const filePayload = btoa(
+        JSON.stringify({
+          type: file.type,
+          name: file.name,
+          file: await fileToBase64(file),
+        }),
       );
 
-      onChange(base64File);
+      onChange(filePayload);
     },
     [onChange],
   );

@@ -18,12 +18,12 @@ export const serializeWorkflowRunData = async (
   );
 
   const [proofOfAddressFileId, registrationDocumentFileId] = await getFilesId([
-    base64ToFile(
+    await base64ToFile(
       proofOfAddressFileData.file,
       proofOfAddressFileData.name,
       proofOfAddressFileData.type,
     ),
-    base64ToFile(
+    await base64ToFile(
       registrationDocumentFileData.file,
       registrationDocumentFileData.name,
       registrationDocumentFileData.type,

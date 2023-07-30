@@ -1,4 +1,4 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
 
 settings:
   autoInstallPeers: true
@@ -34631,7 +34631,7 @@ packages:
       chokidar: 3.5.3
       commander: 8.3.0
       eslint: 8.38.0
-      fast-glob: 3.2.12
+      fast-glob: 3.3.0
       fs-extra: 11.1.1
       lodash.debounce: 4.0.8
       lodash.pick: 4.4.0
