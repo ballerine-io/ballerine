@@ -22,7 +22,8 @@
       "@components/*": ["./src/components/*"],
       "@utils/*": ["./src/utils/*"],
       "@common/*": ["./src/common/*"],
-      "class-variance-authority": ["node_modules/class-variance-authority"]
+      "class-variance-authority": ["node_modules/class-variance-authority"],
+      "react": ["./node_modules/@types/react"]
     }
   },
   "include": ["src"],
