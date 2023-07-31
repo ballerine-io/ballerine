@@ -48,10 +48,10 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@ballerine/common": "0.5.10",
-    "@ballerine/ui": "0.1.7",
-    "@ballerine/workflow-browser-sdk": "0.4.13",
-    "@ballerine/workflow-node-sdk": "0.4.7",
+    "@ballerine/common": "0.5.11",
+    "@ballerine/ui": "0.1.8",
+    "@ballerine/workflow-browser-sdk": "0.4.14",
+    "@ballerine/workflow-node-sdk": "0.4.8",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@hookform/resolvers": "^3.1.0",
     "@lukemorales/query-key-factory": "^1.0.3",
