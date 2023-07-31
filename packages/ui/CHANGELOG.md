@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.1.7
+
+### Patch Changes
+
+- Added react type reference in TS config & added postinstall script
+
 ## 0.1.6
 
 ### Patch Changes
