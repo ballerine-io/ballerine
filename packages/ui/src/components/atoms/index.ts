@@ -3,7 +3,7 @@ export * from './Dialog';
 export * from './Dropdown';
 export * from './HealthIndicator';
 export * from './HealthIndicator';
-export * from './Input';
+export * from './inputs/Input';
 export * from './Label';
 export * from './ScrollArea';
 export * from './Table';
