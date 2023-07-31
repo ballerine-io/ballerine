@@ -90,9 +90,9 @@ export class HookCallbackHandlerService {
 
   private formatDecision(data: AnyRecord) {
     return {
-        status: data.decision,
-        decisionReason: data.reason,
-        riskLabels: data.riskLabels,
+      status: data.decision,
+      decisionReason: data.reason,
+      riskLabels: data.riskLabels,
     };
   }
 
