@@ -61,12 +61,10 @@ export interface IWorkflowContextChangedEventData {
 export interface IWorkflowCompletedEventData {
   eventName: 'workflow.completed';
   // TODO: Move to a shared package
-  entityId: string;
-  workflowDefinitionId: string;
-  workflowDefinitionVersion: number;
+  runtimeData: WorkflowRuntimeData;
   state: string;
-  result: unknown;
-  context: any;
+  entityId: string;
+  correlationId: string;
 }
 
 export interface IWorkflowStateChangedEventData {
