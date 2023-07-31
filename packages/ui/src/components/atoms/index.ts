@@ -4,6 +4,7 @@ export * from './Dropdown';
 export * from './HealthIndicator';
 export * from './HealthIndicator';
 export * from './inputs/Input';
+export * from './inputs/Checkbox';
 export * from './Label';
 export * from './ScrollArea';
 export * from './Table';
