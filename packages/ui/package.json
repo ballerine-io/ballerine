@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.1.6",
+  "version": "0.1.8",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,7 +20,8 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.2",
@@ -37,7 +38,9 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.144.0",
     "react-json-view": "^1.21.3",
-    "tailwind-merge": "^1.10.0"
+    "tailwind-merge": "^1.10.0",
+    "react": "^18.0.37",
+    "react-dom": "^18.0.5"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^7.0.26",
@@ -64,8 +67,6 @@
     "eslint-plugin-storybook": "^0.6.6",
     "fast-glob": "^3.3.0",
     "prop-types": "^15.8.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "storybook": "^7.0.26",
     "tailwindcss": "^3.3.2",
     "tailwindcss-animate": "1.0.5",
