@@ -685,6 +685,7 @@ async function seed(bcryptSalt: Salt) {
       business: {
         select: {
           id: true,
+          businessType: true,
           companyName: true,
           registrationNumber: true,
           legalForm: true,
@@ -838,6 +839,7 @@ async function seed(bcryptSalt: Salt) {
       business: {
         select: {
           id: true,
+          businessType: true,
           companyName: true,
           registrationNumber: true,
           legalForm: true,
@@ -893,6 +895,7 @@ async function seed(bcryptSalt: Salt) {
       business: {
         select: {
           id: true,
+          businessType: true,
           companyName: true,
           registrationNumber: true,
           legalForm: true,
