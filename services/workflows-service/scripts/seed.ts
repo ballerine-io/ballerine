@@ -104,6 +104,10 @@ async function seed(bcryptSalt: Salt) {
   const onboardingMachineKybId = 'COLLECT_DOCS_b0002zpeid7bq9bbb';
   const riskScoreMachineKybId = 'risk-score-improvement-dev';
 
+  // MOMO
+  const onboardingMomoMachineId = 'onboarding-momo';
+  const riskScoreMomoMachineId = 'risk-score-momo';
+
   const user = await client.endUser.create({
     data: {
       id: '43a0a298-0d02-4a2e-a8cc-73c06b465310',
@@ -665,6 +669,58 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
+  // MOMO Onboarding
+  await client.workflowDefinition.create({
+    data: {
+      id: onboardingMomoMachineId,
+      name: 'onboarding_momo',
+      version: 1,
+      definitionType: 'statechart-json',
+      config: {
+        workflowLevelResolution: true,
+        completedWhenTasksResolved: false,
+        allowMultipleActiveWorkflows: false,
+      },
+      definition: {
+        id: 'onboarding_momo',
+        predictableActionArguments: true,
+        initial: baseManualReviewDefinition.definition.initial,
+
+        context: {
+          documents: [],
+        },
+
+        states: baseManualReviewDefinition.definition.states,
+      },
+    },
+  });
+
+  // MOMO Risk Score Improvement
+  await client.workflowDefinition.create({
+    data: {
+      id: riskScoreMomoMachineId,
+      name: 'risk_score_momo',
+      version: 1,
+      definitionType: 'statechart-json',
+      config: {
+        workflowLevelResolution: false,
+        completedWhenTasksResolved: true,
+        allowMultipleActiveWorkflows: true,
+      },
+      definition: {
+        id: 'risk_score_momo',
+        predictableActionArguments: true,
+        initial: baseManualReviewDefinition.definition.initial,
+
+        context: {
+          documents: [],
+        },
+
+        states: baseManualReviewDefinition.definition.states,
+      },
+    },
+  });
+
   await createFilter('Onboarding - Businesses with enriched data', 'businesses', {
     select: {
       id: true,
@@ -816,6 +872,124 @@ async function seed(bcryptSalt: Salt) {
     where: {
       workflowDefinitionId: riskScoreMachineKybId,
       endUserId: { not: null },
+    },
+  });
+
+  await createFilter('Risk Score Improvement - MOMO', 'businesses', {
+    select: {
+      id: true,
+      status: true,
+      assigneeId: true,
+      createdAt: true,
+      context: true,
+      state: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+          definition: true,
+        },
+      },
+      business: {
+        select: {
+          id: true,
+          businessType: true,
+          companyName: true,
+          registrationNumber: true,
+          legalForm: true,
+          countryOfIncorporation: true,
+          dateOfIncorporation: true,
+          address: true,
+          phoneNumber: true,
+          email: true,
+          website: true,
+          industry: true,
+          taxIdentificationNumber: true,
+          vatNumber: true,
+          shareholderStructure: true,
+          numberOfEmployees: true,
+          businessPurpose: true,
+          documents: true,
+          approvalState: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
+    where: {
+      workflowDefinitionId: riskScoreMomoMachineId,
+      businessId: { not: null },
+      business: {
+        businessType: 'MOMO',
+      },
+    },
+  });
+
+  await createFilter('Risk Score Improvement - MOMO', 'businesses', {
+    select: {
+      id: true,
+      status: true,
+      assigneeId: true,
+      createdAt: true,
+      context: true,
+      state: true,
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+          definition: true,
+        },
+      },
+      business: {
+        select: {
+          id: true,
+          businessType: true,
+          companyName: true,
+          registrationNumber: true,
+          legalForm: true,
+          countryOfIncorporation: true,
+          dateOfIncorporation: true,
+          address: true,
+          phoneNumber: true,
+          email: true,
+          website: true,
+          industry: true,
+          taxIdentificationNumber: true,
+          vatNumber: true,
+          shareholderStructure: true,
+          numberOfEmployees: true,
+          businessPurpose: true,
+          documents: true,
+          approvalState: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      assignee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
+    where: {
+      workflowDefinitionId: onboardingMomoMachineId,
+      businessId: { not: null },
+      business: {
+        businessType: 'MOMO',
+      },
     },
   });
 
