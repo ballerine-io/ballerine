@@ -154,6 +154,8 @@ enum WorkflowRuntimeDataStatus {
 
 model WorkflowRuntimeData {
   id                        String                    @id @default(cuid())
+  // Potentially use an enum
+  tasksStatus               String                    @default("pending")
   endUser                   EndUser?                  @relation(fields: [endUserId], references: [id], onDelete: SetNull)
   endUserId                 String?
   business                  Business?                 @relation(fields: [businessId], references: [id], onDelete: SetNull)

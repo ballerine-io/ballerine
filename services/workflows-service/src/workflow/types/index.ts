@@ -94,3 +94,20 @@ export type ExtractWorkflowEventData<TEvent extends TEventName> = Omit<
   >,
   'eventName'
 >;
+
+export const DocumentDecisionStatus = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+  REVISION: 'revision',
+} as const;
+
+export const DocumentDecisionStatuses = [
+  DocumentDecisionStatus.PENDING,
+  DocumentDecisionStatus.APPROVED,
+  DocumentDecisionStatus.REJECTED,
+  DocumentDecisionStatus.REVISION,
+] as const;
+
+export type TDocumentDecisionStatus =
+  (typeof DocumentDecisionStatus)[keyof typeof DocumentDecisionStatus];

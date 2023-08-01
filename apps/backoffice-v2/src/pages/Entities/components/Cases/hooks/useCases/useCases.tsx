@@ -72,6 +72,28 @@ export const useCases = () => {
         },
       ],
     },
+    {
+      label: 'Decision',
+      value: 'tasksStatus',
+      options: [
+        {
+          label: 'Approved',
+          value: 'approved',
+        },
+        {
+          label: 'Rejected',
+          value: 'rejected',
+        },
+        {
+          label: 'Revision',
+          value: 'revision',
+        },
+        {
+          label: 'Pending',
+          value: 'pending',
+        },
+      ],
+    },
   ] as const;
   const searchRef = useRef<HTMLInputElement>();
   const sortRef = useRef<HTMLButtonElement>();
