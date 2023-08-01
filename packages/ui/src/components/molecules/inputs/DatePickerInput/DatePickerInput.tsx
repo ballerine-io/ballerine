@@ -3,9 +3,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useCallback, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { CalendarWrapper } from '@components/molecules/inputs/DatePickerInput/components/CalendarWrapper';
 import dayjs, { Dayjs } from 'dayjs';
 import { createTheme, TextField, ThemeProvider } from '@mui/material';
+import { Paper } from '@components/atoms/Paper';
 
 const getCSSVariableValue = (variableName: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(variableName);
@@ -88,10 +88,11 @@ export const DatePickerInput = ({
                 {...params}
                 variant="standard"
                 fullWidth
+                size="small"
                 InputProps={{
                   ...params.InputProps,
                   classes: {
-                    root: 'border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 px-3 py-1',
+                    root: 'border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 px-3 py-0',
                     focused: 'border-input ring-ring ring-1',
                   },
                   disableUnderline: true,
@@ -117,7 +118,8 @@ export const DatePickerInput = ({
             },
             desktopPaper: {
               //@ts-ignore
-              component: CalendarWrapper,
+              component: Paper,
+              className: 'mt-2',
             },
           }}
         />
