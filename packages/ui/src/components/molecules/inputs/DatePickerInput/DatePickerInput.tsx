@@ -1,14 +1,11 @@
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AnyObject } from '@common/types';
 import { useCallback, useMemo, useState } from 'react';
-import { Field } from '@components/molecules/inputs/DatePickerInput/components/Field';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { CalendarWrapper } from '@components/molecules/inputs/DatePickerInput/components/CalendarWrapper';
-import createTheme from '@mui/system/createTheme';
-import ThemeProvider from '@mui/system/ThemeProvider';
 import dayjs, { Dayjs } from 'dayjs';
+import { createTheme, TextField, ThemeProvider } from '@mui/material';
 
 const getCSSVariableValue = (variableName: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(variableName);
@@ -46,8 +43,6 @@ export const DatePickerInput = ({
   onChange,
 }: DatePickerProps) => {
   const [isOpen, setOpen] = useState(false);
-
-  const toggleOpen = useCallback(() => setOpen(prev => !prev), []);
 
   const serializeValue = useCallback((value: Dayjs): number => {
     return +value.toDate();
@@ -88,7 +83,25 @@ export const DatePickerInput = ({
           onClose={() => setOpen(false)}
           onChange={handleChange}
           slots={{
-            field: Field as React.ComponentType<AnyObject>,
+            textField: params => (
+              <TextField
+                {...params}
+                variant="standard"
+                fullWidth
+                InputProps={{
+                  ...params.InputProps,
+                  classes: {
+                    root: 'border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 px-3 py-1',
+                    focused: 'border-input ring-ring ring-1',
+                  },
+                  disableUnderline: true,
+                }}
+                inputProps={{
+                  ...params.inputProps,
+                  className: 'py-0 px-0 h-9',
+                }}
+              />
+            ),
             rightArrowIcon: () => (
               <ChevronRight size="18" className="hover:text-muted-foreground cursor-pointer" />
             ),
@@ -97,7 +110,6 @@ export const DatePickerInput = ({
             ),
           }}
           slotProps={{
-            field: { onAdornmentClick: toggleOpen } as AnyObject,
             nextIconButton: { disableRipple: true },
             previousIconButton: { disableRipple: true },
             switchViewButton: {
