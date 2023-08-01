@@ -73,6 +73,12 @@ export const ghanaDocuments: TDocument[] = [
           type: 'string',
           format: 'date',
         },
+        accountHolderName: {
+          type: 'string',
+        },
+        maxBalanceRecorded: {
+          type: 'number',
+        },
       },
     },
   },
@@ -663,6 +669,114 @@ export const ghanaDocuments: TDocument[] = [
         issuingDate: {
           type: 'string',
           format: 'date',
+        },
+      },
+    },
+  },
+  {
+    category: 'proof_of_regestration',
+    type: 'certificate_of_registration',
+    issuer: {
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      required: ['businessName', 'taxIdNumber', 'registrationNumber'],
+      properties: {
+        businessName: {
+          type: 'string',
+        },
+        taxIdNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        registrationNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        issuingDate: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
+    category: 'proof_of_regestration',
+    type: 'district_assembly_certificate',
+    issuer: {
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      required: ['certificateNo', 'companyName'],
+      properties: {
+        certificateNo: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        registrationNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        companyName: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        issuingDate: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
+    category: 'proof_of_registration',
+    type: 'form_a',
+    issuer: {
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      required: ['registrationNumber', 'taxIdNumber'],
+      properties: {
+        registrationNumber: {
+          type: 'string',
+          pattern: 'alphaNumeric',
+        },
+        taxIdNumber: {
+          type: 'string',
+          pattern: 'alphaNumeric',
+        },
+      },
+    },
+  },
+  {
+    category: 'proof_of_registration',
+    type: 'shareholder_details',
+    issuer: {
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      required: ['firstName', 'lastName'],
+      properties: {
+        firstName: {
+          type: 'string',
+        },
+        middleName: {
+          type: 'string',
+        },
+        lastName: {
+          type: 'string',
         },
       },
     },
