@@ -17,6 +17,7 @@ import {
   ListRuntimeDataResult,
   ListWorkflowsRuntimeParams,
   RunnableWorkflowData,
+  TDocumentDecisionStatus,
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
 } from './types';
@@ -317,6 +318,7 @@ export class WorkflowService {
     filters?: {
       assigneeId?: (string | null)[];
       status?: WorkflowRuntimeDataStatus[];
+      tasksStatus?: Array<TDocumentDecisionStatus>;
     };
   }) {
     const query = merge(
