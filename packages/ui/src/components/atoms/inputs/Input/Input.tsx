@@ -1,6 +1,8 @@
 import { ctw } from '@utils/ctw';
 import * as React from 'react';
 
+export type InputProps = React.HTMLProps<HTMLInputElement>;
+
 const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   ({ className, type, ...props }, ref) => {
     return (

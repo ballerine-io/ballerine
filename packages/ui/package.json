@@ -46,6 +46,7 @@
     "react": "^18.0.37",
     "react-dom": "^18.0.5",
     "react-json-view": "^1.21.3",
+    "react-phone-input-2": "^2.15.1",
     "tailwind-merge": "^1.10.0"
   },
   "devDependencies": {

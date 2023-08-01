@@ -3,8 +3,7 @@ import { X } from 'lucide-react';
 import { Command, CommandGroup, CommandInput, CommandItem } from '@components/atoms/Command';
 import { Badge } from '@components/atoms/Badge';
 import keyBy from 'lodash/keyBy';
-import { Popover, PopoverContent, ScrollArea } from '@components/atoms';
-import { PopoverPortal, PopoverTrigger } from '@radix-ui/react-popover';
+import { Popover, PopoverContent, ScrollArea, PopoverTrigger } from '@components/atoms';
 
 interface MultiSelectOtion {
   value: string;
@@ -113,77 +112,73 @@ export const MultiSelect = ({
   }, [containerRef, open]);
 
   return (
-    <div ref={containerRef}>
-      <Popover open={open}>
-        <Command onKeyDown={handleKeyDown} className="overflow-visible bg-transparent">
-          <PopoverTrigger asChild>
-            <div className="border-input ring-offset-background focus-within:ring-ring min-10 group flex items-center rounded-md border py-2 text-sm focus-within:ring-1 focus-within:ring-offset-1">
-              <div className="flex flex-wrap gap-2 px-2">
-                {selected.map(option => {
+    <Popover open={open}>
+      <Command onKeyDown={handleKeyDown} className="overflow-visible bg-transparent">
+        <PopoverTrigger asChild>
+          <div className="border-input ring-offset-background focus-within:ring-ring min-10 group flex items-center rounded-md border py-2 text-sm focus-within:ring-1 focus-within:ring-offset-1">
+            <div className="flex flex-wrap gap-2 px-2">
+              {selected.map(option => {
+                return (
+                  <Badge key={option.value} className="h-6">
+                    {option.label}
+                    <button
+                      className="ring-offset-background focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          handleUnselect(option);
+                        }
+                      }}
+                      onMouseDown={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onClick={() => handleUnselect(option)}
+                    >
+                      <X className="hover:text-muted-foreground h-3 w-3 text-white" />
+                    </button>
+                  </Badge>
+                );
+              })}
+              <CommandInput
+                ref={inputRef}
+                value={inputValue}
+                onValueChange={setInputValue}
+                placeholder={searchPlaceholder}
+                style={{ border: 'none' }}
+                className="h-6"
+                onFocus={() => setOpen(true)}
+              />
+            </div>
+          </div>
+        </PopoverTrigger>
+        <PopoverContent style={{ width: 'var(--radix-popover-trigger-width)' }}>
+          {selectables.length ? (
+            <ScrollArea orientation="vertical" className="max-h-[200px]">
+              <CommandGroup className="h-full overflow-auto p-0">
+                {selectables.map(option => {
                   return (
-                    <Badge key={option.value} className="h-6">
+                    <CommandItem
+                      key={option.value}
+                      onMouseDown={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onSelect={() => handleSelect(option)}
+                      className={'cursor-pointer'}
+                    >
                       {option.label}
-                      <button
-                        className="ring-offset-background focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') {
-                            handleUnselect(option);
-                          }
-                        }}
-                        onMouseDown={e => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        onClick={() => handleUnselect(option)}
-                      >
-                        <X className="hover:text-muted-foreground h-3 w-3 text-white" />
-                      </button>
-                    </Badge>
+                    </CommandItem>
                   );
                 })}
-                <CommandInput
-                  ref={inputRef}
-                  value={inputValue}
-                  onValueChange={setInputValue}
-                  placeholder={searchPlaceholder}
-                  style={{ border: 'none' }}
-                  className="h-6"
-                  onFocus={() => setOpen(true)}
-                />
-              </div>
-            </div>
-          </PopoverTrigger>
-          <PopoverPortal container={containerRef.current}>
-            <PopoverContent style={{ width: 'var(--radix-popover-trigger-width)' }} className="p-2">
-              {selectables.length ? (
-                <ScrollArea orientation="vertical" className="max-h-[200px]">
-                  <CommandGroup className="h-full overflow-auto p-0">
-                    {selectables.map(option => {
-                      return (
-                        <CommandItem
-                          key={option.value}
-                          onMouseDown={e => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
-                          onSelect={() => handleSelect(option)}
-                          className={'cursor-pointer'}
-                        >
-                          {option.label}
-                        </CommandItem>
-                      );
-                    })}
-                  </CommandGroup>
-                </ScrollArea>
-              ) : (
-                <p className="text-muted-foreground text-center text-xs">
-                  Options not found or already selected.
-                </p>
-              )}
-            </PopoverContent>
-          </PopoverPortal>
-        </Command>
-      </Popover>
-    </div>
+              </CommandGroup>
+            </ScrollArea>
+          ) : (
+            <p className="text-muted-foreground text-center text-xs">
+              Options not found or already selected.
+            </p>
+          )}
+        </PopoverContent>
+      </Command>
+    </Popover>
   );
 };
