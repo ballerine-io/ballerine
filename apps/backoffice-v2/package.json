@@ -34,6 +34,7 @@
     "pnpm": ">=8.0.0"
   },
   "scripts": {
+    "spellcheck": "cspell \"*\"",
     "format": "prettier --plugin-search-dir=. --write .",
     "format:check": "prettier --plugin-search-dir=. --check .",
     "lint": "eslint . --fix",
@@ -117,6 +118,8 @@
     "@typescript-eslint/parser": "^5.30.0",
     "@vitejs/plugin-react-swc": "^3.0.1",
     "autoprefixer": "^10.4.7",
+    "cspell": "^6.31.2",
+    "@cspell/cspell-types": "^6.31.1",
     "daisyui": "^2.46.1",
     "eslint": "8.22.0",
     "eslint-config-prettier": "^8.5.0",

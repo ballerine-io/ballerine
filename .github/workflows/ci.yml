@@ -26,6 +26,7 @@ jobs:
 
       - name: Format
         uses: ./.github/actions/format-action
+
   build:
     strategy:
       matrix:
@@ -38,6 +39,16 @@ jobs:
 
       - name: Build
         uses: ./.github/actions/build-action
+
+  spell_check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Spell check
+        uses: streetsidesoftware/cspell-action@v2
 
   test_linux:
     runs-on: ubuntu-latest

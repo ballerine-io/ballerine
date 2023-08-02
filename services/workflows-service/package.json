@@ -4,6 +4,7 @@
   "version": "0.4.17",
   "description": "workflow-service",
   "scripts": {
+    "spellcheck": "cspell \"*\"",
     "setup": "npm run docker:db && npm run db:clean && npm run db:migrate-save && npm run seed",
     "format": "prettier --write . '!**/*.{md}'",
     "format:check": "prettier --check . '!**/*.{md}'",
@@ -105,6 +106,8 @@
     "@types/supertest": "2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
+    "cspell": "^6.31.2",
+    "@cspell/cspell-types": "^6.31.1",
     "dayjs": "^1.11.6",
     "dotenv": "^16.0.3",
     "eslint": "^8.35.0",
