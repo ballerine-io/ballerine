@@ -8,15 +8,16 @@ export const SelectField = ({ id, onChange, schema, formData, uiSchema }: FieldP
 
     return (schema.oneOf as AnyObject[]).map(item => {
       return {
-        label: item.const as string,
-        value: item.title as string,
+        label: item.title as string,
+        value: item.const as string,
       };
     }) as DropdownOption[];
   }, [schema.oneOf]);
 
   return (
     <DropdownInput
-      placeholder={uiSchema['ui:placeholder']}
+      placeholdersParams={{ placeholder: uiSchema['ui:placeholder'] }}
+      searchable
       name={id}
       options={options}
       value={formData}

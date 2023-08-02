@@ -3,10 +3,15 @@ export interface DropdownOption {
   value: string;
 }
 
+export interface PlaceholdersParams {
+  placeholder?: string;
+  searchPlaceholder?: string;
+}
+
 export interface DropdownInputProps {
   name: string;
   value?: string;
-  placeholder: string;
+  placeholdersParams?: PlaceholdersParams;
   options: DropdownOption[];
   notFoundText?: string;
   searchable?: boolean;

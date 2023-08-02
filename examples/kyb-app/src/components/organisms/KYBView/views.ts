@@ -1,7 +1,9 @@
 import { View } from '@app/common/providers/ViewStateProvider';
-import { AddressView } from '@app/components/organisms/KYBView/views/AddressView';
-import { BusinessView } from '@app/components/organisms/KYBView/views/BusinessView';
-import { DocumentsView } from '@app/components/organisms/KYBView/views/DocumentsView';
+import { BankInformationView } from '@app/components/organisms/KYBView/views/BankInformationView';
+import { CompanyActivityView } from '@app/components/organisms/KYBView/views/CompanyActivityView';
+import { CompanyDocumentsView } from '@app/components/organisms/KYBView/views/CompanyDocumentsView';
+import { CompanyInformationView } from '@app/components/organisms/KYBView/views/CompanyInformationView';
+import { HeadquartersView } from '@app/components/organisms/KYBView/views/HeadquartersView';
 import { PersonalInformationView } from '@app/components/organisms/KYBView/views/PersonalInformationView';
 import { ShareholdersView } from '@app/components/organisms/KYBView/views/ShareholdersView';
 
@@ -12,23 +14,34 @@ export const kybViews: View[] = [
     Component: PersonalInformationView,
   },
   {
-    label: 'Business Information',
-    key: 'businessInformation',
-    Component: BusinessView,
+    label: 'Company Information',
+    key: 'companyInformation',
+    Component: CompanyInformationView,
   },
   {
-    label: 'Business address',
-    key: 'businessAddress',
-    Component: AddressView,
+    label: 'Headquarters Address',
+    key: 'headquarters',
+    Component: HeadquartersView,
   },
   {
-    label: 'Business documents',
-    key: 'documents',
-    Component: DocumentsView,
+    label: 'Company Activity',
+    key: 'companyActivity',
+    Component: CompanyActivityView,
+    active: true,
   },
   {
-    label: 'Shareholders/UBOs',
+    label: 'Bank Information',
+    key: 'bankInformation',
+    Component: BankInformationView,
+  },
+  {
+    label: 'Company Ownership',
     key: 'ubos',
     Component: ShareholdersView,
+  },
+  {
+    label: 'Company Documents',
+    key: 'companyDocuments',
+    Component: CompanyDocumentsView,
   },
 ];

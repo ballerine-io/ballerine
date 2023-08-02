@@ -1,4 +1,8 @@
 import { ViewsData } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository/types';
+import { BankInformationContext } from '@app/components/organisms/KYBView/views/BankInformationView/types';
+import { CompanyActivityConext } from '@app/components/organisms/KYBView/views/CompanyActivityView/types';
+import { CompanyInformationContext } from '@app/components/organisms/KYBView/views/CompanyInformationView/types';
+import { HeadquartersContext } from '@app/components/organisms/KYBView/views/HeadquartersView/types';
 
 export interface PersonalInformationContext {
   firstName: string;
@@ -35,10 +39,14 @@ export interface WorkflowFlowData extends ViewsData {
     businessId?: string;
   };
   flowData: {
-    personalInformation: PersonalInformationContext | null;
-    businessInformation: BusinessInformationContext | null;
-    businessAddress: BusinessAddressContext | null;
-    documents: DocumentsContext | null;
-    ubos: UBOSContext[] | null;
+    personal: PersonalInformationContext;
+    company: CompanyInformationContext;
+    headquarters: HeadquartersContext;
+    companyActivity: CompanyActivityConext;
+    bank: BankInformationContext;
+    businessInformation: BusinessInformationContext;
+    businessAddress: BusinessAddressContext;
+    documents: DocumentsContext;
+    ubos: UBOSContext[];
   };
 }
