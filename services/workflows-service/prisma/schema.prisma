@@ -90,6 +90,7 @@ model Business {
   id            String  @id @default(cuid()) // Unique identifier for the business entity
   correlationId String? @unique @db.VarChar
 
+  businessType  String?   @default("default")
   createdAt               DateTime      @default(now()) // Timestamp for when the business entity was created
   updatedAt               DateTime      @updatedAt // Timestamp for when the business entity was last updated
   companyName             String // Official registered name of the business entity
