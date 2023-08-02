@@ -1,5 +1,13 @@
 # web-ui-sdk
 
+## 1.3.14
+
+### Patch Changes
+
+- added Autocomplete,DropdownInput,Multiselect,DatePicker,Checkbox,PhoneNumber components
+- Updated dependencies
+  - @ballerine/common@0.5.13
+
 ## 1.3.13
 
 ### Patch Changes

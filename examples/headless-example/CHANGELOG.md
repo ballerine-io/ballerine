@@ -1,5 +1,14 @@
 # @ballerine/headless-example
 
+## 0.0.11
+
+### Patch Changes
+
+- added Autocomplete,DropdownInput,Multiselect,DatePicker,Checkbox,PhoneNumber components
+- Updated dependencies
+  - @ballerine/workflow-browser-sdk@0.4.16
+  - @ballerine/common@0.5.13
+
 ## 0.0.10
 
 ### Patch Changes
