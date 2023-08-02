@@ -47,7 +47,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Spell check
+      - name: Spellcheck
         uses: ./.github/actions/spell-check-action
 
   test_linux:
