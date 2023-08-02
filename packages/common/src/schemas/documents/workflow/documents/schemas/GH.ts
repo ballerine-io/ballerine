@@ -685,7 +685,7 @@ export const ghanaDocuments: TDocument[] = [
       type: 'object',
       required: ['businessName', 'taxIdNumber', 'registrationNumber'],
       properties: {
-        businessName: {
+        companyName: {
           type: 'string',
         },
         taxIdNumber: {
