@@ -2,25 +2,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useCallback, useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import dayjs, { Dayjs } from 'dayjs';
-import { createTheme, TextField, ThemeProvider } from '@mui/material';
+import { TextField, ThemeProvider } from '@mui/material';
 import { Paper } from '@components/atoms/Paper';
-
-const getCSSVariableValue = (variableName: string) =>
-  getComputedStyle(document.documentElement).getPropertyValue(variableName);
-
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Inter',
-  },
-  palette: {
-    primary: {
-      main: `hsla(${getCSSVariableValue('--primary')})`,
-      contrastText: '#fff',
-    },
-  },
-});
+import { muiTheme } from '@common/mui-theme';
 
 export interface DatePickerChangeEvent {
   target: {
@@ -73,7 +59,7 @@ export const DatePickerInput = ({
   }, [_value, deserializeValue]);
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={muiTheme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
           open={isOpen}
@@ -103,6 +89,7 @@ export const DatePickerInput = ({
                 }}
               />
             ),
+            openPickerIcon: () => <CalendarDays size="16" color="#64748B" className="opacity-50" />,
             rightArrowIcon: () => (
               <ChevronRight size="18" className="hover:text-muted-foreground cursor-pointer" />
             ),
@@ -114,6 +101,9 @@ export const DatePickerInput = ({
             nextIconButton: { disableRipple: true },
             previousIconButton: { disableRipple: true },
             switchViewButton: {
+              disableRipple: true,
+            },
+            openPickerButton: {
               disableRipple: true,
             },
             desktopPaper: {

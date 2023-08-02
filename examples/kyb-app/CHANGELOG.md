@@ -1,5 +1,12 @@
 # kyb-app
 
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.2.2
+
 ## 0.0.11
 
 ### Patch Changes

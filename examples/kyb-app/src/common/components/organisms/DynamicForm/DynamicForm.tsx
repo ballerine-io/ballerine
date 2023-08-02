@@ -1,4 +1,4 @@
-import { RJSFSchema, UiSchema } from '@rjsf/utils';
+import { RJSFSchema, RegistryFieldsType, UiSchema } from '@rjsf/utils';
 import Form, { IChangeEvent } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { fields } from '@app/common/components/organisms/DynamicForm/fields';
@@ -64,7 +64,7 @@ export function DynamicForm<TFormData extends object>({
         onSubmit={handleSubmit}
         onChange={handleChange}
         validator={validator}
-        fields={fields}
+        fields={fields as unknown as RegistryFieldsType}
         autoComplete="on"
         templates={templates}
         showErrorList={false}

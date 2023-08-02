@@ -25,7 +25,7 @@ export const PhoneNumberInput = (props: PhoneNumberInputProps) => {
     <PhoneInput
       {...restProps}
       disableSearchIcon={disableSearchIcon}
-      containerClass="flex items-center border border-input h-9 focus-within:ring-ring focus-within:ring-1 rounded-md"
+      containerClass="flex items-center border border-input h-9 focus-within:ring-ring focus-within:ring-1 rounded-md font-inter"
       inputClass="w-full h-8 border-none outline-none"
       searchClass={styles.searchInput}
       buttonClass={clsx('border-none rounded-l-md', styles.hiddenArrow, styles.flagCenter)}

@@ -4,13 +4,13 @@ import { TitleLayout } from '@app/common/components/organisms/DynamicForm/compon
 import { TemplatesType } from '@rjsf/utils';
 import { ArrayFieldsLayout } from '@app/common/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout';
 
-const Filler = () => <div>filler</div>;
+const Filler = () => <div>Not Implemented</div>;
 
 export const templates: Partial<TemplatesType> = {
   FieldTemplate: FieldLayout,
   TitleFieldTemplate: TitleLayout,
   ArrayFieldTemplate: ArrayFieldsLayout,
-  ArrayFieldTitleTemplate: () => <div>123</div>,
+  ArrayFieldTitleTemplate: Filler,
   ButtonTemplates: {
     SubmitButton: SubmitLayout,
     MoveDownButton: Filler,

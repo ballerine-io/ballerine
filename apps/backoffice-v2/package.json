@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@ballerine/common": "0.5.13",
-    "@ballerine/ui": "0.2.0",
+    "@ballerine/ui": "0.2.2",
     "@ballerine/workflow-browser-sdk": "0.4.16",
     "@ballerine/workflow-node-sdk": "0.4.10",
     "@formkit/auto-animate": "1.0.0-beta.5",
