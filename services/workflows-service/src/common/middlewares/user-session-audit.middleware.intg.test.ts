@@ -109,7 +109,7 @@ describe('UserSessionAuditMiddleware', () => {
 
         const user = await userService.getById(testUser.id);
 
-        expect(user.lastActiveAt).toEqual(nonExpiredDate.toDate());
+        expect(Number(user.lastActiveAt)).toEqual(+nonExpiredDate);
         expect(callback).toBeCalledTimes(1);
       });
 
@@ -126,7 +126,7 @@ describe('UserSessionAuditMiddleware', () => {
 
         const updatedUser = await userService.getById(testUser.id);
 
-        expect(Number(updatedUser.lastActiveAt)).toBeGreaterThan(Number(expiredDate.toDate()));
+        expect(Number(updatedUser.lastActiveAt)).toBeGreaterThan(+expiredDate);
         expect(callback).toBeCalledTimes(1);
       });
     });
