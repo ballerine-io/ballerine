@@ -748,11 +748,11 @@ export const ghanaDocuments: TDocument[] = [
       properties: {
         registrationNumber: {
           type: 'string',
-          pattern: 'alphaNumeric',
+          pattern: alphaNumeric,
         },
         taxIdNumber: {
           type: 'string',
-          pattern: 'alphaNumeric',
+          pattern: alphaNumeric,
         },
       },
     },
