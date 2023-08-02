@@ -1,19 +1,19 @@
+import { RJSVInputAdapter } from '@app/common/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { base64ToFile } from '@app/common/utils/base64-to-file';
 import { fileToBase64 } from '@app/common/utils/file-to-base64';
 import { isBase64 } from '@app/utils/is-base-64';
 import { Input } from '@ballerine/ui';
 import { Label } from '@ballerine/ui';
-import { FieldProps } from '@rjsf/utils';
 import { useCallback, useEffect, useRef } from 'react';
 
-export const FileInput = ({
+export const FileInputAdapter: RJSVInputAdapter = ({
   id,
   name,
   uiSchema,
   schema,
   formData,
   onChange,
-}: FieldProps<string>) => {
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {

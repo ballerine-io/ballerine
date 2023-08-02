@@ -1,5 +1,17 @@
 # @ballerine/ui
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated fonts on MUI components & updated icon in DatePicker
+
+## 0.2.1
+
+### Patch Changes
+
+- updated exports
+
 ## 0.2.0
 
 ### Minor Changes
