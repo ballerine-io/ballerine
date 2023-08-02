@@ -20,11 +20,12 @@ export const DropdownInput = ({
   name,
   options,
   value,
-  placeholder,
+  placeholdersParams,
   notFoundText,
   searchable = false,
   onChange,
 }: DropdownInputProps) => {
+  const { placeholder = '', searchPlaceholder = '' } = placeholdersParams;
   const [open, setOpen] = useState(false);
 
   const selectedOption = useMemo(
@@ -39,19 +40,21 @@ export const DropdownInput = ({
           variant="outline"
           role="combobox"
           className={clsx(
-            'w-full justify-between bg-white',
+            'flex w-full flex-nowrap bg-white',
             !selectedOption && 'text-muted-foreground',
           )}
         >
-          {selectedOption ? selectedOption.label : placeholder}
+          <span className="flex-1 text-left">
+            {selectedOption ? selectedOption.label : placeholder}
+          </span>
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent style={{ width: 'var(--radix-popover-trigger-width)' }} className="p-2">
         <Command className="w-full">
-          {searchable ? <CommandInput placeholder={placeholder} className="h-9" /> : null}
+          {searchable ? <CommandInput placeholder={searchPlaceholder} className="h-9" /> : null}
           <CommandEmpty>{notFoundText || ''}</CommandEmpty>
-          <ScrollArea orientation="both" className="max-h-[200px]">
+          <ScrollArea orientation="both" className="h-[200px]">
             <CommandGroup>
               {options.map(option => (
                 <CommandItem

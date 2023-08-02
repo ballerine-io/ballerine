@@ -1,0 +1,23 @@
+import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
+import { useViewState } from '@app/common/providers/ViewStateProvider';
+import { AppShell } from '@app/components/layouts/AppShell';
+import { headquartersSchema } from '@app/components/organisms/KYBView/views/HeadquartersView/headquarters.schema';
+import { headquartersUISchema } from '@app/components/organisms/KYBView/views/HeadquartersView/headquarters.ui-schema';
+import { HeadquartersContext } from '@app/components/organisms/KYBView/views/HeadquartersView/types';
+import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
+
+export const HeadquartersView = () => {
+  const { context, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
+
+  return (
+    <AppShell.FormContainer>
+      <DynamicForm<HeadquartersContext>
+        className="max-w-[384px]"
+        schema={headquartersSchema}
+        uiSchema={headquartersUISchema}
+        formData={context.flowData.headquarters}
+        onSubmit={values => void saveAndPerformTransition(values)}
+      />
+    </AppShell.FormContainer>
+  );
+};

@@ -19,14 +19,14 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
 
   return (
     <div className="w-ful flex h-screen flex-nowrap">
-      <div className="bg-primary col-span-2 w-[24%] max-w-[418px] px-10 pt-14 pb-4">
+      <div className="bg-primary col-span-2 w-[24%] max-w-[418px] px-14 pt-14 pb-4">
         <div className="font-inter flex h-full flex-col">
           <div className="flex flex-1 flex-col pb-16">
             <div onClick={onBackButtonClick}>{backButton}</div>
             <div className="pt-24 pb-16">
               <img src={settings.logo} alt={settings.appName} />
             </div>
-            <div className="h-[236px]">
+            <div className="h-full">
               {isLoading ? null : (
                 <Stepper>
                   <VerticalLayout>

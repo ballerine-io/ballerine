@@ -3,7 +3,7 @@ import styles from './PhoneNumberInput.module.scss';
 import PhoneInput, { PhoneInputProps } from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
-type PhoneInputStylesPropsNames =
+export type PhoneInputStylesPropsNames =
   | 'inputClass'
   | 'buttonClass'
   | 'dropdownClass'
@@ -14,7 +14,7 @@ type PhoneInputStylesPropsNames =
   | 'dropdownStyle'
   | 'searchStyle';
 
-type PhoneInputPropsWithoutStyleProps = Omit<PhoneInputProps, PhoneInputStylesPropsNames>;
+export type PhoneInputPropsWithoutStyleProps = Omit<PhoneInputProps, PhoneInputStylesPropsNames>;
 
 export type PhoneNumberInputProps = PhoneInputPropsWithoutStyleProps;
 

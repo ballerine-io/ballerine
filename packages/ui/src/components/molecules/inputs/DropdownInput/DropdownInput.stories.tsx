@@ -25,7 +25,9 @@ const DefaultComponent = () => {
   return (
     <DropdownInput
       name="select"
-      placeholder="select item"
+      placeholdersParams={{
+        placeholder: 'Select item',
+      }}
       options={storyOptions}
       value={value}
       onChange={setValue}
@@ -43,7 +45,9 @@ const SearchableComponent = () => {
   return (
     <DropdownInput
       name="select"
-      placeholder="select item"
+      placeholdersParams={{
+        placeholder: 'Select item',
+      }}
       searchable
       value={value}
       options={storyOptions}

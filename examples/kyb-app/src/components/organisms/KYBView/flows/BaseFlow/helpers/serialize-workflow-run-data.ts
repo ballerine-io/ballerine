@@ -9,8 +9,13 @@ export const serializeWorkflowRunData = async (
   context: WorkflowFlowData,
 ): Promise<WorkflowUpdatePayload> => {
   const { endUserId, businessId } = context.shared;
-  const { businessAddress, businessInformation, personalInformation, ubos, documents } =
-    context.flowData;
+  const {
+    businessAddress,
+    businessInformation,
+    personal: personalInformation,
+    ubos,
+    documents,
+  } = context.flowData;
 
   const proofOfAddressFileData = parseBase64FileWithMetadata(documents.addressProof);
   const registrationDocumentFileData = parseBase64FileWithMetadata(
@@ -41,7 +46,7 @@ export const serializeWorkflowRunData = async (
       address: businessAddress.address,
       country: businessAddress.country,
       registrationNumber: businessInformation.registrationNumber,
-      mainRepresentative: context.flowData.personalInformation,
+      mainRepresentative: context.flowData.personal,
       customerCompany: 'Ballerine',
       ubos: (Array.from(ubos) || []).map(({ firstName, lastName, email }) => ({
         entity: {

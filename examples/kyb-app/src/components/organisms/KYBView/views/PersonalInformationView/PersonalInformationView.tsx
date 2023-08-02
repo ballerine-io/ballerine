@@ -3,7 +3,8 @@ import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
 import { useCreateEndUserMutation } from '@app/components/organisms/KYBView/hooks/useCreateEndUserMutation';
-import { formSchema } from '@app/components/organisms/KYBView/views/PersonalInformationView/form.schema';
+import { personalInformationSchema } from '@app/components/organisms/KYBView/views/PersonalInformationView/personal-information.schema';
+import { personalInformationUISchema } from '@app/components/organisms/KYBView/views/PersonalInformationView/personal-information.ui-schema';
 import {
   PersonalInformationContext,
   WorkflowFlowData,
@@ -11,7 +12,7 @@ import {
 import { useCallback } from 'react';
 
 export const PersonalInformationView = () => {
-  const { context, state, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
+  const { context, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
   const { createUserAsync } = useCreateEndUserMutation();
 
   const handleSubmit = useCallback(
@@ -43,38 +44,9 @@ export const PersonalInformationView = () => {
     <AppShell.FormContainer header={<ViewHeader progressBar={false} />}>
       <DynamicForm<PersonalInformationContext>
         className="max-w-[384px]"
-        formData={context.flowData[state] as PersonalInformationContext}
-        uiSchema={{
-          phone: {
-            'ui:field': 'PhoneInput',
-            'ui:label': true,
-          },
-          birthDate: {
-            'ui:field': 'DateInput',
-          },
-          name: {
-            firstName: {
-              'ui:placeholder': 'First Name',
-              'ui:label': true,
-            },
-            lastName: {
-              'ui:placeholder': 'Last Name',
-              'ui:label': false,
-            },
-          },
-          title: {
-            'ui:placeholder': 'CEO / Manager / Partner',
-          },
-          email: {
-            'ui:placeholder': 'john@example.com',
-          },
-          'ui:options': {
-            submitButtonOptions: {
-              submitText: 'Continue',
-            },
-          },
-        }}
-        schema={formSchema}
+        formData={context.flowData.personal}
+        uiSchema={personalInformationUISchema}
+        schema={personalInformationSchema}
         onSubmit={handleSubmit}
       />
     </AppShell.FormContainer>
