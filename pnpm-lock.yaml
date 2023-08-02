@@ -64,7 +64,7 @@ importers:
         specifier: 0.5.13
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.2.0
+        specifier: 0.2.2
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.4.16
@@ -604,7 +604,7 @@ importers:
   examples/kyb-app:
     dependencies:
       '@ballerine/ui':
-        specifier: link:../../packages/ui
+        specifier: 0.2.2
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -33345,7 +33345,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.2.7(postcss@8.4.21)(ts-node@10.9.1)
+      tailwindcss: 3.2.7(postcss@8.4.24)(ts-node@10.9.1)
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.2):
