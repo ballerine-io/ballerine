@@ -514,6 +514,13 @@ export class WorkflowService {
 
     if (isResolved) {
       this.logger.log('Workflow resolved', { id: workflowRuntimeId });
+
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData,
+        state: currentState ?? runtimeData.state,
+        entityId: runtimeData.businessId || runtimeData.endUserId,
+        correlationId,
+      });
     }
 
     const documentToRevise = data.context?.documents?.find(

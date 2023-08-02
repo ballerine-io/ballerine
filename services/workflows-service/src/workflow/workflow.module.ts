@@ -18,6 +18,7 @@ import { FilterService } from '@/filter/filter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
+import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webhook-caller';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
@@ -33,6 +34,7 @@ import { UserRepository } from '@/user/user.repository';
     FileService,
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
+    WorkflowCompletedWebhookCaller,
     FilterRepository,
     FilterService,
     UserService,
