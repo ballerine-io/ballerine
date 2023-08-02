@@ -674,7 +674,7 @@ export const ghanaDocuments: TDocument[] = [
     },
   },
   {
-    category: 'proof_of_regestration',
+    category: 'proof_of_registration',
     type: 'certificate_of_registration',
     issuer: {
       country: 'GH',
@@ -704,7 +704,7 @@ export const ghanaDocuments: TDocument[] = [
     },
   },
   {
-    category: 'proof_of_regestration',
+    category: 'proof_of_registration',
     type: 'district_assembly_certificate',
     issuer: {
       country: 'GH',
