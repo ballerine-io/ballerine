@@ -98,6 +98,10 @@ async function seed(bcryptSalt: Salt) {
   const onboardingMachineKybId = 'COLLECT_DOCS_b0002zpeid7bq9bbb';
   const riskScoreMachineKybId = 'risk-score-improvement-dev';
 
+  // MOMO
+  const onboardingMomoMachineId = 'kyb-onboarding-momo';
+  const riskScoreMomoMachineId = 'kyb-risk-score-momo';
+
   const user = await client.endUser.create({
     data: {
       id: '43a0a298-0d02-4a2e-a8cc-73c06b465310',
@@ -731,6 +735,228 @@ async function seed(bcryptSalt: Salt) {
     where: {
       workflowDefinitionId: manualMachineId,
       endUserId: { not: null },
+    },
+  });
+
+  // MOMO Onboarding
+  await client.workflowDefinition.create({
+    data: {
+      id: onboardingMomoMachineId,
+      name: 'kyb_onboarding_momo',
+      version: 1,
+      definitionType: 'statechart-json',
+      config: {
+        workflowLevelResolution: true,
+        completedWhenTasksResolved: false,
+        allowMultipleActiveWorkflows: false,
+      },
+      definition: {
+        id: 'kyb_onboarding_momo',
+        predictableActionArguments: true,
+        initial: 'review',
+
+        context: {
+          documents: [],
+        },
+
+        states: {
+          review: {
+            on: {
+              approve: {
+                target: 'approved',
+              },
+              reject: {
+                target: 'rejected',
+              },
+              revision: {
+                target: 'revision',
+              },
+            },
+          },
+          approved: {
+            type: 'final',
+          },
+          rejected: {
+            type: 'final',
+          },
+          revision: {
+            on: {
+              review: {
+                target: 'review',
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // MOMO Risk Score Improvement
+  await client.workflowDefinition.create({
+    data: {
+      id: riskScoreMomoMachineId,
+      name: 'kyb_risk_score_momo',
+      version: 1,
+      definitionType: 'statechart-json',
+      config: {
+        workflowLevelResolution: false,
+        completedWhenTasksResolved: true,
+        allowMultipleActiveWorkflows: true,
+      },
+      definition: {
+        id: 'risk_score_momo',
+        predictableActionArguments: true,
+        initial: 'review',
+
+        context: {
+          documents: [],
+        },
+
+        states: {
+          review: {
+            on: {
+              approve: {
+                target: 'approved',
+              },
+              reject: {
+                target: 'rejected',
+              },
+              revision: {
+                target: 'revision',
+              },
+            },
+          },
+          approved: {
+            type: 'final',
+          },
+          rejected: {
+            type: 'final',
+          },
+          revision: {
+            on: {
+              review: {
+                target: 'review',
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  await createFilter('Onboarding MOMO', 'businesses', {
+    where: {
+      businessId: {
+        not: null,
+      },
+      business: {
+        businessType: 'MOMO',
+      },
+      workflowDefinitionId: onboardingMomoMachineId,
+    },
+    select: {
+      id: true,
+      status: true,
+      createdAt: true,
+      context: true,
+      assignee: {
+        select: {
+          id: true,
+          lastName: true,
+          firstName: true,
+        },
+      },
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+        },
+      },
+      business: {
+        select: {
+          id: true,
+          businessType: true,
+          email: true,
+          address: true,
+          website: true,
+          industry: true,
+          createdAt: true,
+          documents: true,
+          legalForm: true,
+          updatedAt: true,
+          vatNumber: true,
+          companyName: true,
+          phoneNumber: true,
+          approvalState: true,
+          businessPurpose: true,
+          numberOfEmployees: true,
+          registrationNumber: true,
+          dateOfIncorporation: true,
+          shareholderStructure: true,
+          countryOfIncorporation: true,
+          taxIdentificationNumber: true,
+        },
+      },
+    },
+  });
+
+  await createFilter('Risk Score Improvement MOMO', 'businesses', {
+    where: {
+      businessId: {
+        not: null,
+      },
+      business: {
+        businessType: 'MOMO',
+      },
+      workflowDefinitionId: riskScoreMomoMachineId,
+    },
+    select: {
+      id: true,
+      status: true,
+      createdAt: true,
+      context: true,
+      assignee: {
+        select: {
+          id: true,
+          lastName: true,
+          firstName: true,
+        },
+      },
+      workflowDefinition: {
+        select: {
+          id: true,
+          name: true,
+          contextSchema: true,
+          config: true,
+        },
+      },
+      business: {
+        select: {
+          id: true,
+          businessType: true,
+          email: true,
+          address: true,
+          website: true,
+          industry: true,
+          createdAt: true,
+          documents: true,
+          legalForm: true,
+          updatedAt: true,
+          vatNumber: true,
+          companyName: true,
+          phoneNumber: true,
+          approvalState: true,
+          businessPurpose: true,
+          numberOfEmployees: true,
+          registrationNumber: true,
+          dateOfIncorporation: true,
+          shareholderStructure: true,
+          countryOfIncorporation: true,
+          taxIdentificationNumber: true,
+        },
+      },
     },
   });
 
