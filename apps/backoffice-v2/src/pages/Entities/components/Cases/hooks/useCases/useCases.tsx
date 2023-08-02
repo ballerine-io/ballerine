@@ -3,6 +3,7 @@ import { useCallback, useRef } from 'react';
 import { useUsersQuery } from '../../../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
 import { useEntityType } from '../../../../../../common/hooks/useEntityType/useEntityType';
 import { useSearchParamsByEntity } from '../../../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { DocumentDecisionStatus } from '../../../../../../common/enums';
 
 export const useCases = () => {
   const [{ filter, sortBy }] = useSearchParamsByEntity();
@@ -69,6 +70,28 @@ export const useCases = () => {
         {
           label: 'Unassigned',
           value: null,
+        },
+      ],
+    },
+    {
+      label: 'Decision',
+      value: 'tasksStatus',
+      options: [
+        {
+          label: 'Approved',
+          value: DocumentDecisionStatus.APPROVED,
+        },
+        {
+          label: 'Rejected',
+          value: DocumentDecisionStatus.REJECTED,
+        },
+        {
+          label: 'Revision',
+          value: DocumentDecisionStatus.REVISION,
+        },
+        {
+          label: 'Pending',
+          value: DocumentDecisionStatus.PENDING,
         },
       ],
     },

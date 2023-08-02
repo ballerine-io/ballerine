@@ -1,8 +1,10 @@
 import { Prisma, WorkflowRuntimeDataStatus } from '@prisma/client';
+import { TDocumentDecisionStatus } from '@/workflow/types';
 
 type Filters = {
   assigneeId?: (string | null)[];
   status?: WorkflowRuntimeDataStatus[];
+  tasksStatus?: Array<TDocumentDecisionStatus>;
 };
 
 export const toPrismaWhere = (filters: Filters): Prisma.WorkflowRuntimeDataWhereInput => {
@@ -24,6 +26,12 @@ export const toPrismaWhere = (filters: Filters): Prisma.WorkflowRuntimeDataWhere
   if (filters.status) {
     where.status = {
       in: filters.status,
+    };
+  }
+
+  if (filters.tasksStatus) {
+    where.tasksStatus = {
+      in: filters.tasksStatus,
     };
   }
 
