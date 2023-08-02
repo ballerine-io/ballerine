@@ -1,5 +1,14 @@
 # @ballerine/workflow-browser-sdk
 
+## 0.4.16
+
+### Patch Changes
+
+- added Autocomplete,DropdownInput,Multiselect,DatePicker,Checkbox,PhoneNumber components
+- Updated dependencies
+  - @ballerine/workflow-core@0.4.23
+  - @ballerine/common@0.5.13
+
 ## 0.4.15
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # kyb-app
 
+## 0.0.11
+
+### Patch Changes
+
+- added Autocomplete,DropdownInput,Multiselect,DatePicker,Checkbox,PhoneNumber components
+- Updated dependencies
+  - @ballerine/ui@0.2.0
+
 ## 0.0.10
 
 ### Patch Changes
