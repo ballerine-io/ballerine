@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { WorkflowRuntimeDataStatus } from '@prisma/client';
 import { z } from 'zod';
+import { DocumentDecisionStatuses } from '@/workflow/types';
 
 class PageDto {
   @ApiProperty()
@@ -66,6 +67,7 @@ export const FindWorkflowsListSchema = z.object({
         .array(z.union([z.literal('').transform(() => null), z.string().nonempty()]))
         .optional(),
       status: z.array(z.nativeEnum(WorkflowRuntimeDataStatus)).optional(),
+      tasksStatus: z.array(z.enum(DocumentDecisionStatuses)).optional(),
     })
     .optional(),
 });

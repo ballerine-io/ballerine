@@ -4,6 +4,8 @@ import { Prisma, WorkflowRuntimeData, WorkflowRuntimeDataStatus } from '@prisma/
 import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
+import { TDocument } from '@ballerine/common';
+import { pickTasksStatus } from '@/workflow/utils/pick-tasks-status';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
@@ -14,10 +16,19 @@ export class WorkflowRuntimeDataRepository {
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
   ): Promise<WorkflowRuntimeData> {
+    const tasksStatus = pickTasksStatus(
+      (
+        args?.data?.context as {
+          documents: Array<TDocument>;
+        }
+      )?.documents,
+    );
+
     return await this.prisma.workflowRuntimeData.create<T>({
       ...args,
       data: {
         ...args.data,
+        tasksStatus,
         context: {
           ...((args.data?.context ?? {}) as any),
           documents: assignIdToDocuments((args.data?.context as any)?.documents),
@@ -49,9 +60,21 @@ export class WorkflowRuntimeDataRepository {
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>,
   ): Promise<WorkflowRuntimeData> {
+    const tasksStatus = pickTasksStatus(
+      (
+        args?.data?.context as {
+          documents: Array<TDocument>;
+        }
+      )?.documents,
+    );
+
     return await this.prisma.workflowRuntimeData.update({
       where: { id },
       ...args,
+      data: {
+        ...args?.data,
+        tasksStatus,
+      } as T['data'],
     });
   }
 
@@ -69,7 +92,24 @@ export class WorkflowRuntimeDataRepository {
       throw new Error(`No workflowRuntimeData found with the id "${id}"`);
     }
 
-    return this.findById(id);
+    const updatedWorkflowRuntimeData = await this.findById(id);
+
+    const tasksStatus = pickTasksStatus(
+      (
+        updatedWorkflowRuntimeData?.context as {
+          documents: Array<TDocument>;
+        }
+      )?.documents,
+    );
+
+    await this.prisma.workflowRuntimeData.update({
+      where: { id },
+      data: {
+        tasksStatus,
+      },
+    });
+
+    return updatedWorkflowRuntimeData;
   }
 
   async deleteById<T extends Omit<Prisma.WorkflowRuntimeDataDeleteArgs, 'where'>>(

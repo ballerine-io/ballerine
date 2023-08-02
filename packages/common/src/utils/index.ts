@@ -10,4 +10,6 @@ export { noNullish } from './no-nullish';
 export { sleep } from './sleep';
 export { uniqueArray } from './unique-array';
 export { zodErrorToReadable } from './zod-error-to-readable';
+export { safeEvery } from './safe-every';
+export { someDocumentDecisionStatus } from './some-document-decision-status';
 export { type IErrorWithMessage } from './is-error-with-message';
