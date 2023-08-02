@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Spell check
-        uses: streetsidesoftware/cspell-action@v2
+        uses: ./.github/actions/spell-check-action
 
   test_linux:
     runs-on: ubuntu-latest
