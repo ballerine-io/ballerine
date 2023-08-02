@@ -153,8 +153,8 @@ export const MultiSelect = ({
         </PopoverTrigger>
         <PopoverContent style={{ width: 'var(--radix-popover-trigger-width)' }}>
           {selectables.length ? (
-            <ScrollArea orientation="vertical" className="max-h-[200px]">
-              <CommandGroup className="h-full overflow-auto p-0">
+            <ScrollArea orientation="both" className="h-[200px]">
+              <CommandGroup className="h-full p-0">
                 {selectables.map(option => {
                   return (
                     <CommandItem

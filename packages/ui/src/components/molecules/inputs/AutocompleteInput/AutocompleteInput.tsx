@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { Paper } from '@components/atoms/Paper';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export interface AutocompleteOption {
   value: string;
@@ -27,9 +27,11 @@ export const AutocompleteInput = ({
   name,
   onChange,
 }: AutocompleteInputProps) => {
+  const optionLabels = useMemo(() => options.map(option => option.value), [options]);
+
   const handleChange = useCallback(
-    (_, newValue: AutocompleteOption) => {
-      onChange({ target: { value: newValue.value, name } } as AutocompleteChangeEvent);
+    (_, newValue: string) => {
+      onChange({ target: { value: newValue, name } } as AutocompleteChangeEvent);
     },
     [name, onChange],
   );
@@ -49,8 +51,8 @@ export const AutocompleteInput = ({
   return (
     <Autocomplete
       disablePortal
-      options={options}
-      getOptionLabel={option => option.value}
+      options={optionLabels}
+      freeSolo
       PaperComponent={Paper}
       onChange={handleChange}
       slotProps={{
@@ -66,6 +68,7 @@ export const AutocompleteInput = ({
           size="small"
           placeholder={placeholder}
           value={value}
+          //@ts-nocheck
           InputProps={{
             ...params.InputProps,
             classes: {
@@ -74,6 +77,7 @@ export const AutocompleteInput = ({
             },
             disableUnderline: true,
           }}
+          //@ts-nocheck
           inputProps={{
             ...params.inputProps,
             className: 'py-0 px-0 h-9',
