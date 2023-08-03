@@ -1,6 +1,11 @@
 import { UiSchema } from '@rjsf/utils';
 
 export const headquartersUISchema: UiSchema = {
+  'ui:options': {
+    submitButtonOptions: {
+      submitText: 'Continue',
+    },
+  },
   address: {
     'ui:placeholder': '10 Downing Street, London, UK, SW1A 2AA',
   },

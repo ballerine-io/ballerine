@@ -1,6 +1,11 @@
 import { UiSchema } from '@rjsf/utils';
 
 export const companyActivityUISchema: UiSchema = {
+  'ui:options': {
+    submitButtonOptions: {
+      submitText: 'Continue',
+    },
+  },
   industry: {
     'ui:placeholder': 'Food & Beverages',
   },

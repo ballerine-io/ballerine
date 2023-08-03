@@ -1,4 +1,3 @@
-import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
@@ -9,6 +8,7 @@ import {
   PersonalInformationContext,
   WorkflowFlowData,
 } from '@app/domains/workflows/flow-data.type';
+import { DynamicForm } from '@ballerine/ui';
 import { useCallback } from 'react';
 
 export const PersonalInformationView = () => {

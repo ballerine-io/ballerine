@@ -1,6 +1,11 @@
 import { UiSchema } from '@rjsf/utils';
 
 export const shareholdersUISchema: UiSchema = {
+  'ui:options': {
+    submitButtonOptions: {
+      submitText: 'Continue',
+    },
+  },
   shareholders: {
     items: {
       name: {
