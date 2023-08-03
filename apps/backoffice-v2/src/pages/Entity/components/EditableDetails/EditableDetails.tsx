@@ -43,12 +43,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   workflowId,
 }) => {
   const [formData, setFormData] = useState(data);
-  const useInitialCategorySetValue = () => {
-    useEffect(() => {
-      const categoryValue = form.getValues('category');
-      form.setValue('category', categoryValue);
-    }, [form, data, setFormData]);
-  };
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected', 'declined'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
@@ -194,10 +188,16 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {dropdownOptions?.map(({ label, value }) => {
+                              {dropdownOptions?.map(({ label, value }, index) => {
                                 return (
                                   <SelectItem
-                                    key={keyFactory(valueId, label, `select-item`)}
+                                    key={keyFactory(
+                                      id,
+                                      valueId,
+                                      label,
+                                      index?.toString(),
+                                      `select-item`,
+                                    )}
                                     value={value}
                                   >
                                     {label}

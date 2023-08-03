@@ -61,16 +61,16 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.11
+        specifier: 0.5.12
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.1.8
+        specifier: 0.1.9
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.4.14
+        specifier: 0.4.15
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.4.8
+        specifier: 0.4.9
         version: link:../../sdks/workflow-node-sdk
       '@formkit/auto-animate':
         specifier: 1.0.0-beta.5
@@ -513,10 +513,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.11
+        specifier: 0.5.12
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.4.14
+        specifier: 0.4.15
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -604,7 +604,7 @@ importers:
   examples/kyb-app:
     dependencies:
       '@ballerine/ui':
-        specifier: 0.1.8
+        specifier: 0.1.9
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -1245,7 +1245,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.11
+        specifier: 0.5.12
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1387,7 +1387,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.11
+        specifier: 0.5.12
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -1508,10 +1508,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.11
+        specifier: 0.5.12
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.4.21
+        specifier: 0.4.22
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1638,7 +1638,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.4.21
+        specifier: 0.4.22
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -1856,13 +1856,13 @@ importers:
         specifier: 3.325.0
         version: 3.325.0(@aws-sdk/abort-controller@3.347.0)(@aws-sdk/client-s3@3.325.0)
       '@ballerine/common':
-        specifier: 0.5.11
+        specifier: 0.5.12
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.4.21
+        specifier: 0.4.22
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.4.8
+        specifier: 0.4.9
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2127,7 +2127,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@2.7.2)(tailwindcss@3.3.2)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: 0.5.11
+        specifier: 0.5.12
         version: link:../../packages/common
       '@docsearch/css':
         specifier: ^3.1.0
@@ -3693,6 +3693,20 @@ packages:
       semver: 6.3.1
     dev: true
 
+  /@babel/helper-compilation-targets@7.20.7(@babel/core@7.22.5):
+    resolution: {integrity: sha512-4tGORmfQcrc+bvrjb5y3dG9Mx1IOZjsHqQVUz7XCNHO+iTmqxWnVg3KRygjGmpRLJGdQSKuvFinbIb0CnZwHAQ==}
+    engines: {node: '>=6.9.0'}
+    peerDependencies:
+      '@babel/core': ^7.0.0
+    dependencies:
+      '@babel/compat-data': 7.21.0
+      '@babel/core': 7.22.5
+      '@babel/helper-validator-option': 7.21.0
+      browserslist: 4.21.9
+      lru-cache: 5.1.1
+      semver: 6.3.1
+    dev: true
+
   /@babel/helper-compilation-targets@7.22.5(@babel/core@7.17.9):
     resolution: {integrity: sha512-Ji+ywpHeuqxB8WDxraCiqR0xfhYjiDE/e6k7FuIaANnoOFxAHskHChz4vA1mJC9Lbm01s1PVAGhQY4FUKSkGZw==}
     engines: {node: '>=6.9.0'}
@@ -4734,10 +4748,10 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0
     dependencies:
-      '@babel/compat-data': 7.22.9
+      '@babel/compat-data': 7.21.0
       '@babel/core': 7.21.3
-      '@babel/helper-compilation-targets': 7.22.9(@babel/core@7.21.3)
-      '@babel/helper-plugin-utils': 7.22.5
+      '@babel/helper-compilation-targets': 7.20.7(@babel/core@7.21.3)
+      '@babel/helper-plugin-utils': 7.20.2
       '@babel/plugin-syntax-object-rest-spread': 7.8.3(@babel/core@7.21.3)
       '@babel/plugin-transform-parameters': 7.21.3(@babel/core@7.21.3)
     dev: true
@@ -4748,10 +4762,10 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0
     dependencies:
-      '@babel/compat-data': 7.22.9
+      '@babel/compat-data': 7.21.0
       '@babel/core': 7.22.5
-      '@babel/helper-compilation-targets': 7.22.9(@babel/core@7.22.5)
-      '@babel/helper-plugin-utils': 7.22.5
+      '@babel/helper-compilation-targets': 7.20.7(@babel/core@7.22.5)
+      '@babel/helper-plugin-utils': 7.20.2
       '@babel/plugin-syntax-object-rest-spread': 7.8.3(@babel/core@7.22.5)
       '@babel/plugin-transform-parameters': 7.21.3(@babel/core@7.22.5)
     dev: true
@@ -6239,8 +6253,8 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.21.3
-      '@babel/helper-module-transforms': 7.22.5
-      '@babel/helper-plugin-utils': 7.22.5
+      '@babel/helper-module-transforms': 7.21.2
+      '@babel/helper-plugin-utils': 7.20.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -6252,8 +6266,8 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.22.5
-      '@babel/helper-module-transforms': 7.22.5
-      '@babel/helper-plugin-utils': 7.22.5
+      '@babel/helper-module-transforms': 7.21.2
+      '@babel/helper-plugin-utils': 7.20.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -14994,11 +15008,11 @@ packages:
       tiny-invariant: 1.3.1
     dev: true
 
-  /@storybook/channels@7.2.0-rc.0:
-    resolution: {integrity: sha512-auUqrrYCTzjExtMCFLFVELZ6cNNRWVOUEiJ0I+JACjQFZn0i6cBZHCRkxz0HhcJw5usCeqWVuo0U3OQbR2scEQ==}
+  /@storybook/channels@7.2.2-alpha.0:
+    resolution: {integrity: sha512-bVvEgAkxx4x+IATQYaZLm5Ankqd5Zp1ijCho6KwrDOimHXZU3wBlowWCeDEAwDt1ZBtCVs1i5cOeAme7Ru5k/A==}
     dependencies:
-      '@storybook/client-logger': 7.2.0-rc.0
-      '@storybook/core-events': 7.2.0-rc.0
+      '@storybook/client-logger': 7.2.2-alpha.0
+      '@storybook/core-events': 7.2.2-alpha.0
       '@storybook/global': 5.0.0
       qs: 6.11.2
       telejson: 7.1.0
@@ -15184,8 +15198,8 @@ packages:
       '@storybook/global': 5.0.0
     dev: true
 
-  /@storybook/client-logger@7.2.0-rc.0:
-    resolution: {integrity: sha512-OjSqjuyOC8z/55ENBMrFSCmDLNPnuv5eFTahlBhLU7nYvQIPqXlJdgUQNa3+HzXqm47yhrkIDzXPHdiPzj/2pQ==}
+  /@storybook/client-logger@7.2.2-alpha.0:
+    resolution: {integrity: sha512-9Tb68mrOaT+lXjmxnTRrMnAfklnydQMNB6EK0KjF4ch4GC9Swa7aLOJJpG8VbgKKO7oNXXoQpiwNMae94BwDVw==}
     dependencies:
       '@storybook/global': 5.0.0
     dev: true
@@ -15498,8 +15512,8 @@ packages:
     resolution: {integrity: sha512-b0kZ5ElPZj3NPqWhGsHHuLn0riA4wJXJ5mNBOe2scd8Cw52ELQr5rVHOMROhONOgpOaZBZ+QZd/MDvJDRyxTQw==}
     dev: true
 
-  /@storybook/core-events@7.2.0-rc.0:
-    resolution: {integrity: sha512-H6OTyP+QTH3nfr5EVkuOsfPMPcyGrRe+TKJsta1D493wh4VSMc8Z3Qz2p6KvisT8zQ0lTY9qzzzzgonNgWOhHQ==}
+  /@storybook/core-events@7.2.2-alpha.0:
+    resolution: {integrity: sha512-DuFJt2iwPl202OaUGY7+RKyniyIL29tjoLZ9oT8JVNZ1+cZQT7lbFvQNnLKIpnRWVcvz0RinkMEX0dkN6l+hlQ==}
     dev: true
 
   /@storybook/core-server@7.0.0-rc.10:
@@ -15841,14 +15855,14 @@ packages:
       '@storybook/preview-api': 7.1.0
     dev: true
 
-  /@storybook/instrumenter@7.2.0-rc.0:
-    resolution: {integrity: sha512-DM2M23EcFEMyMIXzZ6PiKlDknPbqvQX2U/dtDoFwx6OITLTFV3xK4PghB/yjLMxPhl/bcZph15ps17/sb+YsJQ==}
+  /@storybook/instrumenter@7.2.2-alpha.0:
+    resolution: {integrity: sha512-ypANLgWeTjqdfEIn2PSj9IlKK7uwvKeWup81GwEJkQDEJNvV/mQeSmArVPp4UZ6PZFmTVUMmLQBIT/Znb8VdzQ==}
     dependencies:
-      '@storybook/channels': 7.2.0-rc.0
-      '@storybook/client-logger': 7.2.0-rc.0
-      '@storybook/core-events': 7.2.0-rc.0
+      '@storybook/channels': 7.2.2-alpha.0
+      '@storybook/client-logger': 7.2.2-alpha.0
+      '@storybook/core-events': 7.2.2-alpha.0
       '@storybook/global': 5.0.0
-      '@storybook/preview-api': 7.2.0-rc.0
+      '@storybook/preview-api': 7.2.2-alpha.0
     dev: true
 
   /@storybook/manager-api@7.0.0-rc.10(react-dom@18.2.0)(react@18.2.0):
@@ -16094,15 +16108,15 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
-  /@storybook/preview-api@7.2.0-rc.0:
-    resolution: {integrity: sha512-18oEkEps0k6n/RMAmThr/QpCawjrZDsUeFIKbRpZ0MYT2wuszLHYAGAMQceBaKoDSBFsO3rY6ijap+G92AT+TA==}
+  /@storybook/preview-api@7.2.2-alpha.0:
+    resolution: {integrity: sha512-BvGroMp1iyfl2P90lj0Tx1kLszkbRUVDIHSkJRFBwimvED+SmqWfsKEDGeBz5PHVWwdp+nbyDAwTMO1eOGy3nA==}
     dependencies:
-      '@storybook/channels': 7.2.0-rc.0
-      '@storybook/client-logger': 7.2.0-rc.0
-      '@storybook/core-events': 7.2.0-rc.0
+      '@storybook/channels': 7.2.2-alpha.0
+      '@storybook/client-logger': 7.2.2-alpha.0
+      '@storybook/core-events': 7.2.2-alpha.0
       '@storybook/csf': 0.1.0
       '@storybook/global': 5.0.0
-      '@storybook/types': 7.2.0-rc.0
+      '@storybook/types': 7.2.2-alpha.0
       '@types/qs': 6.9.7
       dequal: 2.0.3
       lodash: 4.17.21
@@ -16485,8 +16499,8 @@ packages:
   /@storybook/testing-library@0.0.14-next.1:
     resolution: {integrity: sha512-1CAl40IKIhcPaCC4pYCG0b9IiYNymktfV/jTrX7ctquRY3akaN7f4A1SippVHosksft0M+rQTFE0ccfWW581fw==}
     dependencies:
-      '@storybook/client-logger': 7.2.0-rc.0
-      '@storybook/instrumenter': 7.2.0-rc.0
+      '@storybook/client-logger': 7.2.2-alpha.0
+      '@storybook/instrumenter': 7.2.2-alpha.0
       '@testing-library/dom': 8.20.0
       '@testing-library/user-event': 13.5.0(@testing-library/dom@8.20.0)
       ts-dedent: 2.2.0
@@ -16616,10 +16630,10 @@ packages:
       file-system-cache: 2.3.0
     dev: true
 
-  /@storybook/types@7.2.0-rc.0:
-    resolution: {integrity: sha512-Vklvf0XWZkEZtvHI9+JkrC/nWBeQ06QtKmrAFfzQarxzU1oeR9n1sNOdYTFHlmwhnsDZ8Die//A5rUKVJFrJmQ==}
+  /@storybook/types@7.2.2-alpha.0:
+    resolution: {integrity: sha512-wK8It9E/PvzrqPjNBfdMe72mz7dUEOyhKZIgxPNDVQb0yxIwQf6ZUIZTxMWzXWQj1l4o4q4jYdOvlUSjTkO6Cg==}
     dependencies:
-      '@storybook/channels': 7.2.0-rc.0
+      '@storybook/channels': 7.2.2-alpha.0
       '@types/babel__core': 7.20.1
       '@types/express': 4.17.9
       file-system-cache: 2.3.0
