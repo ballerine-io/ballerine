@@ -2,7 +2,7 @@
 
 ### Description
 Web SDK Flows can generate custom made, branded flows to collect KYC/KYB documents and user information.
-The SDK UI is embeddable inside exsiting apps or deployed as an webapp.
+The SDK UI is embeddable inside existing apps or deployed as an webapp.
 
 <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/phones.png">
 
@@ -60,7 +60,7 @@ pnpm add @ballerine/web-ui-sdk
 #### Flows API
 | Config Parameter | Type | Description|
 | - | - | - |
-| `uiConfig` | [FlowsUIConfig](#ui-configuration) |Initilazing flows, preloading needed assets and ui packs|
+| `uiConfig` | [FlowsUIConfig](#ui-configuration) |Initializing flows, preloading needed assets and ui packs|
 | `endUserInfo` | [EndUserInfo]()| Use data like ID, name etc.. |
 | `backendConfig`  | [FlowsBackendConfig](#backend-configuration) |Backend endpoint the flows should interact with|
 | `translations` | [FlowsTranslations](#translations) | Change the config after init function|
@@ -70,7 +70,7 @@ pnpm add @ballerine/web-ui-sdk
 CDN:
 Add this code to your index.html header
 ```javascript
-// 1. Add script (see installtion)
+// 1. Add script (see installation)
 // 2. Initialize SDK & flows (see configuration)
 BallerineSDK.flows.init({...}).then(() => {
 	console.log('flows ready');
@@ -93,7 +93,7 @@ ballerineFlows.mount('my-kyc-flow', 'flow-host-element', {});
 ballerineFlows.on('finish', doSomethingFn)
 ```
 [example folder]()
-	
+
 #### Standalone/Iframe Flows
 Code example:
 ```html
@@ -121,17 +121,17 @@ Code example:
 	}
 	BallerineSDK.flows.init(initConfig).then(() => {
 		BallerineSDK.flows.mount('my-kyc-flow', 'flow-host-element', {});
-	});	
+	});
 }
 </script>
 ```
 
 #### Native Mobile apps
 
-The approch to native apps are all the native funcationalties happens inside Ballerine native sdks (Android, iOS) while and the represenation layer is still an web app (inside a native webview).
+The approach to native apps are all the native functionalities happens inside Ballerine native sdks (Android, iOS) while and the representation layer is still an web app (inside a native webview).
 
 This way we can enjoy both worlds:
-* Web UI: Flexable UI that can be changes instantly from the server (no app deployments or store submissions). 
+* Web UI: Flexible UI that can be changes instantly from the server (no app deployments or store submissions).
 * Native API's: Native camera, deep behavioral analysis, ekyc and more..
 
 See Android and iOS repositories for guidance:
@@ -146,14 +146,14 @@ Customize the UI, the flow's steps and the backend.
 <img src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/flow.png">
 
 #### Flows Configuration
-Flow Initilzation:
+Flow Initialization:
  ```
  BallerineSDK.flows.init([CONFIG])
  ```
 
 | Config Parameter | Type | Description|
 | - | - | - |
-| `uiConfig` | [FlowsUIConfig](#ui-configuration) |Initilazing flows, preloading needed assets and ui packs|
+| `uiConfig` | [FlowsUIConfig](#ui-configuration) |Initializing flows, preloading needed assets and ui packs|
 | `endUserInfo` | [EndUserInfo]()| Use data like ID, name etc.. |
 | `backendConfig`  | [FlowsBackendConfig](#backend-configuration) |Backend endpoint the flows should interact with|
 | `translations` | [FlowsTranslations](#translations) | Change the config after init function|
@@ -164,10 +164,10 @@ BallerineSDK.flows.mount('my-flow', elementId, [CONFIG]);
 // or
 BallerineSDK.flows.openModal('my-flow', [CONFIG]);
  ```
-	
+
 | Config Parameter | Type | Description|
 | - | - | - |
-| `callbacks` | [FlowsCallbacksConfig](#flowscallbacksconfig) |An object contaning callback methods (see below)|
+| `callbacks` | [FlowsCallbacksConfig](#flowscallbacksconfig) |An object containing callback methods (see below)|
 
 ##### FlowsCallbacksConfig:
 | Config Parameter | Type | Description|
@@ -195,21 +195,21 @@ ___
 | `theme.button` | FlowsGeneralTheme |Global button  css
 ... See more
 
-3. Speceifc step component style (**overrides theme & general component style**)
+3. Specific step component style (**overrides theme & general component style**)
 
 | Config Parameter | Type | Description|
 | - | - | - |
-| `theme.flows['FlowName'].step` | ICSSProperties | Step inculdes style object and styles for each element
+| `theme.flows['FlowName'].step` | ICSSProperties | Step includes style object and styles for each element
 ... See more
 
-As the level is lower it will overide the upper ones
+As the level is lower it will override the upper ones
 ___
 #### Translations
 
 | Config Parameter | Type | Description|
 | - | - | - |
 | `remoteUrl` | `string (URL)` | Get a full translation json from remote url
-| `overrides` | `Record<string, string>` |Overide default translations or remote translations
+| `overrides` | `Record<string, string>` |Override default translations or remote translations
 
 ___
 #### Backend Configuration
@@ -217,7 +217,7 @@ ___
 | Config Parameter | Type | Description|
 | - | - | - |
 | `baseUrl` | `string (URL)` | Backend base URL
-| `auth` | BEAuthConfig | Auth method and Autorization header
+| `auth` | BEAuthConfig | Auth method and Authorization header
 | `endpoints` | BEEndpoints | List of endpoints for each action
 -----
 
