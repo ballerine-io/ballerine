@@ -1,8 +1,8 @@
-import { base64ToFile } from '@app/common/utils/base64-to-file';
 import { parseBase64FileWithMetadata } from '@app/common/utils/parse-base64-file-with-metadata';
 import { getFilesId } from '@app/components/organisms/KYBView/helpers/get-file-ids';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { WorkflowUpdatePayload } from '@app/domains/workflows/types';
+import { base64ToFile } from '@ballerine/ui';
 import { v4 as uuidv4 } from 'uuid';
 
 export const serializeWorkflowRunData = async (

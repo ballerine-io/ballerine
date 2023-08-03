@@ -1,6 +1,5 @@
-import { InputsWarnings } from '@app/common/components/organisms/DynamicForm';
 import { IStep, StepMetadata } from '@app/common/hooks/useStepper';
-import { AnyObject } from '@ballerine/ui';
+import { AnyObject, InputsWarnings } from '@ballerine/ui';
 
 export type SchemaBase = { states: AnyObject };
 

@@ -1,6 +1,6 @@
 import { stateContext } from './state.context';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnyChildren, AnyObject } from '@ballerine/ui';
+import { AnyChildren, AnyObject, InputsWarnings } from '@ballerine/ui';
 import { View, ViewStateContext } from '@app/common/providers/ViewStateProvider/types';
 import { ViewResolver } from '@app/common/providers/ViewStateProvider/components/ViewResolver';
 import { useStepper } from '@app/common/hooks/useStepper';
@@ -9,7 +9,6 @@ import { getInitialStepIndexFromContext } from '@app/common/providers/ViewStateP
 import { convertViewsToPaths } from '@app/common/providers/ViewStateProvider/utils/convertViewsToPaths';
 import { ViewsData } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository/types';
 import { useViewsDataRepository } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository';
-import { InputsWarnings } from '@app/common/components/organisms/DynamicForm';
 
 const { Provider } = stateContext;
 interface Props<TContext extends ViewsData> {

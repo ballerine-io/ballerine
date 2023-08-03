@@ -27,7 +27,6 @@ export const kybViews: View[] = [
     label: 'Company Activity',
     key: 'companyActivity',
     Component: CompanyActivityView,
-    active: true,
   },
   {
     label: 'Bank Information',

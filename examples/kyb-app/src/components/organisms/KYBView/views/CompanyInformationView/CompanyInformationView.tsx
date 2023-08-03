@@ -1,9 +1,9 @@
-import { DynamicForm } from '@app/common/components/organisms/DynamicForm';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { companyInformationSchema } from '@app/components/organisms/KYBView/views/CompanyInformationView/company-information.schema';
 import { companyInformationUISchema } from '@app/components/organisms/KYBView/views/CompanyInformationView/company-information.ui-schema';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
+import { DynamicForm } from '@ballerine/ui';
 
 export const CompanyInformationView = () => {
   const { context, saveAndPerformTransition } = useViewState<WorkflowFlowData>();

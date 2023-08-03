@@ -1,6 +1,11 @@
 import { UiSchema } from '@rjsf/utils';
 
 export const bankInformationUISchema: UiSchema = {
+  'ui:options': {
+    submitButtonOptions: {
+      submitText: 'Continue',
+    },
+  },
   country: {
     'ui:placeholder': 'United Kingdom',
   },

@@ -1,6 +1,11 @@
 import { UiSchema } from '@rjsf/utils';
 
 export const companyInformationUISchema: UiSchema = {
+  'ui:options': {
+    submitButtonOptions: {
+      submitText: 'Continue',
+    },
+  },
   registrationNumber: {
     'ui:placeholder': 'CRN12345678',
   },
