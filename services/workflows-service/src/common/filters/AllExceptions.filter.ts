@@ -1,10 +1,13 @@
-import { Catch, ArgumentsHost, Logger } from '@nestjs/common';
-import { BaseExceptionFilter } from '@nestjs/core';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { Catch, ArgumentsHost } from '@nestjs/common';
+import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { Response } from 'express';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
-  private readonly logger = new Logger(AllExceptionsFilter.name);
+  constructor(private readonly logger: AppLoggerService, applicationRef?: HttpAdapterHost) {
+    super(applicationRef?.httpAdapter);
+  }
 
   catch(exception: unknown, host: ArgumentsHost) {
     // if (host.getType() === 'http') return;

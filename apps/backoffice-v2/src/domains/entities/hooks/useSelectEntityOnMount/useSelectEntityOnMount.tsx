@@ -1,25 +1,34 @@
-import { useEffect } from 'react';
-import { useFirstEntityIdQuery } from '../queries/useFirstEntityIdQuery/useFirstEntityIdQuery';
-import { useParams } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
+import { matchPath, useLocation, useParams } from 'react-router-dom';
 import { useSelectEntity } from '../useSelectEntity/useSelectEntity';
-import { useFilterEntity } from '../useFilterEntity/useFilterEntity';
+import { useWorkflowsQuery } from '../../../workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
+import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 
 /**
  * @description Sets the selected end user to the first end user in the array on mount if no user is currently selected. Returns the select end user handler.
  */
 export const useSelectEntityOnMount = () => {
-  const { entityId } = useParams();
-  const { data: firstEntityId } = useFirstEntityIdQuery({
-    initialState: {
-      sortBy: 'caseCreatedAt',
-    },
-  });
+  const { entityId: caseId } = useParams();
+  const [{ filterId, filter, sortBy, sortDir, page, pageSize }] = useSearchParamsByEntity();
+  const { data } = useWorkflowsQuery({ filterId, filter, sortBy, sortDir, page, pageSize });
+  const { data: workflows } = data || { data: [] };
   const onSelectEntity = useSelectEntity();
-  const entity = useFilterEntity();
+  const entity = useEntityType();
+  const firstCaseId = workflows?.[0]?.id;
+  const { state } = useLocation();
+  const prevCaseId = useMemo(() => {
+    const match = matchPath(
+      '/:locale/case-management/entities/:entityId',
+      state?.from?.pathname ?? '',
+    );
+
+    return match?.params?.entityId;
+  }, [state?.from?.pathname]);
 
   useEffect(() => {
-    if (!firstEntityId || entityId) return;
+    if (caseId || (!firstCaseId && !prevCaseId)) return;
 
-    onSelectEntity(firstEntityId)();
-  }, [entity, firstEntityId, entityId, onSelectEntity]);
+    onSelectEntity(prevCaseId || firstCaseId)();
+  }, [entity, firstCaseId, caseId, onSelectEntity, prevCaseId]);
 };

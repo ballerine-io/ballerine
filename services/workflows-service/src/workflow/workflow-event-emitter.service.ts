@@ -3,12 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { WorkflowRuntimeData } from '@prisma/client';
 
 export interface WorkflowEventRawData {
-  runtimeData: WorkflowRuntimeData;
+  oldRuntimeData: WorkflowRuntimeData;
+  updatedRuntimeData: WorkflowRuntimeData;
   state: string;
-  context: {
-    documents: any[];
-    entity: any;
-  };
   entityId: string;
   correlationId: string;
 }
@@ -35,11 +32,12 @@ export class WorkflowEventEmitterService {
     this.eventEmitter.emit(eventName, eventData);
   }
 
-  on(eventName: string, listener: (eventData: WorkflowEventRawData) => void) {
+  on(eventName: string, listener: (eventData: WorkflowEventRawData) => Promise<void>) {
     if (!eventName) {
       throw new Error('Event name is required');
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.eventEmitter.on(eventName, listener);
   }
 }

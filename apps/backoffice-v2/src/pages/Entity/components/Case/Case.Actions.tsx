@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { IActionsProps } from './interfaces';
 import { ResubmissionReason, useActions } from './hooks/useActions/useActions';
 import { ctw } from '../../../../common/utils/ctw/ctw';
@@ -71,7 +70,8 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     isActionButtonDisabled,
     onTriggerAssignToMe,
     isAssignedToMe,
-  } = useActions({ entityId: id, fullName });
+    hasDecision,
+  } = useActions({ workflowId: id, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-4`}>
@@ -89,6 +89,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             onMutateAssignWorkflow(id, onTriggerAssignToMe);
           }}
           buttonType={'Assign'}
+          hasDecision={hasDecision}
         />
         <AssignButton
           assignees={assignees as Assignee[]}
@@ -98,6 +99,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             onMutateAssignWorkflow(id, !onTriggerAssignToMe);
           }}
           buttonType={'Re-Assign'}
+          hasDecision={hasDecision}
         />
       </div>
       <div className={`flex h-20 justify-between`}>
@@ -112,7 +114,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           </h2>
         </div>
         {showResolutionButtons && (
-          <div className={`flex items-center space-x-6 pe-[3.35rem]`}>
+          <div className={`pe-[3.35rem] flex items-center space-x-6`}>
             <Button
               className={ctw({
                 // loading: debouncedIsLoadingRejectEntity,

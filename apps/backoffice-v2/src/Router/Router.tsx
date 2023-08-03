@@ -9,10 +9,13 @@ import { Entities } from '../pages/Entities/Entities.page';
 import { RouteError } from '../common/components/atoms/RouteError/RouteError';
 import { CaseManagement } from '../pages/CaseManagement/CaseManagement.page';
 import { rootLoader } from '../pages/Root/Root.loader';
-import { entityLoader } from '../pages/Entity/Entity.loader';
 import { entitiesLoader } from '../pages/Entities/Entities.loader';
-import { localeLoader } from '../pages/Locale/Locale.loader';
+import { authenticatedLayoutLoader } from '../domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
+import { entityLoader } from '../pages/Entity/Entity.loader';
+import { AuthenticatedLayout } from '../domains/auth/components/AuthenticatedLayout';
+import { UnauthenticatedLayout } from '../domains/auth/components/UnauthenticatedLayout';
 import { Locale } from '../pages/Locale/Locale.page';
+import { unauthenticatedLayoutLoader } from '../domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
 
 const router = createBrowserRouter([
   {
@@ -21,35 +24,57 @@ const router = createBrowserRouter([
     loader: rootLoader,
     errorElement: <RootError />,
     children: [
-      ...(env.VITE_AUTH_ENABLED
-        ? [
-            {
-              path: '/:locale/auth/sign-in',
-              element: <SignIn />,
-            },
-          ]
-        : []),
       {
-        path: '/:locale',
-        element: <Locale />,
-        loader: localeLoader,
+        element: <UnauthenticatedLayout />,
+        loader: unauthenticatedLayoutLoader,
         errorElement: <RouteError />,
         children: [
           {
-            path: '/:locale/case-management',
-            element: <CaseManagement />,
+            path: '/:locale',
+            element: <Locale />,
+            errorElement: <RouteError />,
+            children: [
+              ...(env.VITE_AUTH_ENABLED
+                ? [
+                    {
+                      path: '/:locale/auth/sign-in',
+                      element: <SignIn />,
+                      errorElement: <RouteError />,
+                    },
+                  ]
+                : []),
+            ],
+          },
+        ],
+      },
+      {
+        element: <AuthenticatedLayout />,
+        loader: authenticatedLayoutLoader,
+        errorElement: <RouteError />,
+        children: [
+          {
+            path: '/:locale',
+            element: <Locale />,
+            errorElement: <RouteError />,
             children: [
               {
-                path: '/:locale/case-management/entities',
-                element: <Entities />,
-                loader: entitiesLoader,
+                path: '/:locale/case-management',
+                element: <CaseManagement />,
                 errorElement: <RouteError />,
                 children: [
                   {
-                    path: '/:locale/case-management/entities/:entityId',
-                    element: <Entity />,
-                    loader: entityLoader,
+                    path: '/:locale/case-management/entities',
+                    element: <Entities />,
+                    loader: entitiesLoader,
                     errorElement: <RouteError />,
+                    children: [
+                      {
+                        path: '/:locale/case-management/entities/:entityId',
+                        element: <Entity />,
+                        loader: entityLoader,
+                        errorElement: <RouteError />,
+                      },
+                    ],
                   },
                 ],
               },

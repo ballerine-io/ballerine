@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, Scope } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { UserModule } from './user/user.module';
 import { WorkflowModule } from './workflow/workflow.module';
@@ -21,9 +21,15 @@ import { env } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
 import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
 import { LogRequestInterceptor } from '@/common/interceptors/log-request.interceptor';
+import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
+import { ClsModule } from 'nestjs-cls';
+import { FiltersModule } from '@/common/filters/filters.module';
+import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-audit.middleware';
+import { MetricsController } from '@/metrics/metrics.controller';
+import { MetricsModule } from '@/metrics/metrics.module';
 
 @Module({
-  controllers: [],
+  controllers: [MetricsController],
   imports: [
     SentryModule,
     MulterModule.register({
@@ -54,6 +60,12 @@ import { LogRequestInterceptor } from '@/common/interceptors/log-request.interce
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),
+    ClsModule.forRoot({
+      global: true,
+    }),
+    AppLoggerModule,
+    FiltersModule,
+    MetricsModule,
   ],
   providers: [
     {
@@ -68,6 +80,6 @@ import { LogRequestInterceptor } from '@/common/interceptors/log-request.interce
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestIdMiddleware).forRoutes('*');
+    consumer.apply(RequestIdMiddleware, UserSessionAuditMiddleware).forRoutes('*');
   }
 }

@@ -29,12 +29,14 @@ interface IAssignButtonProps {
   assignees: Assignee[];
   onAssigneeSelect: (id: string) => void;
   authenticatedUser: TAuthenticatedUser;
+  hasDecision: boolean;
 }
 export const AssignButton: React.FC<IAssignButtonProps> = ({
   buttonType,
   assignees,
   onAssigneeSelect,
   caseState,
+  hasDecision,
 }) => {
   const isAssignButtonType = buttonType === 'Assign';
   const isUnassignEnabled = caseState !== CaseState.UNASSIGNED;
@@ -43,20 +45,20 @@ export const AssignButton: React.FC<IAssignButtonProps> = ({
   return (
     <div>
       {isAssignButtonType ? (
-        <Button disabled={!caseState.assignToMeEnabled} onClick={onClick}>
+        <Button disabled={hasDecision || !caseState.assignToMeEnabled} onClick={onClick}>
           Assign Me
         </Button>
       ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant={`outline`} disabled={!caseState.assignToOtherEnabled}>
+            <Button variant={`outline`} disabled={hasDecision || !caseState.assignToOtherEnabled}>
               {buttonType}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className={`min-w-[16rem]`} align={'start'}>
             {isUnassignEnabled ? (
               <DropdownMenuItem
-                className={`border-b-2 text-cyan-950`}
+                className={`text-cyan-950 border-b-2`}
                 onClick={() => onAssigneeSelect(null)}
               >
                 Unassign

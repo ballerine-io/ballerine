@@ -14,7 +14,7 @@ export default defineConfig({
     solidJs(),
     mdx(),
   ],
-  site: `https://ballerine.io`,
+  site: `https://ballerine.com`,
   markdown: {
     shikiConfig: {
       wrap: true,

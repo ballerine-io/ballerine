@@ -18,6 +18,7 @@ model User {
 
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
+  lastActiveAt        DateTime?
   workflowRuntimeData WorkflowRuntimeData[]
 }
 
@@ -43,21 +44,22 @@ enum ApprovalState {
 
 model EndUser {
   id String @id @default(cuid())
+  isContactPerson Boolean @default(false)
 
-  correlationId  String? @unique @db.VarChar
-  verificationId String? @db.VarChar
+  correlationId String? @unique @db.VarChar
 
-  endUserType   String?
+  endUserType   String? @default("individual") // Add userType: can be 'EndUser', 'CompanyContact', 'Stakeholder'
   approvalState ApprovalState @default(NEW)
   stateReason   String?       @db.VarChar
-  jsonData      Json?
 
-  firstName      String?   @db.VarChar
-  lastName       String?   @db.VarChar
+  firstName      String    @db.VarChar
+  lastName       String    @db.VarChar
   email          String?   @db.Text
   phone          String?   @db.VarChar
+  country        String?   @db.VarChar
   dateOfBirth    DateTime?
   avatarUrl      String?
+  nationalId     String?   @db.VarChar
   additionalInfo Json?
 
   workflowRuntimeData WorkflowRuntimeData[]
@@ -93,9 +95,10 @@ model Business {
   companyName             String // Official registered name of the business entity
   registrationNumber      String? // Unique registration number assigned by the relevant authorities
   legalForm               String? // Legal structure of the business entity, e.g., LLC, corporation, partnership
+  country                 String?
   countryOfIncorporation  String? // Country where the business entity is incorporated
   dateOfIncorporation     DateTime? // Date when the business entity was incorporated
-  address                 String? // Registered address of the business entity
+  address                 Json? // Registered address of the business entity
   phoneNumber             String? // Contact phone number of the business entity
   email                   String? // Contact email of the business entity
   website                 String? // Official website of the business entity
@@ -106,6 +109,9 @@ model Business {
   numberOfEmployees       Int? // Number of employees working for the business entity
   businessPurpose         String? // Brief description of the business entity's purpose or main activities
   documents               Json? // Collection of documents required for the KYB process, e.g., registration documents, financial statements
+  avatarUrl               String?
+  additionalInfo          Json?
+  bankInformation        Json?
   approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
 
   workflowRuntimeData  WorkflowRuntimeData[]
@@ -158,7 +164,7 @@ model WorkflowRuntimeData {
   workflowDefinitionId      String
   workflowDefinitionVersion Int
   context                   Json
-  config                   Json?
+  config                    Json?
   // history
   state                     String?
   status                    WorkflowRuntimeDataStatus @default(active)
@@ -166,6 +172,7 @@ model WorkflowRuntimeData {
   updatedAt                 DateTime                  @updatedAt
   createdBy                 String                    @default("SYSTEM")
   resolvedAt                DateTime?
+  assignedAt                DateTime?
 
   @@index([assigneeId, status])
   @@index([endUserId, status])

@@ -1,17 +1,16 @@
-import { ZodSchema } from 'zod';
-import { useSearchParams } from 'react-router-dom';
+import { AnyZodObject } from 'zod';
 import { useZodSearchParams } from '../useZodSearchParams/useZodSearchParams';
 import { IUseZodSearchParams } from '../useZodSearchParams/interfaces';
 import { BusinessesSearchSchema, IndividualsSearchSchema } from './validation-schemas';
 import { useAuthenticatedUserQuery } from '../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useMemo } from 'react';
+import { useEntityType } from '../useEntityType/useEntityType';
 
-export const useSearchParamsByEntity = <TSchema extends ZodSchema>(
+export const useSearchParamsByEntity = <TSchema extends AnyZodObject>(
   schema?: TSchema,
   options: IUseZodSearchParams = {},
 ) => {
-  const [searchParams] = useSearchParams();
-  const entity = searchParams.get('entity');
+  const entity = useEntityType();
   const { data: session } = useAuthenticatedUserQuery();
   const EntitySearchSchema = useMemo(
     () =>
@@ -22,7 +21,6 @@ export const useSearchParamsByEntity = <TSchema extends ZodSchema>(
   );
 
   return useZodSearchParams(
-    // @ts-ignore
     schema ? EntitySearchSchema.merge(schema) : EntitySearchSchema,
     options,
   );

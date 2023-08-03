@@ -3,12 +3,12 @@ export { HttpError } from './errors';
 export {
   Error,
   Errors,
-  StatePlugin,
   WorkflowEvent,
   WorkflowEventWithoutState,
   WorkflowOptions,
   WorkflowRunnerArgs,
-  PluginAction,
-  ExtensionRunOrder,
-  WorkflowContext
+  WorkflowContext,
 } from './types';
+export { StatePlugin } from './plugins/types';
+export { PluginAction } from './plugins/types';
+export { ExtensionRunOrder } from './plugins/types';

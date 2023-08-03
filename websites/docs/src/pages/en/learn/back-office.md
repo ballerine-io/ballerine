@@ -87,7 +87,7 @@ Open cases in the backoffice by sending API requests to the workflow service.
    ```
    6. Initilazie monorepo:
    ```sh
-   pnpm run api-manual-review-example
+   pnpm run api-flow-example
    ```
  _Now the backoffice will run on http://localhost:5137/, and the workflow service will accept calls at http://localhost:3000/_
 

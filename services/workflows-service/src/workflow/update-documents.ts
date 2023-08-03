@@ -1,5 +1,4 @@
-import { DefaultContextSchema } from '@/workflow/schemas/context';
-import { getDocumentId } from '@/documents/utils';
+import { DefaultContextSchema } from '@ballerine/common';
 
 type Documents = DefaultContextSchema['documents'];
 type Document = Documents[number];
@@ -10,16 +9,14 @@ export const updateDocuments = (
 ): Documents => {
   const updatedDocumentsMap = new Map<string, Document>();
 
-  existingDocuments.forEach(document => {
-    const documentId = getDocumentId(document);
-
-    updatedDocumentsMap.set(documentId, document);
+  // @ts-ignore
+  existingDocuments?.forEach(document => {
+    updatedDocumentsMap.set(document.id!, document);
   });
 
-  documentsToUpdate.forEach(document => {
-    const documentId = getDocumentId(document);
-
-    updatedDocumentsMap.set(documentId, document);
+  // @ts-ignore
+  documentsToUpdate?.forEach(document => {
+    updatedDocumentsMap.set(document.id!, document);
   });
 
   return Array.from(updatedDocumentsMap.values());

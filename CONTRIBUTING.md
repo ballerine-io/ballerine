@@ -12,7 +12,7 @@ We accept contributions in different sizes and varied difficulty, from documenta
 
 - Join our [Discord](https://discord.gg/e2rQE4YygA) or [Slack](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw)
 - Head to our [documentation](README.md)
-- Contact us at [oss@ballerine.io](mailto:oss@ballerine.io)
+- Contact us at [oss@ballerine.com](mailto:oss@ballerine.com)
 
 ## Prerequisites
 

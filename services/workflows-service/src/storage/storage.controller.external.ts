@@ -12,6 +12,7 @@ import { downloadFileFromS3, manageFileByProvider } from '@/storage/get-file-sto
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import * as os from 'os';
 import * as path from 'path';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 
 // Temporarily identical to StorageControllerInternal
 @swagger.ApiTags('Storage')
@@ -42,6 +43,7 @@ export class StorageControllerExternal {
       },
     },
   })
+  @UseKeyAuthInDevGuard()
   async uploadFile(@UploadedFile() file: Partial<Express.MulterS3.File>) {
     const id = await this.service.createFileLink({
       uri: file.location || String(file.path),
@@ -56,6 +58,7 @@ export class StorageControllerExternal {
 
   // curl -v http://localhost:3000/api/v1/storage/1679322938093
   @common.Get('/:id')
+  @UseKeyAuthInDevGuard()
   async getFileById(@Param('id') id: string, @Res() res: Response) {
     // currently ignoring user id due to no user info
     const persistedFile = await this.service.getFileNameById({
@@ -70,6 +73,7 @@ export class StorageControllerExternal {
 
   // curl -v http://localhost:3000/api/v1/storage/content/1679322938093
   @common.Get('/content/:id')
+  @UseKeyAuthInDevGuard()
   async fetchFileContent(@Param('id') id: string, @Res() res: Response) {
     // currently ignoring user id due to no user info
     const persistedFile = await this.service.getFileNameById({
