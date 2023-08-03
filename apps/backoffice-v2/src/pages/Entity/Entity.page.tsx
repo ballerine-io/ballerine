@@ -9,7 +9,7 @@ export const Entity = () => {
 
   // Selected entity
   return (
-    <Case>
+    <Case key={workflow?.id}>
       {/* Reject and approve header */}
       <Case.Actions
         id={workflow?.id}
