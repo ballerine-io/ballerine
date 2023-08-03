@@ -20,6 +20,7 @@ import { SelectTrigger } from '../../../../common/components/atoms/Select/Select
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
+import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -143,9 +144,12 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {dropdownOptions?.map(({ label, value }) => {
+                          {dropdownOptions?.map(({ label, value }, index) => {
                             return (
-                              <SelectItem key={value} value={value}>
+                              <SelectItem
+                                key={keyFactory(id, valueId, label, index?.toString())}
+                                value={value}
+                              >
                                 {label}
                               </SelectItem>
                             );
