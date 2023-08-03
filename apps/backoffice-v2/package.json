@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.4.2",
+  "version": "0.4.4",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "repository": {
@@ -30,8 +30,8 @@
     "not IE 11"
   ],
   "engines": {
-    "node": ">=14",
-    "yarn": ">=1.22.5"
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   },
   "scripts": {
     "format": "prettier --plugin-search-dir=. --write .",
@@ -41,21 +41,22 @@
     "dev": "vite",
     "build": "vite build",
     "test": "vitest run --passWithNoTests",
+    "test:unit": "vitest run --passWithNoTests",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@ballerine/common": "^0.4.3",
-    "@ballerine/workflow-browser-sdk": "^0.4.3",
+    "@ballerine/common": "0.5.6",
+    "@ballerine/workflow-browser-sdk": "^0.4.9",
     "@ballerine/workflow-node-sdk": "^0.4.3",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@hookform/resolvers": "^3.1.0",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-checkbox": "^1.0.1",
     "@radix-ui/react-dialog": "^1.0.2",
-    "@radix-ui/react-dropdown-menu": "^2.0.4",
+    "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@radix-ui/react-hover-card": "^1.0.2",
     "@radix-ui/react-label": "^2.0.1",
     "@radix-ui/react-scroll-area": "^1.0.2",
@@ -72,6 +73,7 @@
     "i18next": "^22.4.9",
     "i18next-browser-languagedetector": "^7.0.1",
     "i18next-http-backend": "^2.1.1",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.144.0",
     "match-sorter": "^6.3.1",
     "msw": "^1.0.0",
@@ -82,7 +84,9 @@
     "react-hot-toast": "^2.4.0",
     "react-i18next": "^12.1.4",
     "react-image-crop": "^10.0.9",
+    "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.11.2",
+    "react-zoom-pan-pinch": "^3.0.8",
     "tailwind-merge": "^1.10.0",
     "tailwindcss-animate": "^1.0.5",
     "tesseract.js": "^4.0.1",
@@ -103,6 +107,7 @@
     "@tanstack/react-query-devtools": "4.22.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
+    "@types/leaflet": "^1.9.3",
     "@types/node": "^18.11.13",
     "@types/qs": "^6.9.7",
     "@types/react": "^18.0.14",
@@ -119,6 +124,7 @@
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.6.6",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "postcss": "^8.4.14",
     "prettier": "^2.8.0",
     "prettier-plugin-tailwindcss": "^0.2.1",

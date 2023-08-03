@@ -1,11 +1,11 @@
-import { z, ZodSchema } from 'zod';
+import { AnyZodObject, z } from 'zod';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo } from 'react';
 import { IUseZodSearchParams } from './interfaces';
 import { defaultDeserializer } from './utils/default-deserializer';
 import { defaultSerializer } from './utils/default-serializer';
 
-export const useZodSearchParams = <TSchema extends ZodSchema>(
+export const useZodSearchParams = <TSchema extends AnyZodObject>(
   schema: TSchema,
   options: IUseZodSearchParams = {},
 ) => {
@@ -19,6 +19,7 @@ export const useZodSearchParams = <TSchema extends ZodSchema>(
     [schema, searchParamsAsObject],
   );
   const navigate = useNavigate();
+  const { state } = useLocation();
   const onSetSearchParams = useCallback(
     (searchParams: Record<string, unknown>) => {
       navigate(
@@ -26,6 +27,11 @@ export const useZodSearchParams = <TSchema extends ZodSchema>(
           ...parsedSearchParams,
           ...searchParams,
         })}`,
+        {
+          state: {
+            from: state?.from,
+          },
+        },
       );
     },
     [pathname, parsedSearchParams, setSearchParams],

@@ -1,9 +1,15 @@
 import { Outlet } from 'react-router-dom';
 import { Providers } from '../../common/components/templates/Providers/Providers';
 import { Toaster } from 'react-hot-toast';
-import { Layout } from '../../common/components/templates/Layout/Layout';
-import { FunctionComponent } from 'react';
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { FunctionComponent, lazy, Suspense } from 'react';
+
+const ReactQueryDevtools = lazy(() =>
+  process.env.NODE_ENV !== 'production'
+    ? import('@tanstack/react-query-devtools').then(module => ({
+        default: module.ReactQueryDevtools,
+      }))
+    : Promise.resolve({ default: () => null }),
+);
 
 export const Root: FunctionComponent = () => {
   return (
@@ -15,11 +21,10 @@ export const Root: FunctionComponent = () => {
           duration: 1000 * 3,
         }}
       />
-      <Layout>
-        <Outlet />
-      </Layout>
-      {/** Excluded in production by default */}
-      {/* <ReactQueryDevtools /> */}
+      <Outlet />
+      <Suspense>
+        <ReactQueryDevtools />
+      </Suspense>
     </Providers>
   );
 };

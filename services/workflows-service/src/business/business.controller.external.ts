@@ -1,5 +1,6 @@
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
+import { Param } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
@@ -11,12 +12,18 @@ import { BusinessModel } from './business.model';
 import { BusinessService } from './business.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { WorkflowDefinitionModel } from '@/workflow/workflow-definition.model';
+import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definition-find-many-args';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 
 @swagger.ApiTags('external/businesses')
 @common.Controller('external/businesses')
 export class BusinessControllerExternal {
   constructor(
     protected readonly service: BusinessService,
+    protected readonly workflowService: WorkflowService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -24,6 +31,7 @@ export class BusinessControllerExternal {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [BusinessModel] })
   @swagger.ApiForbiddenResponse()
+  @UseKeyAuthInDevGuard()
   async create(
     @common.Body() data: BusinessCreateDto,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
@@ -57,6 +65,7 @@ export class BusinessControllerExternal {
   @swagger.ApiOkResponse({ type: BusinessModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
+  @UseKeyAuthInDevGuard()
   async getById(@common.Param() params: BusinessWhereUniqueInput): Promise<BusinessModel | null> {
     try {
       const business = await this.service.getById(params.id);
@@ -69,5 +78,22 @@ export class BusinessControllerExternal {
 
       throw err;
     }
+  }
+
+  // curl -v http://localhost:3000/api/v1/external/businesses/:businessId/workflows
+  @common.Get('/:businessId/workflows')
+  @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @common.HttpCode(200)
+  @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
+  @UseKeyAuthInDevGuard()
+  async listWorkflowRuntimeDataByBusinessId(@Param('businessId') businessId: string) {
+    const workflowRuntimeDataWithDefinition =
+      await this.workflowService.listFullWorkflowDataByUserId({
+        entityId: businessId,
+        entity: 'business',
+      });
+
+    return makeFullWorkflow(workflowRuntimeDataWithDefinition);
   }
 }

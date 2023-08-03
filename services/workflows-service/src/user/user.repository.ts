@@ -78,4 +78,8 @@ export class UserRepository {
       ...args,
     });
   }
+
+  async queryRaw<TValue>(query: string, values: any[] = []): Promise<TValue> {
+    return (await this.prisma.$queryRawUnsafe.apply(this.prisma, [query, ...values])) as TValue;
+  }
 }

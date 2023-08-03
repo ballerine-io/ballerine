@@ -8,7 +8,7 @@ export const env = createEnv({
    */
   clientPrefix: 'PUBLIC_',
   server: {
-    NODE_ENV: z.enum(['development', 'production', 'test']),
+    NODE_ENV: z.enum(['development', 'production', 'test', 'local']),
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
     COMPOSE_PROJECT_NAME: z.string(),
@@ -22,6 +22,7 @@ export const env = createEnv({
     SESSION_SECRET: z.string(),
     BACKOFFICE_CORS_ORIGIN: z.string().url(),
     HEADLESS_EXAMPLE_CORS_ORIGIN: z.string().url(),
+    WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().url(),
     AWS_S3_BUCKET_NAME: z.string().optional(),
     AWS_S3_BUCKET_KEY: z.string().optional(),
     AWS_S3_BUCKET_SECRET: z.string().optional(),

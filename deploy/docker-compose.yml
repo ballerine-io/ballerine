@@ -22,14 +22,14 @@ services:
     depends_on:
       - db
   db:
-    image: postgres:12
+    image: sibedge/postgres-plv8:15.3-3.1.7
     ports:
       - ${DB_PORT}:5432
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres15:/var/lib/postgresql/data
     healthcheck:
       test:
         - CMD
@@ -43,4 +43,4 @@ services:
       interval: 10s
       retries: 10
 volumes:
-  postgres: ~
+  postgres15: ~

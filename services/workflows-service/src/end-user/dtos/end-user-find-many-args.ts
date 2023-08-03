@@ -31,11 +31,4 @@ export class EndUserFindManyArgs {
   })
   @Type(() => Number)
   take?: number;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @Type(() => String)
-  filterId?: string;
 }

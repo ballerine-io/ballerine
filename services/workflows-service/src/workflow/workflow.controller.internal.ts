@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import * as common from '@nestjs/common';
+import { UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import * as nestAccessControl from 'nest-access-control';
 import { isRecordNotFoundError } from '../prisma/prisma.util';
@@ -14,19 +15,29 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
-import { RunnableWorkflowData } from './types';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
-import { plainToClass } from 'class-transformer';
-import { Request } from 'express';
-import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
-import { enrichWorkflowRuntimeData } from './enrich-workflow-runtime-data';
+import {
+  FindWorkflowsListDto,
+  FindWorkflowsListLogicSchema,
+  FindWorkflowsListSchema,
+} from '@/workflow/dtos/find-workflows-list.dto';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import { FilterService } from '@/filter/filter.service';
+import {
+  FindWorkflowParamsDto,
+  FindWorkflowQueryDto,
+  FindWorkflowQuerySchema,
+} from '@/workflow/dtos/find-workflow.dto';
+import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
+import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
 export class WorkflowControllerInternal {
   constructor(
     protected readonly service: WorkflowService,
+    protected readonly filterService: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -42,16 +53,42 @@ export class WorkflowControllerInternal {
   }
 
   @common.Get()
-  @swagger.ApiOkResponse({ type: [WorkflowDefinitionModel] })
-  @swagger.ApiForbiddenResponse()
-  @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
-  async listWorkflowDefinitions(
-    @UserData() userInfo: UserInfo,
-    @common.Req() request: Request,
-  ): Promise<WorkflowDefinition[]> {
-    const args = plainToClass(WorkflowDefinitionFindManyArgs, request.query);
+  @swagger.ApiOkResponse()
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiNestedQuery(FindWorkflowsListDto)
+  @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema, 'query'))
+  async listWorkflowRuntimeData(
+    @common.Query() { filterId, page, filter: filters, ...queryParams }: FindWorkflowsListDto,
+  ) {
+    const filter = await this.filterService.getById(filterId);
 
-    return await this.service.listWorkflowDefinitions(args);
+    const entityType = filter.entity as 'individuals' | 'businesses';
+
+    const { orderBy } = FindWorkflowsListLogicSchema[entityType].parse(queryParams);
+
+    return await this.service.listWorkflowRuntimeDataWithRelations({
+      args: filter.query as any,
+      entityType,
+      orderBy,
+      page,
+      filters,
+    });
+  }
+
+  @common.Get('/:id')
+  @swagger.ApiOkResponse()
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiNestedQuery(FindWorkflowQueryDto)
+  @UsePipes(new ZodValidationPipe(FindWorkflowQuerySchema, 'query'))
+  async getRunnableWorkflowDataById(
+    @common.Param() { id }: FindWorkflowParamsDto,
+    @common.Query() { filterId }: FindWorkflowQueryDto,
+  ) {
+    const filter = await this.filterService.getById(filterId);
+
+    return await this.service.getWorkflowByIdWithRelations(id, filter.query as any);
   }
 
   @common.Get('/active-states')
@@ -83,34 +120,41 @@ export class WorkflowControllerInternal {
     });
   }
 
-  @common.Get('/:id')
-  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async getRunnableWorkflowDataById(
-    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
-  ): Promise<RunnableWorkflowData | null> {
-    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(params.id);
-    const workflowDefinition = await this.service.getWorkflowDefinitionById(
-      workflowRuntimeData.workflowDefinitionId,
-    );
-    return {
-      workflowDefinition,
-      workflowRuntimeData: enrichWorkflowRuntimeData(workflowRuntimeData),
-    };
-  }
-
   // PATCH /workflows/:id
   @common.Patch('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(WorkflowAssigneeGuard)
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
   ): Promise<WorkflowRuntimeData> {
     try {
       return await this.service.updateWorkflowRuntimeData(params.id, data);
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
+  }
+
+  // PATCH /workflows/assign/:id
+  // curl -X PATCH http://localhost:3000/api/v1/internal/workflows/assign/:workflowId \
+  // -H 'Content-Type: application/json' \
+  // -H 'Cookie: session=[SESSION]; session.sig=[SESSION_SIG]' \
+  // -d '{"assigneeId": "[ASSIGNEE_ID]"}'
+  @common.Patch('/assign/:id')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async assignWorkflowById(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @common.Body() data: WorkflowAssigneeId,
+  ): Promise<WorkflowRuntimeData> {
+    try {
+      return await this.service.assignWorkflowToUser(params.id, data);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

@@ -51,15 +51,18 @@ export const Navbar: FunctionComponent = () => {
         </ul>
       ))}
       <ul className={`menu menu-compact w-full space-y-2`}>
-        {filters?.map(({ id, name, entity }) => (
+        {filters?.map(({ id, name }) => (
           <NavItem
-            href={`/en/case-management/entities?entity=${entity}&filterId=${id}&filterName=${name}`}
+            href={`/en/case-management/entities?filterId=${id}`}
             key={id}
             className={ctw(`capitalize`, {
-              'bg-muted font-bold': name === searchParams?.filterName,
+              'bg-muted font-bold': id === searchParams?.filterId,
             })}
           >
-            <CheckSquare /> {name}
+            <span>
+              <CheckSquare className={`d-4`} />
+            </span>{' '}
+            {name}
           </NavItem>
         ))}
       </ul>
