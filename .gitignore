@@ -50,3 +50,5 @@ Thumbs.db
 **/.env**
 *.tgz
 *.orig
+
+storybook-static
