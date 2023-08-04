@@ -196,7 +196,7 @@ export class WorkflowService {
         definitionType: workflow.workflowDefinition.definitionType,
         workflowContext: {
           machineContext: workflow.context,
-          state: workflow.state ?? workflow.workflowDefinition.definition.initial,
+          state: workflow.state ?? workflow.workflowDefinition.definition?.initial,
         },
       });
 
