@@ -18,6 +18,9 @@ import { FilterService } from '@/filter/filter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
+import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-changed-webhook-caller';
+import { EntityRepository } from '@/common/entity/entity.repository';
+import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
@@ -27,17 +30,27 @@ import { UserRepository } from '@/user/user.repository';
     WorkflowRuntimeDataRepository,
     EndUserRepository,
     BusinessRepository,
+    EntityRepository,
     StorageService,
     FileRepository,
     WorkflowService,
+    HookCallbackHandlerService,
     FileService,
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
+    WorkflowStateChangedWebhookCaller,
     FilterRepository,
     FilterService,
     UserService,
     UserRepository,
   ],
-  exports: [WorkflowService, ACLModule, AuthModule, StorageService, FileRepository],
+  exports: [
+    WorkflowService,
+    HookCallbackHandlerService,
+    ACLModule,
+    AuthModule,
+    StorageService,
+    FileRepository,
+  ],
 })
 export class WorkflowModule {}

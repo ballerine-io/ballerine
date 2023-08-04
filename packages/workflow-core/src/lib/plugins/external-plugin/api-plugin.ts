@@ -1,19 +1,10 @@
-import { TContext, TTransformers, TValidators } from '../../utils/types';
-import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
-import * as process from 'process';
+import { TContext, Transformer, Transformers, Validator } from '../../utils';
+import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
+import { IApiPluginParams } from './types';
 
-export interface IApiPluginParams {
-  name: string;
-  stateNames: Array<string>;
-  url: string;
-  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
-  request: { transformer: TTransformers; schemaValidator?: TValidators };
-  response?: { transformer: TTransformers; schemaValidator?: TValidators };
-  headers?: HeadersInit;
-  successAction?: string;
-  errorAction?: string;
-}
 export class ApiPlugin {
+  public static pluginType = 'http';
+  public static pluginKind = 'kyc';
   name: string;
   stateNames: Array<string>;
   url: string;
@@ -38,9 +29,9 @@ export class ApiPlugin {
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
   }
-  async callApi(context: TContext) {
+  async invoke(context: TContext) {
     try {
-      const requestPayload = await this.transformData(this.request.transformer, context);
+      const requestPayload = await this.transformData(this.request.transformers, context);
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,
         requestPayload,
@@ -56,9 +47,9 @@ export class ApiPlugin {
       );
 
       if (apiResponse.ok) {
-        const result = await apiResponse.json();
+        const result = (await apiResponse.json()) as unknown;
         const responseBody = await this.transformData(
-          this.response!.transformer,
+          this.response!.transformers,
           result as AnyRecord,
         );
 
@@ -68,15 +59,25 @@ export class ApiPlugin {
           'Response',
         );
         if (!isValidResponse) return this.returnErrorResponse(errorMessage!);
-
-        return { callbackAction: this.successAction, responseBody };
+        if (this.successAction) {
+          return this.returnSuccessResponse(this.successAction, responseBody);
+        }
+        return;
       } else {
-        return this.returnErrorResponse('Request Failed: ' + apiResponse.statusText);
+        const errorResponse = await apiResponse.json();
+        return this.returnErrorResponse(
+          'Request Failed: ' + apiResponse.statusText + ' Error: ' + JSON.stringify(errorResponse),
+        );
       }
     } catch (error) {
       return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
     }
   }
+
+  returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {
+    return { callbackAction, responseBody };
+  }
+
   returnErrorResponse(errorMessage: string) {
     return { callbackAction: this.errorAction, error: errorMessage };
   }
@@ -104,20 +105,29 @@ export class ApiPlugin {
     return await fetch(url, requestParams);
   }
 
-  async transformData(transformer: TTransformers, record: AnyRecord) {
+  async transformData(transformers: Transformers, record: AnyRecord) {
+    let mutatedRecord = record;
+    for (const transformer of transformers) {
+      mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
+    }
+    return mutatedRecord;
+  }
+
+  async transformByTransformer(transformer: Transformer, record: AnyRecord) {
     try {
       return (await transformer.transform(record, { input: 'json', output: 'json' })) as AnyRecord;
     } catch (error) {
       throw new Error(
         `Error transforming data: ${
           isErrorWithMessage(error) ? error.message : ''
-        } for transformer mapping: ${transformer.mapping}`,
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        } for transformer mapping: ${JSON.stringify(transformer.mapping)}`,
       );
     }
   }
 
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
-    schemaValidator: TValidators | undefined,
+    schemaValidator: Validator | undefined,
     transformedRequest: AnyRecord,
     validationContext: TValidationContext,
   ) {
@@ -132,10 +142,12 @@ export class ApiPlugin {
     return Object.fromEntries(
       Object.entries(headers).map(header => [
         header[0],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.replaceValuePlaceholders(header[1], context),
       ]),
     );
   }
+
   replaceValuePlaceholders(content: string, context: TContext) {
     const placeholders = content.match(/{(.*?)}/g);
     if (!placeholders) return content;
@@ -146,7 +158,8 @@ export class ApiPlugin {
       const isPlaceholderSecret = variableKey.includes('secret.');
       const placeholderValue = isPlaceholderSecret
         ? `${process.env[variableKey.replace('secret.', '')]}`
-        : `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
+        : // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
       replacedContent = replacedContent.replace(placeholder, placeholderValue);
     });
 
@@ -154,10 +167,11 @@ export class ApiPlugin {
   }
 
   fetchObjectPlaceholderValue(record: AnyRecord, path: string) {
-    let pathToValue = path.split('.');
+    const pathToValue = path.split('.');
 
     return pathToValue.reduce((acc: unknown, pathKey: string) => {
-      if (typeof acc === 'object' && acc !== null && acc.hasOwnProperty(pathKey)) {
+      // eslint-disable-next-line no-prototype-builtins
+      if (isObject(acc)) {
         return (acc as AnyRecord)[pathKey];
       } else {
         return undefined;

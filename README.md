@@ -182,7 +182,7 @@ pnpm kyb-manual-review-example
 1.  On the KYC UI, click the "Start KYC" button
 2.  Go through and complete the flow
 3.  Go to the backoffice tab to review the new user that was created
-4.  Approve/reject/ask to resubmit
+4.  Approve/reject/ask to revision
 5.  Get back to the KYC UI to see the result
 
 *Note: some components are currently in beta, if you run into an issue please ping us on Slack

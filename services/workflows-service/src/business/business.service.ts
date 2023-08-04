@@ -16,4 +16,8 @@ export class BusinessService {
   async getById(id: string, args?: Parameters<BusinessRepository['findById']>[1]) {
     return await this.repository.findById(id, args);
   }
+
+  async updateById(id: string, args: Parameters<BusinessRepository['updateById']>[1]) {
+    return await this.repository.updateById(id, args);
+  }
 }

@@ -19,8 +19,7 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@/prisma/prisma.service';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
+import { EntityRepository } from '@/common/entity/entity.repository';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -31,6 +30,7 @@ describe('#EndUserControllerExternal', () => {
   beforeAll(async () => {
     const servicesProviders = [
       EndUserRepository,
+      EntityRepository,
       FilterService,
       FilterRepository,
       FileRepository,
@@ -62,7 +62,7 @@ describe('#EndUserControllerExternal', () => {
   });
 
   describe('POST /end-user', () => {
-    it('it creates an end-user', async () => {
+    it('creates an end-user', async () => {
       expect(await endUserService.list({})).toHaveLength(0);
 
       const response = await request(app.getHttpServer()).post('/external/end-users').send({

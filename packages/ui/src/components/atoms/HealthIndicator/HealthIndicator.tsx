@@ -1,7 +1,7 @@
 import { IWorkflowHealthStatus, WorkflowHealthStatus } from '@common/enums';
 import { ctw } from '@utils/ctw';
 
-interface Props {
+export interface Props {
   healthStatus: IWorkflowHealthStatus;
   size?: number;
 }
