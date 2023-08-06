@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { t } from 'i18next';
 import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
+import { Action } from '../../../../../common/enums';
 
 // @TODO: Refactor to be under cases/workflows domain
 export const useApproveEntityMutation = ({
@@ -10,7 +11,7 @@ export const useApproveEntityMutation = ({
   onSelectNextEntity,
 }: {
   workflowId: string;
-  onSelectNextEntity: VoidFunction;
+  onSelectNextEntity?: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
 
@@ -19,7 +20,7 @@ export const useApproveEntityMutation = ({
       fetchWorkflowEvent({
         workflowId,
         body: {
-          name: 'approve',
+          name: Action.APPROVE.toLowerCase(),
         },
       }),
     onSuccess: () => {
@@ -28,7 +29,8 @@ export const useApproveEntityMutation = ({
 
       toast.success(t('toast:approve_case.success'));
 
-      onSelectNextEntity();
+      // TODO: Re-implement
+      // onSelectNextEntity();
     },
     onError: () => {
       toast.error(t('toast:approve_case.error'));

@@ -1,26 +1,23 @@
-import { ApiPlugin, IApiPluginParams } from './api-plugin';
+import { ApiPlugin } from './api-plugin';
 import { TContext } from '../../utils/types';
-
-export interface WebhookPluginParams {
-  name: string;
-  stateNames: Array<string>;
-  url: string;
-  method: IApiPluginParams['method'];
-  headers: IApiPluginParams['headers'];
-  request: Omit<IApiPluginParams['request'], 'schemaValidator'>;
-}
+import { IApiPluginParams } from './types';
 
 export class WebhookPlugin extends ApiPlugin {
+  public static pluginType = 'http';
+  public static pluginKind = 'webhook';
   constructor(pluginParams: IApiPluginParams) {
     super(pluginParams);
   }
-  async callApi(context: TContext) {
-    const requestPayload = await this.transformData(this.request.transformer, context);
+
+  // TODO: Ensure if this is intentional
+  // @ts-expect-error - this does not match the interface of api plugins
+  async invoke(context: TContext) {
+    const requestPayload = await this.transformData(this.request.transformers, context);
 
     try {
-      await this.makeApiRequest(this.url, this.method, requestPayload, this.headers);
-    } catch (e) {
-      console.error(e);
+      await this.makeApiRequest(this.url, this.method, requestPayload, this.headers!);
+    } catch (err) {
+      console.error(err);
     }
 
     return {};

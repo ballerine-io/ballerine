@@ -3,16 +3,22 @@ import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { WebhookEvent } from './types';
-import { WorkflowEventData } from '@/workflow/workflow-event-emitter.service';
+import { ExtractWorkflowEventData } from '@/workflow/types';
 
 @Injectable()
 export class WebhooksService {
   constructor(private readonly httpService: HttpService, private eventEmitter: EventEmitter2) {
-    this.eventEmitter.addListener('workflow.completed', (event: WorkflowEventData) => {
-      const webhookEvent = event as unknown as WebhookEvent; // we should have mapping/transformer for this
-      // should be workflow.*
-      this.outgoingWebhooksHandler.bind(this)(webhookEvent).then(console.log).catch(console.error);
-    });
+    this.eventEmitter.addListener(
+      'workflow.completed',
+      (event: ExtractWorkflowEventData<'workflow.completed'>) => {
+        const webhookEvent = event as unknown as WebhookEvent; // we should have mapping/transformer for this
+        // should be workflow.*
+        this.outgoingWebhooksHandler
+          .bind(this)(webhookEvent)
+          .then(console.log)
+          .catch(console.error);
+      },
+    );
   }
 
   async outgoingWebhooksHandler(event: WebhookEvent): Promise<any> {

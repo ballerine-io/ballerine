@@ -176,11 +176,16 @@ model WorkflowRuntimeData {
   resolvedAt                DateTime?
   assignedAt                DateTime?
 
+  parentRuntimeDataId       String?               @map("parent_runtime_data_id")
+  parentWorkflowRuntimeData WorkflowRuntimeData?  @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
+  childWorkflowsRuntimeData WorkflowRuntimeData[] @relation("ParentChild")
+
   @@index([assigneeId, status])
   @@index([endUserId, status])
   @@index([businessId, status])
   @@index([workflowDefinitionId, status])
   @@index([state])
+  @@index([parentRuntimeDataId])
 }
 
 model File {

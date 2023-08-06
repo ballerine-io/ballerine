@@ -2,5 +2,5 @@
 export const camelCaseToSpace = (str: string) => {
   if (typeof str !== 'string') return str;
 
-  return str?.split(/(?=[A-Z])/g).join(' ');
+  return str.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
 };
