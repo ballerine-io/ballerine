@@ -1,7 +1,7 @@
 import { Button } from '@components/atoms';
 import { SubmitButtonProps, getSubmitButtonOptions } from '@rjsf/utils';
 
-export const SubmitLayout = ({ uiSchema, ...rest }: SubmitButtonProps) => {
+export const SubmitLayout = ({ uiSchema }: SubmitButtonProps) => {
   const { norender, submitText } = getSubmitButtonOptions(uiSchema);
   const disabled = Boolean(uiSchema['ui:options']?.submitButtonOptions?.props?.disabled);
 

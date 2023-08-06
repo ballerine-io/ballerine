@@ -19,7 +19,7 @@ export function useViewsDataRepository<T extends ViewsData>(initial = {} as T) {
             ...prev,
             flowData: {
               ...prev.flowData,
-              [key]: merge(prev.flowData[key] as AnyObject, data),
+              [key]: { ...(prev.flowData[key] as AnyObject), ...data },
             },
             shared: shared ? { ...prev.shared, ...shared } : prev.shared,
             completionMap: {

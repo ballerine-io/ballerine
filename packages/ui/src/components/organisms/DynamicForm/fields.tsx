@@ -1,3 +1,4 @@
+import { AutocompleteTextInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/AutocompleteTextInputAdapter';
 import { BooleanFieldAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/BooleanFieldAdapter';
 import { DateInputAdater } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/DateInputAdater';
 import { FileInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/FileInputAdapter';
@@ -15,4 +16,5 @@ export const fields: Record<keyof RegistryFieldsType, RJSVInputAdapter<any>> = {
   FileInput: FileInputAdapter,
   DateInput: DateInputAdater,
   PhoneInput: PhoneInputAdapter,
+  AutocompleteInput: AutocompleteTextInputAdapter,
 };

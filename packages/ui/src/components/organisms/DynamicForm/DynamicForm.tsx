@@ -1,4 +1,4 @@
-import { RJSFSchema, RegistryFieldsType, UiSchema } from '@rjsf/utils';
+import { RJSFSchema, RJSFValidationError, RegistryFieldsType, UiSchema } from '@rjsf/utils';
 import Form, { IChangeEvent } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { fields } from './fields';
@@ -20,6 +20,7 @@ interface Props<TFormData> {
   formData?: object;
   warnings?: InputsWarnings;
   disabled?: boolean;
+  transformErrors?: (errors: RJSFValidationError[], uiSchema: UiSchema) => RJSFValidationError[];
   onChange?: (formData: TFormData) => void;
   onSubmit: (formData: TFormData) => void;
 }
@@ -31,6 +32,7 @@ export function DynamicForm<TFormData extends object>({
   formData,
   warnings,
   disabled,
+  transformErrors,
   onChange,
   onSubmit,
 }: Props<TFormData>) {
@@ -71,6 +73,7 @@ export function DynamicForm<TFormData extends object>({
         templates={templates}
         showErrorList={false}
         disabled={disabled}
+        transformErrors={transformErrors}
       />
     </Provider>
   );

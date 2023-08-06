@@ -2,7 +2,8 @@ export interface TCompanyInformation {
   name: string;
   companyNumber: string;
   companyType: string;
-  jurisdictionsCode: string;
+  jurisdictionCode: string;
+  incorporationDate: string;
 }
 
 export interface GetCompanyInformationDto {

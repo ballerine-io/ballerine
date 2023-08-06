@@ -6,7 +6,7 @@ export const fetchCompanyInformation = async ({
   jurisdictionCode,
 }: GetCompanyInformationDto): Promise<TCompanyInformation> => {
   const result = await request
-    .get(`companies/${registrationNumber}`, {
+    .get(`companies/info/${registrationNumber}`, {
       searchParams: { jurisdictionCode },
     })
     .json<TCompanyInformation>();

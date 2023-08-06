@@ -1,5 +1,14 @@
 # kyb-app
 
+## 0.0.13
+
+### Patch Changes
+
+- c06f2341: added DynamicForm & TextArea & css fixes
+- Updated dependencies
+- Updated dependencies [c06f2341]
+  - @ballerine/ui@0.2.3
+
 ## 0.0.12
 
 ### Patch Changes

@@ -15,8 +15,10 @@ export interface DatePickerChangeEvent {
   };
 }
 
+export type DatePickerValue = number | string | Date | null;
+
 export interface DatePickerProps {
-  value?: number | null;
+  value?: DatePickerValue;
   name?: string;
   disabled?: boolean;
   onChange: (event: DatePickerChangeEvent) => void;
@@ -34,7 +36,15 @@ export const DatePickerInput = ({
     return +value.toDate();
   }, []);
 
-  const deserializeValue = useCallback((value: number) => {
+  const deserializeValue = useCallback((value: DatePickerValue) => {
+    if (value instanceof Date) {
+      return dayjs(value);
+    }
+
+    if (typeof value === 'string' && value) {
+      return dayjs(new Date(value));
+    }
+
     return dayjs(value);
   }, []);
 
@@ -85,7 +95,7 @@ export const DatePickerInput = ({
                 }}
                 inputProps={{
                   ...params.inputProps,
-                  className: 'py-0 px-0 h-9',
+                  className: 'py-0 px-0 h-9 disabled:cursor-not-allowed disabled:opacity-50',
                 }}
               />
             ),

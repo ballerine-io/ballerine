@@ -19,6 +19,7 @@ export interface AutocompleteInputProps {
   options: AutocompleteOption[];
   placeholder?: string;
   name?: string;
+  disabled?: boolean;
   onChange: (event: AutocompleteChangeEvent) => void;
 }
 
@@ -27,6 +28,7 @@ export const AutocompleteInput = ({
   value,
   placeholder,
   name,
+  disabled,
   onChange,
 }: AutocompleteInputProps) => {
   const optionLabels = useMemo(() => options.map(option => option.value), [options]);
@@ -55,12 +57,15 @@ export const AutocompleteInput = ({
       <Autocomplete
         disablePortal
         options={optionLabels}
+        getOptionLabel={label => label}
         freeSolo
+        inputValue={value}
         PaperComponent={Paper}
         onChange={handleChange}
+        disabled={disabled}
         slotProps={{
           paper: {
-            className: 'mt-2',
+            className: 'mt-2 mb-2 w-full',
           },
         }}
         renderInput={params => (
@@ -70,12 +75,12 @@ export const AutocompleteInput = ({
             fullWidth
             size="small"
             placeholder={placeholder}
-            value={value}
+            disabled={disabled}
             //@ts-nocheck
             InputProps={{
               ...params.InputProps,
               classes: {
-                root: 'border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 px-3 py-0',
+                root: 'border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 px-3 py-0 shadow-none',
                 focused: 'border-input ring-ring ring-1',
               },
               disableUnderline: true,
