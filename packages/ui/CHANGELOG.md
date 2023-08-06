@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.1.10
+
+### Patch Changes
+
+- Upgrade packages
+
 ## 0.1.9
 
 ### Patch Changes
