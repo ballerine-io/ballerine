@@ -105,8 +105,8 @@ async function seed(bcryptSalt: Salt) {
   const riskScoreMachineKybId = 'risk-score-improvement-dev';
 
   // MOMO
-  const onboardingMomoMachineId = 'kyb-onboarding-momo';
-  const riskScoreMomoMachineId = 'kyb-risk-score-momo';
+  const onboardingMomoMachineId = 'kyb-onboarding';
+  const riskScoreMomoMachineId = 'kyb-risk-score';
 
   const user = await client.endUser.create({
     data: {
@@ -773,11 +773,11 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  // MOMO Onboarding
+  // KYB Onboarding
   await client.workflowDefinition.create({
     data: {
       id: onboardingMomoMachineId,
-      name: 'kyb_onboarding_momo',
+      name: 'kyb_onboarding',
       version: 1,
       definitionType: 'statechart-json',
       config: {
@@ -786,7 +786,7 @@ async function seed(bcryptSalt: Salt) {
         allowMultipleActiveWorkflows: false,
       },
       definition: {
-        id: 'kyb_onboarding_momo',
+        id: 'kyb_onboarding',
         predictableActionArguments: true,
         initial: 'review',
 
@@ -826,11 +826,11 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  // MOMO Risk Score Improvement
+  // KYB Risk Score Improvement
   await client.workflowDefinition.create({
     data: {
       id: riskScoreMomoMachineId,
-      name: 'kyb_risk_score_momo',
+      name: 'kyb_risk_score',
       version: 1,
       definitionType: 'statechart-json',
       config: {
@@ -839,7 +839,7 @@ async function seed(bcryptSalt: Salt) {
         allowMultipleActiveWorkflows: true,
       },
       definition: {
-        id: 'risk_score_momo',
+        id: 'kyb_risk_score',
         predictableActionArguments: true,
         initial: 'review',
 
@@ -874,122 +874,6 @@ async function seed(bcryptSalt: Salt) {
               },
             },
           },
-        },
-      },
-    },
-  });
-
-  await createFilter('Onboarding MOMO', 'businesses', {
-    where: {
-      businessId: {
-        not: null,
-      },
-      business: {
-        businessType: 'MOMO',
-      },
-      workflowDefinitionId: onboardingMomoMachineId,
-    },
-    select: {
-      id: true,
-      status: true,
-      createdAt: true,
-      context: true,
-      assignee: {
-        select: {
-          id: true,
-          lastName: true,
-          firstName: true,
-        },
-      },
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
-        },
-      },
-      business: {
-        select: {
-          id: true,
-          businessType: true,
-          email: true,
-          address: true,
-          website: true,
-          industry: true,
-          createdAt: true,
-          documents: true,
-          legalForm: true,
-          updatedAt: true,
-          vatNumber: true,
-          companyName: true,
-          phoneNumber: true,
-          approvalState: true,
-          businessPurpose: true,
-          numberOfEmployees: true,
-          registrationNumber: true,
-          dateOfIncorporation: true,
-          shareholderStructure: true,
-          countryOfIncorporation: true,
-          taxIdentificationNumber: true,
-        },
-      },
-    },
-  });
-
-  await createFilter('Risk Score Improvement MOMO', 'businesses', {
-    where: {
-      businessId: {
-        not: null,
-      },
-      business: {
-        businessType: 'MOMO',
-      },
-      workflowDefinitionId: riskScoreMomoMachineId,
-    },
-    select: {
-      id: true,
-      status: true,
-      createdAt: true,
-      context: true,
-      assignee: {
-        select: {
-          id: true,
-          lastName: true,
-          firstName: true,
-        },
-      },
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
-        },
-      },
-      business: {
-        select: {
-          id: true,
-          businessType: true,
-          email: true,
-          address: true,
-          website: true,
-          industry: true,
-          createdAt: true,
-          documents: true,
-          legalForm: true,
-          updatedAt: true,
-          vatNumber: true,
-          companyName: true,
-          phoneNumber: true,
-          approvalState: true,
-          businessPurpose: true,
-          numberOfEmployees: true,
-          registrationNumber: true,
-          dateOfIncorporation: true,
-          shareholderStructure: true,
-          countryOfIncorporation: true,
-          taxIdentificationNumber: true,
         },
       },
     },
