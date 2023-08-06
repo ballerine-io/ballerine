@@ -90,6 +90,7 @@ model Business {
   id            String  @id @default(cuid()) // Unique identifier for the business entity
   correlationId String? @unique @db.VarChar
 
+  businessType            String?       @default("default")
   createdAt               DateTime      @default(now()) // Timestamp for when the business entity was created
   updatedAt               DateTime      @updatedAt // Timestamp for when the business entity was last updated
   companyName             String // Official registered name of the business entity
@@ -118,6 +119,7 @@ model Business {
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
+  @@index([businessType])
   @@index([companyName])
   @@index([approvalState])
   @@index([correlationId])
@@ -155,7 +157,7 @@ enum WorkflowRuntimeDataStatus {
 model WorkflowRuntimeData {
   id                        String                    @id @default(cuid())
   // Potentially use an enum
-  tasksStatus               String                    @default("pending")
+  tasksStatus               String?
   endUser                   EndUser?                  @relation(fields: [endUserId], references: [id], onDelete: SetNull)
   endUserId                 String?
   business                  Business?                 @relation(fields: [businessId], references: [id], onDelete: SetNull)
@@ -176,11 +178,16 @@ model WorkflowRuntimeData {
   resolvedAt                DateTime?
   assignedAt                DateTime?
 
+  parentRuntimeDataId       String?               @map("parent_runtime_data_id")
+  parentWorkflowRuntimeData WorkflowRuntimeData?  @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
+  childWorkflowsRuntimeData WorkflowRuntimeData[] @relation("ParentChild")
+
   @@index([assigneeId, status])
   @@index([endUserId, status])
   @@index([businessId, status])
   @@index([workflowDefinitionId, status])
   @@index([state])
+  @@index([parentRuntimeDataId])
 }
 
 model File {
