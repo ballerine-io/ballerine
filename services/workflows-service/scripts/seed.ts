@@ -104,9 +104,9 @@ async function seed(bcryptSalt: Salt) {
   const onboardingMachineKybId = 'COLLECT_DOCS_b0002zpeid7bq9bbb';
   const riskScoreMachineKybId = 'risk-score-improvement-dev';
 
-  // MOMO
-  const onboardingMomoMachineId = 'kyb-onboarding';
-  const riskScoreMomoMachineId = 'kyb-risk-score';
+  // KYB Flows
+  const onboardingMachineId = 'kyb-onboarding';
+  const riskScoreMachineId = 'kyb-risk-score';
 
   const user = await client.endUser.create({
     data: {
@@ -776,7 +776,7 @@ async function seed(bcryptSalt: Salt) {
   // KYB Onboarding
   await client.workflowDefinition.create({
     data: {
-      id: onboardingMomoMachineId,
+      id: onboardingMachineId,
       name: 'kyb_onboarding',
       version: 1,
       definitionType: 'statechart-json',
@@ -829,7 +829,7 @@ async function seed(bcryptSalt: Salt) {
   // KYB Risk Score Improvement
   await client.workflowDefinition.create({
     data: {
-      id: riskScoreMomoMachineId,
+      id: riskScoreMachineId,
       name: 'kyb_risk_score',
       version: 1,
       definitionType: 'statechart-json',
