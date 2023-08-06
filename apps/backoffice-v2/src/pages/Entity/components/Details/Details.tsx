@@ -21,10 +21,10 @@ export const Details: FunctionComponent<IDetailsProps> = ({ id, value }) => {
       })}
     >
       <EditableDetails
-        workflowId={workflow.id}
+        workflowId={workflow?.id}
         id={id}
         valueId={value?.id}
-        documents={workflow.context.documents}
+        documents={workflow?.context?.documents}
         title={value?.title}
         data={value?.data}
       />

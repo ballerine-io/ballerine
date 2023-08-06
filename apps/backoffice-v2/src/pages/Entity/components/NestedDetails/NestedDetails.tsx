@@ -6,7 +6,7 @@ export const NestedDetails: FunctionComponent<INestedDetailsProps> = ({ id, valu
   if (!value?.data?.length) return;
 
   return (
-    <div className={`ml-3`}>
+    <div className={`ml-3 space-y-4`}>
       <NestedComponent id={id} value={value} />
     </div>
   );

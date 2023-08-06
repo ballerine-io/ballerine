@@ -15,7 +15,7 @@ export const useCallToActionLogic = () => {
   const caseState = useCaseState(session?.user, workflow);
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
     useUpdateWorkflowByIdMutation({
-      workflowId: workflow.id,
+      workflowId: workflow?.id,
     });
   const onMutateUpdateWorkflowById =
     (
@@ -41,12 +41,12 @@ export const useCallToActionLogic = () => {
         {
           approved: 'approve_document',
           rejected: 'reject_document',
-          revision: 'ask_resubmit_document',
+          revision: 'ask_revision_document',
         } as const
       )[payload.approvalStatus];
 
       const context = {
-        documents: workflow.context.documents?.map(document => {
+        documents: workflow?.context?.documents?.map(document => {
           if (document?.id !== payload?.id) return document;
 
           switch (payload?.approvalStatus) {
@@ -89,11 +89,11 @@ export const useCallToActionLogic = () => {
       });
     };
   const revisionReasons =
-    workflow.workflowDefinition.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum;
   const rejectionReasons =
-    workflow.workflowDefinition.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum;
   const actions = [

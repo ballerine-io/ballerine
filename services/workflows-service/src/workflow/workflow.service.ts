@@ -20,7 +20,6 @@ import {
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
 } from './types';
-import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { isEqual, merge } from 'lodash';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
@@ -65,6 +64,19 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import { plainToClass } from 'class-transformer';
 import { SortOrder } from '@/common/query-filters/sort-order';
+import { aliasIndividualAsEndUser } from '@/common/utils/alias-individual-as-end-user/alias-individual-as-end-user';
+import { EntityRepository } from '@/common/entity/entity.repository';
+import {
+  ChildPluginCallbackOutput,
+  ChildToParentCallback,
+  ChildWorkflowCallback,
+  createWorkflow,
+  HelpersTransformer,
+  JmespathTransformer,
+  SerializableTransformer,
+  THelperFormatingLogic,
+  Transformer,
+} from '@ballerine/workflow-core';
 
 type TEntityId = string;
 
@@ -111,6 +123,7 @@ export class WorkflowService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
     protected readonly businessRepository: BusinessRepository,
+    protected readonly entityRepository: EntityRepository,
     protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
@@ -122,15 +135,13 @@ export class WorkflowService {
       id: true,
       name: true,
       version: true,
-
       definition: true,
       definitionType: true,
-
       backend: true,
-
       extensions: true,
       persistStates: true,
       submitStates: true,
+      parentRuntimeDataId: true,
     };
     return await this.workflowDefinitionRepository.create({ data, select });
   }
@@ -142,29 +153,57 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.findById(id, args);
   }
 
+  async getWorkflowRuntimeWithChildrenDataById(
+    id: string,
+    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+  ) {
+    return await this.workflowRuntimeDataRepository.findById(id, {
+      ...args,
+    });
+  }
+
   async getWorkflowByIdWithRelations(
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
   ) {
-    const workflow = (await this.workflowRuntimeDataRepository.findById(
-      id,
-      args,
-    )) as TWorkflowWithRelations;
+    const allEntities = { endUser: true, business: true };
+    const childWorkflowSelectArgs = {
+      select: { ...args?.select, ...allEntities },
+      include: args?.include,
+    };
+    const workflow = (await this.workflowRuntimeDataRepository.findById(id, {
+      ...args,
+      select: {
+        ...(args?.select || {}),
+        childWorkflowsRuntimeData: { ...childWorkflowSelectArgs },
+      },
+    })) as TWorkflowWithRelations;
 
     return this.formatWorkflow(workflow);
   }
 
-  private formatWorkflow(workflow: TWorkflowWithRelations) {
+  private formatWorkflow(
+    workflow: TWorkflowWithRelations,
+    addNextEvents = true,
+  ): TWorkflowWithRelations {
     const isIndividual = 'endUser' in workflow;
-    const service = createWorkflow({
-      definition: workflow.workflowDefinition as any,
-      definitionType: workflow.workflowDefinition.definitionType,
-      workflowContext: {
-        machineContext: workflow.context,
-        state: workflow.state,
-      },
-    });
 
+    let nextEvents;
+    if (addNextEvents) {
+      const service = createWorkflow({
+        runtimeId: workflow.id,
+        definition: workflow.workflowDefinition.definition,
+        definitionType: workflow.workflowDefinition.definitionType,
+        workflowContext: {
+          machineContext: workflow.context,
+          state: workflow.state ?? workflow.workflowDefinition.definition?.initial,
+        },
+      });
+
+      nextEvents = service.getSnapshot().nextEvents;
+    }
+
+    // @ts-expect-error - typescript does not like recurrsion over types
     return {
       ...workflow,
       context: {
@@ -195,10 +234,44 @@ export class WorkflowService {
       },
       endUser: undefined,
       business: undefined,
-      nextEvents: service.getSnapshot().nextEvents,
+      nextEvents,
+      childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
+        this.formatWorkflow(childWorkflow, false),
+      ),
     };
   }
 
+  async persistChildEvent(childPluginConfig: ChildPluginCallbackOutput) {
+    const childWorkflow = (
+      await this.createOrUpdateWorkflowRuntime({
+        workflowDefinitionId: childPluginConfig.definitionId,
+        context: childPluginConfig.initOptions.context as unknown as DefaultContextSchema,
+        parentWorkflowId: childPluginConfig.parentWorkflowRuntimeId,
+      })
+    )[0];
+
+    const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(
+      childPluginConfig.parentWorkflowRuntimeId,
+    );
+
+    if (childWorkflow) {
+      const contextToPersist = {
+        [childWorkflow.workflowRuntimeData.id]: {
+          entityId: childWorkflow.workflowRuntimeData.context.entity.id,
+          status: childWorkflow.workflowRuntimeData.status || 'active',
+        },
+      };
+      const parentContext = this.composeContextWithChildResponse(
+        parentWorkflowRuntime.context,
+        childWorkflow.workflowDefinition.id,
+        contextToPersist,
+      );
+
+      await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
+    }
+
+    return childWorkflow;
+  }
   async getWorkflowRuntimeDataByCorrelationId(
     id: string,
     args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
@@ -427,14 +500,78 @@ export class WorkflowService {
       version: true,
       definition: true,
       definitionType: true,
-
       backend: true,
-
       extensions: true,
       persistStates: true,
       submitStates: true,
     };
     return await this.workflowDefinitionRepository.findMany({ ...args, select });
+  }
+
+  async updateDecisionAndSendEvent({
+    id,
+    name,
+    reason,
+  }: {
+    id: string;
+    name: string;
+    reason?: string;
+  }) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
+    // `name` is always `approve` and not `approved` etc.
+    const Status = {
+      approve: 'approved',
+      reject: 'rejected',
+      revision: 'revision',
+    } as const;
+    const status = Status[name as keyof typeof Status];
+    const decision = (() => {
+      if (status === 'approved') {
+        return {
+          revisionReason: null,
+          rejectionReason: null,
+        };
+      }
+
+      if (status === 'rejected') {
+        return {
+          revisionReason: null,
+          rejectionReason: reason,
+        };
+      }
+
+      if (status === 'revision') {
+        return {
+          revisionReason: reason,
+          rejectionReason: null,
+        };
+      }
+
+      throw new BadRequestException(`Invalid decision status: ${status}`);
+    })();
+    const documentsWithDecision = runtimeData?.context?.documents?.map(
+      (document: DefaultContextSchema['documents'][number]) => ({
+        ...document,
+        decision: {
+          ...document?.decision,
+          ...decision,
+          status,
+        },
+      }),
+    );
+    const updatedWorkflow = await this.updateWorkflowRuntimeData(id, {
+      context: {
+        ...runtimeData?.context,
+        documents: documentsWithDecision,
+      },
+    });
+
+    await this.event({
+      id,
+      name,
+    });
+
+    return updatedWorkflow;
   }
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
@@ -495,6 +632,7 @@ export class WorkflowService {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
+    // TODO: Use snapshot.done instead
     const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
     if (
       ['active'].includes(data.status! || runtimeData.status) &&
@@ -716,6 +854,13 @@ export class WorkflowService {
         },
       });
     } else {
+      if (manualReviewWorkflow.state === 'revision') {
+        await this.event({
+          name: 'review',
+          id: manualReviewWorkflow.id,
+        });
+      }
+
       await this.workflowRuntimeDataRepository.updateById(manualReviewWorkflow.id, {
         data: {
           context: {
@@ -776,15 +921,18 @@ export class WorkflowService {
     workflowDefinitionId,
     context,
     config,
+    parentWorkflowId,
   }: {
     workflowDefinitionId: string;
     context: DefaultContextSchema;
     config?: WorkflowConfig;
+    parentWorkflowId?: string;
   }): Promise<RunnableWorkflowData[]> {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
     );
     config = merge(workflowDefinition.config, config);
+    console.log('config', config);
     let validatedConfig: WorkflowConfig;
     try {
       validatedConfig = ConfigSchema.parse(config);
@@ -813,7 +961,7 @@ export class WorkflowService {
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
     if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
-      contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
         data: {
           ...entityConnect,
@@ -826,6 +974,9 @@ export class WorkflowService {
               id: workflowDefinition.id,
             },
           },
+          ...(parentWorkflowId && {
+            parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
+          }),
         },
       });
       newWorkflowCreated = true;
@@ -835,7 +986,7 @@ export class WorkflowService {
         context.documents,
       );
 
-      contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
         existingWorkflowRuntimeData.id,
         {
@@ -868,12 +1019,14 @@ export class WorkflowService {
     ];
   }
 
-  private async __copyFileAndCreate(
+  async copyFileAndCreate(
     context: DefaultContextSchema,
     entityId: TEntityId,
   ): Promise<DefaultContextSchema> {
+    if (!context?.documents?.length) return context;
+
     const documentsWithPersistedImages = await Promise.all(
-      context.documents.map(async document => ({
+      context?.documents?.map(async document => ({
         ...document,
         pages: await this.__persistDocumentPagesFiles(document, entityId),
       })),
@@ -886,7 +1039,7 @@ export class WorkflowService {
     entityId: string,
   ) {
     return await Promise.all(
-      document.pages.map(async documentPage => {
+      document?.pages?.map(async documentPage => {
         const ballerineFileId =
           documentPage.ballerineFileId ||
           (await this.__copyFileToDestinationAndCraeteFile(document, entityId, documentPage));
@@ -1007,28 +1160,33 @@ export class WorkflowService {
     );
   }
 
-  async event({
-    name: type,
-    document,
-    resubmissionReason,
-    id,
-  }: WorkflowEventInput & IObjectWithId) {
+  async event({ name: type, id }: WorkflowEventInput & IObjectWithId) {
     this.logger.log('Workflow event received', { id, type });
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
-    const workflow = await this.workflowDefinitionRepository.findById(
-      runtimeData.workflowDefinitionId,
+    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(id);
+    const workflowDefinition = await this.workflowDefinitionRepository.findById(
+      workflowRuntimeData.workflowDefinitionId,
     );
 
     const service = createWorkflow({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      definition: workflow.definition,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      definitionType: workflow.definitionType,
+      runtimeId: workflowRuntimeData.id,
+      definition: workflowDefinition.definition,
+      definitionType: workflowDefinition.definitionType,
       workflowContext: {
-        machineContext: runtimeData.context,
-        state: runtimeData.state,
+        machineContext: workflowRuntimeData.context,
+        state: workflowRuntimeData.state,
       },
-      extensions: workflow.extensions,
+      extensions: workflowDefinition.extensions,
+      invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
+        const runnableChildWorkflow = await this.persistChildEvent(childPluginConfiguration);
+
+        if (runnableChildWorkflow && childPluginConfiguration.initOptions.event) {
+          // TODO: Review the issue if return child workflow id for parent and not "send event"
+          await this.event({
+            id: runnableChildWorkflow.workflowRuntimeData.id,
+            name: childPluginConfiguration.initOptions.event,
+          });
+        }
+      },
     });
 
     await service.sendEvent({
@@ -1038,59 +1196,187 @@ export class WorkflowService {
     const snapshot = service.getSnapshot();
     const currentState = snapshot.value;
     const context = snapshot.machine.context;
+    // TODO: Refactor to use snapshot.done instead
     const isFinal = snapshot.machine.states[currentState].type === 'final';
+    const entityType = aliasIndividualAsEndUser(context?.entity?.type);
+    const entityId = workflowRuntimeData[`${entityType}Id`];
 
     this.logger.log('Workflow state transition', {
       id: id,
-      from: runtimeData.state,
+      from: workflowRuntimeData.state,
       to: currentState,
     });
-
-    // TODO: Update to work with changes related to revision
-    if (type === 'resubmit' && document) {
-      switch (resubmissionReason) {
-        case ResubmissionReason.BLURRY_IMAGE:
-          await this.workflowRuntimeDataRepository.updateById(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-            (runtimeData as any).context?.parentMachine?.id,
-            {
-              data: {
-                state: 'document_photo',
-                status: 'active',
-                context: {
-                  ...context,
-                  [document]: {
-                    ...context?.[document],
-                    resubmissionReason,
-                  },
-                },
-              },
-            },
-          );
-          break;
-        default:
-          throw new BadRequestException(
-            `Invalid resubmission reason ${resubmissionReason as string}`,
-          );
-      }
-    }
-
-    await this.updateWorkflowRuntimeData(runtimeData.id, {
+    const updatedRuntimeData = await this.updateWorkflowRuntimeData(workflowRuntimeData.id, {
       context,
       state: currentState,
-      status: isFinal ? 'completed' : runtimeData.status,
+      status: isFinal ? 'completed' : workflowRuntimeData.status,
+    });
+
+    if (workflowRuntimeData.parentRuntimeDataId) {
+      await this.persistChildWorkflowToParent(
+        workflowRuntimeData,
+        workflowDefinition,
+        isFinal,
+        currentState,
+      );
+    }
+
+    this.workflowEventEmitter.emit('workflow.state.changed', {
+      entityId,
+      state: updatedRuntimeData.state,
+      correlationId: updatedRuntimeData.correlationId,
+      runtimeData: updatedRuntimeData,
     });
 
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
       return;
     }
 
-    runtimeData.endUserId &&
-      (await this.endUserRepository.updateById(runtimeData.endUserId, {
+    const approvalState = ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState];
+
+    if (!entityType) {
+      throw new BadRequestException(`entity.type is required`);
+    }
+
+    if (!entityId) {
+      throw new BadRequestException(`entity.${entityType}Id is required`);
+    }
+
+    if (entityType === 'endUser') {
+      await this.entityRepository[entityType].updateById(entityId, {
         data: {
-          approvalState: ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState],
+          approvalState,
         },
-      }));
+      });
+    }
+
+    if (entityType === 'business') {
+      await this.entityRepository[entityType].updateById(entityId, {
+        data: {
+          approvalState,
+        },
+      });
+    }
+  }
+
+  async persistChildWorkflowToParent(
+    workflowRuntimeData: WorkflowRuntimeData,
+    workflowDefinition: WorkflowDefinition,
+    isFinal: boolean,
+    childRuntimeState?: string,
+  ) {
+    const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
+      workflowRuntimeData.parentRuntimeDataId,
+      { include: { childWorkflowsRuntimeData: true } },
+    );
+    const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
+      parentWorkflowRuntime.workflowDefinitionId,
+    );
+
+    const callbackTransformation = (
+      parentWorkflowDefinition?.config
+        ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
+    )
+      // @ts-ignore - fix as childCallbackResults[number]
+      ?.find(childCallbackResult => workflowDefinition.id === childCallbackResult.definitionId);
+    const childWorkflowCallback = (callbackTransformation ||
+      workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
+    const childrenOfSameDefinition = (
+      parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>
+    )?.filter(
+      childWorkflow =>
+        childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
+    );
+    const isPersistableState =
+      !!(
+        childRuntimeState &&
+        childWorkflowCallback.persistenceStates &&
+        childWorkflowCallback.persistenceStates.includes(childRuntimeState)
+      ) || isFinal;
+    if (!isPersistableState) return;
+
+    const parentContext = await this.generateParentContextWithInjectedChildContext(
+      childrenOfSameDefinition,
+      childWorkflowCallback.transformers,
+      parentWorkflowRuntime,
+      workflowDefinition,
+      isPersistableState,
+    );
+
+    await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
+
+    if (
+      childWorkflowCallback.deliverEvent &&
+      parentWorkflowRuntime.status !== 'completed' &&
+      isPersistableState
+    ) {
+      await this.event({
+        id: parentWorkflowRuntime.id,
+        name: childWorkflowCallback.deliverEvent,
+      });
+    }
+  }
+
+  private async generateParentContextWithInjectedChildContext(
+    childrenOfSameDefinition: WorkflowRuntimeData[],
+    transformers: ChildWorkflowCallback['transformers'],
+    parentWorkflowRuntime: WorkflowRuntimeData,
+    workflowDefinition: WorkflowDefinition,
+    isPersistableToParent: boolean,
+  ) {
+    if (!isPersistableToParent)
+      return this.composeContextWithChildResponse(
+        parentWorkflowRuntime.context,
+        workflowDefinition.id,
+      );
+
+    const transformerInstance = (transformers || []).map((transformer: SerializableTransformer) =>
+      this.initiateTransformer(transformer),
+    );
+
+    const contextToPersist: Record<string, any> = {};
+
+    for (const childWorkflow of childrenOfSameDefinition) {
+      let childContextToPersist = childWorkflow.context;
+
+      for (const transformer of transformerInstance || []) {
+        childContextToPersist = await transformer.transform(childContextToPersist);
+      }
+      contextToPersist[childWorkflow.id] = {
+        entityId: childWorkflow.context.entity.id,
+        status: childContextToPersist.status,
+        result: childContextToPersist,
+      };
+    }
+
+    const parentContext = this.composeContextWithChildResponse(
+      parentWorkflowRuntime.context,
+      workflowDefinition.id,
+      contextToPersist,
+    );
+
+    return parentContext;
+  }
+
+  private initiateTransformer(transformer: SerializableTransformer): Transformer {
+    if (transformer.transformer === 'jmespath')
+      return new JmespathTransformer(transformer.mapping as string);
+    if (transformer.transformer === 'helper')
+      return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
+
+    throw new Error(`No transformer found for ${transformer.transformer}`);
+  }
+
+  private composeContextWithChildResponse(
+    parentWorkflowContext: any,
+    definitionId: string,
+    contextToPersist?: any,
+  ) {
+    parentWorkflowContext['childWorkflows'] ||= {};
+    parentWorkflowContext['childWorkflows'][definitionId] ||= {};
+
+    parentWorkflowContext['childWorkflows'][definitionId] = contextToPersist;
+    return parentWorkflowContext;
   }
 
   private __fetchFromServiceProviders(document: TDefaultSchemaDocumentPage): {
