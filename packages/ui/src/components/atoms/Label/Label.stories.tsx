@@ -1,4 +1,4 @@
-import { Label } from '@components/atoms/Label/Label';
+import { Label } from './Label';
 
 export default {
   component: Label,

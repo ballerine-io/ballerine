@@ -15,6 +15,11 @@ import { Salt } from '../src/auth/password/password.service';
 import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
+import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
+import { generateParentKybWithKycs } from './workflows/parent-kyb-workflow';
+import { generateKybDefintion } from './workflows';
+import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
+import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
 
 if (require.main === module) {
   dotenv.config();
@@ -91,12 +96,17 @@ async function seed(bcryptSalt: Salt) {
     });
   }
 
-  const manualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
+  const kycManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
+  const kybManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9bbb';
   const manualMachineVersion = 1;
 
   const onboardingMachineKycId = 'COLLECT_DOCS_b0002zpeid7bq9aaa';
   const onboardingMachineKybId = 'COLLECT_DOCS_b0002zpeid7bq9bbb';
   const riskScoreMachineKybId = 'risk-score-improvement-dev';
+
+  // KYB Flows
+  const onboardingMachineId = 'kyb-onboarding';
+  const riskScoreMachineId = 'kyb-risk-score';
 
   const user = await client.endUser.create({
     data: {
@@ -425,40 +435,65 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  // Manual Review
-  await client.workflowDefinition.create({
-    data: {
-      id: manualMachineId,
-      name: 'manual_review',
-      version: manualMachineVersion,
-      definitionType: 'statechart-json',
-      definition: {
-        id: 'Manual Review',
-        initial: 'review',
-        states: {
-          review: {
-            on: {
-              approve: {
-                target: 'approved',
-              },
-              reject: {
-                target: 'rejected',
-              },
-              resubmit: {
-                target: 'review',
-              },
+  const baseManualReviewDefinition = {
+    name: 'manual_review',
+    version: manualMachineVersion,
+    definitionType: 'statechart-json',
+    definition: {
+      id: 'Manual Review',
+      initial: 'review',
+      states: {
+        review: {
+          on: {
+            approve: {
+              target: 'approved',
+            },
+            reject: {
+              target: 'rejected',
+            },
+            revision: {
+              target: 'revision',
             },
           },
-          approved: {
-            type: 'final',
-          },
-          rejected: {
-            type: 'final',
+        },
+        approved: {
+          type: 'final',
+        },
+        rejected: {
+          type: 'final',
+        },
+        revision: {
+          on: {
+            review: {
+              target: 'review',
+            },
           },
         },
       },
-      persistStates: [],
-      submitStates: [],
+    },
+    persistStates: [],
+    submitStates: [],
+  } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
+
+  // KYC Manual Review (workflowLevelResolution false)
+  await client.workflowDefinition.create({
+    data: {
+      ...baseManualReviewDefinition,
+      id: kycManualMachineId,
+      config: {
+        workflowLevelResolution: false,
+      },
+    },
+  });
+
+  // KYB Manual Review (workflowLevelResolution true)
+  await client.workflowDefinition.create({
+    data: {
+      ...baseManualReviewDefinition,
+      id: kybManualMachineId,
+      config: {
+        workflowLevelResolution: true,
+      },
     },
   });
 
@@ -466,7 +501,7 @@ async function seed(bcryptSalt: Salt) {
   await client.workflowDefinition.create({
     data: {
       id: onboardingMachineKycId, // should be auto generated normally
-      reviewMachineId: manualMachineId,
+      reviewMachineId: kycManualMachineId,
       name: 'kyc',
       version: 1,
       definitionType: 'statechart-json',
@@ -546,7 +581,7 @@ async function seed(bcryptSalt: Salt) {
   await client.workflowDefinition.create({
     data: {
       id: onboardingMachineKybId, // should be auto generated normally
-      reviewMachineId: manualMachineId,
+      reviewMachineId: kybManualMachineId,
       name: 'kyb',
       version: 1,
       definitionType: 'statechart-json',
@@ -641,12 +676,14 @@ async function seed(bcryptSalt: Salt) {
       assigneeId: true,
       createdAt: true,
       context: true,
+      state: true,
       workflowDefinition: {
         select: {
           id: true,
           name: true,
           contextSchema: true,
           config: true,
+          definition: true,
         },
       },
       business: {
@@ -694,12 +731,14 @@ async function seed(bcryptSalt: Salt) {
       assigneeId: true,
       context: true,
       createdAt: true,
+      state: true,
       workflowDefinition: {
         select: {
           id: true,
           name: true,
           contextSchema: true,
           config: true,
+          definition: true,
         },
       },
       endUser: {
@@ -729,8 +768,114 @@ async function seed(bcryptSalt: Salt) {
       },
     },
     where: {
-      workflowDefinitionId: manualMachineId,
+      workflowDefinitionId: kycManualMachineId,
       endUserId: { not: null },
+    },
+  });
+
+  // KYB Onboarding
+  await client.workflowDefinition.create({
+    data: {
+      id: onboardingMachineId,
+      name: 'kyb_onboarding',
+      version: 1,
+      definitionType: 'statechart-json',
+      config: {
+        workflowLevelResolution: true,
+        completedWhenTasksResolved: false,
+        allowMultipleActiveWorkflows: false,
+      },
+      definition: {
+        id: 'kyb_onboarding',
+        predictableActionArguments: true,
+        initial: 'review',
+
+        context: {
+          documents: [],
+        },
+
+        states: {
+          review: {
+            on: {
+              approve: {
+                target: 'approved',
+              },
+              reject: {
+                target: 'rejected',
+              },
+              revision: {
+                target: 'revision',
+              },
+            },
+          },
+          approved: {
+            type: 'final',
+          },
+          rejected: {
+            type: 'final',
+          },
+          revision: {
+            on: {
+              review: {
+                target: 'review',
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // KYB Risk Score Improvement
+  await client.workflowDefinition.create({
+    data: {
+      id: riskScoreMachineId,
+      name: 'kyb_risk_score',
+      version: 1,
+      definitionType: 'statechart-json',
+      config: {
+        workflowLevelResolution: false,
+        completedWhenTasksResolved: true,
+        allowMultipleActiveWorkflows: true,
+      },
+      definition: {
+        id: 'kyb_risk_score',
+        predictableActionArguments: true,
+        initial: 'review',
+
+        context: {
+          documents: [],
+        },
+
+        states: {
+          review: {
+            on: {
+              approve: {
+                target: 'approved',
+              },
+              reject: {
+                target: 'rejected',
+              },
+              revision: {
+                target: 'revision',
+              },
+            },
+          },
+          approved: {
+            type: 'final',
+          },
+          rejected: {
+            type: 'final',
+          },
+          revision: {
+            on: {
+              review: {
+                target: 'review',
+              },
+            },
+          },
+        },
+      },
     },
   });
 
@@ -741,12 +886,14 @@ async function seed(bcryptSalt: Salt) {
       assigneeId: true,
       createdAt: true,
       context: true,
+      state: true,
       workflowDefinition: {
         select: {
           id: true,
           name: true,
           contextSchema: true,
           config: true,
+          definition: true,
         },
       },
       endUser: {
@@ -788,12 +935,14 @@ async function seed(bcryptSalt: Salt) {
       assigneeId: true,
       createdAt: true,
       context: true,
+      state: true,
       workflowDefinition: {
         select: {
           id: true,
           name: true,
           contextSchema: true,
           config: true,
+          definition: true,
         },
       },
       business: {
@@ -834,19 +983,21 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  await createFilter('KYB', 'businesses', {
+  await createFilter("KYB with UBO's", 'businesses', {
     select: {
       id: true,
       status: true,
       assigneeId: true,
       createdAt: true,
       context: true,
+      state: true,
       workflowDefinition: {
         select: {
           id: true,
           name: true,
           contextSchema: true,
           config: true,
+          definition: true,
         },
       },
       business: {
@@ -880,9 +1031,10 @@ async function seed(bcryptSalt: Salt) {
           lastName: true,
         },
       },
+      childWorkflowsRuntimeData: true,
     },
     where: {
-      workflowDefinitionId: manualMachineId,
+      workflowDefinitionId: 'kyb_parent_kyc_session_example',
       businessId: { not: null },
     },
   });
@@ -894,7 +1046,7 @@ async function seed(bcryptSalt: Salt) {
         data: generateEndUser({
           id,
           workflow: {
-            workflowDefinitionId: manualMachineId,
+            workflowDefinitionId: kycManualMachineId,
             workflowDefinitionVersion: manualMachineVersion,
             context: await createMockEndUserContextData(id, index + 1),
           },
@@ -961,6 +1113,10 @@ async function seed(bcryptSalt: Salt) {
 
   console.info('Seeding database with custom seed...');
   customSeed();
-
+  await generateKybDefintion(client);
+  await generateKycSessionDefinition(client);
+  await generateParentKybWithSessionKycs(client);
+  await generateKycForE2eTest(client);
+  await generateParentKybWithKycs(client);
   console.info('Seeded database successfully');
 }

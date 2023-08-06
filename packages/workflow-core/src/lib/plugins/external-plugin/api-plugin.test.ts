@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { WorkflowRunner } from '../../workflow-runner';
-import { IApiPluginParams } from './api-plugin';
 import { WorkflowRunnerArgs } from '../../types';
+import { ISerializableHttpPluginParams } from './types';
 
 function createWorkflowRunner(
   definition: WorkflowRunnerArgs['definition'],
-  apiPluginsSchemas: IApiPluginParams[],
+  apiPluginsSchemas: Array<ISerializableHttpPluginParams>,
 ) {
   return new WorkflowRunner({
     definition,
@@ -41,35 +41,44 @@ describe('workflow-runner', () => {
           type: 'final',
         },
       },
-    };
+    } satisfies ConstructorParameters<typeof WorkflowRunner>[0]['definition'];
 
     const apiPluginsSchemas = [
       {
         name: 'ballerineEnrichment',
         url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.json',
-        method: 'GET',
+        method: 'GET' as const,
         stateNames: ['checkBusinessScore'],
         successAction: 'API_CALL_SUCCESS',
         errorAction: 'API_CALL_FAILURE',
         request: {
-          transform: {
-            transformer: 'jmespath',
-            mapping: '{data: entity.id}',
-          },
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '{data: entity.id}',
+            },
+          ],
         },
         response: {
-          transform: { transformer: 'jmespath', mapping: '{result: @}' },
+          transform: [{ transformer: 'jmespath', mapping: '{result: @}' }],
         },
       },
     ];
 
     describe('when api plugin tranforms and makes a request to an external api', () => {
       const workflow = createWorkflowRunner(definition, apiPluginsSchemas);
-      it('it transitions to successAction and persist response to context', async () => {
+      it('transitions to successAction and persist response to context', async () => {
+        // @ts-expect-error - `sendEvent` is not supposed to receive a string
         await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
         expect(workflow.state).toEqual('checkBusinessScoreSuccess');
-        expect(workflow.context.pluginsOutput).toEqual({
+        expect(
+          (
+            workflow.context as {
+              pluginsOutput: Record<string, unknown>;
+            }
+          ).pluginsOutput,
+        ).toEqual({
           ballerineEnrichment: {
             result: {
               companyInfo: {
@@ -91,16 +100,23 @@ describe('workflow-runner', () => {
 
     describe('when api invalid jmespath transformation of request', () => {
       const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
-      apiPluginsSchemasCopy[0].request.transform.mapping = 'dsa: .unknwonvalue.id}';
+      apiPluginsSchemasCopy[0]!.request.transform[0].mapping = 'dsa: .unknwonvalue.id}';
       const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
-      it('it returns error for transformation and transition to testManually', async () => {
+      it('returns error for transformation and transition to testManually', async () => {
+        // @ts-expect-error - `sendEvent` is not supposed to receive a string
         await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
         expect(workflow.state).toEqual('testManually');
-        expect(workflow.context.pluginsOutput).toEqual({
+        expect(
+          (
+            workflow.context as {
+              pluginsOutput: Record<string, unknown>;
+            }
+          ).pluginsOutput,
+        ).toEqual({
           ballerineEnrichment: {
             error:
-              'Error transforming data: Unexpected token type: Colon, value: : for transformer mapping: dsa: .unknwonvalue.id}',
+              'Error transforming data: Unexpected token type: Colon, value: : for transformer mapping: "dsa: .unknwonvalue.id}"',
           },
         });
       });
@@ -109,7 +125,8 @@ describe('workflow-runner', () => {
     describe('when api plugin has schema', () => {
       describe('when api request invalid for schema', () => {
         const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
-        apiPluginsSchemasCopy[0].request.schema = {
+        // @ts-expect-error - `schema` type is wrong
+        apiPluginsSchemasCopy[0]!.request.schema = {
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',
           properties: {
@@ -124,14 +141,21 @@ describe('workflow-runner', () => {
         };
         const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
 
-        it('it returns error for transformation and transition to testManually', async () => {
+        it('returns error for transformation and transition to testManually', async () => {
+          // @ts-expect-error - `sendEvent` is not supposed to receive a string
           await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
           expect(workflow.state).toEqual('testManually');
-          expect(workflow.context.pluginsOutput).toEqual({
+          expect(
+            (
+              workflow.context as {
+                pluginsOutput: Record<string, unknown>;
+              }
+            ).pluginsOutput,
+          ).toEqual({
             ballerineEnrichment: {
               error:
-                "must have required property 'business_name' | must have required property 'registration_number'",
+                " - must have required property 'business_name' |  - must have required property 'registration_number'",
             },
           });
         });
@@ -139,7 +163,9 @@ describe('workflow-runner', () => {
 
       describe('when api request valid schema', () => {
         const apiPluginsSchemasCopy = structuredClone(apiPluginsSchemas);
-        apiPluginsSchemasCopy[0].request.schema = {
+
+        // @ts-expect-error - `schema` type is wrong
+        apiPluginsSchemasCopy[0]!.request.schema = {
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',
           properties: {
@@ -151,13 +177,22 @@ describe('workflow-runner', () => {
         };
         const workflow = createWorkflowRunner(definition, apiPluginsSchemasCopy);
 
-        it('it transitions to successAction and persist success (response) to context', async () => {
+        it('transitions to successAction and persist success (response) to context', async () => {
+          // @ts-expect-error - `sendEvent` is not supposed to receive a string
           await workflow.sendEvent('CHECK_BUSINESS_SCORE');
 
           expect(workflow.state).toEqual('checkBusinessScoreSuccess');
-          expect(Object.keys(workflow.context.pluginsOutput.ballerineEnrichment)[0]).toEqual(
-            'result',
-          );
+          expect(
+            Object.keys(
+              (
+                workflow.context as {
+                  pluginsOutput: {
+                    ballerineEnrichment: Record<string, unknown>;
+                  };
+                }
+              ).pluginsOutput.ballerineEnrichment,
+            )[0],
+          ).toEqual('result');
         });
       });
     });

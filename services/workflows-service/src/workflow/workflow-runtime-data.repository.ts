@@ -5,7 +5,7 @@ import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { TDocument } from '@ballerine/common';
-import { pickTasksStatus } from '@/workflow/utils/pick-tasks-status';
+import { computeTasksStatus } from '@/workflow/utils/compute-tasks-status';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
@@ -16,7 +16,7 @@ export class WorkflowRuntimeDataRepository {
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
   ): Promise<WorkflowRuntimeData> {
-    const tasksStatus = pickTasksStatus(
+    const tasksStatus = computeTasksStatus(
       (
         args?.data?.context as {
           documents: Array<TDocument>;
@@ -60,7 +60,7 @@ export class WorkflowRuntimeDataRepository {
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>,
   ): Promise<WorkflowRuntimeData> {
-    const tasksStatus = pickTasksStatus(
+    const tasksStatus = computeTasksStatus(
       (
         args?.data?.context as {
           documents: Array<TDocument>;
@@ -94,7 +94,7 @@ export class WorkflowRuntimeDataRepository {
 
     const updatedWorkflowRuntimeData = await this.findById(id);
 
-    const tasksStatus = pickTasksStatus(
+    const tasksStatus = computeTasksStatus(
       (
         updatedWorkflowRuntimeData?.context as {
           documents: Array<TDocument>;

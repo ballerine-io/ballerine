@@ -10,7 +10,7 @@ import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.in
 // @ts-ignore - there is an issue with helemet types
 import helmet from 'helmet';
 import { env } from '@/env';
-import { NextFunction, Request, Response } from 'express';
+import { json, NextFunction, Request, Response, urlencoded } from 'express';
 import { ClsMiddleware } from 'nestjs-cls';
 
 // This line is used to improve Sentry's stack traces
@@ -19,13 +19,20 @@ global.__rootdir__ = __dirname || process.cwd();
 
 const corsOrigins =
   env.NODE_ENV === 'production'
-    ? [env.BACKOFFICE_CORS_ORIGIN, env.WORKFLOW_DASHBOARD_CORS_ORIGIN, /\.ballerine\.app$/]
+    ? [
+        env.BACKOFFICE_CORS_ORIGIN,
+        env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
+        env.KYB_EXAMPLE_CORS_ORIGIN,
+        /\.ballerine\.app$/,
+      ]
     : [
         env.BACKOFFICE_CORS_ORIGIN,
         env.HEADLESS_EXAMPLE_CORS_ORIGIN,
         env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
+        env.KYB_EXAMPLE_CORS_ORIGIN,
         /\.ballerine\.dev$/,
         /\.ballerine\.app$/,
+        /\.+$/,
       ];
 
 async function main() {
@@ -40,13 +47,15 @@ async function main() {
   app.use(new ClsMiddleware({}).use);
 
   app.use(helmet());
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ limit: '50mb' }));
   app.use(
     cookieSession({
       name: 'session',
       keys: [env.SESSION_SECRET],
-      httpOnly: true,
+      httpOnly: env.NODE_ENV === 'production' ? true : false,
       secure: false,
-      sameSite: 'strict',
+      sameSite: env.NODE_ENV === 'production' ? 'strict' : false,
       maxAge: 1000 * 60 * 60 * 1, // 1 hour(s),
     }),
   );
