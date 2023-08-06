@@ -103,3 +103,5 @@ export const companyInformationSchema: RJSFSchema = {
     },
   },
 };
+
+console.log('schema', companyInformationSchema);

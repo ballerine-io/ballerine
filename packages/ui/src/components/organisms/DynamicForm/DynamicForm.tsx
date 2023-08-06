@@ -19,6 +19,7 @@ interface Props<TFormData> {
   className?: string;
   formData?: object;
   warnings?: InputsWarnings;
+  disabled?: boolean;
   onChange?: (formData: TFormData) => void;
   onSubmit: (formData: TFormData) => void;
 }
@@ -29,6 +30,7 @@ export function DynamicForm<TFormData extends object>({
   className,
   formData,
   warnings,
+  disabled,
   onChange,
   onSubmit,
 }: Props<TFormData>) {
@@ -68,6 +70,7 @@ export function DynamicForm<TFormData extends object>({
         autoComplete="on"
         templates={templates}
         showErrorList={false}
+        disabled={disabled}
       />
     </Provider>
   );

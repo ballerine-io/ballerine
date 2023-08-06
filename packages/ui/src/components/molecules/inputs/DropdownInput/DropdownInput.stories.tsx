@@ -59,3 +59,7 @@ const SearchableComponent = () => {
 export const Searchable = {
   render: SearchableComponent,
 };
+
+export const Disabled = {
+  render: () => <DropdownInput name="disabled-input" options={[]} disabled onChange={() => {}} />,
+};

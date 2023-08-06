@@ -15,5 +15,6 @@ export interface DropdownInputProps {
   options: DropdownOption[];
   notFoundText?: string;
   searchable?: boolean;
+  disabled?: boolean;
   onChange: (value: string, inputName: string) => void;
 }

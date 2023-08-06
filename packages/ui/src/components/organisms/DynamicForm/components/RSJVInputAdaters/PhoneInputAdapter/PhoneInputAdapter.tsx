@@ -1,8 +1,13 @@
 import { PhoneNumberInput } from '@components/atoms';
 import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 
-export const PhoneInputAdapter: RJSVInputAdapter = ({ formData, onChange }) => {
+export const PhoneInputAdapter: RJSVInputAdapter = ({ formData, disabled, onChange }) => {
   return (
-    <PhoneNumberInput country="us" value={formData} onChange={value => void onChange(value)} />
+    <PhoneNumberInput
+      country="us"
+      value={formData}
+      disabled={disabled}
+      onChange={value => void onChange(value)}
+    />
   );
 };

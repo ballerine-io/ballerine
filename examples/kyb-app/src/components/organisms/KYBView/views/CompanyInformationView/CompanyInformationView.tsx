@@ -16,6 +16,7 @@ export const CompanyInformationView = () => {
         schema={companyInformationSchema}
         uiSchema={companyInformationUISchema}
         onSubmit={values => void saveAndPerformTransition(values)}
+        onChange={values => console.log('values', values)}
       />
     </AppShell.FormContainer>
   );

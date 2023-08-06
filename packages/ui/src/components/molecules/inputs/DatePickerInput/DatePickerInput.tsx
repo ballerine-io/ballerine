@@ -78,7 +78,7 @@ export const DatePickerInput = ({
                 InputProps={{
                   ...params.InputProps,
                   classes: {
-                    root: 'border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 px-3 py-0',
+                    root: 'shadow-none border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 px-3 py-0',
                     focused: 'border-input ring-ring ring-1',
                   },
                   disableUnderline: true,

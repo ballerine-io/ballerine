@@ -10,6 +10,7 @@ export const FileInputAdapter: RJSVInputAdapter = ({
   uiSchema,
   schema,
   formData,
+  disabled,
   onChange,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -68,6 +69,8 @@ export const FileInputAdapter: RJSVInputAdapter = ({
         placeholder={uiSchema['ui:placeholder']}
         onChange={e => void handleChange(e)}
         accept="image/jpeg, image/png, application/pdf, .docx"
+        className="line-1 flex items-center"
+        disabled={disabled}
       />
     </div>
   );

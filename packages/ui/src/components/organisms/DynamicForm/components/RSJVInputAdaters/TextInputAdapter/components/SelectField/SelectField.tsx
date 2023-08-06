@@ -3,7 +3,14 @@ import { DropdownInput, DropdownOption } from '@components/molecules';
 import { FieldProps } from '@rjsf/utils';
 import { useMemo } from 'react';
 
-export const SelectField = ({ id, onChange, schema, formData, uiSchema }: FieldProps<string>) => {
+export const SelectField = ({
+  id,
+  onChange,
+  schema,
+  formData,
+  uiSchema,
+  disabled,
+}: FieldProps<string>) => {
   const options = useMemo((): DropdownOption[] => {
     if (!Array.isArray(schema.oneOf)) return [];
 
@@ -22,6 +29,7 @@ export const SelectField = ({ id, onChange, schema, formData, uiSchema }: FieldP
       name={id}
       options={options}
       value={formData}
+      disabled={disabled}
       onChange={onChange}
     />
   );

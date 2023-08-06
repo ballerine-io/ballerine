@@ -2,7 +2,14 @@ import { Input, TextArea } from '@components/atoms';
 import { FieldProps } from '@rjsf/utils';
 import { useCallback } from 'react';
 
-export const TextField = ({ id, name, uiSchema, formData, onChange }: FieldProps<string>) => {
+export const TextField = ({
+  id,
+  name,
+  uiSchema,
+  formData,
+  disabled,
+  onChange,
+}: FieldProps<string>) => {
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       onChange(event.target.value);
@@ -15,6 +22,7 @@ export const TextField = ({ id, name, uiSchema, formData, onChange }: FieldProps
     name,
     value: formData || '',
     placeholder: uiSchema['ui:placeholder'],
+    disabled,
     onChange: handleChange,
   };
 

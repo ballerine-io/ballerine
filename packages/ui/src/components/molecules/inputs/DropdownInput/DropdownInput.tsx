@@ -20,9 +20,10 @@ export const DropdownInput = ({
   name,
   options,
   value,
-  placeholdersParams,
+  placeholdersParams = {},
   notFoundText,
   searchable = false,
+  disabled,
   onChange,
 }: DropdownInputProps) => {
   const { placeholder = '', searchPlaceholder = '' } = placeholdersParams;
@@ -40,9 +41,10 @@ export const DropdownInput = ({
           variant="outline"
           role="combobox"
           className={clsx(
-            'flex w-full flex-nowrap bg-white',
+            'flex w-full flex-nowrap bg-white px-2',
             !selectedOption && 'text-muted-foreground',
           )}
+          disabled={disabled}
         >
           <span className="flex-1 text-left">
             {selectedOption ? selectedOption.label : placeholder}

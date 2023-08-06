@@ -1,8 +1,8 @@
 import isoCountries from 'i18n-iso-countries';
+import locale from 'i18n-iso-countries/langs/en.json';
 
-const LOCALE_LANG = 'en';
-
-const isoCountriesRecord = isoCountries.getNames(LOCALE_LANG, { select: 'official' });
+isoCountries.registerLocale(locale);
+const isoCountriesRecord = isoCountries.getNames('en', { select: 'official' });
 
 export interface ICountry {
   fullName: string;
