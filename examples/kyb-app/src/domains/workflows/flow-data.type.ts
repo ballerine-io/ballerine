@@ -40,7 +40,7 @@ export interface WorkflowFlowData extends ViewsData {
   };
   flowData: {
     personal: PersonalInformationContext;
-    company: CompanyInformationContext;
+    companyInformation: CompanyInformationContext;
     headquarters: HeadquartersContext;
     companyActivity: CompanyActivityConext;
     bank: BankInformationContext;

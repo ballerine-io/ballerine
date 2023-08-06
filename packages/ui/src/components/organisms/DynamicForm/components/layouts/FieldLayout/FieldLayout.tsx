@@ -20,7 +20,9 @@ export const FieldLayout = ({
     <div className="flex flex-col gap-3 py-1">
       {isLabelEnabled ? <Label htmlFor={id}>{label}</Label> : null}
       {children}
-      {rawErrors ? <ErrorsList errors={rawErrors} className="capitalize" /> : null}
+      {rawErrors ? (
+        <ErrorsList errors={Array.from(new Set(rawErrors))} className="capitalize" />
+      ) : null}
       {fieldWarnings ? (
         <ErrorsList
           errors={Array.isArray(fieldWarnings) ? fieldWarnings : [fieldWarnings]}

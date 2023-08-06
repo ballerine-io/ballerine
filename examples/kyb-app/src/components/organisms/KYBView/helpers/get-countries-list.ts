@@ -1,5 +1,6 @@
 import isoCountries from 'i18n-iso-countries';
 import locale from 'i18n-iso-countries/langs/en.json';
+import { State } from 'country-state-city';
 
 isoCountries.registerLocale(locale);
 const isoCountriesRecord = isoCountries.getNames('en', { select: 'official' });
@@ -11,3 +12,7 @@ export interface ICountry {
 
 export const getCountriesList = (): ICountry[] =>
   Object.entries(isoCountriesRecord).map(([isoCode, fullName]) => ({ isoCode, fullName }));
+
+export const getCountryStates = (countryCode: string) => {
+  return State.getStatesOfCountry(countryCode.toUpperCase());
+};

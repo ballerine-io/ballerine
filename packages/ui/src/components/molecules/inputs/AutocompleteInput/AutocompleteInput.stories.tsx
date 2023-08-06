@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AutocompleteInput, AutocompleteOption } from './AutocompleteInput';
 
 export default {
@@ -19,4 +20,20 @@ const storyOptions: AutocompleteOption[] = [
 
 export const Default = {
   render: () => <AutocompleteInput options={storyOptions} onChange={() => {}} />,
+};
+
+const ControlledAutocomplete = () => {
+  const [value, setValue] = useState('');
+
+  return (
+    <AutocompleteInput
+      options={storyOptions}
+      value={value}
+      onChange={event => setValue(event.target.value)}
+    />
+  );
+};
+
+export const Controlled = {
+  render: ControlledAutocomplete,
 };

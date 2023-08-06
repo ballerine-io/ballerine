@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/kyb-app",
   "private": true,
-  "version": "0.0.12",
+  "version": "0.0.13",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -19,6 +19,7 @@
     "@tanstack/react-query": "^4.29.25",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
+    "country-state-city": "^3.1.4",
     "form-data-encoder": "^3.0.0",
     "i18n-iso-countries": "^7.6.0",
     "ky": "^0.33.3",
@@ -27,6 +28,7 @@
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "use-debounce": "^9.0.4",
     "uuid": "^9.0.0",
     "zod": "^3.21.4"
   },

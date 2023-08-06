@@ -37,7 +37,7 @@ export class CompaniesService {
 
       const companyInformation = plainToClass(CompanyInformationModel, {
         name: result.name,
-        companyNumber: result.companyType,
+        companyNumber: result.companyNumber,
         companyType: result.companyType,
         jurisdictionCode: result.jurisdictionCode,
         incorporationDate: result.incorporationDate,

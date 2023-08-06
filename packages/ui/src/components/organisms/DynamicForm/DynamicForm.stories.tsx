@@ -139,6 +139,10 @@ const complexFormScheme: RJSFSchema = {
         },
       ],
     },
+    favoriteFruit: {
+      type: 'string',
+      title: 'Favorite Fruit',
+    },
     childrens: {
       title: 'Childrens',
       type: 'array',
@@ -183,6 +187,22 @@ const complexFormUISchema = {
   },
   phoneNumber: {
     'ui:field': 'PhoneInput',
+  },
+  favoriteFruit: {
+    'ui:field': 'AutocompleteInput',
+    'ui:label': true,
+    options: [
+      { title: 'Apple', const: 'apple' },
+      { title: 'Banana', const: 'banana' },
+      { title: 'Cherry', const: 'cherry' },
+      { title: 'Orange', const: 'orange' },
+      { title: 'Grapes', const: 'grapes' },
+      { title: 'Mango', const: 'mango' },
+      { title: 'Pineapple', const: 'pineapple' },
+      { title: 'Strawberry', const: 'strawberry' },
+      { title: 'Watermelon', const: 'watermelon' },
+      { title: 'Kiwi', const: 'kiwi' },
+    ],
   },
   childrens: {
     addText: 'Add Children',
@@ -255,6 +275,10 @@ const disabledFormSchema: RJSFSchema = {
         },
       ],
     },
+    favoriteFruit: {
+      type: 'string',
+      title: 'Favorite Fruit',
+    },
     childrens: {
       title: 'Childrens',
       type: 'array',
@@ -299,6 +323,10 @@ const disabledFormSchemaUISchema = {
   },
   phoneNumber: {
     'ui:field': 'PhoneInput',
+  },
+  favoriteFruit: {
+    'ui:field': 'AutocompleteInput',
+    'ui:label': true,
   },
   childrens: {
     addText: 'Add Children',

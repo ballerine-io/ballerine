@@ -11,14 +11,14 @@ export const defaultFlowData: WorkflowFlowData = {
       phone: '',
       companyName: '',
     },
-    company: {
+    companyInformation: {
       registrationNumber: '',
-      country: '',
+      companyCountry: '',
+      companyName: '',
+      companyType: '',
       state: '',
       vat: '',
       registrationDate: '',
-      companyName: '',
-      companyType: '',
     },
     headquarters: {
       address: '',

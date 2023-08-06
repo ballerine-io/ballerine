@@ -1,5 +1,12 @@
 # @ballerine/ui
 
+## 0.2.3
+
+### Patch Changes
+
+- Added hanlding of disabled state to inputs & css fixes
+- c06f2341: added DynamicForm & TextArea & css fixes
+
 ## 0.2.2
 
 ### Patch Changes
