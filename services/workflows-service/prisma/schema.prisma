@@ -43,12 +43,12 @@ enum ApprovalState {
 }
 
 model EndUser {
-  id String @id @default(cuid())
+  id              String  @id @default(cuid())
   isContactPerson Boolean @default(false)
 
   correlationId String? @unique @db.VarChar
 
-  endUserType   String? @default("individual") // Add userType: can be 'EndUser', 'CompanyContact', 'Stakeholder'
+  endUserType   String?       @default("individual") // Add userType: can be 'EndUser', 'CompanyContact', 'Stakeholder'
   approvalState ApprovalState @default(NEW)
   stateReason   String?       @db.VarChar
 
@@ -90,6 +90,7 @@ model Business {
   id            String  @id @default(cuid()) // Unique identifier for the business entity
   correlationId String? @unique @db.VarChar
 
+  businessType            String?       @default("default")
   createdAt               DateTime      @default(now()) // Timestamp for when the business entity was created
   updatedAt               DateTime      @updatedAt // Timestamp for when the business entity was last updated
   companyName             String // Official registered name of the business entity
@@ -111,13 +112,14 @@ model Business {
   documents               Json? // Collection of documents required for the KYB process, e.g., registration documents, financial statements
   avatarUrl               String?
   additionalInfo          Json?
-  bankInformation        Json?
+  bankInformation         Json?
   approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
 
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
+  @@index([businessType])
   @@index([companyName])
   @@index([approvalState])
   @@index([correlationId])
