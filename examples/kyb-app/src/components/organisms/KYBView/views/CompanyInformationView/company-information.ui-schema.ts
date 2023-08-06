@@ -8,6 +8,7 @@ export const companyInformationUISchema: UiSchema = {
   },
   registrationNumber: {
     'ui:placeholder': 'CRN12345678',
+    'ui:disabled': true,
   },
   companyCountry: {
     'ui:placeholder': 'United Kingdom',
@@ -23,5 +24,9 @@ export const companyInformationUISchema: UiSchema = {
   },
   establishmentDate: {
     'ui:field': 'DateInput',
+    'ui:label': true,
+  },
+  state: {
+    'ui:disabled': true,
   },
 };

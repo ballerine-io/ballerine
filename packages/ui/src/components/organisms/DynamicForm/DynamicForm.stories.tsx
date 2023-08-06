@@ -205,3 +205,124 @@ export const ComplexForm = {
     <DynamicForm schema={complexFormScheme} uiSchema={complexFormUISchema} onSubmit={() => {}} />
   ),
 };
+
+const disabledFormSchema: RJSFSchema = {
+  type: 'object',
+  properties: {
+    firstName: {
+      type: 'string',
+      title: 'First Name',
+    },
+    lastName: {
+      type: 'string',
+      title: 'Last Name',
+    },
+    birthDate: {
+      type: 'string',
+      title: 'Date of Birth',
+    },
+    passportPhoto: {
+      type: 'string',
+      title: 'Passport photo',
+    },
+    phoneNumber: {
+      type: 'string',
+      title: 'Phone Number',
+    },
+    country: {
+      type: 'string',
+      title: 'Country',
+      oneOf: [
+        {
+          title: 'Bhutan',
+          const: 'bhutan',
+        },
+        {
+          title: 'Jamaica',
+          const: 'jamaica',
+        },
+        {
+          title: 'Estonia',
+          const: 'estonia',
+        },
+        {
+          title: 'Senegal',
+          const: 'senegal',
+        },
+        {
+          title: 'Fiji',
+          const: 'fiji',
+        },
+      ],
+    },
+    childrens: {
+      title: 'Childrens',
+      type: 'array',
+      items: {
+        type: 'object',
+        title: 'Children',
+        properties: {
+          name: {
+            type: 'string',
+            title: 'First Name',
+          },
+          lastName: {
+            type: 'string',
+            title: 'Last Name',
+          },
+          birthDate: {
+            type: 'string',
+            title: 'Birth Date',
+          },
+          birthCertificate: {
+            type: 'string',
+            title: 'Birth Certificate',
+          },
+        },
+      },
+    },
+  },
+};
+
+const disabledFormSchemaUISchema = {
+  firstName: {
+    'ui:placeholder': 'John',
+  },
+  lastName: {
+    'ui:placeholder': 'Doe',
+  },
+  birthDate: {
+    'ui:field': 'DateInput',
+  },
+  passportPhoto: {
+    'ui:field': 'FileInput',
+  },
+  phoneNumber: {
+    'ui:field': 'PhoneInput',
+  },
+  childrens: {
+    addText: 'Add Children',
+    deleteText: 'Remove Children',
+
+    items: {
+      titleClassName: 'text-sm',
+      birthDate: {
+        'ui:field': 'DateInput',
+      },
+      birthCertificate: {
+        'ui:field': 'FileInput',
+      },
+    },
+  },
+};
+
+export const DisabledForm = {
+  render: () => (
+    <DynamicForm
+      schema={disabledFormSchema}
+      uiSchema={disabledFormSchemaUISchema}
+      onSubmit={() => {}}
+      disabled
+    />
+  ),
+};
