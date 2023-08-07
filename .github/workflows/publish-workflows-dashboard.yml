@@ -69,7 +69,7 @@ jobs:
             type=raw,value=${{ steps.get_version.outputs.version }}-test
 
       - name: Extract metadata (tags, labels) for prod Docker
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/prod'
         id: prodmeta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
@@ -98,7 +98,7 @@ jobs:
           labels: ${{ steps.testmeta.outputs.labels }}
 
       - name: Build and push Docker image for Prod Branch
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/prod'
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: apps/workflows-dashboard
