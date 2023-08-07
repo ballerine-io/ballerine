@@ -1,5 +1,11 @@
 # @ballerine/headless-example
 
+## 0.0.12
+
+### Patch Changes
+
+- New Build
+
 ## 0.0.11
 
 ### Patch Changes
