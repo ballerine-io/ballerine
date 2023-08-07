@@ -4,7 +4,6 @@ import { RJSFSchema } from '@rjsf/utils';
 export const companyInformationSchema: RJSFSchema = {
   type: 'object',
   title: 'Company Information',
-  required: ['companyType'],
   properties: {
     registrationNumber: {
       title: 'Company Registration Number',
@@ -39,4 +38,5 @@ export const companyInformationSchema: RJSFSchema = {
       type: 'string',
     },
   },
+  required: ['registrationNumber', 'companyType', 'state', 'companyName', 'registrationDate'],
 };

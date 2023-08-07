@@ -11,10 +11,12 @@ export const formSchema: RJSFSchema = {
         firstName: {
           title: 'Name',
           type: 'string',
+          minLength: 1,
         },
         lastName: {
           title: '',
           type: 'string',
+          minLength: 1,
         },
       },
       required: ['firstName', 'lastName'],
@@ -22,6 +24,7 @@ export const formSchema: RJSFSchema = {
     title: {
       title: 'Title',
       type: 'string',
+      minLength: 1,
     },
     email: {
       type: 'string',
@@ -36,6 +39,7 @@ export const formSchema: RJSFSchema = {
     phone: {
       type: 'string',
       title: 'Phone Number',
+      minLength: 1,
     },
     companyCheck: {
       title: 'dfrd',

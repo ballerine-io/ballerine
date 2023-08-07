@@ -3,7 +3,11 @@ import { companyInformationSchema } from '@app/components/organisms/KYBView/view
 import { COUNTRIES_WITH_STATES } from '@app/components/organisms/KYBView/views/CompanyInformationView/const';
 import { CompanyInformationContext } from '@app/components/organisms/KYBView/views/CompanyInformationView/types';
 import { AnyObject } from '@ballerine/ui';
+import { createPrecompiledValidator } from '@rjsf/validator-ajv8';
 import { useMemo } from 'react';
+import uniqueId from 'lodash/uniqueId';
+
+createPrecompiledValidator;
 
 export const useCompanyInformationSchema = (
   schema = companyInformationSchema,
@@ -13,7 +17,7 @@ export const useCompanyInformationSchema = (
     const countryStates = getCountryStates(formData.companyCountry);
 
     return Boolean(
-      COUNTRIES_WITH_STATES.includes(formData.companyCountry.toLocaleLowerCase()) &&
+      COUNTRIES_WITH_STATES.includes(formData.companyCountry?.toLocaleLowerCase()) &&
         countryStates.length,
     );
   }, [formData.companyCountry]);
@@ -39,7 +43,7 @@ export const useCompanyInformationSchema = (
       schema.required = schema.required.filter(requiredField => requiredField !== 'state');
     }
 
-    return { ...schema };
+    return schema;
   }, [schema, formData.companyCountry, isCountryHasStates]);
 
   return {

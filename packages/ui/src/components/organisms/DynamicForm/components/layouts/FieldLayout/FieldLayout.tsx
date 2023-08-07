@@ -11,6 +11,7 @@ export const FieldLayout = ({
   rawErrors,
   description,
   uiSchema,
+  required,
 }: FieldTemplateProps) => {
   const { fieldWarnings } = useWarnings(id);
 
@@ -18,11 +19,14 @@ export const FieldLayout = ({
 
   return (
     <div className="flex flex-col gap-3 py-1">
-      {isLabelEnabled ? <Label htmlFor={id}>{label}</Label> : null}
-      {children}
-      {rawErrors ? (
-        <ErrorsList errors={Array.from(new Set(rawErrors))} className="capitalize" />
+      {isLabelEnabled ? (
+        <Label htmlFor={id}>
+          {label}
+          {required ? '*' : ''}
+        </Label>
       ) : null}
+      {children}
+      {rawErrors ? <ErrorsList errors={rawErrors} className="capitalize" /> : null}
       {fieldWarnings ? (
         <ErrorsList
           errors={Array.isArray(fieldWarnings) ? fieldWarnings : [fieldWarnings]}

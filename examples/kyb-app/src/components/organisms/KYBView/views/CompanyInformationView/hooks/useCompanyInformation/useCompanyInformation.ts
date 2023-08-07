@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 
 export const useCompanyInformation = (formData: CompanyInformationContext) => {
   const isStateSelectionRequired = useMemo(
-    () => COUNTRIES_WITH_STATES.includes(formData.companyCountry.toLowerCase()),
+    () => COUNTRIES_WITH_STATES.includes(formData.companyCountry?.toLowerCase()),
     [formData.companyCountry],
   );
 

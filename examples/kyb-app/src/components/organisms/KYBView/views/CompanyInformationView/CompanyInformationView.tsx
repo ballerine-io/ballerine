@@ -1,5 +1,6 @@
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
+import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
 import { companyInformationSchema } from '@app/components/organisms/KYBView/views/CompanyInformationView/company-information.schema';
 import { companyInformationUISchema } from '@app/components/organisms/KYBView/views/CompanyInformationView/company-information.ui-schema';
 import { useCompanyInformation } from '@app/components/organisms/KYBView/views/CompanyInformationView/hooks/useCompanyInformation';
@@ -9,7 +10,6 @@ import { useCompanyInformationUpdate } from '@app/components/organisms/KYBView/v
 import { CompanyInformationContext } from '@app/components/organisms/KYBView/views/CompanyInformationView/types';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { DynamicForm } from '@ballerine/ui';
-import { RJSFValidationError } from '@rjsf/utils';
 import { useEffect, useRef } from 'react';
 import { useDebounce } from 'use-debounce';
 
@@ -53,7 +53,7 @@ export const CompanyInformationView = () => {
   }, [companyInformation, formDataRef, update]);
 
   return (
-    <AppShell.FormContainer>
+    <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<CompanyInformationContext>
         className="max-w-[384px]"
         formData={context.flowData.companyInformation}
