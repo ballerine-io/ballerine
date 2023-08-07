@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import {TProjectId} from "@/types";
+import { TProjectId } from '@/types';
 
 export class RequestProjectContext {
   private request: Request;
@@ -8,7 +8,7 @@ export class RequestProjectContext {
     this.request = req;
   }
 
-  static getProjectId(): TProjectId {
+  static getProjectIds(): TProjectId {
     // @ts-ignore
     return this.request?.user?.projectIds;
   }
