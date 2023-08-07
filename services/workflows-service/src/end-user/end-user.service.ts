@@ -19,7 +19,7 @@ export class EndUserService {
   }
 
   async createWithBusiness(endUser: EndUserCreateDto) {
-    const { companyName, ...userData } = endUser;
+    const { companyName = '', ...userData } = endUser;
 
     const user = await this.repository.create({
       data: {

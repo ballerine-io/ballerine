@@ -47,6 +47,7 @@ export interface WorkflowFlowData extends ViewsData {
   shared: {
     endUserId?: string;
     businessId?: string;
+    email?: string;
   };
   flowData: {
     personal: PersonalInformationContext;

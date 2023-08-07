@@ -10,7 +10,7 @@ import {
   PersonalInformationContext,
   WorkflowFlowData,
 } from '@app/domains/workflows/flow-data.type';
-import { AnyObject, DynamicForm } from '@ballerine/ui';
+import { DynamicForm } from '@ballerine/ui';
 import { useCallback } from 'react';
 
 export const PersonalInformationView = () => {
@@ -28,7 +28,18 @@ export const PersonalInformationView = () => {
         return;
       }
 
-      createUserAsync(values as unknown as CreateEndUserDto)
+      const createUserDto: CreateEndUserDto = {
+        firstName: values.name.firstName,
+        lastName: values.name.lastName,
+        phone: values.phoneNumber,
+        email: context.shared.email,
+        dateOfBirth: new Date(+values.birthDate).toISOString(),
+        additionalInformation: {
+          role: values.title,
+        },
+      };
+
+      createUserAsync(createUserDto)
         .then(result => {
           void saveAndPerformTransition(values, {
             endUserId: result.endUserId,
