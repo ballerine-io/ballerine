@@ -28,21 +28,25 @@ export interface WorkflowRunDocument {
   }[];
 }
 
+export interface WorkflowEntity {
+  type: 'business';
+  website: string;
+  companyName: string;
+  address: string;
+  country: string;
+  registrationNumber: string;
+  customerCompany: string;
+  email: string;
+  ubos: WorkflowUBO[];
+  birthDate: string;
+  mainRepresentative: PersonalInformationContext;
+}
+
 export interface WorkflowUpdatePayload {
   workflowId: string;
   endUserId: string;
   businessId: string;
-  entity: {
-    type: 'business';
-    website: string;
-    companyName: string;
-    address: string;
-    country: string;
-    registrationNumber: string;
-    customerCompany: string;
-    ubos: WorkflowUBO[];
-    mainRepresentative: PersonalInformationContext;
-  };
+  entity: Partial<WorkflowEntity>;
   documents: WorkflowRunDocument[];
 }
 
@@ -56,6 +60,15 @@ export interface TRunWorkflowDocument {
   properies: AnyObject;
   version: string;
   issuingVersion: number;
+}
+
+export interface WorkflowAdditionalInformation {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  dateOfBirth: string;
+  companyName: string;
 }
 
 export interface TRunWorkflowDto {
@@ -82,7 +95,7 @@ export interface TRunWorkflowDto {
         };
         registrationNumber: string;
         additionalInfo?: {
-          mainRepresentative: CreateEndUserDto;
+          mainRepresentative: WorkflowAdditionalInformation;
           ubos: WorkflowUBO[];
         };
       };
