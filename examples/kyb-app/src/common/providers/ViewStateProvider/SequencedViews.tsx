@@ -13,7 +13,7 @@ import { useViewsDataRepository } from '@app/common/providers/ViewStateProvider/
 const { Provider } = stateContext;
 interface Props<TContext extends ViewsData> {
   views: View[];
-  viewWrapper: React.ComponentType<{ children: AnyChildren }>;
+  globalWrapper: React.ComponentType<{ children: AnyChildren }>;
   initialContext?: TContext;
   warnings?: InputsWarnings;
   afterUpdate?: (viewsData: AnyObject) => void;
@@ -24,14 +24,12 @@ interface Props<TContext extends ViewsData> {
 export function SequencedViews<TContext extends ViewsData>({
   views,
   initialContext,
-  viewWrapper,
+  globalWrapper,
   warnings,
   onViewChange,
   afterUpdate,
   onFinish,
 }: Props<TContext>) {
-  const ViewWrapperComponent = viewWrapper;
-
   const [isFinished, setFinished] = useState(false);
   const paths = useMemo(() => convertViewsToPaths(views), [views]);
 
@@ -51,6 +49,12 @@ export function SequencedViews<TContext extends ViewsData>({
   const { data: viewsData, update: _update } = useViewsDataRepository(initialContext);
 
   const contextRef = useRef(viewsData);
+
+  const ViewWrapperComponent = useMemo(() => {
+    const currentView = views.find(view => view.key === currentStep.dataAlias);
+
+    return currentView.disableWrapper ? null : globalWrapper;
+  }, [views, currentStep, globalWrapper]);
 
   useEffect(() => {
     contextRef.current = viewsData;
@@ -108,7 +112,7 @@ export function SequencedViews<TContext extends ViewsData>({
       steps: steps,
       stepper: {
         currentStep: currentStep.index + 1,
-        totalSteps: steps.length,
+        totalSteps: steps.filter(step => !step.hidden).length,
       },
       warnings,
       isFinished,
@@ -137,9 +141,13 @@ export function SequencedViews<TContext extends ViewsData>({
 
   return (
     <Provider value={context}>
-      <ViewWrapperComponent>
+      {ViewWrapperComponent ? (
+        <ViewWrapperComponent>
+          <ViewResolver paths={paths} />
+        </ViewWrapperComponent>
+      ) : (
         <ViewResolver paths={paths} />
-      </ViewWrapperComponent>
+      )}
     </Provider>
   );
 }

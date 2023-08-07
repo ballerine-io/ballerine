@@ -21,7 +21,7 @@ export const IssueResolvingFlow = () => {
 
   return context ? (
     <SequencedViews
-      viewWrapper={
+      globalWrapper={
         isLoading
           ? LoadingPlaceholder
           : loadError

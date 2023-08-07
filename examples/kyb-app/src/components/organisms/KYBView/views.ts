@@ -6,8 +6,16 @@ import { CompanyInformationView } from '@app/components/organisms/KYBView/views/
 import { HeadquartersView } from '@app/components/organisms/KYBView/views/HeadquartersView';
 import { PersonalInformationView } from '@app/components/organisms/KYBView/views/PersonalInformationView';
 import { ShareholdersView } from '@app/components/organisms/KYBView/views/ShareholdersView';
+import { SigninView } from '@app/components/organisms/KYBView/views/SigninView';
 
 export const kybViews: View[] = [
+  {
+    label: 'Signin',
+    key: 'signin',
+    Component: SigninView,
+    disableWrapper: true,
+    hidden: true,
+  },
   {
     label: 'Personal Information',
     key: 'personalInformation',

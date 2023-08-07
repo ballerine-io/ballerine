@@ -35,4 +35,6 @@ export interface View {
   active?: boolean;
   Component: React.ComponentType;
   meta?: StepMetadata;
+  disableWrapper?: boolean;
+  hidden?: boolean;
 }

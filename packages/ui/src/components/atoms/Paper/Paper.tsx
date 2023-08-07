@@ -14,7 +14,7 @@ export const Paper = forwardRef(
     ref: React.ForwardRefExoticComponent<HTMLDivElement>,
   ) => {
     return (
-      <div className={wrapperClassName} ref={ref}>
+      <div ref={ref} {...restProps} className={clsx(wrapperClassName)}>
         <div
           {...restProps}
           className={clsx('bg-card text-card-foreground rounded-lg border shadow-none', className)}
