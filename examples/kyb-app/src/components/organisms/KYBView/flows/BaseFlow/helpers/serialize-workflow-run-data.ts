@@ -15,6 +15,7 @@ export const serializeWorkflowRunData = async (
     personal: personalInformation,
     ubos,
     documents,
+    companyInformation,
   } = context.flowData;
 
   const proofOfAddressFileData = parseBase64FileWithMetadata(documents.addressProof);
@@ -42,19 +43,19 @@ export const serializeWorkflowRunData = async (
     entity: {
       type: 'business',
       website: businessInformation.website,
-      companyName: personalInformation.companyName,
+      companyName: companyInformation.companyName,
       address: businessAddress.address,
       country: businessAddress.country,
       registrationNumber: businessInformation.registrationNumber,
       mainRepresentative: context.flowData.personal,
       customerCompany: 'Ballerine',
-      ubos: (Array.from(ubos) || []).map(({ firstName, lastName, email }) => ({
+      ubos: (Array.from(ubos.shareholders) || []).map(({ name, email }) => ({
         entity: {
           type: 'individual',
           id: uuidv4(),
           data: {
-            firstName,
-            lastName,
+            firstName: name.firstName,
+            lastName: name.lastName,
             email,
           },
         },

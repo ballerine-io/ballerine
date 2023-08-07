@@ -17,7 +17,14 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
             text: data.entity.address,
           },
           additionalInfo: {
-            mainRepresentative: data.entity.mainRepresentative,
+            mainRepresentative: {
+              firstName: data.entity.mainRepresentative.name.firstName,
+              lastName: data.entity.mainRepresentative.name.lastName,
+              phone: data.entity.mainRepresentative.phoneNumber,
+              // TO DO: UPDATE empty values
+              companyName: '',
+              email: '',
+            },
             ubos: data.entity.ubos.map(ubo => {
               ubo.entity.data.additionalInfo = {
                 ...(ubo.entity.data.additionalInfo || {}),

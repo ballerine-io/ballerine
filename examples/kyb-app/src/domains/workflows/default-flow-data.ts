@@ -5,11 +5,14 @@ export const defaultFlowData: WorkflowFlowData = {
   currentView: kybViews[0].key || '',
   flowData: {
     personal: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      companyName: '',
+      title: '',
+      name: {
+        firstName: '',
+        lastName: '',
+      },
+      birthDate: '',
+      phoneNumber: '',
+      companyCheck: false,
     },
     companyInformation: {
       registrationNumber: '',
@@ -51,7 +54,10 @@ export const defaultFlowData: WorkflowFlowData = {
       address: '',
       country: '',
     },
-    ubos: [],
+    ubos: {
+      checked: false,
+      shareholders: [],
+    },
     documents: {
       registrationCertificate: '',
       addressProof: '',

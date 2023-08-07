@@ -1,3 +1,4 @@
+import { industries } from '@app/common/static/industries';
 import { RJSFSchema } from '@rjsf/utils';
 
 export const companyActivitySchema: RJSFSchema = {
@@ -7,6 +8,7 @@ export const companyActivitySchema: RJSFSchema = {
     industry: {
       title: 'Industry',
       type: 'string',
+      oneOf: industries.map(industry => ({ title: industry, const: industry })),
     },
     model: {
       title: 'Business Model',
@@ -17,6 +19,7 @@ export const companyActivitySchema: RJSFSchema = {
     website: {
       title: 'Company Website',
       type: 'string',
+      minLength: 1,
     },
     volumeAmount: {
       title: 'Estimate Annual Volume (USD)',

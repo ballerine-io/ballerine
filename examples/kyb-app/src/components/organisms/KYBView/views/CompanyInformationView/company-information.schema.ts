@@ -8,6 +8,7 @@ export const companyInformationSchema: RJSFSchema = {
     registrationNumber: {
       title: 'Company Registration Number',
       type: 'string',
+      minLength: 1,
     },
     companyCountry: {
       title: 'Registered Country',
@@ -24,6 +25,7 @@ export const companyInformationSchema: RJSFSchema = {
     companyName: {
       title: 'Company Legal Name',
       type: 'string',
+      minLength: 1,
     },
     vat: {
       title: 'VAT Number',
@@ -32,10 +34,12 @@ export const companyInformationSchema: RJSFSchema = {
     companyType: {
       title: 'Company Type',
       type: 'string',
+      minLength: 1,
     },
     registrationDate: {
       title: 'Date of Establishment',
       type: 'string',
+      minLength: 1,
     },
   },
   required: ['registrationNumber', 'companyType', 'state', 'companyName', 'registrationDate'],

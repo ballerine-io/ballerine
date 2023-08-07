@@ -12,18 +12,12 @@ export const headquartersSchema: RJSFSchema = {
     street: {
       title: 'Street',
       type: 'string',
+      minLength: 1,
     },
     postalCode: {
       title: 'Postal code',
       type: 'string',
-    },
-    city: {
-      title: 'City',
-      type: 'string',
-    },
-    state: {
-      title: 'State (if country has)',
-      type: 'string',
+      minLength: 1,
     },
     country: {
       title: 'Country',
@@ -32,6 +26,15 @@ export const headquartersSchema: RJSFSchema = {
         const: country.isoCode,
         title: country.fullName,
       })),
+    },
+    state: {
+      title: 'State (if country has)',
+      type: 'string',
+    },
+    city: {
+      title: 'City',
+      type: 'string',
+      minLength: 1,
     },
     phone: {
       title: 'Headquarters phone number',

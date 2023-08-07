@@ -7,7 +7,10 @@ export const shareholdersUISchema: UiSchema = {
     },
   },
   shareholders: {
+    addText: 'Add Shareholder',
+    deleteButtonClassname: 'leading-9',
     items: {
+      titleClassName: 'text-sm',
       name: {
         firstName: {
           'ui:placeholder': 'First name',

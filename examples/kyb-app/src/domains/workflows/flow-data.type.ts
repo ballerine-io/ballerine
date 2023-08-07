@@ -5,11 +5,14 @@ import { CompanyInformationContext } from '@app/components/organisms/KYBView/vie
 import { HeadquartersContext } from '@app/components/organisms/KYBView/views/HeadquartersView/types';
 
 export interface PersonalInformationContext {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  companyName: string;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  title: string;
+  birthDate: string;
+  phoneNumber: string;
+  companyCheck: boolean;
 }
 
 export interface DocumentsContext {
@@ -28,9 +31,16 @@ export interface BusinessAddressContext {
 }
 
 export interface UBOSContext {
-  firstName: string;
-  lastName: string;
-  email: string;
+  checked: boolean;
+  shareholders: {
+    name: {
+      firstName: string;
+      lastName: string;
+    };
+    title: string;
+    birthDate: string;
+    email: string;
+  }[];
 }
 
 export interface WorkflowFlowData extends ViewsData {
@@ -47,6 +57,6 @@ export interface WorkflowFlowData extends ViewsData {
     businessInformation: BusinessInformationContext;
     businessAddress: BusinessAddressContext;
     documents: DocumentsContext;
-    ubos: UBOSContext[];
+    ubos: UBOSContext;
   };
 }

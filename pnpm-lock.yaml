@@ -64,7 +64,7 @@ importers:
         specifier: 0.5.13
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.2.2
+        specifier: 0.2.3
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.4.16
@@ -633,6 +633,9 @@ importers:
       country-state-city:
         specifier: ^3.1.4
         version: 3.1.4
+      currency-codes:
+        specifier: ^2.1.0
+        version: 2.1.0
       form-data-encoder:
         specifier: ^3.0.0
         version: 3.0.0
@@ -21936,6 +21939,13 @@ packages:
       stream-transform: 2.1.3
     dev: true
 
+  /currency-codes@2.1.0:
+    resolution: {integrity: sha512-aASwFNP8VjZ0y0PWlSW7c9N/isYTLxK6OCbm7aVuQMk7dWO2zgup9KGiFQgeL9OGL5P/ulvCHcjQizmuEeZXtw==}
+    dependencies:
+      first-match: 0.0.1
+      nub: 0.0.0
+    dev: false
+
   /cz-conventional-changelog@3.3.0:
     resolution: {integrity: sha512-U466fIzU5U22eES5lTNiNbZ+d8dfcHcssH4o7QsdWaCcRs/feIPCxKYSWkYBNs5mny7MvEfwpTLWjvbm94hecw==}
     engines: {node: '>= 10'}
@@ -24774,6 +24784,10 @@ packages:
       micromatch: 4.0.5
       resolve-dir: 1.0.1
     dev: true
+
+  /first-match@0.0.1:
+    resolution: {integrity: sha512-VvKbnaxrC0polTFDC+teKPTdl2mn6B/KUW+WB3C9RzKDeNwbzfLdnUz3FxC+tnjvus6bI0jWrWicQyVIPdS37A==}
+    dev: false
 
   /flat-cache@3.0.4:
     resolution: {integrity: sha512-dm9s5Pw7Jc0GvMYbshN6zchCA9RgQlzzEZX3vylR9IqFfS8XciblUXOKfW6SiuJ0e13eDYZoZV5wdrev7P3Nwg==}
@@ -29601,6 +29615,10 @@ packages:
     dependencies:
       boolbase: 1.0.0
     dev: true
+
+  /nub@0.0.0:
+    resolution: {integrity: sha512-dK0Ss9C34R/vV0FfYJXuqDAqHlaW9fvWVufq9MmGF2umCuDbd5GRfRD9fpi/LiM0l4ZXf8IBB+RYmZExqCrf0w==}
+    dev: false
 
   /nwsapi@2.2.2:
     resolution: {integrity: sha512-90yv+6538zuvUMnN+zCr8LuV6bPFdq50304114vJYJ8RDyK8D5O9Phpbd6SZWgI7PwzmmfN1upeOJlvybDSgCw==}
