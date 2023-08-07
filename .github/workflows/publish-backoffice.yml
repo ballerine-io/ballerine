@@ -10,7 +10,7 @@ on:
       - dev
       - test
       - staging
-      - main
+      - prod
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/backoffice
