@@ -16,7 +16,7 @@ model User {
   password  String
   roles     Json
 
-  ProjectToUsers ProjectToUser[]
+  userToProject UserToProject[]
 
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
@@ -274,7 +274,7 @@ model Project {
   customerId    String
   customer Customer @relation(fields: [customerId], references: [id])
 
-  ProjectToUsers ProjectToUser[]
+  userToProject UserToProject[]
 
   filters Filter[]
   endUsers EndUser[]
@@ -286,12 +286,12 @@ model Project {
   @@index(customerId)
 }
 
-model ProjectToUser {
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id])
-
+model UserToProject {
   userId  String
   user    User @relation(fields: [userId], references: [id])
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
   @@id([projectId, userId])
   @@index([userId])

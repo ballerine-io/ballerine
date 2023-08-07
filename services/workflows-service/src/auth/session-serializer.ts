@@ -9,19 +9,30 @@ export class SessionSerializer extends PassportSerializer {
     super();
   }
 
-  serializeUser(user: User, done: (err: unknown, user: Partial<User & {projectIds: Array<string>}>) => void) {
+  serializeUser(
+    user: User,
+    done: (err: unknown, user: Partial<User>) => void,
+  ) {
     done(null, {
       id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      projectIds: [],
+      projectIds: user.userToProjects?.map((userToProject) => userToProject.projectId)
     });
   }
 
   async deserializeUser(user: User, done: (err: unknown, user: User | null) => void) {
     try {
-      const userResult = await this.userService.getById(user.id);
+      const userResult = await this.userService.getById(user.id, {
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          userToProjects: { select: { projectId: true } }
+        }
+      });
 
       delete (userResult as Partial<User>).password;
 

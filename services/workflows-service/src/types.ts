@@ -8,4 +8,4 @@ export interface IObjectWithId {
 
 export type Unpacked<T> = T extends (infer U)[] ? U : T;
 
-export type TProjectId = string | null;
+export type TProjectId = Array<string> | null;

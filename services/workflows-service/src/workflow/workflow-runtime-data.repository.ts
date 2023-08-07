@@ -4,7 +4,7 @@ import { Prisma, WorkflowRuntimeData, WorkflowRuntimeDataStatus } from '@prisma/
 import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
-import {ProjectScopedRepository} from "@/common/repositories/project-scoped.repository";
+import { ProjectScopedRepository } from '@/common/repositories/project-scoped.repository';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 

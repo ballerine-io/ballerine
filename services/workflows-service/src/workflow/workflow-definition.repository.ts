@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, WorkflowDefinition } from '@prisma/client';
-import {ProjectScopedRepository} from "@/common/repositories/project-scoped.repository";
+import { ProjectScopedRepository } from '@/common/repositories/project-scoped.repository';
 
 @Injectable()
 export class WorkflowDefinitionRepository extends ProjectScopedRepository {
-
   async create<T extends Prisma.WorkflowDefinitionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionCreateArgs>,
   ): Promise<WorkflowDefinition> {

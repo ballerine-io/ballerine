@@ -27,7 +27,7 @@ import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-au
 import { MetricsController } from '@/metrics/metrics.controller';
 import { MetricsModule } from '@/metrics/metrics.module';
 import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
-import {RequestProjectMiddleware} from "@/common/middlewares/request-project.middleware";
+import { RequestProjectMiddleware } from '@/common/middlewares/request-project.middleware';
 
 @Module({
   controllers: [MetricsController],
@@ -81,6 +81,8 @@ import {RequestProjectMiddleware} from "@/common/middlewares/request-project.mid
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestIdMiddleware, UserSessionAuditMiddleware, RequestProjectMiddleware).forRoutes('*');
+    consumer
+      .apply(RequestIdMiddleware, UserSessionAuditMiddleware, RequestProjectMiddleware)
+      .forRoutes('*');
   }
 }
