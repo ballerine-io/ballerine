@@ -1,0 +1,107 @@
+name: Publish kyb-app image
+
+on:
+  workflow_dispatch:
+  push:
+    # Run this pipeline only if there are changes in specified path
+    paths:
+      - "examples/kyb-app/**"
+    branches:
+      - dev
+      - test
+      - prod
+      - staging
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/kyb-app
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get package version from package.json
+        id: get_version
+        run: |
+          PACKAGE_VERSION=$(jq -r '.version' examples/kyb-app/package.json)
+          echo "::set-output name=version::$PACKAGE_VERSION"
+
+      - name: Print the version
+        run: echo "The version was ${{ steps.get_version.outputs.version }}"
+
+      - name: Extract metadata (tags, labels) for dev Docker
+        if: github.ref == 'refs/heads/dev'
+        id: devmeta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=dev
+            type=raw,value=commit-${{ github.sha }}-dev
+            type=raw,value=${{ steps.get_version.outputs.version }}-dev
+
+      - name: Extract metadata (tags, labels) for test Docker
+        if: github.ref == 'refs/heads/test'
+        id: testmeta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=test
+            type=raw,value=commit-${{ github.sha }}-test
+            type=raw,value=${{ steps.get_version.outputs.version }}-test
+
+      - name: Extract metadata (tags, labels) for prod Docker
+        if: github.ref == 'refs/heads/prod'
+        id: prodmeta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=prod
+            type=raw,value=commit-${{ github.sha }}-prod
+            type=raw,value=${{ steps.get_version.outputs.version }}-prod
+
+      - name: Build and push Docker image for Dev Branch
+        if: github.ref == 'refs/heads/dev'
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: examples/kyb-app
+          push: true
+          tags: ${{ steps.devmeta.outputs.tags }}
+          labels: ${{ steps.devmeta.outputs.labels }}
+
+      - name: Build and push Docker image for Test Branch
+        if: github.ref == 'refs/heads/test'
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: examples/kyb-app
+          push: true
+          tags: ${{ steps.testmeta.outputs.tags }}
+          labels: ${{ steps.testmeta.outputs.labels }}
+
+      - name: Build and push Docker image for Prod Branch
+        if: github.ref == 'refs/heads/prod'
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: examples/kyb-app
+          push: true
+          tags: ${{ steps.prodmeta.outputs.tags }}
+          labels: ${{ steps.prodmeta.outputs.labels }}
