@@ -1,7 +1,7 @@
 import { UiSchema } from '@rjsf/utils';
 
 export const personalInformationUISchema: UiSchema = {
-  phone: {
+  phoneNumber: {
     'ui:field': 'PhoneInput',
     'ui:label': true,
   },

@@ -14,5 +14,7 @@ export const getCountriesList = (): ICountry[] =>
   Object.entries(isoCountriesRecord).map(([isoCode, fullName]) => ({ isoCode, fullName }));
 
 export const getCountryStates = (countryCode: string) => {
+  if (!countryCode) return [];
+
   return State.getStatesOfCountry(countryCode.toUpperCase());
 };

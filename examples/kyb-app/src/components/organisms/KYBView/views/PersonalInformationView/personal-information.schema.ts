@@ -25,10 +25,9 @@ export const personalInformationSchema: RJSFSchema = {
     },
     birthDate: {
       type: 'string',
-      format: 'date',
       title: 'Date of Birth',
     },
-    phone: {
+    phoneNumber: {
       type: 'string',
       title: 'Phone Number',
     },
@@ -39,5 +38,5 @@ export const personalInformationSchema: RJSFSchema = {
       default: true,
     },
   },
-  required: ['name', 'title', 'email', 'birthDate', 'phone'],
+  required: ['name', 'title', 'birthDate', 'phoneNumber'],
 };
