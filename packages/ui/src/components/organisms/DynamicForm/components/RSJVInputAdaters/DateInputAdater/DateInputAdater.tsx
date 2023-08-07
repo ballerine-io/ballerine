@@ -4,7 +4,7 @@ import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/R
 export const DateInputAdater: RJSVInputAdapter = ({ formData, disabled, onChange }) => {
   return (
     <DatePickerInput
-      value={formData ? Number(formData) : undefined}
+      value={formData ? formData : undefined}
       onChange={event => void onChange(String(event.target.value))}
       disabled={disabled}
     />

@@ -89,7 +89,7 @@ export const companyInformationUISchema: UiSchema = {
       },
     ].sort((a, b) => a.title.localeCompare(b.title)),
   },
-  establishmentDate: {
+  registrationDate: {
     'ui:field': 'DateInput',
     'ui:label': true,
   },

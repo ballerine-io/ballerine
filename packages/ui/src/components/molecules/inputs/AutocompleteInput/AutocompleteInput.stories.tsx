@@ -37,3 +37,7 @@ const ControlledAutocomplete = () => {
 export const Controlled = {
   render: ControlledAutocomplete,
 };
+
+export const Disabled = {
+  render: () => <AutocompleteInput disabled options={[]} onChange={() => {}} />,
+};
