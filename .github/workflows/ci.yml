@@ -4,6 +4,12 @@ on:
   push:
     branches-ignore:
       - main
+    paths:
+      # Run this pipeline only if there are changes in specified path
+      - "apps/**"
+      - "services/**"
+      - "examples/**"
+      - "experiments/**"
   workflow_call:
 
 jobs:

@@ -4,11 +4,11 @@ WORKDIR /app
 
 COPY . .
 
-RUN mv /app/.env.example /app/.env; npm install --legacy-peer-deps; npm run build; apk add xdg-utils
+RUN mv /app/.env.example /app/.env; npm install --legacy-peer-deps; npm run build
 
-ENV PATH="$PATH:/app/node_modules/.bin"
+ENV PATH="$PATH:./node_modules/.bin"
 
-EXPOSE 5137
+EXPOSE 5200
 
 CMD ["npm", "run", "dev", "--host"]
 
