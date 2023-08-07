@@ -2,11 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EndUserModel } from './end-user.model';
+import {ProjectScopedRepository} from "@/common/repositories/project-scoped.repository";
 
 @Injectable()
-export class EndUserRepository {
-  constructor(protected readonly prisma: PrismaService) {}
-
+export class EndUserRepository extends ProjectScopedRepository {
   async create<T extends Prisma.EndUserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EndUserCreateArgs>,
   ) {

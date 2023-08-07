@@ -1,10 +1,9 @@
-import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma, WorkflowDefinition } from '@prisma/client';
+import {ProjectScopedRepository} from "@/common/repositories/project-scoped.repository";
 
 @Injectable()
-export class WorkflowDefinitionRepository {
-  constructor(protected readonly prisma: PrismaService) {}
+export class WorkflowDefinitionRepository extends ProjectScopedRepository {
 
   async create<T extends Prisma.WorkflowDefinitionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionCreateArgs>,

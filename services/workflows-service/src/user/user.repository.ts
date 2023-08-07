@@ -3,13 +3,16 @@ import { Prisma, User } from '@prisma/client';
 import { PasswordService } from '../auth/password/password.service';
 import { transformStringFieldUpdateInput } from '../prisma/prisma.util';
 import { Injectable } from '@nestjs/common';
+import {ProjectScopedRepository} from "@/common/repositories/project-scoped.repository";
 
 @Injectable()
-export class UserRepository {
+export class UserRepository extends ProjectScopedRepository {
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly passwordService: PasswordService,
-  ) {}
+  ) {
+    super(prisma)
+  }
 
   async create<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>,
