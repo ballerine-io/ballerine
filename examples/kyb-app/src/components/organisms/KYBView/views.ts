@@ -17,7 +17,6 @@ export const kybViews: View[] = [
     label: 'Company Information',
     key: 'companyInformation',
     Component: CompanyInformationView,
-    active: true,
   },
   {
     label: 'Headquarters Address',

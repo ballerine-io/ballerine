@@ -7,6 +7,8 @@ export const shareholdersSchema: RJSFSchema = {
     check: {
       type: 'boolean',
       description: 'I own 25% or more of the company',
+      enum: [true],
+      default: false,
     },
     shareholders: {
       title: '',
@@ -24,10 +26,12 @@ export const shareholdersSchema: RJSFSchema = {
               firstName: {
                 title: 'Name',
                 type: 'string',
+                minLength: 1,
               },
               lastName: {
                 title: '',
                 type: 'string',
+                minLength: 1,
               },
             },
             required: ['firstName', 'lastName'],
@@ -40,16 +44,17 @@ export const shareholdersSchema: RJSFSchema = {
             type: 'string',
             title: 'Date of Birth',
             format: 'date',
+            minLength: 1,
           },
           email: {
             type: 'string',
             title: 'Email',
             format: 'email',
+            minLength: 1,
           },
         },
-        required: ['firstName', 'lastName', 'email'],
+        required: ['name', 'email', 'birthDate'],
       },
-      minItems: 1,
     },
   },
 };

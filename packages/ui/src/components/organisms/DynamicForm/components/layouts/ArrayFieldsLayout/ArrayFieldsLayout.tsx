@@ -2,6 +2,7 @@ import { ArrayFieldTemplateProps } from '@rjsf/utils';
 import { Plus } from 'lucide-react';
 import { Button } from '@components/atoms';
 import { AnyObject } from '@common/types';
+import clsx from 'clsx';
 
 export const ArrayFieldsLayout = ({
   title,
@@ -10,7 +11,11 @@ export const ArrayFieldsLayout = ({
   uiSchema,
   onAddClick,
 }: ArrayFieldTemplateProps) => {
-  const { addText = 'Add', removeText = 'Delete' } = uiSchema as AnyObject;
+  const {
+    addText = 'Add',
+    removeText = 'Delete',
+    deleteButtonClassname = '',
+  } = uiSchema as AnyObject;
 
   return (
     <div>
@@ -19,7 +24,10 @@ export const ArrayFieldsLayout = ({
         <div key={element.index} className="relative flex flex-row flex-nowrap">
           <div className="flex-1">{element.children}</div>
           <span
-            className="absolute right-0 top-0 cursor-pointer text-sm font-medium underline"
+            className={clsx(
+              'absolute right-0 top-0 inline-block cursor-pointer text-sm font-medium underline',
+              deleteButtonClassname as string,
+            )}
             onClick={element.onDropIndexClick(element.index)}
           >
             {removeText}

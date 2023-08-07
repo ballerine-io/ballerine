@@ -8,6 +8,7 @@ export const TextField = ({
   uiSchema,
   formData,
   disabled,
+  schema,
   onChange,
 }: FieldProps<string>) => {
   const handleChange = useCallback(
@@ -29,6 +30,6 @@ export const TextField = ({
   return uiSchema['ui:widget'] === 'textarea' ? (
     <TextArea {...inputProps} />
   ) : (
-    <Input {...inputProps} />
+    <Input {...inputProps} type={schema.type === 'number' ? 'number' : 'text'} />
   );
 };

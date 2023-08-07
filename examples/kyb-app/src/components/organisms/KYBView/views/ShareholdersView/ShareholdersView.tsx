@@ -6,6 +6,7 @@ import { UBOSContext, WorkflowFlowData } from '@app/domains/workflows/flow-data.
 import { FinalView } from '@app/components/organisms/KYBView/views/ShareholdersView/components/FinalView';
 import { shareholdersUISchema } from '@app/components/organisms/KYBView/views/ShareholdersView/shareholders.ui-schema';
 import { DynamicForm } from '@ballerine/ui';
+import { transformRJSFErrors } from '@app/components/organisms/KYBView/helpers/transform-errors';
 
 export const ShareholdersView = () => {
   const { context, state, isFinished, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
@@ -18,6 +19,7 @@ export const ShareholdersView = () => {
         uiSchema={shareholdersUISchema}
         formData={(context.flowData[state] as UBOSContext[]) || []}
         onSubmit={values => void saveAndPerformTransition(values)}
+        transformErrors={transformRJSFErrors}
       />
     </AppShell.FormContainer>
   ) : (

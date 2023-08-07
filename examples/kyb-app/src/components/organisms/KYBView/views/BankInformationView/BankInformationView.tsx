@@ -6,6 +6,7 @@ import { bankInformationSchema } from '@app/components/organisms/KYBView/views/B
 import { bankInformationUISchema } from '@app/components/organisms/KYBView/views/BankInformationView/bank-information.ui-schema';
 import { DynamicForm } from '@ballerine/ui';
 import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
+import { transformRJSFErrors } from '@app/components/organisms/KYBView/helpers/transform-errors';
 
 export const BankInformationView = () => {
   const { context, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
@@ -18,6 +19,7 @@ export const BankInformationView = () => {
         schema={bankInformationSchema}
         uiSchema={bankInformationUISchema}
         onSubmit={values => void saveAndPerformTransition(values)}
+        transformErrors={transformRJSFErrors}
       />
     </AppShell.FormContainer>
   );

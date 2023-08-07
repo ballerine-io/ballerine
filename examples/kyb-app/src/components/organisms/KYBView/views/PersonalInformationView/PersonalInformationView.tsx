@@ -1,14 +1,16 @@
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
+import { transformRJSFErrors } from '@app/components/organisms/KYBView/helpers/transform-errors';
 import { useCreateEndUserMutation } from '@app/components/organisms/KYBView/hooks/useCreateEndUserMutation';
 import { personalInformationSchema } from '@app/components/organisms/KYBView/views/PersonalInformationView/personal-information.schema';
 import { personalInformationUISchema } from '@app/components/organisms/KYBView/views/PersonalInformationView/personal-information.ui-schema';
+import { CreateEndUserDto } from '@app/domains/end-user';
 import {
   PersonalInformationContext,
   WorkflowFlowData,
 } from '@app/domains/workflows/flow-data.type';
-import { DynamicForm } from '@ballerine/ui';
+import { AnyObject, DynamicForm } from '@ballerine/ui';
 import { useCallback } from 'react';
 
 export const PersonalInformationView = () => {
@@ -26,7 +28,7 @@ export const PersonalInformationView = () => {
         return;
       }
 
-      createUserAsync(values)
+      createUserAsync(values as unknown as CreateEndUserDto)
         .then(result => {
           void saveAndPerformTransition(values, {
             endUserId: result.endUserId,
@@ -47,6 +49,7 @@ export const PersonalInformationView = () => {
         formData={context.flowData.personal}
         uiSchema={personalInformationUISchema}
         schema={personalInformationSchema}
+        transformErrors={transformRJSFErrors}
         onSubmit={handleSubmit}
       />
     </AppShell.FormContainer>

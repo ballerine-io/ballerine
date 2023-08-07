@@ -1,6 +1,7 @@
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/components/organisms/KYBView/components/ViewHeader';
+import { transformRJSFErrors } from '@app/components/organisms/KYBView/helpers/transform-errors';
 import { companyInformationSchema } from '@app/components/organisms/KYBView/views/CompanyInformationView/company-information.schema';
 import { companyInformationUISchema } from '@app/components/organisms/KYBView/views/CompanyInformationView/company-information.ui-schema';
 import { useCompanyInformation } from '@app/components/organisms/KYBView/views/CompanyInformationView/hooks/useCompanyInformation';
@@ -61,6 +62,7 @@ export const CompanyInformationView = () => {
         uiSchema={uiSchema}
         onSubmit={values => void saveAndPerformTransition(values)}
         onChange={handleUpdate}
+        transformErrors={transformRJSFErrors}
       />
     </AppShell.FormContainer>
   );
