@@ -42,11 +42,11 @@ CREATE TABLE "Project" (
 );
 
 -- CreateTable
-CREATE TABLE "ProjectToUser" (
-    "projectId" TEXT NOT NULL,
+CREATE TABLE "UserToProject" (
     "userId" TEXT NOT NULL,
+    "projectId" TEXT NOT NULL,
 
-    CONSTRAINT "ProjectToUser_pkey" PRIMARY KEY ("projectId","userId")
+    CONSTRAINT "UserToProject_pkey" PRIMARY KEY ("projectId","userId")
 );
 
 -- CreateIndex
@@ -68,7 +68,7 @@ CREATE INDEX "Project_name_idx" ON "Project"("name");
 CREATE INDEX "Project_customerId_idx" ON "Project"("customerId");
 
 -- CreateIndex
-CREATE INDEX "ProjectToUser_userId_idx" ON "ProjectToUser"("userId");
+CREATE INDEX "UserToProject_userId_idx" ON "UserToProject"("userId");
 
 -- CreateIndex
 CREATE INDEX "Business_projectId_idx" ON "Business"("projectId");
@@ -104,7 +104,7 @@ ALTER TABLE "Filter" ADD CONSTRAINT "Filter_projectId_fkey" FOREIGN KEY ("projec
 ALTER TABLE "Project" ADD CONSTRAINT "Project_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectToUser" ADD CONSTRAINT "ProjectToUser_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserToProject" ADD CONSTRAINT "UserToProject_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectToUser" ADD CONSTRAINT "ProjectToUser_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserToProject" ADD CONSTRAINT "UserToProject_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

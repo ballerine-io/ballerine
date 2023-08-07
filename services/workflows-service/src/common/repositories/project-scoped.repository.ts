@@ -22,11 +22,14 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
   where: Record<string, unknown> | null;
 }
 export class ProjectScopedRepository {
-  constructor(protected readonly prisma: PrismaService) {}
+  constructor(
+    protected readonly prisma: PrismaService,
+    protected readonly requestProjectContext: RequestProjectContext
+  ) {}
   scopeFindMany<T extends PrismaGeneralQueryArgs>(
     args?: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
   ): T {
-    const projectId = RequestProjectContext.getProjectIds();
+    const projectId = this.requestProjectContext.getProjectIds();
 
     // @ts-ignore
     args ||= {};
@@ -41,7 +44,7 @@ export class ProjectScopedRepository {
   scopeFindOne<T extends PrismaGeneralQueryArgs>(
     args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
   ) {
-    const projectIds = RequestProjectContext.getProjectIds();
+    const projectIds = this.requestProjectContext.getProjectIds();
     // if proejct/user == admin ... dont filter by project
     args.where = {
       ...args?.where,
@@ -54,7 +57,7 @@ export class ProjectScopedRepository {
   scopeCreate<T extends PrismaGeneralInsertArgs>(
     args: Prisma.SelectSubset<T, PrismaGeneralInsertArgs>,
   ) {
-    const projectId = RequestProjectContext.getProjectIds();
+    const projectId = this.requestProjectContext.getProjectIds();
 
     args.data = {
       ...args.data,
@@ -67,7 +70,7 @@ export class ProjectScopedRepository {
   scopeUpdate<T extends Prisma.FilterUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>,
   ) {
-    const projectId = RequestProjectContext.getProjectIds();
+    const projectId = this.requestProjectContext.getProjectIds();
 
     args = this.scopeCreate(args);
     args.where = {
@@ -84,7 +87,7 @@ export class ProjectScopedRepository {
   scopeUpsert<T extends PrismaGeneralUpsertArgs>(
     args: Prisma.SelectSubset<T, PrismaGeneralUpsertArgs>,
   ) {
-    const projectId = RequestProjectContext.getProjectIds();
+    const projectId = this.requestProjectContext.getProjectIds();
     args.where = {
       ...args.where,
       projectId: projectId,
@@ -104,10 +107,10 @@ export class ProjectScopedRepository {
   scopeDelete<T extends Prisma.FilterDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.FilterDeleteArgs>,
   ) {
-    const projectId = RequestProjectContext.getProjectIds();
+    const projectId = this.requestProjectContext.getProjectIds();
     args.where = {
-      projectId: projectId,
       ...args.where,
+      projectId: projectId,
     };
     return args;
   }

@@ -182,7 +182,6 @@ export class WorkflowControllerInternal {
     @common.Body() data: WorkflowAssigneeId,
   ): Promise<WorkflowRuntimeData> {
     try {
-
       return await this.service.assignWorkflowToUser(params.id, data);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
