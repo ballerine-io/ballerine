@@ -15,7 +15,8 @@ export function stepsRepisotoryReducer(
 ): StepsRepositoryState {
   if (action.type === 'NEXT') {
     const nextStepIndex = state.activeStep + 1;
-    const isInRange = Boolean(state.steps[nextStepIndex]);
+    const stepToNavigate = state.steps[nextStepIndex];
+    const isInRange = Boolean(stepToNavigate) && !stepToNavigate.hidden;
 
     return {
       ...state,
@@ -25,7 +26,8 @@ export function stepsRepisotoryReducer(
 
   if (action.type === 'PREV') {
     const prevStepIndex = state.activeStep - 1;
-    const isInRange = Boolean(state.steps[prevStepIndex]);
+    const stepToNavigate = state.steps[prevStepIndex];
+    const isInRange = Boolean(stepToNavigate) && !stepToNavigate.hidden;
 
     return {
       ...state,

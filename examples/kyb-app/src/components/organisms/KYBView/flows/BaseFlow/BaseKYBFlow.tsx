@@ -10,7 +10,7 @@ export const BaseFlow = () => {
     <SequencedViews<WorkflowFlowData>
       views={views}
       initialContext={context}
-      viewWrapper={ViewWrapper}
+      globalWrapper={ViewWrapper}
       afterUpdate={handleViewUpdate}
       onViewChange={handleViewChange}
       onFinish={data => void handleFinish(data)}

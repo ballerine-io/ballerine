@@ -4,7 +4,6 @@ import {
 } from '@app/domains/workflows/flow-data.type';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema } from '@rjsf/utils';
-import { CreateEndUserDto } from '@app/domains/end-user';
 
 export interface WorkflowUBO {
   entity: {

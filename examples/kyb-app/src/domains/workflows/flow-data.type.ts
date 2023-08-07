@@ -3,6 +3,7 @@ import { BankInformationContext } from '@app/components/organisms/KYBView/views/
 import { CompanyActivityConext } from '@app/components/organisms/KYBView/views/CompanyActivityView/types';
 import { CompanyInformationContext } from '@app/components/organisms/KYBView/views/CompanyInformationView/types';
 import { HeadquartersContext } from '@app/components/organisms/KYBView/views/HeadquartersView/types';
+import { SigninContext } from '@app/components/organisms/KYBView/views/SigninView/types';
 
 export interface PersonalInformationContext {
   name: {
@@ -47,9 +48,9 @@ export interface WorkflowFlowData extends ViewsData {
   shared: {
     endUserId?: string;
     businessId?: string;
-    email?: string;
   };
   flowData: {
+    signin: SigninContext;
     personal: PersonalInformationContext;
     companyInformation: CompanyInformationContext;
     headquarters: HeadquartersContext;

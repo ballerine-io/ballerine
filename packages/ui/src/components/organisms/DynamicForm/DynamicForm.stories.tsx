@@ -355,3 +355,37 @@ export const DisabledForm = {
     />
   ),
 };
+
+const customSubmitLayoutSchema: RJSFSchema = {
+  type: 'object',
+  required: ['name'],
+  properties: {
+    name: {
+      type: 'string',
+      title: 'First Name',
+    },
+    lastName: {
+      type: 'string',
+      title: 'Last Name',
+    },
+  },
+};
+
+const customSubmitLayoutUISchema: UiSchema = {
+  'ui:submitButtonOptions': {
+    props: {
+      layoutClassName: 'justify-center',
+    },
+  },
+};
+
+export const CustomSubmitButtonsLayout = {
+  render: () => (
+    <DynamicForm
+      schema={customSubmitLayoutSchema}
+      uiSchema={customSubmitLayoutUISchema}
+      onSubmit={() => {}}
+      disabled
+    />
+  ),
+};

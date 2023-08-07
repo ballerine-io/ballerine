@@ -32,7 +32,7 @@ export const PersonalInformationView = () => {
         firstName: values.name.firstName,
         lastName: values.name.lastName,
         phone: values.phoneNumber,
-        email: context.shared.email,
+        email: context.flowData.signin.email,
         dateOfBirth: new Date(+values.birthDate).toISOString(),
         additionalInformation: {
           role: values.title,

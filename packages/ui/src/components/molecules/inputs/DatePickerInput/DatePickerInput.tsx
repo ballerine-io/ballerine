@@ -1,12 +1,12 @@
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import dayjs, { Dayjs } from 'dayjs';
 import { TextField, ThemeProvider } from '@mui/material';
-import { Paper } from '@components/atoms/Paper';
 import { muiTheme } from '@common/mui-theme';
+import { Paper } from '@components/atoms';
 
 export interface DatePickerChangeEvent {
   target: {
@@ -30,8 +30,6 @@ export const DatePickerInput = ({
   disabled = false,
   onChange,
 }: DatePickerProps) => {
-  const [isOpen, setOpen] = useState(false);
-
   const serializeValue = useCallback((value: Dayjs): number => {
     return +value.toDate();
   }, []);
@@ -42,7 +40,9 @@ export const DatePickerInput = ({
     }
 
     if (typeof value === 'string' && value) {
-      return dayjs(new Date(value));
+      const timestamp = parseInt(value);
+
+      return dayjs(new Date(isNaN(timestamp) ? timestamp : +timestamp));
     }
 
     return dayjs(value);
@@ -63,7 +63,7 @@ export const DatePickerInput = ({
   );
 
   const value = useMemo(() => {
-    if (!_value) return undefined;
+    if (!_value) return null;
 
     return deserializeValue(_value);
   }, [_value, deserializeValue]);
@@ -72,12 +72,13 @@ export const DatePickerInput = ({
     <ThemeProvider theme={muiTheme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
-          open={isOpen}
+          // open={isOpen}
           disabled={disabled}
           value={value}
-          onOpen={() => setOpen(true)}
-          onClose={() => setOpen(false)}
+          // onOpen={() => setOpen(true)}
+          // onClose={() => setOpen(false)}
           onChange={handleChange}
+          reduceAnimations
           slots={{
             textField: params => (
               <TextField
@@ -120,7 +121,7 @@ export const DatePickerInput = ({
             desktopPaper: {
               //@ts-ignore
               component: Paper,
-              className: 'mt-2',
+              className: 'mt-2 mb-2',
             },
           }}
         />
