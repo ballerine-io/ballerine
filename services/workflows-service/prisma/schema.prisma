@@ -16,14 +16,12 @@ model User {
   password  String
   roles     Json
 
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  ProjectToUsers ProjectToUser[]
 
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   lastActiveAt        DateTime?
   workflowRuntimeData WorkflowRuntimeData[]
-  @@index([projectId])
 }
 
 model Entities {
@@ -276,8 +274,9 @@ model Project {
   customerId    String
   customer Customer @relation(fields: [customerId], references: [id])
 
+  ProjectToUsers ProjectToUser[]
+
   filters Filter[]
-  users User[]
   endUsers EndUser[]
   business Business[]
   workflowRuntimeData WorkflowRuntimeData[]
@@ -285,4 +284,15 @@ model Project {
 
   @@index(name)
   @@index(customerId)
+}
+
+model ProjectToUser {
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  userId  String
+  user    User @relation(fields: [userId], references: [id])
+
+  @@id([projectId, userId])
+  @@index([userId])
 }

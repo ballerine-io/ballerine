@@ -9,12 +9,13 @@ export class SessionSerializer extends PassportSerializer {
     super();
   }
 
-  serializeUser(user: User, done: (err: unknown, user: Partial<User>) => void) {
+  serializeUser(user: User, done: (err: unknown, user: Partial<User & {projectIds: Array<string>}>) => void) {
     done(null, {
       id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      projectIds: [],
     });
   }
 
