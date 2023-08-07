@@ -1,5 +1,11 @@
 # @ballerine/backoffice-v2
 
+## 0.4.5
+
+### Patch Changes
+
+- New Build
+
 ## 0.4.2
 
 ### Patch Changes
