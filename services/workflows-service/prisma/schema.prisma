@@ -16,7 +16,7 @@ model User {
   password  String
   roles     Json
 
-  userToProject UserToProject[]
+  userToProjects UserToProject[]
 
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
@@ -274,7 +274,7 @@ model Project {
   customerId    String
   customer Customer @relation(fields: [customerId], references: [id])
 
-  userToProject UserToProject[]
+  userToProjects UserToProject[]
 
   filters Filter[]
   endUsers EndUser[]
