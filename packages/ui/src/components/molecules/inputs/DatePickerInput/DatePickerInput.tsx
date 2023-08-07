@@ -88,14 +88,15 @@ export const DatePickerInput = ({
                 InputProps={{
                   ...params.InputProps,
                   classes: {
-                    root: 'shadow-none border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 px-3 py-0',
+                    root: 'shadow-none bg-background border-input rounded-md border text-sm shadow-sm transition-colors px-3 py-0',
                     focused: 'border-input ring-ring ring-1',
+                    disabled: 'opacity-50 cursor-not-allowed',
                   },
                   disableUnderline: true,
                 }}
                 inputProps={{
                   ...params.inputProps,
-                  className: 'py-0 px-0 h-9 disabled:cursor-not-allowed disabled:opacity-50',
+                  className: 'py-0 px-0 h-9',
                 }}
               />
             ),

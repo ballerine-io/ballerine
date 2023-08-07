@@ -17,21 +17,10 @@ export class CompaniesController {
   ) {
     const { jurisdictionCode, vendor } = query;
 
-    // return this.companiesService.fetchCompanyInformation({
-    //   registrationNumber,
-    //   jurisdictionCode,
-    //   vendor,
-    // });
-
-    return Promise.resolve(
-      plainToClass(CompanyInformationModel, {
-        name: 'BALLERINE INC',
-        companyNumber: '6816429',
-        companyType: 'Domestic Corporation',
-        jurisdictionCode: 'us-de',
-        incorporationDate: '2022-05-24',
-        vat: '',
-      }),
-    );
+    return this.companiesService.fetchCompanyInformation({
+      registrationNumber,
+      jurisdictionCode,
+      vendor,
+    });
   }
 }

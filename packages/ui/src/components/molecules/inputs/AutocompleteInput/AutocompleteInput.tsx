@@ -80,8 +80,9 @@ export const AutocompleteInput = ({
             InputProps={{
               ...params.InputProps,
               classes: {
-                root: 'border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 px-3 py-0 shadow-none',
+                root: 'border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm transition-colors px-3 py-0 shadow-none',
                 focused: 'border-input ring-ring ring-1',
+                disabled: 'opacity-50 cursor-not-allowed',
               },
               disableUnderline: true,
             }}
