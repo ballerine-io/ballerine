@@ -6,6 +6,7 @@ import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
 import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
 import * as errors from '../errors';
@@ -23,7 +24,10 @@ import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-gu
 import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
+import { Public } from '@/common/decorators/public.decorator';
+import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
+import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -31,6 +35,7 @@ import { ApiOkResponse } from '@nestjs/swagger';
 export class WorkflowControllerExternal {
   constructor(
     protected readonly service: WorkflowService,
+    protected readonly normalizeService: HookCallbackHandlerService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -193,5 +198,38 @@ export class WorkflowControllerExternal {
 
       throw err;
     }
+  }
+
+  @common.Post('/:id/hook/:event')
+  @swagger.ApiOkResponse()
+  @common.HttpCode(200)
+  @Public()
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async hook(
+    @common.Param() params: WorkflowIdWithEventInput,
+    @common.Query() query: WorkflowHookQuery,
+    @common.Body() hookResponse: any,
+  ): Promise<void> {
+    try {
+      const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
+      await this.normalizeService.handleHookResponse({
+        workflowRuntime: workflowRuntime,
+        data: hookResponse,
+        resultDestinationPath: query.resultDestination || 'hookResponse',
+        processName: query.processName,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
+
+    return await this.service.event({
+      id: params.id,
+      name: params.event,
+    });
+
+    return;
   }
 }

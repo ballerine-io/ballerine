@@ -1,10 +1,12 @@
-import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
+import { randomUUID } from 'crypto';
 import { faker } from '@faker-js/faker';
 import * as common from '@nestjs/common';
 import { Param } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
+
+import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as errors from '../errors';
 import * as nestAccessControl from 'nest-access-control';
 import { EndUserCreateDto } from './dtos/end-user-create';
@@ -18,6 +20,8 @@ import { WorkflowDefinitionModel } from '@/workflow/workflow-definition.model';
 import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definition-find-many-args';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
+import { Public } from '@/common/decorators/public.decorator';
+import { DemoGuard } from '@/common/guards/demo.guard';
 
 @swagger.ApiTags('external/end-users')
 @common.Controller('external/end-users')
@@ -39,11 +43,11 @@ export class EndUserControllerExternal {
     return this.service.create({
       data: {
         ...data,
-        correlationId: faker.datatype.uuid(),
-        email: faker.internet.email(data.firstName, data.lastName),
-        phone: faker.phone.number('+##########'),
-        dateOfBirth: faker.date.past(60),
-        avatarUrl: faker.image.avatar(),
+        correlationId: data.correlationId || randomUUID(),
+        email: data.email || faker.internet.email(data.firstName, data.lastName),
+        phone: data.phone || faker.phone.number('+##########'),
+        dateOfBirth: data.dateOfBirth || faker.date.past(60),
+        avatarUrl: data.avatarUrl || faker.image.avatar(),
       },
       select: {
         id: true,
@@ -52,6 +56,17 @@ export class EndUserControllerExternal {
         avatarUrl: true,
       },
     });
+  }
+
+  @common.Post('/create-with-business')
+  @UseKeyAuthInDevGuard()
+  async createWithBusiness(@common.Body() data: EndUserCreateDto) {
+    const endUser = await this.service.createWithBusiness(data);
+
+    return {
+      endUserId: endUser.id,
+      businessId: endUser.businesses.at(-1)!.id,
+    };
   }
 
   @common.Get()

@@ -1,5 +1,4 @@
 // Type only exports - does not bundle otherwise.
-export { createWorkflow, Error, Errors, HttpError } from './lib';
 export type {
   StatePlugin,
   WorkflowEvent,
@@ -7,6 +6,23 @@ export type {
   WorkflowOptions,
   WorkflowRunnerArgs,
   PluginAction,
+  ChildWorkflowCallback,
+  ChildPluginCallbackOutput,
   WorkflowContext,
-  ExtensionRunOrder
+  ExtensionRunOrder,
+  Transformer,
+  SerializableTransformer,
+  ValidatableTransformer,
+  ChildToParentCallback,
+  SerializableValidatableTransformer,
+  THelperFormatingLogic,
+} from './lib';
+export {
+  createWorkflow,
+  Error,
+  Errors,
+  HttpError,
+  JmespathTransformer,
+  JsonSchemaValidator,
+  HelpersTransformer,
 } from './lib';

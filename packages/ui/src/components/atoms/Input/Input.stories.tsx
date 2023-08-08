@@ -1,4 +1,4 @@
-import { Input } from '@components/atoms/Input/Input';
+import { Input } from './Input';
 
 export default {
   component: Input,

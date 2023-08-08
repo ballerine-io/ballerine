@@ -1,5 +1,53 @@
 # @ballerine/common
 
+## 0.5.14
+
+### Patch Changes
+
+- - Remove required fields from document schemas
+
+## 0.5.13
+
+### Patch Changes
+
+- Upgrade packages
+
+## 0.5.12
+
+### Patch Changes
+
+- Update versions
+
+## 0.5.11
+
+### Patch Changes
+
+- Packages update
+
+## 0.5.10
+
+### Patch Changes
+
+- Update packages
+
+## 0.5.9
+
+### Patch Changes
+
+- New UI package
+
+## 0.5.8
+
+### Patch Changes
+
+- Package update
+
+## 0.5.7
+
+### Patch Changes
+
+- Update packages
+
 ## 0.5.6
 
 ### Patch Changes

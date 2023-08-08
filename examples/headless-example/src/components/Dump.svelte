@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { dump } from '@/utils';
-  import type { Serializable } from '@/types';
+  import type { Serializable } from '@ballerine/common';
+  import { dump } from '@ballerine/common';
 
   export let value: Serializable;
 </script>

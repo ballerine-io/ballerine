@@ -683,7 +683,7 @@ export const ghanaDocuments: TDocument[] = [
     version: 1,
     propertiesSchema: {
       type: 'object',
-      required: ['businessName', 'taxIdNumber', 'registrationNumber'],
+      // required: ['companyName', 'taxIdNumber', 'registrationNumber'],
       properties: {
         companyName: {
           type: 'string',
@@ -713,7 +713,7 @@ export const ghanaDocuments: TDocument[] = [
     version: 1,
     propertiesSchema: {
       type: 'object',
-      required: ['certificateNo', 'companyName'],
+      // required: ['certificateNo', 'companyName'],
       properties: {
         certificateNo: {
           type: 'string',
@@ -725,7 +725,6 @@ export const ghanaDocuments: TDocument[] = [
         },
         companyName: {
           type: 'string',
-          pattern: alphaNumeric,
         },
         issuingDate: {
           type: 'string',
@@ -744,7 +743,7 @@ export const ghanaDocuments: TDocument[] = [
     version: 1,
     propertiesSchema: {
       type: 'object',
-      required: ['registrationNumber', 'taxIdNumber'],
+      // required: ['registrationNumber', 'taxIdNumber'],
       properties: {
         registrationNumber: {
           type: 'string',
@@ -767,7 +766,7 @@ export const ghanaDocuments: TDocument[] = [
     version: 1,
     propertiesSchema: {
       type: 'object',
-      required: ['firstName', 'lastName'],
+      // required: ['firstName', 'lastName'],
       properties: {
         firstName: {
           type: 'string',
