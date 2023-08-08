@@ -42,9 +42,7 @@ export const useKycBlock = ({
         },
         {
           title: 'Result',
-          value:
-            childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.decision
-              ?.decision,
+          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.status,
           type: 'text',
           format: 'text',
           pattern: '',
@@ -53,11 +51,11 @@ export const useKycBlock = ({
         },
         {
           title: 'Issues',
-          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.decision
-            ?.riskLabels?.length
-            ? childWorkflow?.context?.pluginsOutput?.kyc_session[
-                key
-              ]?.decision?.decision?.riskLabels?.join(', ')
+          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.riskLabels
+            ?.length
+            ? childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.riskLabels?.join(
+                ', ',
+              )
             : 'none',
           type: 'text',
           format: 'text',
@@ -68,6 +66,18 @@ export const useKycBlock = ({
         {
           title: 'Full report',
           value: childWorkflow?.context?.pluginsOutput?.kyc_session[key],
+          type: 'text',
+          format: 'text',
+          pattern: '',
+          isEditable: false,
+          dropdownOptions: undefined,
+        },
+        {
+          title: 'Decision Reason',
+          value: capitalize(
+            childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision
+              ?.decisionReason,
+          ),
           type: 'text',
           format: 'text',
           pattern: '',

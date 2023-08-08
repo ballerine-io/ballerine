@@ -32,7 +32,7 @@ export const childContexts = [
               },
               type: 'individual',
             },
-            decision: { decision: { decision: 'approved', riskLabels: [], decisionReason: null } },
+            decision: { status: 'approved', riskLabels: [], decisionReason: null },
             metadata: {
               id: 'a5a52bfd-9960-4740-aba9-34efccd7e837',
               url: 'https://alchemy.veriff.com/v/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2ODk4NDExMDYsInNlc3Npb25faWQiOiJhNWE1MmJmZC05OTYwLTQ3NDAtYWJhOS0zNGVmY2NkN2U4MzciLCJpaWQiOiJhN2IxYTQ3Mi04OTNkLTQwYjgtYWVhZi05ZmI3MmJkOGMxNGEifQ.C17Y6GoVHySzoIe2BLOl0LEJNoCwJ8uJKStrpFow_vA',
@@ -145,7 +145,7 @@ export const childContexts = [
               },
               type: 'individual',
             },
-            decision: { decision: { decision: 'approved', riskLabels: [], decisionReason: null } },
+            decision: { status: 'approved', riskLabels: [], decisionReason: null },
             metadata: {
               id: '7f13ae49-e6d1-4479-9beb-be8e5d55cb37',
               url: 'https://alchemy.veriff.com/v/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2ODk4NDExMDYsInNlc3Npb25faWQiOiI3ZjEzYWU0OS1lNmQxLTQ0NzktOWJlYi1iZThlNWQ1NWNiMzciLCJpaWQiOiJhN2IxYTQ3Mi04OTNkLTQwYjgtYWVhZi05ZmI3MmJkOGMxNGEifQ.bhzkKj2CYGUb6n5RYdpvmU9Z0RaVlGZDtxr6l_-hTog',
