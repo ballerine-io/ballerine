@@ -123,7 +123,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
         </legend>
         <div
           className={ctw(`grid grid-cols-2 gap-4 gap-y-6`, {
-            'grid-cols-3': id === 'entity-details',
+            'grid-cols-4': id === 'entity-details',
           })}
         >
           {formData?.map(

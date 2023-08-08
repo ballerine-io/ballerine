@@ -22,13 +22,13 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
         const Component = anchorUrls && isValidUrl(value) ? 'a' : 'p';
 
         return (
-          <div key={title}>
+          <div key={title} className={`mb-2`}>
             <h4
               className={ctw(
-                `text-lg font-medium capitalize leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70`,
+                `font-medium capitalize leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70`,
                 {
-                  'text-xl': !isNested,
-                  'mb-4 text-2xl': isObject(value) || Array.isArray(value),
+                  'text-lg': !isNested,
+                  'mb-4 text-xl': isObject(value) || Array.isArray(value),
                 },
               )}
             >
@@ -102,7 +102,7 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
               })}
             {!isObject(value) && !Array.isArray(value) && (
               <Component
-                className={`leading-7 [&:not(:first-child)]:mt-2`}
+                className={`text-sm leading-7 [&:not(:first-child)]:mt-2`}
                 {...(Component === 'a'
                   ? {
                       // Component === 'a' only if `value` is a string.

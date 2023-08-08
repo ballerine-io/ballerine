@@ -7,5 +7,5 @@ export const NestedContainer: FunctionComponentWithChildren<INestedContainerProp
 }) => {
   if (!isNested) return <>{children}</>;
 
-  return <div className={`my-2 grid grid-cols-2 gap-4 gap-y-6`}>{children}</div>;
+  return <div className={`my-2 grid grid-cols-4 gap-8`}>{children}</div>;
 };
