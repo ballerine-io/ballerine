@@ -12,7 +12,7 @@ export const SigninLayout = ({ children, bgSrc }: Props) => {
         {children}
       </div>
       <div
-        className="hidden w-[62%] bg-cover lg:block"
+        className="hidden w-[62%] bg-slate-500 bg-cover lg:block"
         style={{
           backgroundImage: `url(${bgSrc})`,
         }}

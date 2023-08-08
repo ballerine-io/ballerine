@@ -21,11 +21,6 @@ export interface DocumentsContext {
   addressProof: string;
 }
 
-export interface BusinessInformationContext {
-  registrationNumber: string;
-  website: string;
-}
-
 export interface BusinessAddressContext {
   address: string;
   country: string;
@@ -51,14 +46,12 @@ export interface WorkflowFlowData extends ViewsData {
   };
   flowData: {
     signin: SigninContext;
-    personal: PersonalInformationContext;
+    personalInformation: PersonalInformationContext;
     companyInformation: CompanyInformationContext;
     headquarters: HeadquartersContext;
     companyActivity: CompanyActivityConext;
-    bank: BankInformationContext;
-    businessInformation: BusinessInformationContext;
-    businessAddress: BusinessAddressContext;
-    documents: DocumentsContext;
+    bankInformation: BankInformationContext;
+    companyDocuments: DocumentsContext;
     ubos: UBOSContext;
   };
 }

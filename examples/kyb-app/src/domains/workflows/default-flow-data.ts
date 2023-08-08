@@ -7,7 +7,7 @@ export const defaultFlowData: WorkflowFlowData = {
     signin: {
       email: '',
     },
-    personal: {
+    personalInformation: {
       title: '',
       name: {
         firstName: '',
@@ -42,26 +42,18 @@ export const defaultFlowData: WorkflowFlowData = {
       volumeAmount: '',
       transactionValue: '',
     },
-    bank: {
+    bankInformation: {
       country: '',
-      name: '',
+      bankName: '',
       holder: '',
       account: '',
       currency: '',
-    },
-    businessInformation: {
-      registrationNumber: '',
-      website: '',
-    },
-    businessAddress: {
-      address: '',
-      country: '',
     },
     ubos: {
       checked: false,
       shareholders: [],
     },
-    documents: {
+    companyDocuments: {
       registrationCertificate: '',
       addressProof: '',
     },

@@ -17,21 +17,20 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
             text: data.entity.address,
           },
           additionalInfo: {
+            ...data.entity.additionalInfo,
             mainRepresentative: {
               firstName: data.entity.mainRepresentative.name.firstName,
               lastName: data.entity.mainRepresentative.name.lastName,
               phone: data.entity.mainRepresentative.phoneNumber,
               dateOfBirth: data.entity.birthDate,
               companyName: data.entity.companyName,
-              // TO DO: UPDATE empty values
-              // companyName: data.entity.companyName,
               email: data.entity.email,
             },
             ubos: data.entity.ubos.map(ubo => {
               ubo.entity.data.additionalInfo = {
                 ...(ubo.entity.data.additionalInfo || {}),
                 companyName: data.entity.companyName,
-                customerCompany: 'PayLink',
+                customerCompany: data.entity.companyName,
               };
 
               return ubo;

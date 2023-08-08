@@ -1,6 +1,6 @@
 export interface BankInformationContext {
   country: string;
-  name: string;
+  bankName: string;
   holder: string;
   account: string;
   currency: string;

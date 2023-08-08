@@ -19,6 +19,8 @@ type Props = BaseLabelProps & BaseLabelVariantProps;
 
 export const BaseLabel = ({ text, variant, className }: Props) => {
   return (
-    <span className={clsx(baseLabelVariants({ variant }), 'leading-4', className)}>{text}</span>
+    <span className={clsx(baseLabelVariants({ variant }), 'text-sm leading-4', className)}>
+      {text}
+    </span>
   );
 };

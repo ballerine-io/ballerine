@@ -53,7 +53,7 @@ export const CompanyInformationView = () => {
     }
   }, [companyInformation, formDataRef, update]);
 
-  console.log(context.flowData.companyInformation);
+  console.log(context.flowData);
 
   return (
     <AppShell.FormContainer header={<ViewHeader />}>

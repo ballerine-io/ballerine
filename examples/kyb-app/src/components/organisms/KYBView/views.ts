@@ -10,11 +10,10 @@ import { SigninView } from '@app/components/organisms/KYBView/views/SigninView';
 
 export const kybViews: View[] = [
   {
-    label: 'Signin',
+    label: 'Sign In',
     key: 'signin',
     Component: SigninView,
     disableWrapper: true,
-    hidden: true,
   },
   {
     label: 'Personal Information',

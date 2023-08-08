@@ -1,4 +1,5 @@
 import { parseBase64FileWithMetadata } from '@app/common/utils/parse-base64-file-with-metadata';
+import { buildCompanyAddress } from '@app/components/organisms/KYBView/flows/BaseFlow/helpers/serialize-business-data';
 import { getFilesId } from '@app/components/organisms/KYBView/helpers/get-file-ids';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { WorkflowUpdatePayload } from '@app/domains/workflows/types';
@@ -10,17 +11,18 @@ export const serializeWorkflowRunData = async (
 ): Promise<WorkflowUpdatePayload> => {
   const { endUserId, businessId } = context.shared;
   const {
-    businessAddress,
-    businessInformation,
-    personal: personalInformation,
+    personalInformation,
     ubos,
-    documents,
+    companyDocuments,
     companyInformation,
+    companyActivity,
+    headquarters,
+    bankInformation,
   } = context.flowData;
 
-  const proofOfAddressFileData = parseBase64FileWithMetadata(documents.addressProof);
+  const proofOfAddressFileData = parseBase64FileWithMetadata(companyDocuments.addressProof);
   const registrationDocumentFileData = parseBase64FileWithMetadata(
-    documents.registrationCertificate,
+    companyDocuments.registrationCertificate,
   );
 
   const [proofOfAddressFileId, registrationDocumentFileId] = await getFilesId([
@@ -42,14 +44,43 @@ export const serializeWorkflowRunData = async (
     businessId,
     entity: {
       type: 'business',
-      website: businessInformation.website,
+      website: companyActivity.website,
       companyName: companyInformation.companyName,
-      address: businessAddress.address,
-      country: businessAddress.country,
-      registrationNumber: businessInformation.registrationNumber,
-      mainRepresentative: context.flowData.personal,
+      address: buildCompanyAddress(headquarters),
+      country: companyInformation.companyCountry,
+      registrationNumber: companyInformation.registrationNumber,
+      mainRepresentative: context.flowData.personalInformation,
       customerCompany: 'Ballerine',
-      ubos: (Array.from(ubos.shareholders) || []).map(({ name, email }) => ({
+      birthDate: personalInformation.birthDate,
+      email: context.flowData.signin.email,
+      additionalInfo: {
+        company: {
+          vat: companyInformation.vat,
+          type: companyInformation.companyType,
+          incorporationDate: +companyInformation.registrationDate,
+          industry: companyActivity.industry,
+          model: companyActivity.model,
+          estimateAnnualVolume: companyActivity.volumeAmount,
+          averageTransactionValue: companyActivity.transactionValue,
+        },
+        headquarters: {
+          state: headquarters.state,
+          zip: headquarters.postalCode,
+          phone: headquarters.phone,
+          street: headquarters.street,
+          country: headquarters.country,
+          city: headquarters.city,
+        },
+        bank: {
+          country: bankInformation.country,
+          name: bankInformation.bankName,
+          holder: bankInformation.holder,
+          currencyCode: bankInformation.currency,
+          accountNumber: bankInformation.account,
+        },
+        __kyb_snapshot: JSON.stringify(context),
+      },
+      ubos: (Array.from(ubos.shareholders) || []).map(({ name, email, birthDate, title }) => ({
         entity: {
           type: 'individual',
           id: uuidv4(),
@@ -57,6 +88,10 @@ export const serializeWorkflowRunData = async (
             firstName: name.firstName,
             lastName: name.lastName,
             email,
+            dateOfBirth: +birthDate,
+            additionalInfo: {
+              role: title,
+            },
           },
         },
       })),

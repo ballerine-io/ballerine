@@ -22,7 +22,7 @@ export const useHeadquartersSchema = (
                 const: state.isoCode,
                 title: state.name,
               })) as AnyObject[])
-            : undefined,
+            : [],
         },
       },
     };
