@@ -22,7 +22,7 @@ interface Props<TContext extends ViewsData> {
 }
 
 export function SequencedViews<TContext extends ViewsData>({
-  views,
+  views: originViews,
   initialContext,
   globalWrapper,
   warnings,
@@ -31,6 +31,8 @@ export function SequencedViews<TContext extends ViewsData>({
   onFinish,
 }: Props<TContext>) {
   const [isFinished, setFinished] = useState(false);
+  const [views, setViews] = useState(originViews);
+
   const paths = useMemo(() => convertViewsToPaths(views), [views]);
 
   const initialSteps = useMemo(() => convertViewsToSteps(views), [views]);
@@ -46,7 +48,7 @@ export function SequencedViews<TContext extends ViewsData>({
     initialStepIndex: initialStep,
   });
 
-  const { data: viewsData, update: _update } = useViewsDataRepository(initialContext);
+  const { data: viewsData, update: _update, setData } = useViewsDataRepository(initialContext);
 
   const contextRef = useRef(viewsData);
 
@@ -116,12 +118,15 @@ export function SequencedViews<TContext extends ViewsData>({
       },
       warnings,
       isFinished,
+      views,
       finish,
       update,
+      updateViews: setViews,
       save,
       saveAndPerformTransition,
       next: nextStep,
       prev: prevStep,
+      setData,
     };
 
     return ctx;
@@ -131,6 +136,8 @@ export function SequencedViews<TContext extends ViewsData>({
     steps,
     warnings,
     isFinished,
+    views,
+    setData,
     update,
     save,
     nextStep,

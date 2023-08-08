@@ -78,5 +78,12 @@ export function stepsRepisotoryReducer(
     };
   }
 
+  if (action.type === 'STEPS_OVERRIDE') {
+    return {
+      ...state,
+      steps: action.payload,
+    };
+  }
+
   return state;
 }

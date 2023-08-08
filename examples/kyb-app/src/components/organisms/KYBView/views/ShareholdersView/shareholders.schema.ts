@@ -43,7 +43,6 @@ export const shareholdersSchema: RJSFSchema = {
           birthDate: {
             type: 'string',
             title: 'Date of Birth',
-            format: 'date',
             minLength: 1,
           },
           email: {

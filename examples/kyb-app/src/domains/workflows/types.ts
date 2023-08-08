@@ -13,7 +13,7 @@ export interface WorkflowUBO {
       firstName: string;
       lastName: string;
       email: string;
-      dateOfBirth: number;
+      dateOfBirth: string;
       additionalInfo?: Record<PropertyKey, unknown>;
     };
   };
@@ -188,7 +188,7 @@ export interface UpdateWorkflowDto {
 }
 
 export interface GetFlowDataDto {
-  workflowId?: string;
+  email: string;
 }
 
 export interface UpdateFlowDataDto {

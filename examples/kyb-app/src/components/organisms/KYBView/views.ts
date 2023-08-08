@@ -49,6 +49,5 @@ export const kybViews: View[] = [
     label: 'Company Documents',
     key: 'companyDocuments',
     Component: CompanyDocumentsView,
-    active: true,
   },
 ];

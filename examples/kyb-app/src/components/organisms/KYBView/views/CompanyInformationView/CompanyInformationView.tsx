@@ -53,8 +53,6 @@ export const CompanyInformationView = () => {
     }
   }, [companyInformation, formDataRef, update]);
 
-  console.log(context.flowData);
-
   return (
     <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<CompanyInformationContext>
