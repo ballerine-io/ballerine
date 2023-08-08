@@ -25,7 +25,7 @@ const eraseContextWithIssues = (context: WorkflowFlowData, issues: Issue[]) => {
 };
 
 export const SigninView = () => {
-  const { context, views, saveAndPerformTransition, next, setData, updateViews } =
+  const { views, saveAndPerformTransition, next, setData, updateViews } =
     useViewState<WorkflowFlowData>();
 
   const handleSubmit = useCallback(
@@ -53,7 +53,13 @@ export const SigninView = () => {
         processedViews = enableActiveOnFirstViewWithIssue(processedViews);
 
         updateViews(processedViews);
-        setData(context);
+        setData({
+          ...context,
+          shared: {
+            ...context.shared,
+            workflowId: activeWorkflow.id,
+          },
+        });
         next();
       } catch (error) {
         console.log('Failed to parse snapshot');

@@ -53,8 +53,6 @@ export const PersonalInformationView = () => {
     [context, saveAndPerformTransition, createUserAsync],
   );
 
-  console.log('context', context);
-
   return (
     <AppShell.FormContainer header={<ViewHeader progressBar={false} />}>
       <DynamicForm<PersonalInformationContext>

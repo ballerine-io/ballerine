@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.5.15
+
+### Patch Changes
+
+- fixed GH document schema
+
 ## 0.5.14
 
 ### Patch Changes

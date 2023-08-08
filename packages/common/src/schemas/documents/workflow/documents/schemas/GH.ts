@@ -668,14 +668,17 @@ export const ghanaDocuments: TDocument[] = [
     },
   },
   {
-    category: 'financial_information',
-    type: 'company_structure',
+    category: 'company_structure',
+    type: 'shareholders',
     issuer: {
       type: 'private',
       country: 'GH',
     },
     issuingVersion: 1,
     version: 1,
-    propertiesSchema: {},
+    propertiesSchema: {
+      type: 'object',
+      properties: {},
+    },
   },
 ];

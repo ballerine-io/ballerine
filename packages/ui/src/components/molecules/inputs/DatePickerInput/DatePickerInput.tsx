@@ -40,9 +40,13 @@ export const DatePickerInput = ({
     }
 
     if (typeof value === 'string' && value) {
-      const timestamp = parseInt(value);
+      const timestamp = Number(value);
 
-      return dayjs(new Date(isNaN(timestamp) ? timestamp : +timestamp));
+      if (isNaN(timestamp)) {
+        return dayjs(value, ['YYYY-MM-DD', 'YYYY-DD-MM'], true);
+      }
+
+      return dayjs(+timestamp);
     }
 
     return dayjs(value);
@@ -72,11 +76,8 @@ export const DatePickerInput = ({
     <ThemeProvider theme={muiTheme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
-          // open={isOpen}
           disabled={disabled}
           value={value}
-          // onOpen={() => setOpen(true)}
-          // onClose={() => setOpen(false)}
           onChange={handleChange}
           reduceAnimations
           slots={{

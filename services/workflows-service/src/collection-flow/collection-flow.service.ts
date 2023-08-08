@@ -33,7 +33,7 @@ export class CollectionFlowService {
 
     const workflowData = await this.collectionFlowRepository.findLastActive(query);
 
-    this.logger.log('Last active workflow', { workflowId: workflowData!.id });
+    this.logger.log('Last active workflow', { workflowId: workflowData ? workflowData.id : null });
 
     return workflowData;
   }
