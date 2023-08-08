@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { kycDynamicExample } from './kyc-dynamic-process-example';
 import { kycEmailSessionDefinition } from './kyc-email-process-example';
 
 export const parentKybWithSessionWorkflowDefinition = {
@@ -61,28 +60,23 @@ export const parentKybWithSessionWorkflowDefinition = {
       },
       manual_review: {
         on: {
-          approve: 'approve',
-          reject: 'reject',
+          approve: 'approved',
+          reject: 'rejected',
           revision: 'revision',
         },
       },
-      pending_resubmission: {
-        on: {
-          RESUBMITTED: 'manual_review',
-        },
+      approved: {
+        type: 'final' as const,
       },
-      approve: {
+      rejected: {
         type: 'final' as const,
       },
       revision: {
-        always: [
-          {
-            target: 'pending_resubmission',
+        on: {
+          review: {
+            target: 'manual_review',
           },
-        ],
-      },
-      reject: {
-        type: 'final' as const,
+        },
       },
       auto_reject: {
         type: 'final' as const,
@@ -126,7 +120,7 @@ export const parentKybWithSessionWorkflowDefinition = {
         pluginKind: 'email',
         url: `{secret.EMAIL_API_URL}`,
         method: 'POST',
-        stateNames: ['pending_resubmission'],
+        stateNames: ['revision'],
         headers: {
           Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
           'Content-Type': 'application/json',
@@ -139,7 +133,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               kybCompanyName: 'PayLynk',
               customerCompanyName: entity.data.companyName,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}/workflowRuntimeId=',workflowRuntimeId, '?resubmitEvent=RESUBMITTED']),
+              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}/?workflowRuntimeId=',workflowRuntimeId, '?resubmitEvent=RESUBMITTED']),
               supportEmail: join('',['PayLynk','@support.com']),
               from: 'no-reply@ballerine.com',
               receivers: [entity.data.additionalInfo.mainRepresentative.email],

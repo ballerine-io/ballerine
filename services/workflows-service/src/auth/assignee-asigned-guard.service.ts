@@ -13,8 +13,19 @@ export class WorkflowAssigneeGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const workflowId = request.params.id;
     const requestingUserId = request.user!.id;
-    const workflowRuntime = await this.service.getWorkflowRuntimeDataById(workflowId as string);
+    const workflowRuntime = await this.service.getWorkflowRuntimeDataById(workflowId as string, {
+      include: {
+        parentWorkflowRuntimeData: {
+          select: {
+            assigneeId: true,
+          },
+        },
+      },
+    });
 
-    return workflowRuntime.assigneeId === requestingUserId;
+    return (
+      workflowRuntime.assigneeId === requestingUserId ||
+      workflowRuntime.parentWorkflowRuntimeData?.assigneeId === requestingUserId
+    );
   }
 }
