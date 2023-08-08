@@ -1,16 +1,15 @@
 FROM node:18.16-alpine3.17 as dev
 
 WORKDIR /app
-
 COPY . .
 
-RUN mv /app/.env.example /app/.env; npm install --legacy-peer-deps; npm run build; apk add xdg-utils
+RUN npm install --legacy-peer-deps; npm run build; apk add xdg-utils
 
-ENV PATH="$PATH:/app/node_modules/.bin"
+ENV PATH="$PATH:./node_modules/.bin"
 
-EXPOSE 5137
+EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--host"]
+CMD ["npm","run","dev", "--host"]
 
 FROM nginx:stable-alpine as prod
 
