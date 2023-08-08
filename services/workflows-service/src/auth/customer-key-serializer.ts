@@ -1,9 +1,9 @@
 import { PassportSerializer } from '@nestjs/passport';
 import { Inject } from '@nestjs/common';
 import { UserService } from '@/user/user.service';
-import { User } from '@prisma/client';
+import {Customer, User } from '@prisma/client';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
-import {UserWithProjects} from "@/types";
+import {CustomerWithProjectIds} from "@/types";
 
 export class SessionSerializer extends PassportSerializer {
   constructor(@Inject('USER_SERVICE') private readonly userService: UserService) {
@@ -11,19 +11,19 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   serializeUser(
-    user: UserWithProjects,
-    done: (err: unknown, user: Partial<User & { projectIds: Array<string> }>) => void,
+    user: CustomerWithProjectIds,
+    done: (err: unknown, user: Partial<CustomerWithProjectIds>) => void,
   ) {
     done(null, {
       id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      projectIds: user.userToProjects?.map((userToProject) => userToProject.projectId)
+      name: user.name,
+      displayName: user.displayName,
+      logoImageUri: user.logoImageUri,
+      projectIds: user.projectIds
     });
   }
 
-  async deserializeUser(user: User, done: (err: unknown, user: User | null) => void) {
+  async deserializeUser(user: CustomerWithProjectIds, done: (err: unknown, user: CustomerWithProjectIds | null) => void) {
     try {
       const userResult = await this.userService.getById(user.id, {
         select: {
