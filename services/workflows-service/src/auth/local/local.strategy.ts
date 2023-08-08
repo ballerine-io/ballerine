@@ -9,7 +9,7 @@ import { UserInfo } from '@/user/user-info';
 export class LocalStrategy extends PassportStrategy(Strategy) implements IAuthStrategy {
   constructor(protected readonly authService: AuthService) {
     super({
-      usernameField: 'email',
+      usernameField: 'email'
     });
   }
 

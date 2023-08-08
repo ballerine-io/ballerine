@@ -3,7 +3,6 @@ import { UserService } from '@/user/user.service';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { Request, Response } from 'express';
-import {SessionSerializer} from "@/auth/session-serializer";
 import {AuthenticatedEntity} from "@/types";
 
 @Injectable()

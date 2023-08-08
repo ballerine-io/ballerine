@@ -14,7 +14,6 @@ import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
 import { PassportModule } from '@nestjs/passport';
 import { env } from '@/env';
-import {RequestProjectContext} from "@/common/utils/project-context/request-project-context";
 
 @Module({
   imports: [

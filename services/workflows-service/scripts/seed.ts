@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker';
-import { Business, EndUser, Prisma, PrismaClient } from '@prisma/client';
+import { Business, Customer, EndUser, Prisma, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -54,10 +54,42 @@ function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, 
   return faker.image.people(1000, 2000, true);
 }
 
+async function createCustomer(client: PrismaClient) {
+  return await client.customer.create({
+    data: {
+      id: 'customer-1',
+      name: 'Customer 1',
+      displayName: 'Customer 1',
+      authenticationConfiguration: {
+        apiType: 'API_KEY',
+        authValue: env.API_KEY,
+        validUntil: '',
+        isValid: ''
+      },
+      logoImageUri: 'https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/63f40bee4744d561b55ade6b_Frame1.svg',
+      country: 'GB',
+      language: 'en',
+    }
+  })
+}
+
+async function createProject(client: PrismaClient, customer: Customer, id: string) {
+  return client.project.create({
+    data: {
+      id: `project-${id}`,
+      name: `Project ${id}`,
+      customerId: customer.id,
+    }
+  })
+}
+
 async function seed(bcryptSalt: Salt) {
   console.info('Seeding database...');
   const client = new PrismaClient();
   await generateDynamicDefinitionForE2eTest(client);
+  const customer = await createCustomer(client);
+  const defaultProject = await createProject(client, customer, '1');
+  const project2 = await createProject(client, customer, '2');
   const users = [
     {
       email: 'agent1@ballerine.com',
@@ -65,6 +97,9 @@ async function seed(bcryptSalt: Salt) {
       lastName: faker.name.lastName(),
       password: await hash('agent1', bcryptSalt),
       roles: ['user'],
+      userToProjects: {
+        create: {projectId: project2.id}
+      }
     },
     {
       email: 'agent2@ballerine.com',
@@ -72,6 +107,9 @@ async function seed(bcryptSalt: Salt) {
       lastName: faker.name.lastName(),
       password: await hash('agent2', bcryptSalt),
       roles: ['user'],
+      userToProjects: {
+        create: {projectId: project2.id}
+      }
     },
     {
       email: 'agent3@ballerine.com',
@@ -79,6 +117,9 @@ async function seed(bcryptSalt: Salt) {
       lastName: faker.name.lastName(),
       password: await hash('agent3', bcryptSalt),
       roles: ['user'],
+      userToProjects: {
+        create: {projectId: defaultProject.id}
+      },
     },
     {
       email: 'admin@admin.com',
@@ -86,6 +127,9 @@ async function seed(bcryptSalt: Salt) {
       lastName: faker.name.lastName(),
       password: await hash('admin', bcryptSalt),
       roles: ['user'],
+      userToProjects: {
+        create: {projectId: defaultProject.id}
+      },
     },
   ];
   for (const user of users) {
