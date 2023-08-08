@@ -19,6 +19,8 @@ export interface PersonalInformationContext {
 export interface DocumentsContext {
   registrationCertificate: string;
   addressProof: string;
+  bankStatement: string;
+  companyStructure: string;
 }
 
 export interface BusinessAddressContext {

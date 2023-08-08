@@ -56,6 +56,8 @@ export const defaultFlowData: WorkflowFlowData = {
     companyDocuments: {
       registrationCertificate: '',
       addressProof: '',
+      bankStatement: '',
+      companyStructure: '',
     },
   },
   shared: {},

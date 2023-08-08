@@ -20,12 +20,24 @@ export const serializeWorkflowRunData = async (
     bankInformation,
   } = context.flowData;
 
-  const proofOfAddressFileData = parseBase64FileWithMetadata(companyDocuments.addressProof);
-  const registrationDocumentFileData = parseBase64FileWithMetadata(
-    companyDocuments.registrationCertificate,
-  );
+  const [
+    proofOfAddressFileData,
+    registrationDocumentFileData,
+    bankStatementFileData,
+    companyStructureFileData,
+  ] = [
+    parseBase64FileWithMetadata(companyDocuments.addressProof),
+    parseBase64FileWithMetadata(companyDocuments.registrationCertificate),
+    parseBase64FileWithMetadata(companyDocuments.bankStatement),
+    parseBase64FileWithMetadata(companyDocuments.companyStructure),
+  ];
 
-  const [proofOfAddressFileId, registrationDocumentFileId] = await getFilesId([
+  const [
+    proofOfAddressFileId,
+    registrationDocumentFileId,
+    bankStatementFileId,
+    companyStructureFileId,
+  ] = await getFilesId([
     await base64ToFile(
       proofOfAddressFileData.file,
       proofOfAddressFileData.name,
@@ -35,6 +47,16 @@ export const serializeWorkflowRunData = async (
       registrationDocumentFileData.file,
       registrationDocumentFileData.name,
       registrationDocumentFileData.type,
+    ),
+    await base64ToFile(
+      bankStatementFileData.file,
+      bankStatementFileData.name,
+      bankStatementFileData.type,
+    ),
+    await base64ToFile(
+      companyStructureFileData.file,
+      companyStructureFileData.name,
+      companyStructureFileData.type,
     ),
   ]);
 
@@ -116,6 +138,18 @@ export const serializeWorkflowRunData = async (
             fileId: registrationDocumentFileId,
           },
         ],
+      },
+      {
+        country: 'GH',
+        type: 'bank_statement',
+        category: 'proof_of_address',
+        pages: [{ fileId: bankStatementFileId }],
+      },
+      {
+        country: 'GH',
+        type: 'company_structure',
+        category: 'financial_information',
+        pages: [{ fileId: companyStructureFileId }],
       },
     ],
   };

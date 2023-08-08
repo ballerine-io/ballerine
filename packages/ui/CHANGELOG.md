@@ -1,5 +1,14 @@
 # @ballerine/ui
 
+## 0.2.4
+
+### Patch Changes
+
+- feb95afb: fixed DatePicker popup crash & added required mark
+- ce7c98bb: minor changes to provide base customization on array items in form & removal of error duplicates on render
+- 4c3dd515: fixed css on disabled Autocomplete & DatePicker
+- 33db0b58: Fixed popup flickering on calendar open in DatePickerInput
+
 ## 0.2.3
 
 ### Patch Changes
