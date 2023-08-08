@@ -285,7 +285,9 @@ export const workflow = {
                 type: 'individual',
               },
               decision: {
-                decision: { decision: 'approved', riskLabels: [], decisionReason: null },
+                status: 'approved',
+                riskLabels: [],
+                decisionReason: 'we suspect document tampering',
               },
               metadata: {
                 id: 'eeb2967c-10b6-4ad9-b9e7-ddce68867296',
@@ -471,7 +473,9 @@ export const workflow = {
                   type: 'individual',
                 },
                 decision: {
-                  decision: { decision: 'approved', riskLabels: [], decisionReason: null },
+                  status: 'approved',
+                  riskLabels: [],
+                  decisionReason: 'we suspect document tampering',
                 },
                 metadata: {
                   id: 'eeb2967c-10b6-4ad9-b9e7-ddce68867296',
@@ -655,7 +659,9 @@ export const workflow = {
                   type: 'individual',
                 },
                 decision: {
-                  decision: { decision: 'approved', riskLabels: [], decisionReason: null },
+                  status: 'approved',
+                  riskLabels: [],
+                  decisionReason: 'we suspect document tampering',
                 },
                 metadata: {
                   id: 'eeb2967c-10b6-4ad9-b9e7-ddce68867296',

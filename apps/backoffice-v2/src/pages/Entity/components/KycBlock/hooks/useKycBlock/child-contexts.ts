@@ -32,7 +32,7 @@ export const childContexts = [
               },
               type: 'individual',
             },
-            decision: { decision: { decision: 'approved', riskLabels: [], decisionReason: null } },
+            decision: { status: 'approved', riskLabels: [], decisionReason: null },
             metadata: {
               id: 'a5a52bfd-9960-4740-aba9-34efccd7e837',
               url: 'https://alchemy.veriff.com/v/***PURGED-INCIDENT-2026-09***',
@@ -145,7 +145,7 @@ export const childContexts = [
               },
               type: 'individual',
             },
-            decision: { decision: { decision: 'approved', riskLabels: [], decisionReason: null } },
+            decision: { status: 'approved', riskLabels: [], decisionReason: null },
             metadata: {
               id: '7f13ae49-e6d1-4479-9beb-be8e5d55cb37',
               url: 'https://alchemy.veriff.com/v/***PURGED-INCIDENT-2026-09***',
