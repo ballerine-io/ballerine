@@ -12,4 +12,10 @@ export const companyDocumetsUISchema: UiSchema = {
   addressProof: {
     'ui:field': 'FileInput',
   },
+  bankStatement: {
+    'ui:field': 'FileInput',
+  },
+  companyStructure: {
+    'ui:field': 'FileInput',
+  },
 };

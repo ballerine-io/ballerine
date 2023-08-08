@@ -27,7 +27,7 @@ export const useBaseFlow = () => {
 
   const handleFinish = useCallback(async (context: WorkflowFlowData) => {
     const serializedBusinessPayload = serializeBusinessData(context, context.shared.businessId);
-    await updateBusiness(serializedBusinessPayload);
+    // await updateBusiness(serializedBusinessPayload);
 
     const serializedRunPayload = await serializeWorkflowRunData(context);
 
