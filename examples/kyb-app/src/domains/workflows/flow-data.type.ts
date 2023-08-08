@@ -45,6 +45,7 @@ export interface WorkflowFlowData extends ViewsData {
   shared: {
     endUserId?: string;
     businessId?: string;
+    workflowId?: string;
   };
   flowData: {
     signin: SigninContext;

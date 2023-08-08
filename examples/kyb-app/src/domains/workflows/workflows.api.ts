@@ -1,11 +1,6 @@
 import { request } from '@app/common/utils/request';
-import { defaultFlowData } from '@app/domains/workflows/default-flow-data';
-import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { serializeWorkflowUpdatePayload } from '@app/domains/workflows/serialize/run-and-start-workflow.serialize';
-import { KYBStorageService } from '@app/domains/workflows/storages/kyb-storage-service';
-import { RevisionStorageService } from '@app/domains/workflows/storages/revision-storage-service/revision-storage-service';
 import {
-  GetFlowDataDto,
   GetWofklowDto,
   GetWorkflowResponse,
   WorkflowUpdatePayload,
@@ -51,7 +46,7 @@ export const fetchWorkflow = async (query: GetWofklowDto): Promise<Workflow> => 
 };
 
 export const updateWorkflow = async (dto: UpdateWorkflowDto) => {
-  const { workflowId: _, ...payload } = serializeWorkflowUpdatePayload(dto.payload);
+  const { workflowId, ...payload } = serializeWorkflowUpdatePayload(dto.payload);
 
   await request.patch(`external/workflows/${dto.workflowId}`, {
     json: payload,

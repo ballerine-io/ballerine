@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.2.5
+
+### Patch Changes
+
+- fixed deserialization of DatePickerInput input value
+
 ## 0.2.4
 
 ### Patch Changes
