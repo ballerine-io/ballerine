@@ -266,6 +266,8 @@ model Customer {
 
   @@index(name)
   @@index(customerStatus)
+  @@index([authenticationConfiguration(ops: JsonbPathOps)], type: Gin)
+
 }
 
 model Project {

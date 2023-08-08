@@ -3,6 +3,8 @@ import { UserService } from '@/user/user.service';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { Request, Response } from 'express';
+import {SessionSerializer} from "@/auth/session-serializer";
+import {AuthenticatedEntity} from "@/types";
 
 @Injectable()
 export class UserSessionAuditMiddleware implements NestMiddleware {
@@ -15,9 +17,11 @@ export class UserSessionAuditMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: (error?: any) => void) {
-    if (req.session && req.user) {
-      if (this.isUpdateCanBePerformed((req.user as User).lastActiveAt)) {
-        await this.trackAuthorizedAction(req.user as User);
+    const authenticatedEntity = (req.user as unknown as AuthenticatedEntity)
+    const user = authenticatedEntity?.user;
+    if (req.session && user) {
+      if (this.isUpdateCanBePerformed(user.lastActiveAt!)) {
+        await this.trackAuthorizedAction(user);
       }
     }
 
@@ -36,9 +40,9 @@ export class UserSessionAuditMiddleware implements NestMiddleware {
     return now - pastDate >= updateIntervalInMs;
   }
 
-  private async trackAuthorizedAction(user: User, activeDate = new Date()) {
+  private async trackAuthorizedAction(user: Partial<User>, activeDate = new Date()) {
     this.logger.log(`Updating user presence`, { userId: user.id });
-    await this.userService.updateById(user.id, { data: { lastActiveAt: activeDate } });
+    await this.userService.updateById(user.id!, { data: { lastActiveAt: activeDate } });
     this.logger.log(`Updated user presence`, { userId: user.id });
   }
 }

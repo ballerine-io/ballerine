@@ -1,5 +1,5 @@
 import type { JsonValue } from 'type-fest';
-import {Customer, User, UserToProject} from "@prisma/client";
+import {Customer, Project, User, UserToProject} from "@prisma/client";
 
 export type InputJsonValue = Omit<JsonValue, 'null'>;
 
@@ -13,3 +13,9 @@ export type TProjectId = Array<string> | null;
 
 export type UserWithProjects = User & { userToProjects: Omit<UserToProject[], 'userId'> };
 export type CustomerWithProjectIds = Customer & { projectIds: Array<TProjectId> };
+export type CustomerWithProjects = Partial<Customer & { projects: Array<Project> }>;
+export type AuthenticatedEntity = {
+  user?: Partial<User>
+  customer?: Partial<Customer>
+  projectIds: TProjectId
+}
