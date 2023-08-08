@@ -4,15 +4,13 @@ import { useBaseFlow } from '@app/components/organisms/KYBView/flows/BaseFlow/us
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 
 export const BaseFlow = () => {
-  const { context, views, handleViewChange, handleViewUpdate, handleFinish } = useBaseFlow();
+  const { context, views, handleFinish } = useBaseFlow();
 
   return context ? (
     <SequencedViews<WorkflowFlowData>
       views={views}
       initialContext={context}
       globalWrapper={ViewWrapper}
-      afterUpdate={handleViewUpdate}
-      onViewChange={handleViewChange}
       onFinish={data => void handleFinish(data)}
     />
   ) : null;

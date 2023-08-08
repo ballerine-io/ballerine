@@ -18,7 +18,9 @@ export interface ViewStateContext<TGlobalContext = AnyObject> {
   next: () => void;
   prev: () => void;
   update: (data: object, shared?: object) => Promise<object>;
+  updateViews: (views: View[]) => void;
   save: <T>(data: T, shared?: object) => Promise<TGlobalContext>;
+  setData: (data: TGlobalContext) => void;
   saveAndPerformTransition: <T>(data: T, shared?: object) => Promise<TGlobalContext>;
   finish: (context: TGlobalContext) => void;
   context: TGlobalContext;
@@ -27,6 +29,7 @@ export interface ViewStateContext<TGlobalContext = AnyObject> {
   stepper: StepperParams;
   warnings?: InputsWarnings;
   isFinished: boolean;
+  views: View[];
 }
 
 export interface View {

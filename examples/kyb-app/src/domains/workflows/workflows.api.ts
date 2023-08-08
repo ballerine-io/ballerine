@@ -9,7 +9,6 @@ import {
   GetWofklowDto,
   GetWorkflowResponse,
   WorkflowUpdatePayload,
-  UpdateFlowDataDto,
   UpdateWorkflowDto,
   Workflow,
   GetActiveWorkflowDto,
@@ -54,43 +53,18 @@ export const fetchWorkflow = async (query: GetWofklowDto): Promise<Workflow> => 
 export const updateWorkflow = async (dto: UpdateWorkflowDto) => {
   const { workflowId: _, ...payload } = serializeWorkflowUpdatePayload(dto.payload);
 
-  await request.patch(`internal/workflows/${dto.workflowId}`, {
+  await request.patch(`external/workflows/${dto.workflowId}`, {
     json: payload,
   });
-};
-
-export const fetchFlowData = (dto: GetFlowDataDto): WorkflowFlowData => {
-  const { workflowId } = dto;
-
-  const storage = workflowId ? new RevisionStorageService(workflowId) : new KYBStorageService();
-
-  const data = storage.getData() || defaultFlowData;
-
-  return data as WorkflowFlowData;
-};
-
-export const updateFlowData = async (dto: UpdateFlowDataDto): Promise<WorkflowFlowData> => {
-  const { workflowId, payload } = dto;
-
-  const flowStorage = new KYBStorageService();
-  const workflowStorage = new RevisionStorageService(workflowId);
-  const storage = workflowId ? workflowStorage : flowStorage;
-
-  await storage.save(payload);
-
-  const isShouldClearFlowStorage = Boolean(workflowId);
-
-  if (isShouldClearFlowStorage) {
-    flowStorage.clear();
-  }
-
-  return dto.payload;
 };
 
 export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<Workflow | null> => {
   const result = await request
     .get('collection-flow/active-flow', {
-      searchParams: { email: dto.email },
+      searchParams: {
+        email: dto.email,
+        workflowRuntimeDefinitionId: import.meta.env.VITE_KYB_DEFINITION_ID as string,
+      },
     })
     .json<{ result: Workflow }>();
 

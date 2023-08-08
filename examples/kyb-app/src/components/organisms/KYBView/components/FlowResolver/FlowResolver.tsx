@@ -1,19 +1,16 @@
 import { useMemo } from 'react';
 
-export type Flows = 'base' | 'resolving';
+export type Flows = 'base';
 export type FlowComponent = React.ComponentType;
 
 interface Props {
-  workflowId?: string;
   flowToComponentMap: Record<Flows, FlowComponent>;
 }
 
-export const FlowResolver = ({ workflowId, flowToComponentMap }: Props) => {
+export const FlowResolver = ({ flowToComponentMap }: Props) => {
   const ResolvedFlowComponent = useMemo(() => {
-    if (!workflowId) return flowToComponentMap['base'];
-
-    return flowToComponentMap['resolving'];
-  }, [workflowId, flowToComponentMap]);
+    return flowToComponentMap['base'];
+  }, [flowToComponentMap]);
 
   return <ResolvedFlowComponent />;
 };

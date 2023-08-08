@@ -110,7 +110,7 @@ export const serializeWorkflowRunData = async (
             firstName: name.firstName,
             lastName: name.lastName,
             email,
-            dateOfBirth: +birthDate,
+            dateOfBirth: new Date(+birthDate).toISOString(),
             additionalInfo: {
               role: title,
             },
