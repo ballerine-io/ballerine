@@ -2,16 +2,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
 import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
 import * as errors from '../errors';
 import { IntentDto } from './dtos/intent';
-import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
@@ -25,6 +24,10 @@ import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-gu
 import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
+import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
+import { Public } from '@/common/decorators/public.decorator';
+import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
+import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -32,6 +35,7 @@ import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runt
 export class WorkflowControllerExternal {
   constructor(
     protected readonly service: WorkflowService,
+    protected readonly normalizeService: HookCallbackHandlerService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -40,7 +44,6 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeOutputDto] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
-  @UseKeyAuthInDevGuard()
   async listWorkflowRuntimeData(
     @Query() query: GetWorkflowsRuntimeInputDto,
   ): Promise<GetWorkflowsRuntimeOutputDto> {
@@ -55,10 +58,11 @@ export class WorkflowControllerExternal {
     return plainToClass(GetWorkflowsRuntimeOutputDto, results);
   }
 
-  @common.Get('/metrics')
-  @UseKeyAuthInDevGuard()
-  async listWorkflowRuntimeMetric() {
-    return await this.service.listWorkflowsMetrics();
+  @common.Get('/workflow-definition/:id')
+  @ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async getWorkflowDefinition(@common.Param() params: WorkflowDefinitionWhereUniqueInput) {
+    return await this.service.getWorkflowDefinitionById(params.id);
   }
 
   @common.Get('/:id')
@@ -194,5 +198,38 @@ export class WorkflowControllerExternal {
 
       throw err;
     }
+  }
+
+  @common.Post('/:id/hook/:event')
+  @swagger.ApiOkResponse()
+  @common.HttpCode(200)
+  @Public()
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async hook(
+    @common.Param() params: WorkflowIdWithEventInput,
+    @common.Query() query: WorkflowHookQuery,
+    @common.Body() hookResponse: any,
+  ): Promise<void> {
+    try {
+      const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
+      await this.normalizeService.handleHookResponse({
+        workflowRuntime: workflowRuntime,
+        data: hookResponse,
+        resultDestinationPath: query.resultDestination || 'hookResponse',
+        processName: query.processName,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
+
+    return await this.service.event({
+      id: params.id,
+      name: params.event,
+    });
+
+    return;
   }
 }

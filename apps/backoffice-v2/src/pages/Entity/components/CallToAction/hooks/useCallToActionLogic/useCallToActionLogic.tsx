@@ -15,7 +15,7 @@ export const useCallToActionLogic = () => {
   const caseState = useCaseState(session?.user, workflow);
   const { mutate: mutateUpdateWorkflowById, isLoading: isLoadingUpdateWorkflowById } =
     useUpdateWorkflowByIdMutation({
-      workflowId: workflow.id,
+      workflowId: workflow?.id,
     });
   const onMutateUpdateWorkflowById =
     (
@@ -41,12 +41,12 @@ export const useCallToActionLogic = () => {
         {
           approved: 'approve_document',
           rejected: 'reject_document',
-          revision: 'ask_resubmit_document',
+          revision: 'ask_revision_document',
         } as const
       )[payload.approvalStatus];
 
       const context = {
-        documents: workflow.context.documents?.map(document => {
+        documents: workflow?.context?.documents?.map(document => {
           if (document?.id !== payload?.id) return document;
 
           switch (payload?.approvalStatus) {
@@ -89,11 +89,11 @@ export const useCallToActionLogic = () => {
       });
     };
   const revisionReasons =
-    workflow.workflowDefinition.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum;
   const rejectionReasons =
-    workflow.workflowDefinition.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum;
   const actions = [
@@ -108,9 +108,12 @@ export const useCallToActionLogic = () => {
   ] as const;
   const [action, setAction] = useState<(typeof actions)[number]['value']>(actions[0].value);
   const reasons = action === 'revision' ? revisionReasons : rejectionReasons;
+  const noReasons = !reasons?.length;
   const [reason, setReason] = useState(reasons?.[0] ?? '');
+  const [comment, setComment] = useState('');
   const onReasonChange = useCallback((value: string) => setReason(value), [setReason]);
   const onActionChange = useCallback((value: typeof action) => setAction(value), [setAction]);
+  const onCommentChange = useCallback((value: string) => setComment(value), [setComment]);
 
   return {
     onMutateUpdateWorkflowById,
@@ -120,7 +123,10 @@ export const useCallToActionLogic = () => {
     actions,
     reasons,
     reason,
+    comment,
     onReasonChange,
     onActionChange,
+    onCommentChange,
+    noReasons,
   };
 };

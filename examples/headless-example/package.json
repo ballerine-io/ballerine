@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/headless-example",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.13",
   "type": "module",
   "scripts": {
     "format": "prettier --plugin-search-dir=. --write .",
@@ -31,8 +31,8 @@
     "vite": "^4.1.0"
   },
   "dependencies": {
-    "@ballerine/common": "0.5.3",
-    "@ballerine/workflow-browser-sdk": "^0.4.3",
+    "@ballerine/common": "0.5.14",
+    "@ballerine/workflow-browser-sdk": "0.4.17",
     "@felte/reporter-svelte": "^1.1.5",
     "@felte/validator-zod": "^1.0.13",
     "@fontsource/inter": "^4.5.15",

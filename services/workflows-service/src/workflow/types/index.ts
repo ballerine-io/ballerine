@@ -24,6 +24,8 @@ export type TEntityType = 'endUser' | 'business';
 export type TWorkflowWithRelations = WorkflowRuntimeData & {
   workflowDefinition: WorkflowDefinition;
   assignee: User;
+  parentRuntimeId?: string;
+  childWorkflowsRuntimeData?: Array<TWorkflowWithRelations>;
 } & ({ endUser: EndUser } | { business: Business });
 
 export interface ListWorkflowsRuntimeParams {
@@ -47,10 +49,46 @@ export type WorkflowRuntimeListQueryResult = WorkflowRuntimeData & {
   assignee: User | null;
 };
 
-export type WorkflowStatusMetric = Record<WorkflowRuntimeDataStatus, number>;
-
-export type WorkflowsApprovedChart = { workflowId: string; approvedDate: Date }[];
-export interface WorkflowsRuntimeMetric {
-  status: WorkflowStatusMetric;
-  approvedWorkflows: WorkflowsApprovedChart;
+export interface IWorkflowContextChangedEventData {
+  eventName: 'workflow.context.changed';
+  oldRuntimeData: WorkflowRuntimeData;
+  updatedRuntimeData: WorkflowRuntimeData;
+  state: string;
+  entityId: string;
+  correlationId: string;
 }
+
+export interface IWorkflowCompletedEventData {
+  eventName: 'workflow.completed';
+  // TODO: Move to a shared package
+  runtimeData: WorkflowRuntimeData;
+  state: string;
+  entityId: string;
+  correlationId: string;
+}
+
+export interface IWorkflowStateChangedEventData {
+  eventName: 'workflow.state.changed';
+  runtimeData: WorkflowRuntimeData;
+  state: string;
+  entityId: string;
+  correlationId: string;
+}
+
+export type TWorkflowEventData =
+  | IWorkflowContextChangedEventData
+  | IWorkflowStateChangedEventData
+  | IWorkflowCompletedEventData;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type TEventName = TWorkflowEventData['eventName'] | (string & {});
+
+export type ExtractWorkflowEventData<TEvent extends TEventName> = Omit<
+  Extract<
+    TWorkflowEventData,
+    {
+      eventName: TEvent;
+    }
+  >,
+  'eventName'
+>;

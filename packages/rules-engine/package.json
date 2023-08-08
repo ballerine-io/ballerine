@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/rules-engine-lib",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.4.3",
+  "version": "0.4.10",
   "description": "rules-engine-lib",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "json-logic-js": "^2.0.2",
+    "jmespath": "^0.16.0",
     "xstate": "^4.35.2"
   },
   "devDependencies": {

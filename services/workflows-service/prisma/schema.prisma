@@ -43,11 +43,12 @@ enum ApprovalState {
 }
 
 model EndUser {
-  id String @id @default(cuid())
+  id              String  @id @default(cuid())
+  isContactPerson Boolean @default(false)
 
   correlationId String? @unique @db.VarChar
 
-  endUserType   String?
+  endUserType   String?       @default("individual") // Add userType: can be 'EndUser', 'CompanyContact', 'Stakeholder'
   approvalState ApprovalState @default(NEW)
   stateReason   String?       @db.VarChar
 
@@ -89,6 +90,7 @@ model Business {
   id            String  @id @default(cuid()) // Unique identifier for the business entity
   correlationId String? @unique @db.VarChar
 
+  businessType            String?       @default("default")
   createdAt               DateTime      @default(now()) // Timestamp for when the business entity was created
   updatedAt               DateTime      @updatedAt // Timestamp for when the business entity was last updated
   companyName             String // Official registered name of the business entity
@@ -97,7 +99,7 @@ model Business {
   country                 String?
   countryOfIncorporation  String? // Country where the business entity is incorporated
   dateOfIncorporation     DateTime? // Date when the business entity was incorporated
-  address                 String? // Registered address of the business entity
+  address                 Json? // Registered address of the business entity
   phoneNumber             String? // Contact phone number of the business entity
   email                   String? // Contact email of the business entity
   website                 String? // Official website of the business entity
@@ -110,12 +112,14 @@ model Business {
   documents               Json? // Collection of documents required for the KYB process, e.g., registration documents, financial statements
   avatarUrl               String?
   additionalInfo          Json?
+  bankInformation         Json?
   approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
 
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
+  @@index([businessType])
   @@index([companyName])
   @@index([approvalState])
   @@index([correlationId])
@@ -170,12 +174,18 @@ model WorkflowRuntimeData {
   updatedAt                 DateTime                  @updatedAt
   createdBy                 String                    @default("SYSTEM")
   resolvedAt                DateTime?
+  assignedAt                DateTime?
+
+  parentRuntimeDataId       String?               @map("parent_runtime_data_id")
+  parentWorkflowRuntimeData WorkflowRuntimeData?  @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
+  childWorkflowsRuntimeData WorkflowRuntimeData[] @relation("ParentChild")
 
   @@index([assigneeId, status])
   @@index([endUserId, status])
   @@index([businessId, status])
   @@index([workflowDefinitionId, status])
   @@index([state])
+  @@index([parentRuntimeDataId])
 }
 
 model File {

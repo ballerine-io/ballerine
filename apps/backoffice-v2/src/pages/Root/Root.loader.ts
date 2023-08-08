@@ -5,5 +5,5 @@ export const rootLoader: LoaderFunction = ({ request }) => {
 
   if (url.pathname.startsWith('/en')) return null;
 
-  return redirect(`/en${url.pathname === '/' ? '' : url.pathname}`);
+  return redirect(`/en${url.pathname === '/' ? '' : url.pathname}${url.search}`);
 };
