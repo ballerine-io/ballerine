@@ -83,8 +83,7 @@ export class WorkflowCompletedWebhookCaller {
           correlationId,
           environment,
           data: {
-            ...restData,
-            ...restRuntimeData,
+            ...restRuntimeData.context,
           },
         },
       );
