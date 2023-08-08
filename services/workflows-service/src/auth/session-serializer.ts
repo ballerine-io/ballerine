@@ -3,7 +3,7 @@ import { Inject } from '@nestjs/common';
 import { UserService } from '@/user/user.service';
 import { User } from '@prisma/client';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
-import {UserWithProjects} from "@/types";
+import {AuthenticatedEntity, UserWithProjects} from "@/types";
 
 export class SessionSerializer extends PassportSerializer {
   constructor(@Inject('USER_SERVICE') private readonly userService: UserService) {
@@ -12,13 +12,15 @@ export class SessionSerializer extends PassportSerializer {
 
   serializeUser(
     user: UserWithProjects,
-    done: (err: unknown, user: Partial<User & { projectIds: Array<string> }>) => void,
+    done: (err: unknown, user: AuthenticatedEntity) => void,
   ) {
     done(null, {
+      user: {
       id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      },
       projectIds: user.userToProjects?.map((userToProject) => userToProject.projectId)
     });
   }
