@@ -47,6 +47,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     onTriggerAssignToMe,
     isAssignedToMe,
     hasDecision,
+    documentsToReviseCount,
   } = useActions({ workflowId: id, fullName });
 
   return (
@@ -92,13 +93,13 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         {showResolutionButtons && (
           <div className={`pe-[3.35rem] flex items-center space-x-6`}>
             <Button
-              className={ctw({
+              className={ctw('bg-orange-400', {
                 loading: debouncedIsLoadingRejectEntity,
               })}
               disabled={isLoading || !canRevision}
               onClick={onMutateRevisionCase}
             >
-              Ask for all revisions
+              Ask for all re-uploads {canRevision && `(${documentsToReviseCount})`}
             </Button>
             <Button
               variant={`destructive`}
