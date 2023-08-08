@@ -1,4 +1,4 @@
-import {defineConfig} from 'astro/config';
+import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 import tailwind from '@astrojs/tailwind';
@@ -236,7 +236,7 @@ export default defineConfig({
     },
   },
   redirects: {
-   '/': '/en/getting_started/introduction/',
-   '/en': '/en/getting_started/introduction/',
-  }
+    '/': '/en/getting_started/introduction/',
+    '/en': '/en/getting_started/introduction/',
+  },
 });

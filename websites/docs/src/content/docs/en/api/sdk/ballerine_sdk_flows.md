@@ -8,7 +8,7 @@ description: SDK API documentation
 
 ### init
 
-• **init**: (`config`: [`FlowsInitOptions`](/en/api/sdk/flows_init_options)) => `Promise`<`void`\>
+• **init**: (`config`: [`FlowsInitOptions`](../flows_init_options)) => `Promise`<`void`\>
 
 #### Type declaration
 
@@ -16,9 +16,9 @@ description: SDK API documentation
 
 ##### Parameters
 
-| Name     | Type                                       |
-| :------- |:-------------------------------------------|
-| `config` | [`FlowsInitOptions`](/en/api/sdk/flows_init_options) |
+| Name     | Type                                        |
+| :------- |:--------------------------------------------|
+| `config` | [`FlowsInitOptions`](../flows_init_options) |
 
 ##### Returns
 
@@ -32,7 +32,7 @@ description: SDK API documentation
 
 ### mount
 
-• **mount**: (`config`: [`IFlowsMountOptions`](/en/api/sdk/flows_mount_options)) => `Promise`<`void`\>
+• **mount**: (`config`: [`IFlowsMountOptions`](../flows_mount_options)) => `Promise`<`void`\>
 
 #### Type declaration
 
@@ -40,9 +40,9 @@ description: SDK API documentation
 
 ##### Parameters
 
-| Name     | Type                                           |
-| :------- |:-----------------------------------------------|
-| `config` | [`IFlowsMountOptions`](/en/api/sdk/flows_mount_options) |
+| Name     | Type                                          |
+| :------- |:----------------------------------------------|
+| `config` | [`IFlowsMountOptions`](../flows_mount_options) |
 
 ##### Returns
 
@@ -56,7 +56,7 @@ description: SDK API documentation
 
 ### setConfig
 
-• **setConfig**: (`config`: [`FlowsInitOptions`](/en/api/sdk/flows_init_options)) => `Promise`<`void`\>
+• **setConfig**: (`config`: [`FlowsInitOptions`](../flows_init_options)) => `Promise`<`void`\>
 
 #### Type declaration
 
@@ -66,7 +66,7 @@ description: SDK API documentation
 
 | Name     | Type                                       |
 | :------- |:-------------------------------------------|
-| `config` | [`FlowsInitOptions`](/en/api/sdk/flows_init_options) |
+| `config` | [`FlowsInitOptions`](../flows_init_options) |
 
 ##### Returns
 

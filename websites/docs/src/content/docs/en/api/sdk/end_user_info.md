@@ -32,7 +32,7 @@ description: EndUserInfo interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:92](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L92)
+[BallerineSDK.ts:81](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L81)
 
 ---
 

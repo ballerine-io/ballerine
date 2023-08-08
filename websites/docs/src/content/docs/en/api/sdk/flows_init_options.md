@@ -8,7 +8,7 @@ description: FlowsInitOptions interface documentation
 
 ### backendConfig
 
-• `Optional` **backendConfig**: [`FlowsBackendConfig`](/en/api/sdk/flows_backend_config)
+• `Optional` **backendConfig**: [`FlowsBackendConfig`](../flows_backend_config)
 
 **`Description`**
 
@@ -22,7 +22,7 @@ The backend configuration object to change the backend's auth, base url, and end
 
 ### endUserInfo
 
-• **endUserInfo**: [`EndUserInfo`](/en/api/sdk/end_user_info)
+• **endUserInfo**: [`EndUserInfo`](../end_user_info)
 
 **`Description`**
 
@@ -36,7 +36,7 @@ The end user's personal information.
 
 ### translations
 
-• `Optional` **translations**: [`FlowsTranslations`](/en/api/sdk/flows_translations)
+• `Optional` **translations**: [`FlowsTranslations`](../flows_translations)
 
 **`Description`**
 
