@@ -10,4 +10,4 @@ import {CustomerService} from "@/customer/customer.service";
   providers: [CustomerService, CustomerRepository],
   exports: [ACLModule, CustomerService],
 })
-export class UserModule {}
+export class CustomerModule {}
