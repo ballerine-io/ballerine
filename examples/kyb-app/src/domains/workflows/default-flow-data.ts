@@ -3,9 +3,6 @@ import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 export const defaultFlowData: WorkflowFlowData = {
   currentView: 'signin',
   flowData: {
-    signin: {
-      email: '',
-    },
     personalInformation: {
       title: '',
       name: {
