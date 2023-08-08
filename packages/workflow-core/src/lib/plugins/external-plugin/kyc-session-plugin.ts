@@ -7,6 +7,9 @@ const kycSessionRequestSchema = {
   $schema: 'http://json-schema.org/draft-07/schema#',
   type: 'object',
   properties: {
+    endUserId: {
+      type: 'string',
+    },
     firstName: {
       type: 'string',
     },
@@ -20,7 +23,7 @@ const kycSessionRequestSchema = {
       type: 'string',
     },
   },
-  required: ['firstName', 'lastName', 'callbackUrl', 'vendor'],
+  required: ['endUserId', 'firstName', 'lastName', 'callbackUrl', 'vendor'],
 };
 
 export class KycSessionPlugin extends ApiPlugin {
