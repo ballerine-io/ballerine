@@ -150,7 +150,7 @@ export const useKycBlock = ({
             value: [
               {
                 type: 'caseCallToAction',
-                value: 'Reject',
+                value: 'Re-upload needed',
                 data: {
                   parentWorkflowId: parentWorkflowId,
                   childWorkflowId: childWorkflow?.id,

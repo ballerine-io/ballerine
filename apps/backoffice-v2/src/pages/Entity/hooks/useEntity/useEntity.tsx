@@ -3,12 +3,13 @@ import { cells } from './cells';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useTasks } from '../useTasks/useTasks';
+import { workflow } from './mock-workflow-with-children';
 
 export const useEntity = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
 
-  const { data: workflow, isLoading } = useWorkflowQuery({ workflowId: entityId, filterId });
+  const { data: _workflow, isLoading } = useWorkflowQuery({ workflowId: entityId, filterId });
   const selectedEntity = workflow?.entity;
   const {
     documents: contextDocuments,
