@@ -26,7 +26,7 @@ export const CompanyDocumentsView = () => {
         formData={context.flowData[state] as DocumentsContext}
         uiSchema={companyDocumetsUISchema}
         onSubmit={values => {
-          void handleSubmit(values as DocumentsContext);
+          void handleSubmit(values);
         }}
         warnings={warnings}
       />

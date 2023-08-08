@@ -15,7 +15,7 @@ export const BankInformationView = () => {
     <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<BankInformationContext>
         className="max-w-[384px]"
-        formData={context.flowData.bank}
+        formData={context.flowData.bankInformation}
         schema={bankInformationSchema}
         uiSchema={bankInformationUISchema}
         onSubmit={values => void saveAndPerformTransition(values)}

@@ -7,7 +7,7 @@ export const BackButton = () => {
   const { state, prev } = useViewState();
   const { leaveText } = useSettings();
 
-  const isExit = useMemo(() => state === 'personalInformation', [state]);
+  const isExit = useMemo(() => state === 'signin', [state]);
 
   return (
     <div className="select-none" onClick={!isExit ? prev : () => alert('Not implemented')}>

@@ -13,6 +13,7 @@ export interface WorkflowUBO {
       firstName: string;
       lastName: string;
       email: string;
+      dateOfBirth: number;
       additionalInfo?: Record<PropertyKey, unknown>;
     };
   };
@@ -39,13 +40,41 @@ export interface WorkflowEntity {
   ubos: WorkflowUBO[];
   birthDate: string;
   mainRepresentative: PersonalInformationContext;
+  additionalInfo: {
+    company: {
+      vat: string;
+      type: string;
+      incorporationDate: number;
+      industry: string;
+      model: string;
+      estimateAnnualVolume: string;
+      averageTransactionValue: string;
+    };
+    headquarters: {
+      street: string;
+      zip: string;
+      country: string;
+      state: string;
+      city: string;
+      phone: string;
+    };
+    bank: {
+      country: string;
+      name: string;
+      holder: string;
+      accountNumber: string;
+      currencyCode: string;
+    };
+    //WorkflowFlowData
+    __kyb_snapshot: string;
+  };
 }
 
 export interface WorkflowUpdatePayload {
   workflowId: string;
   endUserId: string;
   businessId: string;
-  entity: Partial<WorkflowEntity>;
+  entity: WorkflowEntity;
   documents: WorkflowRunDocument[];
 }
 
@@ -142,9 +171,7 @@ export interface Workflow {
         };
         website: string;
         registrationNumber: string;
-        additionalInfo: {
-          ubos: WorkflowUBO[];
-        };
+        additionalInfo: WorkflowEntity['additionalInfo'];
         companyName: string;
       };
     };
@@ -167,4 +194,8 @@ export interface GetFlowDataDto {
 export interface UpdateFlowDataDto {
   workflowId?: string;
   payload: WorkflowFlowData;
+}
+
+export interface GetActiveWorkflowDto {
+  email: string;
 }

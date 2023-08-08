@@ -12,6 +12,7 @@ import {
   UpdateFlowDataDto,
   UpdateWorkflowDto,
   Workflow,
+  GetActiveWorkflowDto,
 } from '@app/domains/workflows/types';
 
 export const runWorkflowRequest = async (dto: WorkflowUpdatePayload): Promise<void> => {
@@ -84,4 +85,14 @@ export const updateFlowData = async (dto: UpdateFlowDataDto): Promise<WorkflowFl
   }
 
   return dto.payload;
+};
+
+export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<Workflow | null> => {
+  const result = await request
+    .get('collection-flow/active-flow', {
+      searchParams: { email: dto.email },
+    })
+    .json<{ result: Workflow }>();
+
+  return result.result;
 };

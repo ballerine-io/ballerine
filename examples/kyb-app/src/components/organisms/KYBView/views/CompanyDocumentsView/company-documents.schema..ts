@@ -11,6 +11,7 @@ export const companyDocumentsSchema: RJSFSchema = {
     },
     companyStructure: {
       title: 'Company structure (directors & legal representatives)',
+      type: 'string',
     },
     registrationCertificate: {
       title: 'Company Certificate of Registration',
