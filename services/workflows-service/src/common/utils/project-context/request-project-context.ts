@@ -1,10 +1,12 @@
-import { Injectable, Scope } from '@nestjs/common';
-import { Request } from 'express';
+import {Inject, Injectable, Scope} from '@nestjs/common';
 import { TProjectId } from "@/types";
+import { REQUEST } from '@nestjs/core';
+import {Request} from "express";
+
 
 @Injectable({ scope: Scope.REQUEST })
 export class RequestProjectContext {
-  constructor(private request: Request) {}
+  constructor(@Inject(REQUEST) private request: Request) {}
 
   getProjectIds(): TProjectId {
     // @ts-ignore

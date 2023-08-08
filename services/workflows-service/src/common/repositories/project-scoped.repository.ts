@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { RequestProjectContext } from '@/common/utils/request-project-context';
+import { RequestProjectContext } from '@/common/utils/project-context/request-project-context';
 import { PrismaService } from '@/prisma/prisma.service';
 
 export interface PrismaGeneralQueryArgs {

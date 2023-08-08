@@ -4,7 +4,7 @@ import { PasswordService } from '../auth/password/password.service';
 import { transformStringFieldUpdateInput } from '../prisma/prisma.util';
 import { Injectable } from '@nestjs/common';
 import { ProjectScopedRepository } from '@/common/repositories/project-scoped.repository';
-import {RequestProjectContext} from "@/common/utils/request-project-context";
+import {RequestProjectContext} from "@/common/utils/project-context/request-project-context";
 
 @Injectable()
 export class UserRepository extends ProjectScopedRepository {
