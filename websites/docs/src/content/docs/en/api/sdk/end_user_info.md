@@ -12,7 +12,7 @@ description: EndUserInfo interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:75](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L75)
+[BallerineSDK.ts:86](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L86)
 
 ---
 
@@ -22,7 +22,7 @@ description: EndUserInfo interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:79](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L79)
+[BallerineSDK.ts:90](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L90)
 
 ---
 
@@ -32,7 +32,7 @@ description: EndUserInfo interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:81](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L81)
+[BallerineSDK.ts:81](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L81)
 
 ---
 
@@ -42,7 +42,7 @@ description: EndUserInfo interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:73](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L73)
+[BallerineSDK.ts:84](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L84)
 
 ---
 
@@ -52,7 +52,7 @@ description: EndUserInfo interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:76](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L76)
+[BallerineSDK.ts:87](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L87)
 
 ---
 
@@ -62,7 +62,7 @@ description: EndUserInfo interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:80](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L80)
+[BallerineSDK.ts:91](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L91)
 
 ---
 
@@ -72,7 +72,7 @@ description: EndUserInfo interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:74](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L74)
+[BallerineSDK.ts:85](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L85)
 
 ---
 
@@ -82,7 +82,7 @@ description: EndUserInfo interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:78](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L78)
+[BallerineSDK.ts:89](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L89)
 
 ---
 
@@ -92,4 +92,4 @@ description: EndUserInfo interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:77](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L77)
+[BallerineSDK.ts:88](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L88)

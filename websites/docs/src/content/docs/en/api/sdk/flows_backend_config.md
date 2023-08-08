@@ -19,7 +19,7 @@ description: FlowsBackendConfig interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:86](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L86)
+[BallerineSDK.ts:103](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L103)
 
 ---
 
@@ -29,7 +29,7 @@ description: FlowsBackendConfig interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:85](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L85)
+[BallerineSDK.ts:102](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L102)
 
 ---
 
@@ -48,4 +48,4 @@ description: FlowsBackendConfig interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:90](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L90)
+[BallerineSDK.ts:107](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L107)

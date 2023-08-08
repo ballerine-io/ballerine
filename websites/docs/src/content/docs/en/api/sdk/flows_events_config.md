@@ -26,7 +26,7 @@ description: FlowsEventsConfig interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:66](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L66)
+[BallerineSDK.ts:77](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L77)
 
 ---
 
@@ -50,7 +50,7 @@ description: FlowsEventsConfig interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:68](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L68)
+[BallerineSDK.ts:79](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L79)
 
 ---
 
@@ -74,7 +74,7 @@ description: FlowsEventsConfig interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:67](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L67)
+[BallerineSDK.ts:78](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L78)
 
 ---
 
@@ -98,4 +98,4 @@ description: FlowsEventsConfig interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:69](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L69)
+[BallerineSDK.ts:80](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L80)

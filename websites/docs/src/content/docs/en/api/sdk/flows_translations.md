@@ -12,7 +12,7 @@ description: FlowsTranslations interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:128](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L128)
+[BallerineSDK.ts:141](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L141)
 
 ---
 
@@ -22,4 +22,4 @@ description: FlowsTranslations interface documentation
 
 #### Defined in
 
-[BallerineSDK.ts:129](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L129)
+[BallerineSDK.ts:142](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L142)

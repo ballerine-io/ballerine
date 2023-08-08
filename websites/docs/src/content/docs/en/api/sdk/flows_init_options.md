@@ -8,7 +8,7 @@ description: FlowsInitOptions interface documentation
 
 ### backendConfig
 
-• `Optional` **backendConfig**: [`FlowsBackendConfig`](./flows-backend-config)
+• `Optional` **backendConfig**: [`FlowsBackendConfig`](../flows_backend_config)
 
 **`Description`**
 
@@ -16,13 +16,13 @@ The backend configuration object to change the backend's auth, base url, and end
 
 #### Defined in
 
-[BallerineSDK.ts:114](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L114)
+[BallerineSDK.ts:115](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L115)
 
 ---
 
 ### endUserInfo
 
-• **endUserInfo**: [`EndUserInfo`](./end-user-info)
+• **endUserInfo**: [`EndUserInfo`](../end_user_info)
 
 **`Description`**
 
@@ -30,13 +30,13 @@ The end user's personal information.
 
 #### Defined in
 
-[BallerineSDK.ts:110](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L110)
+[BallerineSDK.ts:114](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L114)
 
 ---
 
 ### translations
 
-• `Optional` **translations**: [`FlowsTranslations`](./flows-translations)
+• `Optional` **translations**: [`FlowsTranslations`](../flows_translations)
 
 **`Description`**
 
@@ -44,7 +44,7 @@ The translations to be used in the flow.
 
 #### Defined in
 
-[BallerineSDK.ts:118](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L118)
+[BallerineSDK.ts:116](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L116)
 
 ---
 
@@ -58,7 +58,7 @@ The UI configuration object to change the theme and components.
 
 #### Defined in
 
-[BallerineSDK.ts:106](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L106)
+[BallerineSDK.ts:112](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L112)
 
 ---
 
@@ -72,4 +72,4 @@ The flow version to be used.
 
 #### Defined in
 
-[BallerineSDK.ts:102](https://github.com/ballerine-io/ballerine/blob/ec0b014/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L102)
+[BallerineSDK.ts:111](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L111)

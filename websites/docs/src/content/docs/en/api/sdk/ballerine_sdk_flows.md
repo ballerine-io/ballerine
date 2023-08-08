@@ -8,7 +8,7 @@ description: SDK API documentation
 
 ### init
 
-• **init**: (`config`: [`FlowsInitOptions`](../flows-init-options)) => `Promise`<`void`\>
+• **init**: (`config`: [`FlowsInitOptions`](../flows_init_options)) => `Promise`<`void`\>
 
 #### Type declaration
 
@@ -17,8 +17,8 @@ description: SDK API documentation
 ##### Parameters
 
 | Name     | Type                                        |
-| :------- | :------------------------------------------ |
-| `config` | [`FlowsInitOptions`](../flows-init-options) |
+| :------- |:--------------------------------------------|
+| `config` | [`FlowsInitOptions`](../flows_init_options) |
 
 ##### Returns
 
@@ -26,13 +26,13 @@ description: SDK API documentation
 
 #### Defined in
 
-[BallerineSDK.ts:132](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L132)
+[BallerineSDK.ts:146](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L146)
 
 ---
 
 ### mount
 
-• **mount**: (`config`: [`IFlowsMountOptions`](../flows-mount-options)) => `Promise`<`void`\>
+• **mount**: (`config`: [`IFlowsMountOptions`](../flows_mount_options)) => `Promise`<`void`\>
 
 #### Type declaration
 
@@ -40,9 +40,9 @@ description: SDK API documentation
 
 ##### Parameters
 
-| Name     | Type                                           |
-| :------- | :--------------------------------------------- |
-| `config` | [`IFlowsMountOptions`](../flows-mount-options) |
+| Name     | Type                                          |
+| :------- |:----------------------------------------------|
+| `config` | [`IFlowsMountOptions`](../flows_mount_options) |
 
 ##### Returns
 
@@ -50,13 +50,13 @@ description: SDK API documentation
 
 #### Defined in
 
-[BallerineSDK.ts:133](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L133)
+[BallerineSDK.ts:147](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L147)
 
 ---
 
 ### setConfig
 
-• **setConfig**: (`config`: [`FlowsInitOptions`](../flows-init-options)) => `Promise`<`void`\>
+• **setConfig**: (`config`: [`FlowsInitOptions`](../flows_init_options)) => `Promise`<`void`\>
 
 #### Type declaration
 
@@ -64,9 +64,9 @@ description: SDK API documentation
 
 ##### Parameters
 
-| Name     | Type                                        |
-| :------- | :------------------------------------------ |
-| `config` | [`FlowsInitOptions`](../flows-init-options) |
+| Name     | Type                                       |
+| :------- |:-------------------------------------------|
+| `config` | [`FlowsInitOptions`](../flows_init_options) |
 
 ##### Returns
 
@@ -74,4 +74,4 @@ description: SDK API documentation
 
 #### Defined in
 
-[BallerineSDK.ts:134](https://github.com/ballerine-io/ballerine/blob/aacaaa6/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L134)
+[BallerineSDK.ts:148](https://github.com/ballerine-io/ballerine/blob/dev/sdks/web-ui-sdk/src/types/BallerineSDK.ts#L148)
