@@ -678,7 +678,11 @@ export const ghanaDocuments: TDocument[] = [
     version: 1,
     propertiesSchema: {
       type: 'object',
-      properties: {},
+      properties: {
+        whatever: {
+          type: 'string',
+        },
+      },
     },
   },
 ];

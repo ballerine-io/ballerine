@@ -1,9 +1,8 @@
 import { ViewsData } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository/types';
-import { BankInformationContext } from '@app/components/organisms/KYBView/views/BankInformationView/types';
-import { CompanyActivityConext } from '@app/components/organisms/KYBView/views/CompanyActivityView/types';
-import { CompanyInformationContext } from '@app/components/organisms/KYBView/views/CompanyInformationView/types';
-import { HeadquartersContext } from '@app/components/organisms/KYBView/views/HeadquartersView/types';
-import { SigninContext } from '@app/components/organisms/KYBView/views/SigninView/types';
+import { BankInformationContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/BankInformationView/types';
+import { CompanyActivityConext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyActivityView/types';
+import { CompanyInformationContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/types';
+import { HeadquartersContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/types';
 
 export interface PersonalInformationContext {
   name: {
@@ -48,7 +47,6 @@ export interface WorkflowFlowData extends ViewsData {
     workflowId?: string;
   };
   flowData: {
-    signin: SigninContext;
     personalInformation: PersonalInformationContext;
     companyInformation: CompanyInformationContext;
     headquarters: HeadquartersContext;
