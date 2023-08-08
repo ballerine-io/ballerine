@@ -62,6 +62,7 @@ export class HookCallbackHandlerService {
     const result = {
       entity: entity,
       decision: decision,
+      aml: data.aml
     };
 
     this.setNestedProperty(context, attributePath, result);
@@ -93,6 +94,7 @@ export class HookCallbackHandlerService {
       status: data.decision,
       decisionReason: data.reason,
       riskLabels: data.riskLabels,
+      highRisk: data.highRisk,
     };
   }
 
