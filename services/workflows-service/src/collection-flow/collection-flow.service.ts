@@ -35,6 +35,6 @@ export class CollectionFlowService {
 
     this.logger.log('Last active workflow', { workflowId: workflowData ? workflowData.id : null });
 
-    return workflowData;
+    return workflowData ? workflowData : null;
   }
 }

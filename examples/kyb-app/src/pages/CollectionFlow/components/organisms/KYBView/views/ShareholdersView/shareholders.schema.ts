@@ -7,7 +7,6 @@ export const shareholdersSchema: RJSFSchema = {
     check: {
       type: 'boolean',
       description: 'I own 25% or more of the company',
-      enum: [true],
       default: false,
     },
     shareholders: {
