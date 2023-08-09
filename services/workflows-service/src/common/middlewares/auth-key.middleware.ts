@@ -7,8 +7,8 @@ export class AuthKeyMiddleware implements NestMiddleware {
   constructor(private readonly customerService: CustomerService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers.authorization || '';
-    const apiKey = authHeader.split(' ')[1];
+    const authHeader = req.headers.authorization;
+    const apiKey = authHeader?.split?.(' ')?.[1];
 
     if (apiKey) {
       const customer = await this.customerService.getByApiKey(apiKey);
