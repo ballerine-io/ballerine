@@ -1,5 +1,13 @@
 # @ballerine/blocks
 
+## 0.0.7
+
+### Patch Changes
+
+- Update packages
+- Updated dependencies
+  - @ballerine/common@0.5.16
+
 ## 0.0.6
 
 ### Patch Changes
@@ -19,6 +27,7 @@
 ### Patch Changes
 
 - added Autocomplete,DropdownInput,Multiselect,DatePicker,Checkbox,PhoneNumber components
+- Upgrade packages
 - Updated dependencies
   - @ballerine/common@0.5.13
 

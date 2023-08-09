@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.2.8
+
+### Patch Changes
+
+- Update packages
+
 ## 0.2.7
 
 ### Patch Changes
@@ -51,6 +57,12 @@
 ### Minor Changes
 
 - added Autocomplete,DropdownInput,Multiselect,DatePicker,Checkbox,PhoneNumber components
+
+## 0.1.10
+
+### Patch Changes
+
+- Upgrade packages
 
 ## 0.1.9
 

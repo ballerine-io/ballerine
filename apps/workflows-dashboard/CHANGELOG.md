@@ -1,10 +1,22 @@
 # @ballerine/workflows-dashboard
 
+## 0.0.8
+
+### Patch Changes
+
+- Update packages
+
+## 0.0.7
+
+### Patch Changes
+
+- New Build
+
 ## 0.0.6
 
 ### Patch Changes
 
-- added Autocomplete,DropdownInput,Multiselect,DatePicker,Checkbox,PhoneNumber components
+- Upgrade packages
 
 ## 0.0.5
 

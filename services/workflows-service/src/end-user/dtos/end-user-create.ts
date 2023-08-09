@@ -17,11 +17,40 @@ export class EndUserCreateDto {
   lastName!: string;
 
   @IsOptional()
-  email!: string;
-
-  @IsOptional()
-  phone!: string;
-
-  @IsOptional()
   companyName!: string;
+
+  @IsOptional()
+  @ApiProperty({
+    type: String,
+  })
+  @IsString()
+  correlationId?: string;
+
+  @IsOptional()
+  @ApiProperty({
+    type: String,
+  })
+  @IsString()
+  email?: string;
+
+  @IsOptional()
+  @ApiProperty({
+    type: String,
+  })
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @ApiProperty({
+    type: String,
+  })
+  @IsString()
+  dateOfBirth?: string;
+
+  @IsOptional()
+  @ApiProperty({
+    type: String,
+  })
+  @IsString()
+  avatarUrl?: string;
 }
