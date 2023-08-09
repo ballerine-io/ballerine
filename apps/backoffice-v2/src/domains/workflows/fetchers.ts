@@ -161,6 +161,27 @@ export const fetchWorkflowEvent = async ({
   return handleZodError(error, workflow);
 };
 
+export const fetchWorkflowDecision = async ({
+  workflowId,
+  documentId,
+  body,
+}: IWorkflowId & {
+  documentId: string;
+  body: {
+    decision: string;
+    reason?: string;
+  };
+}) => {
+  const [workflow, error] = await apiClient({
+    endpoint: `workflows/${workflowId}/decision/${documentId}`,
+    method: Method.PATCH,
+    body,
+    schema: WorkflowByIdSchema,
+  });
+
+  return handleZodError(error, workflow);
+};
+
 export const fetchWorkflowEventDecision = async ({
   workflowId,
   body,
