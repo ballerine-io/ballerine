@@ -12,7 +12,7 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
           website: data.entity.website,
           registrationNumber: data.entity.registrationNumber,
           companyName: data.entity.companyName,
-          countryOfIncorporation: data.entity.country, // TODO: this needs to be extracted from address
+          countryOfIncorporation: data.entity.country,
           address: {
             text: data.entity.address,
           },

@@ -31,9 +31,9 @@
   "dependencies": {
     "@ballerine/common": "0.5.16",
     "ajv": "^8.12.0",
-    "i18n-iso-countries": "^7.6.0",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
+    "i18n-iso-countries": "^7.6.0",
     "xstate": "^4.35.2"
   },
   "devDependencies": {
