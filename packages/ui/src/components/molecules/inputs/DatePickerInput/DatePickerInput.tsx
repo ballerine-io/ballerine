@@ -4,7 +4,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useCallback, useMemo } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import dayjs, { Dayjs } from 'dayjs';
-import { TextField, ThemeProvider } from '@mui/material';
+import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
 import { muiTheme } from '@common/mui-theme';
 import { Paper } from '@components/atoms';
 
@@ -72,6 +72,33 @@ export const DatePickerInput = ({
     return deserializeValue(_value);
   }, [_value, deserializeValue]);
 
+  const Field = useMemo(
+    () => (props: TextFieldProps) => {
+      return (
+        <TextField
+          {...props}
+          variant="standard"
+          fullWidth
+          size="small"
+          InputProps={{
+            ...props.InputProps,
+            classes: {
+              root: 'shadow-none bg-background border-input rounded-md border text-sm shadow-sm transition-colors px-3 py-0',
+              focused: 'border-input ring-ring ring-1',
+              disabled: 'opacity-50 cursor-not-allowed',
+            },
+            disableUnderline: true,
+          }}
+          inputProps={{
+            ...props.inputProps,
+            className: 'py-0 px-0 h-9',
+          }}
+        />
+      );
+    },
+    [],
+  );
+
   return (
     <ThemeProvider theme={muiTheme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -81,27 +108,7 @@ export const DatePickerInput = ({
           onChange={handleChange}
           reduceAnimations
           slots={{
-            textField: params => (
-              <TextField
-                {...params}
-                variant="standard"
-                fullWidth
-                size="small"
-                InputProps={{
-                  ...params.InputProps,
-                  classes: {
-                    root: 'shadow-none bg-background border-input rounded-md border text-sm shadow-sm transition-colors px-3 py-0',
-                    focused: 'border-input ring-ring ring-1',
-                    disabled: 'opacity-50 cursor-not-allowed',
-                  },
-                  disableUnderline: true,
-                }}
-                inputProps={{
-                  ...params.inputProps,
-                  className: 'py-0 px-0 h-9',
-                }}
-              />
-            ),
+            textField: Field,
             openPickerIcon: () => <CalendarDays size="16" color="#64748B" className="opacity-50" />,
             rightArrowIcon: () => (
               <ChevronRight size="18" className="hover:text-muted-foreground cursor-pointer" />

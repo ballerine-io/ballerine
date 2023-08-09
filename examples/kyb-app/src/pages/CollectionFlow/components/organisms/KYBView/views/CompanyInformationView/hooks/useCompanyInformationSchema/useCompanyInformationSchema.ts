@@ -3,11 +3,7 @@ import { companyInformationSchema } from '@app/pages/CollectionFlow/components/o
 import { COUNTRIES_WITH_STATES } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/const';
 import { CompanyInformationContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/types';
 import { AnyObject } from '@ballerine/ui';
-import { createPrecompiledValidator } from '@rjsf/validator-ajv8';
 import { useMemo } from 'react';
-import uniqueId from 'lodash/uniqueId';
-
-createPrecompiledValidator;
 
 export const useCompanyInformationSchema = (
   schema = companyInformationSchema,
