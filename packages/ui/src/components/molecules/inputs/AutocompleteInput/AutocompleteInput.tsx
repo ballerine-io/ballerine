@@ -67,6 +67,9 @@ export const AutocompleteInput = ({
           paper: {
             className: 'mt-2 mb-2 w-full',
           },
+          clearIndicator: {
+            disableRipple: true,
+          },
         }}
         renderInput={params => (
           <TextField
