@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { RequestProjectContext } from '@/common/utils/project-context/request-project-context';
+import { RequestProjectService } from '@/common/utils/project-context/request-project-service';
 import { PrismaService } from '@/prisma/prisma.service';
 
 export interface PrismaGeneralQueryArgs {
@@ -24,7 +24,7 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
 export class ProjectScopedRepository {
   constructor(
     protected readonly prisma: PrismaService,
-    protected readonly requestProjectContext: RequestProjectContext
+    protected readonly requestProjectContext: RequestProjectService
   ) {}
   scopeFindMany<T extends PrismaGeneralQueryArgs>(
     args?: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,

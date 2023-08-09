@@ -5,7 +5,7 @@ import {Request} from "express";
 
 
 @Injectable({ scope: Scope.REQUEST })
-export class RequestProjectContext {
+export class RequestProjectService {
   constructor(@Inject(REQUEST) private request: Request) {}
 
   getProjectIds(): TProjectId {
