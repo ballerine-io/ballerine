@@ -14,7 +14,7 @@ import { StorageService } from '@/storage/storage.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EntityRepository } from '@/common/entity/entity.repository';
-import {ProjectScopeService} from "@/project/project-scope.service";
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Module({
   controllers: [BusinessControllerInternal, BusinessControllerExternal],

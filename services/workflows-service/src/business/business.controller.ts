@@ -11,7 +11,7 @@ import { BusinessModel } from './business.model';
 import { BusinessService } from './business.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
-import {ProjectScopeService} from "@/project/project-scope.service";
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 @swagger.ApiTags('internal/businesses')
 @common.Controller('internal/businesses')

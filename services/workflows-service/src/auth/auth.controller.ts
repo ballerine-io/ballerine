@@ -9,8 +9,8 @@ import { Request, Response } from 'express';
 import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
 import util from 'util';
 import { Public } from '@/common/decorators/public.decorator';
-import {AuthenticatedEntity} from "@/types";
-import {User} from "@prisma/client";
+import { AuthenticatedEntity } from '@/types';
+import { User } from '@prisma/client';
 
 @Public()
 @ApiTags('auth')

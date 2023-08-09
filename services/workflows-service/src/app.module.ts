@@ -27,9 +27,9 @@ import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-au
 import { MetricsController } from '@/metrics/metrics.controller';
 import { MetricsModule } from '@/metrics/metrics.module';
 import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
-import {CustomerModule} from "@/customer/customer.module";
-import {AuthKeyMiddleware} from "@/common/middlewares/auth-key.middleware";
-import {ProjectModule} from "@/project/project.module";
+import { CustomerModule } from '@/customer/customer.module';
+import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
+import { ProjectModule } from '@/project/project.module';
 
 @Module({
   controllers: [MetricsController],
