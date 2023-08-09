@@ -792,9 +792,79 @@ export const ghanaDocuments: TDocument[] = [
     propertiesSchema: {
       type: 'object',
       properties: {
-        whatever: {
-          type: 'string',
+        properties: {
+          firstName: {
+            type: 'string',
+          },
+          middleName: {
+            type: 'string',
+          },
+          lastName: {
+            type: 'string',
+          },
         },
+      },
+    },
+  },
+  {
+    category: 'registration_document',
+    type: 'certificate_of_incorporatio',
+    issuer: {
+      type: 'private',
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        properties: {
+          companyName: {
+            type: 'string',
+          },
+          country: {
+            type: 'string',
+          },
+          state: {
+            type: 'string',
+          },
+          vat: {
+            type: 'string',
+          },
+          companyType: {
+            type: 'string',
+          },
+          establishmentDate: {
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
+  {
+    category: 'proof_of_bank_account',
+    type: 'bank_statement',
+    issuer: {
+      type: 'private',
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      country: {
+        type: 'string',
+      },
+      name: {
+        type: 'string',
+      },
+      holderName: {
+        type: 'string',
+      },
+      accountNumber: {
+        type: 'string',
+      },
+      currency: {
+        type: 'string',
       },
     },
   },
