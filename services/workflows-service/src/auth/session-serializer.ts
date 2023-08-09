@@ -21,11 +21,11 @@ export class SessionSerializer extends PassportSerializer {
       firstName: user.firstName,
       lastName: user.lastName,
       },
-      projectIds: user.userToProjects?.map((userToProject) => userToProject.projectId)
+      projectIds: user.userToProjects?.map((userToProject) => userToProject.projectId) || null
     });
   }
 
-  async deserializeUser(user: AuthenticatedEntity, done: (err: unknown, user: User | null) => void) {
+  async deserializeUser(user: AuthenticatedEntity, done: (err: unknown, user: AuthenticatedEntity | null) => void) {
     try {
       const userResult = await this.userService.getById(user.user!.id!, {
         select: {
@@ -37,7 +37,13 @@ export class SessionSerializer extends PassportSerializer {
         }
       });
 
-      return done(null, userResult);
+      const {userToProjects, ...userData} = userResult
+      const authenticatedEntity = {
+        user: userData,
+        projectIds: userToProjects?.map((userToProject) => userToProject.projectId) || null
+      }
+
+      return done(null, authenticatedEntity);
     } catch (err) {
       if (!isRecordNotFoundError(err)) throw err;
 

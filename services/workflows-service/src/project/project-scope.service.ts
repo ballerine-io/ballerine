@@ -23,87 +23,105 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
   update: Record<string, unknown> | null;
   where: Record<string, unknown> | null;
 }
-export class BaseController {
-  scopeFindMany<T extends PrismaGeneralQueryArgs>(
+export class ProjectScopeService {
+  scopeFindMany<T>(
     args?: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
     projectIds?: TProjectIds): T {
-    // @ts-ignore
+    // @ts-expect-error - dynamically typed for all queries
     args ||= {};
+    // @ts-expect-error - dynamically typed for all queries
     args!.where = {
+    // @ts-expect-error - dynamically typed for all queries
       ...args?.where,
-      projectId: projectIds,
+      projectId: {in: projectIds},
     };
 
     return args!;
   }
 
-  scopeFindOne<T extends PrismaGeneralQueryArgs>(
+  scopeFindOne<T>(
     args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
     projectIds?: TProjectIds
   ) {
+    // @ts-expect-error - dynamically typed for all queries
     args.where = {
+      // @ts-expect-error - dynamically typed for all queries
       ...args?.where,
-      projectId: projectIds,
+      projectId: {in: projectIds},
     };
 
     return args;
   }
 
-  scopeCreate<T extends PrismaGeneralInsertArgs>(
+  scopeCreate<T>(
     args: Prisma.SelectSubset<T, PrismaGeneralInsertArgs>,
     projectIds?: TProjectIds
   ) {
+    // @ts-expect-error - dynamically typed for all queries
     args.data = {
+      // @ts-expect-error - dynamically typed for all queries
       ...args.data,
-      projectId: projectIds,
+      projectId: {in: projectIds},
     };
 
     return args;
   }
 
-  scopeUpdate<T extends Prisma.FilterUpdateArgs>(
+  scopeUpdate<T>(
     args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>,
     projectIds?: TProjectIds
   ) {
     args = this.scopeCreate(args);
+    // @ts-expect-error - dynamically typed for all queries
     args.where = {
+      // @ts-expect-error - dynamically typed for all queries
       ...args.where,
-      projectId: projectIds,
+      projectId: {in: projectIds},
     };
+    // @ts-expect-error - dynamically typed for all queries
     args.data = {
+      // @ts-expect-error - dynamically typed for all queries
       ...args.data,
-      projectId: projectIds,
+      projectId: projectIds?.[0],
     };
     return args;
   }
 
-  scopeUpsert<T extends PrismaGeneralUpsertArgs>(
+  scopeUpsert<T>(
     args: Prisma.SelectSubset<T, PrismaGeneralUpsertArgs>,
     projectIds?: TProjectIds
   ) {
+    // @ts-expect-error - dynamically typed for all queries
     args.where = {
+      // @ts-expect-error - dynamically typed for all queries
       ...args.where,
-      projectId: projectIds,
+      projectId: {in: projectIds},
     };
+    // @ts-expect-error - dynamically typed for all queries
     args.update = {
+      // @ts-expect-error - dynamically typed for all queries
       ...args.update,
-      projectId: projectIds,
+      projectId: projectIds?.[0],
     };
+    // @ts-expect-error - dynamically typed for all queries
     args.create = {
+      // @ts-expect-error - dynamically typed for all queries
       ...args.create,
-      projectId: projectIds,
+      projectId: projectIds?.[0],
     };
 
     return args;
   }
 
-  scopeDelete<T extends Prisma.FilterDeleteArgs>(
+  scopeDelete<T>(
     args: Prisma.SelectSubset<T, Prisma.FilterDeleteArgs>,
     projectIds?: TProjectIds
   ) {
+    // @ts-expect-error - dynamically typed for all queries
     args.where = {
+      // @ts-expect-error - dynamically typed for all queries
       ...args.where,
-      projectId: projectIds,
+      projectId: projectIds?.[0],
     };
     return args;
   }

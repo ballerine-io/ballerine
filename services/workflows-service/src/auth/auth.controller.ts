@@ -9,6 +9,8 @@ import { Request, Response } from 'express';
 import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
 import util from 'util';
 import { Public } from '@/common/decorators/public.decorator';
+import {AuthenticatedEntity} from "@/types";
+import {User} from "@prisma/client";
 
 @Public()
 @ApiTags('auth')
@@ -40,10 +42,10 @@ export class AuthController {
   @common.Get('session')
   @swagger.ApiOkResponse({ type: UserModel })
   getSession(@Req() req: Request): {
-    user: Express.User | undefined;
+    user: Partial<User> | undefined;
   } {
     return {
-      user: req?.user,
+      user: (req?.user as unknown as AuthenticatedEntity)?.user,
     };
   }
 }
