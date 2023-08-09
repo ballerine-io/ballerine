@@ -196,7 +196,7 @@ export class WorkflowService {
         definitionType: workflow.workflowDefinition.definitionType,
         workflowContext: {
           machineContext: workflow.context,
-          state: workflow.state ?? workflow.workflowDefinition.definition.initial,
+          state: workflow.state ?? workflow.workflowDefinition.definition?.initial,
         },
       });
 
@@ -652,6 +652,13 @@ export class WorkflowService {
 
     if (isResolved) {
       this.logger.log('Workflow resolved', { id: workflowRuntimeId });
+
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData,
+        state: currentState ?? runtimeData.state,
+        entityId: runtimeData.businessId || runtimeData.endUserId,
+        correlationId,
+      });
     }
 
     const documentToRevise = data.context?.documents?.find(
