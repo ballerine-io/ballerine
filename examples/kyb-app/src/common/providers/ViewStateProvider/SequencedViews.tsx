@@ -16,6 +16,7 @@ interface Props<TContext extends ViewsData> {
   globalWrapper: React.ComponentType<{ children: AnyChildren }>;
   initialContext?: TContext;
   warnings?: InputsWarnings;
+  isLoading?: boolean;
   afterUpdate?: (viewsData: AnyObject) => void;
   onViewChange?: (context: TContext, viewKey: string) => void;
   onFinish?: (context: TContext) => void;
@@ -26,6 +27,7 @@ export function SequencedViews<TContext extends ViewsData>({
   initialContext,
   globalWrapper,
   warnings,
+  isLoading = false,
   onViewChange,
   afterUpdate,
   onFinish,
@@ -119,6 +121,7 @@ export function SequencedViews<TContext extends ViewsData>({
       warnings,
       isFinished,
       views,
+      isLoading,
       finish,
       update,
       updateViews: setViews,
@@ -136,6 +139,7 @@ export function SequencedViews<TContext extends ViewsData>({
     steps,
     warnings,
     isFinished,
+    isLoading,
     views,
     setData,
     update,

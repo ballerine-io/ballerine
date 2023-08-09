@@ -1,7 +1,21 @@
+import { useEffect } from 'react';
+import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
+import { useSignin } from '@app/hooks/useSignin';
 import { withSessionProtected } from '@app/hooks/useSignin/hocs/withSessionProtected';
 import { Card } from '@ballerine/ui';
 
 export const Rejected = withSessionProtected(() => {
+  const { isFetching, workflow } = useActiveWorkflowQuery();
+  const { logoutSilent } = useSignin();
+
+  useEffect(() => {
+    if (isFetching) return;
+
+    if (workflow.state === 'reject') {
+      setTimeout(logoutSilent, 250);
+    }
+  }, [isFetching, workflow, logoutSilent]);
+
   return (
     <div className="flex h-full items-center justify-center">
       <Card className="w-full max-w-[646px] p-12">

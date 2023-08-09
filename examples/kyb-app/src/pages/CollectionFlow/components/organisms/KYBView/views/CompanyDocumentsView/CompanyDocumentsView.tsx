@@ -8,7 +8,7 @@ import { DynamicForm } from '@ballerine/ui';
 import { useCallback } from 'react';
 
 export const CompanyDocumentsView = () => {
-  const { context, state, warnings, save, finish } = useViewState<WorkflowFlowData>();
+  const { context, state, warnings, isLoading, save, finish } = useViewState<WorkflowFlowData>();
 
   const handleSubmit = useCallback(
     (values: DocumentsContext) => {
@@ -29,6 +29,7 @@ export const CompanyDocumentsView = () => {
           void handleSubmit(values);
         }}
         warnings={warnings}
+        disabled={isLoading}
       />
     </AppShell.FormContainer>
   );

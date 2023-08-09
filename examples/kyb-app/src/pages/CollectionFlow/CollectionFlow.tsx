@@ -10,12 +10,12 @@ export const CollectionFlowDumb = () => {
     return <LoadingScreen />;
   }
 
-  if (workflow.state === 'approve') {
-    return <Navigate to="approved" />;
+  if (workflow?.state === 'approve') {
+    return <Navigate to="/approved" />;
   }
 
-  if (workflow.state === 'reject') {
-    return <Navigate to="rejected" />;
+  if (workflow?.state === 'reject') {
+    return <Navigate to="/rejected" />;
   }
 
   return <Outlet />;
