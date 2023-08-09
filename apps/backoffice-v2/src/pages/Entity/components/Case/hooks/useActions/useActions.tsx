@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useApproveEntityMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveEntityMutation/useApproveEntityMutation';
+import { useApproveCaseMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveCaseMutation/useApproveCaseMutation';
 import { useDebounce } from '../../../../../../common/hooks/useDebounce/useDebounce';
 import { createInitials } from '../../../../../../common/utils/create-initials/create-initials';
 import { IUseActions } from './interfaces';
@@ -23,11 +23,12 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
   const filterId = useFilterId();
   const { data: workflow, isLoading: isLoadingCase } = useWorkflowQuery({ workflowId, filterId });
-  const { mutate: mutateApproveEntity, isLoading: isLoadingApproveEntity } =
-    useApproveEntityMutation({
+  const { mutate: mutateApproveEntity, isLoading: isLoadingApproveEntity } = useApproveCaseMutation(
+    {
       workflowId: workflowId,
       onSelectNextEntity,
-    });
+    },
+  );
   const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } = useRevisionCaseMutation({
     workflowId: workflowId,
     onSelectNextEntity,
