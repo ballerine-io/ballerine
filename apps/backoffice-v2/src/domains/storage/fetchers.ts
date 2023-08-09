@@ -16,6 +16,16 @@ export const fetchFileContentById = async (fileId: string) => {
   return handleZodError(error, base64);
 };
 
+export const fetchFileSignedUrlById = async (fileId: string) => {
+  const [res, error] = await apiClient({
+    endpoint: `storage/content/${fileId}?format=signed-url`,
+    method: Method.GET,
+    schema: z.object({ signedUrl: z.string() }),
+  });
+
+  return handleZodError(error, res);
+};
+
 export const fetchFileInfoById = async (fileId: string) => {
   const [fileInfo, error] = await apiClient({
     endpoint: `storage/${fileId}`,
@@ -27,7 +37,10 @@ export const fetchFileInfoById = async (fileId: string) => {
 };
 export const fetchFileById = async (fileId: string) => {
   const fileInfo = await fetchFileInfoById(fileId);
+  if (fileInfo.fileNameInBucket) {
+    const res = await fetchFileSignedUrlById(fileInfo.id);
+    return res.signedUrl;
+  }
   const fileContent = await fetchFileContentById(fileInfo.id);
-
   return fileContent;
 };

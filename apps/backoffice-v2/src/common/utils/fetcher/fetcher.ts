@@ -12,7 +12,7 @@ export const fetcher: IFetcher = async ({
     'Content-Type': 'application/json',
   },
   options,
-  timeout = 5000,
+  timeout = 10000,
   schema,
   isBlob = false,
 }) => {
