@@ -9,7 +9,7 @@ export const fetcher: IFetcher = async ({
   method,
   body,
   options,
-  timeout = 5000,
+  timeout = 10000,
   schema,
   isBlob = false,
 }) => {

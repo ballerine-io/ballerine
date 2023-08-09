@@ -10,6 +10,7 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import { TLocalFile } from '@/storage/types';
 import path from 'path';
 import os from 'os';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
   if (AwsS3FileConfig.isConfigured(processEnv)) {
@@ -55,4 +56,23 @@ export const downloadFileFromS3 = async (
     console.error('Error Stream file to S3:', error);
     throw new Error('Failed to Stream S3 file');
   }
+};
+
+export const createPresignedUrlWithClient = async ({
+  bucketName,
+  fileNameInBucket,
+  fileTypeByEnding,
+}: {
+  bucketName: string;
+  fileNameInBucket: string;
+  fileTypeByEnding?: string;
+}): Promise<TLocalFile> => {
+  const s3Client = new S3Client(AwsS3FileConfig.fetchClientConfig(process.env));
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: fileNameInBucket,
+    ResponseContentType: fileTypeByEnding && `application/${fileTypeByEnding}`,
+  });
+
+  return getSignedUrl(s3Client, command, { expiresIn: 1800 });
 };
