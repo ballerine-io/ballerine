@@ -110,7 +110,7 @@ export const useTasks = ({
                           data: {
                             id,
                             disabled: !isDoneWithRevision && Boolean(decision?.status),
-                            approvalStatus: 'rejected',
+                            decision: 'reject',
                           },
                         },
                         {
@@ -119,7 +119,7 @@ export const useTasks = ({
                           data: {
                             id,
                             disabled: !isDoneWithRevision && Boolean(decision?.status),
-                            approvalStatus: 'approved',
+                            decision: 'approve',
                           },
                         },
                       ],

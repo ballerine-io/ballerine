@@ -6,7 +6,7 @@ import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { Action } from '../../../../../common/enums';
 
 // @TODO: Refactor to be under cases/workflows domain
-export const useApproveEntityMutation = ({
+export const useApproveCaseMutation = ({
   workflowId,
   onSelectNextEntity,
 }: {
