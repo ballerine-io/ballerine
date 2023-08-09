@@ -4,11 +4,18 @@ import { useNominatimQuery } from './hooks/useNominatimQuery/useNominatimQuery';
 import { IMapCellProps } from './interfaces';
 import { Map } from '../../../../common/components/molecules/Map/Map';
 import { ErrorAlert } from '../../../../common/components/atoms/ErrorAlert/ErrorAlert';
+import { Alert } from '../../../../common/components/atoms/Alert/Alert';
 
 export const MapCell: FunctionComponent<IMapCellProps> = ({ value }) => {
-  const { data } = useNominatimQuery(value);
+  const { data, isLoading, isError } = useNominatimQuery(value);
 
-  if (!data?.[0]?.lat || !data?.[0]?.lon) {
+  const className = 'mt-6 h-[600px] w-[600px] rounded-md';
+
+  if (isLoading) {
+    return <Alert className={className}>Loading map...</Alert>;
+  }
+
+  if (isError || !data?.[0]?.lat || !data?.[0]?.lon) {
     return <ErrorAlert>Invalid address.</ErrorAlert>;
   }
 
@@ -16,6 +23,7 @@ export const MapCell: FunctionComponent<IMapCellProps> = ({ value }) => {
     <Map
       latitude={data?.[0]?.lat}
       longitude={data?.[0]?.lon}
+      className={className}
       popupContent={`${value?.country}, ${value?.city}, ${value?.street}`}
     />
   );
