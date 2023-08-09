@@ -50,7 +50,8 @@ export class WorkflowCompletedWebhookCaller {
     );
 
     if (!url) {
-      throw new Error(`No webhook url found for a workflow runtime data with an id of "${id}"`);
+      this.logger.log(`No webhook url found for a workflow runtime data with an id of "${id}"`);
+      return;
     }
 
     this.logger.log('Sending webhook', { id, url });

@@ -14,7 +14,6 @@ import { BusinessModule } from './business/business.module';
 import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { WebhooksModule } from './webhooks/webhooks.module';
 import { FilterModule } from '@/filter/filter.module';
 import { env } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
@@ -40,7 +39,6 @@ import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
       },
     }),
     EventEmitterModule.forRoot(),
-    WebhooksModule,
     // DevtoolsModule.register({
     //   http: process.env.NODE_ENV !== 'production',
     // }),
