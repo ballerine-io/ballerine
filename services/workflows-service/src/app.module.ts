@@ -42,9 +42,6 @@ import {AuthKeyMiddleware} from "@/common/middlewares/auth-key.middleware";
     }),
     EventEmitterModule.forRoot(),
     WebhooksModule,
-    // DevtoolsModule.register({
-    //   http: process.env.NODE_ENV !== 'production',
-    // }),
     UserModule,
     WorkflowModule,
     StorageModule,

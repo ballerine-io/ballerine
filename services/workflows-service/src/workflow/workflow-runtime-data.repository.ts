@@ -4,12 +4,13 @@ import { Prisma, WorkflowRuntimeData, WorkflowRuntimeDataStatus } from '@prisma/
 import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
-import { ProjectScopedRepository } from '@/common/repositories/project-scoped.repository';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
 @Injectable()
-export class WorkflowRuntimeDataRepository extends ProjectScopedRepository {
+export class WorkflowRuntimeDataRepository {
+  constructor(protected readonly prisma: PrismaService) {}
+
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
   ): Promise<WorkflowRuntimeData> {

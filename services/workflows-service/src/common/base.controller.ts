@@ -1,6 +1,8 @@
 import { Prisma } from '@prisma/client';
-import { RequestProjectContext } from '@/common/utils/project-context/request-project-context';
 import { PrismaService } from '@/prisma/prisma.service';
+import {Request} from "express";
+import {Controller, Req} from "@nestjs/common";
+import {AuthenticatedEntity, TProjectIds} from "@/types";
 
 export interface PrismaGeneralQueryArgs {
   select?: Record<string, unknown> | null;
@@ -21,21 +23,15 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
   update: Record<string, unknown> | null;
   where: Record<string, unknown> | null;
 }
-export class ProjectScopedRepository {
-  constructor(
-    protected readonly prisma: PrismaService,
-    protected readonly requestProjectContext: RequestProjectContext
-  ) {}
+export class BaseController {
   scopeFindMany<T extends PrismaGeneralQueryArgs>(
     args?: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
-  ): T {
-    const projectId = this.requestProjectContext.getProjectIds();
-
+    projectIds?: TProjectIds): T {
     // @ts-ignore
     args ||= {};
     args!.where = {
       ...args?.where,
-      projectId: projectId,
+      projectId: projectIds,
     };
 
     return args!;
@@ -43,9 +39,8 @@ export class ProjectScopedRepository {
 
   scopeFindOne<T extends PrismaGeneralQueryArgs>(
     args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
+    projectIds?: TProjectIds
   ) {
-    const projectIds = this.requestProjectContext.getProjectIds();
-    // if proejct/user == admin ... dont filter by project
     args.where = {
       ...args?.where,
       projectId: projectIds,
@@ -56,12 +51,11 @@ export class ProjectScopedRepository {
 
   scopeCreate<T extends PrismaGeneralInsertArgs>(
     args: Prisma.SelectSubset<T, PrismaGeneralInsertArgs>,
+    projectIds?: TProjectIds
   ) {
-    const projectId = this.requestProjectContext.getProjectIds();
-
     args.data = {
       ...args.data,
-      projectId: projectId,
+      projectId: projectIds,
     };
 
     return args;
@@ -69,36 +63,35 @@ export class ProjectScopedRepository {
 
   scopeUpdate<T extends Prisma.FilterUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>,
+    projectIds?: TProjectIds
   ) {
-    const projectId = this.requestProjectContext.getProjectIds();
-
     args = this.scopeCreate(args);
     args.where = {
       ...args.where,
-      projectId: projectId,
+      projectId: projectIds,
     };
     args.data = {
       ...args.data,
-      projectId: projectId,
+      projectId: projectIds,
     };
     return args;
   }
 
   scopeUpsert<T extends PrismaGeneralUpsertArgs>(
     args: Prisma.SelectSubset<T, PrismaGeneralUpsertArgs>,
+    projectIds?: TProjectIds
   ) {
-    const projectId = this.requestProjectContext.getProjectIds();
     args.where = {
       ...args.where,
-      projectId: projectId,
+      projectId: projectIds,
     };
     args.update = {
       ...args.update,
-      projectId: projectId,
+      projectId: projectIds,
     };
     args.create = {
       ...args.create,
-      projectId: projectId,
+      projectId: projectIds,
     };
 
     return args;
@@ -106,11 +99,11 @@ export class ProjectScopedRepository {
 
   scopeDelete<T extends Prisma.FilterDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.FilterDeleteArgs>,
+    projectIds?: TProjectIds
   ) {
-    const projectId = this.requestProjectContext.getProjectIds();
     args.where = {
       ...args.where,
-      projectId: projectId,
+      projectId: projectIds,
     };
     return args;
   }

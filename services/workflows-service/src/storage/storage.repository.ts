@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { File, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { IFileIds } from './types';
-import { ProjectScopedRepository } from '@/common/repositories/project-scoped.repository';
 
 @Injectable()
-export class FileRepository extends ProjectScopedRepository {
+export class FileRepository {
+  constructor(protected readonly prisma: PrismaService) {}
+
   async create<T extends Prisma.FileCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.FileCreateArgs>,
   ): Promise<File> {
