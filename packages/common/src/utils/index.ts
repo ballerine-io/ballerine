@@ -13,4 +13,7 @@ export { zodErrorToReadable } from './zod-error-to-readable';
 export { safeEvery } from './safe-every';
 export { someDocumentDecisionStatus } from './some-document-decision-status';
 export { everyDocumentDecisionStatus } from './every-document-decision-status';
+export { raise } from './raise';
+export { log } from './log';
+export { dump } from './dump';
 export { type IErrorWithMessage } from './is-error-with-message';

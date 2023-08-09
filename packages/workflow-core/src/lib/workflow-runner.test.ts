@@ -52,7 +52,7 @@ describe('workflow-runner', () => {
     expect(workflow.events).toStrictEqual([]);
   });
 
-  it('it does not invoke subscribe callback when staying at the same state', async () => {
+  it('does not invoke subscribe callback when staying at the same state', async () => {
     const workflow = createEventCollectingWorkflow({
       definition: SINGLE_STATE_MACHINE_DEFINITION,
     });

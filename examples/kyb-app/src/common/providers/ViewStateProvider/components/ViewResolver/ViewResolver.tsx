@@ -1,17 +1,15 @@
 import { useViewState } from '@app/common/providers/ViewStateProvider/hooks/useViewState';
-import { SchemaBase, SchemaStates } from '@app/common/providers/ViewStateProvider/types';
 import { useMemo } from 'react';
 
-interface Props<TSchema extends SchemaBase> {
-  schema: TSchema;
-  paths: Record<SchemaStates<TSchema>, React.ComponentType<object>>;
+interface Props {
+  paths: Record<PropertyKey, React.ComponentType<object>>;
 }
 
-export function ViewResolver<TSchema extends SchemaBase>({ paths }: Props<TSchema>) {
+export function ViewResolver({ paths }: Props) {
   const context = useViewState();
 
   const Component = useMemo(() => {
-    const componentInPaths = paths[context.state];
+    const componentInPaths = paths[context.state as PropertyKey];
 
     if (!componentInPaths) return () => null;
 

@@ -10,7 +10,7 @@ export const useRevisionCaseMutation = ({
   onSelectNextEntity,
 }: {
   workflowId: string;
-  onSelectNextEntity: VoidFunction;
+  onSelectNextEntity?: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
 

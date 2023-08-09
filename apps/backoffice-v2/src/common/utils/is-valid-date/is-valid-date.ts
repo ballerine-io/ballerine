@@ -1,9 +1,14 @@
 import { z } from 'zod';
 
 /**
- * @description Checks if a passed string is a date by checking if creating a new Date object from it returns NaN.
- * @param str
+ * @description Checks if a passed value is a datetime string.
+ * @param value
+ * @param strict - If false, will return true for strings that match the format YYYY-MM-DD.
  */
-export const isValidDate = (str: string) => {
-  return z.string().datetime().safeParse(str).success;
+export const isValidDate = (value: unknown, strict = true): value is string => {
+  if (typeof value !== 'string') return false;
+
+  if (!strict && /\d{4}-\d{2}-\d{2}/.test(value)) return true;
+
+  return z.string().datetime().safeParse(value).success;
 };

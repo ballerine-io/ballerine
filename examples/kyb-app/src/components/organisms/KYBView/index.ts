@@ -1,1 +1,1 @@
-export * from './KYBView';
+export * from './KYB';

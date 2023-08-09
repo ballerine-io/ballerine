@@ -22,9 +22,11 @@ const kycSessionRequestSchema = {
   },
   required: ['firstName', 'lastName', 'callbackUrl', 'vendor'],
 };
+
 export class KycSessionPlugin extends ApiPlugin {
   public static pluginType = 'http';
   public static pluginKind = 'kyc-session';
+
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
     schemaValidator: Validator | undefined,
     transformedRequest: AnyRecord,
@@ -36,9 +38,8 @@ export class KycSessionPlugin extends ApiPlugin {
         transformedRequest,
         validationContext,
       );
-    } else {
-      return super.validateContent(schemaValidator, transformedRequest, validationContext);
     }
+    return super.validateContent(schemaValidator, transformedRequest, validationContext);
   }
 
   async makeApiRequest(
