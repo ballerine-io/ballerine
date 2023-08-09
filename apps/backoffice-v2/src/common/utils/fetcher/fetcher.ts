@@ -8,6 +8,9 @@ export const fetcher: IFetcher = async ({
   url,
   method,
   body,
+  headers = {
+    'Content-Type': 'application/json',
+  },
   options,
   timeout = 5000,
   schema,
@@ -24,10 +27,7 @@ export const fetcher: IFetcher = async ({
       method,
       signal,
       body: method !== 'GET' && body ? JSON.stringify(body) : undefined,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.headers ?? {}),
-      },
+      headers,
     }),
   );
   clearTimeout(timeoutRef);
