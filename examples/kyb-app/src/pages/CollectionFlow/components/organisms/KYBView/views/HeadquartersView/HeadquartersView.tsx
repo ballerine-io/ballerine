@@ -13,8 +13,6 @@ export const HeadquartersView = () => {
   const { context, update, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
   const { schema } = useHeadquartersSchema(context.flowData.headquarters, headquartersSchema);
 
-  console.log('heaquarters context', context);
-
   return (
     <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<HeadquartersContext>

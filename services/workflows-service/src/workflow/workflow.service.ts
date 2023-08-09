@@ -362,8 +362,6 @@ export class WorkflowService {
     return workflows.map(workflow => {
       const isIndividual = 'endUser' in workflow;
 
-      console.log('workflow', workflow);
-
       return {
         id: workflow?.id,
         status: workflow?.status,
