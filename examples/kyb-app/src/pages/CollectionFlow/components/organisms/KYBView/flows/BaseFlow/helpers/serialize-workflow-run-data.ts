@@ -132,6 +132,9 @@ export const serializeWorkflowRunData = async (
             fileId: proofOfAddressFileId,
           },
         ],
+        properties: {
+          userAddress: buildCompanyAddress(headquarters),
+        },
       },
       {
         country: 'GH',
@@ -142,18 +145,40 @@ export const serializeWorkflowRunData = async (
             fileId: registrationDocumentFileId,
           },
         ],
+        properties: {
+          companyName: companyInformation.companyName,
+          country: getFullCountryNameByCode(companyInformation.companyCountry),
+          state: companyInformation.state,
+          vat: companyInformation.vat,
+          companyType: companyInformation.companyType,
+          establishmentDate: new Date(companyInformation.registrationDate),
+        },
       },
       {
         country: 'GH',
         type: 'bank_statement',
         category: 'proof_of_address',
         pages: [{ fileId: bankStatementFileId }],
+        properties: {
+          country: bankInformation.country,
+          name: bankInformation.bankName,
+          holderName: bankInformation.holder,
+          accountNumber: bankInformation.account,
+          currency: bankInformation.currency,
+        },
       },
       {
         country: 'GH',
-        type: 'company_structure',
-        category: 'financial_information',
+        type: 'shareholders',
+        category: 'company_structure',
         pages: [{ fileId: companyStructureFileId }],
+        properties:
+          ubos.shareholders && ubos.shareholders.length
+            ? {
+                firstName: ubos.shareholders.at(-1).name.firstName,
+                lastName: ubos.shareholders.at(-1).name.lastName,
+              }
+            : {},
       },
     ],
   };

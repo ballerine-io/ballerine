@@ -38,7 +38,7 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
           },
         },
       },
-      documents: data.documents.map(({ category, country, type, pages }) => ({
+      documents: data.documents.map(({ category, country, type, pages, properties }) => ({
         category,
         type,
         issuer: {
@@ -46,7 +46,7 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
         },
         decision: { status: '', revisionReason: '', rejectionReason: '' },
         pages: pages.map(({ fileId }) => ({ ballerineFileId: fileId })),
-        properies: {},
+        properties,
         version: '1',
         issuingVersion: 1,
       })),

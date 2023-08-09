@@ -26,6 +26,7 @@ export interface WorkflowRunDocument {
   pages: {
     fileId: string;
   }[];
+  properties: AnyObject;
 }
 
 export interface WorkflowEntity {
@@ -86,7 +87,7 @@ export interface TRunWorkflowDocument {
     country: string;
   };
   pages: { ballerineFileId: string }[];
-  properies: AnyObject;
+  properties: AnyObject;
   version: string;
   issuingVersion: number;
 }
