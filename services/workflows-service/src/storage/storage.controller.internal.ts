@@ -1,5 +1,5 @@
 import * as common from '@nestjs/common';
-import { Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Param, Post, Res, UploadedFile, UseInterceptors, Query } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -8,7 +8,11 @@ import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
 import { fileFilter } from './file-filter';
-import { downloadFileFromS3, manageFileByProvider } from '@/storage/get-file-storage-manager';
+import {
+  createPresignedUrlWithClient,
+  downloadFileFromS3,
+  manageFileByProvider,
+} from '@/storage/get-file-storage-manager';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import path from 'path';
 import os from 'os';
@@ -16,6 +20,7 @@ import { File } from '@prisma/client';
 import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { file } from 'tmp';
+import { Public } from '@/common/decorators/public.decorator';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -75,7 +80,11 @@ export class StorageControllerInternal {
 
   // curl -v http://localhost:3000/api/v1/storage/content/1679322938093
   @common.Get('/content/:id')
-  async fetchFileContent(@Param('id') id: string, @Res() res: Response) {
+  async fetchFileContent(
+    @Param('id') id: string,
+    @Res() res: Response,
+    @Query('format') format: string,
+  ) {
     // currently ignoring user id due to no user info
     const persistedFile = await this.service.getFileNameById({
       id,
@@ -84,9 +93,19 @@ export class StorageControllerInternal {
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }
+
     const root = path.parse(os.homedir()).root;
 
     if (persistedFile.fileNameInBucket) {
+      if (format === 'signed-url') {
+        const fileTypeByEnding = persistedFile.fileNameInBucket.split('.').pop();
+        const signedUrl = await createPresignedUrlWithClient({
+          bucketName: AwsS3FileConfig.fetchBucketName(process.env) as string,
+          fileNameInBucket: persistedFile.fileNameInBucket,
+          fileTypeByEnding,
+        });
+        return res.json({ signedUrl });
+      }
       const localFilePath = await downloadFileFromS3(
         AwsS3FileConfig.fetchBucketName(process.env) as string,
         persistedFile.fileNameInBucket,
