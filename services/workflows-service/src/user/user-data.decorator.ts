@@ -1,6 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { TProjectId } from '@/types';
 
 /**
  * Access the user data from the request object i.e `req.user`.

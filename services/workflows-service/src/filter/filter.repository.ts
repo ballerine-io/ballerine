@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { FilterModel } from './filter.model';
-import { ProjectScopedRepository } from '@/common/repositories/project-scoped.repository';
 
 @Injectable()
-export class FilterRepository extends ProjectScopedRepository {
+export class FilterRepository {
+  constructor(protected readonly prisma: PrismaService) {}
+
   async create<T extends Prisma.FilterCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.FilterCreateArgs>,
   ) {

@@ -11,15 +11,18 @@ import { BusinessModel } from './business.model';
 import { BusinessService } from './business.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
+import {BaseController} from "@/common/base.controller";
 
 @swagger.ApiTags('internal/businesses')
 @common.Controller('internal/businesses')
-export class BusinessControllerExternal {
+export class BusinessControllerExternal extends BaseController {
   constructor(
     protected readonly service: BusinessService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-  ) {}
+  ) {
+    super()
+  }
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [BusinessModel] })

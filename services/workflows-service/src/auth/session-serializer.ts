@@ -25,9 +25,9 @@ export class SessionSerializer extends PassportSerializer {
     });
   }
 
-  async deserializeUser(user: User, done: (err: unknown, user: User | null) => void) {
+  async deserializeUser(user: AuthenticatedEntity, done: (err: unknown, user: User | null) => void) {
     try {
-      const userResult = await this.userService.getById(user.id, {
+      const userResult = await this.userService.getById(user.user!.id!, {
         select: {
           id: true,
           email: true,
@@ -36,8 +36,6 @@ export class SessionSerializer extends PassportSerializer {
           userToProjects: { select: { projectId: true } }
         }
       });
-
-      delete (userResult as Partial<User>).password;
 
       return done(null, userResult);
     } catch (err) {

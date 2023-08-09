@@ -92,6 +92,16 @@ async function seed(bcryptSalt: Salt) {
   const project2 = await createProject(client, customer, '2');
   const users = [
     {
+      email: 'admin@admin.com',
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      password: await hash('admin', bcryptSalt),
+      roles: ['user'],
+      userToProjects: {
+        create: {projectId: defaultProject.id}
+      },
+    },
+    {
       email: 'agent1@ballerine.com',
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
@@ -116,16 +126,6 @@ async function seed(bcryptSalt: Salt) {
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
       password: await hash('agent3', bcryptSalt),
-      roles: ['user'],
-      userToProjects: {
-        create: {projectId: defaultProject.id}
-      },
-    },
-    {
-      email: 'admin@admin.com',
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      password: await hash('admin', bcryptSalt),
       roles: ['user'],
       userToProjects: {
         create: {projectId: defaultProject.id}
@@ -160,6 +160,7 @@ async function seed(bcryptSalt: Salt) {
       email: 'nadia@ballerine.com',
       correlationId: '1',
       dateOfBirth: '2000-11-04T12:45:51.695Z',
+      projectId: defaultProject.id,
     },
   });
 
