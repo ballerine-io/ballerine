@@ -1,6 +1,6 @@
 import { getCountriesList } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list';
 import { RJSFSchema } from '@rjsf/utils';
-import currencyCodes from 'currency-codes';
+// import currencyCodes from 'currency-codes';
 
 export const bankInformationSchema: RJSFSchema = {
   type: 'object',
@@ -16,7 +16,7 @@ export const bankInformationSchema: RJSFSchema = {
     bankName: {
       title: 'Bank Name',
       type: 'string',
-      oneOf: [{ const: 'bank', title: 'Some Bank' }],
+      // oneOf: [{ const: 'bank', title: 'Some Bank' }],
     },
     holder: {
       title: 'Account Holder Name',
@@ -31,7 +31,8 @@ export const bankInformationSchema: RJSFSchema = {
     currency: {
       title: 'Account Currency',
       type: 'string',
-      oneOf: currencyCodes.codes().map(code => ({ title: code.toUpperCase(), const: code })),
+      // oneOf: currencyCodes.codes().map(code => ({ title: code.toUpperCase(), const: code })),
+      oneOf: [{ title: 'USD', const: 'usd' }],
     },
   },
   required: ['country', 'holder', 'bankName'],

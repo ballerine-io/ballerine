@@ -7,7 +7,6 @@ export const useActiveWorkflowQuery = () => {
   const { data: workflow, isFetching } = useQuery({
     ...workflowsQueryKeys.getFlowData({ email: user?.email }),
     enabled: Boolean(user),
-    retry: false,
     staleTime: Infinity,
   });
 

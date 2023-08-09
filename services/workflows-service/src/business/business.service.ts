@@ -50,8 +50,13 @@ export class BusinessService {
 
     try {
       const request$ = this.httpService.get<TCompanyInformation>(
-        `${env.UNIFIED_API_URL}/companies/${jurisdictionCode}/${registrationNumber}`,
-        { params: { vendor } },
+        `${process.env.KYB_API_URL as string}/companies/${jurisdictionCode}/${registrationNumber}`,
+        {
+          params: { vendor },
+          headers: {
+            Authorization: `Bearer ${process.env.UNIFIED_API_TOKEN as string}`,
+          },
+        },
       );
       const result = (await lastValueFrom(request$)).data;
 
