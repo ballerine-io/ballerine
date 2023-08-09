@@ -88,7 +88,7 @@ async function seed(bcryptSalt: Salt) {
   const client = new PrismaClient();
   await generateDynamicDefinitionForE2eTest(client);
   const customer = await createCustomer(client);
-  const defaultProject = await createProject(client, customer, '1');
+  const project1 = await createProject(client, customer, '1');
   const project2 = await createProject(client, customer, '2');
   const users = [
     {
@@ -98,7 +98,7 @@ async function seed(bcryptSalt: Salt) {
       password: await hash('admin', bcryptSalt),
       roles: ['user'],
       userToProjects: {
-        create: {projectId: defaultProject.id}
+        create: {projectId: project1.id}
       },
     },
     {
@@ -128,7 +128,7 @@ async function seed(bcryptSalt: Salt) {
       password: await hash('agent3', bcryptSalt),
       roles: ['user'],
       userToProjects: {
-        create: {projectId: defaultProject.id}
+        create: {projectId: project1.id}
       },
     },
   ];
@@ -160,7 +160,19 @@ async function seed(bcryptSalt: Salt) {
       email: 'nadia@ballerine.com',
       correlationId: '1',
       dateOfBirth: '2000-11-04T12:45:51.695Z',
-      projectId: defaultProject.id,
+      projectId: project1.id,
+    },
+  });
+
+  const user2 = await client.endUser.create({
+    data: {
+      id: '43a0a298-0d02-4a2e-a8cc-73c06b465311',
+      firstName: 'Nadin',
+      lastName: 'Mami',
+      email: 'ndain@ballerine.com',
+      correlationId: '2',
+      dateOfBirth: '2000-11-04T12:45:51.695Z',
+      projectId: project2.id,
     },
   });
 
@@ -424,12 +436,14 @@ async function seed(bcryptSalt: Salt) {
     name: string,
     entity: 'individuals' | 'businesses',
     query: Prisma.WorkflowRuntimeDataFindManyArgs,
+    projectId: string
   ) {
     return client.filter.create({
       data: {
         entity,
         name,
         query: query as any,
+        projectId: projectId
       },
     });
   }
@@ -767,7 +781,8 @@ async function seed(bcryptSalt: Salt) {
       workflowDefinitionId: 'dynamic_external_request_example',
       businessId: { not: null },
     },
-  });
+  },
+    project1.id);
 
   await createFilter('Onboarding - Individuals', 'individuals', {
     select: {
@@ -816,7 +831,8 @@ async function seed(bcryptSalt: Salt) {
       workflowDefinitionId: kycManualMachineId,
       endUserId: { not: null },
     },
-  });
+  },
+    project2.id);
 
   // KYB Onboarding
   await client.workflowDefinition.create({
@@ -971,7 +987,8 @@ async function seed(bcryptSalt: Salt) {
       workflowDefinitionId: riskScoreMachineKybId,
       endUserId: { not: null },
     },
-  });
+  },
+    project1.id);
 
   await createFilter('Risk Score Improvement - Businesses', 'businesses', {
     select: {
@@ -1026,7 +1043,8 @@ async function seed(bcryptSalt: Salt) {
       workflowDefinitionId: riskScoreMachineKybId,
       businessId: { not: null },
     },
-  });
+  },
+    project1.id);
 
   await createFilter("KYB with UBO's", 'businesses', {
     select: {
@@ -1082,7 +1100,8 @@ async function seed(bcryptSalt: Salt) {
       workflowDefinitionId: 'kyb_parent_kyc_session_example',
       businessId: { not: null },
     },
-  });
+  },
+    project2.id);
 
   await client.$transaction(async () =>
     endUserIds.map(async (id, index) =>
@@ -1095,6 +1114,7 @@ async function seed(bcryptSalt: Salt) {
             workflowDefinitionVersion: manualMachineVersion,
             context: await createMockEndUserContextData(id, index + 1),
           },
+          projectId: project2.id
         }),
       }),
     ),
@@ -1107,12 +1127,14 @@ async function seed(bcryptSalt: Salt) {
         workflowDefinitionVersion: 1,
         context: await createMockBusinessContextData(id, index + 1),
         createdAt: faker.date.recent(2),
+        projectId: project1.id
       });
 
       return client.business.create({
         data: generateBusiness({
           id,
           workflow: await riskWf(),
+          projectId: project1.id
         }),
       });
     });
@@ -1130,6 +1152,7 @@ async function seed(bcryptSalt: Salt) {
         data: generateBusiness({
           id,
           workflow: exampleWf,
+          projectId: project1.id
         }),
       });
     });

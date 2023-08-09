@@ -29,6 +29,7 @@ import { MetricsModule } from '@/metrics/metrics.module';
 import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
 import {CustomerModule} from "@/customer/customer.module";
 import {AuthKeyMiddleware} from "@/common/middlewares/auth-key.middleware";
+import {ProjectModule} from "@/project/project.module";
 
 @Module({
   controllers: [MetricsController],
@@ -48,6 +49,7 @@ import {AuthKeyMiddleware} from "@/common/middlewares/auth-key.middleware";
     EndUserModule,
     CustomerModule,
     BusinessModule,
+    ProjectModule,
     FilterModule,
     ACLModule,
     AuthModule,

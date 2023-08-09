@@ -28,7 +28,7 @@ import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
-import { InputJsonValue, IObjectWithId } from '@/types';
+import {InputJsonValue, IObjectWithId, TProjectIds} from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
 import Ajv from 'ajv';
@@ -77,6 +77,7 @@ import {
   THelperFormatingLogic,
   Transformer,
 } from '@ballerine/workflow-core';
+import {ProjectScopeService} from "@/project/project-scope.service";
 
 type TEntityId = string;
 
@@ -128,6 +129,7 @@ export class WorkflowService {
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
+    private readonly projectScopeService: ProjectScopeService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -306,6 +308,7 @@ export class WorkflowService {
     orderBy,
     page,
     filters,
+    projectIds
   }: {
     args: Parameters<WorkflowRuntimeDataRepository['findMany']>[0];
     entityType: 'individuals' | 'businesses';
@@ -317,9 +320,11 @@ export class WorkflowService {
     filters?: {
       assigneeId?: (string | null)[];
       status?: WorkflowRuntimeDataStatus[];
-    };
+    },
+    projectIds: TProjectIds;
   }) {
-    const query = merge(
+    const query = this.projectScopeService.scopeFindMany(
+      merge(
       args,
       {
         orderBy: toPrismaOrderBy(orderBy, entityType),
@@ -330,14 +335,11 @@ export class WorkflowService {
       {
         where:
           entityType === 'individuals'
-            ? {
-                endUserId: { not: null },
-              }
-            : {
-                businessId: { not: null },
-              },
+            ? {endUserId: { not: null }}
+            : {businessId: { not: null }},
       },
-    );
+    ), projectIds);
+
 
     const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count({
       where: query.where,

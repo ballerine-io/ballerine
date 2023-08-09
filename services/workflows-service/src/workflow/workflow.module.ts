@@ -22,6 +22,7 @@ import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-chang
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webhook-caller';
+import {ProjectScopeService} from "@/project/project-scope.service";
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
@@ -29,6 +30,7 @@ import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webh
   providers: [
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
+    ProjectScopeService,
     EndUserRepository,
     BusinessRepository,
     EntityRepository,

@@ -33,6 +33,9 @@ import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 import { WorkflowEventDecisionInput } from '@/workflow/dtos/workflow-event-decision-input';
+import {ProjectIds} from "@/common/decorators/project-ids.decorator";
+import {TProjectIds} from "@/types";
+import {ProjectScopeService} from "@/project/project-scope.service";
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -42,6 +45,7 @@ export class WorkflowControllerInternal {
     protected readonly filterService: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly scopeService: ProjectScopeService,
   ) {}
 
   @common.Post()
@@ -61,9 +65,10 @@ export class WorkflowControllerInternal {
   @ApiNestedQuery(FindWorkflowsListDto)
   @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema, 'query'))
   async listWorkflowRuntimeData(
+    @ProjectIds() projectIds: TProjectIds,
     @common.Query() { filterId, page, filter: filters, ...queryParams }: FindWorkflowsListDto,
   ) {
-    const filter = await this.filterService.getById(filterId);
+    const filter = await this.filterService.getById(filterId, this.scopeService.scopeFindOne({}, projectIds));
 
     const entityType = filter.entity as 'individuals' | 'businesses';
 
@@ -75,6 +80,7 @@ export class WorkflowControllerInternal {
       orderBy,
       page,
       filters,
+      projectIds
     });
   }
 

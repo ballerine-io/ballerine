@@ -5,7 +5,8 @@ import { FilterModel } from './filter.model';
 
 @Injectable()
 export class FilterRepository {
-  constructor(protected readonly prisma: PrismaService) {}
+  constructor(protected readonly prisma: PrismaService) {
+  }
 
   async create<T extends Prisma.FilterCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.FilterCreateArgs>,
@@ -19,23 +20,23 @@ export class FilterRepository {
     return await this.prisma.filter.findMany(args);
   }
 
-  async findById<T extends Omit<Prisma.FilterFindUniqueOrThrowArgs, 'where'>>(
+  async findById(
     id: string,
-    args?: Prisma.SelectSubset<T, Omit<Prisma.FilterFindUniqueOrThrowArgs, 'where'>>,
+    args?: Prisma.FilterFindFirstArgs,
   ) {
-    return await this.prisma.filter.findUniqueOrThrow({
-      where: { id },
+    return await this.prisma.filter.findFirst({
       ...args,
+      where: {...args?.where, id: id},
     });
   }
 
-  async updateById<T extends Omit<Prisma.FilterUpdateArgs, 'where'>>(
+  async updateById(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.FilterUpdateArgs, 'where'>>,
+    args: Prisma.FilterUpdateArgs,
   ): Promise<FilterModel> {
     return await this.prisma.filter.update({
-      where: { id },
       ...args,
+      where: {...args.where, id: id},
     });
   }
 }
