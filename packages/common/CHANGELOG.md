@@ -1,15 +1,29 @@
 # @ballerine/common
 
+## 0.5.16
+
+### Patch Changes
+
+- Update packages
+
+## 0.5.15
+
+### Patch Changes
+
+- fixed GH document schema
+
 ## 0.5.14
 
 ### Patch Changes
 
+- Added company structure GH document schema
 - - Remove required fields from document schemas
 
 ## 0.5.13
 
 ### Patch Changes
 
+- added Autocomplete,DropdownInput,Multiselect,DatePicker,Checkbox,PhoneNumber components
 - Upgrade packages
 
 ## 0.5.12

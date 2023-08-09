@@ -19,7 +19,7 @@ export class EndUserService {
   }
 
   async createWithBusiness(endUser: EndUserCreateDto) {
-    const { companyName, ...userData } = endUser;
+    const { companyName = '', ...userData } = endUser;
 
     const user = await this.repository.create({
       data: {
@@ -34,5 +34,16 @@ export class EndUserService {
     });
 
     return user;
+  }
+
+  async getByEmail(email: string) {
+    return await this.repository.find({
+      where: {
+        email,
+      },
+      include: {
+        businesses: true,
+      },
+    });
   }
 }

@@ -26,6 +26,7 @@ import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-au
 import { MetricsController } from '@/metrics/metrics.controller';
 import { MetricsModule } from '@/metrics/metrics.module';
 import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
+import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 
 @Module({
   controllers: [MetricsController],
@@ -64,6 +65,7 @@ import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
     AppLoggerModule,
     FiltersModule,
     MetricsModule,
+    CollectionFlowModule,
   ],
   providers: [
     {

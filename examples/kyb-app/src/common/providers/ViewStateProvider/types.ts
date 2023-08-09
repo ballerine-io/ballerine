@@ -1,6 +1,5 @@
-import { InputsWarnings } from '@app/common/components/organisms/DynamicForm';
 import { IStep, StepMetadata } from '@app/common/hooks/useStepper';
-import { AnyObject } from '@ballerine/ui';
+import { AnyObject, InputsWarnings } from '@ballerine/ui';
 
 export type SchemaBase = { states: AnyObject };
 
@@ -18,8 +17,10 @@ export interface StepperParams {
 export interface ViewStateContext<TGlobalContext = AnyObject> {
   next: () => void;
   prev: () => void;
-  update: (data: object, shared?: object) => Promise<object>;
+  update: (data: object, shared?: object, completed?: boolean) => Promise<object>;
+  updateViews: (views: View[]) => void;
   save: <T>(data: T, shared?: object) => Promise<TGlobalContext>;
+  setData: (data: TGlobalContext) => void;
   saveAndPerformTransition: <T>(data: T, shared?: object) => Promise<TGlobalContext>;
   finish: (context: TGlobalContext) => void;
   context: TGlobalContext;
@@ -28,6 +29,7 @@ export interface ViewStateContext<TGlobalContext = AnyObject> {
   stepper: StepperParams;
   warnings?: InputsWarnings;
   isFinished: boolean;
+  views: View[];
 }
 
 export interface View {
@@ -36,4 +38,6 @@ export interface View {
   active?: boolean;
   Component: React.ComponentType;
   meta?: StepMetadata;
+  disableWrapper?: boolean;
+  hidden?: boolean;
 }

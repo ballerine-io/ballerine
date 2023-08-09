@@ -19,6 +19,12 @@ export class EndUserRepository {
     return await this.prisma.endUser.findMany(args);
   }
 
+  async find<T extends Prisma.EndUserFindFirstArgs>(
+    args?: Prisma.SelectSubset<T, Prisma.EndUserFindFirstArgs>,
+  ) {
+    return await this.prisma.endUser.findFirst(args);
+  }
+
   async findById<T extends Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>(
     id: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>,
