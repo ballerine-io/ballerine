@@ -3,6 +3,7 @@ import * as swagger from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserModel } from './user.model';
 import { UserCreateDto } from '@/user/dtos/user-create';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 
 @swagger.ApiTags('internal/users')
 @common.Controller('internal/users')
@@ -29,6 +30,7 @@ export class UserControllerInternal {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [UserModel] })
   @swagger.ApiForbiddenResponse()
+  @UseKeyAuthInDevGuard()
   async create(@common.Body() userCreatInfo: UserCreateDto) {
     return this.service.create({
       data: userCreatInfo,

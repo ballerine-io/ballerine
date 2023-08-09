@@ -1,17 +1,25 @@
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import Form from '@rjsf/core';
+import Form, { IChangeEvent } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { fields } from '@app/common/components/organisms/DynamicForm/fields';
 import { templates } from '@app/common/components/organisms/DynamicForm/templates';
-import { FileStorage } from '@app/common/utils/file-storage';
-import { FileStorageProvider } from '@app/common/providers/FileStorageProvider';
+import { useCallback, useMemo } from 'react';
+import { Provider, WarningsContext } from './warnings.context';
+
+type InputName = string;
+export type InputWarning = string | string[];
+
+export interface InputsWarnings {
+  [k: InputName]: InputWarning | InputsWarnings;
+}
 
 interface Props<TFormData> {
   schema: RJSFSchema;
   uiSchema?: UiSchema;
   className?: string;
-  initialData?: object;
-  fileStorage?: FileStorage;
+  formData?: object;
+  warnings?: InputsWarnings;
+  onChange?: (formData: TFormData) => void;
   onSubmit: (formData: TFormData) => void;
 }
 
@@ -19,40 +27,48 @@ export function DynamicForm<TFormData extends object>({
   schema,
   uiSchema,
   className,
-  initialData,
-  fileStorage,
+  formData,
+  warnings,
+  onChange,
   onSubmit,
 }: Props<TFormData>) {
-  return fileStorage ? (
-    <FileStorageProvider storage={fileStorage}>
+  const handleChange = useCallback(
+    (form: IChangeEvent<TFormData>) => {
+      onChange && onChange(form.formData);
+    },
+    [onChange],
+  );
+
+  const handleSubmit = useCallback(
+    (form: IChangeEvent<TFormData>) => {
+      onSubmit && onSubmit(form.formData);
+    },
+    [onSubmit],
+  );
+
+  const warningsContext = useMemo(() => {
+    const ctx: WarningsContext = {
+      warnings,
+    };
+
+    return ctx;
+  }, [warnings]);
+
+  return (
+    <Provider value={warningsContext}>
       <Form
         className={className}
         schema={schema}
-        formData={initialData}
+        formData={formData}
         uiSchema={uiSchema}
-        onChange={values => console.log('values', values)}
-        onSubmit={data =>
-          onSubmit(data.formData ? (data.formData as TFormData) : ({} as TFormData))
-        }
+        onSubmit={handleSubmit}
+        onChange={handleChange}
         validator={validator}
         fields={fields}
         autoComplete="on"
         templates={templates}
         showErrorList={false}
       />
-    </FileStorageProvider>
-  ) : (
-    <Form
-      className={className}
-      schema={schema}
-      autoComplete="on"
-      formData={initialData}
-      uiSchema={uiSchema}
-      onSubmit={data => onSubmit(data.formData ? (data.formData as TFormData) : ({} as TFormData))}
-      validator={validator}
-      fields={fields}
-      templates={templates}
-      showErrorList={false}
-    />
+    </Provider>
   );
 }

@@ -104,6 +104,10 @@ async function seed(bcryptSalt: Salt) {
   const onboardingMachineKybId = 'COLLECT_DOCS_b0002zpeid7bq9bbb';
   const riskScoreMachineKybId = 'risk-score-improvement-dev';
 
+  // KYB Flows
+  const onboardingMachineId = 'kyb-onboarding';
+  const riskScoreMachineId = 'kyb-risk-score';
+
   const user = await client.endUser.create({
     data: {
       id: '43a0a298-0d02-4a2e-a8cc-73c06b465310',
@@ -769,6 +773,112 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
+  // KYB Onboarding
+  await client.workflowDefinition.create({
+    data: {
+      id: onboardingMachineId,
+      name: 'kyb_onboarding',
+      version: 1,
+      definitionType: 'statechart-json',
+      config: {
+        workflowLevelResolution: true,
+        completedWhenTasksResolved: false,
+        allowMultipleActiveWorkflows: false,
+      },
+      definition: {
+        id: 'kyb_onboarding',
+        predictableActionArguments: true,
+        initial: 'review',
+
+        context: {
+          documents: [],
+        },
+
+        states: {
+          review: {
+            on: {
+              approve: {
+                target: 'approved',
+              },
+              reject: {
+                target: 'rejected',
+              },
+              revision: {
+                target: 'revision',
+              },
+            },
+          },
+          approved: {
+            type: 'final',
+          },
+          rejected: {
+            type: 'final',
+          },
+          revision: {
+            on: {
+              review: {
+                target: 'review',
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // KYB Risk Score Improvement
+  await client.workflowDefinition.create({
+    data: {
+      id: riskScoreMachineId,
+      name: 'kyb_risk_score',
+      version: 1,
+      definitionType: 'statechart-json',
+      config: {
+        workflowLevelResolution: false,
+        completedWhenTasksResolved: true,
+        allowMultipleActiveWorkflows: true,
+      },
+      definition: {
+        id: 'kyb_risk_score',
+        predictableActionArguments: true,
+        initial: 'review',
+
+        context: {
+          documents: [],
+        },
+
+        states: {
+          review: {
+            on: {
+              approve: {
+                target: 'approved',
+              },
+              reject: {
+                target: 'rejected',
+              },
+              revision: {
+                target: 'revision',
+              },
+            },
+          },
+          approved: {
+            type: 'final',
+          },
+          rejected: {
+            type: 'final',
+          },
+          revision: {
+            on: {
+              review: {
+                target: 'review',
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
   await createFilter('Risk Score Improvement - Individuals', 'individuals', {
     select: {
       id: true,
@@ -921,6 +1031,7 @@ async function seed(bcryptSalt: Salt) {
           lastName: true,
         },
       },
+      childWorkflowsRuntimeData: true,
     },
     where: {
       workflowDefinitionId: 'kyb_parent_kyc_session_example',

@@ -1,15 +1,19 @@
 {
-  "logo": "/ballerine-logo.png",
+  "logo": "/app-logo.svg",
+  "title": "Account activation process",
+  "subtitle": "Activate your account with PayLynk by completing the verification process.",
+  "contactInformation": "Contact PayLynk for support <br /> example@example.com (000) 123-4567",
   "appName": "App",
+  "leaveText": "Return to PayLynk Portal.",
   "theme": {
     "pallete": {
       "primary": {
-        "color": "222.2 47.4% 11.2%",
-        "foreground": "210 40% 98%"
+        "color": "0, 0%, 100%",
+        "foreground": "212, 100%, 11%"
       },
       "secondary": {
-        "color": "210 40% 96.1%",
-        "foreground": "222.2 47.4% 11.2%"
+        "color": "222.2 47.4% 11.2%",
+        "foreground": "210 40% 98%"
       },
       "muted": {
         "color": "210 40% 96.1%",

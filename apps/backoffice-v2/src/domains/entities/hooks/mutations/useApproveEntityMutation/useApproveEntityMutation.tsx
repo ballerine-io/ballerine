@@ -11,7 +11,7 @@ export const useApproveEntityMutation = ({
   onSelectNextEntity,
 }: {
   workflowId: string;
-  onSelectNextEntity: VoidFunction;
+  onSelectNextEntity?: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
 
