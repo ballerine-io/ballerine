@@ -49,6 +49,7 @@ export interface WorkflowEntity {
       model: string;
       estimateAnnualVolume: string;
       averageTransactionValue: string;
+      state: string;
     };
     headquarters: {
       street: string;

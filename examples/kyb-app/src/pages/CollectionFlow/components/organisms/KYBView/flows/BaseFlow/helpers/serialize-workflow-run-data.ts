@@ -6,6 +6,7 @@ import { WorkflowUpdatePayload } from '@app/domains/workflows/types';
 import { base64ToFile } from '@ballerine/ui';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '@app/hooks/useSignin';
+import { getFullCountryNameByCode } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list';
 
 export const serializeWorkflowRunData = async (
   context: WorkflowFlowData,
@@ -71,7 +72,7 @@ export const serializeWorkflowRunData = async (
       website: companyActivity.website,
       companyName: companyInformation.companyName,
       address: buildCompanyAddress(headquarters),
-      country: companyInformation.companyCountry,
+      country: getFullCountryNameByCode(companyInformation.companyCountry),
       registrationNumber: companyInformation.registrationNumber,
       mainRepresentative: context.flowData.personalInformation,
       customerCompany: 'Ballerine',
@@ -84,6 +85,7 @@ export const serializeWorkflowRunData = async (
           incorporationDate: +companyInformation.registrationDate,
           industry: companyActivity.industry,
           model: companyActivity.model,
+          state: companyInformation.state,
           estimateAnnualVolume: companyActivity.volumeAmount,
           averageTransactionValue: companyActivity.transactionValue,
         },

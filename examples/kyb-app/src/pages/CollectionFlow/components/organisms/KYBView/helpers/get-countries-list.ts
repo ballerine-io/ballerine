@@ -18,3 +18,7 @@ export const getCountryStates = (countryCode: string) => {
 
   return State.getStatesOfCountry(countryCode.toUpperCase());
 };
+
+export const getFullCountryNameByCode = (countryCode: string): string => {
+  return isoCountries.getName(countryCode?.toLocaleUpperCase(), 'en');
+};

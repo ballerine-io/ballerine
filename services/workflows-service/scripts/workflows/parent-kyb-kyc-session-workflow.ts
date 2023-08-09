@@ -107,6 +107,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               mapping: `{
               countryOfIncorporation: entity.data.countryOfIncorporation,
               companyNumber: entity.data.registrationNumber,
+              state: entity.data.additionalInfo.company.state
               vendor: 'open-corporates'
               }`, // jmespath
             },
