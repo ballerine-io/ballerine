@@ -624,9 +624,7 @@ export class WorkflowService {
         if (document.id !== documentId) return document;
 
         return {
-          ...document,
           decision: {
-            ...document?.decision,
             ...newDecision,
             status,
           },
