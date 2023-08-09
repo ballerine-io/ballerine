@@ -14,7 +14,6 @@ import { BusinessModule } from './business/business.module';
 import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { WebhooksModule } from './webhooks/webhooks.module';
 import { FilterModule } from '@/filter/filter.module';
 import { env } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
@@ -29,6 +28,7 @@ import { MetricsModule } from '@/metrics/metrics.module';
 import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
 import {CustomerModule} from "@/customer/customer.module";
 import {AuthKeyMiddleware} from "@/common/middlewares/auth-key.middleware";
+import {ProjectContextModule} from "@/common/utils/project-context/project-context-module";
 
 @Module({
   controllers: [MetricsController],
@@ -41,7 +41,6 @@ import {AuthKeyMiddleware} from "@/common/middlewares/auth-key.middleware";
       },
     }),
     EventEmitterModule.forRoot(),
-    WebhooksModule,
     // DevtoolsModule.register({
     //   http: process.env.NODE_ENV !== 'production',
     // }),
@@ -69,6 +68,7 @@ import {AuthKeyMiddleware} from "@/common/middlewares/auth-key.middleware";
     AppLoggerModule,
     FiltersModule,
     MetricsModule,
+    ProjectContextModule,
   ],
   providers: [
     {

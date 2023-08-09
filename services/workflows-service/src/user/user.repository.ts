@@ -4,14 +4,14 @@ import { PasswordService } from '../auth/password/password.service';
 import { transformStringFieldUpdateInput } from '../prisma/prisma.util';
 import { Injectable } from '@nestjs/common';
 import { ProjectScopedRepository } from '@/common/repositories/project-scoped.repository';
-import {RequestProjectContext} from "@/common/utils/project-context/request-project-context";
+import {RequestProjectService} from "@/common/utils/project-context/request-project-service";
 
 @Injectable()
 export class UserRepository extends ProjectScopedRepository {
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly passwordService: PasswordService,
-    protected readonly requestProjectContext: RequestProjectContext,
+    protected readonly requestProjectContext: RequestProjectService,
   ) {
     super(prisma, requestProjectContext);
   }
