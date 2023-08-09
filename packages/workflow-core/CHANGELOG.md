@@ -1,5 +1,14 @@
 # @ballerine/workflow-core
 
+## 0.4.27
+
+### Patch Changes
+
+- 39db2ab0: Added country state support to KYB plugin
+- Package update
+- Updated dependencies
+  - @ballerine/common@0.5.17
+
 ## 0.4.26
 
 ### Patch Changes
