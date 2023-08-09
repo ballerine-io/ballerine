@@ -83,7 +83,8 @@ export class DocumentChangedWebhookCaller {
     );
 
     if (!url) {
-      throw new Error(`No webhook url found for a workflow runtime data with an id of "${id}"`);
+      this.logger.log(`No webhook url found for a workflow runtime data with an id of "${id}"`);
+      return;
     }
 
     data.updatedRuntimeData.context.documents.forEach((doc: any) => {
