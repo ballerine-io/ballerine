@@ -7,7 +7,12 @@ import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import { AlertDescription } from '../../atoms/Alert/Alert.Description';
 import { IMapProps } from './interfaces';
 
-export const Map: FunctionComponent<IMapProps> = ({ latitude, longitude, popupContent }) => {
+export const Map: FunctionComponent<IMapProps> = ({
+  latitude,
+  longitude,
+  popupContent,
+  className,
+}) => {
   if (!latitude || !longitude) {
     return <AlertDescription>Invalid coordinates.</AlertDescription>;
   }
@@ -20,7 +25,7 @@ export const Map: FunctionComponent<IMapProps> = ({ latitude, longitude, popupCo
   });
 
   return (
-    <MapContainer center={position} zoom={13} className={`mt-6 h-[600px] rounded-md`}>
+    <MapContainer center={position} zoom={13} className={className}>
       <TileLayer
         attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
         url={`https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png`}
