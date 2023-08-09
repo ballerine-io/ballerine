@@ -10,6 +10,7 @@ export interface IFetcher {
     url: string;
     method: typeof Method.POST | typeof Method.PUT | typeof Method.PATCH;
     body?: TBody;
+    headers?: RequestInit['headers'];
     options?: Omit<RequestInit, 'body'>;
     timeout?: number;
     schema: TZodSchema;
@@ -19,6 +20,7 @@ export interface IFetcher {
   <TZodSchema extends ZodSchema>(params: {
     url: string;
     method: typeof Method.GET | typeof Method.DELETE;
+    headers?: RequestInit['headers'];
     options?: Omit<RequestInit, 'body'>;
     timeout?: number;
     schema: TZodSchema;

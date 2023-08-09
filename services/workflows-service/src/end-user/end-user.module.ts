@@ -13,11 +13,13 @@ import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
 import { FileRepository } from '@/storage/storage.repository';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
+import { EntityRepository } from '@/common/entity/entity.repository';
 
 @Module({
   controllers: [EndUserControllerInternal, EndUserControllerExternal],
   providers: [
     EndUserRepository,
+    EntityRepository,
     EndUserService,
     FilterService,
     FilterRepository,

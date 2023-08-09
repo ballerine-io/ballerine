@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflow-node-sdk",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.4.3",
+  "version": "0.4.13",
   "description": "workflow-node-sdk",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
@@ -16,14 +16,15 @@
   "scripts": {
     "build": "rollup --config rollup.config.js",
     "watch": "concurrently --kill-others \"rollup --config rollup.config.js -w\" \"tsc -b --watch\"",
-    "test": "vitest run",
-    "test:unit": "vitest run"
+    "test": "vitest run --passWithNoTests",
+    "test:unit": "vitest run --passWithNoTests",
+    "test:watch": "vitest"
   },
   "engines": {
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/workflow-core": "0.4.9",
+    "@ballerine/workflow-core": "0.4.26",
     "json-logic-js": "^2.0.2",
     "xstate": "^4.36.0"
   },
@@ -58,7 +59,7 @@
     "rollup-plugin-terser": "7.0.2",
     "rollup-plugin-visualizer": "5.6.0",
     "ts-node": "^10.9.1",
-    "typescript": "4.9.5",
+    "typescript": "5.1.6",
     "vite": "^4.1.1",
     "vitest": "^0.28.5"
   }
