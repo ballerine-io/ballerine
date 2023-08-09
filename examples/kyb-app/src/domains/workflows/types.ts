@@ -160,6 +160,7 @@ export interface WorkflowDocument {
 export interface Workflow {
   id: string;
   workflowDefinitionId: string;
+  state: 'approve' | 'reject';
   businessId: string;
   endUserId: string;
   context: {
