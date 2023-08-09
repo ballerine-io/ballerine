@@ -21,6 +21,7 @@ export const serializeBusinessData = (
     registrationNumber: companyInformation.registrationNumber,
     address: buildCompanyAddress(headquarters),
     website: companyActivity.website,
+    companyName: companyInformation.companyName,
   };
 
   return dto;

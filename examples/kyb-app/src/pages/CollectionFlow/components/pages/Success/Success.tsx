@@ -1,6 +1,7 @@
+import { withSessionProtected } from '@app/hooks/useSignin/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
 
-export const Success = () => {
+export const Success = withSessionProtected(() => {
   return (
     <div className="flex h-full items-center justify-center">
       <Card className="w-full max-w-[646px] p-12">
@@ -24,4 +25,4 @@ export const Success = () => {
       </Card>
     </div>
   );
-};
+});
