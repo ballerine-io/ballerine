@@ -7,3 +7,7 @@ export default {
 export const Default = {
   render: () => <Input />,
 };
+
+export const Error = {
+  render: () => <Input />,
+};

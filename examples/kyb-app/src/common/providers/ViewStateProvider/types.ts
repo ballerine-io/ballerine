@@ -17,7 +17,7 @@ export interface StepperParams {
 export interface ViewStateContext<TGlobalContext = AnyObject> {
   next: () => void;
   prev: () => void;
-  update: (data: object, shared?: object) => Promise<object>;
+  update: (data: object, shared?: object, completed?: boolean) => Promise<object>;
   updateViews: (views: View[]) => void;
   save: <T>(data: T, shared?: object) => Promise<TGlobalContext>;
   setData: (data: TGlobalContext) => void;

@@ -36,22 +36,26 @@ export const CompanyInformationView = () => {
 
   const { handleUpdate } = useCompanyInformationUpdate();
 
-  const formDataRef = useRef<CompanyInformationContext>(context.flowData.companyInformation);
+  const contextRef = useRef<WorkflowFlowData>(context);
 
   useEffect(() => {
-    formDataRef.current = context.flowData.companyInformation;
+    contextRef.current = context;
   }, [context]);
 
   useEffect(() => {
     if (companyInformation) {
-      void update({
-        ...formDataRef.current,
-        companyName: companyInformation.name,
-        companyType: companyInformation.companyType,
-        registrationDate: companyInformation.incorporationDate,
-      });
+      void update(
+        {
+          ...contextRef.current.flowData.companyInformation,
+          companyName: companyInformation.name,
+          companyType: companyInformation.companyType,
+          registrationDate: companyInformation.incorporationDate,
+        },
+        contextRef.current.shared,
+        contextRef.current.completionMap['companyInformation'],
+      );
     }
-  }, [companyInformation, formDataRef, update]);
+  }, [companyInformation, contextRef, update]);
 
   return (
     <AppShell.FormContainer header={<ViewHeader />}>

@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.2.6
+
+### Patch Changes
+
+- Fixed bug where DatePicker popup lost anchor on year selection
+
 ## 0.2.5
 
 ### Patch Changes

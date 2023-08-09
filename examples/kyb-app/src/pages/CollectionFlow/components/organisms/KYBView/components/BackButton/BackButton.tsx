@@ -8,7 +8,7 @@ export const BackButton = () => {
   const { state, isFinished, prev } = useViewState();
   const { leaveText } = useSettings();
 
-  const isExit = useMemo(() => state === 'signin', [state]);
+  const isExit = useMemo(() => state === 'personalInformation', [state]);
 
   return (
     <div
