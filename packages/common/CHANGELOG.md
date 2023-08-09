@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.5.17
+
+### Patch Changes
+
+- Package update
+
 ## 0.5.16
 
 ### Patch Changes
