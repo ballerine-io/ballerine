@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 
-export class GetCompanyInfoDto {
+export class BusinessInformation {
   @IsString()
   jurisdictionCode!: string;
 

@@ -1,4 +1,4 @@
-import { companiesQueryKeys } from '@app/domains/companies';
+import { businessQueryKeys } from '@app/domains/business/query-keys';
 import { useQuery } from '@tanstack/react-query';
 
 export const useCompanyInformationQuery = (
@@ -7,7 +7,7 @@ export const useCompanyInformationQuery = (
   enabled?: boolean,
 ) => {
   const { data, isFetching } = useQuery({
-    ...companiesQueryKeys.fetchCompanyInformation({ registrationNumber, jurisdictionCode }),
+    ...businessQueryKeys.getBusinessInformation({ registrationNumber, jurisdictionCode }),
     enabled,
     retry: false,
   });
