@@ -4,7 +4,7 @@ import { IApiPluginParams } from './types';
 
 export class ApiPlugin {
   public static pluginType = 'http';
-  public static pluginKind = 'kyc';
+  public static pluginKind = 'api';
   name: string;
   stateNames: Array<string>;
   url: string;
