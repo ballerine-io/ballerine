@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.4.4",
+  "version": "0.4.8",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "repository": {
@@ -48,9 +48,10 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@ballerine/common": "0.5.6",
-    "@ballerine/workflow-browser-sdk": "^0.4.9",
-    "@ballerine/workflow-node-sdk": "^0.4.3",
+    "@ballerine/common": "0.5.16",
+    "@ballerine/ui": "0.2.8",
+    "@ballerine/workflow-browser-sdk": "0.4.19",
+    "@ballerine/workflow-node-sdk": "0.4.13",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@hookform/resolvers": "^3.1.0",
     "@lukemorales/query-key-factory": "^1.0.3",
@@ -84,6 +85,7 @@
     "react-hot-toast": "^2.4.0",
     "react-i18next": "^12.1.4",
     "react-image-crop": "^10.0.9",
+    "react-json-view": "^1.21.3",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.11.2",
     "react-zoom-pan-pinch": "^3.0.8",
@@ -129,10 +131,16 @@
     "prettier": "^2.8.0",
     "prettier-plugin-tailwindcss": "^0.2.1",
     "storybook": "^7.0.0-rc.10",
+    "storybook-addon-react-router-v6": "^1.0.2",
     "tailwindcss": "^3.2.4",
     "typescript": "^4.9.3",
-    "vite": "^4.0.4",
+    "vite": "^4.3.9",
+    "vite-plugin-mkcert": "^1.16.0",
     "vitest": "^0.29.8"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0"
   },
   "msw": {
     "workerDirectory": "public"

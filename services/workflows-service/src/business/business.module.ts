@@ -13,12 +13,17 @@ import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { EndUserRepository } from '@/end-user/end-user.repository';
+import { EntityRepository } from '@/common/entity/entity.repository';
+import { HttpModule } from '@nestjs/axios';
+import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 
 @Module({
+  imports: [HttpModule, AppLoggerModule],
   controllers: [BusinessControllerInternal, BusinessControllerExternal],
   providers: [
     BusinessRepository,
     BusinessService,
+    EntityRepository,
     FilterRepository,
     FilterService,
     FileRepository,

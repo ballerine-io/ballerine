@@ -1,5 +1,5 @@
 import { WorkflowHealthStatus } from '@common/enums';
-import { HealthIndicator } from '@components/atoms/HealthIndicator/HealthIndicator';
+import { HealthIndicator } from './HealthIndicator';
 
 export default {
   component: HealthIndicator,

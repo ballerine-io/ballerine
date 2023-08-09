@@ -48,7 +48,9 @@ export const fetchWorkflows = async (params: {
   return handleZodError(error, workflows);
 };
 
-export const WorkflowByIdSchema = z.object({
+export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
+
+export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
   status: z.string(),
   nextEvents: z.array(z.any()),
@@ -59,7 +61,7 @@ export const WorkflowByIdSchema = z.object({
   }),
   createdAt: z.string().datetime(),
   context: z.object({
-    documents: z.array(z.any()),
+    documents: z.array(z.any()).default([]),
     entity: z.record(z.any(), z.any()),
     parentMachine: ObjectWithIdSchema.extend({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),
@@ -75,6 +77,16 @@ export const WorkflowByIdSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
   }).nullable(),
+});
+
+export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
+  childWorkflows: z
+    .array(
+      BaseWorkflowByIdSchema.omit({
+        nextEvents: true,
+      }),
+    )
+    .optional(),
 });
 
 export const fetchWorkflowById = async ({
@@ -142,6 +154,46 @@ export const fetchWorkflowEvent = async ({
   const [workflow, error] = await apiClient({
     endpoint: `workflows/${workflowId}/event`,
     method: Method.POST,
+    body,
+    schema: z.any(),
+  });
+
+  return handleZodError(error, workflow);
+};
+
+export const fetchWorkflowDecision = async ({
+  workflowId,
+  documentId,
+  body,
+}: IWorkflowId & {
+  documentId: string;
+  body: {
+    decision: string;
+    reason?: string;
+  };
+}) => {
+  const [workflow, error] = await apiClient({
+    endpoint: `workflows/${workflowId}/decision/${documentId}`,
+    method: Method.PATCH,
+    body,
+    schema: WorkflowByIdSchema,
+  });
+
+  return handleZodError(error, workflow);
+};
+
+export const fetchWorkflowEventDecision = async ({
+  workflowId,
+  body,
+}: IWorkflowId & {
+  body: {
+    name: string;
+    reason?: string;
+  };
+}) => {
+  const [workflow, error] = await apiClient({
+    endpoint: `workflows/${workflowId}/event-decision`,
+    method: Method.PATCH,
     body,
     schema: z.any(),
   });

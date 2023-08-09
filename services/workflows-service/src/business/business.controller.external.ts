@@ -17,6 +17,9 @@ import { WorkflowDefinitionModel } from '@/workflow/workflow-definition.model';
 import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definition-find-many-args';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
+import { BusinessUpdateDto } from '@/business/dtos/business.update';
+import { BusinessInformation } from '@/business/dtos/business-information';
+import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 
 @swagger.ApiTags('external/businesses')
 @common.Controller('external/businesses')
@@ -78,6 +81,39 @@ export class BusinessControllerExternal {
 
       throw err;
     }
+  }
+
+  @common.Put(':id')
+  @UseKeyAuthInDevGuard()
+  async update(@common.Param('id') businessId: string, @common.Body() data: BusinessUpdateDto) {
+    return this.service.updateById(businessId, {
+      data: {
+        companyName: data.companyName,
+        address: data.address,
+        registrationNumber: data.registrationNumber,
+        website: data.website,
+        documents: data.documents ? JSON.stringify(data.documents) : undefined,
+        shareholderStructure:
+          data.shareholderStructure && data.shareholderStructure.length
+            ? JSON.stringify(data.shareholderStructure)
+            : undefined,
+      },
+    });
+  }
+
+  @UseKeyAuthGuard()
+  @common.Get('/business-information/:registrationNumber')
+  async getCompanyInfo(
+    @common.Query() query: BusinessInformation,
+    @common.Param('registrationNumber') registrationNumber: string,
+  ) {
+    const { jurisdictionCode, vendor } = query;
+
+    return this.service.fetchCompanyInformation({
+      registrationNumber,
+      jurisdictionCode,
+      vendor,
+    });
   }
 
   // curl -v http://localhost:3000/api/v1/external/businesses/:businessId/workflows
