@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
-import {Request} from "express";
-import {Controller, Req} from "@nestjs/common";
-import {AuthenticatedEntity, TProjectIds} from "@/types";
+import { Request } from 'express';
+import { Controller, Req } from '@nestjs/common';
+import { AuthenticatedEntity, TProjectIds } from '@/types';
 
 export interface PrismaGeneralQueryArgs {
   select?: Record<string, unknown> | null;
@@ -26,57 +26,49 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
 export class ProjectScopeService {
   scopeFindMany<T>(
     args?: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
-    projectIds?: TProjectIds): T {
+    projectIds?: TProjectIds,
+  ): T {
     // @ts-expect-error - dynamically typed for all queries
     args ||= {};
     // @ts-expect-error - dynamically typed for all queries
     args!.where = {
-    // @ts-expect-error - dynamically typed for all queries
+      // @ts-expect-error - dynamically typed for all queries
       ...args?.where,
-      projectId: {in: projectIds},
+      projectId: { in: projectIds },
     };
 
     return args!;
   }
 
-  scopeFindOne<T>(
-    args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
-    projectIds?: TProjectIds
-  ) {
+  scopeFindOne<T>(args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>, projectIds?: TProjectIds) {
     // @ts-expect-error - dynamically typed for all queries
     args.where = {
       // @ts-expect-error - dynamically typed for all queries
       ...args?.where,
-      projectId: {in: projectIds},
+      projectId: { in: projectIds },
     };
 
     return args;
   }
 
-  scopeCreate<T>(
-    args: Prisma.SelectSubset<T, PrismaGeneralInsertArgs>,
-    projectIds?: TProjectIds
-  ) {
+  scopeCreate<T>(args: Prisma.SelectSubset<T, PrismaGeneralInsertArgs>, projectIds?: TProjectIds) {
     // @ts-expect-error - dynamically typed for all queries
     args.data = {
       // @ts-expect-error - dynamically typed for all queries
       ...args.data,
-      projectId: {in: projectIds},
+      projectId: { in: projectIds },
     };
 
     return args;
   }
 
-  scopeUpdate<T>(
-    args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>,
-    projectIds?: TProjectIds
-  ) {
+  scopeUpdate<T>(args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>, projectIds?: TProjectIds) {
     args = this.scopeCreate(args);
     // @ts-expect-error - dynamically typed for all queries
     args.where = {
       // @ts-expect-error - dynamically typed for all queries
       ...args.where,
-      projectId: {in: projectIds},
+      projectId: { in: projectIds },
     };
     // @ts-expect-error - dynamically typed for all queries
     args.data = {
@@ -87,15 +79,12 @@ export class ProjectScopeService {
     return args;
   }
 
-  scopeUpsert<T>(
-    args: Prisma.SelectSubset<T, PrismaGeneralUpsertArgs>,
-    projectIds?: TProjectIds
-  ) {
+  scopeUpsert<T>(args: Prisma.SelectSubset<T, PrismaGeneralUpsertArgs>, projectIds?: TProjectIds) {
     // @ts-expect-error - dynamically typed for all queries
     args.where = {
       // @ts-expect-error - dynamically typed for all queries
       ...args.where,
-      projectId: {in: projectIds},
+      projectId: { in: projectIds },
     };
     // @ts-expect-error - dynamically typed for all queries
     args.update = {
@@ -113,10 +102,7 @@ export class ProjectScopeService {
     return args;
   }
 
-  scopeDelete<T>(
-    args: Prisma.SelectSubset<T, Prisma.FilterDeleteArgs>,
-    projectIds?: TProjectIds
-  ) {
+  scopeDelete<T>(args: Prisma.SelectSubset<T, Prisma.FilterDeleteArgs>, projectIds?: TProjectIds) {
     // @ts-expect-error - dynamically typed for all queries
     args.where = {
       // @ts-expect-error - dynamically typed for all queries

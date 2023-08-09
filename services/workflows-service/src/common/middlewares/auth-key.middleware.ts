@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware, Scope } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import {CustomerService} from "@/customer/customer.service";
+import { CustomerService } from '@/customer/customer.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthKeyMiddleware implements NestMiddleware {
@@ -20,7 +20,7 @@ export class AuthKeyMiddleware implements NestMiddleware {
         req.user = {
           // @ts-ignore
           customer: customerWithoutProjects,
-          projectIds: customer.projects?.map((project) => project.id)
+          projectIds: customer.projects?.map(project => project.id),
         };
       }
     }

@@ -1,19 +1,17 @@
 import { PrismaService } from '../prisma/prisma.service';
-import {Customer, Prisma} from '@prisma/client';
+import { Customer, Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import {CustomerWithProjects} from "@/types";
+import { CustomerWithProjects } from '@/types';
 
 @Injectable()
 export class CustomerRepository {
-  constructor(
-    protected readonly prisma: PrismaService,
-  ) {}
+  constructor(protected readonly prisma: PrismaService) {}
 
   async create<T extends Prisma.CustomerCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>,
   ): Promise<Customer> {
     // @ts-expect-error - prisma json not updated
-    await this.validateApiKey(args.data?.authenticationConfiguration?.authValue)
+    await this.validateApiKey(args.data?.authenticationConfiguration?.authValue);
 
     return this.prisma.customer.create<T>(args);
   }
@@ -23,8 +21,8 @@ export class CustomerRepository {
 
     if (apiKey.length < 4) throw new Error('Invalid API key');
 
-    const customerApiAlreadyExists = await this.findByApiKey(apiKey)
-    if (customerApiAlreadyExists) throw new Error('API key already exists')
+    const customerApiAlreadyExists = await this.findByApiKey(apiKey);
+    if (customerApiAlreadyExists) throw new Error('API key already exists');
   }
 
   async findMany<T extends Prisma.CustomerFindManyArgs>(
@@ -39,6 +37,16 @@ export class CustomerRepository {
   ): Promise<Customer> {
     return this.prisma.customer.findUniqueOrThrow({
       where: { id },
+      ...args,
+    });
+  }
+
+  async findByProjectId<T extends Omit<Prisma.CustomerFindFirstArgsBase, 'where'>>(
+    projectId: string,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.CustomerFindFirstArgsBase, 'where'>>,
+  ): Promise<Customer | null> {
+    return this.prisma.customer.findFirst({
+      where: { projects: { some: { id: projectId } } },
       ...args,
     });
   }
@@ -73,8 +81,8 @@ export class CustomerRepository {
         customerStatus: true,
         country: true,
         language: true,
-        projects: true
-      }
+        projects: true,
+      },
     });
   }
 
@@ -83,7 +91,7 @@ export class CustomerRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.CustomerUpdateArgs, 'where'>>,
   ): Promise<Customer> {
     // @ts-expect-error - prisma json not updated
-    await this.validateApiKey(args.data?.authenticationConfiguration?.authValue)
+    await this.validateApiKey(args.data?.authenticationConfiguration?.authValue);
 
     return this.prisma.customer.update<T & { where: { id: string } }>({
       where: { id },

@@ -1,5 +1,5 @@
-import {Module} from "@nestjs/common";
-import {ProjectScopeService} from "@/project/project-scope.service";
+import { Module } from '@nestjs/common';
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Module({
   controllers: [],

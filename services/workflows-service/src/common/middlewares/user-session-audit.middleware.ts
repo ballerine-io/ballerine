@@ -3,7 +3,7 @@ import { UserService } from '@/user/user.service';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { Request, Response } from 'express';
-import {AuthenticatedEntity} from "@/types";
+import { AuthenticatedEntity } from '@/types';
 
 @Injectable()
 export class UserSessionAuditMiddleware implements NestMiddleware {
@@ -16,7 +16,7 @@ export class UserSessionAuditMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: (error?: any) => void) {
-    const authenticatedEntity = (req.user as unknown as AuthenticatedEntity)
+    const authenticatedEntity = req.user as unknown as AuthenticatedEntity;
     const user = authenticatedEntity?.user;
     if (req.session && user) {
       if (this.isUpdateCanBePerformed(user.lastActiveAt!)) {

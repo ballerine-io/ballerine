@@ -58,7 +58,7 @@ export const generateBusiness = ({
     workflowDefinitionVersion: number;
     context: Prisma.InputJsonValue;
   };
-  projectId: string
+  projectId: string;
 }): Prisma.BusinessCreateInput => {
   const { workflowDefinitionId, workflowDefinitionVersion, context } = workflow;
   const companyName = faker.company.name();
@@ -101,7 +101,7 @@ export const generateBusiness = ({
     businessPurpose,
     documents,
     shareholderStructure,
-    project: {connect: {id: projectId}},
+    project: { connect: { id: projectId } },
     approvalState: 'PROCESSING',
     workflowRuntimeData: {
       create: {
@@ -109,7 +109,7 @@ export const generateBusiness = ({
         context,
         workflowDefinitionId,
         createdAt: faker.date.recent(2),
-        projectId: projectId
+        projectId: projectId,
       },
     },
   };
@@ -126,7 +126,7 @@ export const generateEndUser = ({
     workflowDefinitionVersion: number;
     context: Prisma.InputJsonValue;
   };
-  projectId: string
+  projectId: string;
 }): Prisma.EndUserCreateInput => {
   const { workflowDefinitionId, workflowDefinitionVersion, context } = workflow;
   const correlationId = faker.datatype.uuid();
@@ -152,12 +152,12 @@ export const generateEndUser = ({
           context,
           workflowDefinitionId,
           createdAt: faker.date.recent(2),
-          projectId: projectId
+          projectId: projectId,
         },
       },
     };
   }
 
-  res.project = {connect: {id: projectId}}
+  res.project = { connect: { id: projectId } };
   return res;
 };

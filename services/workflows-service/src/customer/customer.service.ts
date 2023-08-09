@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import {CustomerRepository} from "@/customer/customer.repository";
+import { CustomerRepository } from '@/customer/customer.repository';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CustomerService {
-  constructor(
-    protected readonly repository: CustomerRepository,
-  ) {}
+  constructor(protected readonly repository: CustomerRepository) {}
 
   async create(args: Parameters<CustomerRepository['create']>[0]) {
     return this.repository.create(args);
@@ -21,6 +20,10 @@ export class CustomerService {
 
   async getByApiKey(apiKey: string) {
     return this.repository.findByApiKey(apiKey);
+  }
+
+  async getByProjectId(projectId: string, args: Omit<Prisma.CustomerFindFirstArgsBase, 'where'>) {
+    return this.repository.findByProjectId(projectId, args);
   }
 
   async updateById(id: string, args: Parameters<CustomerRepository['updateById']>[1]) {
