@@ -20,7 +20,7 @@ export const router = createBrowserRouter([
     element: <CollectionFlow />,
     children: [
       {
-        path: 'kyb',
+        path: '',
         element: <KYB />,
         children: [
           {

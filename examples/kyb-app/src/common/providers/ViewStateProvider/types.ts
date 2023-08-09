@@ -29,6 +29,7 @@ export interface ViewStateContext<TGlobalContext = AnyObject> {
   stepper: StepperParams;
   warnings?: InputsWarnings;
   isFinished: boolean;
+  isLoading: boolean;
   views: View[];
 }
 

@@ -1,5 +1,5 @@
 import { serializeBusinessData } from './helpers/serialize-business-data';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { updateBusiness } from '@app/domains/business';
 import { serializeWorkflowRunData } from './helpers/serialize-workflow-run-data';
 import { runAndStartWorkflowRequest, updateWorkflow } from '@app/domains/workflows';
@@ -15,6 +15,7 @@ import { useBaseFlowViews } from '@app/pages/CollectionFlow/components/organisms
 export const useBaseFlow = () => {
   const { user, logoutSilent } = useSignin();
   const { workflow } = useActiveWorkflowQuery();
+  const [isLoading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const issues = useWorkflowIssues(workflow);
@@ -27,20 +28,33 @@ export const useBaseFlow = () => {
       const isUpdate = Boolean(context.shared.workflowId);
       const serializedRunPayload = await serializeWorkflowRunData(context, user);
 
-      if (isUpdate) {
-        await updateWorkflow({
-          workflowId: context.shared.workflowId,
-          payload: serializedRunPayload,
-        });
-      } else {
-        const serializedBusinessPayload = serializeBusinessData(context, context.shared.businessId);
-        await updateBusiness(serializedBusinessPayload);
+      try {
+        setLoading(true);
 
-        await runAndStartWorkflowRequest(serializedRunPayload);
+        if (isUpdate) {
+          await updateWorkflow({
+            workflowId: context.shared.workflowId,
+            payload: serializedRunPayload,
+          });
+        } else {
+          const serializedBusinessPayload = serializeBusinessData(
+            context,
+            context.shared.businessId,
+          );
+          await updateBusiness(serializedBusinessPayload);
+
+          await runAndStartWorkflowRequest(serializedRunPayload);
+        }
+        setLoading(false);
+        setTimeout(() => logoutSilent(), 50);
+        navigate('success');
+      } catch (error) {
+        console.log(
+          `Failed to perform ${isUpdate ? 'update' : 'create'},`,
+          error.message as string,
+        );
+        setLoading(false);
       }
-
-      logoutSilent();
-      navigate('success');
     },
     [user, logoutSilent, navigate],
   );
@@ -49,6 +63,7 @@ export const useBaseFlow = () => {
     context: workflowContext,
     views,
     warnings,
+    isLoading,
     handleFinish,
   };
 };
