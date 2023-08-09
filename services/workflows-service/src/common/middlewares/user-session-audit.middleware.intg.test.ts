@@ -95,10 +95,12 @@ describe('UserSessionAuditMiddleware', () => {
       });
 
       it('will not be changed when lastActiveAt not expired', async () => {
-        const nonExpiredDate = dayjs().subtract(middleware.UPDATE_INTERVAL - 10, 'ms');
+        const nonExpiredDateString = dayjs()
+          .subtract(middleware.UPDATE_INTERVAL - 10, 'ms')
+          .toISOString();
 
         testUser = await userService.updateById(testUser.id, {
-          data: { lastActiveAt: nonExpiredDate.toDate() },
+          data: { lastActiveAt: nonExpiredDateString },
         });
 
         await middleware.use(
@@ -109,7 +111,7 @@ describe('UserSessionAuditMiddleware', () => {
 
         const user = await userService.getById(testUser.id);
 
-        expect(Number(user.lastActiveAt)).toEqual(Number(nonExpiredDate));
+        expect(user.lastActiveAt?.toISOString()).toBe(nonExpiredDateString);
         expect(callback).toBeCalledTimes(1);
       });
 
