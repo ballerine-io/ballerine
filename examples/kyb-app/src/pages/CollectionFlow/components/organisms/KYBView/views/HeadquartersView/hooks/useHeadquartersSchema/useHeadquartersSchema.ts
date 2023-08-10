@@ -13,16 +13,19 @@ export const useHeadquartersSchema = (
 
     return {
       ...schema,
+      required: countryStates.length ? [...schema.required, 'state'] : schema.required,
       properties: {
         ...schema.properties,
         state: {
           ...(schema.properties.state as AnyObject),
-          oneOf: countryStates.length
-            ? (countryStates.map(state => ({
-                const: state.isoCode,
-                title: state.name,
-              })) as AnyObject[])
-            : [],
+          ...(countryStates.length
+            ? {
+                oneOf: countryStates.map(state => ({
+                  const: state.isoCode,
+                  title: state.name,
+                })),
+              }
+            : undefined),
         },
       },
     };
