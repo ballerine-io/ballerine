@@ -16,6 +16,7 @@ import { useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 
 import { octetToFileType } from '../../../../common/octet-to-file-type/octet-to-file-type';
+import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 
 export const useTasks = ({
   workflow,
@@ -37,6 +38,7 @@ export const useTasks = ({
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
+  const { noAction } = useCaseDecision();
 
   const results: Array<Array<string>> = [];
   workflow?.context?.documents?.forEach((document, docIndex) => {
@@ -109,7 +111,8 @@ export const useTasks = ({
                           value: 'Reject',
                           data: {
                             id,
-                            disabled: !isDoneWithRevision && Boolean(decision?.status),
+                            disabled:
+                              (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
                             decision: 'reject',
                           },
                         },
@@ -118,7 +121,8 @@ export const useTasks = ({
                           value: 'Approve',
                           data: {
                             id,
-                            disabled: !isDoneWithRevision && Boolean(decision?.status),
+                            disabled:
+                              (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
                             decision: 'approve',
                           },
                         },
