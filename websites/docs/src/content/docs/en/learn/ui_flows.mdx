@@ -4,18 +4,11 @@ description: UI Flows documentation
 
 ---
 
-## Package manager
+import PackageManagersTabs from '../../../../components/PackageManagersTabs/PackageManagersTabs.astro';
 
-```bash
-# pnpm
-pnpm add @ballerine/web-ui-sdk
+## Install dependencies
 
-# yarn
-yarn add @ballerine/web-ui-sdk
-
-# npm
-npm install @ballerine/web-ui-sdk
-```
+<PackageManagersTabs code={`install @ballerine/web-ui-sdk`} />
 
 ```typescript
 import { flows } from '@ballerine/web-ui-sdk';
