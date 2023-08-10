@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { kycDynamicExample } from './kyc-dynamic-process-example';
 import { kycEmailSessionDefinition } from './kyc-email-process-example';
 
 export const parentKybWithSessionWorkflowDefinition = {
@@ -60,8 +61,8 @@ export const parentKybWithSessionWorkflowDefinition = {
       },
       manual_review: {
         on: {
-          approve: 'approved',
-          reject: 'rejected',
+          approve: 'approve',
+          reject: 'reject',
           revision: 'revision',
         },
       },
@@ -70,7 +71,7 @@ export const parentKybWithSessionWorkflowDefinition = {
           RESUBMITTED: 'manual_review',
         },
       },
-      approved: {
+      approve: {
         type: 'final' as const,
       },
       revision: {
@@ -80,7 +81,7 @@ export const parentKybWithSessionWorkflowDefinition = {
           },
         ],
       },
-      rejected: {
+      reject: {
         type: 'final' as const,
       },
       auto_reject: {
