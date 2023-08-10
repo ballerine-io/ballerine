@@ -63,17 +63,14 @@ export const useTasks = ({
                   {
                     id: 'nested-details-heading',
                     type: 'heading',
-                    value: convertSnakeCaseToTitleCase(key),
+                    value: 'Registry information',
                   },
                   {
-                    type: 'nestedDetails',
+                    type: 'details',
                     value: {
                       data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
                         title,
                         value,
-                        // Can be part of the response or from a config in the future.
-                        showNull: true,
-                        anchorUrls: true,
                       })),
                     },
                   },

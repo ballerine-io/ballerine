@@ -5,7 +5,7 @@ import { toStartCase } from '../../../../common/utils/to-start-case/to-start-cas
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Button, buttonVariants } from '../../../../common/components/atoms/Button/Button';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { ChangeEvent, FunctionComponent, useEffect, useState } from 'react';
 import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
 import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
@@ -21,7 +21,7 @@ import { SelectValue } from '../../../../common/components/atoms/Select/Select.V
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
-import { isObject } from '@ballerine/common';
+import { isNullish, isObject } from '@ballerine/common';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { JsonDialog } from '../../../../common/components/molecules/JsonDialog/JsonDialog';
 import { FileJson2 } from 'lucide-react';
@@ -128,6 +128,20 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
         >
           {formData?.map(
             ({ title, isEditable, type, format, pattern, value, valueAlias, dropdownOptions }) => {
+              const originalValue = form.watch(title);
+
+              const displayValue = (value: unknown) => {
+                if (isEditable) return originalValue;
+
+                return isNullish(value) || value === '' ? 'Unavailable' : value;
+              };
+
+              const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+                const inputValue = event.target.value;
+
+                form.setValue(title, inputValue === 'Unavailable' ? '' : inputValue);
+              };
+
               return (
                 <FormField
                   key={keyFactory(valueId, title, `form-field`)}
@@ -167,7 +181,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             key={keyFactory(valueId, title, `form-field`)}
                             className={buttonVariants({
                               variant: 'link',
-                              className: '!block cursor-pointer !p-0',
+                              className: '!block cursor-pointer !p-0 !text-blue-500',
                             })}
                             target={'_blank'}
                             rel={'noopener noreferrer'}
@@ -229,6 +243,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                               pattern={pattern}
                               autoComplete={'off'}
                               {...field}
+                              value={displayValue(originalValue)}
+                              onChange={handleInputChange}
                             />
                           </FormControl>
                         )}
