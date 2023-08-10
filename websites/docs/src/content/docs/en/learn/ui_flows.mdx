@@ -4,9 +4,11 @@ description: UI Flows documentation
 
 ---
 
-## Package manager
+import PackageManagersTabs from '../../../../components/PackageManagersTabs/PackageManagersTabs.astro';
 
-<PackageManagersTabs code={`install @ballerine/web-ui-sdk@1.3.19`} />
+## Install dependencies
+
+<PackageManagersTabs code={`install @ballerine/web-ui-sdk`} />
 
 ```typescript
 import { flows } from '@ballerine/web-ui-sdk';
@@ -153,7 +155,7 @@ await flows.openModal('my-kyc-flow', {});
     </script>
     <script
       defer
-      src="https://cdn.ballerine.com/js/1.1.38/ballerine-sdk.umd.js"
+      src="https://cdn.ballerine.io/js/1.1.38/ballerine-sdk.umd.js"
       crossorigin="anonymous"
       onload="onLoad()"
     ></script>
