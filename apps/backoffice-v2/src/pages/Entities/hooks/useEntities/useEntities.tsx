@@ -5,6 +5,7 @@ import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSe
 import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
+import { setLocalStorage } from '../../../../common/utils/set-localstorage/set-localstorage';
 
 export const useEntities = () => {
   const [{ filterId, filter, sortBy, sortDir, page, pageSize }, setSearchParams] =
@@ -53,6 +54,12 @@ export const useEntities = () => {
             [key]: values,
           },
           page: 1,
+        });
+
+        localStorage.removeItem('cases-filter');
+        setLocalStorage('cases-filter', {
+          ...filter,
+          [key]: values,
         });
       };
     },

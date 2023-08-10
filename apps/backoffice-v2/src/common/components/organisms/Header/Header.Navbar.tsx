@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 import { NavItem } from './Header.NavItem';
 import { useFiltersQuery } from '../../../../domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { ctw } from '../../../utils/ctw/ctw';
@@ -16,7 +16,7 @@ import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks
  */
 export const Navbar: FunctionComponent = () => {
   const { data: filters } = useFiltersQuery();
-  const [searchParams] = useSearchParamsByEntity();
+  const [searchParams, setSearchParams] = useSearchParamsByEntity();
   const navItems = [
     // {
     //   text: 'Home',
@@ -25,6 +25,18 @@ export const Navbar: FunctionComponent = () => {
     //   key: 'nav-item-home',
     // },
   ] satisfies TRoutes;
+
+  useEffect(() => {
+    const caseFilters = localStorage.getItem('cases-filter');
+
+    if (caseFilters) {
+      const caseFilter = JSON.parse(caseFilters);
+      setSearchParams({
+        filter: caseFilter,
+        page: 1,
+      });
+    }
+  }, [searchParams]);
 
   useSelectEntityFilterOnMount();
 
