@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsObject, IsOptional, IsString } from 'class-validator';
+import { IsObject, IsString } from 'class-validator';
 import { TAuthenticationConfiguration } from '@/customer/types';
-import {CustomerStatuses, Project} from '@prisma/client';
+import {CustomerStatuses} from '@prisma/client';
 
 export class CustomerCreateDto {
 
