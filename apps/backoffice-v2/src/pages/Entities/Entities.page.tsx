@@ -71,7 +71,7 @@ export const Entities: FunctionComponent = () => {
         </Case>
       )}
       {Array.isArray(cases) && !cases.length && !isLoading ? (
-        <div className="p-4">
+        <div className="flex items-center justify-center border-l-[1px] p-4">
           <div className="inline-flex flex-col  items-start gap-4 rounded-md border-[1px] border-[#CBD5E1] p-6">
             <div className="flex w-[464px] items-center justify-center">
               <NoCasesSvg width={96} height={81} />
@@ -80,7 +80,7 @@ export const Entities: FunctionComponent = () => {
             <div className="flex w-[464px] flex-col items-start gap-2">
               <h2 className="text-lg font-[600]">No cases found</h2>
 
-              <div className="text-sm leading-[20px] text-[#64748B]">
+              <div className="text-sm leading-[20px]">
                 <p className="font-[400]">
                   It looks like there aren&apos;t any cases in your queue right now.
                 </p>
