@@ -636,6 +636,16 @@ export class WorkflowService {
       documents: documentsWithDecision,
     });
 
+    const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow);
+
+    this.workflowEventEmitter.emit('workflow.context.changed', {
+      oldRuntimeData: runtimeData,
+      updatedRuntimeData: updatedWorkflow,
+      state: updatedWorkflow.state,
+      entityId: (updatedWorkflow.businessId || updatedWorkflow.endUserId) as string,
+      correlationId: correlationId,
+    });
+
     return updatedWorkflow;
   }
 
