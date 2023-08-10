@@ -7,6 +7,7 @@ import {
 import { octetToFileType } from '../../../../../../common/octet-to-file-type/octet-to-file-type';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { safeEvery } from '@ballerine/common';
+import { useCaseDecision } from '../../../Case/hooks/useCaseDecision/useCaseDecision';
 
 export const useKycBlock = ({
   parentWorkflowId,
@@ -15,6 +16,7 @@ export const useKycBlock = ({
   childWorkflow: TWorkflowById['childWorkflows'][number];
   parentWorkflowId: string;
 }) => {
+  const { noAction } = useCaseDecision();
   const docsData = useStorageFilesQuery(
     childWorkflow?.context?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
@@ -129,10 +131,9 @@ export const useKycBlock = ({
         fileType: type,
       })) ?? [],
   );
-  const hasDecision = safeEvery(
-    childWorkflow?.context?.documents,
-    document => !!document?.decision?.status,
-  );
+  const hasDecision =
+    safeEvery(childWorkflow?.context?.documents, document => !!document?.decision?.status) ||
+    noAction;
 
   return [
     [
