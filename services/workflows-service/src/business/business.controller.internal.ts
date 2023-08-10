@@ -10,10 +10,10 @@ import { Request } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { BusinessService } from './business.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
-import {InputJsonValue, TProjectIds} from '@/types';
+import { InputJsonValue, TProjectIds } from '@/types';
 import { JsonValue } from 'type-fest';
-import {ProjectIds} from "@/common/decorators/project-ids.decorator";
-import {ProjectScopeService} from "@/project/project-scope.service";
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 @swagger.ApiTags('internal/businesses')
 @common.Controller('internal/businesses')
@@ -31,15 +31,20 @@ export class BusinessControllerInternal {
   @ApiNestedQuery(BusinessFindManyArgs)
   async list(
     @ProjectIds() projectIds: TProjectIds,
-    @common.Req() request: Request
+    @common.Req() request: Request,
   ): Promise<BusinessModel[]> {
     const args = plainToClass(BusinessFindManyArgs, request.query);
     const query: JsonValue = {};
 
-    return this.service.list(this.projectScopeService.scopeFindMany({
-      ...args,
-      ...(query as InputJsonValue),
-    }, projectIds));
+    return this.service.list(
+      this.projectScopeService.scopeFindMany(
+        {
+          ...args,
+          ...(query as InputJsonValue),
+        },
+        projectIds,
+      ),
+    );
   }
 
   @common.Get(':id')

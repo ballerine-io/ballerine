@@ -1,19 +1,18 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
-import { env } from '@/env';
+import {AuthenticatedEntity} from "@/types";
 
 @Injectable()
-export class KeyAuthGuard implements CanActivate {
+export class AdminAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest<Request>();
+    const user = req.user as unknown as AuthenticatedEntity;
 
-    const authHeader = req.headers.authorization || '';
-    const apiKey = authHeader.split(' ')[1];
-
-    if (apiKey !== env.API_KEY) {
-      throw new UnauthorizedException('Invalid API key');
+    if (user.type !== 'admin') {
+      throw new UnauthorizedException('Unauthorized');
     }
 
     return true;
   }
 }
+
