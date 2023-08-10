@@ -21,6 +21,7 @@ export class AuthKeyMiddleware implements NestMiddleware {
           // @ts-ignore
           customer: customerWithoutProjects,
           projectIds: customer.projects?.map(project => project.id),
+          type: 'customer',
         };
       }
     }

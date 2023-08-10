@@ -18,4 +18,5 @@ export type AuthenticatedEntity = {
   user?: Partial<User>;
   customer?: Partial<Customer>;
   projectIds: TProjectIds;
+  type: 'user' | 'customer' | 'admin';
 };

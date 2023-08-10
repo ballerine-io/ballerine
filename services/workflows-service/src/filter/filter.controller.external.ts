@@ -15,7 +15,7 @@ import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterCreateDto } from '@/filter/dtos/filter-create';
 import { FilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
 import { InputJsonValue } from '@/types';
-import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
+import {UseCustomerAuthGuard} from "@/common/decorators/use-customer-auth-guard.decorator";
 
 @swagger.ApiTags('external/filters')
 @common.Controller('external/filters')
@@ -54,7 +54,7 @@ export class FilterControllerExternal {
   }
 
   @common.Post()
-  @UseKeyAuthGuard()
+  @UseCustomerAuthGuard()
   @swagger.ApiCreatedResponse({ type: FilterModel })
   @swagger.ApiForbiddenResponse()
   @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
