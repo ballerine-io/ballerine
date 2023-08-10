@@ -2,6 +2,7 @@ import { getCountriesList } from '@app/pages/CollectionFlow/components/organisms
 import { RJSFSchema } from '@rjsf/utils';
 
 export const headquartersSchema: RJSFSchema = {
+  title: 'Headquarters Address',
   type: 'object',
   required: ['street', 'postalCode', 'city', 'country'],
   properties: {

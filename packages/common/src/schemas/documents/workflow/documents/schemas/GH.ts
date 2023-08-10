@@ -808,7 +808,7 @@ export const ghanaDocuments: TDocument[] = [
   },
   {
     category: 'registration_document',
-    type: 'certificate_of_incorporatio',
+    type: 'certificate_of_incorporation',
     issuer: {
       type: 'private',
       country: 'GH',

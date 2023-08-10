@@ -2,6 +2,7 @@ import { industries } from '@app/common/static/industries';
 import { RJSFSchema } from '@rjsf/utils';
 
 export const companyActivitySchema: RJSFSchema = {
+  title: 'Company Activity',
   type: 'object',
   required: ['website'],
   properties: {
