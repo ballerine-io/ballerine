@@ -47,6 +47,7 @@ export class WorkflowCompletedWebhookCaller {
       this.configService.get('NODE_ENV'),
       this.configService.get('WEBHOOK_URL'),
       this.configService.get('WEBHOOK_SECRET'),
+      'workflow.completed',
     );
 
     if (!url) {
