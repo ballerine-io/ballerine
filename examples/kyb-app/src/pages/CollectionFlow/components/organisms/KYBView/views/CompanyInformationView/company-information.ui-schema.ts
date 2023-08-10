@@ -10,7 +10,7 @@ export const companyInformationUISchema: UiSchema = {
     'ui:placeholder': 'CRN12345678',
   },
   companyCountry: {
-    'ui:placeholder': 'United Kingdom',
+    'ui:placeholder': 'Select country',
   },
   companyName: {
     'ui:placeholder': 'OpenAI Technologies, Inc.',

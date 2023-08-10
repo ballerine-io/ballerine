@@ -7,7 +7,7 @@ export const bankInformationUISchema: UiSchema = {
     },
   },
   country: {
-    'ui:placeholder': 'United Kingdom',
+    'ui:placeholder': 'Select country',
   },
   bankName: {
     'ui:placeholder': 'Barclays',
@@ -19,6 +19,6 @@ export const bankInformationUISchema: UiSchema = {
     'ui:placeholder': '20456720',
   },
   currency: {
-    'ui:placeholder': 'GBP',
+    'ui:placeholder': 'Select currency',
   },
 };
