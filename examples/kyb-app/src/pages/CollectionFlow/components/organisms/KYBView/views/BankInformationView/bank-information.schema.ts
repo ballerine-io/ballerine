@@ -3,6 +3,7 @@ import { RJSFSchema } from '@rjsf/utils';
 // import currencyCodes from 'currency-codes';
 
 export const bankInformationSchema: RJSFSchema = {
+  title: 'Bank Information',
   type: 'object',
   properties: {
     country: {
