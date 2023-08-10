@@ -12,8 +12,8 @@ export class AuthKeyMiddleware implements NestMiddleware {
 
     if (apiKey) {
       const customer = await this.customerService.getByApiKey(apiKey);
+      if (!customer) return next();
 
-      // @ts-expect-error - unused variable projects
       const { projects, ...customerWithoutProjects } = customer;
 
       if (customer) {

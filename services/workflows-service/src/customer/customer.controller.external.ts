@@ -18,9 +18,9 @@ export class CustomerControllerExternal {
   @swagger.ApiCreatedResponse({type: [CustomerCreateDto]})
   @swagger.ApiForbiddenResponse()
   async create(@common.Body() customerCreateModel: CustomerCreateDto) {
-    const customer: Prisma.CustomerCreateInput = customerCreateModel
-    if (customerCreateModel.projectName) {
-      customer.projects = {create: {name: customerCreateModel.projectName}}
+    const {projectName, ...customer } = customerCreateModel
+    if (projectName) {
+      (customer as Prisma.CustomerCreateInput).projects = {create: {name: customerCreateModel.projectName!}}
     }
 
     return this.service.create({
