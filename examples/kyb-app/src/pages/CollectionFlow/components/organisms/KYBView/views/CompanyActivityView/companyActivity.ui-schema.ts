@@ -18,9 +18,9 @@ export const companyActivityUISchema: UiSchema = {
     'ui:placeholder': 'www.example.co.uk',
   },
   volumeAmount: {
-    'ui:placeholder': '€500,000',
+    'ui:placeholder': '$500,000',
   },
   transactionValue: {
-    'ui:placeholder': '€10',
+    'ui:placeholder': '$10',
   },
 };

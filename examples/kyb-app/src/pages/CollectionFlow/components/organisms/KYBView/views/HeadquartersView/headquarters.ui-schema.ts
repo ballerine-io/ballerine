@@ -22,7 +22,7 @@ export const headquartersUISchema: UiSchema = {
     'ui:placeholder': 'N/A',
   },
   country: {
-    'ui:placeholder': 'United Kingdom',
+    'ui:placeholder': 'Select country',
   },
   phone: {
     'ui:field': 'PhoneInput',
