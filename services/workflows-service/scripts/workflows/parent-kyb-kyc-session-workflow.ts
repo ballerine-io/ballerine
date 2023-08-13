@@ -65,18 +65,23 @@ export const parentKybWithSessionWorkflowDefinition = {
           revision: 'revision',
         },
       },
+      pending_resubmission: {
+        on: {
+          RESUBMITTED: 'manual_review',
+        },
+      },
       approved: {
         type: 'final' as const,
       },
+      revision: {
+        always: [
+          {
+            target: 'pending_resubmission',
+          },
+        ],
+      },
       rejected: {
         type: 'final' as const,
-      },
-      revision: {
-        on: {
-          review: {
-            target: 'manual_review',
-          },
-        },
       },
       auto_reject: {
         type: 'final' as const,
@@ -120,7 +125,7 @@ export const parentKybWithSessionWorkflowDefinition = {
         pluginKind: 'email',
         url: `{secret.EMAIL_API_URL}`,
         method: 'POST',
-        stateNames: ['revision'],
+        stateNames: ['pending_resubmission'],
         headers: {
           Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
           'Content-Type': 'application/json',
@@ -133,7 +138,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               kybCompanyName: 'PayLynk',
               customerCompanyName: entity.data.companyName,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}/?workflowRuntimeId=',workflowRuntimeId, '?resubmitEvent=RESUBMITTED']),
+              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}/workflowRuntimeId=',workflowRuntimeId, '?resubmitEvent=RESUBMITTED']),
               supportEmail: join('',['PayLynk','@support.com']),
               from: 'no-reply@ballerine.com',
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
