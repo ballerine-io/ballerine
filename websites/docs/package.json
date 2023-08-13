@@ -4,6 +4,7 @@
   "version": "0.4.1",
   "private": true,
   "scripts": {
+    "spellcheck": "cspell \"*\"",
     "dev": "astro dev",
     "start": "astro dev",
     "check": "astro check && tsc",
@@ -37,6 +38,8 @@
   },
   "devDependencies": {
     "@types/html-escaper": "^3.0.0",
+    "cspell": "^6.31.2",
+    "@cspell/cspell-types": "^6.31.1",
     "editorconfig": "^1.0.1",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^8.5.0",
