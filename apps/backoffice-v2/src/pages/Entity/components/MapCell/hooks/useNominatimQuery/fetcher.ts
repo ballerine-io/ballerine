@@ -21,6 +21,7 @@ export const fetchNominatimSearch = async (
           ? address
           : `${address?.country} ${address?.city} ${address?.street}`,
       )}&format=json`,
+      headers: {},
       schema: z.array(
         z.object({
           lat: z.coerce.number(),
