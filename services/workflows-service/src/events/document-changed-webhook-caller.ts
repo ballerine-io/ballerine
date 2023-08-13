@@ -80,10 +80,12 @@ export class DocumentChangedWebhookCaller {
       this.configService.get('NODE_ENV'),
       this.configService.get('WEBHOOK_URL'),
       this.configService.get('WEBHOOK_SECRET'),
+      'workflow.context.document.changed',
     );
 
     if (!url) {
-      throw new Error(`No webhook url found for a workflow runtime data with an id of "${id}"`);
+      this.logger.log(`No webhook url found for a workflow runtime data with an id of "${id}"`);
+      return;
     }
 
     data.updatedRuntimeData.context.documents.forEach((doc: any) => {
