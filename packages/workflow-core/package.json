@@ -17,6 +17,7 @@
   "license": "Apache-2.0",
   "keywords": [],
   "scripts": {
+    "spellcheck": "cspell \"*\"",
     "clean": "rimraf ./dist",
     "build": "pnpm clean && rollup --config rollup.config.js",
     "watch": "tsc -w",
@@ -55,6 +56,8 @@
     "@typescript-eslint/parser": "^5.48.1",
     "@vitest/coverage-istanbul": "^0.28.4",
     "concurrently": "^7.6.0",
+    "cspell": "^6.31.2",
+    "@cspell/cspell-types": "^6.31.1",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^6.11.0",

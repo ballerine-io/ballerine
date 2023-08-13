@@ -35,6 +35,7 @@
     }
   },
   "scripts": {
+    "spellcheck": "cspell \"*\"",
     "dev": "vite -c vite.dev.config.ts",
     "build": "vite build",
     "deprecated:build:sdk": "rollup --config",
@@ -70,6 +71,8 @@
     "@types/testing-library__jest-dom": "^5.14.5",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
+    "cspell": "^6.31.2",
+    "@cspell/cspell-types": "^6.31.1",
     "editorconfig": "^1.0.1",
     "eslint": "8.22.0",
     "eslint-config-prettier": "^8.5.0",
