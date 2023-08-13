@@ -33,6 +33,8 @@ import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 import { WorkflowEventDecisionInput } from '@/workflow/dtos/workflow-event-decision-input';
+import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
+import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -160,6 +162,36 @@ export class WorkflowControllerInternal {
   ): Promise<WorkflowRuntimeData> {
     try {
       return await this.service.updateWorkflowRuntimeData(params.id, data);
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
+  }
+
+  // PATCH /workflows/:workflowId/decision/:documentId
+  @common.Patch('/:workflowId/decision/:documentId')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseKeyAuthInDevGuard()
+  @UseGuards(WorkflowAssigneeGuard)
+  async updateDocumentDecisionById(
+    @common.Param() params: DocumentDecisionParamsInput,
+    @common.Body() data: DocumentDecisionUpdateInput,
+  ): Promise<WorkflowRuntimeData> {
+    try {
+      return await this.service.updateDocumentDecisionById(
+        {
+          workflowId: params?.workflowId,
+          documentId: params?.documentId,
+        },
+        {
+          status: data?.decision,
+          reason: data?.reason,
+        },
+      );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
