@@ -17,8 +17,8 @@ import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActi
 
 export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
   const {
-    onMutateUpdateWorkflowById,
-    isLoadingUpdateWorkflowById,
+    onMutateTaskDecisionById,
+    isLoadingTaskDecisionById,
     caseState,
     action,
     actions,
@@ -119,9 +119,9 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
               // revisionReason,
               // })}
               // disabled={!revisionReason}
-              onClick={onMutateUpdateWorkflowById({
+              onClick={onMutateTaskDecisionById({
                 id: data?.id,
-                approvalStatus: action,
+                decision: action,
                 reason: comment ? `${reason} - ${comment}` : reason,
               })}
             >
@@ -135,12 +135,12 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     <Button
       variant={`success`}
       className={ctw({
-        loading: isLoadingUpdateWorkflowById,
+        loading: isLoadingTaskDecisionById,
       })}
-      disabled={isLoadingUpdateWorkflowById || data?.disabled || !caseState.actionButtonsEnabled}
-      onClick={onMutateUpdateWorkflowById({
+      disabled={isLoadingTaskDecisionById || data?.disabled || !caseState.actionButtonsEnabled}
+      onClick={onMutateTaskDecisionById({
         id: data?.id,
-        approvalStatus: data?.approvalStatus,
+        decision: data?.decision,
       })}
     >
       {value}

@@ -16,6 +16,7 @@ import { useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 
 import { octetToFileType } from '../../../../common/octet-to-file-type/octet-to-file-type';
+import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 
 export const useTasks = ({
   workflow,
@@ -37,6 +38,7 @@ export const useTasks = ({
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
+  const { noAction } = useCaseDecision();
 
   const results: Array<Array<string>> = [];
   workflow?.context?.documents?.forEach((document, docIndex) => {
@@ -63,17 +65,14 @@ export const useTasks = ({
                   {
                     id: 'nested-details-heading',
                     type: 'heading',
-                    value: convertSnakeCaseToTitleCase(key),
+                    value: 'Registry information',
                   },
                   {
-                    type: 'nestedDetails',
+                    type: 'details',
                     value: {
                       data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
                         title,
                         value,
-                        // Can be part of the response or from a config in the future.
-                        showNull: true,
-                        anchorUrls: true,
                       })),
                     },
                   },
@@ -109,8 +108,9 @@ export const useTasks = ({
                           value: 'Reject',
                           data: {
                             id,
-                            disabled: !isDoneWithRevision && Boolean(decision?.status),
-                            approvalStatus: 'rejected',
+                            disabled:
+                              (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
+                            decision: 'reject',
                           },
                         },
                         {
@@ -118,8 +118,9 @@ export const useTasks = ({
                           value: 'Approve',
                           data: {
                             id,
-                            disabled: !isDoneWithRevision && Boolean(decision?.status),
-                            approvalStatus: 'approved',
+                            disabled:
+                              (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
+                            decision: 'approve',
                           },
                         },
                       ],
