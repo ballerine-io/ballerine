@@ -1,10 +1,14 @@
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import {CustomerService} from '@/customer/customer.service';
-import {Prisma} from '@prisma/client';
+import {Customer, Prisma} from '@prisma/client';
 import {CustomerCreateDto} from '@/customer/dtos/customer-create';
-import {UseGuards} from "@nestjs/common";
+import {NotFoundException, Request, UseGuards} from "@nestjs/common";
 import {AdminAuthGuard} from "@/common/guards/admin-auth.guard";
+import {CustomerModel} from "@/customer/customer.model";
+import {ProjectIds} from "@/common/decorators/project-ids.decorator";
+import {AuthenticatedEntity, TProjectIds} from "@/types";
+import {CustomerAuthGuard} from "@/common/guards/customer-auth.guard";
 
 
 @swagger.ApiTags('external/customers')
@@ -37,4 +41,15 @@ export class CustomerControllerExternal {
       },
     });
   }
+
+  @common.Get()
+  @UseGuards(CustomerAuthGuard)
+  @swagger.ApiOkResponse({ type: [CustomerModel] })
+  @swagger.ApiForbiddenResponse()
+  find(
+    @Request() req: any
+  ): Partial<Customer> {
+    return (req.user as AuthenticatedEntity).customer!
+  }
+
 }
