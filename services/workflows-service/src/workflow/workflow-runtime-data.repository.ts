@@ -4,6 +4,7 @@ import { Prisma, WorkflowRuntimeData, WorkflowRuntimeDataStatus } from '@prisma/
 import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
+import { FindLastActiveFlowParams } from '@/workflow/types/params';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
@@ -141,5 +142,26 @@ export class WorkflowRuntimeDataRepository {
 
   async queryRaw<TValue>(query: string, values: any[] = []): Promise<TValue> {
     return (await this.prisma.$queryRawUnsafe.apply(this.prisma, [query, ...values])) as TValue;
+  }
+
+  async findLastActive({
+    workflowDefinitionId,
+    businessId,
+  }: FindLastActiveFlowParams): Promise<WorkflowRuntimeData | null> {
+    const latestWorkflowRuntimeData = await this.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 1,
+      where: {
+        status: 'active',
+        businessId,
+        workflowDefinitionId,
+      },
+    });
+
+    return latestWorkflowRuntimeData
+      ? (latestWorkflowRuntimeData.at(-1) as WorkflowRuntimeData)
+      : null;
   }
 }
