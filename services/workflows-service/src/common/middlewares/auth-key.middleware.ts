@@ -14,7 +14,11 @@ export class AuthKeyMiddleware implements NestMiddleware {
       const customer = await this.customerService.getByApiKey(apiKey);
       if (!customer) return next();
 
-      const { projects, ...customerWithoutProjects } = customer;
+      const {
+        projects,
+        authenticationConfiguration,
+        ...customerWithoutProjects
+      } = customer;
 
       if (customer) {
         req.user = {

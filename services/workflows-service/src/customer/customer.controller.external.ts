@@ -3,11 +3,10 @@ import * as swagger from '@nestjs/swagger';
 import {CustomerService} from '@/customer/customer.service';
 import {Customer, Prisma} from '@prisma/client';
 import {CustomerCreateDto} from '@/customer/dtos/customer-create';
-import {NotFoundException, Request, UseGuards} from "@nestjs/common";
+import {Request, UseGuards} from "@nestjs/common";
 import {AdminAuthGuard} from "@/common/guards/admin-auth.guard";
 import {CustomerModel} from "@/customer/customer.model";
-import {ProjectIds} from "@/common/decorators/project-ids.decorator";
-import {AuthenticatedEntity, TProjectIds} from "@/types";
+import {AuthenticatedEntity} from "@/types";
 import {CustomerAuthGuard} from "@/common/guards/customer-auth.guard";
 
 
@@ -51,5 +50,4 @@ export class CustomerControllerExternal {
   ): Partial<Customer> {
     return (req.user as AuthenticatedEntity).customer!
   }
-
 }
