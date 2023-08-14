@@ -27,7 +27,7 @@ import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event
 import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
-import {UseCustomerAuthGuard} from "@/common/decorators/use-customer-auth-guard.decorator";
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
