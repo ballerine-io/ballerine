@@ -49,10 +49,16 @@ export interface UpdateStepDataAction {
   payload: object;
 }
 
+export interface OverrideStepsAction {
+  type: 'STEPS_OVERRIDE';
+  payload: IStep[];
+}
+
 export type StepsManagerActions =
   | CompleteCurrentStepActionPayload
   | NextStepActionPayload
   | PrevStepActionPayload
   | WarningStepActionPayload
   | InvalidateStepActionPayload
-  | UpdateStepDataAction;
+  | UpdateStepDataAction
+  | OverrideStepsAction;
