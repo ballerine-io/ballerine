@@ -41,7 +41,7 @@ export class CustomerControllerExternal {
     });
   }
 
-  @common.Get()
+  @common.Get('/me')
   @UseGuards(CustomerAuthGuard)
   @swagger.ApiOkResponse({ type: [CustomerModel] })
   @swagger.ApiForbiddenResponse()

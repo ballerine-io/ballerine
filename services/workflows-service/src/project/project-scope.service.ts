@@ -56,7 +56,7 @@ export class ProjectScopeService {
     args.data = {
       // @ts-expect-error - dynamically typed for all queries
       ...args.data,
-      projectId: { in: projectIds },
+      projectId: projectIds?.[0],
     };
 
     return args;
