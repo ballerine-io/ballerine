@@ -29,8 +29,8 @@ import { MetricsModule } from '@/metrics/metrics.module';
 import { CustomerModule } from '@/customer/customer.module';
 import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
 import { ProjectModule } from '@/project/project.module';
-import {AdminKeyMiddleware} from "@/common/middlewares/admin-key.middleware";
-import {SessionAuthGuard} from "@/common/guards/session-auth.guard";
+import { AdminKeyMiddleware } from '@/common/middlewares/admin-key.middleware';
+import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
 
 @Module({
   controllers: [MetricsController],
@@ -78,7 +78,7 @@ import {SessionAuthGuard} from "@/common/guards/session-auth.guard";
     {
       provide: APP_GUARD,
       useClass: SessionAuthGuard,
-    }
+    },
   ],
 })
 export class AppModule {

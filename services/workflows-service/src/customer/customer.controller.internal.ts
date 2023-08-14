@@ -2,11 +2,10 @@ import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { CustomerService } from '@/customer/customer.service';
 import { CustomerModel } from '@/customer/customer.model';
-import {Customer} from '@prisma/client';
+import { Customer } from '@prisma/client';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
 import { NotFoundException } from '@nestjs/common';
-
 
 @swagger.ApiTags('internal/customers')
 @common.Controller('internal/customers')

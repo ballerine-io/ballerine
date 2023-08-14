@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
-import {AuthenticatedEntity} from "@/types";
+import { AuthenticatedEntity } from '@/types';
 
 @Injectable()
 export class CustomerAuthGuard implements CanActivate {
@@ -15,4 +15,3 @@ export class CustomerAuthGuard implements CanActivate {
     return true;
   }
 }
-

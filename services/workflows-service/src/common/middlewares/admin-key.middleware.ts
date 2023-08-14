@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware, Scope } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { CustomerService } from '@/customer/customer.service';
-import {env} from "@/env";
+import { env } from '@/env';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AdminKeyMiddleware implements NestMiddleware {
