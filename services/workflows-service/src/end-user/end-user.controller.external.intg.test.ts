@@ -20,6 +20,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@/prisma/prisma.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -32,6 +33,7 @@ describe('#EndUserControllerExternal', () => {
       EndUserRepository,
       EntityRepository,
       FilterService,
+      ProjectScopeService,
       FilterRepository,
       FileRepository,
       FileService,
