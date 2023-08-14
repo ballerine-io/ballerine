@@ -1,5 +1,69 @@
 # @ballerine/ui
 
+## 0.2.9
+
+### Patch Changes
+
+- Package update
+
+## 0.2.8
+
+### Patch Changes
+
+- Update packages
+
+## 0.2.7
+
+### Patch Changes
+
+- Disabled ripple on Autocomplete clear indicator
+
+## 0.2.6
+
+### Patch Changes
+
+- Fixed bug where DatePicker popup lost anchor on year selection
+
+## 0.2.5
+
+### Patch Changes
+
+- fixed deserialization of DatePickerInput input value
+
+## 0.2.4
+
+### Patch Changes
+
+- feb95afb: fixed DatePicker popup crash & added required mark
+- ce7c98bb: minor changes to provide base customization on array items in form & removal of error duplicates on render
+- 4c3dd515: fixed css on disabled Autocomplete & DatePicker
+- 33db0b58: Fixed popup flickering on calendar open in DatePickerInput
+
+## 0.2.3
+
+### Patch Changes
+
+- Added hanlding of disabled state to inputs & css fixes
+- c06f2341: added DynamicForm & TextArea & css fixes
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated fonts on MUI components & updated icon in DatePicker
+
+## 0.2.1
+
+### Patch Changes
+
+- updated exports
+
+## 0.2.0
+
+### Minor Changes
+
+- added Autocomplete,DropdownInput,Multiselect,DatePicker,Checkbox,PhoneNumber components
+
 ## 0.1.10
 
 ### Patch Changes

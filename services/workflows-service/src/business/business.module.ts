@@ -15,8 +15,11 @@ import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.s
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { HttpModule } from '@nestjs/axios';
+import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 
 @Module({
+  imports: [HttpModule, AppLoggerModule],
   controllers: [BusinessControllerInternal, BusinessControllerExternal],
   providers: [
     BusinessRepository,

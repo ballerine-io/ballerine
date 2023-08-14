@@ -5,6 +5,8 @@ const appSettings = require('./settings.json');
 module.exports = {
   darkMode: ['class'],
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  // This is required for MUI components customization
+  important: true,
   theme: {
     container: {
       center: true,

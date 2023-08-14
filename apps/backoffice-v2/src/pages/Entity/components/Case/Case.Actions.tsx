@@ -105,7 +105,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
               className={ctw({
                 loading: debouncedIsLoadingRejectEntity,
               })}
-              disabled={isLoading || !canReject}
+              // disabled={isLoading || !canReject}
               onClick={onMutateRejectEntity}
             >
               Reject
@@ -115,7 +115,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                 loading: debouncedIsLoadingApproveEntity,
               })}
               variant={`success`}
-              disabled={isLoading || !canApprove}
+              // disabled={isLoading || !canApprove}
               onClick={onMutateApproveEntity}
             >
               Approve

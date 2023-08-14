@@ -12,17 +12,25 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
           website: data.entity.website,
           registrationNumber: data.entity.registrationNumber,
           companyName: data.entity.companyName,
-          countryOfIncorporation: data.entity.country, // TODO: this needs to be extracted from address
+          countryOfIncorporation: data.entity.country,
           address: {
             text: data.entity.address,
           },
           additionalInfo: {
-            mainRepresentative: data.entity.mainRepresentative,
+            ...data.entity.additionalInfo,
+            mainRepresentative: {
+              firstName: data.entity.mainRepresentative.name.firstName,
+              lastName: data.entity.mainRepresentative.name.lastName,
+              phone: data.entity.mainRepresentative.phoneNumber,
+              dateOfBirth: data.entity.birthDate,
+              companyName: data.entity.companyName,
+              email: data.entity.email,
+            },
             ubos: data.entity.ubos.map(ubo => {
               ubo.entity.data.additionalInfo = {
                 ...(ubo.entity.data.additionalInfo || {}),
                 companyName: data.entity.companyName,
-                customerCompany: 'PayLink',
+                customerCompany: data.entity.companyName,
               };
 
               return ubo;
@@ -30,7 +38,7 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
           },
         },
       },
-      documents: data.documents.map(({ category, country, type, pages }) => ({
+      documents: data.documents.map(({ category, country, type, pages, properties }) => ({
         category,
         type,
         issuer: {
@@ -38,7 +46,7 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
         },
         decision: { status: '', revisionReason: '', rejectionReason: '' },
         pages: pages.map(({ fileId }) => ({ ballerineFileId: fileId })),
-        properies: {},
+        properties,
         version: '1',
         issuingVersion: 1,
       })),
