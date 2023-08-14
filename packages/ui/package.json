@@ -14,6 +14,7 @@
     "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
+    "spellcheck": "cspell \"*\"",
     "dev": "vite build --watch",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -70,6 +71,8 @@
     "@typescript-eslint/parser": "^5.61.0",
     "@vitejs/plugin-react": "^4.0.1",
     "autoprefixer": "10.4.14",
+    "cspell": "^6.31.2",
+    "@cspell/cspell-types": "^6.31.1",
     "eslint": "^8.44.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
