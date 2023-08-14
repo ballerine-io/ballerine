@@ -3,6 +3,9 @@ import { Request } from 'express';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { env } from '@/env';
 
+/**
+ * Expects a param named `id` in the request belonging to a workflow
+ */
 @Injectable()
 export class WorkflowAssigneeGuard implements CanActivate {
   constructor(private service: WorkflowService) {}

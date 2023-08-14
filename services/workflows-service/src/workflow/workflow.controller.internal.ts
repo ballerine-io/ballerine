@@ -171,7 +171,7 @@ export class WorkflowControllerInternal {
   }
 
   // PATCH /workflows/:workflowId/decision/:documentId
-  @common.Patch('/:workflowId/decision/:documentId')
+  @common.Patch('/:id/decision/:documentId')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -184,7 +184,7 @@ export class WorkflowControllerInternal {
     try {
       return await this.service.updateDocumentDecisionById(
         {
-          workflowId: params?.workflowId,
+          workflowId: params?.id,
           documentId: params?.documentId,
         },
         {
