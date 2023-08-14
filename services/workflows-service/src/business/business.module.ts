@@ -16,6 +16,7 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { HttpModule } from '@nestjs/axios';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
+import { EndUserService } from '@/end-user/end-user.service';
 
 @Module({
   imports: [HttpModule, AppLoggerModule],
@@ -30,6 +31,7 @@ import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
     FileService,
     StorageService,
     EndUserRepository,
+    EndUserService,
     WorkflowEventEmitterService,
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,

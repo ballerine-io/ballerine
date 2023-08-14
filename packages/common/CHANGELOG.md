@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.5.19
+
+### Patch Changes
+
+- cce4a663: Fixed type in GH schema
+
 ## 0.5.18
 
 ### Patch Changes

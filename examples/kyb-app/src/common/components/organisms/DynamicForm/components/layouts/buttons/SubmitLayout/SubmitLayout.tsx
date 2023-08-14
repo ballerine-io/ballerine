@@ -6,6 +6,8 @@ export const SubmitLayout = ({ uiSchema }: SubmitButtonProps) => {
 
   if (norender) return null;
 
+  console.log('submit layout');
+
   return (
     <div className="flex justify-end">
       <Button
@@ -13,7 +15,8 @@ export const SubmitLayout = ({ uiSchema }: SubmitButtonProps) => {
         className="bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm"
         type="submit"
       >
-        {submitText}
+        {/* {submitText} */}
+        loading
       </Button>
     </div>
   );

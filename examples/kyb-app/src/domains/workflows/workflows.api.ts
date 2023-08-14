@@ -55,7 +55,7 @@ export const updateWorkflow = async (dto: UpdateWorkflowDto) => {
 
 export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<Workflow | null> => {
   const result = await request
-    .get('collection-flow/active-flow', {
+    .get('external/workflows/active-flow', {
       searchParams: {
         email: dto.email,
         workflowRuntimeDefinitionId: import.meta.env.VITE_KYB_DEFINITION_ID as string,

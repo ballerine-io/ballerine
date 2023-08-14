@@ -64,6 +64,18 @@ export class BusinessControllerExternal {
     return this.service.list(args);
   }
 
+  @UseKeyAuthGuard()
+  @common.Get('/business-information')
+  async getCompanyInfo(@common.Query() query: BusinessInformation) {
+    const { jurisdictionCode, vendor, registrationNumber } = query;
+
+    return this.service.fetchCompanyInformation({
+      registrationNumber,
+      jurisdictionCode,
+      vendor,
+    });
+  }
+
   @common.Get(':id')
   @swagger.ApiOkResponse({ type: BusinessModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -98,21 +110,6 @@ export class BusinessControllerExternal {
             ? JSON.stringify(data.shareholderStructure)
             : undefined,
       },
-    });
-  }
-
-  @UseKeyAuthGuard()
-  @common.Get('/business-information/:registrationNumber')
-  async getCompanyInfo(
-    @common.Query() query: BusinessInformation,
-    @common.Param('registrationNumber') registrationNumber: string,
-  ) {
-    const { jurisdictionCode, vendor } = query;
-
-    return this.service.fetchCompanyInformation({
-      registrationNumber,
-      jurisdictionCode,
-      vendor,
     });
   }
 

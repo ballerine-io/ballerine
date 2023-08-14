@@ -24,6 +24,40 @@ export const SimpleForm = {
   render: () => <DynamicForm schema={simpleFormSchema} onSubmit={() => {}} />,
 };
 
+const submittingFormSchema: RJSFSchema = {
+  type: 'object',
+  required: ['name'],
+  properties: {
+    name: {
+      type: 'string',
+      title: 'First Name',
+    },
+    lastName: {
+      type: 'string',
+      title: 'Last Name',
+    },
+  },
+};
+
+const submittingFormUISchema = {
+  'ui:options': {
+    submitButtonOptions: {
+      submitText: 'Submit',
+      isLoading: true,
+    },
+  },
+};
+
+export const SubmittingForm = {
+  render: () => (
+    <DynamicForm
+      schema={submittingFormSchema}
+      uiSchema={submittingFormUISchema}
+      onSubmit={() => {}}
+    />
+  ),
+};
+
 const fileInputFormSchema: RJSFSchema = {
   type: 'object',
   properties: {
