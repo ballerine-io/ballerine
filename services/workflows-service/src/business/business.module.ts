@@ -17,6 +17,7 @@ import { EntityRepository } from '@/common/entity/entity.repository';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { HttpModule } from '@nestjs/axios';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
+import { EndUserService } from '@/end-user/end-user.service';
 
 @Module({
   imports: [HttpModule, AppLoggerModule],
@@ -32,6 +33,7 @@ import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
     StorageService,
     ProjectScopeService,
     EndUserRepository,
+    EndUserService,
     WorkflowEventEmitterService,
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
