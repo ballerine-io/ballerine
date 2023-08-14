@@ -1,6 +1,6 @@
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
-import {Param, UseGuards} from '@nestjs/common';
+import { Param, UseGuards } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
@@ -19,7 +19,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 import { BusinessUpdateDto } from '@/business/dtos/business.update';
 import { BusinessInformation } from '@/business/dtos/business-information';
-import {CustomerAuthGuard} from "@/common/guards/customer-auth.guard";
+import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 
 @swagger.ApiTags('external/businesses')
 @common.Controller('external/businesses')
