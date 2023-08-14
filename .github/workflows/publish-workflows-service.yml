@@ -3,6 +3,9 @@ name: Publish workflows-service image
 on:
   workflow_dispatch:
   push:
+    paths:
+      # Run this pipeline only if there are changes in specified path
+      - "services/workflows-service/**"
     branches:
       - dev
       - test
@@ -55,6 +58,17 @@ jobs:
             type=raw,value=commit-${{ github.sha }}-dev
             type=raw,value=${{ steps.get_version.outputs.version }}-dev
 
+      - name: Extract metadata (tags, labels) for demo Docker
+        if: github.ref == 'refs/heads/demo'
+        id: devmeta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=dev
+            type=raw,value=commit-${{ github.sha }}-demo
+            type=raw,value=${{ steps.get_version.outputs.version }}-demo
+
       - name: Extract metadata (tags, labels) for test Docker
         if: github.ref == 'refs/heads/test'
         id: testmeta
@@ -81,6 +95,15 @@ jobs:
 
       - name: Build and push Docker image for Dev
         if: github.ref == 'refs/heads/dev'
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: services/workflows-service
+          push: true
+          tags: ${{ steps.devmeta.outputs.tags }}
+          labels: ${{ steps.devmeta.outputs.labels }}
+
+      - name: Build and push Docker image for Demo
+        if: github.ref == 'refs/heads/demo'
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: services/workflows-service
