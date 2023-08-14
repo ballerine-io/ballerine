@@ -28,6 +28,7 @@ import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event
 import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
+import { GetActiveFlowDto } from '@/workflow/dtos/get-active-workflow-input.dto';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -63,6 +64,19 @@ export class WorkflowControllerExternal {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   async getWorkflowDefinition(@common.Param() params: WorkflowDefinitionWhereUniqueInput) {
     return await this.service.getWorkflowDefinitionById(params.id);
+  }
+
+  @common.Get('/active-flow')
+  @UseKeyAuthGuard()
+  async getActiveFlow(@common.Query() query: GetActiveFlowDto) {
+    const activeWorkflow = await this.service.getLastActiveFlow({
+      email: query.email,
+      workflowRuntimeDefinitionId: query.workflowRuntimeDefinitionId,
+    });
+
+    return {
+      result: activeWorkflow,
+    };
   }
 
   @common.Get('/:id')

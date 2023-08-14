@@ -1,9 +1,22 @@
 # @ballerine/rules-engine-lib
 
+## 0.4.12
+
+### Patch Changes
+
+- Package update
+
+## 0.4.11
+
+### Patch Changes
+
+- Update packages
+
 ## 0.4.10
 
 ### Patch Changes
 
+- added Autocomplete,DropdownInput,Multiselect,DatePicker,Checkbox,PhoneNumber components
 - Upgrade packages
 
 ## 0.4.9

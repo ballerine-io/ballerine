@@ -217,12 +217,18 @@ export const useTasks = ({
                         omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
                       ),
                       ...Object.entries(entity?.data?.additionalInfo ?? {}),
-                    ]?.map(([title, value]) => ({
-                      title,
-                      value,
-                      type: 'string',
-                      isEditable: false,
-                    })),
+                    ]
+                      ?.map(([title, value]) => ({
+                        title,
+                        value,
+                        type: 'string',
+                        isEditable: false,
+                      }))
+                      // removing private properties from list (__kyb_snapshot in this case)
+                      // __kyb_snapshot is state of KYB,temp solution
+                      // payload is not for users so removing it
+                      // TO DO: Remove this as soon as BE updated
+                      .filter(elem => !elem.title.startsWith('__')),
                   },
                 },
               ],

@@ -107,6 +107,7 @@ describe('WorkflowControllerInternal', () => {
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
       endUserRepo,
+      {} as any,
       businessRepo,
       entityRepo,
       {} as any,
