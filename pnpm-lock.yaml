@@ -61,16 +61,16 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.18
+        specifier: 0.5.19
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.2.9
+        specifier: 0.2.10
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.4.21
+        specifier: 0.4.22
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.4.15
+        specifier: 0.4.16
         version: link:../../sdks/workflow-node-sdk
       '@formkit/auto-animate':
         specifier: 1.0.0-beta.5
@@ -513,10 +513,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.18
+        specifier: 0.5.19
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.4.21
+        specifier: 0.4.22
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -604,7 +604,7 @@ importers:
   examples/kyb-app:
     dependencies:
       '@ballerine/ui':
-        specifier: link:../../packages/ui
+        specifier: 0.2.10
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -1287,7 +1287,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.18
+        specifier: 0.5.19
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1429,7 +1429,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.18
+        specifier: 0.5.19
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -1550,10 +1550,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.18
+        specifier: 0.5.19
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.4.28
+        specifier: 0.4.29
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1680,7 +1680,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.4.28
+        specifier: 0.4.29
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -1904,13 +1904,13 @@ importers:
         specifier: 3.325.0
         version: 3.325.0
       '@ballerine/common':
-        specifier: 0.5.18
+        specifier: 0.5.19
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.4.28
+        specifier: 0.4.29
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.4.15
+        specifier: 0.4.16
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2175,7 +2175,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@2.7.2)(tailwindcss@3.3.2)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: 0.5.18
+        specifier: 0.5.19
         version: link:../../packages/common
       '@docsearch/css':
         specifier: ^3.1.0
@@ -33449,7 +33449,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.2.7(postcss@8.4.21)(ts-node@10.9.1)
+      tailwindcss: 3.2.7(postcss@8.4.24)(ts-node@10.9.1)
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.2):
