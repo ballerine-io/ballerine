@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.2.10
+
+### Patch Changes
+
+- Added SubmitButton and updated DynamicForm & added stories
+
 ## 0.2.9
 
 ### Patch Changes

@@ -23,8 +23,8 @@ export const fetchBusinessInformation = async ({
   jurisdictionCode,
 }: GetBusinessInformationDto): Promise<TBusinessInformation> => {
   const result = await request
-    .get(`external/businesses/business-information/${registrationNumber}`, {
-      searchParams: { jurisdictionCode },
+    .get(`external/businesses/business-information`, {
+      searchParams: { jurisdictionCode, registrationNumber },
     })
     .json<TBusinessInformation>();
 

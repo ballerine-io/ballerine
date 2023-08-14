@@ -30,7 +30,6 @@ import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
 import { ProjectModule } from '@/project/project.module';
 import { AdminKeyMiddleware } from '@/common/middlewares/admin-key.middleware';
 import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
-import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Module({
@@ -69,7 +68,6 @@ import { ProjectScopeService } from '@/project/project-scope.service';
     AppLoggerModule,
     FiltersModule,
     MetricsModule,
-    CollectionFlowModule,
   ],
   providers: [
     {

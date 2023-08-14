@@ -23,6 +23,7 @@ import { EntityRepository } from '@/common/entity/entity.repository';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webhook-caller';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { EndUserService } from '@/end-user/end-user.service';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
@@ -32,6 +33,7 @@ import { ProjectScopeService } from '@/project/project-scope.service';
     WorkflowRuntimeDataRepository,
     ProjectScopeService,
     EndUserRepository,
+    EndUserService,
     BusinessRepository,
     EntityRepository,
     StorageService,

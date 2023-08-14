@@ -151,6 +151,7 @@ describe('WorkflowService', () => {
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
       endUserRepo,
+      {} as any,
       businessRepo,
       entityRepo,
       {} as any,
