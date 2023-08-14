@@ -25,6 +25,10 @@ import { FiltersModule } from '@/common/filters/filters.module';
 import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-audit.middleware';
 import { MetricsController } from '@/metrics/metrics.controller';
 import { MetricsModule } from '@/metrics/metrics.module';
+import { CustomerModule } from '@/customer/customer.module';
+import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
+import { ProjectModule } from '@/project/project.module';
+import { AdminKeyMiddleware } from '@/common/middlewares/admin-key.middleware';
 import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
 
 @Module({
@@ -38,14 +42,13 @@ import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
       },
     }),
     EventEmitterModule.forRoot(),
-    // DevtoolsModule.register({
-    //   http: process.env.NODE_ENV !== 'production',
-    // }),
     UserModule,
     WorkflowModule,
     StorageModule,
     EndUserModule,
+    CustomerModule,
     BusinessModule,
+    ProjectModule,
     FilterModule,
     ACLModule,
     AuthModule,
@@ -78,6 +81,8 @@ import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestIdMiddleware, UserSessionAuditMiddleware).forRoutes('*');
+    consumer
+      .apply(RequestIdMiddleware, UserSessionAuditMiddleware, AuthKeyMiddleware, AdminKeyMiddleware)
+      .forRoutes('*');
   }
 }

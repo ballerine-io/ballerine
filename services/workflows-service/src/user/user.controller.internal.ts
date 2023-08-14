@@ -3,7 +3,9 @@ import * as swagger from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserModel } from './user.model';
 import { UserCreateDto } from '@/user/dtos/user-create';
-import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { Prisma } from '@prisma/client';
+import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @swagger.ApiTags('internal/users')
 @common.Controller('internal/users')
@@ -29,11 +31,24 @@ export class UserControllerInternal {
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [UserModel] })
+  @UseGuards(AdminAuthGuard)
   @swagger.ApiForbiddenResponse()
-  @UseKeyAuthInDevGuard()
   async create(@common.Body() userCreatInfo: UserCreateDto) {
+    const { projectIds, ...user } = userCreatInfo;
+
+    if (projectIds && projectIds.length > 0) {
+      (user as Prisma.UserCreateInput).userToProjects = {
+        createMany: {
+          data: projectIds.map(projectId => {
+            return { projectId };
+          }),
+          skipDuplicates: true,
+        },
+      };
+    }
+
     return this.service.create({
-      data: userCreatInfo,
+      data: user,
       select: {
         id: true,
         firstName: true,
