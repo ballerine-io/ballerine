@@ -20,6 +20,7 @@ import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 import { BusinessUpdateDto } from '@/business/dtos/business.update';
 import { BusinessInformation } from '@/business/dtos/business-information';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
+import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 
 @swagger.ApiTags('external/businesses')
 @common.Controller('external/businesses')
@@ -64,6 +65,18 @@ export class BusinessControllerExternal {
     return this.service.list(args);
   }
 
+  @UseKeyAuthOrSessionGuard()
+  @common.Get('/business-information')
+  async getCompanyInfo(@common.Query() query: BusinessInformation) {
+    const { jurisdictionCode, vendor, registrationNumber } = query;
+
+    return this.service.fetchCompanyInformation({
+      registrationNumber,
+      jurisdictionCode,
+      vendor,
+    });
+  }
+
   @common.Get(':id')
   @swagger.ApiOkResponse({ type: BusinessModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -98,21 +111,6 @@ export class BusinessControllerExternal {
             ? JSON.stringify(data.shareholderStructure)
             : undefined,
       },
-    });
-  }
-
-  @common.Get('/business-information/:registrationNumber')
-  @UseGuards(CustomerAuthGuard)
-  async getCompanyInfo(
-    @common.Query() query: BusinessInformation,
-    @common.Param('registrationNumber') registrationNumber: string,
-  ) {
-    const { jurisdictionCode, vendor } = query;
-
-    return this.service.fetchCompanyInformation({
-      registrationNumber,
-      jurisdictionCode,
-      vendor,
     });
   }
 

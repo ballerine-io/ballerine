@@ -1,5 +1,12 @@
 # @ballerine/workflow-core
 
+## 0.4.29
+
+### Patch Changes
+
+- Updated dependencies [cce4a663]
+  - @ballerine/common@0.5.19
+
 ## 0.4.28
 
 ### Patch Changes
