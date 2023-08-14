@@ -19,7 +19,6 @@ import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
-import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
@@ -28,6 +27,7 @@ import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event
 import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -122,7 +122,7 @@ export class WorkflowControllerExternal {
 
   @common.Post('/run')
   @swagger.ApiOkResponse()
-  @UseKeyAuthGuard()
+  @UseCustomerAuthGuard()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createWorkflowRuntimeData(
@@ -167,7 +167,7 @@ export class WorkflowControllerExternal {
   // POST /event
   @common.Post('/:id/send-event')
   @swagger.ApiOkResponse()
-  @UseKeyAuthGuard()
+  @UseCustomerAuthGuard()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async sendEvent(
@@ -182,7 +182,7 @@ export class WorkflowControllerExternal {
   }
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')
-  @UseKeyAuthGuard()
+  @UseCustomerAuthGuard()
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
