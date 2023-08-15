@@ -99,7 +99,6 @@ services:
         - pg_isready
         - -U
         - admin
-        - admin
       timeout: 45s
       interval: 10s
       retries: 10
