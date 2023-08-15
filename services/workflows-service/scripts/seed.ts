@@ -389,46 +389,6 @@ async function seed(bcryptSalt: Salt) {
     });
   }
 
-  const baseManualReviewDefinition = {
-    name: 'manual_review',
-    version: manualMachineVersion,
-    definitionType: 'statechart-json',
-    definition: {
-      id: 'Manual Review',
-      initial: 'review',
-      states: {
-        review: {
-          on: {
-            approve: {
-              target: 'approved',
-            },
-            reject: {
-              target: 'rejected',
-            },
-            revision: {
-              target: 'revision',
-            },
-          },
-        },
-        approved: {
-          type: 'final',
-        },
-        rejected: {
-          type: 'final',
-        },
-        revision: {
-          on: {
-            review: {
-              target: 'review',
-            },
-          },
-        },
-      },
-    },
-    persistStates: [],
-    submitStates: [],
-  } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
-
   // Risk score improvement
   await client.workflowDefinition.create({
     data: {
@@ -474,6 +434,46 @@ async function seed(bcryptSalt: Salt) {
       },
     },
   });
+
+  const baseManualReviewDefinition = {
+    name: 'manual_review',
+    version: manualMachineVersion,
+    definitionType: 'statechart-json',
+    definition: {
+      id: 'Manual Review',
+      initial: 'review',
+      states: {
+        review: {
+          on: {
+            approve: {
+              target: 'approved',
+            },
+            reject: {
+              target: 'rejected',
+            },
+            revision: {
+              target: 'revision',
+            },
+          },
+        },
+        approved: {
+          type: 'final',
+        },
+        rejected: {
+          type: 'final',
+        },
+        revision: {
+          on: {
+            review: {
+              target: 'review',
+            },
+          },
+        },
+      },
+    },
+    persistStates: [],
+    submitStates: [],
+  } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
 
   // KYC Manual Review (workflowLevelResolution false)
   await client.workflowDefinition.create({
