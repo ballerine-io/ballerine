@@ -447,8 +447,30 @@ async function seed(bcryptSalt: Salt) {
       },
       definition: {
         id: 'risk-score-improvement',
-        initial: baseManualReviewDefinition.definition.initial,
-        states: baseManualReviewDefinition.definition.states,
+        initial: 'idle',
+        states: {
+          review: {
+            on: {
+              idle: {
+                target: 'review',
+              },
+              review: {
+                target: ['rejected', 'approved', 'revision'],
+              },
+              revision: {
+                target: ['rejected', 'approved', 'review'],
+              },
+            },
+          },
+          idle: {},
+          approved: {
+            type: 'final',
+          },
+          rejected: {
+            type: 'final',
+          },
+          revision: {},
+        },
       },
     },
   });
