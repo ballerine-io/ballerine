@@ -573,36 +573,6 @@ export class WorkflowService {
     return updatedWorkflow;
   }
 
-  async completeWorkflowWhenResolvedIfConfigured({
-    workflow,
-    workflowDefinition,
-  }: {
-    workflow: WorkflowRuntimeData;
-    workflowDefinition: WorkflowDefinition;
-  }) {
-    if (!workflowDefinition?.config?.completedWhenTasksResolved || workflow?.status !== 'active')
-      return;
-
-    // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
-    const resolvedStates = ['approved', 'rejected'];
-    const allDocumentsResolved = safeEvery(
-      workflow?.context?.documents,
-      (document: DefaultContextSchema['documents'][number]) => {
-        if (!document?.decision?.status) return false;
-
-        return resolvedStates.includes(document?.decision?.status);
-      },
-    );
-
-    if (!allDocumentsResolved) return;
-
-    await this.workflowRuntimeDataRepository.updateById(workflow?.id, {
-      data: {
-        status: 'completed',
-      },
-    });
-  }
-
   async updateDocumentDecisionById(
     {
       workflowId,
@@ -678,12 +648,58 @@ export class WorkflowService {
       correlationId: correlationId,
     });
 
-    await this.completeWorkflowWhenResolvedIfConfigured({
-      workflow: updatedWorkflow,
-      workflowDefinition,
+    // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
+    const resolvedStates = ['approved', 'rejected'];
+    const shouldResolve =
+      workflowDefinition?.config?.completedWhenTasksResolved && workflow?.status === 'active';
+    const allDocumentsResolved =
+      shouldResolve &&
+      safeEvery(
+        updatedWorkflow?.context?.documents,
+        (document: DefaultContextSchema['documents'][number]) => {
+          if (!document?.decision?.status) return false;
+
+          return resolvedStates.includes(document?.decision?.status);
+        },
+      );
+
+    const workflowService = createWorkflow({
+      runtimeId: workflow?.id,
+      definition: workflowDefinition?.definition,
+      definitionType: workflowDefinition?.definitionType,
+      workflowContext: {
+        machineContext: workflow?.context,
+        state: workflow?.state ?? workflowDefinition?.definition?.initial,
+      },
     });
 
-    return updatedWorkflow;
+    const snapshot = workflowService.getSnapshot();
+    const isFinal = workflowDefinition?.definition?.states?.[snapshot?.value]?.type === 'final';
+    const isResolved =
+      isFinal || allDocumentsResolved || workflow?.status === WorkflowRuntimeDataStatus.completed;
+
+    const updatedWorkflowWithResolve = await this.workflowRuntimeDataRepository.updateById(
+      workflow?.id,
+      {
+        data: {
+          status: allDocumentsResolved ? 'completed' : workflow?.status,
+          resolvedAt: isResolved ? new Date().toISOString() : null,
+        },
+      },
+    );
+
+    if (isResolved) {
+      this.logger.log('Workflow resolved', { id: updatedWorkflowWithResolve?.id });
+
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData: updatedWorkflowWithResolve,
+        state: snapshot?.value ?? updatedWorkflowWithResolve?.state,
+        entityId: updatedWorkflowWithResolve?.businessId || updatedWorkflowWithResolve?.endUserId,
+        correlationId: updatedWorkflowWithResolve?.correlationId,
+      });
+    }
+
+    return updatedWorkflowWithResolve;
   }
 
   async updateContextById(id: string, context: WorkflowRuntimeData['context']) {

@@ -389,52 +389,6 @@ async function seed(bcryptSalt: Salt) {
     });
   }
 
-  // Risk score improvement
-  await client.workflowDefinition.create({
-    data: {
-      id: 'risk-score-improvement-dev', // should be auto generated normally
-      name: 'risk-score-improvement',
-      version: 1,
-      definitionType: 'statechart-json',
-      config: {
-        completedWhenTasksResolved: true,
-        workflowLevelResolution: false,
-        allowMultipleActiveWorkflows: true,
-      },
-      contextSchema: {
-        type: 'json-schema',
-        schema: defaultContextSchema,
-      },
-      definition: {
-        id: 'risk-score-improvement',
-        initial: 'idle',
-        states: {
-          review: {
-            on: {
-              idle: {
-                target: 'review',
-              },
-              review: {
-                target: ['rejected', 'approved', 'revision'],
-              },
-              revision: {
-                target: ['rejected', 'approved', 'review'],
-              },
-            },
-          },
-          idle: {},
-          approved: {
-            type: 'final',
-          },
-          rejected: {
-            type: 'final',
-          },
-          revision: {},
-        },
-      },
-    },
-  });
-
   const baseManualReviewDefinition = {
     name: 'manual_review',
     version: manualMachineVersion,
@@ -474,6 +428,30 @@ async function seed(bcryptSalt: Salt) {
     persistStates: [],
     submitStates: [],
   } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
+
+  // Risk score improvement
+  await client.workflowDefinition.create({
+    data: {
+      id: 'risk-score-improvement-dev', // should be auto generated normally
+      name: 'risk-score-improvement',
+      version: 1,
+      definitionType: 'statechart-json',
+      config: {
+        completedWhenTasksResolved: true,
+        workflowLevelResolution: false,
+        allowMultipleActiveWorkflows: true,
+      },
+      contextSchema: {
+        type: 'json-schema',
+        schema: defaultContextSchema,
+      },
+      definition: {
+        id: 'risk-score-improvement',
+        initial: baseManualReviewDefinition.definition.initial,
+        states: baseManualReviewDefinition.definition.states,
+      },
+    },
+  });
 
   // KYC Manual Review (workflowLevelResolution false)
   await client.workflowDefinition.create({
