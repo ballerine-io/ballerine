@@ -7,6 +7,14 @@ import {
   Assignee,
 } from '../../../../common/components/atoms/AssignButton/AssignButton';
 import { Button } from '../../../../common/components/atoms/Button/Button';
+import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
+import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
+import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
+import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
+import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
+import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
+import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
+import { Send } from 'lucide-react';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -34,6 +42,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     debouncedIsLoadingApproveEntity,
     debouncedIsLoadingRejectEntity,
     debouncedIsLoadingAssignEntity,
+    debouncedIsLoadingRevisionCase,
     isLoading,
     isLoadingCase,
     initials,
@@ -91,15 +100,41 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         </div>
         {showResolutionButtons && (
           <div className={`pe-[3.35rem] flex items-center space-x-6`}>
-            <Button
-              className={ctw({
-                loading: debouncedIsLoadingRejectEntity,
-              })}
-              disabled={isLoading || !canRevision}
-              onClick={onMutateRevisionCase}
-            >
-              Ask for all revisions
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  className={ctw({
+                    loading: debouncedIsLoadingRevisionCase,
+                  })}
+                  disabled={isLoading || !canRevision}
+                >
+                  Ask for all re-uploads
+                </Button>
+              </DialogTrigger>
+              <DialogContent className={`mb-96`}>
+                <DialogHeader>
+                  <DialogTitle className={`text-2xl`}>Ask for all re-uploads</DialogTitle>
+                  <DialogDescription>
+                    By clicking the button below, an email with a link will be sent to the customer,
+                    directing them to re-upload the documents you have marked as “re-upload needed”.
+                    The case’s status will then change to “Revisions” until the customer will
+                    provide the needed documents and fixes.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    className={ctw(`gap-x-2`, {
+                      loading: debouncedIsLoadingRevisionCase,
+                    })}
+                    disabled={isLoading || !canRevision}
+                    onClick={onMutateRevisionCase}
+                  >
+                    <Send size={18} />
+                    Send email
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <Button
               variant={`destructive`}
               className={ctw({

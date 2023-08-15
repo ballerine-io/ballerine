@@ -8,8 +8,8 @@
     "error": "Error occurred while rejecting the case."
   },
   "ask_revision_case": {
-    "success": "The case has been asked for revision successfully.",
-    "error": "Error occurred while asking for revision of the case."
+    "success": "Email sent successfully.",
+    "error": "Error occurred while sending email."
   },
   "approve_document": {
     "success": "The document has been approved successfully.",
