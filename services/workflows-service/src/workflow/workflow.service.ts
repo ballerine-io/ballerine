@@ -54,6 +54,7 @@ import {
   DefaultContextSchema,
   getDocumentId,
   getDocumentsByCountry,
+  safeEvery,
   TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -572,6 +573,36 @@ export class WorkflowService {
     return updatedWorkflow;
   }
 
+  async completeWorkflowWhenResolvedIfConfigured({
+    workflow,
+    workflowDefinition,
+  }: {
+    workflow: WorkflowRuntimeData;
+    workflowDefinition: WorkflowDefinition;
+  }) {
+    if (!workflowDefinition?.config?.completedWhenTasksResolved || workflow?.status !== 'active')
+      return;
+
+    // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
+    const resolvedStates = ['approved', 'rejected'];
+    const allDocumentsResolved = safeEvery(
+      workflow?.context?.documents,
+      (document: DefaultContextSchema['documents'][number]) => {
+        if (!document?.decision?.status) return false;
+
+        return resolvedStates.includes(document?.decision?.status);
+      },
+    );
+
+    if (!allDocumentsResolved) return;
+
+    await this.workflowRuntimeDataRepository.updateById(workflow?.id, {
+      data: {
+        status: 'completed',
+      },
+    });
+  }
+
   async updateDocumentDecisionById(
     {
       workflowId,
@@ -585,7 +616,10 @@ export class WorkflowService {
       reason?: string;
     },
   ) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowId);
+    const workflow = await this.workflowRuntimeDataRepository.findById(workflowId);
+    const workflowDefinition = await this.workflowDefinitionRepository.findById(
+      workflow?.workflowDefinitionId,
+    );
     // `name` is always `approve` and not `approved` etc.
     const Status = {
       approve: 'approved',
@@ -617,7 +651,7 @@ export class WorkflowService {
 
       throw new BadRequestException(`Invalid decision status: ${status}`);
     })();
-    const documentsWithDecision = runtimeData?.context?.documents?.map(
+    const documentsWithDecision = workflow?.context?.documents?.map(
       (document: DefaultContextSchema['documents'][number]) => {
         if (document.id !== documentId) return document;
 
@@ -633,15 +667,20 @@ export class WorkflowService {
     const updatedWorkflow = await this.updateContextById(workflowId, {
       documents: documentsWithDecision,
     });
-
     const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow);
+    const entityId = updatedWorkflow.businessId || updatedWorkflow.endUserId;
 
     this.workflowEventEmitter.emit('workflow.context.changed', {
-      oldRuntimeData: runtimeData,
+      oldRuntimeData: workflow,
       updatedRuntimeData: updatedWorkflow,
       state: updatedWorkflow.state,
-      entityId: (updatedWorkflow.businessId || updatedWorkflow.endUserId) as string,
+      entityId,
       correlationId: correlationId,
+    });
+
+    await this.completeWorkflowWhenResolvedIfConfigured({
+      workflow: updatedWorkflow,
+      workflowDefinition,
     });
 
     return updatedWorkflow;
