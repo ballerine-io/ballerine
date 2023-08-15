@@ -1,6 +1,6 @@
 import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
 import { withSessionProtected } from '@app/hooks/useSignin/hocs/withSessionProtected';
-import { LoadingScreen } from '@app/pages/CollectionFlow/components/atoms/LoadingScreen';
+import { LoadingScreen } from '@app/common/components/molecules/LoadingScreen';
 import { Outlet, Navigate } from 'react-router-dom';
 
 export const CollectionFlowDumb = () => {
