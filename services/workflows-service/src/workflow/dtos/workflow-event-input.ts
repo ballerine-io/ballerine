@@ -9,7 +9,4 @@ export class WorkflowEventInput {
   })
   @IsString()
   name!: string;
-
-  @IsArray()
-  projectIds!: TProjectIds;
 }

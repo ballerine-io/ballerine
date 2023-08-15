@@ -75,7 +75,6 @@ export class WorkflowControllerExternal {
     @common.Query() query: GetActiveFlowDto,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    console.log('project ids', projectIds);
     const activeWorkflow = await this.service.getLastActiveFlow({
       email: query.email,
       workflowRuntimeDefinitionId: query.workflowRuntimeDefinitionId,
@@ -184,11 +183,15 @@ export class WorkflowControllerExternal {
     @UserData() _userInfo: UserInfo,
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
-    return await this.service.event({
-      ...data,
-      id,
-    });
+    return await this.service.event(
+      {
+        ...data,
+        id,
+      },
+      projectIds,
+    );
   }
 
   // POST /event
@@ -201,11 +204,15 @@ export class WorkflowControllerExternal {
     @UserData() _userInfo: UserInfo,
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
-    return await this.service.event({
-      ...data,
-      id,
-    });
+    return await this.service.event(
+      {
+        ...data,
+        id,
+      },
+      projectIds,
+    );
   }
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')
@@ -254,11 +261,13 @@ export class WorkflowControllerExternal {
       throw error;
     }
 
-    return await this.service.event({
-      id: params.id,
-      name: params.event,
+    return await this.service.event(
+      {
+        id: params.id,
+        name: params.event,
+      },
       projectIds,
-    });
+    );
 
     return;
   }

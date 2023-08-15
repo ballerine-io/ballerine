@@ -23,14 +23,15 @@ export class EndUserService {
     return await this.repository.findById(id, args);
   }
 
-  async createWithBusiness(endUser: EndUserCreateDto) {
+  async createWithBusiness(endUser: EndUserCreateDto, projectIds: TProjectIds) {
     const { companyName = '', ...userData } = endUser;
 
     const user = await this.repository.create({
       data: {
         ...userData,
+        projectId: projectIds?.at(-1),
         businesses: {
-          create: { companyName },
+          create: { companyName, projectId: projectIds?.at(-1) },
         },
       },
       include: {

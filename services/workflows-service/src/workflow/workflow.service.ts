@@ -573,11 +573,13 @@ export class WorkflowService {
       },
     });
 
-    await this.event({
-      id,
-      name,
+    await this.event(
+      {
+        id,
+        name,
+      },
       projectIds,
-    });
+    );
 
     return updatedWorkflow;
   }
@@ -950,11 +952,13 @@ export class WorkflowService {
       });
     } else {
       if (manualReviewWorkflow.state === 'revision') {
-        await this.event({
-          name: 'review',
-          id: manualReviewWorkflow.id,
+        await this.event(
+          {
+            name: 'review',
+            id: manualReviewWorkflow.id,
+          },
           projectIds,
-        });
+        );
       }
 
       await this.workflowRuntimeDataRepository.updateById(manualReviewWorkflow.id, {
@@ -1031,7 +1035,6 @@ export class WorkflowService {
       workflowDefinitionId,
     );
     config = merge(workflowDefinition.config, config);
-    console.log('config', config);
     let validatedConfig: WorkflowConfig;
     try {
       validatedConfig = ConfigSchema.parse(config);
@@ -1291,7 +1294,7 @@ export class WorkflowService {
     );
   }
 
-  async event({ name: type, id, projectIds }: WorkflowEventInput & IObjectWithId) {
+  async event({ name: type, id }: WorkflowEventInput & IObjectWithId, projectIds: TProjectIds) {
     this.logger.log('Workflow event received', { id, type });
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(id);
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
@@ -1315,11 +1318,13 @@ export class WorkflowService {
 
         if (runnableChildWorkflow && childPluginConfiguration.initOptions.event) {
           // TODO: Review the issue if return child workflow id for parent and not "send event"
-          await this.event({
-            id: runnableChildWorkflow.workflowRuntimeData.id,
-            name: childPluginConfiguration.initOptions.event,
+          await this.event(
+            {
+              id: runnableChildWorkflow.workflowRuntimeData.id,
+              name: childPluginConfiguration.initOptions.event,
+            },
             projectIds,
-          });
+          );
         }
       },
     });
@@ -1447,11 +1452,13 @@ export class WorkflowService {
       parentWorkflowRuntime.status !== 'completed' &&
       isPersistableState
     ) {
-      await this.event({
-        id: parentWorkflowRuntime.id,
-        name: childWorkflowCallback.deliverEvent,
-        projectIds: projectIds,
-      });
+      await this.event(
+        {
+          id: parentWorkflowRuntime.id,
+          name: childWorkflowCallback.deliverEvent,
+        },
+        projectIds,
+      );
     }
   }
 

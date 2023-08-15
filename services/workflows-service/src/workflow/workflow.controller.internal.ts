@@ -126,11 +126,15 @@ export class WorkflowControllerInternal {
   async event(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowEventInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
-    return await this.service.event({
-      ...data,
-      id: params.id,
-    });
+    return await this.service.event(
+      {
+        ...data,
+        id: params.id,
+      },
+      projectIds,
+    );
   }
 
   // PATCH /workflows/:id/event-decision
