@@ -143,12 +143,14 @@ export class WorkflowControllerInternal {
   async updateDecisionAndSendEventById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowEventDecisionInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
     try {
       return this.service.updateDecisionAndSendEvent({
         id: params?.id,
         name: data?.name,
         reason: data?.reason,
+        projectIds,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {

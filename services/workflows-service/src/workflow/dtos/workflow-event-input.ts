@@ -1,5 +1,6 @@
+import { TProjectIds } from '@/types';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 
 export class WorkflowEventInput {
   @ApiProperty({
@@ -8,4 +9,7 @@ export class WorkflowEventInput {
   })
   @IsString()
   name!: string;
+
+  @IsArray()
+  projectIds!: TProjectIds;
 }

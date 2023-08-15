@@ -15,8 +15,10 @@ import { FileRepository } from '@/storage/storage.repository';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { ProjectModule } from '@/project/project.module';
 
 @Module({
+  imports: [ProjectModule],
   controllers: [EndUserControllerInternal, EndUserControllerExternal],
   providers: [
     EndUserRepository,
@@ -29,7 +31,6 @@ import { ProjectScopeService } from '@/project/project-scope.service';
     StorageService,
     WorkflowEventEmitterService,
     BusinessRepository,
-    ProjectScopeService,
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
     WorkflowService,
