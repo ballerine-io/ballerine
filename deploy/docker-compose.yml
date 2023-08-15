@@ -35,6 +35,12 @@ services:
       context: ../services/workflows-service/
       args:
         NPM_LOG_LEVEL: notice
+    command:
+      - /bin/sh
+      - -c
+      - |
+        npm run db:init
+        dumb-init npm run prod
     ports:
       - ${WORKFLOW_SVC_PORT}:${WORKFLOW_SVC_PORT}
     environment:
@@ -91,6 +97,8 @@ services:
       test:
         - CMD
         - pg_isready
+        - -U
+        - admin
       timeout: 45s
       interval: 10s
       retries: 10
