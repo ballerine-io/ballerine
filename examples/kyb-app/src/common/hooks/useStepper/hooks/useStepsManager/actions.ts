@@ -2,10 +2,12 @@ import {
   CompleteCurrentStepActionPayload,
   InvalidateStepActionPayload,
   NextStepActionPayload,
+  OverrideStepsAction,
   PrevStepActionPayload,
   UpdateStepDataAction,
   WarningStepActionPayload,
 } from '@app/common/hooks/useStepper/hooks/useStepsManager/types';
+import { IStep } from '@app/common/hooks/useStepper/types';
 
 export const completeCurrentStepAction = (): CompleteCurrentStepActionPayload => ({
   type: 'COMPLETE-CURRENT',
@@ -30,3 +32,8 @@ export const updateStepDataAction = (stepIndex: number, payload: object): Update
 export const nextStepAction = (): NextStepActionPayload => ({ type: 'NEXT' });
 
 export const prevStepAction = (): PrevStepActionPayload => ({ type: 'PREV' });
+
+export const overrideStepsAction = (steps: IStep[]): OverrideStepsAction => ({
+  type: 'STEPS_OVERRIDE',
+  payload: steps,
+});
