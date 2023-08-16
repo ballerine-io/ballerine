@@ -65,7 +65,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=dev
+            type=raw,value=demo
             type=raw,value=commit-${{ github.sha }}-demo
             type=raw,value=${{ steps.get_version.outputs.version }}-demo
 
