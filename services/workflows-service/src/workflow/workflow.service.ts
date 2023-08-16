@@ -832,7 +832,7 @@ export class WorkflowService {
       });
       newWorkflowCreated = true;
     } else {
-      this.__validateWorkflowDefinitionContext(workflowDefinition, context, SchemaType.DEFAULT);
+      this.__validateWorkflowDefinitionContext(workflowDefinition, context, SchemaType.INSERT);
 
       contextToInsert.documents = updateDocuments(
         existingWorkflowRuntimeData.context.documents,
