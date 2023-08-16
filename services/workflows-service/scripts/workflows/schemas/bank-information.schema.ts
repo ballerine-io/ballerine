@@ -38,6 +38,7 @@ export const bankInformationSchema = {
 };
 
 export const bankInformationUISchema = {
+  'ui:order': ['country', 'bankName', 'holder', 'account', 'currency'],
   'ui:options': {
     submitButtonOptions: {
       submitText: 'Continue',

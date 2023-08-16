@@ -44,6 +44,7 @@ export const headquartersSchema = {
 };
 
 export const headquartersUISchema = {
+  'ui:order': ['address', 'street', 'postalCode', 'country', 'state', 'city', 'phone'],
   'ui:options': {
     submitButtonOptions: {
       submitText: 'Continue',

@@ -1,12 +1,12 @@
 import { getCountryStates } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list';
-import { companyInformationSchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/company-information.schema';
 import { COUNTRIES_WITH_STATES } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/const';
 import { CompanyInformationContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/types';
 import { AnyObject } from '@ballerine/ui';
+import { RJSFSchema } from '@rjsf/utils';
 import { useMemo } from 'react';
 
 export const useCompanyInformationSchema = (
-  schema = companyInformationSchema,
+  schema: RJSFSchema,
   formData: CompanyInformationContext,
 ) => {
   const isCountryHasStates = useMemo(() => {
