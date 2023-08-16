@@ -14,7 +14,7 @@ export {
   type IErrorWithMessage,
 } from './utils';
 
-export { type AnyRecord } from './types';
+export { type AnyRecord, type TSchemaType, SchemaType, SchemaTypes } from './types';
 
 export {
   type DefaultContextSchema,
@@ -25,4 +25,5 @@ export {
   getDocumentId,
   type TDocument,
   defaultContextSchema,
+  defaultInsertContextSchema,
 } from './schemas';

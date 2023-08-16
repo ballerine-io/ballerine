@@ -1,7 +1,7 @@
 import { FunctionComponentWithChildren } from '../../../../common/types';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { convertSnakeCaseToTitleCase } from '../../hooks/useEntity/utils';
-import { isObject } from '@ballerine/common';
+import { isObject, noNullish } from '@ballerine/common';
 import { FunctionComponent } from 'react';
 import { INestedComponentProps } from './interfaces';
 
@@ -29,7 +29,7 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
                 'text-slate-400': isNested,
               })}
             >
-              {convertSnakeCaseToTitleCase(title)}
+              {noNullish`${convertSnakeCaseToTitleCase(title)}`}
             </h4>
             {isObject(value) && (
               <NestedComponent

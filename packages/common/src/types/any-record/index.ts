@@ -1,1 +1,1 @@
-export { AnyRecord } from './any-record';
+export { type AnyRecord } from './any-record';
