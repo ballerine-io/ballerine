@@ -14,7 +14,7 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from './utils';
-import { getDocumentsByCountry } from '@ballerine/common';
+import { getDocumentsByCountry, noNullish } from '@ballerine/common';
 import { getAddressDeep } from './utils/get-address-deep/get-address-deep';
 
 export const useEntity = () => {
@@ -61,7 +61,7 @@ export const useEntity = () => {
                 {
                   id: 'nested-details-heading',
                   type: 'heading',
-                  value: convertSnakeCaseToTitleCase(key),
+                  value: noNullish`${convertSnakeCaseToTitleCase(key)}`,
                 },
                 {
                   type: 'nestedDetails',
@@ -92,9 +92,9 @@ export const useEntity = () => {
                 value: [
                   {
                     type: 'heading',
-                    value: `${convertSnakeCaseToTitleCase(
-                      category,
-                    )} - ${convertSnakeCaseToTitleCase(docType)}`,
+                    value: noNullish`${convertSnakeCaseToTitleCase(category)} - ${
+                      convertSnakeCaseToTitleCase(docType) ?? `Unknown`
+                    }`,
                   },
                   {
                     id: 'actions',
@@ -180,7 +180,7 @@ export const useEntity = () => {
                   data:
                     contextDocuments?.[docIndex]?.pages?.map(
                       ({ type, metadata, data }, pageIndex) => ({
-                        title: `${convertSnakeCaseToTitleCase(
+                        title: noNullish`${convertSnakeCaseToTitleCase(
                           category,
                         )} - ${convertSnakeCaseToTitleCase(docType)}${
                           metadata?.side ? ` - ${metadata?.side}` : ''
