@@ -10,7 +10,7 @@ const documentIdsByCountry: Partial<Record<(typeof countryCodes)[number], TDocum
 };
 
 export const getDocumentsByCountry = (countryCode: (typeof countryCodes)[number]): TDocument[] => {
-  return documentIdsByCountry[countryCode] || [];
+  return documentIdsByCountry[countryCode?.toUpperCase() as Uppercase<typeof countryCode>] || [];
 };
 
 export const getDocumentId = (
