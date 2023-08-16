@@ -49,6 +49,10 @@ export function SequencedViews<TContext extends ViewsData>({
   const { steps, currentStep, nextStep, prevStep, completeCurrent } = useStepper(initialSteps, {
     initialStepIndex: initialStep,
   });
+  const currentView = useMemo(
+    () => views.find(view => view.key === currentStep.dataAlias) || null,
+    [currentStep],
+  );
 
   const { data: viewsData, update: _update, setData } = useViewsDataRepository(initialContext);
 
@@ -122,6 +126,7 @@ export function SequencedViews<TContext extends ViewsData>({
       isFinished,
       views,
       isLoading,
+      activeView: currentView,
       finish,
       update,
       updateViews: setViews,
@@ -141,6 +146,7 @@ export function SequencedViews<TContext extends ViewsData>({
     isFinished,
     isLoading,
     views,
+    currentView,
     setData,
     update,
     save,

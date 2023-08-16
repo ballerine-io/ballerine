@@ -45,6 +45,7 @@ export const personalInformationSchema = {
 };
 
 export const personalInformationUISchema = {
+  'ui:order': ['name', 'title', 'birthDate', 'phoneNumber', 'companyCheck'],
   phoneNumber: {
     'ui:field': 'PhoneInput',
     'ui:label': true,

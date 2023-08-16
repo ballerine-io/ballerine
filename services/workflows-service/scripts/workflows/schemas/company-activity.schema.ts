@@ -182,6 +182,7 @@ export const companyActivitySchema = {
 };
 
 export const companyActivityUISchema = {
+  'ui:order': ['industry', 'model', 'website', 'volumeAmount', 'transactionValue'],
   'ui:options': {
     submitButtonOptions: {
       submitText: 'Continue',

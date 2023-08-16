@@ -24,6 +24,7 @@ export const companyDocumentsSchema = {
 };
 
 export const companyDocumentsUISchema = {
+  'ui:order': ['bankStatement', 'companyStructure', 'registrationCertificate', 'addressProof'],
   'ui:options': {
     submitButtonOptions: {
       submitText: 'Submit',

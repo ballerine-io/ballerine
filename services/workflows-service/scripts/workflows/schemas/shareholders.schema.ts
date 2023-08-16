@@ -56,6 +56,7 @@ export const shareholdersSchema = {
 };
 
 export const shareholdersUISchema = {
+  'ui:order': ['check', 'shareholders', 'birthDate', 'email'],
   'ui:options': {
     submitButtonOptions: {
       submitText: 'Continue',
@@ -66,6 +67,7 @@ export const shareholdersUISchema = {
     deleteButtonClassname: 'leading-9',
     items: {
       titleClassName: 'text-sm',
+      'ui:order': ['name', 'title'],
       name: {
         firstName: {
           'ui:placeholder': 'First name',

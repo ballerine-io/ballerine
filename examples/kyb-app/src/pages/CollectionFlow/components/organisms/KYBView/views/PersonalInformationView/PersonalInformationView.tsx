@@ -3,8 +3,6 @@ import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/ViewHeader';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
 import { useCreateEndUserMutation } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useCreateEndUserMutation';
-import { personalInformationSchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/PersonalInformationView/personal-information.schema';
-import { personalInformationUISchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/PersonalInformationView/personal-information.ui-schema';
 import { CreateEndUserDto } from '@app/domains/end-user';
 import {
   PersonalInformationContext,
@@ -13,10 +11,16 @@ import {
 import { DynamicForm } from '@ballerine/ui';
 import { useCallback } from 'react';
 import { useSignin } from '@app/hooks/useSignin';
+import { BaseFlowViewMetadata } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/types';
+import { useViewSchemas } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useViewSchemas';
 
 export const PersonalInformationView = () => {
   const { user } = useSignin();
-  const { context, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
+  const { context, saveAndPerformTransition } = useViewState<
+    WorkflowFlowData,
+    BaseFlowViewMetadata
+  >();
+  const { uiSchema, formSchema } = useViewSchemas();
   const { createUserAsync } = useCreateEndUserMutation();
 
   const handleSubmit = useCallback(
@@ -60,8 +64,8 @@ export const PersonalInformationView = () => {
       <DynamicForm<PersonalInformationContext>
         className="max-w-[384px]"
         formData={context.flowData.personalInformation}
-        uiSchema={personalInformationUISchema}
-        schema={personalInformationSchema}
+        uiSchema={uiSchema}
+        schema={formSchema}
         transformErrors={transformRJSFErrors}
         onSubmit={handleSubmit}
       />

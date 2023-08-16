@@ -2,6 +2,6 @@ import { stateContext } from '@app/common/providers/ViewStateProvider/state.cont
 import { ViewStateContext } from '@app/common/providers/ViewStateProvider/types';
 import { useContext } from 'react';
 
-export function useViewState<TContext>() {
-  return useContext(stateContext) as ViewStateContext<TContext>;
+export function useViewState<TContext, TViewMeta = {}>() {
+  return useContext(stateContext) as ViewStateContext<TContext, TViewMeta>;
 }

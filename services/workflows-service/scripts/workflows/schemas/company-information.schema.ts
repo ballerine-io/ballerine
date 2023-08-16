@@ -45,6 +45,15 @@ export const companyInformationSchema = {
 };
 
 export const companyInformationUISchema = {
+  'ui:order': [
+    'registrationNumber',
+    'companyCountry',
+    'state',
+    'companyName',
+    'vat',
+    'companyType',
+    'registrationDate',
+  ],
   'ui:options': {
     submitButtonOptions: {
       submitText: 'Continue',
