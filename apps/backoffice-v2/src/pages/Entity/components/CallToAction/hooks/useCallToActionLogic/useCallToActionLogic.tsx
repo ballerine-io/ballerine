@@ -89,11 +89,11 @@ export const useCallToActionLogic = () => {
       });
     };
   const revisionReasons =
-    workflow.workflowDefinition.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+    workflow.workflowDefinition.contextSchema?.schema?.default?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum;
   const rejectionReasons =
-    workflow.workflowDefinition.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+    workflow.workflowDefinition.contextSchema?.schema?.default?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum;
   const actions = [
