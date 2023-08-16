@@ -43,3 +43,10 @@ export const companyDocumentsUISchema = {
     'ui:field': 'FileInput',
   },
 };
+
+export const defaultCompanyDocumentsData = {
+  registrationCertificate: '',
+  addressProof: '',
+  bankStatement: '',
+  companyStructure: '',
+};

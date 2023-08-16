@@ -1,20 +1,35 @@
 import { PrismaClient } from '@prisma/client';
 import { kycEmailSessionDefinition } from './kyc-email-process-example';
 import {
+  defaultPersonalInformationData,
   personalInformationSchema,
   personalInformationUISchema,
 } from './schemas/personal-information.schema';
 import {
   companyInformationSchema,
   companyInformationUISchema,
+  defaultCompanyInformationData,
 } from './schemas/company-information.schema';
-import { headquartersSchema, headquartersUISchema } from './schemas/headquarters.schema';
+import {
+  defaultHeadquartersData,
+  headquartersSchema,
+  headquartersUISchema,
+} from './schemas/headquarters.schema';
 import { companyActivitySchema, companyActivityUISchema } from './schemas/company-activity.schema';
-import { bankInformationSchema, bankInformationUISchema } from './schemas/bank-information.schema';
-import { shareholdersSchema, shareholdersUISchema } from './schemas/shareholders.schema';
+import {
+  bankInformationSchema,
+  bankInformationUISchema,
+  defaultBankInformationData,
+} from './schemas/bank-information.schema';
+import {
+  defaultShareholdersData,
+  shareholdersSchema,
+  shareholdersUISchema,
+} from './schemas/shareholders.schema';
 import {
   companyDocumentsSchema,
   companyDocumentsUISchema,
+  defaultCompanyDocumentsData,
 } from './schemas/company-documents.schema';
 
 export const parentKybWithSessionWorkflowDefinition = {
@@ -43,6 +58,7 @@ export const parentKybWithSessionWorkflowDefinition = {
                   description: 'Please provide your personal information',
                   formSchema: personalInformationSchema,
                   uiSchema: personalInformationUISchema,
+                  defaultData: defaultPersonalInformationData,
                   key: 'personalInformation',
                 },
                 {
@@ -50,6 +66,7 @@ export const parentKybWithSessionWorkflowDefinition = {
                   description: 'Please provide your company information',
                   formSchema: companyInformationSchema,
                   uiSchema: companyInformationUISchema,
+                  defaultData: defaultCompanyInformationData,
                   key: 'companyInformation',
                 },
                 {
@@ -57,6 +74,7 @@ export const parentKybWithSessionWorkflowDefinition = {
                   description: 'Please provide headquarters address',
                   formSchema: headquartersSchema,
                   uiSchema: headquartersUISchema,
+                  defaultData: defaultHeadquartersData,
                   key: 'headquarters',
                 },
                 {
@@ -71,6 +89,7 @@ export const parentKybWithSessionWorkflowDefinition = {
                   description: 'Please provide your bank details',
                   formSchema: bankInformationSchema,
                   uiSchema: bankInformationUISchema,
+                  defaultData: defaultBankInformationData,
                   key: 'bankInformation',
                 },
                 {
@@ -78,6 +97,7 @@ export const parentKybWithSessionWorkflowDefinition = {
                   description: 'Please provide ownership details',
                   formSchema: shareholdersSchema,
                   uiSchema: shareholdersUISchema,
+                  defaultData: defaultShareholdersData,
                   key: 'ubos',
                 },
                 {
@@ -85,6 +105,7 @@ export const parentKybWithSessionWorkflowDefinition = {
                   description: 'Please upload company documents',
                   formSchema: companyDocumentsSchema,
                   uiSchema: companyDocumentsUISchema,
+                  defaultData: defaultCompanyDocumentsData,
                   key: 'companyDocuments',
                 },
               ],

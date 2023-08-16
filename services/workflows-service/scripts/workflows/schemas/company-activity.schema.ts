@@ -206,3 +206,11 @@ export const companyActivityUISchema = {
     'ui:placeholder': '$10',
   },
 };
+
+export const defaultCompanyActivityData = {
+  industry: '',
+  model: '',
+  website: '',
+  volumeAmount: '',
+  transactionValue: '',
+};

@@ -2,7 +2,7 @@ import { IsString } from 'class-validator';
 
 export class GetActiveFlowDto {
   @IsString()
-  email!: string;
+  endUserId!: string;
 
   @IsString()
   workflowRuntimeDefinitionId!: string;

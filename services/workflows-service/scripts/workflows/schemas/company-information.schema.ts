@@ -147,3 +147,13 @@ export const companyInformationUISchema = {
     'ui:label': true,
   },
 };
+
+export const defaultCompanyInformationData = {
+  registrationNumber: '',
+  companyCountry: '',
+  companyName: '',
+  companyType: '',
+  state: '',
+  vat: '',
+  registrationDate: '',
+};
