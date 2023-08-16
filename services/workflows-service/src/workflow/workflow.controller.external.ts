@@ -30,6 +30,8 @@ import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.ser
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { GetActiveFlowDto } from '@/workflow/dtos/get-active-workflow-input.dto';
 import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TProjectIds } from '@/types';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -69,10 +71,14 @@ export class WorkflowControllerExternal {
 
   @common.Get('/active-flow')
   @UseKeyAuthOrSessionGuard()
-  async getActiveFlow(@common.Query() query: GetActiveFlowDto) {
+  async getActiveFlow(
+    @common.Query() query: GetActiveFlowDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
     const activeWorkflow = await this.service.getLastActiveFlow({
       email: query.email,
       workflowRuntimeDefinitionId: query.workflowRuntimeDefinitionId,
+      projectIds,
     });
 
     return {
@@ -129,10 +135,13 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @UseKeyAuthInDevGuard()
-  async intent(@common.Body() { intentName, entityId }: IntentDto): Promise<IntentResponse> {
+  async intent(
+    @common.Body() { intentName, entityId }: IntentDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<IntentResponse> {
     // Rename to intent or getRunnableWorkflowDataByIntent?
     const entityType = intentName === 'kycSignup' ? 'endUser' : 'business';
-    return await this.service.resolveIntent(intentName, entityId, entityType);
+    return await this.service.resolveIntent(intentName, entityId, entityType, projectIds);
   }
 
   @common.Post('/run')
@@ -143,6 +152,7 @@ export class WorkflowControllerExternal {
   async createWorkflowRuntimeData(
     @common.Body() body: WorkflowRunDto,
     @Res() res: Response,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<any> {
     const { workflowId, context, config } = body;
     const { entity } = context;
@@ -154,6 +164,7 @@ export class WorkflowControllerExternal {
       workflowDefinitionId: workflowId,
       context,
       config,
+      projectIds,
     });
 
     return res.json({
@@ -172,11 +183,15 @@ export class WorkflowControllerExternal {
     @UserData() _userInfo: UserInfo,
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
-    return await this.service.event({
-      ...data,
-      id,
-    });
+    return await this.service.event(
+      {
+        ...data,
+        id,
+      },
+      projectIds,
+    );
   }
 
   // POST /event
@@ -189,11 +204,15 @@ export class WorkflowControllerExternal {
     @UserData() _userInfo: UserInfo,
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
-    return await this.service.event({
-      ...data,
-      id,
-    });
+    return await this.service.event(
+      {
+        ...data,
+        id,
+      },
+      projectIds,
+    );
   }
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')
@@ -224,6 +243,7 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowIdWithEventInput,
     @common.Query() query: WorkflowHookQuery,
     @common.Body() hookResponse: any,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
     try {
       const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
@@ -232,6 +252,7 @@ export class WorkflowControllerExternal {
         data: hookResponse,
         resultDestinationPath: query.resultDestination || 'hookResponse',
         processName: query.processName,
+        projectIds,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -240,10 +261,13 @@ export class WorkflowControllerExternal {
       throw error;
     }
 
-    return await this.service.event({
-      id: params.id,
-      name: params.event,
-    });
+    return await this.service.event(
+      {
+        id: params.id,
+        name: params.event,
+      },
+      projectIds,
+    );
 
     return;
   }

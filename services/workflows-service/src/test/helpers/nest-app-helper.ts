@@ -52,7 +52,6 @@ export const initiateNestApp = async (
   controllers: Array<Type>,
   modules: Array<Type>,
 ) => {
-  console.log(JSON.stringify(modules));
   const moduleRef = await Test.createTestingModule({
     providers: providers,
     controllers: controllers,
