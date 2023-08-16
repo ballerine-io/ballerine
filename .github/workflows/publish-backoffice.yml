@@ -118,4 +118,4 @@ jobs:
         with:
           context: apps/backoffice-v2/
           push: true
-         tags: ${{ steps.branchmeta.outputs.tags }}
+          tags: ${{ steps.branchmeta.outputs.tags }}
