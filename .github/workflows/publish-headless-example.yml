@@ -113,10 +113,10 @@ jobs:
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
 
-     - name: Build and push Docker image for other branch
-       if: ${{ github.event_name == 'workflow_dispatch' }}
-       uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-       with:
-         context: examples/headless-example
-         push: true
-         tags: ${{ steps.branchmeta.outputs.tags }}          
+      - name: Build and push Docker image for other branch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: examples/headless-example
+          push: true
+          tags: ${{ steps.branchmeta.outputs.tags }}

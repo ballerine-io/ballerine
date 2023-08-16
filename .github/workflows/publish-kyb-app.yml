@@ -87,7 +87,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}            
+            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
 
       - name: Build and push Docker image for Dev Branch
         if: github.ref == 'refs/heads/dev'
@@ -113,11 +113,10 @@ jobs:
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
 
-     - name: Build and push Docker image for other branch
-       if: ${{ github.event_name == 'workflow_dispatch' }}
-       uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-       with:
-         context: examples/kyb-app
-         push: true
-         tags: ${{ steps.branchmeta.outputs.tags }}          
-          
+      - name: Build and push Docker image for other branch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: examples/kyb-app
+          push: true
+          tags: ${{ steps.branchmeta.outputs.tags }}
