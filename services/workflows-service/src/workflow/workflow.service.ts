@@ -1539,29 +1539,4 @@ export class WorkflowService {
   async getWorkflowRuntimeDataContext(id: string) {
     return this.workflowRuntimeDataRepository.findContext(id);
   }
-
-  async getLastActiveFlow({
-    email,
-    workflowRuntimeDefinitionId,
-  }: GetLastActiveFlowParams): Promise<WorkflowRuntimeData | null> {
-    const endUser = await this.endUserService.getByEmail(email);
-
-    if (!endUser || !endUser.businesses.length) return null;
-
-    const query = {
-      endUserId: endUser.id,
-      ...{
-        workflowDefinitionId: workflowRuntimeDefinitionId,
-        businessId: endUser.businesses.at(-1)!.id,
-      },
-    };
-
-    this.logger.log(`Getting last active workflow`, query);
-
-    const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query);
-
-    this.logger.log('Last active workflow', { workflowId: workflowData ? workflowData.id : null });
-
-    return workflowData ? workflowData : null;
-  }
 }

@@ -75,3 +75,14 @@ export const personalInformationUISchema = {
     },
   },
 };
+
+export const defaultPersonalInformationData = {
+  title: '',
+  name: {
+    firstName: '',
+    lastName: '',
+  },
+  birthDate: '',
+  phoneNumber: '',
+  companyCheck: false,
+};

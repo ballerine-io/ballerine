@@ -60,3 +60,11 @@ export const bankInformationUISchema = {
     'ui:placeholder': 'Select currency',
   },
 };
+
+export const defaultBankInformationData = {
+  country: '',
+  bankName: '',
+  holder: '',
+  account: '',
+  currency: '',
+};

@@ -73,3 +73,13 @@ export const headquartersUISchema = {
     'ui:label': true,
   },
 };
+
+export const defaultHeadquartersData = {
+  address: '',
+  street: '',
+  postalCode: '',
+  city: '',
+  country: '',
+  state: '',
+  phone: '',
+};

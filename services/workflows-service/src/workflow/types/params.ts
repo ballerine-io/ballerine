@@ -4,6 +4,6 @@ export interface FindLastActiveFlowParams {
 }
 
 export interface GetLastActiveFlowParams {
-  email: string;
+  endUserId: string;
   workflowRuntimeDefinitionId: string;
 }

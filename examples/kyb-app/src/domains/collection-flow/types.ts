@@ -1,3 +1,4 @@
+import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
 export interface GetCollectionFlowSchemaDto {
@@ -9,5 +10,6 @@ export interface CollectionFlowSchema {
   description: string;
   formSchema: RJSFSchema;
   uiSchema: UiSchema;
+  defaultData: AnyObject;
   key: string;
 }

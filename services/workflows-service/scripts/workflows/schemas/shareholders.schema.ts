@@ -90,3 +90,8 @@ export const shareholdersUISchema = {
     },
   },
 };
+
+export const defaultShareholdersData = {
+  check: false,
+  shareholders: [],
+};
