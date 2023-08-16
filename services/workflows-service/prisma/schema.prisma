@@ -272,7 +272,7 @@ model Customer {
 
 model Project {
   id         String   @id @default(cuid())
-  name       String   @unique
+  name       String
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
 
