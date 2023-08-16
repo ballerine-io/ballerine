@@ -118,4 +118,4 @@ jobs:
         with:
           context: services/websocket-service
           push: true
-         tags: ${{ steps.branchmeta.outputs.tags }}
+          tags: ${{ steps.branchmeta.outputs.tags }}
