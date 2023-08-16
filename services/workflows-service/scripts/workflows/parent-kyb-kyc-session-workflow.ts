@@ -1,5 +1,21 @@
 import { PrismaClient } from '@prisma/client';
 import { kycEmailSessionDefinition } from './kyc-email-process-example';
+import {
+  personalInformationSchema,
+  personalInformationUISchema,
+} from './schemas/personal-information.schema';
+import {
+  companyInformationSchema,
+  companyInformationUISchema,
+} from './schemas/company-information.schema';
+import { headquartersSchema, headquartersUISchema } from './schemas/headquarters.schema';
+import { companyActivitySchema, companyActivityUISchema } from './schemas/company-activity.schema';
+import { bankInformationSchema, bankInformationUISchema } from './schemas/bank-information.schema';
+import { shareholdersSchema, shareholdersUISchema } from './schemas/shareholders.schema';
+import {
+  companyDocumentsSchema,
+  companyDocumentsUISchema,
+} from './schemas/company-documents.schema';
 
 export const parentKybWithSessionWorkflowDefinition = {
   id: 'kyb_parent_kyc_session_example',
@@ -9,14 +25,71 @@ export const parentKybWithSessionWorkflowDefinition = {
   definition: {
     id: 'kyb_parent_kyc_session_example_v1',
     predictableActionArguments: true,
-    initial: 'idle',
+    initial: 'data_collection',
     context: {
       documents: [],
     },
     states: {
-      idle: {
+      data_collection: {
         on: {
           start: 'run_ubos',
+        },
+        metadata: {
+          uiSettings: {
+            multiForm: {
+              steps: [
+                {
+                  title: 'Personal information',
+                  description: 'Please provide your personal information',
+                  formSchema: personalInformationSchema,
+                  uiSchema: personalInformationUISchema,
+                  key: 'personalInformation',
+                },
+                {
+                  title: 'Company Information',
+                  description: 'Please provide your company information',
+                  formSchema: companyInformationSchema,
+                  uiSchema: companyInformationUISchema,
+                  key: 'companyInformation',
+                },
+                {
+                  title: 'Headquarters Address',
+                  description: 'Please provide headquarters address',
+                  formSchema: headquartersSchema,
+                  uiSchema: headquartersUISchema,
+                  key: 'headquarters',
+                },
+                {
+                  title: 'Company Activity',
+                  description: 'Please provide details about company activity',
+                  formSchema: companyActivitySchema,
+                  uiSchema: companyActivityUISchema,
+                  key: 'companyActivity',
+                },
+                {
+                  title: 'Bank Information',
+                  description: 'Please provide your bank details',
+                  formSchema: bankInformationSchema,
+                  uiSchema: bankInformationUISchema,
+                  key: 'bankInformation',
+                },
+                {
+                  title: 'Company Ownership',
+                  description: 'Please provide ownership details',
+                  formSchema: shareholdersSchema,
+                  uiSchema: shareholdersUISchema,
+                  key: 'ubos',
+                },
+                {
+                  title: 'Company Documents',
+                  description: 'Please upload company documents',
+                  formSchema: companyDocumentsSchema,
+                  uiSchema: companyDocumentsUISchema,
+                  key: 'companyDocuments',
+                },
+              ],
+            },
+          },
         },
       },
       run_ubos: {

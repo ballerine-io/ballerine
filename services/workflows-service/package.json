@@ -72,8 +72,10 @@
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
     "cookie-session": "^2.0.0",
+    "country-state-city": "^3.1.4",
     "express-cookie": "^4.17.1",
     "helmet": "^6.0.1",
+    "i18n-iso-countries": "^7.6.0",
     "lodash": "^4.17.21",
     "multer-s3": "3.0.1",
     "nest-access-control": "2.2.0",
@@ -91,6 +93,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@cspell/cspell-types": "^6.31.1",
     "@nestjs/cli": "9.3.0",
     "@nestjs/swagger": "6.2.1",
     "@types/bcrypt": "5.0.0",
@@ -110,7 +113,6 @@
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
     "cspell": "^6.31.2",
-    "@cspell/cspell-types": "^6.31.1",
     "dayjs": "^1.11.6",
     "dotenv": "^16.0.3",
     "eslint": "^8.35.0",
