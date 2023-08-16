@@ -15,6 +15,7 @@ import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dial
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { Send } from 'lucide-react';
+import { DialogClose } from '@radix-ui/react-dialog';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -122,16 +123,18 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                  <Button
-                    className={ctw(`gap-x-2`, {
-                      loading: debouncedIsLoadingRevisionCase,
-                    })}
-                    disabled={isLoading || !canRevision}
-                    onClick={onMutateRevisionCase}
-                  >
-                    <Send size={18} />
-                    Send email
-                  </Button>
+                  <DialogClose asChild>
+                    <Button
+                      className={ctw(`gap-x-2`, {
+                        loading: debouncedIsLoadingRevisionCase,
+                      })}
+                      disabled={isLoading || !canRevision}
+                      onClick={onMutateRevisionCase}
+                    >
+                      <Send size={18} />
+                      Send email
+                    </Button>
+                  </DialogClose>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
