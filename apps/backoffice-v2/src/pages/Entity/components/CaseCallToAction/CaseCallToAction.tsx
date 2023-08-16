@@ -64,7 +64,7 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
           </DialogHeader>
           {!noReasons && (
             <div>
-              <label className={`mb-1 font-bold`} htmlFor={`reason`}>
+              <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
                 Reason
               </label>
               <Select onValueChange={onReasonChange} value={reason} id={`reason`}>
