@@ -17,6 +17,8 @@ import { toStartCase } from '../../../../common/utils/to-start-case/to-start-cas
 
 import { octetToFileType } from '../../../../common/octet-to-file-type/octet-to-file-type';
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
+import { X } from 'lucide-react';
+import * as React from 'react';
 
 export const useTasks = ({
   workflow,
@@ -85,119 +87,153 @@ export const useTasks = ({
               const additionProperties =
                 isExistingSchemaForDocument(documentsSchemas) &&
                 composePickableCategoryType(category, docType, documentsSchemas);
+
               const isDoneWithRevision =
-                decision?.status === 'revision' && parentMachine?.status === 'completed';
+                decision?.status === 'revised' && parentMachine?.status === 'completed';
 
-              return [
-                {
-                  id: 'header',
-                  type: 'container',
-                  value: [
-                    {
-                      type: 'heading',
-                      value: `${convertSnakeCaseToTitleCase(
-                        category,
-                      )} - ${convertSnakeCaseToTitleCase(docType)}`,
-                    },
-                    {
-                      id: 'actions',
-                      type: 'container',
-                      value: [
-                        {
-                          type: 'callToAction',
-                          value: 'Reject',
-                          data: {
-                            id,
-                            disabled:
-                              (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                            decision: 'reject',
-                          },
-                        },
-                        {
-                          type: 'callToAction',
-                          value: 'Approve',
-                          data: {
-                            id,
-                            disabled:
-                              (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                            decision: 'approve',
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  type: 'container',
-                  value: [
-                    {
-                      id: 'decision',
-                      type: 'details',
-                      value: {
-                        id,
-                        title: `${category} - ${docType}`,
-                        data: Object.entries(
-                          {
-                            ...additionProperties,
-                            ...propertiesSchema?.properties,
-                          } ?? {},
-                        )?.map(
-                          ([
-                            title,
-                            { type, format, pattern, isEditable = true, dropdownOptions, value },
-                          ]) => {
-                            const fieldValue = value || (properties?.[title] ?? '');
-                            const isEditableDecision = isDoneWithRevision || !decision?.status;
+              const isRevision =
+                decision?.status === 'revision' && (!isDoneWithRevision || noAction);
 
-                            return {
-                              title,
-                              value: fieldValue,
-                              type,
-                              format,
-                              pattern,
-                              isEditable:
-                                isEditableDecision &&
-                                caseState.writeEnabled &&
-                                getIsEditable(isEditable, title),
-                              dropdownOptions,
-                            };
-                          },
-                        ),
-                      },
-                    },
-                    {
-                      type: 'details',
-                      value: {
-                        id,
-                        title: 'Decision',
-                        data: Object.entries(decision ?? {}).map(([title, value]) => ({
-                          title,
-                          value,
-                        })),
-                      },
-                    },
-                  ],
-                },
-                {
-                  type: 'multiDocuments',
-                  value: {
-                    isLoading: docsData?.some(({ isLoading }) => isLoading),
-                    data:
-                      documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-                        title: `${convertSnakeCaseToTitleCase(
+              return {
+                className: isRevision
+                  ? 'shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning bg-[#FFB35A]/10'
+                  : '',
+                cells: [
+                  {
+                    id: 'header',
+                    type: 'container',
+                    value: [
+                      {
+                        type: 'heading',
+                        value: `${convertSnakeCaseToTitleCase(
                           category,
-                        )} - ${convertSnakeCaseToTitleCase(docType)}${
-                          metadata?.side ? ` - ${metadata?.side}` : ''
-                        }`,
-                        imageUrl:
-                          type === 'pdf'
-                            ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
-                            : results[docIndex][pageIndex],
-                        fileType: type,
-                      })) ?? [],
+                        )} - ${convertSnakeCaseToTitleCase(docType)}`,
+                      },
+                      {
+                        id: 'actions',
+                        type: 'container',
+                        value: isRevision
+                          ? [
+                              {
+                                type: 'badge',
+                                value: (
+                                  <React.Fragment>
+                                    Re-upload needed
+                                    <X
+                                      className="h-4 w-4 cursor-pointer"
+                                      onClick={() => alert(1)}
+                                    />
+                                  </React.Fragment>
+                                ),
+                                props: {
+                                  size: 'sm',
+                                  variant: 'warning',
+                                  className: 'gap-x-2 text-sm font-medium text-white',
+                                },
+                              },
+                            ]
+                          : [
+                              {
+                                type: 'callToAction',
+                                value: 'Reject',
+                                data: {
+                                  id,
+                                  disabled:
+                                    (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
+                                  decision: 'reject',
+                                },
+                              },
+                              {
+                                type: 'callToAction',
+                                value: 'Approve',
+                                data: {
+                                  id,
+                                  disabled:
+                                    (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
+                                  decision: 'approve',
+                                },
+                              },
+                            ],
+                      },
+                    ],
                   },
-                },
-              ];
+                  {
+                    type: 'container',
+                    value: [
+                      {
+                        id: 'decision',
+                        type: 'details',
+                        value: {
+                          id,
+                          title: `${category} - ${docType}`,
+                          data: Object.entries(
+                            {
+                              ...additionProperties,
+                              ...propertiesSchema?.properties,
+                            } ?? {},
+                          )?.map(
+                            ([
+                              title,
+                              { type, format, pattern, isEditable = true, dropdownOptions, value },
+                            ]) => {
+                              const fieldValue = value || (properties?.[title] ?? '');
+                              const isEditableDecision = isDoneWithRevision || !decision?.status;
+
+                              return {
+                                title,
+                                value: fieldValue,
+                                type,
+                                format,
+                                pattern,
+                                isEditable:
+                                  isEditableDecision &&
+                                  caseState.writeEnabled &&
+                                  getIsEditable(isEditable, title),
+                                dropdownOptions,
+                              };
+                            },
+                          ),
+                        },
+                      },
+                      {
+                        type: 'details',
+                        value: {
+                          id,
+                          title: 'Decision',
+                          data: Object.entries(decision ?? {}).map(([title, value]) => ({
+                            title,
+                            value,
+                          })),
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    type: 'multiDocuments',
+                    value: {
+                      isLoading: docsData?.some(({ isLoading }) => isLoading),
+                      data:
+                        documents?.[docIndex]?.pages?.map(
+                          ({ type, metadata, data }, pageIndex) => ({
+                            title: `${convertSnakeCaseToTitleCase(
+                              category,
+                            )} - ${convertSnakeCaseToTitleCase(docType)}${
+                              metadata?.side ? ` - ${metadata?.side}` : ''
+                            }`,
+                            imageUrl:
+                              type === 'pdf'
+                                ? octetToFileType(
+                                    results[docIndex][pageIndex],
+                                    `application/${type}`,
+                                  )
+                                : results[docIndex][pageIndex],
+                            fileType: type,
+                          }),
+                        ) ?? [],
+                    },
+                  },
+                ],
+              };
             },
           ) ?? []),
           Object.keys(entity?.data ?? {}).length === 0

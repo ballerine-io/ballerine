@@ -1,3 +1,6 @@
+import { ComponentProps, FC } from 'react';
+import { Badge, type BadgeVariantProps } from '@ballerine/ui';
+
 import { Heading } from '../../components/Heading/Heading';
 import { Alert } from '../../components/Alert/Alert';
 import { Container } from '../../components/Container/Container';
@@ -9,9 +12,20 @@ import { NestedDetails } from '../../components/NestedDetails/NestedDetails';
 import { MapCell } from '../../components/MapCell/MapCell';
 import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAction';
 
+const BadgeCell: FC<{
+  value: ComponentProps<typeof Badge>['children'];
+  props: {
+    variant: BadgeVariantProps['variant'];
+    size: BadgeVariantProps['size'];
+  };
+}> = ({ value, props }) => {
+  return <Badge {...props}>{value}</Badge>;
+};
+
 export const cells = {
   heading: Heading,
   alert: Alert,
+  badge: BadgeCell,
   container: Container,
   callToAction: CallToAction,
   faceComparison: FaceComparison,

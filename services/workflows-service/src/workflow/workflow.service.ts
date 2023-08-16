@@ -584,7 +584,7 @@ export class WorkflowService {
       documentId: string;
     },
     decision: {
-      status: 'approve' | 'reject' | 'revision';
+      status: 'approve' | 'reject' | 'revision' | 'revised';
       reason?: string;
     },
   ) {
@@ -594,6 +594,7 @@ export class WorkflowService {
       approve: 'approved',
       reject: 'rejected',
       revision: 'revision',
+      revised: 'revised',
     } as const;
     const status = Status[decision?.status];
     const newDecision = (() => {
@@ -612,6 +613,13 @@ export class WorkflowService {
       }
 
       if (status === 'revision') {
+        return {
+          revisionReason: decision?.reason,
+          rejectionReason: null,
+        };
+      }
+
+      if (status === 'revised') {
         return {
           revisionReason: decision?.reason,
           rejectionReason: null,

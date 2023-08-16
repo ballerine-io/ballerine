@@ -42,6 +42,9 @@
     --success: 152 51% 54%;
     --success-foreground: 152 51% 84%;
 
+    --warning: 32 100% 68%;
+    --warning-foreground: 32 100% 98%;
+
     --ring: 215 20.2% 65.1%;
 
     --radius: 0.5rem;

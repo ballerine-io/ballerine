@@ -6,8 +6,8 @@ export class DocumentDecisionUpdateInput {
     required: true,
     type: String,
   })
-  @IsIn(['approve', 'reject', 'revision'])
-  decision!: 'approve' | 'reject' | 'revision';
+  @IsIn(['approve', 'reject', 'revision', 'revised'])
+  decision!: 'approve' | 'reject' | 'revision' | 'revised';
 
   @ApiProperty({
     required: false,

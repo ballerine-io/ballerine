@@ -58,7 +58,7 @@ export const useCallToActionLogic = () => {
             }
           | {
               id: string;
-              decision: 'reject' | 'revision';
+              decision: 'reject' | 'revision' | 'revised';
               reason?: string;
             },
       ) =>
