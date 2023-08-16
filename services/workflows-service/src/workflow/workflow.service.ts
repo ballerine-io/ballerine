@@ -55,9 +55,7 @@ import {
   DefaultContextSchema,
   getDocumentId,
   getDocumentsByCountry,
-  SchemaType,
   TDefaultSchemaDocumentPage,
-  TSchemaType,
 } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
@@ -461,7 +459,7 @@ export class WorkflowService {
         ),
       };
 
-      this.__validateWorkflowDefinitionContext(workflowDef, context, SchemaType.DEFAULT);
+      this.__validateWorkflowDefinitionContext(workflowDef, context);
 
       // @ts-ignore
       data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
@@ -791,7 +789,7 @@ export class WorkflowService {
     } catch (error) {
       throw new BadRequestException(error);
     }
-
+    this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(context);
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
 
@@ -813,8 +811,6 @@ export class WorkflowService {
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
     if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
-      this.__validateWorkflowDefinitionContext(workflowDefinition, context, SchemaType.INSERT);
-
       contextToInsert = await this.__copyFileAndCreate(contextToInsert, entityId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
         data: {
@@ -832,8 +828,6 @@ export class WorkflowService {
       });
       newWorkflowCreated = true;
     } else {
-      this.__validateWorkflowDefinitionContext(workflowDefinition, context, SchemaType.INSERT);
-
       contextToInsert.documents = updateDocuments(
         existingWorkflowRuntimeData.context.documents,
         context.documents,
@@ -994,11 +988,10 @@ export class WorkflowService {
   private __validateWorkflowDefinitionContext(
     workflowDefinition: WorkflowDefinition,
     context: DefaultContextSchema,
-    schemaType: TSchemaType,
   ) {
-    if (!Object.keys(workflowDefinition?.contextSchema?.schema?.[schemaType] ?? {}).length) return;
+    if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
 
-    const validate = ajv.compile(workflowDefinition?.contextSchema?.schema?.[schemaType]); // TODO: fix type
+    const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate(context);
 
     if (isValid) return;
