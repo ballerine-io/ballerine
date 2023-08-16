@@ -26,11 +26,11 @@ export const SignIn = () => {
   }
 
   return (
-    <SigninLayout bgSrc="/public/signin-background.png">
+    <SigninLayout bgSrc="/signin-background.png">
       <div className="flex flex-col items-center md:items-start">
         <div>
           <div className="mb-12">
-            <img src={'/public/app-logo.svg'} className="h-[51px] max-w-[120px]" />
+            <img src={'/app-logo.svg'} className="h-[51px] max-w-[120px]" />
           </div>
           <div className="mb-6">
             <h1 className="font-inter mb-6 text-2xl font-bold">Activate your account</h1>
