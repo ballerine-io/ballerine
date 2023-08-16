@@ -1,0 +1,13 @@
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px); /* Adjust this value to control the bounce height */
+  }
+}
+
+.bounceAnimation {
+  animation: bounce 500ms ease-in-out; /* Adjust the animation duration as needed */
+}
