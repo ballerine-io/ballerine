@@ -1,12 +1,12 @@
 import { TDropdownOption } from '../../components/EditableDetails/types';
 import { AnyArray } from '../../../../common/types';
-import { TDocument } from '@ballerine/common';
+import { noNullish, TDocument } from '@ballerine/common';
 
 export const convertSnakeCaseToTitleCase = (input: string): string =>
   input
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    ?.split('_')
+    ?.map(word => word?.charAt(0)?.toUpperCase() + word?.slice(1))
+    ?.join(' ');
 const composeDataFormCell = (
   cellName: string,
   categoryDropdownOptions: TDropdownOption[],
@@ -43,17 +43,17 @@ export const composePickableCategoryType = (
     const category = document.category;
     if (category) {
       documentCategoryDropdownOptions.push({
-        value: category as string,
-        label: convertSnakeCaseToTitleCase(category),
+        value: category,
+        label: noNullish`${convertSnakeCaseToTitleCase(category)}`,
       });
     }
     const type = document.type;
     if (type) {
       documentTypesDropdownOptions.push({
         dependantOn: 'category',
-        dependantValue: category as string,
-        value: type as string,
-        label: convertSnakeCaseToTitleCase(type),
+        dependantValue: category,
+        value: type,
+        label: noNullish`${convertSnakeCaseToTitleCase(type)}`,
       });
     }
   });
