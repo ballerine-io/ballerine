@@ -227,10 +227,10 @@ model Policy {
 }
 
 model Filter {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  entity    String
-  query     Json
+  id     String @id @default(cuid())
+  name   String @unique
+  entity String
+  query  Json
 
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id])
@@ -250,14 +250,14 @@ enum CustomerStatuses {
 }
 
 model Customer {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  displayName    String
-  logoImageUri   String
-  customerStatus CustomerStatuses @default(onboarding)
+  id                          String           @id @default(cuid())
+  name                        String           @unique
+  displayName                 String
+  logoImageUri                String
+  customerStatus              CustomerStatuses @default(onboarding)
   authenticationConfiguration Json?
-  country  String?
-  language  String?
+  country                     String?
+  language                    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -267,30 +267,29 @@ model Customer {
   @@index(name)
   @@index(customerStatus)
   @@index([authenticationConfiguration(ops: JsonbPathOps)], type: Gin)
-
 }
 
 model Project {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  customerId    String
-  customer Customer @relation(fields: [customerId], references: [id])
+  id         String   @id @default(cuid())
+  name       String   @unique
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
 
   userToProjects UserToProject[]
 
-  filters Filter[]
-  endUsers EndUser[]
-  business Business[]
+  filters             Filter[]
+  endUsers            EndUser[]
+  business            Business[]
   workflowRuntimeData WorkflowRuntimeData[]
-  files File[]
+  files               File[]
 
   @@index(name)
   @@index(customerId)
 }
 
 model UserToProject {
-  userId  String
-  user    User @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])

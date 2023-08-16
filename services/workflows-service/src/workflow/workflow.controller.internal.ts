@@ -126,11 +126,15 @@ export class WorkflowControllerInternal {
   async event(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowEventInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
-    return await this.service.event({
-      ...data,
-      id: params.id,
-    });
+    return await this.service.event(
+      {
+        ...data,
+        id: params.id,
+      },
+      projectIds,
+    );
   }
 
   // PATCH /workflows/:id/event-decision
@@ -143,12 +147,14 @@ export class WorkflowControllerInternal {
   async updateDecisionAndSendEventById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowEventDecisionInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
     try {
       return this.service.updateDecisionAndSendEvent({
         id: params?.id,
         name: data?.name,
         reason: data?.reason,
+        projectIds,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {

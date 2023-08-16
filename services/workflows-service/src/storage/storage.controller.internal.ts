@@ -21,6 +21,8 @@ import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { file } from 'tmp';
 import { Public } from '@/common/decorators/public.decorator';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TProjectIds } from '@/types';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -52,13 +54,17 @@ export class StorageControllerInternal {
       },
     },
   })
-  async uploadFile(@UploadedFile() file: Partial<Express.MulterS3.File>) {
+  async uploadFile(
+    @UploadedFile() file: Partial<Express.MulterS3.File>,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
     const id = await this.service.createFileLink({
       uri: file.location || String(file.path),
       fileNameOnDisk: String(file.path),
       fileNameInBucket: file.key,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
+      projectIds,
     });
 
     return { id };

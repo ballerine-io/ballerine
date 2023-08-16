@@ -24,9 +24,10 @@ import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.ser
 import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webhook-caller';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
+import { ProjectModule } from '@/project/project.module';
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
+  imports: [ACLModule, forwardRef(() => AuthModule), HttpModule, ProjectModule],
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
   providers: [
     WorkflowDefinitionRepository,

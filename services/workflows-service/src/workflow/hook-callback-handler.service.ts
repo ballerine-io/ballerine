@@ -6,6 +6,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as tmp from 'tmp';
 import fs from 'fs';
+import { TProjectIds } from '@/types';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -14,14 +15,21 @@ export class HookCallbackHandlerService {
     data,
     resultDestinationPath,
     processName,
+    projectIds,
   }: {
     workflowRuntime: WorkflowRuntimeData;
     data: AnyRecord;
     resultDestinationPath: string;
     processName?: UnifiedCallbackNames;
+    projectIds: TProjectIds;
   }) {
     if (processName === 'kyc-unified-api') {
-      return await this.mapCallbackDataToIndividual(data, workflowRuntime, resultDestinationPath);
+      return await this.mapCallbackDataToIndividual(
+        data,
+        workflowRuntime,
+        resultDestinationPath,
+        projectIds,
+      );
     }
 
     const updatedContext = { ...workflowRuntime.context, [resultDestinationPath]: data };
@@ -41,6 +49,7 @@ export class HookCallbackHandlerService {
     data: AnyRecord,
     workflowRuntime: WorkflowRuntimeData,
     resultDestinationPath: string,
+    proejctIds: TProjectIds,
   ) {
     const attributePath = resultDestinationPath.split('.');
     const context = workflowRuntime.context;
@@ -56,6 +65,7 @@ export class HookCallbackHandlerService {
       await this.workflowService.copyFileAndCreate(
         { documents: documents } as DefaultContextSchema,
         context.entity.id,
+        proejctIds,
       )
     ).documents;
 

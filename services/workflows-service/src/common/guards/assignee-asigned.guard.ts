@@ -7,7 +7,6 @@ import { env } from '@/env';
 export class WorkflowAssigneeGuard implements CanActivate {
   constructor(private service: WorkflowService) {}
   async canActivate(context: ExecutionContext) {
-    console.log('IS DEMO', env.IS_DEMO);
     if (env.IS_DEMO) return true;
 
     const request = context.switchToHttp().getRequest<Request>();

@@ -64,7 +64,6 @@ export class CustomerRepository {
   async findByApiKey<T extends Omit<Prisma.CustomerFindFirstArgs, 'where'>>(
     apiKey: string,
   ): Promise<CustomerWithProjects | null> {
-    console.log('authValue', apiKey);
     return this.prisma.customer.findFirst({
       where: {
         authenticationConfiguration: {
