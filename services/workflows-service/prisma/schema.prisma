@@ -228,7 +228,7 @@ model Policy {
 
 model Filter {
   id        String   @id @default(cuid())
-  name      String   @unique
+  name      String
   entity    String
   query     Json
 
@@ -240,6 +240,7 @@ model Filter {
   createdBy String   @default("SYSTEM")
 
   @@index([projectId])
+  @@unique([name, projectId])  // Ensure 'name' is unique within the scope of 'projectId'
 }
 
 enum CustomerStatuses {
@@ -272,7 +273,7 @@ model Customer {
 
 model Project {
   id        String   @id @default(cuid())
-  name      String   @unique
+  name      String
   customerId    String
   customer Customer @relation(fields: [customerId], references: [id])
 
@@ -286,6 +287,8 @@ model Project {
 
   @@index(name)
   @@index(customerId)
+  @@unique([name, customerId])
+
 }
 
 model UserToProject {
