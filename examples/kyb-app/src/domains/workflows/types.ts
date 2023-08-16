@@ -77,6 +77,7 @@ export interface WorkflowUpdatePayload {
   endUserId: string;
   businessId: string;
   entity: WorkflowEntity;
+  isShareholder: boolean;
   documents: WorkflowRunDocument[];
 }
 

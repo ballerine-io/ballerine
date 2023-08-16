@@ -1,6 +1,34 @@
-import { TRunWorkflowDto, WorkflowUpdatePayload } from '@app/domains/workflows/types';
+import { TRunWorkflowDto, WorkflowUBO, WorkflowUpdatePayload } from '@app/domains/workflows/types';
+import { v4 as uuidv4 } from 'uuid';
+
+function createUBOFromUserInformation(data: WorkflowUpdatePayload): WorkflowUBO {
+  const ubo: WorkflowUBO = {
+    entity: {
+      id: uuidv4(),
+      type: 'individual',
+      data: {
+        firstName: data.entity.mainRepresentative.name.firstName,
+        lastName: data.entity.mainRepresentative.name.lastName,
+        email: data.entity.email,
+        dateOfBirth: new Date(+data.entity.mainRepresentative.birthDate).toISOString(),
+      },
+    },
+  };
+
+  return ubo;
+}
 
 export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRunWorkflowDto => {
+  const ubos = data.entity.ubos.map(ubo => {
+    ubo.entity.data.additionalInfo = {
+      ...(ubo.entity.data.additionalInfo || {}),
+      companyName: data.entity.companyName,
+      customerCompany: data.entity.companyName,
+    };
+
+    return ubo;
+  });
+
   const payload: TRunWorkflowDto = {
     workflowId: data.workflowId,
     context: {
@@ -26,15 +54,7 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
               companyName: data.entity.companyName,
               email: data.entity.email,
             },
-            ubos: data.entity.ubos.map(ubo => {
-              ubo.entity.data.additionalInfo = {
-                ...(ubo.entity.data.additionalInfo || {}),
-                companyName: data.entity.companyName,
-                customerCompany: data.entity.companyName,
-              };
-
-              return ubo;
-            }),
+            ubos: data.isShareholder ? [createUBOFromUserInformation(data), ...ubos] : ubos,
           },
         },
       },

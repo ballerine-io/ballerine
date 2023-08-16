@@ -46,7 +46,7 @@ export const defaultFlowData: WorkflowFlowData = {
       currency: '',
     },
     ubos: {
-      checked: false,
+      check: false,
       shareholders: [],
     },
     companyDocuments: {
