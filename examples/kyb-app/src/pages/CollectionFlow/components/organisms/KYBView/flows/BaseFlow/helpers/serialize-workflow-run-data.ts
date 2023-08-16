@@ -67,6 +67,7 @@ export const serializeWorkflowRunData = async (
     workflowId: import.meta.env.VITE_KYB_DEFINITION_ID as string,
     endUserId,
     businessId,
+    isShareholder: context.flowData.ubos.check,
     entity: {
       type: 'business',
       website: companyActivity.website,

@@ -1,6 +1,8 @@
+import styles from './ProgressBar.module.css';
 import { Chip } from '@app/common/components/atoms/Chip';
 import { LoadingSpinner } from '@app/common/components/atoms/LoadingSpinner';
 import { Check } from 'lucide-react';
+import clsx from 'clsx';
 
 interface Props {
   isLoading?: boolean;
@@ -15,8 +17,10 @@ export const ProgressBar = ({ isLoading, className }: Props) => {
           <LoadingSpinner size="14" />
         ) : (
           <div
-            style={{ animationIterationCount: 1, animationDuration: '500ms' }}
-            className="flex h-3 w-3 animate-bounce items-center justify-center rounded-full bg-[#00BD59]"
+            className={clsx(
+              'flex h-3 w-3 items-center justify-center rounded-full bg-[#00BD59]',
+              styles.bounceAnimation,
+            )}
           >
             <Check size="8" color="#fff" />
           </div>
