@@ -26,7 +26,7 @@
     "db:clean": "ts-node scripts/clean.ts",
     "db:reset": "npm run db:clean && npm run db:migrate-up",
     "db:reset:dev": "npm run db:migrate-up && npm run db:reset && npm run seed",
-    "db:init": "npm run db:migrate-save -- --name 'initial version' && npm run db:migrate-up seed",
+    "db:init": "npm run db:migrate-save -- --name 'initial version' && npm run db:migrate-up && npm run seed",
     "prisma:generate": "prisma generate",
     "json-schema:generate": "json2ts src/workflow/schemas/default-context-schema.json src/workflow/schemas/context.d.ts",
     "docker:db": "docker compose -f docker-compose.db.yml up -d --wait",

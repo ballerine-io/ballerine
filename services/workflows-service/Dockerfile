@@ -1,6 +1,6 @@
-FROM node:18.16-alpine3.17 as dev
+FROM node:18.12.1 as dev
 
-RUN apk add dumb-init
+RUN apt-get update && apt-get install -y --no-install-recommends dumb-init
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN npm install; npm run prisma:generate ; npm run build;
 
 CMD [ "dumb-init", "npm", "run", "dev", "--host" ]
 
-FROM node:18.16-alpine3.17 as prod
+FROM node:18.12.1 as prod
 
 WORKDIR /app
 
