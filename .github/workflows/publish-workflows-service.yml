@@ -57,7 +57,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for demo Docker
         if: github.ref == 'refs/heads/demo'
-        id: devmeta
+        id: demometa
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
