@@ -6,7 +6,7 @@ export const Success = withSessionProtected(() => {
     <div className="flex h-full items-center justify-center">
       <Card className="w-full max-w-[646px] p-12">
         <div className="mb-9 flex justify-center">
-          <img src="/public/papers-checked.svg" className="h-[156px] w-[156px]" />
+          <img src="/papers-checked.svg" className="h-[156px] w-[156px]" />
         </div>
         <div className="mb-10">
           <h1 className="mb-6 text-center text-3xl font-bold leading-8">

@@ -1,11 +1,11 @@
-name: Publish workflows-service image
+name: Publish kyb-app image
 
 on:
   workflow_dispatch:
   push:
+    # Run this pipeline only if there are changes in specified path
     paths:
-      # Run this pipeline only if there are changes in specified path
-      - "services/workflows-service/**"
+      - "examples/kyb-app/**"
     branches:
       - dev
       - test
@@ -14,7 +14,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
+  IMAGE_NAME: ${{ github.repository_owner }}/kyb-app
 
 jobs:
   build-and-push-image:
@@ -40,7 +40,7 @@ jobs:
       - name: Get package version from package.json
         id: get_version
         run: |
-          PACKAGE_VERSION=$(jq -r '.version' services/workflows-service/package.json)
+          PACKAGE_VERSION=$(jq -r '.version' examples/kyb-app/package.json)
           echo "::set-output name=version::$PACKAGE_VERSION"
 
       - name: Print the version
@@ -78,7 +78,6 @@ jobs:
             type=raw,value=prod
             type=raw,value=commit-${{ github.sha }}-prod
             type=raw,value=${{ steps.get_version.outputs.version }}-prod
-            type=raw,value=latest
 
       - name: Extract metadata for other branches Docker
         if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -88,29 +87,29 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }} 
+            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
 
-      - name: Build and push Docker image for Dev
+      - name: Build and push Docker image for Dev Branch
         if: github.ref == 'refs/heads/dev'
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: services/workflows-service
+          context: examples/kyb-app
           push: true
           tags: ${{ steps.devmeta.outputs.tags }}
 
-      - name: Build and push Docker image for Test
+      - name: Build and push Docker image for Test Branch
         if: github.ref == 'refs/heads/test'
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: services/workflows-service
+          context: examples/kyb-app
           push: true
           tags: ${{ steps.testmeta.outputs.tags }}
 
-      - name: Build and push Docker image for Prod
+      - name: Build and push Docker image for Prod Branch
         if: github.ref == 'refs/heads/prod'
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: services/workflows-service
+          context: examples/kyb-app
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
 
@@ -118,6 +117,6 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: services/workflows-service
+          context: examples/kyb-app
           push: true
           tags: ${{ steps.branchmeta.outputs.tags }}

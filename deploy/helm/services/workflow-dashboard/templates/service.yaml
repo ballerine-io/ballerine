@@ -1,0 +1,18 @@
+{{- if .Values.workflowsdashboard.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ .Values.workflowsdashboard.nameOverride }}
+    namespace: {{ .Release.Namespace | quote }}
+    labels:
+      app: {{ .Values.workflowsdashboard.nameOverride }}
+spec:
+    ports:
+    - name: {{ .Values.workflowsdashboard.nameOverride }}
+      port: {{ .Values.workflowsdashboard.service.port }}
+      protocol: {{ .Values.workflowsdashboard.service.protocol }}
+      targetPort: {{ .Values.workflowsdashboard.service.port }}
+    selector:
+        app: {{ .Values.workflowsdashboard.nameOverride }}
+    type: {{ .Values.workflowsdashboard.service.type }}
+{{- end }}
