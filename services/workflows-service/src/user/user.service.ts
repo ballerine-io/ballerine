@@ -17,15 +17,15 @@ export class UserService {
     return this.repository.findMany(args);
   }
 
-  async getById(id: string, args?: Parameters<UserRepository['findById']>[1]) {
+  async getByIdUnscoped(id: string, args?: Parameters<UserRepository['findById']>[1]) {
     return this.repository.findById(id, args);
   }
 
-  async getByEmail(email: string, args?: Parameters<UserRepository['findByEmail']>[1]) {
+  async getByEmailUnscoped(email: string, args?: Parameters<UserRepository['findByEmail']>[1]) {
     return this.repository.findByEmail(email, args);
   }
 
-  async updateById(id: string, args: Parameters<UserRepository['updateById']>[1]) {
+  async updateByIdUnscoped(id: string, args: Parameters<UserRepository['updateById']>[1]) {
     return this.repository.updateById(id, args);
   }
 
