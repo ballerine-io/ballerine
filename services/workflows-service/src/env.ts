@@ -32,6 +32,16 @@ export const env = createEnv({
     WEBHOOK_URL: z.string().url().optional(),
     WEBHOOK_SECRET: z.string().optional(),
     IS_DEMO: z.string().optional(),
+    UNIFIED_API_TOKEN: z
+      .string()
+      .optional()
+      .describe(
+        'API token for the Unified API. Used for authenticating outgoing requests to the Unified API.',
+      ),
+    UNIFIED_API_SHARED_SECRET: z
+      .string()
+      .optional()
+      .describe('Shared secret for the Unified API. Used for verifying incoming callbacks.'),
   },
   client: {},
   /**

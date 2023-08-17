@@ -96,7 +96,7 @@
     "vitest": "^0.24.5"
   },
   "dependencies": {
-    "@ballerine/common": "0.5.19",
+    "@ballerine/common": "0.5.20",
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "deepmerge": "^4.3.0",
