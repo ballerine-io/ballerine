@@ -22,7 +22,7 @@ export class CustomerService {
     return this.repository.findByApiKey(apiKey);
   }
 
-  async getByProjectId(projectId: string, args: Omit<Prisma.CustomerFindFirstArgsBase, 'where'>) {
+  async getByProjectId(projectId: string, args?: Omit<Prisma.CustomerFindFirstArgsBase, 'where'>) {
     return this.repository.findByProjectId(projectId, args);
   }
 
