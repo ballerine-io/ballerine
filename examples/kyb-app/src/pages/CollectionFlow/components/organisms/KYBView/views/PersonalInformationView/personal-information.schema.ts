@@ -30,6 +30,7 @@ export const personalInformationSchema: RJSFSchema = {
       type: 'string',
       title: 'Date of Birth',
       minLength: 1,
+      format: 'date-time',
     },
     phoneNumber: {
       type: 'string',
@@ -37,10 +38,8 @@ export const personalInformationSchema: RJSFSchema = {
       minLength: 1,
     },
     companyCheck: {
-      title: 'dfrd',
+      title: 'I have the signing authority for this company',
       type: 'boolean',
-      description: 'I have the signing authority for this company',
-      enum: [null, true],
     },
   },
   required: ['name', 'title', 'birthDate', 'phoneNumber'],

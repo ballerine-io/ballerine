@@ -35,7 +35,7 @@ export const PersonalInformationView = () => {
         lastName: values.name.lastName,
         phone: values.phoneNumber,
         email: user.email,
-        dateOfBirth: new Date(+values.birthDate).toISOString(),
+        dateOfBirth: new Date(values.birthDate).toISOString(),
         additionalInformation: {
           role: values.title,
         },
@@ -56,7 +56,7 @@ export const PersonalInformationView = () => {
   );
 
   return (
-    <AppShell.FormContainer header={<ViewHeader progressBar={false} />}>
+    <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<PersonalInformationContext>
         className="max-w-[384px]"
         formData={context.flowData.personalInformation}
