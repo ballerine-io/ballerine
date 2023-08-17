@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PasswordService } from '../auth/password/password.service';
 import { UserRepository } from './user.repository';
+import { TProjectIds } from '@/types';
 
 @Injectable()
 export class UserService {
@@ -9,12 +10,40 @@ export class UserService {
     protected readonly passwordService: PasswordService,
   ) {}
 
-  async create(args: Parameters<UserRepository['create']>[0]) {
-    return this.repository.create(args);
+  async create(args: Parameters<UserRepository['create']>[0], projectIds?: TProjectIds) {
+    return this.repository.create({
+      ...args,
+      data: {
+        ...args?.data,
+        userToProjects: !args?.data?.userToProjects
+          ? {
+              createMany: {
+                data: projectIds!.map(projectId => {
+                  return { projectId };
+                }),
+              },
+            }
+          : args.data.userToProjects,
+      },
+    });
   }
 
-  async list(args?: Parameters<UserRepository['findMany']>[0]) {
-    return this.repository.findMany(args);
+  async list(args?: Parameters<UserRepository['findMany']>[0], projectIds?: TProjectIds) {
+    return this.repository.findMany({
+      ...args,
+      where: {
+        ...args?.where,
+        userToProjects: !args?.where?.userToProjects
+          ? {
+              every: {
+                projectId: {
+                  in: projectIds!.map(projectId => projectId),
+                },
+              },
+            }
+          : args.where.userToProjects,
+      },
+    });
   }
 
   async getByIdUnscoped(id: string, args?: Parameters<UserRepository['findById']>[1]) {
