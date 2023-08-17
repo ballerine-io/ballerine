@@ -78,7 +78,7 @@ import {
   THelperFormatingLogic,
   Transformer,
 } from '@ballerine/workflow-core';
-import { FindLastActiveFlowParams, GetLastActiveFlowParams } from '@/workflow/types/params';
+import { GetLastActiveFlowParams } from '@/workflow/types/params';
 import { EndUserService } from '@/end-user/end-user.service';
 
 type TEntityId = string;
@@ -593,6 +593,17 @@ export class WorkflowService {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflow?.workflowDefinitionId,
     );
+
+    this.__validateWorkflowDefinitionContext(workflowDefinition, {
+      ...workflow?.context,
+      documents: workflow?.context?.documents?.map(
+        (document: DefaultContextSchema['documents'][number]) => ({
+          ...document,
+          type: document?.type === 'unknown' ? undefined : document?.type,
+        }),
+      ),
+    });
+
     // `name` is always `approve` and not `approved` etc.
     const Status = {
       approve: 'approved',
