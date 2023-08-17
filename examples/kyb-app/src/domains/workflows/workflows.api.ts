@@ -9,16 +9,6 @@ import {
   GetActiveWorkflowDto,
 } from '@app/domains/workflows/types';
 
-export const runWorkflowRequest = async (dto: WorkflowUpdatePayload): Promise<void> => {
-  const runPayload = serializeWorkflowUpdatePayload(dto);
-
-  await request
-    .post('external/workflows/run', {
-      json: runPayload,
-    })
-    .json<{ workflowRuntimeId: string }>();
-};
-
 export const runAndStartWorkflowRequest = async (
   dto: WorkflowUpdatePayload,
 ): Promise<{ workflowRuntimeId: string }> => {

@@ -1,0 +1,48 @@
+{{- if .Values.backoffice.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ .Values.backoffice.nameOverride }}
+    namespace: {{ .Release.Namespace | quote }}
+    labels:
+      app: {{ .Values.backoffice.nameOverride }}
+spec:
+    replicas: {{ .Values.backoffice.replicas }}
+    {{- if .Values.backoffice.strategyType }}
+    strategy:
+      type: {{ .Values.backoffice.strategyType }}
+    {{- end }}
+    {{- if .Values.backoffice.updateStrategy }}
+      rollingUpdate:
+        {{- if .Values.backoffice.updateStrategy.maxSurge }}
+        maxSurge: {{ .Values.backoffice.updateStrategy.maxSurge}}
+        {{- end }}
+        {{- if .Values.backoffice.updateStrategy.maxUnavailable }}
+        maxUnavailable: {{ .Values.backoffice.updateStrategy.maxUnavailable }}
+        {{- end }}
+    {{- end }}
+    selector:
+        matchLabels:
+            app: {{ .Values.backoffice.nameOverride }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.backoffice.nameOverride }}
+        spec:
+            {{- with .Values.nodeSelector }}
+            nodeSelector:
+            {{- toYaml . | nindent 8 }}
+            {{- end }}
+            containers:
+            - name: {{ .Values.backoffice.nameOverride }}
+              image: "{{ .Values.backoffice.image.registry }}/{{ .Values.backoffice.image.repository }}:{{ .Values.backoffice.image.tag }}"
+              imagePullPolicy: {{ .Values.backoffice.image.pullPolicy }}
+              command: ["nginx", "-g", "daemon off;"]
+              envFrom:
+                - configMapRef:
+                    name: {{ .Values.backoffice.nameOverride }}
+            {{- if .Values.backoffice.image.pullSecrets}}
+            imagePullSecrets:
+              - name: {{ .Values.backoffice.image.pullSecrets }}
+            {{- end }}
+{{- end }}

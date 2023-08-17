@@ -19,7 +19,6 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 import { BusinessUpdateDto } from '@/business/dtos/business.update';
 import { BusinessInformation } from '@/business/dtos/business-information';
-import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 
 @swagger.ApiTags('external/businesses')

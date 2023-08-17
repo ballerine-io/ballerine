@@ -21,6 +21,8 @@ export const useWorkflowContext = (workflow: Workflow, issues: Issue[]): Workflo
       workflow.context.entity.data.additionalInfo.__kyb_snapshot,
     ) as WorkflowFlowData;
 
+    context.shared.workflowId = workflow.id;
+
     eraseContextWithIssues(context, issues);
 
     return context;
