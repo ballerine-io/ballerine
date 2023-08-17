@@ -56,7 +56,7 @@ export const PersonalInformationView = () => {
   );
 
   return (
-    <AppShell.FormContainer header={<ViewHeader progressBar={false} />}>
+    <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<PersonalInformationContext>
         className="max-w-[384px]"
         formData={context.flowData.personalInformation}
