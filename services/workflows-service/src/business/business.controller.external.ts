@@ -18,6 +18,8 @@ import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definit
 import { WorkflowService } from '@/workflow/workflow.service';
 import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 import { BusinessUpdateDto } from '@/business/dtos/business.update';
+import { BusinessInformation } from '@/business/dtos/business-information';
+import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 
 @swagger.ApiTags('external/businesses')
 @common.Controller('external/businesses')
@@ -60,6 +62,18 @@ export class BusinessControllerExternal {
   async list(@common.Req() request: Request): Promise<BusinessModel[]> {
     const args = plainToClass(BusinessFindManyArgs, request.query);
     return this.service.list(args);
+  }
+
+  @UseKeyAuthGuard()
+  @common.Get('/business-information')
+  async getCompanyInfo(@common.Query() query: BusinessInformation) {
+    const { jurisdictionCode, vendor, registrationNumber } = query;
+
+    return this.service.fetchCompanyInformation({
+      registrationNumber,
+      jurisdictionCode,
+      vendor,
+    });
   }
 
   @common.Get(':id')

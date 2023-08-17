@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { kycDynamicExample } from './kyc-dynamic-process-example';
 import { kycEmailSessionDefinition } from './kyc-email-process-example';
 
 export const parentKybWithSessionWorkflowDefinition = {
@@ -61,8 +60,8 @@ export const parentKybWithSessionWorkflowDefinition = {
       },
       manual_review: {
         on: {
-          approve: 'approve',
-          reject: 'reject',
+          approve: 'approved',
+          reject: 'rejected',
           revision: 'revision',
         },
       },
@@ -71,7 +70,7 @@ export const parentKybWithSessionWorkflowDefinition = {
           RESUBMITTED: 'manual_review',
         },
       },
-      approve: {
+      approved: {
         type: 'final' as const,
       },
       revision: {
@@ -81,7 +80,7 @@ export const parentKybWithSessionWorkflowDefinition = {
           },
         ],
       },
-      reject: {
+      rejected: {
         type: 'final' as const,
       },
       auto_reject: {
@@ -107,6 +106,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               mapping: `{
               countryOfIncorporation: entity.data.countryOfIncorporation,
               companyNumber: entity.data.registrationNumber,
+              state: entity.data.additionalInfo.company.state
               vendor: 'open-corporates'
               }`, // jmespath
             },

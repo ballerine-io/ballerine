@@ -3,6 +3,6 @@ export interface ICallToActionProps {
   data: {
     id: string;
     disabled: boolean;
-    approvalStatus: 'rejected' | 'approved' | 'revision';
+    decision: 'reject' | 'approve' | 'revision';
   };
 }

@@ -77,6 +77,8 @@ import {
   THelperFormatingLogic,
   Transformer,
 } from '@ballerine/workflow-core';
+import { FindLastActiveFlowParams, GetLastActiveFlowParams } from '@/workflow/types/params';
+import { EndUserService } from '@/end-user/end-user.service';
 
 type TEntityId = string;
 
@@ -122,6 +124,7 @@ export class WorkflowService {
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
+    protected readonly endUserService: EndUserService,
     protected readonly businessRepository: BusinessRepository,
     protected readonly entityRepository: EntityRepository,
     protected readonly storageService: StorageService,
@@ -362,8 +365,6 @@ export class WorkflowService {
     return workflows.map(workflow => {
       const isIndividual = 'endUser' in workflow;
 
-      console.log('workflow', workflow);
-
       return {
         id: workflow?.id,
         status: workflow?.status,
@@ -572,6 +573,85 @@ export class WorkflowService {
     });
 
     return updatedWorkflow;
+  }
+
+  async updateDocumentDecisionById(
+    {
+      workflowId,
+      documentId,
+    }: {
+      workflowId: string;
+      documentId: string;
+    },
+    decision: {
+      status: 'approve' | 'reject' | 'revision';
+      reason?: string;
+    },
+  ) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowId);
+    // `name` is always `approve` and not `approved` etc.
+    const Status = {
+      approve: 'approved',
+      reject: 'rejected',
+      revision: 'revision',
+    } as const;
+    const status = Status[decision?.status];
+    const newDecision = (() => {
+      if (status === 'approved') {
+        return {
+          revisionReason: null,
+          rejectionReason: null,
+        };
+      }
+
+      if (status === 'rejected') {
+        return {
+          revisionReason: null,
+          rejectionReason: decision?.reason,
+        };
+      }
+
+      if (status === 'revision') {
+        return {
+          revisionReason: decision?.reason,
+          rejectionReason: null,
+        };
+      }
+
+      throw new BadRequestException(`Invalid decision status: ${status}`);
+    })();
+    const documentsWithDecision = runtimeData?.context?.documents?.map(
+      (document: DefaultContextSchema['documents'][number]) => {
+        if (document.id !== documentId) return document;
+
+        return {
+          id: document.id,
+          decision: {
+            ...newDecision,
+            status,
+          },
+        };
+      },
+    );
+    const updatedWorkflow = await this.updateContextById(workflowId, {
+      documents: documentsWithDecision,
+    });
+
+    const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow);
+
+    this.workflowEventEmitter.emit('workflow.context.changed', {
+      oldRuntimeData: runtimeData,
+      updatedRuntimeData: updatedWorkflow,
+      state: updatedWorkflow.state,
+      entityId: (updatedWorkflow.businessId || updatedWorkflow.endUserId) as string,
+      correlationId: correlationId,
+    });
+
+    return updatedWorkflow;
+  }
+
+  async updateContextById(id: string, context: WorkflowRuntimeData['context']) {
+    return this.workflowRuntimeDataRepository.updateContextById(id, context);
   }
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
@@ -1458,5 +1538,30 @@ export class WorkflowService {
 
   async getWorkflowRuntimeDataContext(id: string) {
     return this.workflowRuntimeDataRepository.findContext(id);
+  }
+
+  async getLastActiveFlow({
+    email,
+    workflowRuntimeDefinitionId,
+  }: GetLastActiveFlowParams): Promise<WorkflowRuntimeData | null> {
+    const endUser = await this.endUserService.getByEmail(email);
+
+    if (!endUser || !endUser.businesses.length) return null;
+
+    const query = {
+      endUserId: endUser.id,
+      ...{
+        workflowDefinitionId: workflowRuntimeDefinitionId,
+        businessId: endUser.businesses.at(-1)!.id,
+      },
+    };
+
+    this.logger.log(`Getting last active workflow`, query);
+
+    const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query);
+
+    this.logger.log('Last active workflow', { workflowId: workflowData ? workflowData.id : null });
+
+    return workflowData ? workflowData : null;
   }
 }
