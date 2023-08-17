@@ -28,7 +28,7 @@ export interface BusinessAddressContext {
 }
 
 export interface UBOSContext {
-  checked: boolean;
+  check: boolean;
   shareholders: {
     name: {
       firstName: string;
