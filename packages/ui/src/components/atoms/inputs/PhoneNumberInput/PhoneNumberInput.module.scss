@@ -1,0 +1,23 @@
+.flagCenter {
+  :global(.selected-flag) {
+    padding: 0 !important;
+
+    @apply flex items-center justify-center;
+  }
+}
+
+.hiddenArrow {
+  :global(.arrow) {
+    display: none;
+  }
+}
+
+.searchInput {
+  @apply py-4 px-0;
+
+  input {
+    margin-left: 0 !important;
+    outline: none;
+    @apply p-0 border border-input h-6 focus-within:ring-ring focus-within:ring-1 rounded-md w-[96%] ml-0;
+  }
+}

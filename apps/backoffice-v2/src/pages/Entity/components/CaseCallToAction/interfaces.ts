@@ -7,6 +7,6 @@ export interface ICaseCallToActionProps {
     childWorkflowId: string;
     childWorkflowContextSchema: TWorkflowById['childWorkflows'][number]['workflowDefinition']['contextSchema'];
     disabled: boolean;
-    approvalStatus: 'rejected' | 'approved' | 'revision';
+    decision: 'rejected' | 'approved' | 'revision';
   };
 }

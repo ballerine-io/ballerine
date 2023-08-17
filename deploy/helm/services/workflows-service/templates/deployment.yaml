@@ -55,6 +55,8 @@ spec:
               envFrom:
                 - configMapRef:
                     name: {{ .Values.workflowService.nameOverride }}
+            {{- if .Values.workflowService.image.pullSecrets}}
             imagePullSecrets:
-            - name: {{ .Values.workflowService.image.pullSecrets }}
+              - name: {{ .Values.workflowService.image.pullSecrets }}
+            {{- end }}
 {{- end }}

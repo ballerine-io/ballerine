@@ -1,28 +1,59 @@
-import { kybViews } from '@app/components/organisms/KYBView/views';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 
 export const defaultFlowData: WorkflowFlowData = {
-  currentView: kybViews[0].key || '',
+  currentView: 'signin',
   flowData: {
     personalInformation: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      companyName: '',
+      title: '',
+      name: {
+        firstName: '',
+        lastName: '',
+      },
+      birthDate: '',
+      phoneNumber: '',
+      companyCheck: false,
     },
-    businessInformation: {
+    companyInformation: {
       registrationNumber: '',
-      website: '',
+      companyCountry: '',
+      companyName: '',
+      companyType: '',
+      state: '',
+      vat: '',
+      registrationDate: '',
     },
-    businessAddress: {
+    headquarters: {
       address: '',
+      street: '',
+      postalCode: '',
+      city: '',
       country: '',
+      state: '',
+      phone: '',
     },
-    ubos: [],
-    documents: {
+    companyActivity: {
+      industry: '',
+      model: '',
+      website: '',
+      volumeAmount: '',
+      transactionValue: '',
+    },
+    bankInformation: {
+      country: '',
+      bankName: '',
+      holder: '',
+      account: '',
+      currency: '',
+    },
+    ubos: {
+      check: false,
+      shareholders: [],
+    },
+    companyDocuments: {
       registrationCertificate: '',
       addressProof: '',
+      bankStatement: '',
+      companyStructure: '',
     },
   },
   shared: {},

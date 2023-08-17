@@ -1,6 +1,7 @@
 import { useStepsRepository } from '@app/common/hooks/useStepper/hooks/useStepsManager';
+import { overrideStepsAction } from '@app/common/hooks/useStepper/hooks/useStepsManager/actions';
 import { IStep, StepperParams, UseStepperHookCallResult } from '@app/common/hooks/useStepper/types';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 export function useStepper(_steps: IStep[], params: StepperParams): UseStepperHookCallResult {
   const { state, actions, dispatch } = useStepsRepository({
@@ -8,6 +9,10 @@ export function useStepper(_steps: IStep[], params: StepperParams): UseStepperHo
     steps: _steps,
     meta: {},
   });
+
+  useEffect(() => {
+    dispatch(overrideStepsAction(_steps));
+  }, [_steps, actions.overrideStepsAction, dispatch]);
 
   const {
     prevStepAction,

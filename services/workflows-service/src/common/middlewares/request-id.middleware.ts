@@ -16,7 +16,12 @@ export class RequestIdMiddleware implements NestMiddleware {
     delete cleanHeaders.authorization;
     delete cleanHeaders.cookie;
 
-    this.cls.set('requestId', request.id);
+    try {
+      this.cls.set('requestId', request.id);
+    } catch (e) {
+      // Mainly for debugging purposes. See https://github.com/Papooch/nestjs-cls/issues/67
+      this.logger.log('Could not set requestId');
+    }
 
     this.logger.log(`Incoming request`, {
       request: {

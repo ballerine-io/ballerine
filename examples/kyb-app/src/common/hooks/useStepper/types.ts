@@ -13,6 +13,7 @@ export interface IStep {
   label: string;
   dataAlias: string;
   meta: StepMetadata;
+  hidden?: boolean;
 }
 
 export interface Step extends IStep {

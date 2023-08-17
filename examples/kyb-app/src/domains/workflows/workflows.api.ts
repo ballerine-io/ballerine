@@ -1,28 +1,13 @@
 import { request } from '@app/common/utils/request';
-import { defaultFlowData } from '@app/domains/workflows/default-flow-data';
-import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { serializeWorkflowUpdatePayload } from '@app/domains/workflows/serialize/run-and-start-workflow.serialize';
-import { KYBStorageService } from '@app/domains/workflows/storages/kyb-storage-service';
-import { RevisionStorageService } from '@app/domains/workflows/storages/revision-storage-service/revision-storage-service';
 import {
-  GetFlowDataDto,
   GetWofklowDto,
   GetWorkflowResponse,
   WorkflowUpdatePayload,
-  UpdateFlowDataDto,
   UpdateWorkflowDto,
   Workflow,
+  GetActiveWorkflowDto,
 } from '@app/domains/workflows/types';
-
-export const runWorkflowRequest = async (dto: WorkflowUpdatePayload): Promise<void> => {
-  const runPayload = serializeWorkflowUpdatePayload(dto);
-
-  await request
-    .post('external/workflows/run', {
-      json: runPayload,
-    })
-    .json<{ workflowRuntimeId: string }>();
-};
 
 export const runAndStartWorkflowRequest = async (
   dto: WorkflowUpdatePayload,
@@ -51,37 +36,22 @@ export const fetchWorkflow = async (query: GetWofklowDto): Promise<Workflow> => 
 };
 
 export const updateWorkflow = async (dto: UpdateWorkflowDto) => {
-  const { workflowId: _, ...payload } = serializeWorkflowUpdatePayload(dto.payload);
+  const { workflowId, ...payload } = serializeWorkflowUpdatePayload(dto.payload);
 
-  await request.patch(`internal/workflows/${dto.workflowId}`, {
+  await request.patch(`external/workflows/${dto.workflowId}`, {
     json: payload,
   });
 };
 
-export const fetchFlowData = (dto: GetFlowDataDto): WorkflowFlowData => {
-  const { workflowId } = dto;
+export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<Workflow | null> => {
+  const result = await request
+    .get('external/workflows/active-flow', {
+      searchParams: {
+        email: dto.email,
+        workflowRuntimeDefinitionId: import.meta.env.VITE_KYB_DEFINITION_ID as string,
+      },
+    })
+    .json<{ result: Workflow }>();
 
-  const storage = workflowId ? new RevisionStorageService(workflowId) : new KYBStorageService();
-
-  const data = storage.getData() || defaultFlowData;
-
-  return data as WorkflowFlowData;
-};
-
-export const updateFlowData = async (dto: UpdateFlowDataDto): Promise<WorkflowFlowData> => {
-  const { workflowId, payload } = dto;
-
-  const flowStorage = new KYBStorageService();
-  const workflowStorage = new RevisionStorageService(workflowId);
-  const storage = workflowId ? workflowStorage : flowStorage;
-
-  await storage.save(payload);
-
-  const isShouldClearFlowStorage = Boolean(workflowId);
-
-  if (isShouldClearFlowStorage) {
-    flowStorage.clear();
-  }
-
-  return dto.payload;
+  return result.result;
 };

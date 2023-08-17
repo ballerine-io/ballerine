@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.4.7",
+  "version": "0.4.11",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "repository": {
@@ -34,6 +34,7 @@
     "pnpm": ">=8.0.0"
   },
   "scripts": {
+    "spellcheck": "cspell \"*\"",
     "format": "prettier --plugin-search-dir=. --write .",
     "format:check": "prettier --plugin-search-dir=. --check .",
     "lint": "eslint . --fix",
@@ -48,10 +49,10 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@ballerine/common": "0.5.14",
-    "@ballerine/ui": "0.1.10",
-    "@ballerine/workflow-browser-sdk": "0.4.17",
-    "@ballerine/workflow-node-sdk": "0.4.11",
+    "@ballerine/common": "0.5.19",
+    "@ballerine/ui": "0.2.10",
+    "@ballerine/workflow-browser-sdk": "0.4.22",
+    "@ballerine/workflow-node-sdk": "0.4.16",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@hookform/resolvers": "^3.1.0",
     "@lukemorales/query-key-factory": "^1.0.3",
@@ -119,6 +120,8 @@
     "@typescript-eslint/parser": "^5.30.0",
     "@vitejs/plugin-react-swc": "^3.0.1",
     "autoprefixer": "^10.4.7",
+    "cspell": "^6.31.2",
+    "@cspell/cspell-types": "^6.31.1",
     "daisyui": "^2.46.1",
     "eslint": "8.22.0",
     "eslint-config-prettier": "^8.5.0",
