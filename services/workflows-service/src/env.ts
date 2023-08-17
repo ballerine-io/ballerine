@@ -32,6 +32,11 @@ export const env = createEnv({
     WEBHOOK_URL: z.string().url().optional(),
     WEBHOOK_SECRET: z.string().optional(),
     IS_DEMO: z.string().optional(),
+    MAIL_DRIVER: z
+      .enum(['sendgrid', 'log'])
+      .describe(
+        `Which mail driver to use. Use "log" during development to log emails to the console. In production, use "sendgrid" to send emails via SendGrid.`,
+      ),
     UNIFIED_API_TOKEN: z
       .string()
       .optional()
