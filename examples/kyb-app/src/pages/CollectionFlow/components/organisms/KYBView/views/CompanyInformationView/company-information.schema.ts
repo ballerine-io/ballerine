@@ -7,8 +7,7 @@ export const companyInformationSchema: RJSFSchema = {
   properties: {
     registrationNumber: {
       title: 'Company Registration Number',
-      type: 'string',
-      minLength: 1,
+      type: 'number',
     },
     companyCountry: {
       title: 'Registered Country',

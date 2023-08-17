@@ -64,7 +64,7 @@ importers:
         specifier: 0.5.19
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.2.10
+        specifier: 0.2.12
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.4.22
@@ -622,7 +622,7 @@ importers:
   examples/kyb-app:
     dependencies:
       '@ballerine/ui':
-        specifier: 0.2.10
+        specifier: 0.2.12
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3

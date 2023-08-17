@@ -7,6 +7,7 @@ export const personalInformationUISchema: UiSchema = {
   },
   birthDate: {
     'ui:field': 'DateInput',
+    'ui:label': true,
   },
   name: {
     firstName: {
