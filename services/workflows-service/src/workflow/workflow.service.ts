@@ -459,7 +459,15 @@ export class WorkflowService {
         ),
       };
 
-      this.__validateWorkflowDefinitionContext(workflowDef, context);
+      this.__validateWorkflowDefinitionContext(workflowDef, {
+        ...context,
+        documents: context?.documents?.map(
+          (document: DefaultContextSchema['documents'][number]) => ({
+            ...document,
+            type: document?.type === 'unknown' ? undefined : document?.type,
+          }),
+        ),
+      });
 
       // @ts-ignore
       data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
