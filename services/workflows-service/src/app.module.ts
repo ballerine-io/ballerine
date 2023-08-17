@@ -30,7 +30,6 @@ import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
 import { ProjectModule } from '@/project/project.module';
 import { AdminKeyMiddleware } from '@/common/middlewares/admin-key.middleware';
 import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
-import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Module({
   controllers: [MetricsController],

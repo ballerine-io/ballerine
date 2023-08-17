@@ -1585,7 +1585,7 @@ export class WorkflowService {
   }
 
   private __fetchBucketName(processEnv: NodeJS.ProcessEnv, isThrowOnMissing = true) {
-    const bucketName = AwsS3FileConfig.fetchBucketName(processEnv);
+    const bucketName = AwsS3FileConfig.getBucketName(processEnv);
 
     if (isThrowOnMissing && !bucketName) {
       throw new Error(`S3 Bucket name is not set`);
