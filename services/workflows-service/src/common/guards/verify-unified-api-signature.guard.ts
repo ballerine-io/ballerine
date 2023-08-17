@@ -8,17 +8,15 @@ export class VerifyUnifiedApiSignatureGuard implements CanActivate {
   canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<Request>();
 
-    const signature = request.headers['X-Hmac-Signature'] ?? '';
+    const signature = request.headers['x-hmac-signature'] ?? '';
 
     if (typeof signature !== 'string') {
       throw new UnauthorizedException('Invalid signature');
     }
 
-    const body = request.body;
-
     if (
-      verifySignature({
-        payload: body,
+      !verifySignature({
+        payload: request.body,
         signature,
         key: env.UNIFIED_API_SHARED_SECRET ?? '',
       })
