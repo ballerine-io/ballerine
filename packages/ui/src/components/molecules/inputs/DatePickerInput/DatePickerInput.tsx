@@ -67,6 +67,11 @@ export const DatePickerInput = ({
           fullWidth
           size="small"
           error={props.error}
+          FormHelperTextProps={{
+            classes: {
+              root: 'pl-2 text-destructive font-inter text-[0.8rem]',
+            },
+          }}
           helperText={props.error ? 'Please enter valid date.' : undefined}
           InputProps={{
             ...props.InputProps,

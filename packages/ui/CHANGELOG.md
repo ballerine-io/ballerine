@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.2.12
+
+### Patch Changes
+
+- Updated DatePicker error text styles & removed errors text capitalization from DynamicForm
+
 ## 0.2.11
 
 ### Patch Changes

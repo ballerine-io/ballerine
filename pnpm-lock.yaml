@@ -64,7 +64,7 @@ importers:
         specifier: 0.5.19
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.2.10
+        specifier: 0.2.11
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.4.22
