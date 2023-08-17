@@ -4,7 +4,6 @@ import {
 } from '@app/domains/workflows/flow-data.type';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema } from '@rjsf/utils';
-import { CreateEndUserDto } from '@app/domains/end-user';
 
 export interface WorkflowUBO {
   entity: {
@@ -14,6 +13,7 @@ export interface WorkflowUBO {
       firstName: string;
       lastName: string;
       email: string;
+      dateOfBirth: string;
       additionalInfo?: Record<PropertyKey, unknown>;
     };
   };
@@ -26,23 +26,58 @@ export interface WorkflowRunDocument {
   pages: {
     fileId: string;
   }[];
+  properties: AnyObject;
+}
+
+export interface WorkflowEntity {
+  type: 'business';
+  website: string;
+  companyName: string;
+  address: string;
+  country: string;
+  registrationNumber: string;
+  customerCompany: string;
+  email: string;
+  ubos: WorkflowUBO[];
+  birthDate: string;
+  mainRepresentative: PersonalInformationContext;
+  additionalInfo: {
+    company: {
+      vat: string;
+      type: string;
+      incorporationDate: number;
+      industry: string;
+      model: string;
+      estimateAnnualVolume: string;
+      averageTransactionValue: string;
+      state: string;
+    };
+    headquarters: {
+      street: string;
+      zip: string;
+      country: string;
+      state: string;
+      city: string;
+      phone: string;
+    };
+    bank: {
+      country: string;
+      name: string;
+      holder: string;
+      accountNumber: string;
+      currencyCode: string;
+    };
+    //WorkflowFlowData
+    __kyb_snapshot: string;
+  };
 }
 
 export interface WorkflowUpdatePayload {
   workflowId: string;
   endUserId: string;
   businessId: string;
-  entity: {
-    type: 'business';
-    website: string;
-    companyName: string;
-    address: string;
-    country: string;
-    registrationNumber: string;
-    customerCompany: string;
-    ubos: WorkflowUBO[];
-    mainRepresentative: PersonalInformationContext;
-  };
+  entity: WorkflowEntity;
+  isShareholder: boolean;
   documents: WorkflowRunDocument[];
 }
 
@@ -53,9 +88,18 @@ export interface TRunWorkflowDocument {
     country: string;
   };
   pages: { ballerineFileId: string }[];
-  properies: AnyObject;
+  properties: AnyObject;
   version: string;
   issuingVersion: number;
+}
+
+export interface WorkflowAdditionalInformation {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  dateOfBirth: string;
+  companyName: string;
 }
 
 export interface TRunWorkflowDto {
@@ -82,7 +126,7 @@ export interface TRunWorkflowDto {
         };
         registrationNumber: string;
         additionalInfo?: {
-          mainRepresentative: CreateEndUserDto;
+          mainRepresentative: WorkflowAdditionalInformation;
           ubos: WorkflowUBO[];
         };
       };
@@ -118,6 +162,7 @@ export interface WorkflowDocument {
 export interface Workflow {
   id: string;
   workflowDefinitionId: string;
+  state: 'approve' | 'reject';
   businessId: string;
   endUserId: string;
   context: {
@@ -130,9 +175,7 @@ export interface Workflow {
         };
         website: string;
         registrationNumber: string;
-        additionalInfo: {
-          ubos: WorkflowUBO[];
-        };
+        additionalInfo: WorkflowEntity['additionalInfo'];
         companyName: string;
       };
     };
@@ -149,10 +192,14 @@ export interface UpdateWorkflowDto {
 }
 
 export interface GetFlowDataDto {
-  workflowId?: string;
+  email: string;
 }
 
 export interface UpdateFlowDataDto {
   workflowId?: string;
   payload: WorkflowFlowData;
+}
+
+export interface GetActiveWorkflowDto {
+  email: string;
 }
