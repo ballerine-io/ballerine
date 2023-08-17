@@ -19,10 +19,9 @@ import os from 'os';
 import { File } from '@prisma/client';
 import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
-import { file } from 'tmp';
-import { Public } from '@/common/decorators/public.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -32,6 +31,7 @@ export class StorageControllerInternal {
     protected readonly service: StorageService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly scopeService: ProjectScopeService,
   ) {}
 
   // curl -v -F "file=@a.jpg" http://localhost:3000/api/v1/storage
@@ -72,11 +72,16 @@ export class StorageControllerInternal {
 
   // curl -v http://localhost:3000/api/v1/internal/storage/1679322938093
   @common.Get('/:id')
-  async getFileById(@Param('id') id: string, @Res() res: Response) {
+  async getFileById(
+    @ProjectIds() projectIds: TProjectIds,
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById({
-      id,
-    });
+    const persistedFile = await this.service.getFileNameById(
+      { id },
+      this.scopeService.scopeFindOne({}, projectIds),
+    );
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }
@@ -87,14 +92,16 @@ export class StorageControllerInternal {
   // curl -v http://localhost:3000/api/v1/storage/content/1679322938093
   @common.Get('/content/:id')
   async fetchFileContent(
+    @ProjectIds() projectIds: TProjectIds,
     @Param('id') id: string,
     @Res() res: Response,
     @Query('format') format: string,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById({
-      id,
-    });
+    const persistedFile = await this.service.getFileNameById(
+      { id },
+      this.scopeService.scopeFindOne({}, projectIds),
+    );
 
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
@@ -106,14 +113,14 @@ export class StorageControllerInternal {
       if (format === 'signed-url') {
         const fileTypeByEnding = persistedFile.fileNameInBucket.split('.').pop();
         const signedUrl = await createPresignedUrlWithClient({
-          bucketName: AwsS3FileConfig.fetchBucketName(process.env) as string,
+          bucketName: AwsS3FileConfig.getBucketName(process.env) as string,
           fileNameInBucket: persistedFile.fileNameInBucket,
           fileTypeByEnding,
         });
         return res.json({ signedUrl });
       }
       const localFilePath = await downloadFileFromS3(
-        AwsS3FileConfig.fetchBucketName(process.env) as string,
+        AwsS3FileConfig.getBucketName(process.env) as string,
         persistedFile.fileNameInBucket,
       );
       return res.sendFile(localFilePath, { root: '/' });
