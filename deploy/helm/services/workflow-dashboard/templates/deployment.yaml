@@ -1,0 +1,48 @@
+{{- if .Values.workflowsdashboard.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ .Values.workflowsdashboard.nameOverride }}
+    namespace: {{ .Release.Namespace | quote }}
+    labels:
+      app: {{ .Values.workflowsdashboard.nameOverride }}
+spec:
+    replicas: {{ .Values.workflowsdashboard.replicas }}
+    {{- if .Values.workflowsdashboard.strategyType }}
+    strategy:
+      type: {{ .Values.workflowsdashboard.strategyType }}
+    {{- end }}
+    {{- if .Values.workflowsdashboard.updateStrategy }}
+      rollingUpdate:
+        {{- if .Values.workflowsdashboard.updateStrategy.maxSurge }}
+        maxSurge: {{ .Values.workflowsdashboard.updateStrategy.maxSurge}}
+        {{- end }}
+        {{- if .Values.workflowsdashboard.updateStrategy.maxUnavailable }}
+        maxUnavailable: {{ .Values.workflowsdashboard.updateStrategy.maxUnavailable }}
+        {{- end }}
+    {{- end }}
+    selector:
+        matchLabels:
+            app: {{ .Values.workflowsdashboard.nameOverride }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.workflowsdashboard.nameOverride }}
+        spec:
+            {{- with .Values.nodeSelector }}
+            nodeSelector:
+            {{- toYaml . | nindent 8 }}
+            {{- end }}
+            containers:
+            - name: {{ .Values.workflowsdashboard.nameOverride }}
+              image: "{{ .Values.workflowsdashboard.image.registry }}/{{ .Values.workflowsdashboard.image.repository }}:{{ .Values.workflowsdashboard.image.tag }}"
+              imagePullPolicy: {{ .Values.workflowsdashboard.image.pullPolicy }}
+              command: ["nginx", "-g", "daemon off;"]
+              envFrom:
+                - configMapRef:
+                    name: {{ .Values.workflowsdashboard.nameOverride }}
+            {{- if .Values.workflowsdashboard.image.pullSecrets}}
+            imagePullSecrets:
+              - name: {{ .Values.workflowsdashboard.image.pullSecrets }}
+            {{- end }}
+{{- end }}
