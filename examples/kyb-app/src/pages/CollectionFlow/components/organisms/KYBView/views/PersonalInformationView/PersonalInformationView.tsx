@@ -35,7 +35,7 @@ export const PersonalInformationView = () => {
         lastName: values.name.lastName,
         phone: values.phoneNumber,
         email: user.email,
-        dateOfBirth: new Date(+values.birthDate).toISOString(),
+        dateOfBirth: new Date(values.birthDate).toISOString(),
         additionalInformation: {
           role: values.title,
         },

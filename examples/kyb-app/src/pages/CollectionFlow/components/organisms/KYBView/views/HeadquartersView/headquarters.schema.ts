@@ -6,10 +6,10 @@ export const headquartersSchema: RJSFSchema = {
   type: 'object',
   required: ['street', 'postalCode', 'city', 'country'],
   properties: {
-    address: {
-      title: 'Search Address',
-      type: 'string',
-    },
+    // address: {
+    //   title: 'Search Address',
+    //   type: 'string',
+    // },
     street: {
       title: 'Street',
       type: 'string',
