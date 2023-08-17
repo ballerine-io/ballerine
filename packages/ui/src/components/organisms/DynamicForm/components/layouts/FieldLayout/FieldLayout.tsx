@@ -26,7 +26,7 @@ export const FieldLayout = ({
       {isLabelEnabled ? (
         <Label htmlFor={id}>
           {label}
-          {required ? '*' : ''}
+          {required ? '' : <span className="opacity-50">{' (optional) '}</span>}
         </Label>
       ) : null}
       {children}

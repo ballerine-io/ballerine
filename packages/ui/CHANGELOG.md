@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.2.11
+
+### Patch Changes
+
+- Fixed date picker date serialization & added incorrect date hint & removed controls from number inputs
+
 ## 0.2.10
 
 ### Patch Changes

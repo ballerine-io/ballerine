@@ -622,7 +622,7 @@ importers:
   examples/kyb-app:
     dependencies:
       '@ballerine/ui':
-        specifier: 0.2.10
+        specifier: link:../../packages/ui
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -33466,7 +33466,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.2.7(postcss@8.4.24)(ts-node@10.9.1)
+      tailwindcss: 3.2.7(postcss@8.4.21)(ts-node@10.9.1)
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.3):

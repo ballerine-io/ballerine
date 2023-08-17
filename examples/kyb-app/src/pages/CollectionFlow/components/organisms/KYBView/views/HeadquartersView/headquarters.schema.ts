@@ -17,8 +17,7 @@ export const headquartersSchema: RJSFSchema = {
     },
     postalCode: {
       title: 'Postal code',
-      type: 'string',
-      minLength: 1,
+      type: 'number',
     },
     country: {
       title: 'Country',

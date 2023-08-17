@@ -10,7 +10,7 @@ import { Paper } from '@components/atoms';
 
 export interface DatePickerChangeEvent {
   target: {
-    value: number | null;
+    value: string | null;
     name?: string;
   };
 }
@@ -30,25 +30,11 @@ export const DatePickerInput = ({
   disabled = false,
   onChange,
 }: DatePickerProps) => {
-  const serializeValue = useCallback((value: Dayjs): number => {
-    return +value.toDate();
+  const serializeValue = useCallback((value: Dayjs): string => {
+    return value.toDate().toISOString();
   }, []);
 
   const deserializeValue = useCallback((value: DatePickerValue) => {
-    if (value instanceof Date) {
-      return dayjs(value);
-    }
-
-    if (typeof value === 'string' && value) {
-      const timestamp = Number(value);
-
-      if (isNaN(timestamp)) {
-        return dayjs(value, ['YYYY-MM-DD', 'YYYY-DD-MM'], true);
-      }
-
-      return dayjs(+timestamp);
-    }
-
     return dayjs(value);
   }, []);
 
@@ -80,6 +66,8 @@ export const DatePickerInput = ({
           variant="standard"
           fullWidth
           size="small"
+          error={props.error}
+          helperText={props.error ? 'Please enter valid date.' : undefined}
           InputProps={{
             ...props.InputProps,
             classes: {

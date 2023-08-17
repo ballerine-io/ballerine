@@ -30,6 +30,7 @@ export const personalInformationSchema: RJSFSchema = {
       type: 'string',
       title: 'Date of Birth',
       minLength: 1,
+      format: 'date-time',
     },
     phoneNumber: {
       type: 'string',
