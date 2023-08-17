@@ -92,3 +92,43 @@ export type ExtractWorkflowEventData<TEvent extends TEventName> = Omit<
   >,
   'eventName'
 >;
+
+export interface KYBParentKYCSessionExampleContext {
+  entity: {
+    endUserId: string;
+    ballerineEntityId: string;
+    type: 'business';
+    data: {
+      website: string;
+      registrationNumber: string;
+      companyName: string;
+      countryOfIncorporation: string;
+      address: {
+        text: string;
+      };
+      additionalInfo: {
+        mainRepresentative: {
+          firstName: string;
+          lastName: string;
+          phone: string;
+          dateOfBirth: string;
+          companyName: string;
+          email: string;
+          title: string;
+        };
+        ubos: {
+          id: string;
+          type: string;
+          data: {
+            firstName: string;
+            lastName: string;
+            email: string;
+            dateOfBirth: string;
+          };
+        }[];
+      };
+      dynamicInfo: Record<string, any>;
+      _stateKey: string;
+    };
+  };
+}

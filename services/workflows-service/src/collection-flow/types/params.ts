@@ -1,5 +1,6 @@
 export interface SigninCredentials {
   email: string;
+  flowType: string;
 }
 
 export interface GetActiveFlowParams {
