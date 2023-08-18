@@ -1,5 +1,4 @@
 import { type } from 'os';
-import { TProjectIds } from "@/types";
 
 declare module '@prisma/client' {
   import type {

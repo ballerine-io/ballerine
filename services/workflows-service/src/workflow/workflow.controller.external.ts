@@ -277,8 +277,6 @@ export class WorkflowControllerExternal {
     return;
   }
 
-
-
   @common.Post('/create-fake-data')
   @swagger.ApiOkResponse()
   @UseGuards(AdminAuthGuard)
