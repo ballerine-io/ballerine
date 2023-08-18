@@ -46,6 +46,16 @@ export class EmailPlugin extends ApiPlugin {
       ...templateId,
     };
 
+    if (payload.adapter === 'log') {
+      console.log('Email payload: ', emailPayload);
+
+      return {
+        ok: true,
+        json: () => Promise.resolve({}),
+        statusText: 'OK',
+      };
+    }
+
     return await super.makeApiRequest(url, method, emailPayload, headers);
   }
 

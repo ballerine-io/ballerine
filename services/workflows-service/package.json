@@ -41,7 +41,7 @@
     "@aws-sdk/lib-storage": "3.325.0",
     "@aws-sdk/s3-request-presigner": "3.325.0",
     "@ballerine/common": "0.5.22",
-    "@ballerine/workflow-core": "0.4.29",
+    "@ballerine/workflow-core": "0.4.30",
     "@ballerine/workflow-node-sdk": "0.4.16",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
