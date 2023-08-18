@@ -113,7 +113,7 @@ jobs:
         with:
           context: services/workflows-service
           push: true
-          tags: ${{ steps.devmeta.outputs.tags }}
+          tags: ${{ steps.demometa.outputs.tags }}
           labels: ${{ steps.devmeta.outputs.labels }}
 
       - name: Build and push Docker image for Test
