@@ -283,9 +283,7 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createFakeData(
-    @common.Param() params: WorkflowIdWithEventInput,
-    @common.Query() query: WorkflowHookQuery,
-    @common.Body() body: any,
+    @common.Body() body: { customerName: string, projectId: string },
   ): Promise<void> {
     await createParentWithChildWorkflow(this.prisma, body.customerName, true, body.projectId)
     await createParentWithChildWorkflow(this.prisma, body.customerName, true, body.projectId)

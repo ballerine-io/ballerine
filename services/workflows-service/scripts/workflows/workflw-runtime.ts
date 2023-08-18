@@ -1,10 +1,25 @@
 import { faker } from '@faker-js/faker';
-import { PrismaClient } from "@prisma/client";
+import {PrismaClient, WorkflowRuntimeDataStatus} from "@prisma/client";
+import {generateBusiness} from "../generate-end-user";
+import {WorkflowRuntimeStatusStatistic} from "@/metrics/repository/models/workflow-runtime-statistic.model";
 
 export const createParentWithChildWorkflow = async (prismaClient: PrismaClient, customerName: string, withAml: boolean, projectId: string) => {
   const companyName = faker.company.companyName()
-  const parentRuntimeInformation = generateParentRuntimeInformation(companyName, projectId)
+  const businessId = faker.datatype.uuid()
+  const parentRuntimeInformation = generateParentRuntimeInformation(businessId, companyName, projectId)
   // @ts-ignore
+  const businessData =  generateBusiness(
+      {
+        id: businessId,
+        workflow: {
+            workflowDefinitionId: parentRuntimeInformation.workflowDefinitionId,
+            workflowDefinitionVersion: parentRuntimeInformation.workflowDefinitionVersion,
+            context: parentRuntimeInformation.context,
+        },
+        projectId: projectId,
+      }
+  )
+  await prismaClient.business.create({data: businessData})
   const parentWorkflowRuntime = await prismaClient.workflowRuntimeData.create({data: parentRuntimeInformation})
   const childWorkflowRuntimeInformation = generateChildRuntimeInformation(customerName, companyName, withAml, projectId, parentWorkflowRuntime.id);
   // @ts-ignore
@@ -18,7 +33,7 @@ export const generateChildRuntimeInformation = (customerName: string, companyNam
     workflowDefinitionVersion: 1,
     context: createKycRuntime(customerName, companyName, withAml),
     state: 'kyc_manual_review',
-    status: 'active',
+    status: WorkflowRuntimeDataStatus.active,
     createdAt: faker.date.recent(2),
     updatedAt: faker.date.recent(2),
     createdBy: 'SYSTEM',
@@ -29,14 +44,14 @@ export const generateChildRuntimeInformation = (customerName: string, companyNam
   }
 }
 
-export const generateParentRuntimeInformation = (companyName: string, projectId: string)  => {
+export const generateParentRuntimeInformation = (businessId: string, companyName: string, projectId: string)  => {
   return {
-    businessId: faker.datatype.uuid(),
-    workflowDefinitionId: 'kyc_email_session_example',
+    businessId: businessId,
+    workflowDefinitionId: 'kyb_parent_kyc_session_example_v1',
     workflowDefinitionVersion: 1,
     context: generateParentRuntimeContext(companyName),
-    state: 'kyc_manual_review',
-    status: 'active',
+    state: 'manual_review',
+    status: WorkflowRuntimeDataStatus.active,
     createdAt: faker.date.recent(2),
     updatedAt: faker.date.recent(2),
     createdBy: 'SYSTEM',
