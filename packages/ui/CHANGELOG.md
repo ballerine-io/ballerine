@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.2.13
+
+### Patch Changes
+
+- b8dedaaf: Enabled search on phone number in DynamicForm & BooleanFieldAdapter fix
+
 ## 0.2.12
 
 ### Patch Changes
