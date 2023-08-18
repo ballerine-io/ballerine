@@ -1,10 +1,20 @@
 import {
   CompanyDocument,
+  EntityData,
   MainRepresentative,
   UBOShareholder,
 } from '@/collection-flow/dto/update-flow-input.dto';
 import { IsNullable } from '@/common/decorators/is-nullable.decorator';
-import { IsArray, IsNotEmpty, IsObject, IsString, ValidateNested } from 'class-validator';
+import { oneOf } from '@/common/decorators/one-of.decorator';
+import { WorkflowRuntimeData } from '@prisma/client';
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsObject,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 export class PersonalInformationName {
   @IsString()
@@ -28,7 +38,10 @@ export class KYBParentKYCSessionExampleFlowData {
 
   @IsString()
   @IsNullable()
-  state!: string | null;
+  flowState!: string | null;
+
+  @IsString()
+  status!: string;
 
   @IsObject()
   flowData!: object;
@@ -41,4 +54,13 @@ export class KYBParentKYCSessionExampleFlowData {
 
   @ValidateNested({ each: true })
   ubos!: UBOShareholder[];
+
+  @IsObject()
+  workflow!: WorkflowRuntimeData;
+
+  @IsObject()
+  entityData!: EntityData;
+
+  @IsBoolean()
+  isFinished!: boolean;
 }

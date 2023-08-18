@@ -1112,6 +1112,8 @@ export class WorkflowService {
   ): Promise<DefaultContextSchema> {
     if (!context?.documents?.length) return context;
 
+    console.log('RECIEVED DOCS', context?.documents);
+
     const documentsWithPersistedImages = await Promise.all(
       context?.documents?.map(async document => ({
         ...document,

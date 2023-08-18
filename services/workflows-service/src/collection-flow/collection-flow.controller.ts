@@ -29,19 +29,17 @@ export class ColectionFlowController {
   async getActiveFlow(@common.Query() query: GetActiveFlowDto) {
     const activeWorkflow = await this.service.getActiveFlow({
       endUserId: query.endUserId,
-      workflowRuntimeDefinitionId: query.workflowRuntimeDefinitionId,
+      workflowRuntimeDefinitionId: query.flowType,
     });
 
     try {
-      const adapter = this.adapterManager.getAdapter(query.workflowRuntimeDefinitionId);
+      const adapter = this.adapterManager.getAdapter(query.flowType);
       return {
         result: activeWorkflow ? adapter.serialize(activeWorkflow) : null,
       };
     } catch (error) {
       if (error instanceof UnsupportedFlowTypeException) {
-        throw new common.BadRequestException(
-          `${query.workflowRuntimeDefinitionId} is not supported.`,
-        );
+        throw new common.BadRequestException(`${query.flowType} is not supported.`);
       }
       throw error;
     }
@@ -78,5 +76,11 @@ export class ColectionFlowController {
 
       throw error;
     }
+  }
+
+  @common.Post('finish/:flowId')
+  @UseKeyAuthGuard()
+  async finishFlow(@common.Param('flowId') flowId: string) {
+    return this.service.finishFlow(flowId);
   }
 }

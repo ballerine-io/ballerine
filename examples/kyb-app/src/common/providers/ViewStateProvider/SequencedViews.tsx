@@ -18,6 +18,7 @@ interface Props<TContext extends ViewsData> {
   warnings?: InputsWarnings;
   isLoading?: boolean;
   afterUpdate?: (viewsData: AnyObject) => void;
+  afterTransition?: (viewsData: AnyObject) => void;
   onViewChange?: (context: TContext, viewKey: string) => void;
   onFinish?: (context: TContext) => void;
 }
@@ -30,6 +31,7 @@ export function SequencedViews<TContext extends ViewsData>({
   isLoading = false,
   onViewChange,
   afterUpdate,
+  afterTransition,
   onFinish,
 }: Props<TContext>) {
   const [isFinished, setFinished] = useState(false);
@@ -100,6 +102,7 @@ export function SequencedViews<TContext extends ViewsData>({
       completeCurrent();
       nextStep();
 
+      afterTransition && afterTransition(savedData);
       return savedData;
     },
     [save, nextStep, completeCurrent],

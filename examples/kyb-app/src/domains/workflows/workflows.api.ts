@@ -6,7 +6,6 @@ import {
   WorkflowUpdatePayload,
   UpdateWorkflowDto,
   Workflow,
-  GetActiveWorkflowDto,
 } from '@app/domains/workflows/types';
 
 export const runAndStartWorkflowRequest = async (
@@ -41,17 +40,4 @@ export const updateWorkflow = async (dto: UpdateWorkflowDto) => {
   await request.patch(`external/workflows/${dto.workflowId}`, {
     json: payload,
   });
-};
-
-export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<Workflow | null> => {
-  const result = await request
-    .get('external/workflows/active-flow', {
-      searchParams: {
-        email: dto.email,
-        workflowRuntimeDefinitionId: import.meta.env.VITE_KYB_DEFINITION_ID as string,
-      },
-    })
-    .json<{ result: Workflow }>();
-
-  return result.result;
 };

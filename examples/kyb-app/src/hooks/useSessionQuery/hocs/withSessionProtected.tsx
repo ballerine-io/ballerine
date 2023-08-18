@@ -1,4 +1,6 @@
+import { useSessionQuery } from '@app/hooks/useSessionQuery/useSessionQuery';
 import { useSignin } from '@app/hooks/useSignin/useSignin';
+import { LoadingScreen } from '@app/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { Navigate } from 'react-router-dom';
 
 export function withSessionProtected<TComponentProps extends object>(
@@ -6,7 +8,9 @@ export function withSessionProtected<TComponentProps extends object>(
   signinPath = '/signin',
 ): React.ComponentType<TComponentProps> {
   function Wrapper(props: TComponentProps) {
-    const { user } = useSignin();
+    const { user, isLoading } = useSessionQuery();
+
+    if (isLoading) return <LoadingScreen />;
 
     const isAuthenticated = Boolean(user);
 
