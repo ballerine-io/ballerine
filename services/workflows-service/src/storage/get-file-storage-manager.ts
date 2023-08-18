@@ -12,7 +12,6 @@ import path from 'path';
 import os from 'os';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getSignedUrl as getSignedUrlCF } from 'aws-cloudfront-sign';
-import { prefix } from 'concurrently/dist/src/defaults';
 
 export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
   if (AwsS3FileConfig.isConfigured(processEnv)) {
