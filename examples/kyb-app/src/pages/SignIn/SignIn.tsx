@@ -1,4 +1,5 @@
 import { delay } from '@app/common/utils/delay';
+import { useSessionQuery, withSessionProtected } from '@app/hooks/useSessionQuery';
 import { SigninCredentials, useSignin } from '@app/hooks/useSignin';
 import { SigninLayout } from '@app/pages/SignIn/components/layouts/SigninLayout';
 import { SigninForm } from '@app/pages/SignIn/components/organisms/SigninForm';
@@ -6,7 +7,8 @@ import { useCallback, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 export const SignIn = () => {
-  const { user, signin } = useSignin();
+  const { signin } = useSignin();
+  const { user } = useSessionQuery();
 
   const [isLoading, setLoading] = useState(false);
 

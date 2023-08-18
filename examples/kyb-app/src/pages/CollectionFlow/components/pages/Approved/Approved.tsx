@@ -1,20 +1,20 @@
 import { useEffect } from 'react';
 import { useSignin } from '@app/hooks/useSignin';
-import { withSessionProtected } from '@app/hooks/useSignin/hocs/withSessionProtected';
+import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
 import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
 
 export const Approved = withSessionProtected(() => {
-  const { isFetching, workflow } = useActiveWorkflowQuery();
+  const { isFetching, flowData } = useActiveWorkflowQuery();
   const { logoutSilent } = useSignin();
 
   useEffect(() => {
     if (isFetching) return;
 
-    if (workflow.state === 'approve') {
+    if (flowData.status === 'approve') {
       setTimeout(logoutSilent, 250);
     }
-  }, [isFetching, workflow, logoutSilent]);
+  }, [isFetching, flowData, logoutSilent]);
 
   return (
     <div className="flex h-full items-center justify-center">

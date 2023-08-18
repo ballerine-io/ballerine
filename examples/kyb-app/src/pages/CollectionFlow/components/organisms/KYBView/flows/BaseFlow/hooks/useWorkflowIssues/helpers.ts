@@ -11,8 +11,8 @@ export const extractIssuesFromWorkflow = (workflow: Workflow) => {
   if (isHasDocumentsIssues) {
     const documentTypesToPropertyNamesMap: Record<string, string> = {
       certificate_of_incorporation: 'registrationCertificate',
-      utility_bill: 'addressProof',
-      company_structure: 'companyStructure',
+      water_bill: 'addressProof',
+      shareholders: 'companyStructure',
       bank_statement: 'bankStatement',
     };
 

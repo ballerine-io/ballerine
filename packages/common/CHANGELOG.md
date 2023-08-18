@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.5.20
+
+### Patch Changes
+
+- GH schemas update
+
 ## 0.5.19
 
 ### Patch Changes

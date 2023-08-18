@@ -1,3 +1,4 @@
+import { FlowStepModel } from '@/collection-flow/models/flow-step.model';
 import { Type } from 'class-transformer';
 import { IsArray, IsString, ValidateNested } from 'class-validator';
 
@@ -7,6 +8,6 @@ export class FlowConfigurationModel {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => FlowConfigurationModel)
-  steps!: FlowConfigurationModel[];
+  @Type(() => FlowStepModel)
+  steps!: FlowStepModel[];
 }

@@ -5,5 +5,5 @@ export class GetActiveFlowDto {
   endUserId!: string;
 
   @IsString()
-  workflowRuntimeDefinitionId!: string;
+  flowType!: string;
 }

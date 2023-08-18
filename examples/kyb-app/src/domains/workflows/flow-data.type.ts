@@ -3,6 +3,7 @@ import { BankInformationContext } from '@app/pages/CollectionFlow/components/org
 import { CompanyActivityConext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyActivityView/types';
 import { CompanyInformationContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/types';
 import { HeadquartersContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/types';
+import { AnyObject } from '@ballerine/ui';
 
 export interface PersonalInformationContext {
   name: {
@@ -46,13 +47,5 @@ export interface WorkflowFlowData extends ViewsData {
     businessId?: string;
     workflowId?: string;
   };
-  flowData: {
-    personalInformation: PersonalInformationContext;
-    companyInformation: CompanyInformationContext;
-    headquarters: HeadquartersContext;
-    companyActivity: CompanyActivityConext;
-    bankInformation: BankInformationContext;
-    companyDocuments: DocumentsContext;
-    ubos: UBOSContext;
-  };
+  flowData: AnyObject;
 }

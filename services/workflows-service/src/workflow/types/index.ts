@@ -124,11 +124,14 @@ export interface KYBParentKYCSessionExampleContext {
             lastName: string;
             email: string;
             dateOfBirth: string;
+            title: string;
           };
         }[];
       };
       dynamicInfo: Record<string, any>;
-      _stateKey: string;
+      __stateKey: string;
+      __isFinished: boolean;
     };
   };
+  documents: any[];
 }

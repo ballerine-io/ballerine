@@ -9,11 +9,11 @@ import { createBrowserRouter } from 'react-router-dom';
 export const router = createBrowserRouter([
   {
     path: '/',
-    Component: SignIn,
+    element: <SignIn />,
   },
   {
     path: '/signin',
-    Component: SignIn,
+    element: <SignIn />,
   },
   {
     path: '/collection-flow',

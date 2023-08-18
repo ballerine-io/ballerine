@@ -147,6 +147,9 @@ export const useTasks = ({
                             { type, format, pattern, isEditable = true, dropdownOptions, value },
                           ]) => {
                             const fieldValue = value || (properties?.[title] ?? '');
+                            // if (value === 'bank_statement') {
+                            console.log({ props: propertiesSchema?.properties });
+                            // }
                             const isEditableDecision = isDoneWithRevision || !decision?.status;
 
                             return {

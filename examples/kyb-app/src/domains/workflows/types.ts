@@ -200,7 +200,3 @@ export interface UpdateFlowDataDto {
   workflowId?: string;
   payload: WorkflowFlowData;
 }
-
-export interface GetActiveWorkflowDto {
-  email: string;
-}

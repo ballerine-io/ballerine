@@ -1,20 +1,20 @@
 import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
-import { withSessionProtected } from '@app/hooks/useSignin/hocs/withSessionProtected';
+import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
 import { LoadingScreen } from '@app/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { Outlet, Navigate } from 'react-router-dom';
 
 export const CollectionFlowDumb = () => {
-  const { isFetching, workflow } = useActiveWorkflowQuery();
+  const { isFetching, flowData } = useActiveWorkflowQuery();
 
   if (isFetching) {
     return <LoadingScreen />;
   }
 
-  if (workflow?.state === 'approve') {
+  if (flowData?.workflow?.state === 'approve') {
     return <Navigate to="/approved" />;
   }
 
-  if (workflow?.state === 'reject') {
+  if (flowData?.workflow?.state === 'reject') {
     return <Navigate to="/rejected" />;
   }
 

@@ -6,6 +6,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsObject,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -20,7 +21,7 @@ export class MainRepresentative {
   @IsString()
   phone!: string;
 
-  @IsDate()
+  @IsString()
   dateOfBirth!: string;
 
   @IsString()
@@ -34,6 +35,10 @@ export class MainRepresentative {
 }
 
 export class CompanyDocument {
+  @IsString()
+  @IsOptional()
+  id!: string;
+
   @IsString()
   @IsNotEmpty()
   fileId!: string;
@@ -64,11 +69,28 @@ export class UBOShareholder {
   @IsString()
   title!: string;
 
-  @IsDate()
+  @IsString()
   birthDate!: string;
 
   @IsEmail()
   email!: string;
+}
+
+export class EntityData {
+  @IsString()
+  website!: string;
+
+  @IsString()
+  registrationNumber!: string;
+
+  @IsString()
+  companyName!: string;
+
+  @IsString()
+  countryOfIncorporation!: string;
+
+  @IsString()
+  fullAddress!: string;
 }
 
 export class UpdateFlowPayload {
@@ -76,14 +98,20 @@ export class UpdateFlowPayload {
   @Type(() => MainRepresentative)
   mainRepresentative!: MainRepresentative;
 
+  @ValidateNested()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CompanyDocument)
   documents!: CompanyDocument[];
 
   @IsArray()
-  // @ValidateNested({ each: true })
+  @ValidateNested({ each: true })
   ubos!: UBOShareholder[];
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => EntityData)
+  entityData!: EntityData;
 
   @IsObject()
   dynamicData!: object;

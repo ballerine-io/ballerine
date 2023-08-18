@@ -13,17 +13,17 @@ export const useBaseFlowViews = (
   context: WorkflowFlowData,
   issues: Issue[],
 ): View<BaseFlowViewMetadata>[] => {
-  const { schema } = useCollectionFlowSchemaQuery();
+  const { steps } = useCollectionFlowSchemaQuery();
 
   const views = useMemo(() => {
-    let processedViews = mapCollectionFlowSchemasToViews(schema);
+    let processedViews = mapCollectionFlowSchemasToViews(steps);
     processedViews = context ? attachStatusesToViews(processedViews, context) : processedViews;
 
     processedViews = attachWorkflowIssuesToViews(processedViews, issues);
     processedViews = findAndActivateFirstViewWithIssue(processedViews);
 
     return processedViews;
-  }, [issues, context]);
+  }, [issues, steps, context]);
 
   return views;
 };

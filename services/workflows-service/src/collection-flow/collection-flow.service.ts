@@ -36,7 +36,9 @@ export class CollectionFlowService {
             endUserId: newUser.id,
             ballerineEntityId: newUser.businesses.at(-1)?.id,
             type: 'business',
-            data: {},
+            data: {
+              __flowProgress: 'initial',
+            },
           },
           documents: [],
         },
@@ -60,7 +62,9 @@ export class CollectionFlowService {
   }
 
   async getFlowConfiguration(configurationId: string): Promise<FlowConfigurationModel> {
-    const workflowDefinition = await this.workflowDefinitionRepository.findById(configurationId);
+    const workflowDefinition = await this.workflowService.getWorkflowDefinitionById(
+      configurationId,
+    );
 
     return plainToClass(FlowConfigurationModel, {
       id: workflowDefinition.id,
@@ -142,12 +146,34 @@ export class CollectionFlowService {
       mainRepresentative: updatePayload.mainRepresentative,
       documents: updatePayload.documents,
       ubos: updatePayload.ubos,
+      flowState: updatePayload.flowState,
+      entityData: updatePayload.entityData,
     });
 
     const workflowData = adapter.deserialize(flowData as any, workflow);
 
-    await this.workflowRuntimeDataRepository.updateContextById(flowId, workflowData.context);
+    await this.workflowService.createOrUpdateWorkflowRuntime({
+      workflowDefinitionId: workflow.workflowDefinitionId,
+      context: workflowData.context,
+    });
 
     return flowData;
+  }
+
+  async finishFlow(flowId: string) {
+    await this.workflowService.event({ id: flowId, name: 'start' });
+
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(flowId);
+
+    return await this.workflowService.updateContextById(flowId, {
+      ...workflowRuntimeData.context,
+      entity: {
+        ...workflowRuntimeData.context.entity,
+        data: {
+          ...workflowRuntimeData.context.entity.data,
+          __isFinished: true,
+        },
+      },
+    });
   }
 }

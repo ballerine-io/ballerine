@@ -54,6 +54,7 @@ export const personalInformationUISchema = {
     'ui:field': 'DateInput',
   },
   name: {
+    'ui:order': ['firstName', 'lastName'],
     firstName: {
       'ui:placeholder': 'First Name',
       'ui:label': true,

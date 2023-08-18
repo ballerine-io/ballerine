@@ -1,10 +1,10 @@
 import { View } from '@app/common/providers/ViewStateProvider';
-import { CollectionFlowSchema } from '@app/domains/collection-flow';
+import { TFlowStep } from '@app/domains/collection-flow';
 import { viewsMap } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useBaseFlowViews/views';
 import { BaseFlowViewMetadata } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/types';
 
 export const mapCollectionFlowSchemasToViews = (
-  schemas: CollectionFlowSchema[],
+  schemas: TFlowStep[],
 ): View<BaseFlowViewMetadata>[] => {
   return schemas.map(schema => {
     const view = viewsMap[schema.key];

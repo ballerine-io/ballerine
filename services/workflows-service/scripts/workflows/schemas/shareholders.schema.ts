@@ -65,10 +65,11 @@ export const shareholdersUISchema = {
   shareholders: {
     addText: 'Add Shareholder',
     deleteButtonClassname: 'leading-9',
+    'ui:order': ['name', 'title', 'birthDate', 'email'],
     items: {
       titleClassName: 'text-sm',
-      'ui:order': ['name', 'title'],
       name: {
+        'ui:order': ['firstName', 'lastName'],
         firstName: {
           'ui:placeholder': 'First name',
         },
