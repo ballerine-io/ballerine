@@ -154,7 +154,7 @@ export class WorkflowRuntimeDataRepository {
       },
       take: 1,
       where: {
-        // status: 'active',
+        status: 'active',
         businessId,
         workflowDefinitionId,
       },
