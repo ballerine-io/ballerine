@@ -74,7 +74,7 @@ export const kycEmailSessionDefinition = {
               transformer: 'jmespath',
               mapping: `{
               endUserId: entity.id,
-              firstName: entity.data.firstName, 
+              firstName: entity.data.firstName,
               lastName: entity.data.lastName,
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED', '?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
               vendor: 'veriff'

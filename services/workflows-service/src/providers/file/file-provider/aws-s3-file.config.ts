@@ -3,10 +3,10 @@ import { z } from 'zod';
 
 export class AwsS3FileConfig {
   static isConfigured(processEnv: NodeJS.ProcessEnv, prefix = '') {
-    return !!this.fetchBucketName(processEnv, prefix) && !!processEnv[`${prefix}AWS_REGION`];
+    return !!this.getBucketName(processEnv, prefix) && !!processEnv[`${prefix}AWS_REGION`];
   }
 
-  static fetchBucketName(processEnv: NodeJS.ProcessEnv, prefix = '') {
+  static getBucketName(processEnv: NodeJS.ProcessEnv, prefix = '') {
     return processEnv[`${prefix}AWS_S3_BUCKET_NAME`];
   }
 

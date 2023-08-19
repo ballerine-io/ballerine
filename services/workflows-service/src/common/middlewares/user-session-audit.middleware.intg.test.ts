@@ -73,7 +73,7 @@ describe('UserSessionAuditMiddleware', () => {
 
       it('will be set on middleware call', async () => {
         await middleware.use(
-          { user: testUser, session: testUser } as any,
+          { user: { user: testUser }, session: testUser } as any,
           {} as Response,
           callback,
         );
@@ -121,11 +121,12 @@ describe('UserSessionAuditMiddleware', () => {
         testUser.lastActiveAt = expiredDate.toDate();
 
         await middleware.use(
-          { user: testUser, session: testUser } as any,
+          { user: { user: testUser }, session: testUser } as any,
           {} as Response,
           callback,
         );
 
+        // @ts-ignore
         const updatedUser = await userService.getById(testUser.id);
 
         expect(Number(updatedUser.lastActiveAt)).toBeGreaterThan(Number(expiredDate));

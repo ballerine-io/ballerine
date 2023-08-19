@@ -1,7 +1,6 @@
 import * as common from '@nestjs/common';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { AuthorizeDto } from '@/collection-flow/dto/authorize-input.dto';
-import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { EndUser } from '@prisma/client';
 import { GetActiveFlowDto } from '@/collection-flow/dto/get-active-workflow-input.dto';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
@@ -10,6 +9,9 @@ import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { GetFlowConfigurationDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TProjectIds } from '@/types';
+import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 
 @common.Controller('collection-flow')
 export class ColectionFlowController {
@@ -19,18 +21,27 @@ export class ColectionFlowController {
   ) {}
 
   @common.Post('/authorize')
-  @UseKeyAuthGuard()
-  async authorizeUser(@common.Body() dto: AuthorizeDto): Promise<EndUser> {
-    return this.service.authorize({ email: dto.email, flowType: dto.flowType });
+  @UseKeyAuthOrSessionGuard()
+  async authorizeUser(
+    @common.Body() dto: AuthorizeDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<EndUser> {
+    return this.service.authorize({ email: dto.email, flowType: dto.flowType }, projectIds);
   }
 
   @common.Get('/active-flow')
-  @UseKeyAuthGuard()
-  async getActiveFlow(@common.Query() query: GetActiveFlowDto) {
-    const activeWorkflow = await this.service.getActiveFlow({
-      endUserId: query.endUserId,
-      workflowRuntimeDefinitionId: query.flowType,
-    });
+  @UseKeyAuthOrSessionGuard()
+  async getActiveFlow(
+    @common.Query() query: GetActiveFlowDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    const activeWorkflow = await this.service.getActiveFlow(
+      {
+        endUserId: query.endUserId,
+        workflowRuntimeDefinitionId: query.flowType,
+      },
+      projectIds,
+    );
 
     try {
       const adapter = this.adapterManager.getAdapter(query.flowType);
@@ -46,7 +57,7 @@ export class ColectionFlowController {
   }
 
   @common.Get('/configuration')
-  @UseKeyAuthGuard()
+  @UseKeyAuthOrSessionGuard()
   async getFlowConfiguration(
     @common.Query() query: GetFlowConfigurationDto,
   ): Promise<FlowConfigurationModel> {
@@ -54,7 +65,7 @@ export class ColectionFlowController {
   }
 
   @common.Put('/configuration/:configurationId')
-  @UseKeyAuthGuard()
+  @UseKeyAuthOrSessionGuard()
   async updateFlowConfiguration(
     @common.Param('configurationId') configurationId: string,
     @common.Body() dto: UpdateConfigurationDto,
@@ -63,12 +74,16 @@ export class ColectionFlowController {
   }
 
   @common.Put('/:flowId')
-  @UseKeyAuthGuard()
-  async updateFlow(@common.Param('flowId') flowId: string, @common.Body() dto: UpdateFlowDto) {
+  @UseKeyAuthOrSessionGuard()
+  async updateFlow(
+    @common.Param('flowId') flowId: string,
+    @common.Body() dto: UpdateFlowDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
     try {
       const adapter = this.adapterManager.getAdapter(dto.flowType);
 
-      return this.service.updateFlow(adapter, dto.payload, flowId);
+      return this.service.updateFlow(adapter, dto.payload, flowId, projectIds);
     } catch (error) {
       if (error instanceof UnsupportedFlowTypeException) {
         throw new common.BadRequestException(`${dto.flowType} is not supported.`);
@@ -79,8 +94,8 @@ export class ColectionFlowController {
   }
 
   @common.Post('finish/:flowId')
-  @UseKeyAuthGuard()
-  async finishFlow(@common.Param('flowId') flowId: string) {
-    return this.service.finishFlow(flowId);
+  @UseKeyAuthOrSessionGuard()
+  async finishFlow(@common.Param('flowId') flowId: string, @ProjectIds() projectIds: TProjectIds) {
+    return this.service.finishFlow(flowId, projectIds);
   }
 }
