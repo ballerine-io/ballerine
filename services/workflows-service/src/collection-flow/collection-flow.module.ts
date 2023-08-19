@@ -1,5 +1,6 @@
 import { PasswordService } from '@/auth/password/password.service';
 import { BusinessRepository } from '@/business/business.repository';
+import { BusinessService } from '@/business/business.service';
 import { ColectionFlowController } from '@/collection-flow/collection-flow.controller';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
@@ -37,6 +38,7 @@ import { Module } from '@nestjs/common';
     WorkflowAdapterManager,
     WorkflowDefinitionRepository,
     BusinessRepository,
+    BusinessService,
     EntityRepository,
     StorageService,
     FileRepository,

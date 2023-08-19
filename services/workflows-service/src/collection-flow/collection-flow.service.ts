@@ -1,4 +1,6 @@
+import { BusinessService } from '@/business/business.service';
 import { UpdateFlowPayload } from '@/collection-flow/dto/update-flow-input.dto';
+import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { FlowStepModel } from '@/collection-flow/models/flow-step.model';
 import { GetActiveFlowParams, SigninCredentials } from '@/collection-flow/types/params';
@@ -7,6 +9,7 @@ import { KYBParentKYCSessionExampleFlowData } from '@/collection-flow/workflow-a
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
+import { PrismaService } from '@/prisma/prisma.service';
 import { TProjectIds } from '@/types';
 import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
@@ -14,6 +17,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { Injectable } from '@nestjs/common';
 import { Business, EndUser } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
+import keyBy from 'lodash/keyBy';
 
 @Injectable()
 export class CollectionFlowService {
@@ -23,6 +27,7 @@ export class CollectionFlowService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowService: WorkflowService,
+    protected readonly businessService: BusinessService,
   ) {}
 
   async authorize(credentials: SigninCredentials, projectIds: TProjectIds): Promise<EndUser> {
@@ -87,6 +92,21 @@ export class CollectionFlowService {
     const definition = await this.workflowDefinitionRepository.findById(configurationId);
     if (!definition) throw new NotFoundException();
 
+    const providedStepsMap = keyBy(steps, 'key');
+
+    const persistedSteps =
+      definition.definition.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
+
+    const mergedSteps = persistedSteps.map((step: any) => {
+      const stepToMergeIn = providedStepsMap[step.key];
+
+      if (stepToMergeIn) {
+        return recursiveMerge(step, stepToMergeIn);
+      }
+
+      return step;
+    });
+
     const updatedDefinition = await this.workflowDefinitionRepository.updateById(configurationId, {
       data: {
         definition: {
@@ -98,7 +118,7 @@ export class CollectionFlowService {
               metadata: {
                 uiSettings: {
                   multiForm: {
-                    steps,
+                    steps: mergedSteps,
                   },
                 },
               },
@@ -167,6 +187,15 @@ export class CollectionFlowService {
 
     const workflowData = adapter.deserialize(flowData as any, workflow);
 
+    await this.businessService.updateById(workflow.businessId, {
+      data: {
+        registrationNumber: String(updatePayload.entityData.registrationNumber),
+        address: updatePayload.entityData.fullAddress,
+        website: updatePayload.entityData.website,
+        companyName: updatePayload.entityData.companyName,
+      },
+    });
+
     await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflow.workflowDefinitionId,
       context: workflowData.context,
@@ -181,15 +210,19 @@ export class CollectionFlowService {
 
     const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(flowId);
 
-    return await this.workflowService.updateContextById(flowId, {
-      ...workflowRuntimeData.context,
-      entity: {
-        ...workflowRuntimeData.context.entity,
-        data: {
-          ...workflowRuntimeData.context.entity.data,
-          __isFinished: true,
+    return await this.workflowService.createOrUpdateWorkflowRuntime({
+      workflowDefinitionId: flowId,
+      context: {
+        ...workflowRuntimeData.context,
+        entity: {
+          ...workflowRuntimeData.context.entity,
+          data: {
+            ...workflowRuntimeData.context.entity.data,
+            __isFinished: true,
+          },
         },
       },
+      projectIds,
     });
   }
 }
