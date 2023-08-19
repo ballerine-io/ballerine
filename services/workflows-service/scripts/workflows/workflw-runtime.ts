@@ -1,14 +1,15 @@
 import { faker } from '@faker-js/faker';
 import {PrismaClient, WorkflowRuntimeDataStatus} from "@prisma/client";
-import {generateBusiness} from "../generate-end-user";
-import {WorkflowRuntimeStatusStatistic} from "@/metrics/repository/models/workflow-runtime-statistic.model";
+import {generateBusiness, generateEndUser} from "../generate-end-user";
 
 export const createParentWithChildWorkflow = async (prismaClient: PrismaClient, customerName: string, withAml: boolean, projectId: string) => {
-  const companyName = faker.company.companyName()
+  const companyName = faker.company.name()
   const businessId = faker.datatype.uuid()
+  const endUserId = faker.datatype.uuid()
+
   const parentRuntimeInformation = generateParentRuntimeInformation(businessId, companyName, projectId)
   // @ts-ignore
-  const businessData =  generateBusiness(
+  const businessWithWorkflowInformation =  generateBusiness(
       {
         id: businessId,
         workflow: {
@@ -19,16 +20,26 @@ export const createParentWithChildWorkflow = async (prismaClient: PrismaClient, 
         projectId: projectId,
       }
   )
-  await prismaClient.business.create({data: businessData})
-  const parentWorkflowRuntime = await prismaClient.workflowRuntimeData.create({data: parentRuntimeInformation})
-  const childWorkflowRuntimeInformation = generateChildRuntimeInformation(customerName, companyName, withAml, projectId, parentWorkflowRuntime.id);
+  const business = await prismaClient.business.create({data: businessWithWorkflowInformation, select: {workflowRuntimeData: true}});
+  const childWorkflowRuntimeInformation = generateChildRuntimeInformation(endUserId, customerName, companyName, withAml, projectId, business.workflowRuntimeData[0]!.id);
+  const endUserWithWorkflowInformation = generateEndUser(
+      {
+        id: endUserId,
+        workflow: {
+          workflowDefinitionId: childWorkflowRuntimeInformation.workflowDefinitionId,
+          workflowDefinitionVersion: childWorkflowRuntimeInformation.workflowDefinitionVersion,
+          context: childWorkflowRuntimeInformation.context,
+          parentRuntimeId: business.workflowRuntimeData[0]!.id
+        },
+        projectId: projectId,
+      }
+  );
   // @ts-ignore
-  await prismaClient.workflowRuntimeData.create({data: childWorkflowRuntimeInformation})
+  await prismaClient.endUser.create({data: endUserWithWorkflowInformation})
 }
 
-export const generateChildRuntimeInformation = (customerName: string, companyName: string, withAml: boolean, projectId: string, parentWorkflowId: string) => {
+export const generateChildRuntimeInformation = (endUserId: string, customerName: string, companyName: string, withAml: boolean, projectId: string, parentWorkflowId: string) => {
   return {
-    endUserId: faker.datatype.uuid(),
     workflowDefinitionId: 'kyc_email_session_example',
     workflowDefinitionVersion: 1,
     context: createKycRuntime(customerName, companyName, withAml),
@@ -39,7 +50,7 @@ export const generateChildRuntimeInformation = (customerName: string, companyNam
     createdBy: 'SYSTEM',
     resolvedAt: null,
     config: {"callbackResult": {"deliverEvent": "KYC_DONE", "transformers": [{"mapping": "{data: @}", "transformer": "jmespath"}]}},
-    parent_runtime_data_id: parentWorkflowId,
+    parentRuntimeDataId: parentWorkflowId,
     projectId: projectId,
   }
 }
@@ -47,7 +58,7 @@ export const generateChildRuntimeInformation = (customerName: string, companyNam
 export const generateParentRuntimeInformation = (businessId: string, companyName: string, projectId: string)  => {
   return {
     businessId: businessId,
-    workflowDefinitionId: 'kyb_parent_kyc_session_example_v1',
+    workflowDefinitionId: 'kyb_parent_kyc_session_example',
     workflowDefinitionVersion: 1,
     context: generateParentRuntimeContext(companyName),
     state: 'manual_review',
@@ -148,12 +159,12 @@ export const createKycRuntime = (customerName: string, companyName: string, with
 
 const createAmlData = (numberOfHits: number) => {
   const hits = Array.from({ length: numberOfHits }, () => ({
-    aka: [faker.name.findName(), faker.name.findName(), faker.name.findName()],
+    aka: [ faker.name.fullName(),  faker.name.fullName(),  faker.name.fullName()],
     countries: [faker.address.country(), faker.address.country(), faker.address.country()],
     matchTypes: [faker.helpers.arrayElement(['unknown', 'year_of_birth', 'full_name', 'last_name']), faker.helpers.arrayElement(['unknown', 'year_of_birth', 'full_name', 'last_name'])],
     dateOfBirth: faker.date.between('1970-01-01', '2000-01-01').toISOString().split('T')[0],
     dateOfDeath: null,
-    matchedName: faker.name.findName(),
+    matchedName:  faker.name.fullName(),
     listingsRelatedToMatch: {
       pep: [],
       warnings: [],
@@ -173,7 +184,7 @@ const createAmlData = (numberOfHits: number) => {
     checkType: 'initial_result',
     matchStatus: 'possible_match',
     searchTerm: {
-      name: faker.name.findName(),
+      name:  faker.name.fullName(),
       year: faker.date.past().getFullYear().toString(),
     },
     totalHits: numberOfHits,
@@ -198,7 +209,7 @@ const generateParentRuntimeContext = (companyName: string) => {
                   lastName: faker.name.lastName(),
                   firstName: faker.name.firstName(),
                   additionalInfo: {
-                    companyName: faker.company.companyName(),
+                    companyName: faker.company.name(),
                     customerCompany: faker.random.word(),
                   },
                 },
@@ -237,12 +248,12 @@ const generateParentRuntimeContext = (companyName: string) => {
           name: companyName,
           source: {
             url: faker.internet.url(),
-            publisher: faker.company.companyName(),
+            publisher: faker.company.name(),
             retrievedAt: faker.date.past().toISOString(),
           },
           isBranch: faker.datatype.boolean(),
           officers: Array.from({ length: faker.datatype.number({ min: 1, max: 5 }) }, () => ({
-            name: faker.name.findName(),
+            name:  faker.name.fullName(),
             address: faker.address.streetAddress(),
             endDate: faker.date.past().toISOString(),
             position: faker.name.jobTitle(),
@@ -251,7 +262,7 @@ const generateParentRuntimeContext = (companyName: string) => {
             occupation: faker.random.word(),
             currentStatus: faker.helpers.arrayElement([null, 'active']),
           })),
-          agentName: faker.name.findName(),
+          agentName:  faker.name.fullName(),
           industries: Array.from({ length: faker.datatype.number({ min: 1, max: 3 }) }, () => ({
             uid: faker.datatype.uuid(),
             code: faker.random.alphaNumeric(4),
@@ -278,7 +289,7 @@ const generateParentRuntimeContext = (companyName: string) => {
               endDate: faker.date.past().toISOString(),
               language: null,
               startDate: faker.date.past().toISOString(),
-              companyName: faker.company.companyName(),
+              companyName: faker.company.name(),
             },
           ],
           dissolutionDate: null,
@@ -305,7 +316,7 @@ const generateParentRuntimeContext = (companyName: string) => {
                 lastName: faker.name.lastName(),
                 firstName: faker.name.firstName(),
                 additionalInfo: {
-                  companyName: faker.company.companyName(),
+                  companyName: faker.company.name(),
                   customerCompany: faker.random.word(),
                 },
               },
