@@ -30,6 +30,7 @@ export class CollectionFlowService {
 
     if (!existingEndUser) {
       const newUser = await this.initializeNewEndUser(credentials, projectIds);
+
       await this.workflowService.createOrUpdateWorkflowRuntime({
         workflowDefinitionId: credentials.flowType,
         context: {

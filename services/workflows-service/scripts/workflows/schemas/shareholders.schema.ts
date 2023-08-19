@@ -4,7 +4,7 @@ export const shareholdersSchema = {
   properties: {
     check: {
       type: 'boolean',
-      description: 'I own 25% or more of the company',
+      title: 'I own 25% or more of the company',
       default: false,
     },
     shareholders: {

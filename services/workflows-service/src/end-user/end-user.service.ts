@@ -3,6 +3,7 @@ import { EndUserRepository } from './end-user.repository';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 import { TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { Business, EndUser } from '@prisma/client';
 
 @Injectable()
 export class EndUserService {
@@ -23,7 +24,10 @@ export class EndUserService {
     return await this.repository.findById(id, args);
   }
 
-  async createWithBusiness(endUser: EndUserCreateDto, projectIds: TProjectIds) {
+  async createWithBusiness(
+    endUser: EndUserCreateDto,
+    projectIds: TProjectIds,
+  ): Promise<EndUser & { businesses: Business[] }> {
     const { companyName = '', ...userData } = endUser;
 
     const user = await this.repository.create({
@@ -39,7 +43,7 @@ export class EndUserService {
       },
     });
 
-    return user;
+    return user as any;
   }
 
   async getByEmail(email: string, projectIds: TProjectIds) {

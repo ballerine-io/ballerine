@@ -5,6 +5,7 @@ import {
   IsDate,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -81,7 +82,7 @@ export class EntityData {
   website!: string;
 
   @IsString()
-  registrationNumber!: string;
+  registrationNumber!: number;
 
   @IsString()
   companyName!: string;

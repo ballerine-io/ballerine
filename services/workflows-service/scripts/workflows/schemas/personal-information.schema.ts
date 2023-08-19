@@ -28,6 +28,7 @@ export const personalInformationSchema = {
       type: 'string',
       title: 'Date of Birth',
       minLength: 1,
+      format: 'date-time',
     },
     phoneNumber: {
       type: 'string',
@@ -35,10 +36,8 @@ export const personalInformationSchema = {
       minLength: 1,
     },
     companyCheck: {
-      title: 'dfrd',
+      title: 'I have the signing authority for this company',
       type: 'boolean',
-      description: 'I have the signing authority for this company',
-      enum: [null, true],
     },
   },
   required: ['name', 'title', 'birthDate', 'phoneNumber'],
@@ -52,6 +51,7 @@ export const personalInformationUISchema = {
   },
   birthDate: {
     'ui:field': 'DateInput',
+    'ui:label': true,
   },
   name: {
     'ui:order': ['firstName', 'lastName'],
