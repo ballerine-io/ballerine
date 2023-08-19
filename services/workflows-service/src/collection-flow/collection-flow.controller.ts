@@ -12,6 +12,8 @@ import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configurati
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
 import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
+import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
+import { Public } from '@/common/decorators/public.decorator';
 
 @common.Controller('collection-flow')
 export class ColectionFlowController {

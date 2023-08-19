@@ -7,7 +7,6 @@ export const companyInformationSchema = {
     registrationNumber: {
       title: 'Company Registration Number',
       type: 'string',
-      minLength: 1,
     },
     companyCountry: {
       title: 'Registered Country',

@@ -1096,19 +1096,16 @@ export class WorkflowService {
       contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId, projectIds);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
         existingWorkflowRuntimeData.id,
-        this.projectScopeService.scopeUpdate(
-          {
-            data: {
-              ...entityConnect,
-              context: contextToInsert as InputJsonValue,
-              config: merge(
-                existingWorkflowRuntimeData.config,
-                validatedConfig || {},
-              ) as InputJsonValue,
-            },
+        {
+          data: {
+            ...entityConnect,
+            context: contextToInsert as InputJsonValue,
+            config: merge(
+              existingWorkflowRuntimeData.config,
+              validatedConfig || {},
+            ) as InputJsonValue,
           },
-          projectIds,
-        ),
+        },
       );
       newWorkflowCreated = false;
     }
@@ -1135,8 +1132,6 @@ export class WorkflowService {
     projectIds: TProjectIds,
   ): Promise<DefaultContextSchema> {
     if (!context?.documents?.length) return context;
-
-    console.log('RECIEVED DOCS', context?.documents);
 
     const documentsWithPersistedImages = await Promise.all(
       context?.documents?.map(async document => ({
