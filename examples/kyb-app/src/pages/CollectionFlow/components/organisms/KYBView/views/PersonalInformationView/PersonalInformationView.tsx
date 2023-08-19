@@ -2,7 +2,6 @@ import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/ViewHeader';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
-import { useCreateEndUserMutation } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useCreateEndUserMutation';
 import {
   PersonalInformationContext,
   WorkflowFlowData,
@@ -20,7 +19,6 @@ export const PersonalInformationView = () => {
     BaseFlowViewMetadata
   >();
   const { uiSchema, formSchema } = useViewSchemas();
-  const { createUserAsync } = useCreateEndUserMutation();
 
   const handleSubmit = useCallback(
     (values: PersonalInformationContext) => {
@@ -29,7 +27,7 @@ export const PersonalInformationView = () => {
         businessId: context.shared.businessId,
       });
     },
-    [context, user, saveAndPerformTransition, createUserAsync],
+    [context, user, saveAndPerformTransition],
   );
 
   return (

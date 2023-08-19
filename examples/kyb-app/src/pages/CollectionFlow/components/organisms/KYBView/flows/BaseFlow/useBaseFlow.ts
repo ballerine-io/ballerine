@@ -79,9 +79,7 @@ export const useBaseFlow = () => {
         if (isUpdate) {
           await updateFlow(updatePayload);
         } else {
-          const serializedBusinessPayload = serializeBusinessData(context, user.businessId);
           await updateFlow(updatePayload);
-          await updateBusiness(serializedBusinessPayload);
           await startFlow(context.shared.workflowId);
         }
         setLoading(false);

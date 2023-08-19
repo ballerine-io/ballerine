@@ -12,8 +12,7 @@ import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configurati
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
 import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
-import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
-import { Public } from '@/common/decorators/public.decorator';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 
 @common.Controller('collection-flow')
 export class ColectionFlowController {
@@ -23,7 +22,7 @@ export class ColectionFlowController {
   ) {}
 
   @common.Post('/authorize')
-  @UseKeyAuthOrSessionGuard()
+  @UseKeyAuthInDevGuard()
   async authorizeUser(
     @common.Body() dto: AuthorizeDto,
     @ProjectIds() projectIds: TProjectIds,
@@ -32,7 +31,7 @@ export class ColectionFlowController {
   }
 
   @common.Get('/active-flow')
-  @UseKeyAuthOrSessionGuard()
+  @UseKeyAuthInDevGuard()
   async getActiveFlow(
     @common.Query() query: GetActiveFlowDto,
     @ProjectIds() projectIds: TProjectIds,
@@ -59,7 +58,7 @@ export class ColectionFlowController {
   }
 
   @common.Get('/configuration')
-  @UseKeyAuthOrSessionGuard()
+  @UseKeyAuthInDevGuard()
   async getFlowConfiguration(
     @common.Query() query: GetFlowConfigurationDto,
   ): Promise<FlowConfigurationModel> {
@@ -67,7 +66,7 @@ export class ColectionFlowController {
   }
 
   @common.Put('/configuration/:configurationId')
-  @UseKeyAuthOrSessionGuard()
+  @UseKeyAuthInDevGuard()
   async updateFlowConfiguration(
     @common.Param('configurationId') configurationId: string,
     @common.Body() dto: UpdateConfigurationDto,
@@ -76,7 +75,7 @@ export class ColectionFlowController {
   }
 
   @common.Put('/:flowId')
-  @UseKeyAuthOrSessionGuard()
+  @UseKeyAuthInDevGuard()
   async updateFlow(
     @common.Param('flowId') flowId: string,
     @common.Body() dto: UpdateFlowDto,
@@ -96,7 +95,7 @@ export class ColectionFlowController {
   }
 
   @common.Post('finish/:flowId')
-  @UseKeyAuthOrSessionGuard()
+  @UseKeyAuthInDevGuard()
   async finishFlow(@common.Param('flowId') flowId: string, @ProjectIds() projectIds: TProjectIds) {
     return this.service.finishFlow(flowId, projectIds);
   }

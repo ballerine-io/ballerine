@@ -1,25 +1,26 @@
-import { IsNotEmpty, IsObject, IsString } from 'class-validator';
+import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class FlowStepModel {
   @IsString()
-  @IsNotEmpty()
   key!: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   title!: string;
 
   @IsString()
+  @IsOptional()
   description!: string;
 
   @IsObject()
-  @IsNotEmpty()
+  @IsOptional()
   uiSchema!: object;
 
   @IsObject()
-  @IsNotEmpty()
+  @IsOptional()
   formSchema!: object;
 
   @IsObject()
+  @IsOptional()
   defaultData!: object;
 }
