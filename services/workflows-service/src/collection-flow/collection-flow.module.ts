@@ -12,6 +12,7 @@ import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webh
 import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-changed-webhook-caller';
 import { FilterRepository } from '@/filter/filter.repository';
 import { FilterService } from '@/filter/filter.service';
+import { ProjectModule } from '@/project/project.module';
 import { FileService } from '@/providers/file/file.service';
 import { FileRepository } from '@/storage/storage.repository';
 import { StorageService } from '@/storage/storage.service';
@@ -26,7 +27,7 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 
 @Module({
-  imports: [AppLoggerModule, HttpModule],
+  imports: [AppLoggerModule, HttpModule, ProjectModule],
   controllers: [ColectionFlowController],
   providers: [
     CollectionFlowService,

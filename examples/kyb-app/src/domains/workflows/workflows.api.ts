@@ -6,6 +6,7 @@ import {
   WorkflowUpdatePayload,
   UpdateWorkflowDto,
   Workflow,
+  GetActiveWorkflowDto,
 } from '@app/domains/workflows/types';
 
 export const runAndStartWorkflowRequest = async (

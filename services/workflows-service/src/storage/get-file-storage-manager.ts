@@ -18,7 +18,7 @@ export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
     return multerS3({
       s3: new S3Client(AwsS3FileConfig.fetchClientConfig(processEnv)),
       acl: 'private',
-      bucket: AwsS3FileConfig.fetchBucketName(processEnv) as string,
+      bucket: AwsS3FileConfig.getBucketName(processEnv) as string,
     });
   } else {
     const root = path.parse(os.homedir()).root;
@@ -33,10 +33,16 @@ export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
 export const downloadFileFromS3 = async (
   bucketName: string,
   fileNameInBucket: string,
+  customerName?: string,
 ): Promise<TLocalFile> => {
   try {
     const getObjectCommand = new GetObjectCommand({ Bucket: bucketName, Key: fileNameInBucket });
-    const s3Client = new S3Client(AwsS3FileConfig.fetchClientConfig(process.env));
+    const s3Client = new S3Client(
+      AwsS3FileConfig.fetchClientConfig(
+        process.env,
+        `${customerName ? customerName.toUpperCase() : ''}`,
+      ),
+    );
     const response = await s3Client.send(getObjectCommand);
     const readableStream = response.Body as Readable;
     const tmpFile = tmp.fileSync();

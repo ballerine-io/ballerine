@@ -7,6 +7,7 @@ export const PhoneInputAdapter: RJSVInputAdapter = ({ formData, disabled, onChan
       country="us"
       value={formData}
       disabled={disabled}
+      enableSearch
       onChange={value => void onChange(value)}
     />
   );

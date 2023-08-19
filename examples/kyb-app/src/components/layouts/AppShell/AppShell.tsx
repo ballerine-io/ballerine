@@ -4,6 +4,7 @@ import { Stepper } from '@app/components/atoms/Stepper';
 import { Item } from '@app/components/atoms/Stepper/Item';
 import { VerticalLayout } from '@app/components/atoms/Stepper/layouts/Vertical';
 import { FormContainer } from '@app/components/layouts/AppShell/FormContainer';
+import { useCustomer } from '@app/components/providers/CustomerProvider';
 import { AnyChildren } from '@ballerine/ui';
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }: Props) => {
   const settings = useSettings();
   const { steps, state } = useViewState();
+  const { customer } = useCustomer();
 
   return (
     <div className="w-ful flex h-screen flex-nowrap">
@@ -24,9 +26,13 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
           <div className="flex flex-1 flex-col pb-16">
             <div onClick={onBackButtonClick}>{backButton}</div>
             <div className="pt-24 pb-16">
-              <img src={settings.logo} alt={settings.appName} className="h-[78px] w-[186px]" />
+              <img
+                src={customer.logoImageUri || settings.logo}
+                alt={settings.appName}
+                className="max-h-[78px] max-w-[186px]"
+              />
             </div>
-            <div className="h-full">
+            <div className="h-full max-h-[440px]">
               {isLoading ? null : (
                 <Stepper>
                   <VerticalLayout>

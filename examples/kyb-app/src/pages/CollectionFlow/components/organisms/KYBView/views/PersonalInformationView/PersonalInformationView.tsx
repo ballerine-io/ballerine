@@ -3,7 +3,6 @@ import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/ViewHeader';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
 import { useCreateEndUserMutation } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useCreateEndUserMutation';
-import { CreateEndUserDto } from '@app/domains/end-user';
 import {
   PersonalInformationContext,
   WorkflowFlowData,
@@ -34,7 +33,7 @@ export const PersonalInformationView = () => {
   );
 
   return (
-    <AppShell.FormContainer header={<ViewHeader progressBar={false} />}>
+    <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<PersonalInformationContext>
         className="max-w-[384px]"
         formData={context.flowData.personalInformation}

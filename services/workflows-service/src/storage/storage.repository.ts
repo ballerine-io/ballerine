@@ -19,9 +19,9 @@ export class FileRepository {
     return await this.prisma.file.findMany(args);
   }
 
-  async findById<T extends Omit<Prisma.FileFindFirstArgs, 'where'>>(
+  async findById<T extends Prisma.FileFindFirstArgs>(
     { id }: IFileIds,
-    args?: Prisma.SelectSubset<T, Omit<Prisma.FileFindFirstArgs, 'where'>>,
+    args?: Prisma.SelectSubset<T, Prisma.FileFindFirstArgs>,
   ): Promise<File | null> {
     return await this.prisma.file.findFirst({
       where: { id },

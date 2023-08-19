@@ -24,6 +24,10 @@ export const transformRJSFErrors = (errors: RJSFValidationError[]): RJSFValidati
       error.message = '';
     }
 
+    if (error.params?.type === 'number') {
+      error.message = 'This field is required';
+    }
+
     return error;
   });
 };
