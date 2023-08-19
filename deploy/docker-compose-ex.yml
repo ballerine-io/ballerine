@@ -33,6 +33,7 @@ services:
       - -c
       - |
         npm run db:init
+        npm run seed:ex
         dumb-init npm run prod
     ports:
       - ${WORKFLOW_SVC_PORT}:${WORKFLOW_SVC_PORT}
