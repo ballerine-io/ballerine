@@ -43,7 +43,7 @@ export const defaultFlowData: WorkflowFlowData = {
       bankName: '',
       holder: '',
       account: '',
-      currency: '',
+      currency: 'usd',
     },
     ubos: {
       check: false,
