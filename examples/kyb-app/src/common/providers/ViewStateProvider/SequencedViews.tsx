@@ -100,9 +100,9 @@ export function SequencedViews<TContext extends ViewsData>({
     async (payload: Partial<TContext['flowData']>, shared?: object): Promise<TContext> => {
       const savedData = await save(payload, shared);
       completeCurrent();
-      nextStep();
+      const step = nextStep();
 
-      afterTransition && afterTransition(savedData);
+      afterTransition && afterTransition({ ...savedData, currentView: step.dataAlias });
       return savedData;
     },
     [save, nextStep, completeCurrent],
