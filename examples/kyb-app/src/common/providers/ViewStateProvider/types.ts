@@ -14,7 +14,7 @@ export interface StepperParams {
   totalSteps: number;
 }
 
-export interface ViewStateContext<TGlobalContext = AnyObject> {
+export interface ViewStateContext<TGlobalContext = AnyObject, TViewmetadata = {}> {
   next: () => void;
   prev: () => void;
   update: (data: object, shared?: object, completed?: boolean) => Promise<object>;
@@ -30,15 +30,18 @@ export interface ViewStateContext<TGlobalContext = AnyObject> {
   warnings?: InputsWarnings;
   isFinished: boolean;
   isLoading: boolean;
-  views: View[];
+  views: View<TViewmetadata>[];
+  activeView: View<TViewmetadata> | null;
 }
 
-export interface View {
+export type Viewkey = string;
+export interface View<T = {}> {
   label: string;
-  key: string;
+  key: Viewkey;
   active?: boolean;
   Component: React.ComponentType;
-  meta?: StepMetadata;
+  stepMetadata?: StepMetadata;
   disableWrapper?: boolean;
   hidden?: boolean;
+  viewMetadata?: T;
 }

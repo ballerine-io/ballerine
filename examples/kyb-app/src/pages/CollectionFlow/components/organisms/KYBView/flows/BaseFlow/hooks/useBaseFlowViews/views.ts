@@ -6,6 +6,7 @@ import { CompanyInformationView } from '@app/pages/CollectionFlow/components/org
 import { HeadquartersView } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView';
 import { PersonalInformationView } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/PersonalInformationView';
 import { ShareholdersView } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/ShareholdersView';
+import keyBy from 'lodash/keyBy';
 
 export const kybViews: View[] = [
   {
@@ -44,3 +45,5 @@ export const kybViews: View[] = [
     Component: CompanyDocumentsView,
   },
 ];
+
+export const viewsMap = keyBy(kybViews, 'key');

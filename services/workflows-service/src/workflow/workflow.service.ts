@@ -78,8 +78,8 @@ import {
   Transformer,
 } from '@ballerine/workflow-core';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { GetLastActiveFlowParams } from '@/workflow/types/params';
 import { EndUserService } from '@/end-user/end-user.service';
+import { GetLastActiveFlowParams } from '@/workflow/types/params';
 
 type TEntityId = string;
 
@@ -1096,19 +1096,16 @@ export class WorkflowService {
       contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId, projectIds);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
         existingWorkflowRuntimeData.id,
-        this.projectScopeService.scopeUpdate(
-          {
-            data: {
-              ...entityConnect,
-              context: contextToInsert as InputJsonValue,
-              config: merge(
-                existingWorkflowRuntimeData.config,
-                validatedConfig || {},
-              ) as InputJsonValue,
-            },
+        {
+          data: {
+            ...entityConnect,
+            context: contextToInsert as InputJsonValue,
+            config: merge(
+              existingWorkflowRuntimeData.config,
+              validatedConfig || {},
+            ) as InputJsonValue,
           },
-          projectIds,
-        ),
+        },
       );
       newWorkflowCreated = false;
     }
@@ -1202,6 +1199,7 @@ export class WorkflowService {
     projectIds: TProjectIds,
   ) {
     const { entity } = context;
+    console.log('context', context);
     const entityId = await this.__tryToFetchExistingEntityId(entity);
 
     if (entityId) {

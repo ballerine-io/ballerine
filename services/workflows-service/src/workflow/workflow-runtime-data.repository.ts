@@ -160,7 +160,7 @@ export class WorkflowRuntimeDataRepository {
           createdAt: 'desc' as SortOrder,
         },
         where: {
-          status: 'active' as WorkflowRuntimeDataStatus,
+          // status: 'active' as WorkflowRuntimeDataStatus,
           businessId,
           workflowDefinitionId,
         },
