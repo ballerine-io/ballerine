@@ -1199,7 +1199,6 @@ export class WorkflowService {
     projectIds: TProjectIds,
   ) {
     const { entity } = context;
-    console.log('context', context);
     const entityId = await this.__tryToFetchExistingEntityId(entity);
 
     if (entityId) {
