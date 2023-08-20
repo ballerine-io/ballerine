@@ -91,9 +91,9 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           </h2>
         </div>
         {showResolutionButtons && (
-          <div className={`pe-[3.35rem] flex items-center space-x-6`}>
+          <div className={`flex items-center space-x-6 pe-[3.35rem]`}>
             <Button
-              className={ctw('bg-orange-400', {
+              className={ctw('bg-orange-400 hover:!bg-orange-400/90', {
                 loading: debouncedIsLoadingRejectEntity,
               })}
               disabled={isLoading || !canRevision}

@@ -168,7 +168,7 @@ export const fetchWorkflowDecision = async ({
 }: IWorkflowId & {
   documentId: string;
   body: {
-    decision: string;
+    decision: string | null;
     reason?: string;
   };
 }) => {

@@ -15,12 +15,14 @@ export const useCallToActionLogic = () => {
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
+
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
   const { mutate: mutateRejectTaskById, isLoading: isLoadingRejectTaskById } =
     useRejectTaskByIdMutation(workflow?.id);
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingRevisionTaskById } =
     useRevisionTaskByIdMutation(workflow?.id);
+
   const revisionReasons =
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
@@ -29,6 +31,9 @@ export const useCallToActionLogic = () => {
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum;
+  const isLoadingTaskDecisionById =
+    isLoadingApproveTaskById || isLoadingRejectTaskById || isLoadingRevisionTaskById;
+
   const actions = [
     {
       label: 'Ask to re-submit',
@@ -39,16 +44,17 @@ export const useCallToActionLogic = () => {
       value: 'reject',
     },
   ] as const;
+
   const [action, setAction] = useState<(typeof actions)[number]['value']>(actions[0].value);
   const reasons = action === 'revision' ? revisionReasons : rejectionReasons;
   const noReasons = !reasons?.length;
   const [reason, setReason] = useState(reasons?.[0] ?? '');
   const [comment, setComment] = useState('');
+
   const onReasonChange = useCallback((value: string) => setReason(value), [setReason]);
   const onActionChange = useCallback((value: typeof action) => setAction(value), [setAction]);
   const onCommentChange = useCallback((value: string) => setComment(value), [setComment]);
-  const isLoadingTaskDecisionById =
-    isLoadingApproveTaskById || isLoadingRejectTaskById || isLoadingRevisionTaskById;
+
   const onMutateTaskDecisionById = useCallback(
     (
         payload:
@@ -75,6 +81,12 @@ export const useCallToActionLogic = () => {
           });
         }
 
+        if (payload?.decision === null) {
+          return mutateRejectTaskById({
+            documentId: payload?.id,
+          });
+        }
+
         if (payload?.decision === 'reject') {
           return mutateRejectTaskById({
             documentId: payload?.id,
@@ -86,6 +98,7 @@ export const useCallToActionLogic = () => {
           return mutateRevisionTaskById({
             documentId: payload?.id,
             reason: payload?.reason,
+            decision: payload?.decision,
           });
         }
 

@@ -24,8 +24,6 @@ export const Entity = () => {
           tasks?.map((task, index) => {
             if (!Array.isArray(task.cells) || !task?.cells.length) return;
 
-            console.log({ task, workflow });
-
             return (
               <Card key={index} className={`me-4 ${task.className}`}>
                 <CardContent
