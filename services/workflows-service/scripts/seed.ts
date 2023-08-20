@@ -1,4 +1,3 @@
-import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker';
 import { Business, Customer, EndUser, Prisma, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
@@ -11,8 +10,6 @@ import {
   generateEndUser,
 } from './generate-end-user';
 import { defaultContextSchema } from '@ballerine/common';
-import { Salt } from '../src/auth/password/password.service';
-import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
@@ -21,14 +18,10 @@ import { generateKybDefintion } from './workflows';
 import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
 import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
 
-if (require.main === module) {
-  dotenv.config();
-
-  seed(env.BCRYPT_SALT).catch(error => {
-    console.error(error);
-    process.exit(1);
-  });
-}
+seed(10).catch(error => {
+  console.error(error);
+  process.exit(1);
+});
 
 const persistImageFile = async (client: PrismaClient, uri: string) => {
   const file = await client.file.create({
@@ -88,7 +81,7 @@ async function createProject(client: PrismaClient, customer: Customer, id: strin
   });
 }
 
-async function seed(bcryptSalt: Salt) {
+async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
   const client = new PrismaClient();
   await generateDynamicDefinitionForE2eTest(client);
