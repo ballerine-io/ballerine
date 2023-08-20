@@ -34,10 +34,10 @@ export class UserControllerInternal {
   @UseGuards(AdminAuthGuard)
   @swagger.ApiForbiddenResponse()
   async create(@common.Body() userCreatInfo: UserCreateDto) {
-    const { projectIds, ...user } = userCreatInfo;
+    const { projectIds, ...userInfo } = userCreatInfo;
 
     if (projectIds && projectIds.length > 0) {
-      (user as Prisma.UserCreateInput).userToProjects = {
+      (userCreatInfo as Prisma.UserCreateInput).userToProjects = {
         createMany: {
           data: projectIds.map(projectId => {
             return { projectId };
@@ -47,8 +47,11 @@ export class UserControllerInternal {
       };
     }
 
+    // @ts-ignore
+    delete userCreatInfo.projectIds;
+
     return this.service.create({
-      data: user,
+      data: userCreatInfo,
       select: {
         id: true,
         firstName: true,
