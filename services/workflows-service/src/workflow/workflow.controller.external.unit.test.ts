@@ -70,16 +70,14 @@ describe('Workflow (external)', () => {
       .compile();
 
     app = moduleRef.createNestApplication();
-    const middlewareInstnace = new AuthKeyMiddleware({} as CustomerService);
-    middlewareInstnace.use = ((req, res, next) => {
+
+    app.use((req, res, next) => {
       req.user = {
         // @ts-ignore
         type: 'customer',
       };
       next();
-    }) as any;
-
-    app.use(middlewareInstnace.use);
+    });
 
     await app.init();
   });
