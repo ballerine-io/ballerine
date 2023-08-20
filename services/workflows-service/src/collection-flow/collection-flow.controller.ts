@@ -1,7 +1,7 @@
 import * as common from '@nestjs/common';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { AuthorizeDto } from '@/collection-flow/dto/authorize-input.dto';
-import { EndUser } from '@prisma/client';
+import { Customer, EndUser } from '@prisma/client';
 import { GetActiveFlowDto } from '@/collection-flow/dto/get-active-workflow-input.dto';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
 import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
@@ -13,6 +13,7 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
 import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { Request } from 'express';
 
 @common.Controller('collection-flow')
 export class ColectionFlowController {
@@ -22,7 +23,6 @@ export class ColectionFlowController {
   ) {}
 
   @common.Post('/authorize')
-  @UseKeyAuthInDevGuard()
   async authorizeUser(
     @common.Body() dto: AuthorizeDto,
     @ProjectIds() projectIds: TProjectIds,
@@ -31,7 +31,6 @@ export class ColectionFlowController {
   }
 
   @common.Get('/active-flow')
-  @UseKeyAuthInDevGuard()
   async getActiveFlow(
     @common.Query() query: GetActiveFlowDto,
     @ProjectIds() projectIds: TProjectIds,
@@ -58,7 +57,6 @@ export class ColectionFlowController {
   }
 
   @common.Get('/configuration')
-  @UseKeyAuthInDevGuard()
   async getFlowConfiguration(
     @common.Query() query: GetFlowConfigurationDto,
   ): Promise<FlowConfigurationModel> {
@@ -66,7 +64,6 @@ export class ColectionFlowController {
   }
 
   @common.Put('/configuration/:configurationId')
-  @UseKeyAuthInDevGuard()
   async updateFlowConfiguration(
     @common.Param('configurationId') configurationId: string,
     @common.Body() dto: UpdateConfigurationDto,
@@ -75,16 +72,22 @@ export class ColectionFlowController {
   }
 
   @common.Put('/:flowId')
-  @UseKeyAuthInDevGuard()
   async updateFlow(
     @common.Param('flowId') flowId: string,
     @common.Body() dto: UpdateFlowDto,
+    @common.Request() request: any,
     @ProjectIds() projectIds: TProjectIds,
   ) {
     try {
       const adapter = this.adapterManager.getAdapter(dto.flowType);
 
-      return this.service.updateFlow(adapter, dto.payload, flowId, projectIds);
+      return this.service.updateFlow(
+        adapter,
+        dto.payload,
+        flowId,
+        projectIds,
+        request.user.customer as Customer,
+      );
     } catch (error) {
       if (error instanceof UnsupportedFlowTypeException) {
         throw new common.BadRequestException(`${dto.flowType} is not supported.`);
@@ -95,7 +98,6 @@ export class ColectionFlowController {
   }
 
   @common.Post('finish/:flowId')
-  @UseKeyAuthInDevGuard()
   async finishFlow(@common.Param('flowId') flowId: string, @ProjectIds() projectIds: TProjectIds) {
     return this.service.finishFlow(flowId, projectIds);
   }
