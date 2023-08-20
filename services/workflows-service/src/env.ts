@@ -34,6 +34,7 @@ export const env = createEnv({
     IS_DEMO: z.string().optional(),
     MAIL_ADAPTER: z
       .enum(['sendgrid', 'log'])
+      .default('sendgrid')
       .describe(
         `Which mail adapter to use. Use "log" during development to log emails to the console. In production, use "sendgrid" to send emails via SendGrid.`,
       ),
