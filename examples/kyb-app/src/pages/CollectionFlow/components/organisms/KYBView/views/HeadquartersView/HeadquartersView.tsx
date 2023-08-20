@@ -2,8 +2,6 @@ import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/ViewHeader';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
-import { headquartersSchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/headquarters.schema';
-import { headquartersUISchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/headquarters.ui-schema';
 import { useHeadquartersSchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/hooks/useHeadquartersSchema';
 import { HeadquartersContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/types';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';

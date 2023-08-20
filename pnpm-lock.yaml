@@ -526,7 +526,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.5.20
-        version: link:../../packages/common
+        version: 0.5.20
       '@ballerine/workflow-browser-sdk':
         specifier: 0.4.23
         version: link:../../sdks/workflow-browser-sdk
@@ -1324,7 +1324,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.5.20
-        version: link:../common
+        version: 0.5.20
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
@@ -1472,7 +1472,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.5.20
-        version: link:../../packages/common
+        version: 0.5.20
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
         version: 0.8.0
@@ -1599,7 +1599,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.5.20
-        version: link:../../packages/common
+        version: 0.5.20
       '@ballerine/workflow-core':
         specifier: 0.4.30
         version: link:../../packages/workflow-core
@@ -1970,7 +1970,7 @@ importers:
         specifier: 3.325.0
         version: 3.325.0
       '@ballerine/common':
-        specifier: 0.5.20
+        specifier: 0.5.22
         version: link:../../packages/common
       '@ballerine/workflow-core':
         specifier: 0.4.30
@@ -7939,6 +7939,14 @@ packages:
 
   /@ballerine/common@0.5.19:
     resolution: {integrity: sha512-WYRqLyBOwtoi193YJvonsz5fdY73/MpAxaO9Sj1dp2nOeqKAv2j880ELUVfyfgYE18ZDBB4qoykvT4X3Rea7KA==}
+    engines: {node: '>=12'}
+    dependencies:
+      ajv: 8.12.0
+      json-schema-to-zod: 0.6.3
+    dev: false
+
+  /@ballerine/common@0.5.20:
+    resolution: {integrity: sha512-NgWAwDF3OQoQY5NBxzeVfVYBQMBcG+csdWS5EKfJ8FwXhjQScrtN/ajdwJtZ5a7kWhxkf6xWGDmhDliPsyA+dQ==}
     engines: {node: '>=12'}
     dependencies:
       ajv: 8.12.0
