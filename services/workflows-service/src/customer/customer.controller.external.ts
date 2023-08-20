@@ -8,7 +8,7 @@ import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { CustomerModel } from '@/customer/customer.model';
 import { AuthenticatedEntity } from '@/types';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
-import {createMockParentWithChildWorkflow} from "../../scripts/workflows/workflw-runtime";
+import {createDemoMockData, createMockParentWithChildWorkflow} from "../../scripts/workflows/workflw-runtime";
 import {PrismaService} from "@/prisma/prisma.service";
 
 @swagger.ApiTags('external/customers')
@@ -46,16 +46,9 @@ export class CustomerControllerExternal {
     }) as Customer & { projects: { id: string }[] };
 
     if (projectName =='demo'){
-      await this.createDemoMockData(customerCreateModel, createdCustomer);
+      await createDemoMockData(this.prisma, customerCreateModel, createdCustomer);
     }
     return createdCustomer;
-  }
-
-  private async createDemoMockData(customerCreateModel: CustomerCreateDto, createdCustomer: & { projects: { id: string }[] }) {
-    await createMockParentWithChildWorkflow(this.prisma, customerCreateModel.name, true, createdCustomer.projects[0]!.id);
-    await createMockParentWithChildWorkflow(this.prisma, customerCreateModel.name, true, createdCustomer.projects[0]!.id);
-    await createMockParentWithChildWorkflow(this.prisma, customerCreateModel.name, false, createdCustomer.projects[0]!.id);
-    await createMockParentWithChildWorkflow(this.prisma, customerCreateModel.name, false, createdCustomer.projects[0]!.id);
   }
 
   @common.Get('/me')

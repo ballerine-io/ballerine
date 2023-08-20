@@ -1,6 +1,18 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient, WorkflowRuntimeDataStatus } from '@prisma/client';
 import { generateBusiness, generateEndUser } from '../generate-end-user';
+import {CustomerCreateDto} from "@/customer/dtos/customer-create";
+
+export const createDemoMockData = async (
+    prismaClient: PrismaClient,
+    customerCreateModel: CustomerCreateDto,
+    createdCustomer: & { projects: { id: string }[] }
+) => {
+  await createMockParentWithChildWorkflow(prismaClient, customerCreateModel.name, true, createdCustomer.projects[0]!.id);
+  await createMockParentWithChildWorkflow(prismaClient, customerCreateModel.name, true, createdCustomer.projects[0]!.id);
+  await createMockParentWithChildWorkflow(prismaClient, customerCreateModel.name, false, createdCustomer.projects[0]!.id);
+  await createMockParentWithChildWorkflow(prismaClient, customerCreateModel.name, false, createdCustomer.projects[0]!.id);
+}
 
 export const createMockParentWithChildWorkflow = async (
   prismaClient: PrismaClient,
