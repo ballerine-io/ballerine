@@ -2065,12 +2065,6 @@ importers:
       cookie-session:
         specifier: ^2.0.0
         version: 2.0.0
-      country-state-city:
-        specifier: ^3.1.4
-        version: 3.1.4
-      currency-codes:
-        specifier: ^2.1.0
-        version: 2.1.0
       express-cookie:
         specifier: ^4.17.1
         version: 4.17.1
@@ -33532,7 +33526,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.2.7(postcss@8.4.21)(ts-node@10.9.1)
+      tailwindcss: 3.2.7(postcss@8.4.24)(ts-node@10.9.1)
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.3):
