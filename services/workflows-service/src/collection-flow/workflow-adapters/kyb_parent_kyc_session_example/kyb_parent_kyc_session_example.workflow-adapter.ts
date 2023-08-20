@@ -1,7 +1,7 @@
 import { IWorkflowAdapter } from '@/collection-flow/workflow-adapters/abstract-workflow-adapter';
 import { KYBParentKYCSessionExampleFlowData } from '@/collection-flow/workflow-adapters/kyb_parent_kyc_session_example/kyb_parent_kyc_session_example.model';
 import { KYBParentKYCSessionExampleContext } from '@/workflow/types';
-import { WorkflowRuntimeData } from '@prisma/client';
+import { Customer, WorkflowRuntimeData } from '@prisma/client';
 
 export class KYBParentKYCSessionExampleAdapter
   implements IWorkflowAdapter<KYBParentKYCSessionExampleFlowData>
@@ -17,12 +17,12 @@ export class KYBParentKYCSessionExampleAdapter
     flowData.isFinished = context?.entity?.data?.__isFinished || false;
     flowData.documents = context?.documents;
     flowData.ubos = (context.entity.data?.additionalInfo?.ubos || []).map(ubo => ({
-      id: ubo.id,
-      firstName: ubo.data.firstName,
-      lastName: ubo.data.lastName,
-      birthDate: ubo.data.dateOfBirth,
-      title: ubo.data.title,
-      email: ubo.data.email,
+      id: ubo.entity.id,
+      firstName: ubo.entity.data.firstName,
+      lastName: ubo.entity.data.lastName,
+      birthDate: ubo.entity.data.dateOfBirth,
+      title: ubo.entity.data.title,
+      email: ubo.entity.data.email,
     }));
     flowData.entityData = {
       website: context.entity?.data?.website,
@@ -41,6 +41,7 @@ export class KYBParentKYCSessionExampleAdapter
   deserialize(
     payload: KYBParentKYCSessionExampleFlowData,
     baseWorkflowRuntimeData: WorkflowRuntimeData,
+    customer: Customer,
   ): WorkflowRuntimeData {
     const { flowData, flowState, mainRepresentative, entityData, documents, ubos, isFinished } =
       payload;
@@ -60,14 +61,21 @@ export class KYBParentKYCSessionExampleAdapter
           ...baseWorkflowRuntimeData.context.entity.data.additionalInfo,
           mainRepresentative,
           ubos: ubos.map(ubo => ({
-            id: ubo.id,
-            type: 'individual',
-            data: {
-              firstName: ubo.firstName,
-              lastName: ubo.lastName,
-              email: ubo.email,
-              dateOfBirth: ubo.birthDate,
-              title: ubo.title,
+            entity: {
+              id: ubo.id,
+              type: 'individual',
+              data: {
+                firstName: ubo.firstName,
+                lastName: ubo.lastName,
+                email: ubo.email,
+                dateOfBirth: ubo.birthDate,
+
+                additionalInfo: {
+                  companyName: customer.name,
+                  customerCompany: customer.displayName,
+                  title: ubo.title,
+                },
+              },
             },
           })),
         },

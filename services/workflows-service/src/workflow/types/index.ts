@@ -117,14 +117,16 @@ export interface KYBParentKYCSessionExampleContext {
           title: string;
         };
         ubos: {
-          id: string;
-          type: string;
-          data: {
-            firstName: string;
-            lastName: string;
-            email: string;
-            dateOfBirth: string;
-            title: string;
+          entity: {
+            id: string;
+            type: string;
+            data: {
+              firstName: string;
+              lastName: string;
+              email: string;
+              dateOfBirth: string;
+              title: string;
+            };
           };
         }[];
       };

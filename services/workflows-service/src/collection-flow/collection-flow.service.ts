@@ -15,7 +15,7 @@ import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.rep
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { Injectable } from '@nestjs/common';
-import { Business, EndUser } from '@prisma/client';
+import { Business, Customer, EndUser } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import keyBy from 'lodash/keyBy';
 
@@ -169,6 +169,7 @@ export class CollectionFlowService {
     updatePayload: UpdateFlowPayload,
     flowId: string,
     projectIds: TProjectIds,
+    customer: Customer,
   ) {
     const workflow = await this.workflowRuntimeDataRepository.findById(flowId);
 
@@ -185,7 +186,7 @@ export class CollectionFlowService {
       entityData: updatePayload.entityData,
     });
 
-    const workflowData = adapter.deserialize(flowData as any, workflow);
+    const workflowData = adapter.deserialize(flowData as any, workflow, customer);
 
     await this.businessService.updateById(workflow.businessId, {
       data: {
@@ -211,7 +212,7 @@ export class CollectionFlowService {
     const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(flowId);
 
     return await this.workflowService.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId: flowId,
+      workflowDefinitionId: workflowRuntimeData.workflowDefinitionId,
       context: {
         ...workflowRuntimeData.context,
         entity: {
