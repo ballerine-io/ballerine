@@ -17,6 +17,7 @@ export {
   raise,
   log,
   dump,
+  verifySignature,
 } from './utils';
 
 export type { IErrorWithMessage } from './utils';

@@ -4,7 +4,7 @@ import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { NotFoundException, Query, Res, UseGuards } from '@nestjs/common';
+import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
@@ -24,12 +24,13 @@ import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
-import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
+import { GetActiveFlowDto } from '@/workflow/dtos/get-active-workflow-input.dto';
+import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -221,8 +222,8 @@ export class WorkflowControllerExternal {
   @common.Post('/:id/hook/:event')
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
-  @Public()
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @VerifyUnifiedApiSignatureDecorator()
   async hook(
     @common.Param() params: WorkflowIdWithEventInput,
     @common.Query() query: WorkflowHookQuery,
