@@ -70,6 +70,19 @@ export class WorkflowControllerExternal {
     return await this.service.getWorkflowDefinitionById(params.id);
   }
 
+  @common.Get('/active-flow')
+  @UseKeyAuthGuard()
+  async getActiveFlow(@common.Query() query: GetActiveFlowDto) {
+    const activeWorkflow = await this.service.getLastActiveFlow({
+      email: query.email,
+      workflowRuntimeDefinitionId: query.workflowRuntimeDefinitionId,
+    });
+
+    return {
+      result: activeWorkflow,
+    };
+  }
+
   @common.Get('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
