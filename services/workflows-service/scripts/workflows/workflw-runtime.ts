@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import {PrismaClient, WorkflowRuntimeDataStatus} from "@prisma/client";
 import {generateBusiness, generateEndUser} from "../generate-end-user";
 
-export const createParentWithChildWorkflow = async (prismaClient: PrismaClient, customerName: string, withAml: boolean, projectId: string) => {
+export const createMockParentWithChildWorkflow = async (prismaClient: PrismaClient, customerName: string, withAml: boolean, projectId: string) => {
   const companyName = faker.company.name()
   const businessId = faker.datatype.uuid()
   const endUserId = faker.datatype.uuid()
@@ -36,6 +36,10 @@ export const createParentWithChildWorkflow = async (prismaClient: PrismaClient, 
   );
   // @ts-ignore
   await prismaClient.endUser.create({data: endUserWithWorkflowInformation})
+  const childPage = childWorkflowRuntimeInformation.context.documents[0]!.pages[0]!;
+  const parentPage = parentRuntimeInformation.context.documents[0]!.pages[0]!;
+  await prismaClient.file.create({data: {id: childPage.ballerineFileId, userId: faker.datatype.uuid(), uri: childPage.uri, fileNameOnDisk: childPage.uri, projectId: projectId}})
+  await prismaClient.file.create({data: {id: parentPage.ballerineFileId, userId: faker.datatype.uuid(), uri: parentPage.uri, fileNameOnDisk: parentPage.uri, projectId: projectId}})
 }
 
 export const generateChildRuntimeInformation = (endUserId: string, customerName: string, companyName: string, withAml: boolean, projectId: string, parentWorkflowId: string) => {
@@ -91,7 +95,13 @@ export const createKycRuntime = (customerName: string, companyName: string, with
       "id": faker.datatype.uuid(),
       "type": "identification_document",
       "pages": [
-        // Add as many pages as needed
+        {
+          uri: faker.image.people(),
+          type: 'png',
+          metadata: {side: 'front', pageNumber: '1'},
+          provider: 'http',
+          ballerineFileId: faker.random.alphaNumeric(20),
+        },
       ],
       "issuer": {
         "city": null,
@@ -221,28 +231,29 @@ const generateParentRuntimeContext = (companyName: string) => {
           countryOfIncorporation: faker.address.country(),
           taxIdentificationNumber: faker.random.alphaNumeric(8),
         },
-        type: 'business',
       },
-      documents: [
-        {
-          id: faker.datatype.uuid(),
-          type: 'unknown',
-          pages: [
-            {
-              uri: faker.image.imageUrl(),
-              type: 'pdf',
-              metadata: { side: 'front', pageNumber: '1' },
-              provider: 'http',
-              ballerineFileId: faker.random.alphaNumeric(20),
-            },
-          ],
-          issuer: { country: faker.address.countryCode() },
-          version: '1',
-          category: 'proof_of_Address',
-          properties: { docNumber: '1234', userAddress: faker.address.streetAddress() },
-          issuingVersion: 1,
-        },
-      ],
+      type: 'business',
+    },
+    documents: [
+      {
+        id: faker.datatype.uuid(),
+        type: 'unknown',
+        pages: [
+          {
+            uri: faker.image.business(),
+            type: 'png',
+            metadata: {side: 'front', pageNumber: '1'},
+            provider: 'http',
+            ballerineFileId: faker.random.alphaNumeric(20),
+          },
+        ],
+        issuer: {country: faker.address.countryCode()},
+        version: '1',
+        category: 'proof_of_Address',
+        properties: {docNumber: '1234', userAddress: faker.address.streetAddress()},
+        issuingVersion: 1,
+      },
+    ],
       pluginsOutput: {
         open_corporates: {
           name: companyName,
@@ -359,6 +370,5 @@ const generateParentRuntimeContext = (companyName: string) => {
         },
       },
       workflowRuntimeId: faker.random.alphaNumeric(20),
-    },
   };
 }

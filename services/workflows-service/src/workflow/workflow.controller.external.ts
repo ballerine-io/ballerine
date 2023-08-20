@@ -33,7 +33,7 @@ import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-se
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
 import { AdminAuthGuard } from "@/common/guards/admin-auth.guard";
-import { createParentWithChildWorkflow } from "../../scripts/workflows/workflw-runtime";
+import { createMockParentWithChildWorkflow } from "../../scripts/workflows/workflw-runtime";
 import { PrismaService } from "@/prisma/prisma.service";
 
 @swagger.ApiBearerAuth()
@@ -285,10 +285,10 @@ export class WorkflowControllerExternal {
   async createFakeData(
     @common.Body() body: { customerName: string, projectId: string },
   ): Promise<void> {
-    await createParentWithChildWorkflow(this.prisma, body.customerName, true, body.projectId)
-    await createParentWithChildWorkflow(this.prisma, body.customerName, true, body.projectId)
-    await createParentWithChildWorkflow(this.prisma, body.customerName, false, body.projectId)
-    await createParentWithChildWorkflow(this.prisma, body.customerName, false, body.projectId)
+    await createMockParentWithChildWorkflow(this.prisma, body.customerName, true, body.projectId)
+    await createMockParentWithChildWorkflow(this.prisma, body.customerName, true, body.projectId)
+    await createMockParentWithChildWorkflow(this.prisma, body.customerName, false, body.projectId)
+    await createMockParentWithChildWorkflow(this.prisma, body.customerName, false, body.projectId)
 
     return;
   }
