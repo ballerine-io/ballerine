@@ -1,5 +1,5 @@
 import { getCountriesList } from '../utils/countries';
-import currencyCodes from 'currency-codes';
+import { currencyCodes } from '../utils/currency-codes';
 
 export const bankInformationSchema = {
   title: 'Bank Information',
@@ -31,7 +31,7 @@ export const bankInformationSchema = {
     currency: {
       title: 'Account Currency',
       type: 'string',
-      oneOf: currencyCodes.codes().map(code => ({ title: code.toUpperCase(), const: code })),
+      oneOf: currencyCodes.map(code => ({ title: code.code.toUpperCase(), const: code.code })),
     },
   },
   required: ['country', 'holder', 'bankName'],
