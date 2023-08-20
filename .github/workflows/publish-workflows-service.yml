@@ -97,7 +97,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }} 
+            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
 
       - name: Build and push Docker image for Dev
         if: github.ref == 'refs/heads/dev'
@@ -113,7 +113,7 @@ jobs:
         with:
           context: services/workflows-service
           push: true
-          tags: ${{ steps.devmeta.outputs.tags }}
+          tags: ${{ steps.demometa.outputs.tags }}
           labels: ${{ steps.devmeta.outputs.labels }}
 
       - name: Build and push Docker image for Test

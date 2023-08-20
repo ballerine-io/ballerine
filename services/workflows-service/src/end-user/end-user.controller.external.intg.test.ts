@@ -21,6 +21,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@/prisma/prisma.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { createCustomer } from '@/test/helpers/create-customer';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -61,19 +62,24 @@ describe('#EndUserControllerExternal', () => {
       [EndUserControllerExternal],
       [PrismaModule],
     );
+
+    await createCustomer(await app.get(PrismaService), String(Date.now()), 'secret', '');
   });
 
   describe('POST /end-user', () => {
     it('creates an end-user', async () => {
       expect(await endUserService.list({})).toHaveLength(0);
 
-      const response = await request(app.getHttpServer()).post('/external/end-users').send({
-        correlationId: faker.datatype.uuid(),
-        endUserType: faker.random.word(),
-        approvalState: 'APPROVED',
-        firstName: 'test',
-        lastName: 'lastName',
-      });
+      const response = await request(app.getHttpServer())
+        .post('/external/end-users')
+        .send({
+          correlationId: faker.datatype.uuid(),
+          endUserType: faker.random.word(),
+          approvalState: 'APPROVED',
+          firstName: 'test',
+          lastName: 'lastName',
+        })
+        .set('authorization', 'Bearer secret');
 
       expect(response.status).toBe(201);
       const allEndUsers = await endUserService.list({});

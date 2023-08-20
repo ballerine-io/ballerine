@@ -125,6 +125,7 @@ export const generateEndUser = ({
     workflowDefinitionId: string;
     workflowDefinitionVersion: number;
     context: Prisma.InputJsonValue;
+    parentRuntimeId?: string;
   };
   projectId: string;
 }): Prisma.EndUserCreateInput => {
@@ -153,6 +154,7 @@ export const generateEndUser = ({
           workflowDefinitionId,
           createdAt: faker.date.recent(2),
           projectId: projectId,
+          parentRuntimeDataId: workflow.parentRuntimeId,
         },
       },
     };
