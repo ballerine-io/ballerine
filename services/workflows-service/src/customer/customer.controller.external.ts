@@ -1,18 +1,23 @@
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { CustomerService } from '@/customer/customer.service';
-import { Customer, Prisma } from '@prisma/client';
+import {Customer, Prisma, PrismaClient} from '@prisma/client';
 import { CustomerCreateDto } from '@/customer/dtos/customer-create';
 import { Request, UseGuards } from '@nestjs/common';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { CustomerModel } from '@/customer/customer.model';
 import { AuthenticatedEntity } from '@/types';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
+import {createMockParentWithChildWorkflow} from "../../scripts/workflows/workflw-runtime";
+import {PrismaService} from "@/prisma/prisma.service";
 
 @swagger.ApiTags('external/customers')
 @common.Controller('external/customers')
 export class CustomerControllerExternal {
-  constructor(protected readonly service: CustomerService) {}
+  constructor(
+      protected readonly service: CustomerService,
+      protected readonly prisma: PrismaService,
+  ) {}
 
   @common.Post()
   @UseGuards(AdminAuthGuard)
@@ -26,7 +31,7 @@ export class CustomerControllerExternal {
       };
     }
 
-    return this.service.create({
+    const createdCustomer = await this.service.create({
       data: customer,
       select: {
         id: true,
@@ -38,7 +43,19 @@ export class CustomerControllerExternal {
         customerStatus: true,
         projects: true,
       },
-    });
+    }) as Customer & { projects: { id: string }[] };
+
+    if (projectName =='demo'){
+      await this.createDemoMockData(customerCreateModel, createdCustomer);
+    }
+    return createdCustomer;
+  }
+
+  private async createDemoMockData(customerCreateModel: CustomerCreateDto, createdCustomer: & { projects: { id: string }[] }) {
+    await createMockParentWithChildWorkflow(this.prisma, customerCreateModel.name, true, createdCustomer.projects[0]!.id);
+    await createMockParentWithChildWorkflow(this.prisma, customerCreateModel.name, true, createdCustomer.projects[0]!.id);
+    await createMockParentWithChildWorkflow(this.prisma, customerCreateModel.name, false, createdCustomer.projects[0]!.id);
+    await createMockParentWithChildWorkflow(this.prisma, customerCreateModel.name, false, createdCustomer.projects[0]!.id);
   }
 
   @common.Get('/me')
