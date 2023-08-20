@@ -261,7 +261,7 @@ export interface ICountry {
 export const getCountriesList = (): ICountry[] =>
   Object.entries(isoCountriesRecord).map(([isoCode, fullName]) => ({
     isoCode,
-    fullName: fullName as string,
+    fullName: Array.isArray(fullName) ? fullName[0] : (fullName as string),
   }));
 
 export const getCountryStates = (countryCode: string) => {
