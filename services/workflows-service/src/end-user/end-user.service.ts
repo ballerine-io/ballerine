@@ -61,4 +61,15 @@ export class EndUserService {
       ),
     );
   }
+
+  async getByEmail(email: string) {
+    return await this.repository.find({
+      where: {
+        email,
+      },
+      include: {
+        businesses: true,
+      },
+    });
+  }
 }
