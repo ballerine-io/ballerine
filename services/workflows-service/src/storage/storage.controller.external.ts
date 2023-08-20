@@ -13,8 +13,6 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import * as os from 'os';
 import * as path from 'path';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
-import { DemoGuard } from '@/common/guards/demo.guard';
-import { Public } from '@/common/decorators/public.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
@@ -77,12 +75,10 @@ export class StorageControllerExternal {
     @Res() res: Response,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById(
-      {
-        id,
-      },
-      this.scopeService.scopeFindOne({}, projectIds),
-    );
+    const persistedFile = await this.service.getFileNameById({
+      id,
+    });
+
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }
@@ -99,12 +95,9 @@ export class StorageControllerExternal {
     @Res() res: Response,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById(
-      {
-        id,
-      },
-      this.scopeService.scopeFindOne({}, projectIds),
-    );
+    const persistedFile = await this.service.getFileNameById({
+      id,
+    });
 
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
