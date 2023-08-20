@@ -12,9 +12,11 @@ import { DynamicForm } from '@ballerine/ui';
 import { useEffect, useRef } from 'react';
 import { useDebounce } from 'use-debounce';
 import { useViewSchemas } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useViewSchemas';
+import { useNextviewMoveResolved } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useNextViewMoveResolver';
 
 export const CompanyInformationView = () => {
-  const { context, update, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
+  const { context, activeView, update, saveAndPerformTransition } =
+    useViewState<WorkflowFlowData>();
   const [registrationNumber] = useDebounce(
     context.flowData.companyInformation.registrationNumber,
     1500,
@@ -27,6 +29,7 @@ export const CompanyInformationView = () => {
 
   const { schema } = useCompanyInformationSchema(formSchema, context.flowData.companyInformation);
   const { uiSchema } = useCompanyInformationUISchema(_uiSchema, schema, isFetching);
+  const { next } = useNextviewMoveResolved(activeView);
 
   const { handleUpdate } = useCompanyInformationUpdate();
 
@@ -58,7 +61,7 @@ export const CompanyInformationView = () => {
         formData={context.flowData.companyInformation}
         schema={schema}
         uiSchema={uiSchema}
-        onSubmit={values => void saveAndPerformTransition(values)}
+        onSubmit={next}
         onChange={handleUpdate}
         transformErrors={transformRJSFErrors}
       />

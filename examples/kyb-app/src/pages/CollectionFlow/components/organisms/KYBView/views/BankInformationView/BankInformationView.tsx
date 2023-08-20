@@ -6,10 +6,12 @@ import { DynamicForm } from '@ballerine/ui';
 import { ViewHeader } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/ViewHeader';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
 import { useViewSchemas } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useViewSchemas';
+import { useNextviewMoveResolved } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useNextViewMoveResolver';
 
 export const BankInformationView = () => {
-  const { context, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
+  const { context, activeView } = useViewState<WorkflowFlowData>();
   const { formSchema, uiSchema } = useViewSchemas();
+  const { next } = useNextviewMoveResolved(activeView);
 
   return (
     <AppShell.FormContainer header={<ViewHeader />}>
@@ -18,7 +20,7 @@ export const BankInformationView = () => {
         formData={context.flowData.bankInformation}
         schema={formSchema}
         uiSchema={uiSchema}
-        onSubmit={values => void saveAndPerformTransition(values)}
+        onSubmit={next}
         transformErrors={transformRJSFErrors}
       />
     </AppShell.FormContainer>
