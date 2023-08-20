@@ -46,29 +46,14 @@ jobs:
       - name: Print the version
         run: echo "The version was ${{ steps.get_version.outputs.version }}"
 
-      - name: Extract metadata (tags, labels) for dev Docker
-        if: github.ref == 'refs/heads/dev'
-        id: devmeta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=dev
-            type=raw,value=commit-${{ github.sha }}-dev
-            type=raw,value=${{ steps.get_version.outputs.version }}-dev
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Extract metadata (tags, labels) for test Docker
-        if: github.ref == 'refs/heads/test'
-        id: testmeta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=test
-            type=raw,value=commit-${{ github.sha }}-test
-            type=raw,value=${{ steps.get_version.outputs.version }}-test
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
 
       - name: Extract metadata (tags, labels) for prod Docker
+        ### If branch is prod we have to build image with latest tag
         if: github.ref == 'refs/heads/prod'
         id: prodmeta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
@@ -81,7 +66,7 @@ jobs:
             type=raw,value=latest
 
       - name: Extract metadata for other branches Docker
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: github.ref != 'refs/heads/prod'
         id: branchmeta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
@@ -90,34 +75,18 @@ jobs:
             type=raw,value=${{ github.head_ref || github.ref_name }}
             type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }} 
 
-      - name: Build and push Docker image for Dev
-        if: github.ref == 'refs/heads/dev'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: services/workflows-service
-          push: true
-          tags: ${{ steps.devmeta.outputs.tags }}
-
-      - name: Build and push Docker image for Test
-        if: github.ref == 'refs/heads/test'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: services/workflows-service
-          push: true
-          tags: ${{ steps.testmeta.outputs.tags }}
-
-      - name: Build and push Docker image for Prod
-        if: github.ref == 'refs/heads/prod'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: services/workflows-service
-          push: true
-          tags: ${{ steps.prodmeta.outputs.tags }}
+     - name: Build and push Docker image for Prod branch
+       if: github.ref == 'refs/heads/prod'
+       run: |
+         docker buildx create --use --name buildx_instance
+         docker buildx build \
+             --platform linux/amd64,linux/arm64 \
+             -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.prodmeta.outputs.tags }} --push .
 
       - name: Build and push Docker image for other branch
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: services/workflows-service
-          push: true
-          tags: ${{ steps.branchmeta.outputs.tags }}
+        if: github.ref != 'refs/heads/prod'
+        run: |
+         docker buildx create --use --name buildx_instance
+         docker buildx build \
+             --platform linux/amd64,linux/arm64 \
+             -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.branchmeta.outputs.tags }} --push .
