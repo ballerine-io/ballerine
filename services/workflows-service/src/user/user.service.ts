@@ -18,9 +18,11 @@ export class UserService {
         userToProjects: !args?.data?.userToProjects
           ? {
               createMany: {
-                data: projectIds!.map(projectId => {
-                  return { projectId };
-                }),
+                data: projectIds
+                  ? projectIds!.map(projectId => {
+                      return { projectId };
+                    })
+                  : [],
               },
             }
           : args.data.userToProjects,
