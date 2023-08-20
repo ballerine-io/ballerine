@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { env } from '../../src/env';
 
 export const kycEmailSessionDefinition = {
   id: 'kyc_email_session_example',
@@ -117,6 +118,7 @@ export const kycEmailSessionDefinition = {
               templateId: (documents[].decision[].revisionReason | [0])!=null && 'd-7305991b3e5840f9a14feec767ea7301' || 'd-2c6ae291d9df4f4a8770d6a4e272d803',
               revisionReason: documents[].decision[].revisionReason | [0],
               supportEmail: join('',['PayLynk','@support.com']),
+              adapter: '${env.MAIL_ADAPTER}'
               }`, // jmespath
             },
           ],
