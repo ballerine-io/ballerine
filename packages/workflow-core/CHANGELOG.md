@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.4.30
+
+### Patch Changes
+
+- Support mail adapters (sendgrid, log)
+
 ## 0.4.29
 
 ### Patch Changes

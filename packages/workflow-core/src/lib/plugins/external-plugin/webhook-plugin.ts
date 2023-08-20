@@ -10,7 +10,6 @@ export class WebhookPlugin extends ApiPlugin {
   }
 
   // TODO: Ensure if this is intentional
-  // @ts-expect-error - this does not match the interface of api plugins
   async invoke(context: TContext) {
     const requestPayload = await this.transformData(this.request.transformers, context);
 
