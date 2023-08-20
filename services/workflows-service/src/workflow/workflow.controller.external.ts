@@ -4,7 +4,7 @@ import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
-import { NotFoundException, Query, Res } from '@nestjs/common';
+import { NotFoundException, Query, Res, UseGuards } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
@@ -32,6 +32,9 @@ import { GetActiveFlowDto } from '@/workflow/dtos/get-active-workflow-input.dto'
 import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
+import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import { createMockParentWithChildWorkflow } from '../../scripts/workflows/workflw-runtime';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -40,9 +43,11 @@ export class WorkflowControllerExternal {
   constructor(
     protected readonly service: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
+    protected readonly prisma: PrismaService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
+
   // GET /workflows
   @common.Get('/')
   @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeOutputDto] })
@@ -215,6 +220,7 @@ export class WorkflowControllerExternal {
       projectIds,
     );
   }
+
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')
   @UseCustomerAuthGuard()
@@ -244,10 +250,10 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowIdWithEventInput,
     @common.Query() query: WorkflowHookQuery,
     @common.Body() hookResponse: any,
-    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
     try {
       const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
+      const projectIds = [workflowRuntime.projectId!];
       await this.normalizeService.handleHookResponse({
         workflowRuntime: workflowRuntime,
         data: hookResponse,
@@ -255,20 +261,20 @@ export class WorkflowControllerExternal {
         processName: query.processName,
         projectIds,
       });
+
+      return await this.service.event(
+        {
+          id: params.id,
+          name: params.event,
+        },
+        projectIds,
+      );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
       throw error;
     }
-
-    return await this.service.event(
-      {
-        id: params.id,
-        name: params.event,
-      },
-      projectIds,
-    );
 
     return;
   }

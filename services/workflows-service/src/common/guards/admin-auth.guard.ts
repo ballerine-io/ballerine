@@ -6,9 +6,9 @@ import { AuthenticatedEntity } from '@/types';
 export class AdminAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest<Request>();
-    const user = req.user as unknown as AuthenticatedEntity;
+    const user = req.user as unknown as AuthenticatedEntity | undefined;
 
-    if (user.type !== 'admin') {
+    if (user?.type !== 'admin') {
       throw new UnauthorizedException('Unauthorized');
     }
 
