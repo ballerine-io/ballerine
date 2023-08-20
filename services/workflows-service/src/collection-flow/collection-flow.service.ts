@@ -43,9 +43,7 @@ export class CollectionFlowService {
             endUserId: newUser.id,
             ballerineEntityId: newUser.businesses.at(-1)?.id,
             type: 'business',
-            data: {
-              __flowProgress: 'initial',
-            },
+            data: {},
           },
           documents: [],
         },
@@ -197,11 +195,7 @@ export class CollectionFlowService {
       },
     });
 
-    await this.workflowService.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId: workflow.workflowDefinitionId,
-      context: workflowData.context,
-      projectIds,
-    });
+    await this.workflowService.updateContextById(workflowData.id, workflowData.context);
 
     return flowData;
   }
@@ -211,19 +205,15 @@ export class CollectionFlowService {
 
     const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(flowId);
 
-    return await this.workflowService.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId: workflowRuntimeData.workflowDefinitionId,
-      context: {
-        ...workflowRuntimeData.context,
-        entity: {
-          ...workflowRuntimeData.context.entity,
-          data: {
-            ...workflowRuntimeData.context.entity.data,
-            __isFinished: true,
-          },
+    return await this.workflowService.updateContextById(workflowRuntimeData.id, {
+      ...workflowRuntimeData.context,
+      entity: {
+        ...workflowRuntimeData.context.entity,
+        data: {
+          ...workflowRuntimeData.context.entity.data,
+          __isFinished: true,
         },
       },
-      projectIds,
     });
   }
 }
