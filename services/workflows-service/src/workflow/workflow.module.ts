@@ -25,7 +25,7 @@ import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webh
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { ProjectModule } from '@/project/project.module';
-import { PrismaModule } from "@/prisma/prisma.module";
+import { PrismaModule } from '@/prisma/prisma.module';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), HttpModule, ProjectModule, PrismaModule],

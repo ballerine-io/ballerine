@@ -32,9 +32,9 @@ import { GetActiveFlowDto } from '@/workflow/dtos/get-active-workflow-input.dto'
 import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
-import { AdminAuthGuard } from "@/common/guards/admin-auth.guard";
-import { createMockParentWithChildWorkflow } from "../../scripts/workflows/workflw-runtime";
-import { PrismaService } from "@/prisma/prisma.service";
+import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import { createMockParentWithChildWorkflow } from '../../scripts/workflows/workflw-runtime';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -256,7 +256,7 @@ export class WorkflowControllerExternal {
         data: hookResponse,
         resultDestinationPath: query.resultDestination || 'hookResponse',
         processName: query.processName,
-        projectIds
+        projectIds,
       });
 
       return await this.service.event(
@@ -264,9 +264,8 @@ export class WorkflowControllerExternal {
           id: params.id,
           name: params.event,
         },
-        projectIds
+        projectIds,
       );
-
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -283,14 +282,13 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createFakeData(
-    @common.Body() body: { customerName: string, projectId: string },
+    @common.Body() body: { customerName: string; projectId: string },
   ): Promise<void> {
-    await createMockParentWithChildWorkflow(this.prisma, body.customerName, true, body.projectId)
-    await createMockParentWithChildWorkflow(this.prisma, body.customerName, true, body.projectId)
-    await createMockParentWithChildWorkflow(this.prisma, body.customerName, false, body.projectId)
-    await createMockParentWithChildWorkflow(this.prisma, body.customerName, false, body.projectId)
+    await createMockParentWithChildWorkflow(this.prisma, body.customerName, true, body.projectId);
+    await createMockParentWithChildWorkflow(this.prisma, body.customerName, true, body.projectId);
+    await createMockParentWithChildWorkflow(this.prisma, body.customerName, false, body.projectId);
+    await createMockParentWithChildWorkflow(this.prisma, body.customerName, false, body.projectId);
 
     return;
   }
 }
-

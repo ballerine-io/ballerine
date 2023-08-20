@@ -48,7 +48,7 @@ export class UserControllerInternal {
     }
 
     // @ts-ignore
-    delete userCreatInfo.projectIds
+    delete userCreatInfo.projectIds;
 
     return this.service.create({
       data: userCreatInfo,
