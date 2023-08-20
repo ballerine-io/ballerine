@@ -28,13 +28,8 @@ import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { GetActiveFlowDto } from '@/workflow/dtos/get-active-workflow-input.dto';
-import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
-import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
-import { createMockParentWithChildWorkflow } from '../../scripts/workflows/workflw-runtime';
-import { PrismaService } from '@/prisma/prisma.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -43,7 +38,6 @@ export class WorkflowControllerExternal {
   constructor(
     protected readonly service: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
-    protected readonly prisma: PrismaService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
@@ -70,25 +64,9 @@ export class WorkflowControllerExternal {
   @common.Get('/workflow-definition/:id')
   @ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @UseKeyAuthInDevGuard()
   async getWorkflowDefinition(@common.Param() params: WorkflowDefinitionWhereUniqueInput) {
     return await this.service.getWorkflowDefinitionById(params.id);
-  }
-
-  @common.Get('/active-flow')
-  @UseKeyAuthOrSessionGuard()
-  async getActiveFlow(
-    @common.Query() query: GetActiveFlowDto,
-    @ProjectIds() projectIds: TProjectIds,
-  ) {
-    const activeWorkflow = await this.service.getLastActiveFlow({
-      email: query.email,
-      workflowRuntimeDefinitionId: query.workflowRuntimeDefinitionId,
-      projectIds,
-    });
-
-    return {
-      result: activeWorkflow,
-    };
   }
 
   @common.Get('/:id')

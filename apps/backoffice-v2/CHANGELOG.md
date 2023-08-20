@@ -14,12 +14,18 @@
 - Updated dependencies
   - @ballerine/ui@0.2.12
 
+> > > > > > > demo
+
 ## 0.4.12
 
 ### Patch Changes
 
 - Updated dependencies
+  - @ballerine/common@0.5.20
+  - @ballerine/workflow-browser-sdk@0.4.23
+  - # @ballerine/workflow-node-sdk@0.4.17
   - @ballerine/ui@0.2.11
+    > > > > > > > demo
 
 ## 0.4.11
 
