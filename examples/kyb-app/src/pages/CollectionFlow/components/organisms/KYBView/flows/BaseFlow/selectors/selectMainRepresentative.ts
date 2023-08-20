@@ -11,8 +11,8 @@ export const selectMainRepresentative = (
     phone: flowData.personalInformation?.phoneNumber || '',
     dateOfBirth: flowData.personalInformation?.birthDate || '',
     companyName: flowData.companyInformation?.companyName || '',
-    email: user.email,
-    title: flowData.personalInformation?.title,
+    email: user.email || '',
+    title: flowData.personalInformation?.title || '',
   };
 
   return data;
