@@ -1,22 +1,25 @@
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { CustomerService } from '@/customer/customer.service';
-import {Customer, Prisma, PrismaClient} from '@prisma/client';
+import { Customer, Prisma, PrismaClient } from '@prisma/client';
 import { CustomerCreateDto } from '@/customer/dtos/customer-create';
 import { Request, UseGuards } from '@nestjs/common';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { CustomerModel } from '@/customer/customer.model';
 import { AuthenticatedEntity } from '@/types';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
-import {createDemoMockData, createMockParentWithChildWorkflow} from "../../scripts/workflows/workflw-runtime";
-import {PrismaService} from "@/prisma/prisma.service";
+import {
+  createDemoMockData,
+  createMockParentWithChildWorkflow,
+} from '../../scripts/workflows/workflw-runtime';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @swagger.ApiTags('external/customers')
 @common.Controller('external/customers')
 export class CustomerControllerExternal {
   constructor(
-      protected readonly service: CustomerService,
-      protected readonly prisma: PrismaService,
+    protected readonly service: CustomerService,
+    protected readonly prisma: PrismaService,
   ) {}
 
   @common.Post()
@@ -31,7 +34,7 @@ export class CustomerControllerExternal {
       };
     }
 
-    const createdCustomer = await this.service.create({
+    const createdCustomer = (await this.service.create({
       data: customer,
       select: {
         id: true,
@@ -43,9 +46,9 @@ export class CustomerControllerExternal {
         customerStatus: true,
         projects: true,
       },
-    }) as Customer & { projects: { id: string }[] };
+    })) as Customer & { projects: { id: string }[] };
 
-    if (projectName =='demo'){
+    if (projectName == 'demo') {
       await createDemoMockData(this.prisma, customerCreateModel, createdCustomer);
     }
     return createdCustomer;
