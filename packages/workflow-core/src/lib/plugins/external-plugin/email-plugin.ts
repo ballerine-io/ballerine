@@ -46,6 +46,8 @@ export class EmailPlugin extends ApiPlugin {
       ...templateId,
     };
 
+    payload.adapter ??= 'sendgrid';
+
     if (payload.adapter === 'log') {
       console.log('Email payload: ', emailPayload);
 

@@ -146,7 +146,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
               templateId: 'd-7305991b3e5840f9a14feec767ea7301',
               revisionReason: documents[].decision[].revisionReason | [0],
-              adapter: '${env.MAIL_DRIVER}'
+              adapter: '${env.MAIL_ADAPTER}'
               }`, // jmespath
             },
           ],
