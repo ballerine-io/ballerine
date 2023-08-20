@@ -1,5 +1,5 @@
 # Workshop (Fintech Devcon)
-
+What we are going to achieve...
 ## Setup
 
 ### Install Docker and Docker Compose
@@ -77,6 +77,8 @@
 ## Workshop Walkthrough
 
 When everything is running, we will start the walk-through. Below are the steps to follow, and each one involves a request to change the configuration to the backend.
+
+Flow Diagam:
 
 ### Step 1: Add Fields to the Collection Flow
 We will add website and a file input.
