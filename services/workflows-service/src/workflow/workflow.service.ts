@@ -54,6 +54,7 @@ import {
   DefaultContextSchema,
   getDocumentId,
   getDocumentsByCountry,
+  safeEvery,
   TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -597,7 +598,24 @@ export class WorkflowService {
       reason?: string;
     },
   ) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowId);
+    const workflow = await this.workflowRuntimeDataRepository.findById(workflowId);
+    const workflowDefinition = await this.workflowDefinitionRepository.findById(
+      workflow?.workflowDefinitionId,
+    );
+
+    this.__validateWorkflowDefinitionContext(workflowDefinition, {
+      ...workflow?.context,
+      documents: workflow?.context?.documents?.map(
+        (document: DefaultContextSchema['documents'][number]) => ({
+          ...document,
+          type:
+            document?.type === 'unknown' && document?.decision?.status === 'approved'
+              ? undefined
+              : document?.type,
+        }),
+      ),
+    });
+
     // `name` is always `approve` and not `approved` etc.
     const Status = {
       approve: 'approved',
@@ -629,7 +647,7 @@ export class WorkflowService {
 
       throw new BadRequestException(`Invalid decision status: ${status}`);
     })();
-    const documentsWithDecision = runtimeData?.context?.documents?.map(
+    const documentsWithDecision = workflow?.context?.documents?.map(
       (document: DefaultContextSchema['documents'][number]) => {
         if (document.id !== documentId) return document;
 
@@ -645,18 +663,69 @@ export class WorkflowService {
     const updatedWorkflow = await this.updateContextById(workflowId, {
       documents: documentsWithDecision,
     });
-
     const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow);
+    const entityId = updatedWorkflow.businessId || updatedWorkflow.endUserId;
 
     this.workflowEventEmitter.emit('workflow.context.changed', {
-      oldRuntimeData: runtimeData,
+      oldRuntimeData: workflow,
       updatedRuntimeData: updatedWorkflow,
       state: updatedWorkflow.state,
-      entityId: (updatedWorkflow.businessId || updatedWorkflow.endUserId) as string,
+      entityId,
       correlationId: correlationId,
     });
 
-    return updatedWorkflow;
+    // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
+    const resolvedStates = ['approved', 'rejected'];
+    const shouldResolve =
+      workflowDefinition?.config?.completedWhenTasksResolved && workflow?.status === 'active';
+    const allDocumentsResolved =
+      shouldResolve &&
+      safeEvery(
+        updatedWorkflow?.context?.documents,
+        (document: DefaultContextSchema['documents'][number]) => {
+          if (!document?.decision?.status) return false;
+
+          return resolvedStates.includes(document?.decision?.status);
+        },
+      );
+
+    const workflowService = createWorkflow({
+      runtimeId: workflow?.id,
+      definition: workflowDefinition?.definition,
+      definitionType: workflowDefinition?.definitionType,
+      workflowContext: {
+        machineContext: workflow?.context,
+        state: workflow?.state ?? workflowDefinition?.definition?.initial,
+      },
+    });
+
+    const snapshot = workflowService.getSnapshot();
+    const isFinal = workflowDefinition?.definition?.states?.[snapshot?.value]?.type === 'final';
+    const isResolved =
+      isFinal || allDocumentsResolved || workflow?.status === WorkflowRuntimeDataStatus.completed;
+
+    const updatedWorkflowWithResolve = await this.workflowRuntimeDataRepository.updateById(
+      workflow?.id,
+      {
+        data: {
+          status: allDocumentsResolved ? 'completed' : workflow?.status,
+          resolvedAt: isResolved ? new Date().toISOString() : null,
+        },
+      },
+    );
+
+    if (isResolved) {
+      this.logger.log('Workflow resolved', { id: updatedWorkflowWithResolve?.id });
+
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData: updatedWorkflowWithResolve,
+        state: snapshot?.value ?? updatedWorkflowWithResolve?.state,
+        entityId: updatedWorkflowWithResolve?.businessId || updatedWorkflowWithResolve?.endUserId,
+        correlationId: updatedWorkflowWithResolve?.correlationId,
+      });
+    }
+
+    return updatedWorkflowWithResolve;
   }
 
   async updateContextById(id: string, context: WorkflowRuntimeData['context']) {
