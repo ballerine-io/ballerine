@@ -599,7 +599,10 @@ export class WorkflowService {
       documents: workflow?.context?.documents?.map(
         (document: DefaultContextSchema['documents'][number]) => ({
           ...document,
-          type: document?.type === 'unknown' ? undefined : document?.type,
+          type:
+            document?.type === 'unknown' && document?.decision?.status === 'approved'
+              ? undefined
+              : document?.type,
         }),
       ),
     });
