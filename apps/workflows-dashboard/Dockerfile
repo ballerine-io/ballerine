@@ -2,9 +2,14 @@ FROM node:18.17.1-bullseye-slim as dev
 
 WORKDIR /app
 
+COPY ./package.json .
+
+RUN npm install --legacy-peer-deps
+
 COPY . .
 
-RUN mv /app/.env.example /app/.env; npm install --legacy-peer-deps; npm run build
+RUN mv /app/.env.example /app/.env
+RUN npm run build
 
 ENV PATH="$PATH:./node_modules/.bin"
 

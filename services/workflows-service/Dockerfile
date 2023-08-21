@@ -5,9 +5,14 @@ RUN apt-get install dumb-init
 
 WORKDIR /app
 
+COPY ./package.json .
+
+RUN npm install
+
 COPY . .
 
-RUN npm install; npm run prisma:generate ; npm run build;
+RUN npm run prisma:generate
+RUN npm run build
 
 CMD [ "dumb-init", "npm", "run", "dev", "--host" ]
 
