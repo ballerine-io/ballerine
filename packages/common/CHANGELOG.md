@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.5.24
+
+### Patch Changes
+
+- 204b5479: updated document schemas
+
 ## 0.5.23
 
 ### Patch Changes
