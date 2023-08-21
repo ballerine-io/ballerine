@@ -34,6 +34,7 @@ export class StorageControllerInternal {
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
+  // TODO - update file to be multitenant to the speicific s3 bucket
   // curl -v -F "file=@a.jpg" http://localhost:3000/api/v1/storage
   @Post()
   @UseInterceptors(
