@@ -87,33 +87,7 @@ jobs:
             type=raw,value=${{ steps.get_version.outputs.version }}-prod
             type=raw,value=latest
 
-      - name: Extract metadata for other branches Docker
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        id: branchmeta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
-
-      - name: Build and push Docker image for Dev Branch
-        if: github.ref == 'refs/heads/dev'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: apps/workflows-dashboard
-          push: true
-          tags: ${{ steps.devmeta.outputs.tags }}
-
-      - name: Build and push Docker image for Test Branch
-        if: github.ref == 'refs/heads/test'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: apps/workflows-dashboard
-          push: true
-          tags: ${{ steps.testmeta.outputs.tags }}
-
-      - name: Build and push Docker image for Prod Branch
+      - name: Build and push Docker image for Prod
         if: github.ref == 'refs/heads/prod'
         uses: docker/build-push-action@v4
         with:
@@ -121,11 +95,3 @@ jobs:
           platforms: linux/amd64, linux/arm64
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
-
-      - name: Build and push Docker image for other branch
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: apps/workflows-dashboard
-          push: true
-          tags: ${{ steps.branchmeta.outputs.tags }}
