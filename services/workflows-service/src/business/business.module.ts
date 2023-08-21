@@ -14,6 +14,7 @@ import { StorageService } from '@/storage/storage.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EntityRepository } from '@/common/entity/entity.repository';
+import { ProjectScopeService } from '@/project/project-scope.service';
 import { HttpModule } from '@nestjs/axios';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { EndUserService } from '@/end-user/end-user.service';
@@ -30,6 +31,7 @@ import { EndUserService } from '@/end-user/end-user.service';
     FileRepository,
     FileService,
     StorageService,
+    ProjectScopeService,
     EndUserRepository,
     EndUserService,
     WorkflowEventEmitterService,

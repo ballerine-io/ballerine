@@ -12,7 +12,7 @@ export const BooleanFieldAdapter: RJSVInputAdapter<boolean> = ({ formData, schem
           onChange(Boolean(e));
         }}
       />
-      <span>{schema.description}</span>
+      <span>{schema.title}</span>
     </div>
   );
 };

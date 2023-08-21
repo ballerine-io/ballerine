@@ -1,6 +1,6 @@
 version: '3'
 services:
-  backoffice:
+  ballerine-case-managment:
     build:
       context: ../apps/backoffice-v2/
       args:
@@ -8,9 +8,9 @@ services:
     ports:
       - ${BACKOFFICE_PORT}:80
     depends_on:
-      - service
+      - ballerine-workflow-service
     restart: on-failure
-  headless-example:
+  ballerine-headless-example:
     build:
       context: ../examples/headless-example
       args:
@@ -18,9 +18,9 @@ services:
     ports:
       - ${HEADLESS_SVC_PORT}:80
     depends_on:
-      - service
+      - ballerine-workflow-service
     restart: on-failure
-  kyb-app:
+  ballerine-kyb-app:
     build:
       context: ../examples/kyb-app
       args:
@@ -28,9 +28,9 @@ services:
     ports:
       - ${KYB_APP_PORT}:80
     depends_on:
-      - service
+      - ballerine-workflow-service
     restart: on-failure
-  service:
+  ballerine-workflow-service:
     build:
       context: ../services/workflows-service/
       args:
@@ -61,10 +61,10 @@ services:
       PORT: ${WORKFLOW_SVC_PORT}
       KYB_EXAMPLE_CORS_ORIGIN: http://localhost:${KYB_APP_PORT}
     depends_on:
-      db:
+      ballerine-postgres:
         condition: service_healthy
     restart: on-failure
-  workflows-dashboard:
+  ballerine-workflows-dashboard:
     build:
       context: ../apps/workflows-dashboard
       args:
@@ -72,9 +72,9 @@ services:
     ports:
       - ${WORKFLOW_DASHBOARD_PORT}:80
     depends_on:
-      - service
+      - ballerine-workflow-service
     restart: on-failure
-  websocket-service:
+  ballerine-websocket-service:
     build:
       context: ../services/websocket-service
       args:
@@ -82,9 +82,9 @@ services:
     ports:
       - ${WEBSOCKET_SVC_PORT}:${WEBSOCKET_SVC_PORT}
     depends_on:
-      - service
+      - ballerine-workflow-service
     restart: on-failure
-  db:
+  ballerine-postgres:
     image: sibedge/postgres-plv8:15.3-3.1.7
     ports:
       - ${DB_PORT}:${DB_PORT}
