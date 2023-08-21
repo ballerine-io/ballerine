@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FilterRepository } from '@/filter/filter.repository';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class FilterService {
@@ -14,6 +15,9 @@ export class FilterService {
   }
 
   async getById(id: string, args?: Parameters<FilterRepository['findById']>[1]) {
-    return await this.repository.findById(id, args);
+    const filter = await this.repository.findById(id, args);
+    if (!filter) throw new NotFoundException(`No Filter with id [${id}] was found`);
+
+    return filter;
   }
 }

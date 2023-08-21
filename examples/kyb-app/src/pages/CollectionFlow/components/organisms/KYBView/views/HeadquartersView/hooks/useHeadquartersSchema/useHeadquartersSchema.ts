@@ -1,13 +1,10 @@
 import { getCountryStates } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list';
-import { headquartersSchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/headquarters.schema';
 import { HeadquartersContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/types';
 import { AnyObject } from '@ballerine/ui';
+import { RJSFSchema } from '@rjsf/utils';
 import { useMemo } from 'react';
 
-export const useHeadquartersSchema = (
-  formData: HeadquartersContext,
-  schema = headquartersSchema,
-) => {
+export const useHeadquartersSchema = (formData: HeadquartersContext, schema: RJSFSchema) => {
   const processedSchema = useMemo(() => {
     const countryStates = getCountryStates(formData.country);
 

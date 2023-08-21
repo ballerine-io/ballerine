@@ -18,6 +18,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@/prisma/prisma.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
+import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
@@ -32,6 +33,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       EndUserService,
       FilterService,
       FilterRepository,
+      ProjectScopeService,
       FileRepository,
       FileService,
       StorageService,

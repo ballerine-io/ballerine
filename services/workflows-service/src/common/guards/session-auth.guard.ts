@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { DISABLE_SESSION_AUTH } from '@/common/disable-session-auth';
+import { AuthenticatedEntity } from '@/types';
 
 @Injectable()
 export class SessionAuthGuard implements CanActivate {
@@ -20,10 +21,15 @@ export class SessionAuthGuard implements CanActivate {
 
     const req = context.switchToHttp().getRequest<Request>();
 
-    if (!req.isAuthenticated()) {
-      throw new UnauthorizedException('Unauthorized');
+    const authenticatedEntity = req.user as AuthenticatedEntity | undefined;
+    if (
+      req.isAuthenticated() ||
+      !!authenticatedEntity?.customer ||
+      authenticatedEntity?.type == 'admin'
+    ) {
+      return true;
     }
 
-    return true;
+    throw new UnauthorizedException('Unauthorized');
   }
 }

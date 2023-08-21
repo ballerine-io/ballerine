@@ -1,5 +1,37 @@
 import { PrismaClient } from '@prisma/client';
 import { kycEmailSessionDefinition } from './kyc-email-process-example';
+import {
+  defaultPersonalInformationData,
+  personalInformationSchema,
+  personalInformationUISchema,
+} from './schemas/personal-information.schema';
+import {
+  companyInformationSchema,
+  companyInformationUISchema,
+  defaultCompanyInformationData,
+} from './schemas/company-information.schema';
+import {
+  defaultHeadquartersData,
+  headquartersSchema,
+  headquartersUISchema,
+} from './schemas/headquarters.schema';
+import { companyActivitySchema, companyActivityUISchema } from './schemas/company-activity.schema';
+import {
+  bankInformationSchema,
+  bankInformationUISchema,
+  defaultBankInformationData,
+} from './schemas/bank-information.schema';
+import {
+  defaultShareholdersData,
+  shareholdersSchema,
+  shareholdersUISchema,
+} from './schemas/shareholders.schema';
+import {
+  companyDocumentsSchema,
+  companyDocumentsUISchema,
+  defaultCompanyDocumentsData,
+} from './schemas/company-documents.schema';
+import { env } from '../../src/env';
 
 export const parentKybWithSessionWorkflowDefinition = {
   id: 'kyb_parent_kyc_session_example',
@@ -9,14 +41,77 @@ export const parentKybWithSessionWorkflowDefinition = {
   definition: {
     id: 'kyb_parent_kyc_session_example_v1',
     predictableActionArguments: true,
-    initial: 'idle',
+    initial: 'data_collection',
     context: {
       documents: [],
     },
     states: {
-      idle: {
+      data_collection: {
         on: {
           start: 'run_ubos',
+        },
+        metadata: {
+          uiSettings: {
+            multiForm: {
+              steps: [
+                {
+                  title: 'Personal information',
+                  description: 'Please provide your personal information',
+                  formSchema: personalInformationSchema,
+                  uiSchema: personalInformationUISchema,
+                  defaultData: defaultPersonalInformationData,
+                  key: 'personalInformation',
+                },
+                {
+                  title: 'Company Information',
+                  description: 'Please provide your company information',
+                  formSchema: companyInformationSchema,
+                  uiSchema: companyInformationUISchema,
+                  defaultData: defaultCompanyInformationData,
+                  key: 'companyInformation',
+                },
+                {
+                  title: 'Headquarters Address',
+                  description: 'Please provide headquarters address',
+                  formSchema: headquartersSchema,
+                  uiSchema: headquartersUISchema,
+                  defaultData: defaultHeadquartersData,
+                  key: 'headquarters',
+                },
+                {
+                  title: 'Company Activity',
+                  description: 'Please provide details about company activity',
+                  formSchema: companyActivitySchema,
+                  uiSchema: companyActivityUISchema,
+                  key: 'companyActivity',
+                },
+                {
+                  title: 'Bank Information',
+                  description: 'Please provide your bank details',
+                  formSchema: bankInformationSchema,
+                  uiSchema: bankInformationUISchema,
+                  defaultData: defaultBankInformationData,
+                  key: 'bankInformation',
+                },
+                {
+                  title: 'Company Ownership',
+                  description: 'Please provide ownership details',
+                  formSchema: shareholdersSchema,
+                  uiSchema: shareholdersUISchema,
+                  defaultData: defaultShareholdersData,
+                  key: 'ubos',
+                },
+                {
+                  title: 'Company Documents',
+                  description: 'Please upload company documents',
+                  formSchema: companyDocumentsSchema,
+                  uiSchema: companyDocumentsUISchema,
+                  defaultData: defaultCompanyDocumentsData,
+                  key: 'companyDocuments',
+                },
+              ],
+            },
+          },
         },
       },
       run_ubos: {
@@ -144,7 +239,8 @@ export const parentKybWithSessionWorkflowDefinition = {
               from: 'no-reply@ballerine.com',
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
               templateId: 'd-7305991b3e5840f9a14feec767ea7301',
-              revisionReason: documents[].decision[].revisionReason | [0]
+              revisionReason: documents[].decision[].revisionReason | [0],
+              adapter: '${env.MAIL_ADAPTER}'
               }`, // jmespath
             },
           ],

@@ -26,11 +26,11 @@ export const FieldLayout = ({
       {isLabelEnabled ? (
         <Label htmlFor={id}>
           {label}
-          {required ? '*' : ''}
+          {required ? '' : <span className="opacity-50">{' (optional) '}</span>}
         </Label>
       ) : null}
       {children}
-      {rawErrors ? <ErrorsList errors={errors} className="capitalize" /> : null}
+      {rawErrors ? <ErrorsList errors={errors} /> : null}
       {fieldWarnings ? (
         <ErrorsList
           errors={Array.isArray(fieldWarnings) ? fieldWarnings : [fieldWarnings]}
