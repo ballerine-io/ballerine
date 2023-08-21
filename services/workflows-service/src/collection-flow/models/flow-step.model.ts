@@ -1,5 +1,13 @@
 import { IsBoolean, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
+export class DocumentConfiguration {
+  @IsString()
+  name!: string;
+
+  @IsString()
+  type!: string;
+}
+
 export class FlowStepModel {
   @IsString()
   key!: string;
