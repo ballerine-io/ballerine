@@ -7,11 +7,13 @@ import { HeadquartersContext } from '@app/pages/CollectionFlow/components/organi
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { DynamicForm } from '@ballerine/ui';
 import { useViewSchemas } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useViewSchemas';
+import { useNextviewMoveResolved } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useNextViewMoveResolver';
 
 export const HeadquartersView = () => {
-  const { context, update, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
+  const { context, activeView } = useViewState<WorkflowFlowData>();
   const { formSchema, uiSchema } = useViewSchemas();
   const { schema } = useHeadquartersSchema(context.flowData.headquarters, formSchema);
+  const { next } = useNextviewMoveResolved(activeView);
 
   return (
     <AppShell.FormContainer header={<ViewHeader />}>
@@ -20,8 +22,7 @@ export const HeadquartersView = () => {
         schema={schema}
         uiSchema={uiSchema}
         formData={context.flowData.headquarters}
-        onChange={values => void update(values)}
-        onSubmit={values => void saveAndPerformTransition(values)}
+        onSubmit={next}
         transformErrors={transformRJSFErrors}
       />
     </AppShell.FormContainer>

@@ -44,4 +44,5 @@ export interface View<T = {}> {
   disableWrapper?: boolean;
   hidden?: boolean;
   viewMetadata?: T;
+  isFinal?: boolean;
 }

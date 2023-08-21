@@ -38,6 +38,7 @@ export interface TFlowStep {
   uiSchema: UiSchema;
   formSchema: RJSFSchema;
   defaultData: object;
+  isFinal?: boolean;
 }
 export interface TFlowConfiguration {
   id: string;

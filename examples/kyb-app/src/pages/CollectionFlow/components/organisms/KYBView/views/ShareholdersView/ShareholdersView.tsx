@@ -6,10 +6,13 @@ import { FinalView } from '@app/pages/CollectionFlow/components/organisms/KYBVie
 import { DynamicForm } from '@ballerine/ui';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
 import { useViewSchemas } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useViewSchemas';
+import { useNextviewMoveResolved } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useNextViewMoveResolver';
 
 export const ShareholdersView = () => {
-  const { context, state, isFinished, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
+  const { context, state, isFinished, activeView, saveAndPerformTransition } =
+    useViewState<WorkflowFlowData>();
   const { formSchema, uiSchema } = useViewSchemas();
+  const { next } = useNextviewMoveResolved(activeView);
 
   return !isFinished ? (
     <AppShell.FormContainer header={<ViewHeader />}>
@@ -18,7 +21,7 @@ export const ShareholdersView = () => {
         schema={formSchema}
         uiSchema={uiSchema}
         formData={(context.flowData[state] as UBOSContext[]) || []}
-        onSubmit={values => void saveAndPerformTransition(values)}
+        onSubmit={next}
         transformErrors={transformRJSFErrors}
       />
     </AppShell.FormContainer>
