@@ -4,7 +4,8 @@
 
 ### Patch Changes
 
-- Support mail adapters (sendgrid, log)
+- Updated dependencies
+  - @ballerine/common@0.5.20
 
 ## 0.4.29
 

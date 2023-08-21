@@ -16,6 +16,8 @@ model User {
   password  String
   roles     Json
 
+  userToProjects UserToProject[]
+
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   lastActiveAt        DateTime?
@@ -70,9 +72,13 @@ model EndUser {
   businesses           Business[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
   @@index([endUserType])
   @@index([approvalState])
   @@index([createdAt])
+  @@index([projectId])
 }
 
 model EndUsersOnBusinesses {
@@ -119,10 +125,14 @@ model Business {
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  @@index([businessType])
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
   @@index([companyName])
   @@index([approvalState])
   @@index([correlationId])
+  @@index([projectId])
+  @@index([businessType])
 }
 
 model WorkflowDefinition {
@@ -180,12 +190,16 @@ model WorkflowRuntimeData {
   parentWorkflowRuntimeData WorkflowRuntimeData?  @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
   childWorkflowsRuntimeData WorkflowRuntimeData[] @relation("ParentChild")
 
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
   @@index([assigneeId, status])
   @@index([endUserId, status])
   @@index([businessId, status])
   @@index([workflowDefinitionId, status])
   @@index([state])
   @@index([parentRuntimeDataId])
+  @@index([projectId])
 }
 
 model File {
@@ -197,7 +211,11 @@ model File {
   createdAt        DateTime @default(now())
   createdBy        String   @default("SYSTEM")
 
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
   @@index([userId])
+  @@index([projectId])
 }
 
 model Policy {
@@ -210,14 +228,75 @@ model Policy {
 
 model Filter {
   id        String   @id @default(cuid())
-  // Name of the filter i.e. "KYC"
-  name      String   @unique
-  // Does the filter belong to EndUser or Business?
+  name      String
   entity    String
-  // 1:1 with Prisma's select object
-  // Example: { select: { id: true, firstName: true, lastName: true }, where: { id: { equals: "123" } } }
   query     Json
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   createdBy String   @default("SYSTEM")
+
+  @@index([projectId])
+  @@unique([name, projectId])  // Ensure 'name' is unique within the scope of 'projectId'
+}
+
+enum CustomerStatuses {
+  onboarding
+  during_pilot
+  active
+  terminated
+}
+
+model Customer {
+  id                          String           @id @default(cuid())
+  name                        String           @unique
+  displayName                 String
+  logoImageUri                String
+  customerStatus              CustomerStatuses @default(onboarding)
+  authenticationConfiguration Json?
+  country                     String?
+  language                    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects Project[]
+
+  @@index(name)
+  @@index(customerStatus)
+  @@index([authenticationConfiguration(ops: JsonbPathOps)], type: Gin)
+}
+
+model Project {
+  id         String   @id @default(cuid())
+  name       String
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  userToProjects UserToProject[]
+
+  filters             Filter[]
+  endUsers            EndUser[]
+  business            Business[]
+  workflowRuntimeData WorkflowRuntimeData[]
+  files               File[]
+
+  @@index(name)
+  @@index(customerId)
+  @@unique([name, customerId])
+
+}
+
+model UserToProject {
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  @@id([projectId, userId])
+  @@index([userId])
 }
