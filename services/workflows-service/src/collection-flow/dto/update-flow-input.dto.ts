@@ -42,6 +42,7 @@ export class CompanyDocument {
 
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   fileId!: string;
 
   @IsObject()
@@ -54,6 +55,10 @@ export class CompanyDocument {
   @IsString()
   @IsNotEmpty()
   type!: string;
+
+  @IsString()
+  @IsOptional()
+  uri!: string;
 }
 
 export class UBOShareholder {
@@ -77,23 +82,6 @@ export class UBOShareholder {
   email!: string;
 }
 
-export class EntityData {
-  @IsString()
-  website!: string;
-
-  @IsString()
-  registrationNumber!: number;
-
-  @IsString()
-  companyName!: string;
-
-  @IsString()
-  countryOfIncorporation!: string;
-
-  @IsString()
-  fullAddress!: string;
-}
-
 export class UpdateFlowPayload {
   @ValidateNested()
   @Type(() => MainRepresentative)
@@ -110,16 +98,14 @@ export class UpdateFlowPayload {
   ubos!: UBOShareholder[];
 
   @IsObject()
-  @ValidateNested()
-  @Type(() => EntityData)
-  entityData!: EntityData;
-
-  @IsObject()
   dynamicData!: object;
 
   @IsNullable()
   @IsString()
   flowState!: string | null;
+
+  @IsObject()
+  businessData!: object;
 }
 
 export class UpdateFlowDto {

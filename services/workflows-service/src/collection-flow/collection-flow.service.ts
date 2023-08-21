@@ -180,21 +180,20 @@ export class CollectionFlowService {
       documents: updatePayload.documents,
       ubos: updatePayload.ubos,
       flowState: updatePayload.flowState,
-      entityData: updatePayload.entityData,
+      businessData: updatePayload.businessData,
     });
 
     const workflowData = adapter.deserialize(flowData as any, workflow, customer);
 
     await this.businessService.updateById(workflow.businessId, {
-      data: {
-        registrationNumber: String(updatePayload.entityData.registrationNumber),
-        address: updatePayload.entityData.fullAddress,
-        website: updatePayload.entityData.website,
-        companyName: updatePayload.entityData.companyName,
-      },
+      data: updatePayload.businessData,
     });
 
-    await this.workflowService.updateContextById(workflowData.id, workflowData.context);
+    await this.workflowService.createOrUpdateWorkflowRuntime({
+      workflowDefinitionId: workflowData.workflowDefinitionId,
+      context: workflowData.context,
+      projectIds,
+    });
 
     return flowData;
   }

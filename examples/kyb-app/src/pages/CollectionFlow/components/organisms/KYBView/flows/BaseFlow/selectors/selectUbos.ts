@@ -19,7 +19,6 @@ export const selectUbos = ({ flowData }: WorkflowFlowData, user: TUser) => {
 
   (ubosData?.shareholders || []).forEach(uboData => {
     list.push({
-      ...uboData,
       id: v4(),
       firstName: uboData.name.firstName,
       lastName: uboData.name.lastName,

@@ -53,6 +53,9 @@ export const parentKybWithSessionWorkflowDefinition = {
         metadata: {
           uiSettings: {
             multiForm: {
+              map: {
+                industry: 'companyActivity.blabla',
+              },
               steps: [
                 {
                   title: 'Personal information',

@@ -1,6 +1,5 @@
 import {
   CompanyDocument,
-  EntityData,
   MainRepresentative,
   UBOShareholder,
 } from '@/collection-flow/dto/update-flow-input.dto';
@@ -59,7 +58,7 @@ export class KYBParentKYCSessionExampleFlowData {
   workflow!: WorkflowRuntimeData;
 
   @IsObject()
-  entityData!: EntityData;
+  businessData!: object;
 
   @IsBoolean()
   isFinished!: boolean;
