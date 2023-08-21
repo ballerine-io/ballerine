@@ -32,6 +32,7 @@ export const env = createEnv({
     WEBHOOK_URL: z.string().url().optional(),
     WEBHOOK_SECRET: z.string().optional(),
     IS_DEMO: z.string().optional(),
+    ADMIN_API_KEY: z.string().optional(),
     MAIL_ADAPTER: z
       .enum(['sendgrid', 'log'])
       .default('sendgrid')

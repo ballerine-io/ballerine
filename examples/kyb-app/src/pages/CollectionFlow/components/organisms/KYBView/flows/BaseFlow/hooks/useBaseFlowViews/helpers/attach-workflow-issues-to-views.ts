@@ -1,8 +1,9 @@
 import keyBy from 'lodash/keyBy';
 import { View } from '@app/common/providers/ViewStateProvider';
 import { Issue } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useWorkflowIssues';
+import { BaseFlowViewMetadata } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/types';
 
-export const attachWorkflowIssuesToViews = (views: View[], issues: Issue[]): View[] => {
+export const attachWorkflowIssuesToViews = <T>(views: View<T>[], issues: Issue[]): View<T>[] => {
   const issuesMap = keyBy(issues, 'name');
   const workflowPropertiesViewAlias = {
     companyDocuments: 'documents',
@@ -10,12 +11,12 @@ export const attachWorkflowIssuesToViews = (views: View[], issues: Issue[]): Vie
 
   const viewsWithStatuses = views.map(view => ({
     ...view,
-    meta: {
+    stepMetadata: {
       status: issuesMap[(workflowPropertiesViewAlias[view.key] as string) || view.key]
         ? 'warning'
-        : view.meta?.status,
+        : view.stepMetadata?.status,
     },
   }));
 
-  return viewsWithStatuses as View[];
+  return viewsWithStatuses;
 };

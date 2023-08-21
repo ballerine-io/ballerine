@@ -2,26 +2,27 @@ import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/ViewHeader';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
-import { headquartersSchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/headquarters.schema';
-import { headquartersUISchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/headquarters.ui-schema';
 import { useHeadquartersSchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/hooks/useHeadquartersSchema';
 import { HeadquartersContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/types';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { DynamicForm } from '@ballerine/ui';
+import { useViewSchemas } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useViewSchemas';
+import { useNextviewMoveResolved } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useNextViewMoveResolver';
 
 export const HeadquartersView = () => {
-  const { context, update, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
-  const { schema } = useHeadquartersSchema(context.flowData.headquarters, headquartersSchema);
+  const { context, activeView } = useViewState<WorkflowFlowData>();
+  const { formSchema, uiSchema } = useViewSchemas();
+  const { schema } = useHeadquartersSchema(context.flowData.headquarters, formSchema);
+  const { next } = useNextviewMoveResolved(activeView);
 
   return (
     <AppShell.FormContainer header={<ViewHeader />}>
       <DynamicForm<HeadquartersContext>
         className="max-w-[384px]"
         schema={schema}
-        uiSchema={headquartersUISchema}
+        uiSchema={uiSchema}
         formData={context.flowData.headquarters}
-        onChange={values => void update(values)}
-        onSubmit={values => void saveAndPerformTransition(values)}
+        onSubmit={next}
         transformErrors={transformRJSFErrors}
       />
     </AppShell.FormContainer>

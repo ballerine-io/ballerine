@@ -53,6 +53,7 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
               dateOfBirth: data.entity.birthDate,
               companyName: data.entity.companyName,
               email: data.entity.email,
+              title: data.entity.mainRepresentative.title,
             },
             ubos: data.isShareholder ? [createUBOFromUserInformation(data), ...ubos] : ubos,
           },

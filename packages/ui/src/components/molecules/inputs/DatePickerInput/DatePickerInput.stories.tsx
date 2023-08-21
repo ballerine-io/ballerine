@@ -14,7 +14,7 @@ export const Disabled = {
 };
 
 const ControlledComponent = () => {
-  const [timestamp, setTimestamp] = useState(+new Date());
+  const [timestamp, setTimestamp] = useState<string | null>(new Date().toISOString());
 
   return <DatePickerInput value={timestamp} onChange={event => setTimestamp(event.target.value)} />;
 };

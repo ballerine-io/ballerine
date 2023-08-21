@@ -1,5 +1,23 @@
 # @ballerine/ui
 
+## 0.2.13
+
+### Patch Changes
+
+- b8dedaaf: Enabled search on phone number in DynamicForm & BooleanFieldAdapter fix
+
+## 0.2.12
+
+### Patch Changes
+
+- Updated DatePicker error text styles & removed errors text capitalization from DynamicForm
+
+## 0.2.11
+
+### Patch Changes
+
+- Fixed date picker date serialization & added incorrect date hint & removed controls from number inputs
+
 ## 0.2.10
 
 ### Patch Changes

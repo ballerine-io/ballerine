@@ -1,4 +1,4 @@
-import { withSessionProtected } from '@app/hooks/useSignin/hocs/withSessionProtected';
+import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
 
 export const Success = withSessionProtected(() => {
