@@ -55,9 +55,6 @@ export const ghanaDocuments: TDocument[] = [
       type: 'object',
       required: ['msisdn', 'accountHolderName'],
       properties: {
-        accountNameHolder: {
-          type: 'string',
-        },
         msisdn: {
           type: 'string',
           pattern: '^233[0-9]{9}$',
