@@ -39,8 +39,8 @@ export const downloadFileFromS3 = async (
     const getObjectCommand = new GetObjectCommand({ Bucket: bucketName, Key: fileNameInBucket });
     const s3Client = new S3Client(
       AwsS3FileConfig.fetchClientConfig(
-        process.env
-        // `${customerName ? `${customerName.toUpperCase()}_` : ''}`,
+        process.env,
+        //TODO: when multi-bucket tenant: `${customerName ? `${customerName.toUpperCase()}_` : ''}`,
       ),
     );
     const response = await s3Client.send(getObjectCommand);
