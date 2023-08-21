@@ -13,10 +13,14 @@ import { UpdateFlowDto, startFlow, updateFlow } from '@app/domains/collection-fl
 import { selectDocuments } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectDocuments';
 import { selectUbos } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectUbos';
 import { selectEntityData } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectEntityData';
+import { useCustomer } from '@app/components/providers/CustomerProvider';
+import { updateBusiness } from '@app/domains/business';
+import { selectBusinessData } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectBusinessData';
 
 export const useBaseFlow = () => {
   const { logoutSilent } = useSignin();
   const { user } = useSessionQuery();
+  const { customer } = useCustomer();
   const { flowData, isFetching } = useActiveWorkflowQuery();
   const [isLoading, setLoading] = useState(false);
   const [isUpdating, setUpdating] = useState(false);
@@ -40,11 +44,12 @@ export const useBaseFlow = () => {
           documents: [],
           dynamicData: values.flowData,
           flowState: values.currentView,
-          entityData: selectEntityData(values),
+          entityData: selectEntityData(values, customer),
+          businessData: selectBusinessData(values, user),
         },
       }).then(() => setUpdating(false));
     },
-    [user],
+    [user, customer],
   );
 
   const handleFinish = useCallback(
@@ -63,7 +68,8 @@ export const useBaseFlow = () => {
             documents: await selectDocuments(context, flowData.documents),
             dynamicData: context.flowData,
             flowState: context.currentView,
-            entityData: selectEntityData(context),
+            entityData: selectEntityData(context, customer),
+            businessData: selectBusinessData(context, user),
           },
         };
 
@@ -84,7 +90,7 @@ export const useBaseFlow = () => {
         setLoading(false);
       }
     },
-    [user, logoutSilent, navigate],
+    [user, customer, logoutSilent, navigate],
   );
 
   return {

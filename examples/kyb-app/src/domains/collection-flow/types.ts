@@ -57,7 +57,8 @@ export interface MainRepresentative {
 
 export interface Document {
   id?: string;
-  fileId: string;
+  fileId?: string;
+  uri?: string;
   properties: object;
   category: string;
   type: string;
@@ -76,9 +77,28 @@ export interface EntityData {
   website: string;
   registrationNumber: string;
   companyName: string;
+  companyDisplayName: string;
   countryOfIncorporation: string;
   fullAddress: string;
 }
+
+export interface BusinessData {
+  businessType?: string;
+  companyName: string;
+  registrationNumber: string;
+  legalForm: string;
+  country: string;
+  countryOfIncorporation: string;
+  dateOfIncorporation: string;
+  address: string;
+  phoneNumber: string;
+  email: string;
+  website: string;
+  industry: string;
+  taxIdentificationNumber: string;
+  vatNumber: string;
+}
+
 export interface UpdateFlowDto {
   flowType: string;
   flowId: string;
@@ -89,5 +109,6 @@ export interface UpdateFlowDto {
     entityData: EntityData;
     flowState: string;
     dynamicData: object;
+    businessData: BusinessData;
   };
 }

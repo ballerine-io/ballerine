@@ -61,7 +61,7 @@ const fileHelpers: Record<FileInputName, FileHelpers> = {
   },
   companyStructure: {
     getProperties: ({ flowData }) => {
-      return flowData?.ubos.shareholders && flowData?.ubos.shareholders.length
+      return flowData?.ubos?.shareholders && flowData?.ubos.shareholders.length
         ? {
             firstName: flowData?.ubos.shareholders.at(-1).name.firstName,
             lastName: flowData?.ubos.shareholders.at(-1).name.lastName,
@@ -86,7 +86,7 @@ const extractFilesFromPayload = (fileNames: typeof allowedFileslist, payload: ob
 
 export const selectDocuments = async (
   flowData: WorkflowFlowData,
-  documents: Document[],
+  existingDocuments: Document[],
 ): Promise<Document[]> => {
   const { companyDocuments } = flowData.flowData;
 
@@ -114,7 +114,7 @@ export const selectDocuments = async (
     );
 
     return documents.map(doc => {
-      const existingDocument = documents.find(
+      const existingDocument = existingDocuments.find(
         existingDocument =>
           existingDocument.type === doc.type && existingDocument.category === doc.category,
       );
