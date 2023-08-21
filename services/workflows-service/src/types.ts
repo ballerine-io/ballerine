@@ -20,3 +20,5 @@ export type AuthenticatedEntity = {
   projectIds: TProjectIds;
   type: 'user' | 'customer' | 'admin';
 };
+
+

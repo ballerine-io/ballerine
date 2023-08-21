@@ -1,5 +1,14 @@
 import * as common from '@nestjs/common';
-import { Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+    CallHandler,
+    ExecutionContext,
+    NestInterceptor,
+    Param,
+    Post,
+    Res,
+    UploadedFile,
+    UseInterceptors
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -14,7 +23,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import { TProjectIds} from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { CustomerService } from '@/customer/customer.service';
 
@@ -77,7 +86,7 @@ export class StorageControllerExternal {
     // currently ignoring user id due to no user info
     const persistedFile = await this.service.getFileNameById({
       id,
-    });
+    }, this.scopeService.scopeFindOne({}, projectIds));
 
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
@@ -96,8 +105,9 @@ export class StorageControllerExternal {
   ) {
     // currently ignoring user id due to no user info
     const persistedFile = await this.service.getFileNameById({
-      id,
-    });
+        id,
+      }, this.scopeService.scopeFindOne({}, projectIds)
+    );
 
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
@@ -110,14 +120,13 @@ export class StorageControllerExternal {
       const localFilePath = await downloadFileFromS3(
         AwsS3FileConfig.getBucketName(
           process.env,
-          `${customer?.name ? customer.name.toUpperCase() : ''}`,
         ) as string,
         persistedFile.fileNameInBucket,
       );
-      return res.sendFile(localFilePath, { root: '/' });
+      return res.sendFile(localFilePath, {root: '/'});
     } else {
       const root = path.parse(os.homedir()).root;
-      return res.sendFile(persistedFile.fileNameOnDisk, { root: root });
+      return res.sendFile(persistedFile.fileNameOnDisk, {root: root});
     }
   }
 }
