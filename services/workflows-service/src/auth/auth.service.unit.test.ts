@@ -33,6 +33,9 @@ const userService = {
     }
     return null;
   },
+  getByEmailUnscoped(email: any) {
+    return this.getByEmail(email);
+  },
 };
 
 const passwordService = {
@@ -50,7 +53,7 @@ const tokenService = {
 describe('AuthService', () => {
   //ARRANGE
   let service: AuthService;
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {

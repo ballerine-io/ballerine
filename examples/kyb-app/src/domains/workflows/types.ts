@@ -100,6 +100,7 @@ export interface WorkflowAdditionalInformation {
   email: string;
   dateOfBirth: string;
   companyName: string;
+  title: string;
 }
 
 export interface TRunWorkflowDto {

@@ -18,6 +18,7 @@ interface Props<TContext extends ViewsData> {
   warnings?: InputsWarnings;
   isLoading?: boolean;
   afterUpdate?: (viewsData: AnyObject) => void;
+  afterTransition?: (viewsData: AnyObject) => void;
   onViewChange?: (context: TContext, viewKey: string) => void;
   onFinish?: (context: TContext) => void;
 }
@@ -30,6 +31,7 @@ export function SequencedViews<TContext extends ViewsData>({
   isLoading = false,
   onViewChange,
   afterUpdate,
+  afterTransition,
   onFinish,
 }: Props<TContext>) {
   const [isFinished, setFinished] = useState(false);
@@ -49,6 +51,10 @@ export function SequencedViews<TContext extends ViewsData>({
   const { steps, currentStep, nextStep, prevStep, completeCurrent } = useStepper(initialSteps, {
     initialStepIndex: initialStep,
   });
+  const currentView = useMemo(
+    () => views.find(view => view.key === currentStep.dataAlias) || null,
+    [currentStep],
+  );
 
   const { data: viewsData, update: _update, setData } = useViewsDataRepository(initialContext);
 
@@ -94,8 +100,9 @@ export function SequencedViews<TContext extends ViewsData>({
     async (payload: Partial<TContext['flowData']>, shared?: object): Promise<TContext> => {
       const savedData = await save(payload, shared);
       completeCurrent();
-      nextStep();
+      const step = nextStep();
 
+      afterTransition && afterTransition({ ...savedData, currentView: step.dataAlias });
       return savedData;
     },
     [save, nextStep, completeCurrent],
@@ -122,6 +129,7 @@ export function SequencedViews<TContext extends ViewsData>({
       isFinished,
       views,
       isLoading,
+      activeView: currentView,
       finish,
       update,
       updateViews: setViews,
@@ -141,6 +149,7 @@ export function SequencedViews<TContext extends ViewsData>({
     isFinished,
     isLoading,
     views,
+    currentView,
     setData,
     update,
     save,

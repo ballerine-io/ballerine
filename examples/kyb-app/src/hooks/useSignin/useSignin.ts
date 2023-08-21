@@ -1,16 +1,19 @@
-import { SigninCredentials, User } from '@app/hooks/useSignin/types';
+import { authorizeUser } from '@app/domains/collection-flow';
+import { SigninCredentials } from '@app/hooks/useSignin/types';
 import { useCallback, useState } from 'react';
 
 export const TOKEN_KEY = 'auth_creds';
 
 export const useSignin = () => {
-  const [user, setUser] = useState<User | null>(() =>
-    localStorage.getItem(TOKEN_KEY) ? { email: localStorage.getItem(TOKEN_KEY) } : null,
-  );
+  const [isSigningIn, setSigningIn] = useState(false);
 
-  const signin = useCallback(({ email }: SigninCredentials) => {
+  const signin = useCallback(async ({ email }: SigninCredentials) => {
+    setSigningIn(true);
+    await authorizeUser({ email });
+
     localStorage.setItem(TOKEN_KEY, email);
-    setUser({ email });
+
+    setSigningIn(false);
   }, []);
 
   const logout = useCallback(() => {
@@ -23,7 +26,7 @@ export const useSignin = () => {
   }, []);
 
   return {
-    user,
+    isSigningIn,
     signin,
     logout,
     logoutSilent,

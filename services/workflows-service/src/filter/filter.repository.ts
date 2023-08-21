@@ -19,23 +19,17 @@ export class FilterRepository {
     return await this.prisma.filter.findMany(args);
   }
 
-  async findById<T extends Omit<Prisma.FilterFindUniqueOrThrowArgs, 'where'>>(
-    id: string,
-    args?: Prisma.SelectSubset<T, Omit<Prisma.FilterFindUniqueOrThrowArgs, 'where'>>,
-  ) {
-    return await this.prisma.filter.findUniqueOrThrow({
-      where: { id },
+  async findById(id: string, args?: Prisma.FilterFindFirstArgs) {
+    return await this.prisma.filter.findFirst({
       ...args,
+      where: { ...args?.where, id: id },
     });
   }
 
-  async updateById<T extends Omit<Prisma.FilterUpdateArgs, 'where'>>(
-    id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.FilterUpdateArgs, 'where'>>,
-  ): Promise<FilterModel> {
+  async updateById(id: string, args: Prisma.FilterUpdateArgs): Promise<FilterModel> {
     return await this.prisma.filter.update({
-      where: { id },
       ...args,
+      where: { ...args.where, id: id },
     });
   }
 }

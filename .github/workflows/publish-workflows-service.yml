@@ -3,14 +3,12 @@ name: Publish workflows-service image
 on:
   workflow_dispatch:
   push:
-    paths:
-      # Run this pipeline only if there are changes in specified path
-      - "services/workflows-service/**"
     branches:
       - dev
       - test
       - prod
       - staging
+      - demo
 
 env:
   REGISTRY: ghcr.io
@@ -30,6 +28,14 @@ jobs:
       - name: Install jq
         run: sudo apt-get install jq
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: 'arm64,arm'
+  
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
@@ -42,20 +48,31 @@ jobs:
         run: |
           PACKAGE_VERSION=$(jq -r '.version' services/workflows-service/package.json)
           echo "::set-output name=version::$PACKAGE_VERSION"
-
+      
       - name: Print the version
         run: echo "The version was ${{ steps.get_version.outputs.version }}"
 
-      - name: Extract metadata (tags, labels) for dev Docker
-        if: github.ref == 'refs/heads/dev'
-        id: devmeta
+      - name: Extract metadata for non Prod Docker images
+        if: github.ref != 'refs/heads/prod'
+        id: branchmeta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=dev
-            type=raw,value=commit-${{ github.sha }}-dev
-            type=raw,value=${{ steps.get_version.outputs.version }}-dev
+            type=raw,value=${{ github.head_ref || github.ref_name }}
+            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
+            type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
+
+      - name: Extract metadata (tags, labels) for demo Docker
+        if: github.ref == 'refs/heads/demo'
+        id: demometa
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=demo
+            type=raw,value=commit-${{ github.sha }}-demo
+            type=raw,value=${{ steps.get_version.outputs.version }}-demo
 
       - name: Extract metadata (tags, labels) for test Docker
         if: github.ref == 'refs/heads/test'
@@ -70,6 +87,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for prod Docker
         if: github.ref == 'refs/heads/prod'
+        # This branch will have the tag latest
         id: prodmeta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
@@ -88,7 +106,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }} 
+            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
 
       - name: Build and push Docker image for Dev
         if: github.ref == 'refs/heads/dev'
@@ -97,6 +115,15 @@ jobs:
           context: services/workflows-service
           push: true
           tags: ${{ steps.devmeta.outputs.tags }}
+
+      - name: Build and push Docker image for Demo
+        if: github.ref == 'refs/heads/demo'
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: services/workflows-service
+          push: true
+          tags: ${{ steps.demometa.outputs.tags }}
+          labels: ${{ steps.devmeta.outputs.labels }}
 
       - name: Build and push Docker image for Test
         if: github.ref == 'refs/heads/test'
@@ -108,9 +135,10 @@ jobs:
 
       - name: Build and push Docker image for Prod
         if: github.ref == 'refs/heads/prod'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        uses: docker/build-push-action@v4
         with:
           context: services/workflows-service
+          platforms: linux/amd64, linux/arm64
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
 
