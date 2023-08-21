@@ -3,12 +3,14 @@ name: Publish workflows-service image
 on:
   workflow_dispatch:
   push:
+    paths:
+      # Run this pipeline only if there are changes in specified path
+      - "services/workflows-service/**"
     branches:
       - dev
       - test
       - prod
       - staging
-      - demo
 
 env:
   REGISTRY: ghcr.io
@@ -63,29 +65,7 @@ jobs:
             type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
             type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
 
-      - name: Extract metadata (tags, labels) for demo Docker
-        if: github.ref == 'refs/heads/demo'
-        id: demometa
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=demo
-            type=raw,value=commit-${{ github.sha }}-demo
-            type=raw,value=${{ steps.get_version.outputs.version }}-demo
-
-      - name: Extract metadata (tags, labels) for test Docker
-        if: github.ref == 'refs/heads/test'
-        id: testmeta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=test
-            type=raw,value=commit-${{ github.sha }}-test
-            type=raw,value=${{ steps.get_version.outputs.version }}-test
-
-      - name: Extract metadata (tags, labels) for prod Docker
+      - name: Extract metadata (tags, labels) for prod Docker images
         if: github.ref == 'refs/heads/prod'
         # This branch will have the tag latest
         id: prodmeta
@@ -97,42 +77,7 @@ jobs:
             type=raw,value=commit-${{ github.sha }}-prod
             type=raw,value=${{ steps.get_version.outputs.version }}-prod
             type=raw,value=latest
-
-      - name: Extract metadata for other branches Docker
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        id: branchmeta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
-
-      - name: Build and push Docker image for Dev
-        if: github.ref == 'refs/heads/dev'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: services/workflows-service
-          push: true
-          tags: ${{ steps.devmeta.outputs.tags }}
-
-      - name: Build and push Docker image for Demo
-        if: github.ref == 'refs/heads/demo'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: services/workflows-service
-          push: true
-          tags: ${{ steps.demometa.outputs.tags }}
-          labels: ${{ steps.devmeta.outputs.labels }}
-
-      - name: Build and push Docker image for Test
-        if: github.ref == 'refs/heads/test'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: services/workflows-service
-          push: true
-          tags: ${{ steps.testmeta.outputs.tags }}
-
+  
       - name: Build and push Docker image for Prod
         if: github.ref == 'refs/heads/prod'
         uses: docker/build-push-action@v4
@@ -142,10 +87,11 @@ jobs:
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
 
-      - name: Build and push Docker image for other branch
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+      - name: Build and push Docker image for non Prod
+        if: github.ref != 'refs/heads/prod'
+        uses: docker/build-push-action@v4
         with:
           context: services/workflows-service
+          platforms: linux/amd64, linux/arm64
           push: true
           tags: ${{ steps.branchmeta.outputs.tags }}

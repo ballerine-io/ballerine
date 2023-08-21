@@ -46,30 +46,44 @@ jobs:
       - name: Print the version
         run: echo "The version was ${{ steps.get_version.outputs.version }}"
 
-      - name: Extract metadata (tags, labels) for dev Docker
-        if: github.ref == 'refs/heads/dev'
-        id: devmeta
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: 'arm64,arm'
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for non Prod Docker images
+        if: github.ref != 'refs/heads/prod'
+        id: branchmeta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=dev
-            type=raw,value=commit-${{ github.sha }}-dev
-            type=raw,value=${{ steps.get_version.outputs.version }}-dev
+            type=raw,value=${{ github.head_ref || github.ref_name }}
+            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
+            type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
 
-      - name: Extract metadata (tags, labels) for test Docker
-        if: github.ref == 'refs/heads/test'
-        id: testmeta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      - name: Build and push Docker image for non Prod
+        if: github.ref != 'refs/heads/prod'
+        uses: docker/build-push-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=test
-            type=raw,value=commit-${{ github.sha }}-test
-            type=raw,value=${{ steps.get_version.outputs.version }}-test
+          context: examples/kyb-app
+          platforms: linux/amd64, linux/arm64
+          push: true
+          tags: ${{ steps.branchmeta.outputs.tags }}
 
-      - name: Extract metadata (tags, labels) for prod Docker
+      - name: Extract metadata (tags, labels) for prod Docker images
         if: github.ref == 'refs/heads/prod'
+        # This branch will have the tag latest
         id: prodmeta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
@@ -78,45 +92,13 @@ jobs:
             type=raw,value=prod
             type=raw,value=commit-${{ github.sha }}-prod
             type=raw,value=${{ steps.get_version.outputs.version }}-prod
+            type=raw,value=latest
 
-      - name: Extract metadata for other branches Docker
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        id: branchmeta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
-
-      - name: Build and push Docker image for Dev Branch
-        if: github.ref == 'refs/heads/dev'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: examples/kyb-app
-          push: true
-          tags: ${{ steps.devmeta.outputs.tags }}
-
-      - name: Build and push Docker image for Test Branch
-        if: github.ref == 'refs/heads/test'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: examples/kyb-app
-          push: true
-          tags: ${{ steps.testmeta.outputs.tags }}
-
-      - name: Build and push Docker image for Prod Branch
+      - name: Build and push Docker image for Prod
         if: github.ref == 'refs/heads/prod'
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        uses: docker/build-push-action@v4
         with:
           context: examples/kyb-app
+          platforms: linux/amd64, linux/arm64
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
-
-      - name: Build and push Docker image for other branch
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: examples/kyb-app
-          push: true
-          tags: ${{ steps.branchmeta.outputs.tags }}
