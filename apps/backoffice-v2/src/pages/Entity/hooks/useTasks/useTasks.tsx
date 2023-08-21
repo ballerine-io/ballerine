@@ -154,7 +154,7 @@ export const useTasks = ({
                       props: {
                         ...motionProps,
                         variant: 'success',
-                        className: badgeClassNames,
+                        className: `${badgeClassNames} bg-success/20`,
                       },
                     },
                   ];
