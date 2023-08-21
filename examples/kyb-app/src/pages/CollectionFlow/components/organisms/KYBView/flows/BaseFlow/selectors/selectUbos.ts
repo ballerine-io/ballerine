@@ -6,7 +6,7 @@ export const selectUbos = ({ flowData }: WorkflowFlowData, user: TUser) => {
   const ubosData = flowData.ubos as UBOSContext;
   const list: UBO[] = [];
 
-  if (ubosData.check) {
+  if (ubosData?.check) {
     list.push({
       id: v4(),
       firstName: flowData?.personalInformation?.name?.firstName,
@@ -17,7 +17,7 @@ export const selectUbos = ({ flowData }: WorkflowFlowData, user: TUser) => {
     });
   }
 
-  (ubosData.shareholders || []).forEach(uboData => {
+  (ubosData?.shareholders || []).forEach(uboData => {
     list.push({
       ...uboData,
       id: v4(),
