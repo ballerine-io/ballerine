@@ -227,7 +227,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                               type={!format ? (type === 'string' ? 'text' : type) : format}
                               disabled={!isEditable}
                               className={ctw(
-                                `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
+                                `p-1 disabled:cursor-auto disabled:border-none disabled:bg-transparent disabled:opacity-100`,
                                 {
                                   '!h-[unset] !p-0': !isEditable,
                                   'font-bold text-success': isDecisionPositive(

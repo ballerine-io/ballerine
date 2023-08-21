@@ -7,8 +7,8 @@ interface Props {
 
 export const SigninLayout = ({ children, bgSrc }: Props) => {
   return (
-    <div className="justify-stretch flex min-h-screen items-stretch">
-      <div className="flex w-full justify-center p-10 md:block md:py-[110px] md:px-[100px] lg:w-[38%]">
+    <div className="flex min-h-screen items-stretch justify-stretch">
+      <div className="flex w-full justify-center p-10 md:block md:px-[100px] md:py-[110px] lg:w-[38%]">
         {children}
       </div>
       <div

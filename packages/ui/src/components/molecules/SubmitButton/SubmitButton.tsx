@@ -22,7 +22,7 @@ export const SubmitButton = forwardRef<HTMLButtonElement, SubmitButtonProps>(
       >
         <span className={clsx({ invisible: isLoading })}>{children}</span>
         {isLoading ? (
-          <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center">
+          <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center">
             <Loader2
               className={clsx('text-primary-foreground animate-spin text-sm', loaderClassName)}
             />

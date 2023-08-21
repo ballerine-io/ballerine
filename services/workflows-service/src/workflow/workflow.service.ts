@@ -594,7 +594,7 @@ export class WorkflowService {
       documentId: string;
     },
     decision: {
-      status: 'approve' | 'reject' | 'revision';
+      status: 'approve' | 'reject' | 'revision' | 'revised' | null;
       reason?: string;
     },
   ) {
@@ -621,10 +621,11 @@ export class WorkflowService {
       approve: 'approved',
       reject: 'rejected',
       revision: 'revision',
+      revised: 'revised',
     } as const;
-    const status = Status[decision?.status];
+    const status = decision.status ? Status[decision.status] : null;
     const newDecision = (() => {
-      if (status === 'approved') {
+      if (!status || status === 'approved') {
         return {
           revisionReason: null,
           rejectionReason: null,
@@ -638,7 +639,7 @@ export class WorkflowService {
         };
       }
 
-      if (status === 'revision') {
+      if (['revision', 'revised'].includes(status)) {
         return {
           revisionReason: decision?.reason,
           rejectionReason: null,
@@ -647,6 +648,7 @@ export class WorkflowService {
 
       throw new BadRequestException(`Invalid decision status: ${status}`);
     })();
+
     const documentsWithDecision = workflow?.context?.documents?.map(
       (document: DefaultContextSchema['documents'][number]) => {
         if (document.id !== documentId) return document;
@@ -660,6 +662,7 @@ export class WorkflowService {
         };
       },
     );
+
     const updatedWorkflow = await this.updateContextById(workflowId, {
       documents: documentsWithDecision,
     });

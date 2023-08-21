@@ -68,6 +68,9 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
   );
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
   const onTriggerAssignToMe = true;
+  const documentsToReviseCount = workflow?.context?.documents?.filter(
+    document => document?.decision?.status === 'revision',
+  )?.length;
 
   // useDocumentListener('keydown', event => {
   //   if (!event.ctrlKey || document.activeElement !== document.body) return;
@@ -114,5 +117,6 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
     assignees,
     hasDecision,
     isLoadingCase,
+    documentsToReviseCount,
   };
 };
