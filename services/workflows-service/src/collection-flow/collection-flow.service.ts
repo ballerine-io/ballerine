@@ -79,6 +79,9 @@ export class CollectionFlowService {
       steps:
         workflowDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
           ?.steps || [],
+      documentConfigurations:
+        workflowDefinition.definition?.states?.data_collection?.metadata?.uiSettings.multiForm
+          .documents || [],
     });
   }
 

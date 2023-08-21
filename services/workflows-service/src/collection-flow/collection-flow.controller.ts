@@ -81,8 +81,6 @@ export class ColectionFlowController {
     try {
       const adapter = this.adapterManager.getAdapter(dto.flowType);
 
-      console.log('dto', dto.payload.businessData);
-
       return this.service.updateFlow(
         adapter,
         dto.payload,
