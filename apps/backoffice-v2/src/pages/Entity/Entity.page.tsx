@@ -22,16 +22,16 @@ export const Entity = () => {
         {Array.isArray(tasks) &&
           tasks?.length > 0 &&
           tasks?.map((task, index) => {
-            if (!Array.isArray(task) || !task?.length) return;
+            if (!Array.isArray(task.cells) || !task?.cells.length) return;
 
             return (
-              <Card key={index} className={`me-4`}>
+              <Card key={index} className={`me-4 ${task.className}`}>
                 <CardContent
                   className={ctw('grid gap-2', {
-                    'grid-cols-2': task?.some(field => field?.type === 'multiDocuments'),
+                    'grid-cols-2': task?.cells.some(field => field?.type === 'multiDocuments'),
                   })}
                 >
-                  {task?.map((field, index) => {
+                  {task?.cells.map((field, index) => {
                     const Cell = cells[field?.type];
 
                     return <Cell key={index} {...field} />;

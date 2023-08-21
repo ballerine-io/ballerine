@@ -1,11 +1,12 @@
-import React, { FunctionComponent } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import React, { ComponentProps, FunctionComponent } from 'react';
+import { DialogClose } from '@radix-ui/react-dialog';
+
 import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
-import { Button } from '../../../../common/components/atoms/Button/Button';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
-import { DialogClose } from '@radix-ui/react-dialog';
 import { ICallToActionProps } from './interfaces';
 import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
 import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
@@ -14,6 +15,14 @@ import { SelectValue } from '../../../../common/components/atoms/Select/Select.V
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
 import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
+import { MotionButton } from '../../../../common/components/molecules/MotionButton/MotionButton';
+
+const motionProps: ComponentProps<typeof MotionButton> = {
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+  initial: { y: 10, opacity: 0 },
+  transition: { type: 'spring', bounce: 0.3 },
+  animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
+};
 
 export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
   const {
@@ -33,18 +42,17 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
 
   return value === 'Reject' ? (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          variant={`destructive`}
-          className={ctw({
-            // loading: debouncedIsLoadingRejectEntity,
-          })}
-          // disabled={isLoading || !canReject}
-          disabled={!caseState.actionButtonsEnabled || data?.disabled}
-        >
-          {value}
-        </Button>
-      </DialogTrigger>
+      <AnimatePresence>
+        <DialogTrigger asChild>
+          <MotionButton
+            {...motionProps}
+            variant={`destructive`}
+            disabled={!caseState.actionButtonsEnabled || data?.disabled}
+          >
+            {value}
+          </MotionButton>
+        </DialogTrigger>
+      </AnimatePresence>
       <DialogContent>
         <div>
           <label className={`mb-1 font-bold`} htmlFor={`action`}>
@@ -132,18 +140,19 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
       </DialogContent>
     </Dialog>
   ) : (
-    <Button
-      variant={`success`}
-      className={ctw({
-        loading: isLoadingTaskDecisionById,
-      })}
-      disabled={isLoadingTaskDecisionById || data?.disabled || !caseState.actionButtonsEnabled}
-      onClick={onMutateTaskDecisionById({
-        id: data?.id,
-        decision: data?.decision,
-      })}
-    >
-      {value}
-    </Button>
+    <AnimatePresence>
+      <MotionButton
+        {...motionProps}
+        variant="success"
+        className={ctw({ loading: isLoadingTaskDecisionById })}
+        disabled={isLoadingTaskDecisionById || data?.disabled || !caseState.actionButtonsEnabled}
+        onClick={onMutateTaskDecisionById({
+          id: data?.id,
+          decision: data?.decision,
+        })}
+      >
+        {value}
+      </MotionButton>
+    </AnimatePresence>
   );
 };
