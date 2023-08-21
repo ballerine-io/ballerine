@@ -1,6 +1,7 @@
 import { request } from '@app/common/utils/request';
 import {
   AuthorizeDto,
+  DocumentConfiguration,
   FlowData,
   GetActiveWorkflowDto,
   GetSessionDto,
@@ -32,7 +33,10 @@ export const getFlowSession = async (query: GetSessionDto) => {
   return authorizeUser(query);
 };
 
-export const fetchCollectionFlowSchema = async (): Promise<TFlowStep[]> => {
+export const fetchCollectionFlowSchema = async (): Promise<{
+  steps: TFlowStep[];
+  documentConfigurations: DocumentConfiguration[];
+}> => {
   const result = await request
     .get(`collection-flow/configuration`, {
       searchParams: {
@@ -41,7 +45,10 @@ export const fetchCollectionFlowSchema = async (): Promise<TFlowStep[]> => {
     })
     .json<TFlowConfiguration>();
 
-  return result.steps;
+  return {
+    steps: result.steps,
+    documentConfigurations: result.documentConfigurations,
+  };
 };
 
 export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<FlowData> => {

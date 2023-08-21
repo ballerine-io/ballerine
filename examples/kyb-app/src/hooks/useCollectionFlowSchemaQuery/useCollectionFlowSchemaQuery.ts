@@ -10,7 +10,8 @@ export const useCollectionFlowSchemaQuery = () => {
 
   return {
     isLoading,
-    steps: data ? data : null,
+    steps: data ? data.steps : [],
+    documentConfigurations: data ? data.documentConfigurations : [],
     error: error as HTTPError,
   };
 };
