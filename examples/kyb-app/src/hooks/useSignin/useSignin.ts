@@ -18,6 +18,7 @@ export const useSignin = () => {
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
+    location.href = '/';
   }, []);
 
   // Clears user session and not causing re-renders
