@@ -5,12 +5,17 @@ import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { FindLastActiveFlowParams } from '@/workflow/types/params';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { SortOrder } from '@/common/query-filters/sort-order';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
 @Injectable()
 export class WorkflowRuntimeDataRepository {
-  constructor(protected readonly prisma: PrismaService) {}
+  constructor(
+    protected readonly prisma: PrismaService,
+    protected readonly projectScopeService: ProjectScopeService,
+  ) {}
 
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
@@ -147,21 +152,24 @@ export class WorkflowRuntimeDataRepository {
   async findLastActive({
     workflowDefinitionId,
     businessId,
+    projectIds,
   }: FindLastActiveFlowParams): Promise<WorkflowRuntimeData | null> {
-    const latestWorkflowRuntimeData = await this.findMany({
-      orderBy: {
-        createdAt: 'desc',
+    const query = this.projectScopeService.scopeFindOne(
+      {
+        orderBy: {
+          createdAt: 'desc' as SortOrder,
+        },
+        where: {
+          // status: 'active' as WorkflowRuntimeDataStatus,
+          businessId,
+          workflowDefinitionId,
+        },
       },
-      take: 1,
-      where: {
-        status: 'active',
-        businessId,
-        workflowDefinitionId,
-      },
-    });
+      projectIds,
+    );
 
-    return latestWorkflowRuntimeData
-      ? (latestWorkflowRuntimeData.at(-1) as WorkflowRuntimeData)
-      : null;
+    const latestWorkflowRuntimeData = await this.findOne(query);
+
+    return latestWorkflowRuntimeData;
   }
 }

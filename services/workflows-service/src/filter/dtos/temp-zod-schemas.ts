@@ -373,6 +373,7 @@ export const WorkflowRuntimeDataSelectSchema = z.object({
   updatedAt: z.boolean().optional(),
   createdBy: z.boolean().optional(),
   resolvedAt: z.boolean().optional(),
+  childWorkflowsRuntimeData: z.boolean().optional(),
   endUser: z
     .union([
       z.boolean(),

@@ -5,4 +5,5 @@ export interface IUser {
   lastName: string;
   roles: string[];
   lastActiveAt: Date | null;
+  projectIds?: Array<string>;
 }
