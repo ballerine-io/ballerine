@@ -192,7 +192,7 @@ export const parentKybWithSessionWorkflowDefinition = {
         method: 'GET',
         stateNames: ['run_kyb_enrichment'],
         successAction: 'KYB_DONE',
-        errorAction: 'FAILED',
+        errorAction: 'KYB_DONE',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -231,11 +231,11 @@ export const parentKybWithSessionWorkflowDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              kybCompanyName: 'PayLynk',
+              kybCompanyName: entity.data.companyName,
               customerCompanyName: entity.data.companyName,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
               resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}/workflowRuntimeId=',workflowRuntimeId, '?resubmitEvent=RESUBMITTED']),
-              supportEmail: join('',['PayLynk','@support.com']),
+              supportEmail: join('',[entity.data.companyName,'@support.com']),
               from: 'no-reply@ballerine.com',
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
               templateId: 'd-7305991b3e5840f9a14feec767ea7301',
