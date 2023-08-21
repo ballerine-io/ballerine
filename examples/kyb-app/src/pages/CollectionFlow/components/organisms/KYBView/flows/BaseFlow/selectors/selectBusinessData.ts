@@ -12,7 +12,7 @@ export const selectBusinessData = ({ flowData }: WorkflowFlowData, user: TUser):
     registrationNumber: traverseObjectAndPickValue('registrationNumber', flowData, ''),
     country: '',
     countryOfIncorporation: traverseObjectAndPickValue('companyCountry', flowData, ''),
-    dateOfIncorporation: traverseObjectAndPickValue('registrationDate', flowData, ''),
+    dateOfIncorporation: traverseObjectAndPickValue('registrationDate', flowData, null),
     address: buildCompanyAddress(traverseObjectAndPickValue('headquarters', flowData, {}) as any),
     phoneNumber: '',
     email: user.email,

@@ -40,9 +40,15 @@ export interface TFlowStep {
   defaultData: object;
   isFinal?: boolean;
 }
+
+export interface DocumentConfiguration {
+  name: string;
+  type: string;
+}
 export interface TFlowConfiguration {
   id: string;
   steps: TFlowStep[];
+  documentConfigurations: DocumentConfiguration[];
 }
 
 export interface MainRepresentative {
