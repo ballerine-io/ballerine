@@ -24,8 +24,8 @@
     "error": "Error occurred while asking for revision of the document."
   },
   "revert_revision": {
-    "success": "Action cancelled successfully.",
-    "error": "Error occurred while reverting the revision."
+    "success": "Asking for document revision has been cancelled successfully.",
+    "error": "Error occurred while reverting the document revision."
   },
   "update_document_properties": {
     "success": "The document has been updated successfully.",
