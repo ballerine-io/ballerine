@@ -7,28 +7,14 @@ import {
   WorkflowFlowData,
 } from '@app/domains/workflows/flow-data.type';
 import { DynamicForm } from '@ballerine/ui';
-import { useCallback } from 'react';
 import { BaseFlowViewMetadata } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/types';
 import { useViewSchemas } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useViewSchemas';
-import { useSessionQuery } from '@app/hooks/useSessionQuery';
+import { useNextviewMoveResolved } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useNextViewMoveResolver';
 
 export const PersonalInformationView = () => {
-  const { user } = useSessionQuery();
-  const { context, saveAndPerformTransition } = useViewState<
-    WorkflowFlowData,
-    BaseFlowViewMetadata
-  >();
+  const { context, activeView } = useViewState<WorkflowFlowData, BaseFlowViewMetadata>();
   const { uiSchema, formSchema } = useViewSchemas();
-
-  const handleSubmit = useCallback(
-    (values: PersonalInformationContext) => {
-      void saveAndPerformTransition(values, {
-        endUserId: context.shared.endUserId,
-        businessId: context.shared.businessId,
-      });
-    },
-    [context, user, saveAndPerformTransition],
-  );
+  const { next } = useNextviewMoveResolved(activeView);
 
   return (
     <AppShell.FormContainer header={<ViewHeader />}>
@@ -38,7 +24,7 @@ export const PersonalInformationView = () => {
         uiSchema={uiSchema}
         schema={formSchema}
         transformErrors={transformRJSFErrors}
-        onSubmit={handleSubmit}
+        onSubmit={next}
       />
     </AppShell.FormContainer>
   );

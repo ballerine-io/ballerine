@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class FlowStepModel {
   @IsString()
@@ -23,4 +23,7 @@ export class FlowStepModel {
   @IsObject()
   @IsOptional()
   defaultData!: object;
+
+  @IsBoolean()
+  isFinal!: boolean;
 }
