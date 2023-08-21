@@ -29,7 +29,7 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/common": "0.5.3",
+    "@ballerine/common": "0.5.11",
     "ajv": "^8.12.0",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
