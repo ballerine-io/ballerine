@@ -44,7 +44,6 @@ const devconExampleWorkflow = {
     },
     extensions: {
       apiPlugins: [],
-
       commonPlugins: [],
     },
     config: {},
