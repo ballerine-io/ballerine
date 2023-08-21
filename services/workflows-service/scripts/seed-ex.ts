@@ -266,8 +266,6 @@ async function seed(bcryptSalt: number | string) {
     return mockData;
   };
 
-
-
   function createFilter(
     name: string,
     entity: 'individuals' | 'businesses',
