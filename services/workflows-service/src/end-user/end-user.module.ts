@@ -14,8 +14,10 @@ import { FileService } from '@/providers/file/file.service';
 import { FileRepository } from '@/storage/storage.repository';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
+import { ProjectModule } from '@/project/project.module';
 
 @Module({
+  imports: [ProjectModule],
   controllers: [EndUserControllerInternal, EndUserControllerExternal],
   providers: [
     EndUserRepository,

@@ -1,20 +1,22 @@
 import { useEffect } from 'react';
 import { useSignin } from '@app/hooks/useSignin';
-import { withSessionProtected } from '@app/hooks/useSignin/hocs/withSessionProtected';
+import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
 import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
+import { useCustomer } from '@app/components/providers/CustomerProvider';
 
 export const Approved = withSessionProtected(() => {
-  const { isFetching, workflow } = useActiveWorkflowQuery();
+  const { customer } = useCustomer();
+  const { isFetching, flowData } = useActiveWorkflowQuery();
   const { logoutSilent } = useSignin();
 
   useEffect(() => {
     if (isFetching) return;
 
-    if (workflow.state === 'approve') {
+    if (flowData.status === 'approve') {
       setTimeout(logoutSilent, 250);
     }
-  }, [isFetching, workflow, logoutSilent]);
+  }, [isFetching, flowData, logoutSilent]);
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -29,12 +31,12 @@ export const Approved = withSessionProtected(() => {
             successfully!
           </h1>
           <p className="text-muted-foreground text-center text-sm leading-5 opacity-50">
-            Go back to PayLynk’s portal to use the system
+            Go back to {customer?.displayName} portal to use the system
           </p>
         </div>
         <div className="flex justify-center">
           <Button variant="secondary" onClick={() => alert('Not implemented.')}>
-            Go back to PayLynk’s Portal
+            Go back to {customer?.displayName} Portal
           </Button>
         </div>
       </Card>

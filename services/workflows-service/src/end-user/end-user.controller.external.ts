@@ -22,6 +22,8 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 import { Public } from '@/common/decorators/public.decorator';
 import { DemoGuard } from '@/common/guards/demo.guard';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TProjectIds } from '@/types';
 
 @swagger.ApiTags('external/end-users')
 @common.Controller('external/end-users')
@@ -60,8 +62,11 @@ export class EndUserControllerExternal {
 
   @common.Post('/create-with-business')
   @UseKeyAuthInDevGuard()
-  async createWithBusiness(@common.Body() data: EndUserCreateDto) {
-    const endUser = await this.service.createWithBusiness(data);
+  async createWithBusiness(
+    @common.Body() data: EndUserCreateDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    const endUser = await this.service.createWithBusiness(data, projectIds);
 
     return {
       endUserId: endUser.id,

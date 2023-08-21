@@ -19,16 +19,18 @@ import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
-import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
 import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
-import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TProjectIds } from '@/types';
 import { GetActiveFlowDto } from '@/workflow/dtos/get-active-workflow-input.dto';
+import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -40,6 +42,7 @@ export class WorkflowControllerExternal {
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
+
   // GET /workflows
   @common.Get('/')
   @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeOutputDto] })
@@ -62,21 +65,9 @@ export class WorkflowControllerExternal {
   @common.Get('/workflow-definition/:id')
   @ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @UseKeyAuthInDevGuard()
   async getWorkflowDefinition(@common.Param() params: WorkflowDefinitionWhereUniqueInput) {
     return await this.service.getWorkflowDefinitionById(params.id);
-  }
-
-  @common.Get('/active-flow')
-  @UseKeyAuthGuard()
-  async getActiveFlow(@common.Query() query: GetActiveFlowDto) {
-    const activeWorkflow = await this.service.getLastActiveFlow({
-      email: query.email,
-      workflowRuntimeDefinitionId: query.workflowRuntimeDefinitionId,
-    });
-
-    return {
-      result: activeWorkflow,
-    };
   }
 
   @common.Get('/:id')
@@ -128,20 +119,24 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @UseKeyAuthInDevGuard()
-  async intent(@common.Body() { intentName, entityId }: IntentDto): Promise<IntentResponse> {
+  async intent(
+    @common.Body() { intentName, entityId }: IntentDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<IntentResponse> {
     // Rename to intent or getRunnableWorkflowDataByIntent?
     const entityType = intentName === 'kycSignup' ? 'endUser' : 'business';
-    return await this.service.resolveIntent(intentName, entityId, entityType);
+    return await this.service.resolveIntent(intentName, entityId, entityType, projectIds);
   }
 
   @common.Post('/run')
   @swagger.ApiOkResponse()
-  @UseKeyAuthGuard()
+  @UseCustomerAuthGuard()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createWorkflowRuntimeData(
     @common.Body() body: WorkflowRunDto,
     @Res() res: Response,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<any> {
     const { workflowId, context, config } = body;
     const { entity } = context;
@@ -153,6 +148,7 @@ export class WorkflowControllerExternal {
       workflowDefinitionId: workflowId,
       context,
       config,
+      projectIds,
     });
 
     return res.json({
@@ -171,32 +167,41 @@ export class WorkflowControllerExternal {
     @UserData() _userInfo: UserInfo,
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
-    return await this.service.event({
-      ...data,
-      id,
-    });
+    return await this.service.event(
+      {
+        ...data,
+        id,
+      },
+      projectIds,
+    );
   }
 
   // POST /event
   @common.Post('/:id/send-event')
   @swagger.ApiOkResponse()
-  @UseKeyAuthGuard()
+  @UseCustomerAuthGuard()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async sendEvent(
     @UserData() _userInfo: UserInfo,
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
-    return await this.service.event({
-      ...data,
-      id,
-    });
+    return await this.service.event(
+      {
+        ...data,
+        id,
+      },
+      projectIds,
+    );
   }
+
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')
-  @UseKeyAuthGuard()
+  @UseCustomerAuthGuard()
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -217,8 +222,8 @@ export class WorkflowControllerExternal {
   @common.Post('/:id/hook/:event')
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
-  @Public()
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @VerifyUnifiedApiSignatureDecorator()
   async hook(
     @common.Param() params: WorkflowIdWithEventInput,
     @common.Query() query: WorkflowHookQuery,
@@ -226,23 +231,28 @@ export class WorkflowControllerExternal {
   ): Promise<void> {
     try {
       const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
+      const projectIds = [workflowRuntime.projectId!];
       await this.normalizeService.handleHookResponse({
         workflowRuntime: workflowRuntime,
         data: hookResponse,
         resultDestinationPath: query.resultDestination || 'hookResponse',
         processName: query.processName,
+        projectIds,
       });
+
+      return await this.service.event(
+        {
+          id: params.id,
+          name: params.event,
+        },
+        projectIds,
+      );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
       throw error;
     }
-
-    return await this.service.event({
-      id: params.id,
-      name: params.event,
-    });
 
     return;
   }

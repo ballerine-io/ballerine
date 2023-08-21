@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Business, EndUser, Prisma, PrismaClient } from '@prisma/client';
+import { Business, Customer, EndUser, Prisma, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -17,18 +17,20 @@ import { generateParentKybWithKycs } from './workflows/parent-kyb-workflow';
 import { generateKybDefintion } from './workflows';
 import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
 import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
+import { env } from '../src/env';
 
 seed(10).catch(error => {
   console.error(error);
   process.exit(1);
 });
 
-const persistImageFile = async (client: PrismaClient, uri: string) => {
+const persistImageFile = async (client: PrismaClient, uri: string, projectId: string) => {
   const file = await client.file.create({
     data: {
       userId: '',
       fileNameOnDisk: uri,
       uri: uri,
+      projectId: projectId
     },
   });
 
@@ -47,17 +49,78 @@ function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, 
   return faker.image.people(1000, 2000, true);
 }
 
-async function seed(bcryptSalt: number | string) {
+async function createCustomer(
+  client: PrismaClient,
+  id: string,
+  apiKey: string,
+  logoImageUri: string,
+) {
+  return await client.customer.create({
+    data: {
+      id: `customer-${id}`,
+      name: `Customer ${id}`,
+      displayName: `Customer ${id}`,
+      authenticationConfiguration: {
+        apiType: 'API_KEY',
+        authValue: apiKey,
+        validUntil: '',
+        isValid: '',
+      },
+      logoImageUri: logoImageUri,
+      country: 'GB',
+      language: 'en',
+    },
+  });
+}
+
+async function createProject(client: PrismaClient, customer: Customer, id: string) {
+  return client.project.create({
+    data: {
+      id: `project-${id}`,
+      name: `Project ${id}`,
+      customerId: customer.id,
+    },
+  });
+}
+
+async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
   const client = new PrismaClient();
   await generateDynamicDefinitionForE2eTest(client);
+  const customer = await createCustomer(
+    client,
+    '1',
+    env.API_KEY,
+    'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645511cb3d3dd84ee28fe04d_CyberAgent.svg',
+  );
+  const customer2 = await createCustomer(
+    client,
+    '2',
+    `${env.API_KEY}2`,
+    'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645d26f285bd18467470e7cd_zenhub-logo.svg',
+  );
+  const project1 = await createProject(client, customer, '1');
+  const project2 = await createProject(client, customer2, '2');
   const users = [
+    {
+      email: 'admin@admin.com',
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      password: await hash('admin', bcryptSalt),
+      roles: ['user'],
+      userToProjects: {
+        create: { projectId: project1.id },
+      },
+    },
     {
       email: 'agent1@ballerine.com',
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
       password: await hash('agent1', bcryptSalt),
       roles: ['user'],
+      userToProjects: {
+        create: { projectId: project2.id },
+      },
     },
     {
       email: 'agent2@ballerine.com',
@@ -65,6 +128,9 @@ async function seed(bcryptSalt: number | string) {
       lastName: faker.name.lastName(),
       password: await hash('agent2', bcryptSalt),
       roles: ['user'],
+      userToProjects: {
+        create: { projectId: project2.id },
+      },
     },
     {
       email: 'agent3@ballerine.com',
@@ -72,13 +138,9 @@ async function seed(bcryptSalt: number | string) {
       lastName: faker.name.lastName(),
       password: await hash('agent3', bcryptSalt),
       roles: ['user'],
-    },
-    {
-      email: 'admin@admin.com',
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      password: await hash('admin', bcryptSalt),
-      roles: ['user'],
+      userToProjects: {
+        create: { projectId: project1.id },
+      },
     },
   ];
   for (const user of users) {
@@ -109,6 +171,19 @@ async function seed(bcryptSalt: number | string) {
       email: 'nadia@ballerine.com',
       correlationId: '1',
       dateOfBirth: '2000-11-04T12:45:51.695Z',
+      projectId: project1.id,
+    },
+  });
+
+  const user2 = await client.endUser.create({
+    data: {
+      id: '43a0a298-0d02-4a2e-a8cc-73c06b465311',
+      firstName: 'Nadin',
+      lastName: 'Mami',
+      email: 'ndain@ballerine.com',
+      correlationId: '2',
+      dateOfBirth: '2000-11-04T12:45:51.695Z',
+      projectId: project1.id,
     },
   });
 
@@ -174,7 +249,7 @@ async function seed(bcryptSalt: number | string) {
               uri: imageUri1,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri1),
+              ballerineFileId: await persistImageFile(client, imageUri1, project1.id),
               metadata: {
                 side: 'front',
                 pageNumber: '1',
@@ -185,7 +260,7 @@ async function seed(bcryptSalt: number | string) {
               uri: imageUri2,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri2),
+              ballerineFileId: await persistImageFile(client, imageUri2, project1.id),
               metadata: {
                 side: 'back',
                 pageNumber: '1',
@@ -220,7 +295,7 @@ async function seed(bcryptSalt: number | string) {
               provider: 'http',
               uri: imageUri3,
               type: 'pdf',
-              ballerineFileId: await persistImageFile(client, imageUri3),
+              ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               data: '',
               metadata: {},
             },
@@ -294,7 +369,7 @@ async function seed(bcryptSalt: number | string) {
               uri: imageUri1,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri1),
+              ballerineFileId: await persistImageFile(client, imageUri1, project1.id),
               metadata: {
                 side: 'front',
                 pageNumber: '1',
@@ -305,7 +380,7 @@ async function seed(bcryptSalt: number | string) {
               uri: imageUri2,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri2),
+              ballerineFileId: await persistImageFile(client, imageUri2, project1.id),
               metadata: {
                 side: 'back',
                 pageNumber: '1',
@@ -345,7 +420,7 @@ async function seed(bcryptSalt: number | string) {
               uri: imageUri3,
               type: 'pdf',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri3),
+              ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               metadata: {},
             },
           ],
@@ -372,12 +447,14 @@ async function seed(bcryptSalt: number | string) {
     name: string,
     entity: 'individuals' | 'businesses',
     query: Prisma.WorkflowRuntimeDataFindManyArgs,
+    projectId: string,
   ) {
     return client.filter.create({
       data: {
         entity,
         name,
         query: query as any,
+        projectId: projectId,
       },
     });
   }
@@ -662,109 +739,119 @@ async function seed(bcryptSalt: number | string) {
     },
   });
 
-  await createFilter('Onboarding - Businesses with enriched data', 'businesses', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      createdAt: true,
-      context: true,
-      state: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
-          definition: true,
+  await createFilter(
+    'Onboarding - Businesses with enriched data',
+    'businesses',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        createdAt: true,
+        context: true,
+        state: true,
+        workflowDefinition: {
+          select: {
+            id: true,
+            name: true,
+            contextSchema: true,
+            config: true,
+            definition: true,
+          },
+        },
+        business: {
+          select: {
+            id: true,
+            companyName: true,
+            registrationNumber: true,
+            legalForm: true,
+            countryOfIncorporation: true,
+            dateOfIncorporation: true,
+            address: true,
+            phoneNumber: true,
+            email: true,
+            website: true,
+            industry: true,
+            taxIdentificationNumber: true,
+            vatNumber: true,
+            shareholderStructure: true,
+            numberOfEmployees: true,
+            businessPurpose: true,
+            documents: true,
+            approvalState: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
         },
       },
-      business: {
-        select: {
-          id: true,
-          companyName: true,
-          registrationNumber: true,
-          legalForm: true,
-          countryOfIncorporation: true,
-          dateOfIncorporation: true,
-          address: true,
-          phoneNumber: true,
-          email: true,
-          website: true,
-          industry: true,
-          taxIdentificationNumber: true,
-          vatNumber: true,
-          shareholderStructure: true,
-          numberOfEmployees: true,
-          businessPurpose: true,
-          documents: true,
-          approvalState: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
+      where: {
+        workflowDefinitionId: 'dynamic_external_request_example',
+        businessId: { not: null },
       },
     },
-    where: {
-      workflowDefinitionId: 'dynamic_external_request_example',
-      businessId: { not: null },
-    },
-  });
+    project1.id,
+  );
 
-  await createFilter('Onboarding - Individuals', 'individuals', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      context: true,
-      createdAt: true,
-      state: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
-          definition: true,
+  await createFilter(
+    'Onboarding - Individuals',
+    'individuals',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        context: true,
+        createdAt: true,
+        state: true,
+        workflowDefinition: {
+          select: {
+            id: true,
+            name: true,
+            contextSchema: true,
+            config: true,
+            definition: true,
+          },
+        },
+        endUser: {
+          select: {
+            id: true,
+            correlationId: true,
+            endUserType: true,
+            approvalState: true,
+            stateReason: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            phone: true,
+            dateOfBirth: true,
+            avatarUrl: true,
+            additionalInfo: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
         },
       },
-      endUser: {
-        select: {
-          id: true,
-          correlationId: true,
-          endUserType: true,
-          approvalState: true,
-          stateReason: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          phone: true,
-          dateOfBirth: true,
-          avatarUrl: true,
-          additionalInfo: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
+      where: {
+        workflowDefinitionId: kycManualMachineId,
+        endUserId: { not: null },
       },
     },
-    where: {
-      workflowDefinitionId: kycManualMachineId,
-      endUserId: { not: null },
-    },
-  });
+    project1.id,
+  );
 
   // KYB Onboarding
   await client.workflowDefinition.create({
@@ -872,165 +959,180 @@ async function seed(bcryptSalt: number | string) {
     },
   });
 
-  await createFilter('Risk Score Improvement - Individuals', 'individuals', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      createdAt: true,
-      context: true,
-      state: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
-          definition: true,
+  await createFilter(
+    'Risk Score Improvement - Individuals',
+    'individuals',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        createdAt: true,
+        context: true,
+        state: true,
+        workflowDefinition: {
+          select: {
+            id: true,
+            name: true,
+            contextSchema: true,
+            config: true,
+            definition: true,
+          },
+        },
+        endUser: {
+          select: {
+            id: true,
+            correlationId: true,
+            endUserType: true,
+            approvalState: true,
+            stateReason: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            phone: true,
+            dateOfBirth: true,
+            avatarUrl: true,
+            additionalInfo: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
         },
       },
-      endUser: {
-        select: {
-          id: true,
-          correlationId: true,
-          endUserType: true,
-          approvalState: true,
-          stateReason: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          phone: true,
-          dateOfBirth: true,
-          avatarUrl: true,
-          additionalInfo: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
+      where: {
+        workflowDefinitionId: riskScoreMachineKybId,
+        endUserId: { not: null },
       },
     },
-    where: {
-      workflowDefinitionId: riskScoreMachineKybId,
-      endUserId: { not: null },
-    },
-  });
+    project1.id,
+  );
 
-  await createFilter('Risk Score Improvement - Businesses', 'businesses', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      createdAt: true,
-      context: true,
-      state: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
-          definition: true,
+  await createFilter(
+    'Risk Score Improvement - Businesses',
+    'businesses',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        createdAt: true,
+        context: true,
+        state: true,
+        workflowDefinition: {
+          select: {
+            id: true,
+            name: true,
+            contextSchema: true,
+            config: true,
+            definition: true,
+          },
+        },
+        business: {
+          select: {
+            id: true,
+            companyName: true,
+            registrationNumber: true,
+            legalForm: true,
+            countryOfIncorporation: true,
+            dateOfIncorporation: true,
+            address: true,
+            phoneNumber: true,
+            email: true,
+            website: true,
+            industry: true,
+            taxIdentificationNumber: true,
+            vatNumber: true,
+            shareholderStructure: true,
+            numberOfEmployees: true,
+            businessPurpose: true,
+            documents: true,
+            approvalState: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
         },
       },
-      business: {
-        select: {
-          id: true,
-          companyName: true,
-          registrationNumber: true,
-          legalForm: true,
-          countryOfIncorporation: true,
-          dateOfIncorporation: true,
-          address: true,
-          phoneNumber: true,
-          email: true,
-          website: true,
-          industry: true,
-          taxIdentificationNumber: true,
-          vatNumber: true,
-          shareholderStructure: true,
-          numberOfEmployees: true,
-          businessPurpose: true,
-          documents: true,
-          approvalState: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
+      where: {
+        workflowDefinitionId: riskScoreMachineKybId,
+        businessId: { not: null },
       },
     },
-    where: {
-      workflowDefinitionId: riskScoreMachineKybId,
-      businessId: { not: null },
-    },
-  });
+    project1.id,
+  );
 
-  await createFilter("KYB with UBO's", 'businesses', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      createdAt: true,
-      context: true,
-      state: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
-          definition: true,
+  await createFilter(
+    "KYB with UBO's",
+    'businesses',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        createdAt: true,
+        context: true,
+        state: true,
+        workflowDefinition: {
+          select: {
+            id: true,
+            name: true,
+            contextSchema: true,
+            config: true,
+            definition: true,
+          },
         },
-      },
-      business: {
-        select: {
-          id: true,
-          companyName: true,
-          registrationNumber: true,
-          legalForm: true,
-          countryOfIncorporation: true,
-          dateOfIncorporation: true,
-          address: true,
-          phoneNumber: true,
-          email: true,
-          website: true,
-          industry: true,
-          taxIdentificationNumber: true,
-          vatNumber: true,
-          shareholderStructure: true,
-          numberOfEmployees: true,
-          businessPurpose: true,
-          documents: true,
-          approvalState: true,
-          createdAt: true,
-          updatedAt: true,
+        business: {
+          select: {
+            id: true,
+            companyName: true,
+            registrationNumber: true,
+            legalForm: true,
+            countryOfIncorporation: true,
+            dateOfIncorporation: true,
+            address: true,
+            phoneNumber: true,
+            email: true,
+            website: true,
+            industry: true,
+            taxIdentificationNumber: true,
+            vatNumber: true,
+            shareholderStructure: true,
+            numberOfEmployees: true,
+            businessPurpose: true,
+            documents: true,
+            approvalState: true,
+            createdAt: true,
+            updatedAt: true,
+          },
         },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
         },
+        childWorkflowsRuntimeData: true,
       },
-      childWorkflowsRuntimeData: true,
+      where: {
+        workflowDefinitionId: 'kyb_parent_kyc_session_example',
+        businessId: { not: null },
+      },
     },
-    where: {
-      workflowDefinitionId: 'kyb_parent_kyc_session_example',
-      businessId: { not: null },
-    },
-  });
+    project1.id,
+  );
 
   await client.$transaction(async () =>
     endUserIds.map(async (id, index) =>
@@ -1043,6 +1145,7 @@ async function seed(bcryptSalt: number | string) {
             workflowDefinitionVersion: manualMachineVersion,
             context: await createMockEndUserContextData(id, index + 1),
           },
+          projectId: project1.id,
         }),
       }),
     ),
@@ -1055,12 +1158,14 @@ async function seed(bcryptSalt: number | string) {
         workflowDefinitionVersion: 1,
         context: await createMockBusinessContextData(id, index + 1),
         createdAt: faker.date.recent(2),
+        projectId: project1.id,
       });
 
       return client.business.create({
         data: generateBusiness({
           id,
           workflow: await riskWf(),
+          projectId: project1.id,
         }),
       });
     });
@@ -1078,6 +1183,7 @@ async function seed(bcryptSalt: number | string) {
         data: generateBusiness({
           id,
           workflow: exampleWf,
+          projectId: project1.id,
         }),
       });
     });

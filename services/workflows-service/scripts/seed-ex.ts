@@ -44,7 +44,6 @@ const devconExampleWorkflow = {
     },
     extensions: {
       apiPlugins: [],
-
       commonPlugins: [],
     },
     config: {},
@@ -265,8 +264,6 @@ async function seed(bcryptSalt: number | string) {
 
     return mockData;
   };
-
-
 
   function createFilter(
     name: string,

@@ -2,8 +2,6 @@ import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { ViewHeader } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/ViewHeader';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
-import { companyInformationSchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/company-information.schema';
-import { companyInformationUISchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/company-information.ui-schema';
 import { useCompanyInformation } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/hooks/useCompanyInformation';
 import { useCompanyInformationSchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/hooks/useCompanyInformationSchema';
 import { useCompanyInformationUISchema } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/hooks/useCompanyInformationUISchema';
@@ -13,9 +11,12 @@ import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { DynamicForm } from '@ballerine/ui';
 import { useEffect, useRef } from 'react';
 import { useDebounce } from 'use-debounce';
+import { useViewSchemas } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useViewSchemas';
+import { useNextviewMoveResolved } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useNextViewMoveResolver';
 
 export const CompanyInformationView = () => {
-  const { context, update, saveAndPerformTransition } = useViewState<WorkflowFlowData>();
+  const { context, activeView, update, saveAndPerformTransition } =
+    useViewState<WorkflowFlowData>();
   const [registrationNumber] = useDebounce(
     context.flowData.companyInformation.registrationNumber,
     1500,
@@ -24,15 +25,11 @@ export const CompanyInformationView = () => {
     ...context.flowData.companyInformation,
     registrationNumber,
   });
-  const { schema } = useCompanyInformationSchema(
-    companyInformationSchema,
-    context.flowData.companyInformation,
-  );
-  const { uiSchema } = useCompanyInformationUISchema(
-    companyInformationUISchema,
-    schema,
-    isFetching,
-  );
+  const { formSchema, uiSchema: _uiSchema } = useViewSchemas();
+
+  const { schema } = useCompanyInformationSchema(formSchema, context.flowData.companyInformation);
+  const { uiSchema } = useCompanyInformationUISchema(_uiSchema, schema, isFetching);
+  const { next } = useNextviewMoveResolved(activeView);
 
   const { handleUpdate } = useCompanyInformationUpdate();
 
@@ -64,7 +61,7 @@ export const CompanyInformationView = () => {
         formData={context.flowData.companyInformation}
         schema={schema}
         uiSchema={uiSchema}
-        onSubmit={values => void saveAndPerformTransition(values)}
+        onSubmit={next}
         onChange={handleUpdate}
         transformErrors={transformRJSFErrors}
       />

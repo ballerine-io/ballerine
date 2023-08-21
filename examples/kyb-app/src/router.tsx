@@ -4,7 +4,7 @@ import { Approved } from '@app/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@app/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@app/pages/CollectionFlow/components/pages/Success';
 import { SignIn } from '@app/pages/SignIn';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 export const router = createBrowserRouter([
   {
@@ -38,5 +38,9 @@ export const router = createBrowserRouter([
   {
     path: 'approved',
     element: <Approved />,
+  },
+  {
+    path: '*',
+    element: <Navigate to="/" />,
   },
 ]);

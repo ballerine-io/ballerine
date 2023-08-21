@@ -47,7 +47,7 @@ export class ApiPlugin {
       );
 
       if (apiResponse.ok) {
-        const result = (await apiResponse.json()) as unknown;
+        const result = await apiResponse.json();
         const responseBody = await this.transformData(
           this.response!.transformers,
           result as AnyRecord,
@@ -62,7 +62,7 @@ export class ApiPlugin {
         if (this.successAction) {
           return this.returnSuccessResponse(this.successAction, responseBody);
         }
-        return;
+        return {};
       } else {
         const errorResponse = await apiResponse.json();
         return this.returnErrorResponse(
@@ -87,7 +87,11 @@ export class ApiPlugin {
     method: ApiPlugin['method'],
     payload: AnyRecord,
     headers: HeadersInit,
-  ) {
+  ): Promise<{
+    ok: boolean;
+    json: () => Promise<unknown>;
+    statusText: string;
+  }> {
     const requestParams = {
       method: method,
       headers: headers,

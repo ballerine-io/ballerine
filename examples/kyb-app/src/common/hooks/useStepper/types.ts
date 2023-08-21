@@ -35,8 +35,8 @@ export interface StepperParams {
 export interface UseStepperHookCallResult {
   steps: IStep[];
   currentStep: IStep;
-  prevStep: () => void;
-  nextStep: () => void;
+  prevStep: () => IStep | null;
+  nextStep: () => IStep | null;
   warning: (index: number, reason?: string) => void;
   invalidate: (index: number, reason?: string) => void;
   update: (index: number, payload: object) => void;
