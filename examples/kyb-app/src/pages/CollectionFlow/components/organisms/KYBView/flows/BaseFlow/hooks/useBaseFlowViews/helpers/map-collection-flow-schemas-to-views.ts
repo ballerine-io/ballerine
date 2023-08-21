@@ -15,10 +15,12 @@ export const mapCollectionFlowSchemasToViews = (
 
     return {
       ...view,
+      label: schema.title,
       viewMetadata: {
         uiSchema: schema.uiSchema || {},
         formSchema: schema.formSchema,
       },
+      isFinal: Boolean(schema.isFinal),
     };
   });
 };
