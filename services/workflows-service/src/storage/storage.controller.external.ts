@@ -1,5 +1,14 @@
 import * as common from '@nestjs/common';
-import { Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  NestInterceptor,
+  Param,
+  Post,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -75,9 +84,12 @@ export class StorageControllerExternal {
     @Res() res: Response,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById({
-      id,
-    });
+    const persistedFile = await this.service.getFileNameById(
+      {
+        id,
+      },
+      this.scopeService.scopeFindOne({}, projectIds),
+    );
 
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
@@ -95,9 +107,12 @@ export class StorageControllerExternal {
     @Res() res: Response,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById({
-      id,
-    });
+    const persistedFile = await this.service.getFileNameById(
+      {
+        id,
+      },
+      this.scopeService.scopeFindOne({}, projectIds),
+    );
 
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
@@ -108,10 +123,7 @@ export class StorageControllerExternal {
     }
     if (persistedFile.fileNameInBucket) {
       const localFilePath = await downloadFileFromS3(
-        AwsS3FileConfig.getBucketName(
-          process.env,
-          `${customer?.name ? customer.name.toUpperCase() : ''}`,
-        ) as string,
+        AwsS3FileConfig.getBucketName(process.env) as string,
         persistedFile.fileNameInBucket,
       );
       return res.sendFile(localFilePath, { root: '/' });

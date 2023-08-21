@@ -24,12 +24,13 @@ seed(10).catch(error => {
   process.exit(1);
 });
 
-const persistImageFile = async (client: PrismaClient, uri: string) => {
+const persistImageFile = async (client: PrismaClient, uri: string, projectId: string) => {
   const file = await client.file.create({
     data: {
       userId: '',
       fileNameOnDisk: uri,
       uri: uri,
+      projectId: projectId
     },
   });
 
@@ -182,7 +183,7 @@ async function seed(bcryptSalt: string | number) {
       email: 'ndain@ballerine.com',
       correlationId: '2',
       dateOfBirth: '2000-11-04T12:45:51.695Z',
-      projectId: project2.id,
+      projectId: project1.id,
     },
   });
 
@@ -248,7 +249,7 @@ async function seed(bcryptSalt: string | number) {
               uri: imageUri1,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri1),
+              ballerineFileId: await persistImageFile(client, imageUri1, project1.id),
               metadata: {
                 side: 'front',
                 pageNumber: '1',
@@ -259,7 +260,7 @@ async function seed(bcryptSalt: string | number) {
               uri: imageUri2,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri2),
+              ballerineFileId: await persistImageFile(client, imageUri2, project1.id),
               metadata: {
                 side: 'back',
                 pageNumber: '1',
@@ -294,7 +295,7 @@ async function seed(bcryptSalt: string | number) {
               provider: 'http',
               uri: imageUri3,
               type: 'pdf',
-              ballerineFileId: await persistImageFile(client, imageUri3),
+              ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               data: '',
               metadata: {},
             },
@@ -368,7 +369,7 @@ async function seed(bcryptSalt: string | number) {
               uri: imageUri1,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri1),
+              ballerineFileId: await persistImageFile(client, imageUri1, project1.id),
               metadata: {
                 side: 'front',
                 pageNumber: '1',
@@ -379,7 +380,7 @@ async function seed(bcryptSalt: string | number) {
               uri: imageUri2,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri2),
+              ballerineFileId: await persistImageFile(client, imageUri2, project1.id),
               metadata: {
                 side: 'back',
                 pageNumber: '1',
@@ -419,7 +420,7 @@ async function seed(bcryptSalt: string | number) {
               uri: imageUri3,
               type: 'pdf',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri3),
+              ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               metadata: {},
             },
           ],
@@ -849,7 +850,7 @@ async function seed(bcryptSalt: string | number) {
         endUserId: { not: null },
       },
     },
-    project2.id,
+    project1.id,
   );
 
   // KYB Onboarding
@@ -1130,7 +1131,7 @@ async function seed(bcryptSalt: string | number) {
         businessId: { not: null },
       },
     },
-    project2.id,
+    project1.id,
   );
 
   await client.$transaction(async () =>
@@ -1144,7 +1145,7 @@ async function seed(bcryptSalt: string | number) {
             workflowDefinitionVersion: manualMachineVersion,
             context: await createMockEndUserContextData(id, index + 1),
           },
-          projectId: project2.id,
+          projectId: project1.id,
         }),
       }),
     ),
