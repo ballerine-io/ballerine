@@ -1970,7 +1970,7 @@ importers:
         specifier: 3.325.0
         version: 3.325.0
       '@ballerine/common':
-        specifier: 0.5.23
+        specifier: 0.5.24
         version: link:../../packages/common
       '@ballerine/workflow-core':
         specifier: 0.4.30
