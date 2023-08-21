@@ -108,7 +108,6 @@ export const parentKybWithSessionWorkflowDefinition = {
                   uiSchema: companyDocumentsUISchema,
                   defaultData: defaultCompanyDocumentsData,
                   key: 'companyDocuments',
-                  isFinal: true,
                 },
               ],
             },
