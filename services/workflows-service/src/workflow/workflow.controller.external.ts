@@ -29,6 +29,7 @@ import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { GetActiveFlowDto } from '@/workflow/dtos/get-active-workflow-input.dto';
+import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -217,8 +218,8 @@ export class WorkflowControllerExternal {
   @common.Post('/:id/hook/:event')
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
-  @Public()
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @VerifyUnifiedApiSignatureDecorator()
   async hook(
     @common.Param() params: WorkflowIdWithEventInput,
     @common.Query() query: WorkflowHookQuery,
