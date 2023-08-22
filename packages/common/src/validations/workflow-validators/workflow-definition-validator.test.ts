@@ -41,15 +41,13 @@ describe('WorkflowDefinitionValidator', () => {
         successAction: 'API_CALL_SUCCESS',
         errorAction: 'API_CALL_FAILURE',
         request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '{data: entity.id}',
-            },
-          ],
+          transform: {
+            transformer: 'jq',
+            mapping: '{data: .entity.id}',
+          },
         },
         response: {
-          transform: [{ transformer: 'jmespath', mapping: '{result: @}' }],
+          transform: { transformer: 'jq', mapping: '{result: .}' },
         },
       },
       {
@@ -59,12 +57,10 @@ describe('WorkflowDefinitionValidator', () => {
         headers: { some_header: 'some_value' },
         stateNames: ['checkBusinessScore'],
         request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '{data: entity.id}',
-            },
-          ],
+          transform: {
+            transformer: 'jq',
+            mapping: '{data: .entity.id}',
+          },
         },
       },
     ];
@@ -83,7 +79,7 @@ describe('WorkflowDefinitionValidator', () => {
     });
 
     describe('when api plugin is invalid', () => {
-      it('returns invalid response', async () => {
+      it('it returns invalid response', async () => {
         workflowDefinition.extensions.apiPlugins[0].request = 'dwadwad';
         const validationResponse = validateWorkflowDefinition(workflowDefinition);
 

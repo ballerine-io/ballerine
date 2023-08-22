@@ -681,7 +681,7 @@ export const ghanaDocuments: TDocument[] = [
     version: 1,
     propertiesSchema: {
       type: 'object',
-      // required: ['companyName', 'taxIdNumber', 'registrationNumber'],
+      required: ['companyName', 'taxIdNumber', 'registrationNumber'],
       properties: {
         companyName: {
           type: 'string',
@@ -711,7 +711,7 @@ export const ghanaDocuments: TDocument[] = [
     version: 1,
     propertiesSchema: {
       type: 'object',
-      // required: ['certificateNo', 'companyName'],
+      required: ['certificateNo', 'companyName'],
       properties: {
         certificateNo: {
           type: 'string',
@@ -741,7 +741,7 @@ export const ghanaDocuments: TDocument[] = [
     version: 1,
     propertiesSchema: {
       type: 'object',
-      // required: ['registrationNumber', 'taxIdNumber'],
+      required: ['registrationNumber', 'taxIdNumber'],
       properties: {
         registrationNumber: {
           type: 'string',
@@ -764,7 +764,7 @@ export const ghanaDocuments: TDocument[] = [
     version: 1,
     propertiesSchema: {
       type: 'object',
-      // required: ['firstName', 'lastName'],
+      required: ['firstName', 'lastName'],
       properties: {
         firstName: {
           type: 'string',
@@ -775,94 +775,6 @@ export const ghanaDocuments: TDocument[] = [
         lastName: {
           type: 'string',
         },
-      },
-    },
-  },
-  {
-    category: 'company_structure',
-    type: 'shareholders',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        properties: {
-          firstName: {
-            type: 'string',
-          },
-          middleName: {
-            type: 'string',
-          },
-          lastName: {
-            type: 'string',
-          },
-        },
-      },
-    },
-  },
-  {
-    category: 'registration_document',
-    type: 'certificate_of_incorporation',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        properties: {
-          companyName: {
-            type: 'string',
-          },
-          country: {
-            type: 'string',
-          },
-          state: {
-            type: 'string',
-          },
-          vat: {
-            type: 'string',
-          },
-          companyType: {
-            type: 'string',
-          },
-          establishmentDate: {
-            type: 'string',
-          },
-        },
-      },
-    },
-  },
-  {
-    category: 'proof_of_bank_account',
-    type: 'bank_statement',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      country: {
-        type: 'string',
-      },
-      name: {
-        type: 'string',
-      },
-      holderName: {
-        type: 'string',
-      },
-      accountNumber: {
-        type: 'string',
-      },
-      currency: {
-        type: 'string',
       },
     },
   },
