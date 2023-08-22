@@ -1,5 +1,5 @@
 import { request } from '@app/common/utils/request';
-import { UploadFileDto, UploadFileResult } from '@app/domains/storage/types';
+import { IFile, UploadFileDto, UploadFileResult } from '@app/domains/storage/types';
 
 export const uploadFile = async (dto: UploadFileDto): Promise<UploadFileResult> => {
   const formData = new FormData();
@@ -14,4 +14,10 @@ export const uploadFile = async (dto: UploadFileDto): Promise<UploadFileResult> 
     }>();
 
   return await request.get(`external/storage/${fileId}`).json<UploadFileResult>();
+};
+
+export const fetchFile = async (fileId: string): Promise<IFile> => {
+  const result = await request.get(`external/storage/${fileId}`);
+
+  return result.json<IFile>();
 };

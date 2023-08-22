@@ -13,11 +13,18 @@ import { UpdateFlowDto, startFlow, updateFlow } from '@app/domains/collection-fl
 import { selectDocuments } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectDocuments';
 import { selectUbos } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectUbos';
 import { selectEntityData } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectEntityData';
+import { useCustomer } from '@app/components/providers/CustomerProvider';
+import { selectBusinessData } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectBusinessData';
+import { useCollectionFlowSchemaQuery } from '@app/hooks/useCollectionFlowSchemaQuery';
+import { uploadFilesAndSaveToStorage } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/helpers/uploadFilesAndSaveToStorage';
+import { assignFileIdsToFlowData } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/helpers/assignFileIdsToFlowData';
 
 export const useBaseFlow = () => {
   const { logoutSilent } = useSignin();
   const { user } = useSessionQuery();
-  const { flowData, isFetching } = useActiveWorkflowQuery();
+  const { customer } = useCustomer();
+  const { documentConfigurations } = useCollectionFlowSchemaQuery();
+  const { flowData, isFetching } = useActiveWorkflowQuery(documentConfigurations);
   const [isLoading, setLoading] = useState(false);
   const [isUpdating, setUpdating] = useState(false);
   const navigate = useNavigate();
@@ -40,11 +47,12 @@ export const useBaseFlow = () => {
           documents: [],
           dynamicData: values.flowData,
           flowState: values.currentView,
-          entityData: selectEntityData(values),
+          entityData: selectEntityData(values, customer),
+          businessData: selectBusinessData(values, user),
         },
       }).then(() => setUpdating(false));
     },
-    [user],
+    [user, customer],
   );
 
   const handleFinish = useCallback(
@@ -54,16 +62,19 @@ export const useBaseFlow = () => {
       try {
         setLoading(true);
 
+        await uploadFilesAndSaveToStorage(documentConfigurations, context);
+
         const updatePayload: UpdateFlowDto = {
           flowId: context.shared.workflowId,
           flowType: import.meta.env.VITE_KYB_DEFINITION_ID,
           payload: {
             mainRepresentative: selectMainRepresentative(context, user),
             ubos: selectUbos(context, user),
-            documents: await selectDocuments(context, flowData.documents),
-            dynamicData: context.flowData,
+            documents: await selectDocuments(context, flowData.documents, documentConfigurations),
+            dynamicData: assignFileIdsToFlowData(context, documentConfigurations).flowData,
             flowState: context.currentView,
-            entityData: selectEntityData(context),
+            entityData: selectEntityData(context, customer),
+            businessData: selectBusinessData(context, user),
           },
         };
 
@@ -84,7 +95,7 @@ export const useBaseFlow = () => {
         setLoading(false);
       }
     },
-    [user, logoutSilent, navigate],
+    [user, customer, logoutSilent, navigate],
   );
 
   return {

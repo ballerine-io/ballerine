@@ -21,11 +21,11 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
 
   return (
     <div className="w-ful flex h-screen flex-nowrap">
-      <div className="bg-primary col-span-2 w-[24%] max-w-[418px] px-14 pt-14 pb-4">
+      <div className="bg-primary col-span-2 w-[24%] max-w-[418px] px-14 pb-4 pt-14">
         <div className="font-inter flex h-full flex-col">
           <div className="flex flex-1 flex-col pb-16">
             <div onClick={onBackButtonClick}>{backButton}</div>
-            <div className="pt-24 pb-16">
+            <div className="pb-16 pt-24">
               <img
                 src={customer.logoImageUri || settings.logo}
                 alt={settings.appName}

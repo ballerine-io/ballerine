@@ -1,21 +1,10 @@
-import {
-  FileWithMetadata,
-  parseBase64FileWithMetadata,
-} from '@app/common/utils/parse-base64-file-with-metadata';
-import { Document } from '@app/domains/collection-flow';
+import { Document, DocumentConfiguration } from '@app/domains/collection-flow';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
+import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
 import { buildCompanyAddress } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/helpers/serialize-business-data';
 import { getFullCountryNameByCode } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list';
-import { getFilesId } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-file-ids';
-import { base64ToFile } from '@ballerine/ui';
 
-const allowedFileslist = [
-  'addressProof',
-  'registrationCertificate',
-  'bankStatement',
-  'companyStructure',
-] as const;
-type FileInputName = (typeof allowedFileslist)[number];
+type FileInputName = string;
 interface FileHelpers {
   getProperties: (context: WorkflowFlowData) => object;
   fileType: string;
@@ -61,7 +50,7 @@ const fileHelpers: Record<FileInputName, FileHelpers> = {
   },
   companyStructure: {
     getProperties: ({ flowData }) => {
-      return flowData?.ubos.shareholders && flowData?.ubos.shareholders.length
+      return flowData?.ubos?.shareholders && flowData?.ubos.shareholders.length
         ? {
             firstName: flowData?.ubos.shareholders.at(-1).name.firstName,
             lastName: flowData?.ubos.shareholders.at(-1).name.lastName,
@@ -73,48 +62,51 @@ const fileHelpers: Record<FileInputName, FileHelpers> = {
   },
 };
 
-const extractFilesFromPayload = (fileNames: typeof allowedFileslist, payload: object) => {
-  return fileNames
-    .map(fileName => {
-      const fileInPayload = payload[fileName];
+const extractFilesFromPayload = (
+  documentConfigurations: DocumentConfiguration[],
+  payload: object,
+) => {
+  return documentConfigurations
+    .map(config => {
+      const fileInPayload = payload[config.name];
       if (!fileInPayload) return null;
 
-      return { ...parseBase64FileWithMetadata(fileInPayload), fileKey: fileName as FileInputName };
+      return { file: fileInPayload as File, fileKey: config.name };
     })
     .filter(Boolean);
 };
 
-export const selectDocuments = async (
+export const selectDocuments = (
   flowData: WorkflowFlowData,
-  documents: Document[],
-): Promise<Document[]> => {
+  existingDocuments: Document[],
+  documentConfigurations: DocumentConfiguration[],
+): Document[] => {
   const { companyDocuments } = flowData.flowData;
 
   try {
-    const filesMetadata: (FileWithMetadata & { fileKey: FileInputName })[] =
-      extractFilesFromPayload(allowedFileslist, companyDocuments);
-    const documents = await Promise.all(
-      filesMetadata.map((fileWithMetadata): Promise<Document> => {
-        return new Promise(async resolve => {
-          const fileId = await getFilesId(
-            await base64ToFile(fileWithMetadata.file, fileWithMetadata.name, fileWithMetadata.type),
-          );
-          const helpers = fileHelpers[fileWithMetadata.fileKey];
-
-          const document: Document = {
-            fileId,
-            type: helpers.fileType,
-            category: helpers.fileCategory,
-            properties: helpers.getProperties(flowData),
-          };
-
-          resolve(document);
-        });
-      }),
+    const filesMetadata: { fileKey: FileInputName; file: File }[] = extractFilesFromPayload(
+      documentConfigurations,
+      companyDocuments,
     );
 
+    const documents = filesMetadata
+      .filter(file => file.file instanceof File)
+      .map((filePayload): Document => {
+        const fileId = collectionFlowFileStorage.getFileId(filePayload.file);
+        const helpers = fileHelpers[filePayload.fileKey];
+
+        const document: Document = {
+          fileId,
+          type: helpers ? helpers.fileType : 'unknown',
+          category: helpers ? helpers.fileCategory : 'unknown',
+          properties: helpers ? helpers.getProperties(flowData) : {},
+        };
+
+        return document;
+      });
+
     return documents.map(doc => {
-      const existingDocument = documents.find(
+      const existingDocument = existingDocuments.find(
         existingDocument =>
           existingDocument.type === doc.type && existingDocument.category === doc.category,
       );

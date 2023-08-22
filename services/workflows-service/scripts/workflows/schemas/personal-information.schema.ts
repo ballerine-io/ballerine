@@ -30,7 +30,7 @@ export const personalInformationSchema = {
       minLength: 1,
       format: 'date-time',
     },
-    phoneNumber: {
+    personalPhoneNumber: {
       type: 'string',
       title: 'Phone Number',
       minLength: 1,
@@ -44,8 +44,8 @@ export const personalInformationSchema = {
 };
 
 export const personalInformationUISchema = {
-  'ui:order': ['name', 'title', 'birthDate', 'phoneNumber', 'companyCheck'],
-  phoneNumber: {
+  'ui:order': ['name', 'title', 'birthDate', 'personalPhoneNumber', 'companyCheck'],
+  personalPhoneNumber: {
     'ui:field': 'PhoneInput',
     'ui:label': true,
   },

@@ -4,10 +4,12 @@ import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessio
 import { Button, Card } from '@ballerine/ui';
 import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
+import { useCollectionFlowSchemaQuery } from '@app/hooks/useCollectionFlowSchemaQuery';
 
 export const Approved = withSessionProtected(() => {
   const { customer } = useCustomer();
-  const { isFetching, flowData } = useActiveWorkflowQuery();
+  const { documentConfigurations } = useCollectionFlowSchemaQuery();
+  const { isFetching, flowData } = useActiveWorkflowQuery(documentConfigurations);
   const { logoutSilent } = useSignin();
 
   useEffect(() => {

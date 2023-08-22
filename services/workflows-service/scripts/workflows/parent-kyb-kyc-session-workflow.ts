@@ -53,6 +53,24 @@ export const parentKybWithSessionWorkflowDefinition = {
         metadata: {
           uiSettings: {
             multiForm: {
+              documents: [
+                {
+                  name: 'bankStatement',
+                  type: 'file',
+                },
+                {
+                  name: 'companyStructure',
+                  type: 'file',
+                },
+                {
+                  name: 'registrationCertificate',
+                  type: 'file',
+                },
+                {
+                  name: 'addressProof',
+                  type: 'file',
+                },
+              ],
               steps: [
                 {
                   title: 'Personal information',
@@ -192,7 +210,7 @@ export const parentKybWithSessionWorkflowDefinition = {
         method: 'GET',
         stateNames: ['run_kyb_enrichment'],
         successAction: 'KYB_DONE',
-        errorAction: 'FAILED',
+        errorAction: 'KYB_DONE',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -231,12 +249,13 @@ export const parentKybWithSessionWorkflowDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              kybCompanyName: 'PayLynk',
-              customerCompanyName: entity.data.companyName,
+              kybCompanyName: entity.data.companyName,
+              customerCompanyName: entity.data.additionalInfo.customerCompany,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
               resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}/workflowRuntimeId=',workflowRuntimeId, '?resubmitEvent=RESUBMITTED']),
-              supportEmail: join('',['PayLynk','@support.com']),
+              supportEmail: join('',[entity.data.additionalInfo.customerCompany,'@support.com']),
               from: 'no-reply@ballerine.com',
+              name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
               templateId: 'd-7305991b3e5840f9a14feec767ea7301',
               revisionReason: documents[].decision[].revisionReason | [0],

@@ -74,7 +74,7 @@ export const kycEmailSessionDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              endUserId: entity.id,
+              endUserId: join('__',[entity.id,pluginsOutput.kyc_session.kyc_session_1.result.metadata.id || '']),
               firstName: entity.data.firstName,
               lastName: entity.data.lastName,
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED', '?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
@@ -112,6 +112,7 @@ export const kycEmailSessionDefinition = {
               firstName: entity.data.firstName,
               kycLink: pluginsOutput.kyc_session.kyc_session_1.result.metadata.url,
               from: 'no-reply@ballerine.com',
+              name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
               receivers: [entity.data.email],
               subject: '{customerCompanyName} activation, Action needed.',
               preheader: 'Verify your identity for Happy Home Goods activation with {customerCompanyName}.',

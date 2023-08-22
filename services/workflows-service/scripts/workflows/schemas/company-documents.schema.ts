@@ -4,21 +4,24 @@ export const companyDocumentsSchema = {
   properties: {
     bankStatement: {
       title: 'Bank Statement',
-      type: 'string',
+      type: 'object',
       description: 'Not older than 6 months.',
     },
     companyStructure: {
       title: 'Company structure (directors & legal representatives)',
-      type: 'string',
+      type: 'object',
     },
     registrationCertificate: {
       title: 'Company Certificate of Registration',
-      type: 'string',
+      type: 'object',
     },
     addressProof: {
       title: 'Utility bill as proof of address of the company',
-      type: 'string',
+      type: 'object',
     },
+    // To make fields optional
+    // Set type to type: ['null', 'object']
+    // Set default values to null
   },
   required: ['bankStatement', 'companyStructure', 'registrationCertificate', 'addressProof'],
 };
@@ -45,8 +48,8 @@ export const companyDocumentsUISchema = {
 };
 
 export const defaultCompanyDocumentsData = {
-  registrationCertificate: '',
-  addressProof: '',
-  bankStatement: '',
-  companyStructure: '',
+  registrationCertificate: null,
+  addressProof: null,
+  bankStatement: null,
+  companyStructure: null,
 };

@@ -42,6 +42,6 @@ export class StorageService {
   }
 
   async getFileNameById({ id }: IFileIds, args?: Prisma.FileFindFirstArgs) {
-    return await this.fileRepository.findById({ id }, args);
+    return await this.fileRepository.findById({ id }, args || {});
   }
 }

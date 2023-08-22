@@ -8,10 +8,12 @@ import { MultiDocuments } from '../../components/MultiDocuments/MultiDocuments';
 import { NestedDetails } from '../../components/NestedDetails/NestedDetails';
 import { MapCell } from '../../components/MapCell/MapCell';
 import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAction';
+import { BadgeCell } from '../../components/BadgeCell/BadgeCell';
 
 export const cells = {
   heading: Heading,
   alert: Alert,
+  badge: BadgeCell,
   container: Container,
   callToAction: CallToAction,
   faceComparison: FaceComparison,

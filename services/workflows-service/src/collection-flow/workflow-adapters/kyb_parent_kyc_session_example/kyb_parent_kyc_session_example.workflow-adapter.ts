@@ -24,13 +24,6 @@ export class KYBParentKYCSessionExampleAdapter
       title: ubo.entity.data.title,
       email: ubo.entity.data.email,
     }));
-    flowData.entityData = {
-      website: context.entity?.data?.website,
-      registrationNumber: context.entity?.data?.registrationNumber,
-      companyName: context.entity?.data?.companyName,
-      countryOfIncorporation: context.entity?.data.countryOfIncorporation,
-      fullAddress: context.entity?.data?.address?.text,
-    };
 
     // TO DO: Implement mapping of WF issues and then remove this
     flowData.workflow = workflow;
@@ -43,20 +36,12 @@ export class KYBParentKYCSessionExampleAdapter
     baseWorkflowRuntimeData: WorkflowRuntimeData,
     customer: Customer,
   ): WorkflowRuntimeData {
-    const { flowData, flowState, mainRepresentative, entityData, documents, ubos, isFinished } =
-      payload;
-
+    const { flowData, flowState, mainRepresentative, documents, ubos, isFinished } = payload;
     (baseWorkflowRuntimeData.context as KYBParentKYCSessionExampleContext).entity = {
       ...(baseWorkflowRuntimeData.context as KYBParentKYCSessionExampleContext).entity,
       data: {
         ...baseWorkflowRuntimeData.context.entity.data,
-        ...{
-          website: entityData?.website,
-          registrationNumber: entityData?.registrationNumber,
-          companyName: entityData?.companyName,
-          countryOfIncorporation: entityData?.countryOfIncorporation,
-          address: { text: entityData?.fullAddress },
-        },
+        ...payload.businessData,
         additionalInfo: {
           ...baseWorkflowRuntimeData.context.entity.data.additionalInfo,
           mainRepresentative,
@@ -96,7 +81,13 @@ export class KYBParentKYCSessionExampleAdapter
           country: 'GH',
         },
         decision: { status: '', revisionReason: '', rejectionReason: '' },
-        pages: [{ ballerineFileId: document.fileId }],
+        pages: [
+          {
+            ballerineFileId: document.fileId,
+            uri: document.uri,
+            provider: document.uri ? 'http' : undefined,
+          },
+        ],
         properties: document.properties,
         version: '1',
         issuingVersion: 1,
