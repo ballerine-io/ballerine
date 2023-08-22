@@ -17,4 +17,5 @@ export const EnvSchema = z.object({
     .or(z.literal(false))
     .catch(undefined),
   VITE_IMAGE_LOGO_URL: z.string().optional(),
+  VITE_FETCH_SIGNED_URL: z.string().optional(),
 });
