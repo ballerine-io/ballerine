@@ -42,20 +42,16 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     onMutateAssignWorkflow,
     debouncedIsLoadingApproveEntity,
     debouncedIsLoadingRejectEntity,
-    debouncedIsLoadingAssignEntity,
     debouncedIsLoadingRevisionCase,
     isLoading,
     isLoadingCase,
-    initials,
     canApprove,
     canReject,
     canRevision,
     caseState,
     authenticatedUser,
     assignees,
-    isActionButtonDisabled,
     onTriggerAssignToMe,
-    isAssignedToMe,
     hasDecision,
     documentsToReviseCount,
   } = useActions({ workflowId: id, fullName });
@@ -109,7 +105,6 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                     loading: debouncedIsLoadingRejectEntity,
                   })}
                   disabled={isLoading || !canRevision}
-                  onClick={onMutateRevisionCase}
                 >
                   Ask for all re-uploads {canRevision && `(${documentsToReviseCount})`}
                 </Button>

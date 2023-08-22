@@ -108,7 +108,6 @@ export const useCallToActionLogic = () => {
   );
 
   return {
-    onMutateTaskDecisionById,
     isLoadingTaskDecisionById,
     caseState,
     action,
@@ -120,5 +119,7 @@ export const useCallToActionLogic = () => {
     onActionChange,
     onCommentChange,
     noReasons,
+    onMutateTaskDecisionById,
+    workflowLevelResolution: workflow?.workflowDefinition?.config?.workflowLevelResolution,
   };
 };

@@ -173,7 +173,7 @@ export const useTasks = ({
           return [
             {
               type: 'callToAction',
-              value: 'Reject',
+              value: 'Re-upload needed',
               data: {
                 id,
                 disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
@@ -230,9 +230,6 @@ export const useTasks = ({
                     { type, format, pattern, isEditable = true, dropdownOptions, value },
                   ]) => {
                     const fieldValue = value || (properties?.[title] ?? '');
-                    // if (value === 'bank_statement') {
-                    console.log({ props: propertiesSchema?.properties });
-                    // }
                     const isEditableDecision = isDoneWithRevision || !decision?.status;
 
                     return {
@@ -285,7 +282,7 @@ export const useTasks = ({
 
         return {
           className: isRevision
-            ? `animate-pending-task shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning ${
+            ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning ${
                 noAction ? '' : 'bg-warning/10'
               }`
             : '',

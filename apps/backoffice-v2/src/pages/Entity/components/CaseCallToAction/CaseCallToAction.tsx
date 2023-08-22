@@ -56,14 +56,14 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
           <DialogHeader>
             <DialogTitle className={`text-2xl`}>Ask for all re-uploads</DialogTitle>
             <DialogDescription>
-              <div className="mb-[10px]">
+              <span className="mb-[10px] block">
                 By clicking the button below, an email with a link will be sent to the customer,
                 directing them to re-upload the documents you have marked as “re-upload needed”.
-              </div>
-              <div>
+              </span>
+              <span>
                 The case’s status will then change to “Revisions” until the customer will provide
                 the needed documents and fixes.
-              </div>
+              </span>
             </DialogDescription>
           </DialogHeader>
           {!noReasons && (
