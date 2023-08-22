@@ -2,12 +2,10 @@ import { z } from 'zod';
 import { AnyRecord } from '@/types';
 
 const RequestSchema = z.object({
-  transform: z.array(
-    z.object({
-      transformer: z.string(),
-      mapping: z.string(),
-    }),
-  ),
+  transform: z.object({
+    transformer: z.string(),
+    mapping: z.string(),
+  }),
   schema: z
     .object({
       $schema: z.string(),
@@ -20,12 +18,10 @@ const RequestSchema = z.object({
 
 const ResponseSchema = z
   .object({
-    transform: z.array(
-      z.object({
-        transformer: z.string(),
-        mapping: z.string(),
-      }),
-    ),
+    transform: z.object({
+      transformer: z.string(),
+      mapping: z.string(),
+    }),
     schema: z
       .object({
         $schema: z.string(),
