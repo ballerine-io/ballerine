@@ -30,7 +30,7 @@ const persistImageFile = async (client: PrismaClient, uri: string, projectId: st
       userId: '',
       fileNameOnDisk: uri,
       uri: uri,
-      projectId: projectId
+      projectId: projectId,
     },
   });
 

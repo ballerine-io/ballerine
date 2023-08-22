@@ -3,9 +3,11 @@ import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
 import { useSignin } from '@app/hooks/useSignin';
 import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Card } from '@ballerine/ui';
+import { useCollectionFlowSchemaQuery } from '@app/hooks/useCollectionFlowSchemaQuery';
 
 export const Rejected = withSessionProtected(() => {
-  const { isFetching, flowData } = useActiveWorkflowQuery();
+  const { documentConfigurations } = useCollectionFlowSchemaQuery();
+  const { isFetching, flowData } = useActiveWorkflowQuery(documentConfigurations);
   const { logoutSilent } = useSignin();
 
   useEffect(() => {

@@ -15,7 +15,7 @@ export class EmailPlugin extends ApiPlugin {
     payload: AnyRecord,
     headers: HeadersInit,
   ) {
-    const from = { from: { email: payload.from } };
+    const from = { from: { email: payload.from, ...(payload.name ? { name: payload } : {}) } };
     const subject = payload.subject
       ? { subject: this.replaceValuePlaceholders(payload.subject as string, payload) }
       : {};

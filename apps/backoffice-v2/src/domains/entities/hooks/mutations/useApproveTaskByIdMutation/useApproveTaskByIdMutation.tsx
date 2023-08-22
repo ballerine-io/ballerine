@@ -17,7 +17,7 @@ export const useApproveTaskByIdMutation = (workflowId: string) => {
         workflowId,
         documentId,
         body: {
-          decision: Action.APPROVE.toLowerCase(),
+          decision: Action.APPROVE,
         },
       }),
     onMutate: async ({ documentId }) => {
