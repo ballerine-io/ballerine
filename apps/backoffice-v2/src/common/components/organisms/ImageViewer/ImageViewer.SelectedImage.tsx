@@ -1,7 +1,6 @@
 import { BallerineImage } from '../../atoms/BallerineImage';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
-import { useImageViewerContext } from './hooks/useImageViewerContext/useImageViewerContext';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { TSelectedImageProps } from './interfaces';
 
@@ -29,7 +28,7 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
       setIsError(false);
     }, [isLoading, selectedImage?.imageUrl]);
 
-    if (selectedImage?.fileType === 'pdf') {
+    if (selectedImage?.fileType === 'pdf' && 'true' === 'false') {
       return (
         <iframe
           src={selectedImage?.imageUrl}

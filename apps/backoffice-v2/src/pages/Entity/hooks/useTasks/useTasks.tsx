@@ -12,15 +12,16 @@ import {
   omitPropsFromObject,
 } from '../useEntity/utils';
 import { getDocumentsByCountry, isObject } from '@ballerine/common';
+import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 
 import { octetToFileType } from '../../../../common/octet-to-file-type/octet-to-file-type';
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 import { X } from 'lucide-react';
-import * as React from 'react';
 import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
+import { z } from 'zod';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -265,21 +266,21 @@ export const useTasks = ({
           ],
         };
 
+        const documentsCellData =
+          documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
+            title: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
+              docType,
+            )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
+            imageUrl: z.string().url().safeParse(results[docIndex][pageIndex]).success
+              ? results[docIndex][pageIndex]
+              : octetToFileType(results[docIndex][pageIndex], `application/${type}`),
+            fileType: type,
+          })) ?? [];
         const documentsCell = {
           type: 'multiDocuments',
           value: {
             isLoading: docsData?.some(({ isLoading }) => isLoading),
-            data:
-              documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-                title: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
-                  docType,
-                )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                imageUrl:
-                  type === 'pdf'
-                    ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
-                    : results[docIndex][pageIndex],
-                fileType: type,
-              })) ?? [],
+            data: documentsCellData,
           },
         };
 

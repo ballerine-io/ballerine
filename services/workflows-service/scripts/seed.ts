@@ -294,7 +294,7 @@ async function seed(bcryptSalt: string | number) {
             {
               provider: 'http',
               uri: imageUri3,
-              type: 'pdf',
+              type: 'png',
               ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               data: '',
               metadata: {},
@@ -418,7 +418,7 @@ async function seed(bcryptSalt: string | number) {
             {
               provider: 'http',
               uri: imageUri3,
-              type: 'pdf',
+              type: 'png',
               data: '',
               ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               metadata: {},
