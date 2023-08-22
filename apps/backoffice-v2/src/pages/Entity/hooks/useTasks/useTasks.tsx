@@ -65,12 +65,14 @@ export const useTasks = ({
   const address = getAddressDeep(pluginsOutput);
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
+
   const registryInfoBlock =
-    Object.keys(pluginsOutput ?? {}).length !== 0
-      ? {
-          cells: pluginsOutputKeys
-            ?.filter(key => !!Object.keys(pluginsOutput[key] ?? {})?.length)
-            ?.map(key => [
+    Object.keys(pluginsOutput ?? {}).length === 0
+      ? {}
+      : pluginsOutputKeys
+          ?.filter(key => !!Object.keys(pluginsOutput[key] ?? {})?.length)
+          ?.map(key => ({
+            cells: [
               {
                 id: 'nested-details-heading',
                 type: 'heading',
@@ -85,15 +87,12 @@ export const useTasks = ({
                   })),
                 },
               },
-            ]),
-        }
-      : {};
+            ],
+          }));
+
   const taskBlocks =
     documents?.map(
-      (
-        { id, type: docType, category, issuer, properties, propertiesSchema, decision },
-        docIndex,
-      ) => {
+      ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
         const additionProperties =
           isExistingSchemaForDocument(documentsSchemas) &&
           composePickableCategoryType(category, docType, documentsSchemas);
@@ -192,6 +191,7 @@ export const useTasks = ({
             },
           ];
         };
+
         const headerCell = {
           id: 'header',
           type: 'container',
@@ -209,6 +209,7 @@ export const useTasks = ({
             },
           ],
         };
+
         const detailsCell = {
           type: 'container',
           value: [
@@ -263,6 +264,7 @@ export const useTasks = ({
             },
           ],
         };
+
         const documentsCell = {
           type: 'multiDocuments',
           value: {
@@ -291,9 +293,11 @@ export const useTasks = ({
         };
       },
     ) ?? [];
+
   const entityInfoBlock =
-    Object.keys(entity?.data ?? {}).length !== 0
-      ? {
+    Object.keys(entity?.data ?? {}).length === 0
+      ? {}
+      : {
           cells: [
             {
               type: 'heading',
@@ -324,8 +328,8 @@ export const useTasks = ({
               },
             },
           ],
-        }
-      : {};
+        };
+
   const mapBlock =
     Object.keys(address ?? {})?.length === 0
       ? {}
