@@ -12,7 +12,7 @@ export const ZoomButton: FunctionComponent<ButtonComponent> = ({ className, ...p
       onClick={onToggleOnIsZoomModalOpen}
       aria-label={'Open zoomed selected image modal'}
       className={ctw(
-        `btn-ghost btn-sm btn-circle btn grid place-content-center bg-base-300/70 focus:outline-primary`,
+        `btn btn-circle btn-ghost btn-sm grid place-content-center bg-base-300/70 focus:outline-primary`,
         className,
       )}
       {...props}

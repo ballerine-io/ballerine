@@ -119,7 +119,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
         <DialogFooter>
           <DialogClose asChild>
             <button
-              className={ctw(`btn-error btn justify-center`)}
+              className={ctw(`btn btn-error justify-center`)}
               // onClick={onMutateRejectEntity({
               //   action: Action.REVISION,
               // Currently hardcoded to documentOne.
