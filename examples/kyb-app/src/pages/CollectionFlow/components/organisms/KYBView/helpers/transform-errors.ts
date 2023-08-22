@@ -32,6 +32,12 @@ export const transformRJSFErrors = (errors: RJSFValidationError[]): RJSFValidati
       error.message = 'This field is required';
     }
 
+    if (error.name === 'minItems') {
+      error.message = `Plead add at least ${error?.params.limit} item${
+        error?.params.limit > 1 ? 's' : ''
+      }.`;
+    }
+
     return error;
   });
 };

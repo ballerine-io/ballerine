@@ -36,7 +36,7 @@ export const SignIn = () => {
           <div className="mb-12">
             <img
               src={customer.logoImageUri || '/app-logo.svg'}
-              className="max-h-[51px] max-w-[120px]"
+              className="max-h-[80px] max-w-[200px] object-fill"
             />
           </div>
           <div className="mb-6">

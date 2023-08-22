@@ -1,7 +1,7 @@
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import dayjs, { Dayjs } from 'dayjs';
 import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
@@ -30,8 +30,10 @@ export const DatePickerInput = ({
   disabled = false,
   onChange,
 }: DatePickerProps) => {
+  const [isFocused, setFocused] = useState(false);
+
   const serializeValue = useCallback((value: Dayjs): string => {
-    return value.toDate().toISOString();
+    return value.toISOString();
   }, []);
 
   const deserializeValue = useCallback((value: DatePickerValue) => {
@@ -66,13 +68,21 @@ export const DatePickerInput = ({
           variant="standard"
           fullWidth
           size="small"
-          error={props.error}
+          onFocus={e => {
+            setFocused(true);
+            props.onFocus && props.onFocus(e);
+          }}
+          onBlur={e => {
+            setFocused(false);
+            props.onBlur && props.onBlur(e);
+          }}
+          error={!isFocused ? props.error : false}
           FormHelperTextProps={{
             classes: {
               root: 'pl-2 text-destructive font-inter text-[0.8rem]',
             },
           }}
-          helperText={props.error ? 'Please enter valid date.' : undefined}
+          helperText={!isFocused && props.error ? 'Please enter valid date.' : undefined}
           InputProps={{
             ...props.InputProps,
             classes: {
@@ -89,7 +99,7 @@ export const DatePickerInput = ({
         />
       );
     },
-    [],
+    [isFocused],
   );
 
   return (
