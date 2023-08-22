@@ -23,7 +23,7 @@ export const AuthenticatedLayout: FunctionComponent = () => {
   }
 
   return (
-    <div className="drawer-mobile drawer">
+    <div className="drawer drawer-mobile">
       <input id="app-drawer" type="checkbox" className="drawer-toggle" />
       <div className={`drawer-content`}>
         <main className={`grid h-full grid-cols-[285px_1fr]`}>
@@ -36,7 +36,7 @@ export const AuthenticatedLayout: FunctionComponent = () => {
       </div>
       <label
         htmlFor="app-drawer"
-        className="drawer-button btn-square btn fixed z-50 bottom-right-6 lg:hidden"
+        className="btn btn-square drawer-button fixed z-50 bottom-right-6 lg:hidden"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
