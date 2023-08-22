@@ -266,21 +266,20 @@ export const useTasks = ({
           ],
         };
 
-        const documentsCellData =
-          documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-            title: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
-              docType,
-            )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-            imageUrl: z.string().url().safeParse(results[docIndex][pageIndex]).success
-              ? results[docIndex][pageIndex]
-              : octetToFileType(results[docIndex][pageIndex], `application/${type}`),
-            fileType: type,
-          })) ?? [];
         const documentsCell = {
           type: 'multiDocuments',
           value: {
             isLoading: docsData?.some(({ isLoading }) => isLoading),
-            data: documentsCellData,
+            data:
+              documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
+                title: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
+                  docType,
+                )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
+                imageUrl: z.string().url().safeParse(results[docIndex][pageIndex]).success
+                  ? results[docIndex][pageIndex]
+                  : octetToFileType(results[docIndex][pageIndex], `application/${type}`),
+                fileType: type,
+              })) ?? [],
           },
         };
 
