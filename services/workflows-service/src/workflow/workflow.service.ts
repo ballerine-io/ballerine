@@ -474,6 +474,9 @@ export class WorkflowService {
 
       // @ts-ignore
       data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
+        if (document?.decision?.status === 'revision' || document?.decision?.status === 'rejected')
+          return;
+
         if (!Object.keys(propertiesSchema ?? {})?.length) return;
 
         const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {});
