@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.2.14
+
+### Patch Changes
+
+- Update file input adapter to work with File
+
 ## 0.2.13
 
 ### Patch Changes

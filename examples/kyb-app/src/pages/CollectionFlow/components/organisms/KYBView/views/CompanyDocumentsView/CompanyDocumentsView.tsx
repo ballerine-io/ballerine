@@ -37,7 +37,6 @@ export const CompanyDocumentsView = () => {
         formData={context.flowData[state] as DocumentsContext}
         uiSchema={uiSchema}
         onSubmit={next}
-        onChange={values => console.log('values', values)}
         warnings={warnings}
         disabled={isLoading}
       />
