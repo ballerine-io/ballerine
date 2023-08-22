@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { env } from '@/env';
-import { verifySignature } from '@ballerine/common';
+import { verifySignature } from '@/common/utils/verify-signature/verify-signature';
 
 @Injectable()
 export class VerifyUnifiedApiSignatureGuard implements CanActivate {
