@@ -2,16 +2,10 @@ import { faker } from '@faker-js/faker';
 import { Business, EndUser, Prisma, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
-import {
-  businessIds,
-  businessRiskIds,
-  endUserIds,
-  generateBusiness,
-  generateEndUser,
-} from './generate-end-user';
+
 import { generateUserNationalId } from './generate-user-national-id';
 
-const devconExampleWorkflow = {
+const devconExampleWorkflowStart = {
   id: 'devcon_example_workflow',
   name: 'devcon_example_workflow',
   version: 1,
@@ -19,12 +13,12 @@ const devconExampleWorkflow = {
   definition: {
     id: 'devcon_example_workflow',
     predictableActionArguments: true,
-    initial: 'collect',
+    initial: 'user_data_collection',
     context: {
       documents: [],
     },
     states: {
-      collect: {
+      user_data_collection: {
         on: {
           start: 'manual_review',
         },
@@ -50,9 +44,113 @@ const devconExampleWorkflow = {
   },
 };
 
+const devconExampleWorkflowFinish = {
+  id: 'devcon_example_workflow',
+  name: 'devcon_example_workflow',
+  version: 1,
+  definitionType: 'statechart-json',
+  definition: {
+    id: 'devcon_example_workflow',
+    predictableActionArguments: true,
+    initial: 'user_data_collection',
+    context: {
+      documents: [],
+    },
+    states: {
+      data_user_data_collectionion: {
+        on: {
+          start: 'process_documents',
+        },
+      },
+      process_documents: {
+        on: {
+          API_CALL_SUCCESS: [
+            {
+              target: 'approved',
+              cond: {
+                type: 'json-logic',
+                rule: {
+                  '==': [
+                    { var: 'context.entity.companyName' },
+                    { var: 'response.data.registered_name' },
+                  ],
+                },
+              },
+            },
+            {
+              target: 'manual_review',
+            },
+          ],
+        },
+      },
+      manual_review: {
+        on: {
+          approve: 'approved',
+          reject: 'rejected',
+        },
+      },
+      rejected: {
+        type: 'final' as const,
+      },
+      approved: {
+        type: 'final' as const,
+      },
+    },
+    extensions: {
+      apiPlugins: [
+        {
+          name: 'llm_ocr_extraction',
+          pluginKind: 'api',
+          url: 'https://unified-api-test.eu.ballerine.app/ocr/extract',
+          method: 'POST',
+          stateNames: ['process_documents'],
+          successAction: 'API_CALL_SUCCESS',
+          errorAction: 'API_CALL_ERROR',
+          request: {
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping:
+                  '{ imageUrl: "https://www.pdffiller.com/preview/27/268/27268737/large.png" }',
+              },
+            ],
+            schema: {}, // OPTIONAL
+          },
+          response: {
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: '@', // jmespath
+              },
+            ],
+            schema: {}, // OPTIONAL
+          },
+        },
+        {
+          name: 'ballerineEnrichment',
+          url: 'https://webhook.site/',
+          method: 'POST',
+          stateNames: ['approved', 'rejected'],
+          headers: {},
+          request: {
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: '{id: entity.id}',
+              },
+            ],
+          },
+        },
+      ],
+      commonPlugins: [],
+    },
+    config: {},
+  },
+};
+
 const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
-    data: devconExampleWorkflow,
+    data: devconExampleWorkflowStart,
   });
 };
 
@@ -60,7 +158,7 @@ const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {
 const isSeeded = async (prismaClient: PrismaClient) => {
   const workflow = await prismaClient.workflowDefinition.findUnique({
     where: {
-      id: devconExampleWorkflow.id,
+      id: devconExampleWorkflowStart.id,
     },
   });
 
