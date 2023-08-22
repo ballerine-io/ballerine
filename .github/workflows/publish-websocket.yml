@@ -77,7 +77,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: services/websocket-service
-          platforms: linux/amd64, linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.branchmeta.outputs.tags }}
 
@@ -99,6 +99,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: services/websocket-service
-          platforms: linux/amd64, linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
