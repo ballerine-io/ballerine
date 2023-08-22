@@ -4,7 +4,6 @@ import { generateBusiness, generateEndUser } from '../generate-end-user';
 import { CustomerCreateDto } from '@/customer/dtos/customer-create';
 
 type Workflow = {
-  withAml: boolean;
   business: {
     id: string;
     name: string;
@@ -53,6 +52,7 @@ type Workflow = {
     nationality: string;
     decision: 'approved' | 'declined' | 'resubmission_requested';
     decisionReason: string | null;
+    withAml: boolean;
     selfie: string;
     passport: {
       front: string;
@@ -62,7 +62,70 @@ type Workflow = {
   }>;
 };
 
-const workflows: Workflow[] = [];
+const workflows: Workflow[] = [
+  {
+    business: {
+      id: faker.datatype.uuid(),
+      name: 'SolTech S.L.',
+      registrationNumber: 'B-12345678',
+      legalForm: 'Sociedad Limitada (S.L.)',
+      countryOfIncorporation: 'Spain',
+      dateOfIncorporation: new Date('2017-03-15'),
+      address: 'Calle Tecnología 15, 28013 Madrid',
+      addressComponents: {
+        country: 'Spain',
+        locality: 'Madrid',
+        postalCode: '28013',
+        region: 'Madrid',
+        streetAddress: 'Calle Tecnología 15',
+      },
+      jurisdictionCode: 'ES',
+      proofOfAddress: 'url_al_comprobante_de_domicilio.pdf',
+      proofOfAddressIssuerCountry: 'Spain',
+      phoneNumber: '+34 910 123 456',
+      email: 'contacto@soltech.es',
+      website: 'www.soltech.es',
+      industry: 'Renewable Energy',
+      taxIdentificationNumber: 'ESB12345678',
+      vatNumber: 'ESA12345678',
+      numberOfEmployees: 60,
+      businessPurpose: 'Desarrollo y venta de soluciones de energía renovable.',
+      documents: {
+        registrationDocument: 'url_al_documento_de_registro.pdf',
+        financialStatement: 'url_al_estado_financiero_2022.pdf',
+      },
+      shareholderStructure: [
+        {
+          name: 'Maria González',
+          ownershipPercentage: 80,
+        },
+      ],
+    },
+    ubos: [
+      {
+        id: faker.datatype.uuid(),
+        nationalId: faker.random.numeric(10),
+        decision: 'approved',
+        decisionReason: null,
+        withAml: false,
+        nationality: 'Spain',
+        gender: 'F',
+        firstName: 'Maria',
+        lastName: 'González',
+        email: 'maria.gonzalez@email.es',
+        phoneNumber: '+34 910 123 457',
+        dateOfBirth: new Date('1984-06-10'),
+        avatarUrl: 'url_al_avatar_maria_gonzalez.jpg',
+        selfie: 'url_al_selfie_maria_gonzalez.jpg',
+        passport: {
+          front: 'url_al_pasaporte_delantero_maria_gonzalez.jpg',
+          back: 'url_al_pasaporte_trasero_maria_gonzalez.jpg',
+          issuerCountryCode: 'ES',
+        },
+      },
+    ],
+  },
+];
 
 export const createDemoMockData = async ({
   prismaClient,
@@ -74,12 +137,11 @@ export const createDemoMockData = async ({
   projects: Array<{ id: string }>;
 }) => {
   for (const { id: projectId } of projects) {
-    for (const { withAml, business, ubos } of workflows) {
+    for (const { business, ubos } of workflows) {
       await createMockParentWithChildWorkflow({
         prismaClient,
         customerName,
         projectId,
-        withAml,
         business,
         ubos,
       });
@@ -91,14 +153,12 @@ export const createMockParentWithChildWorkflow = async ({
   prismaClient,
   customerName,
   projectId,
-  withAml,
   business,
   ubos,
 }: {
   prismaClient: PrismaClient;
   customerName: string;
   projectId: string;
-  withAml: Workflow['withAml'];
   business: Workflow['business'];
   ubos: Workflow['ubos'];
 }) => {
@@ -106,7 +166,6 @@ export const createMockParentWithChildWorkflow = async ({
     businessId: business.id,
     companyName: customerName,
     projectId,
-    withAml,
     business,
     ubos,
   });
@@ -119,15 +178,25 @@ export const createMockParentWithChildWorkflow = async ({
       context: parentRuntimeInformation.context as unknown as Prisma.InputJsonValue,
     },
   });
-  const businessRecord = await prismaClient.business.create({
-    data: businessWithWorkflowInformation,
-    select: { workflowRuntimeData: true },
+  parentRuntimeInformation.context.documents[0]!.pages.forEach(async file => {
+    await prismaClient.file.create({
+      data: {
+        id: file.ballerineFileId,
+        userId: faker.datatype.uuid(),
+        uri: file.uri,
+        fileNameOnDisk: file.uri,
+        projectId: projectId,
+      },
+    });
   });
 
   for (const ubo of ubos) {
+    const businessRecord = await prismaClient.business.create({
+      data: businessWithWorkflowInformation,
+      select: { workflowRuntimeData: true },
+    });
     const childWorkflowRuntimeInformation = generateChildRuntimeInformation({
       customerName: customerName,
-      withAml: withAml,
       projectId: projectId,
       parentWorkflowId: businessRecord.workflowRuntimeData[0]!.id,
       ubo,
@@ -143,39 +212,27 @@ export const createMockParentWithChildWorkflow = async ({
       projectId: projectId,
     });
     await prismaClient.endUser.create({ data: endUserWithWorkflowInformation });
-    const childPage = childWorkflowRuntimeInformation.context.documents[0]!.pages[0]!;
-    await prismaClient.file.create({
-      data: {
-        id: childPage.ballerineFileId,
-        userId: faker.datatype.uuid(),
-        uri: childPage.uri,
-        fileNameOnDisk: childPage.uri,
-        projectId: projectId,
-      },
+    childWorkflowRuntimeInformation.context.documents[0]!.pages.forEach(async childPage => {
+      await prismaClient.file.create({
+        data: {
+          id: childPage.ballerineFileId,
+          userId: faker.datatype.uuid(),
+          uri: childPage.uri,
+          fileNameOnDisk: childPage.uri,
+          projectId: projectId,
+        },
+      });
     });
   }
-
-  const parentPage = parentRuntimeInformation.context.documents[0]!.pages[0]!;
-  await prismaClient.file.create({
-    data: {
-      id: parentPage.ballerineFileId,
-      userId: faker.datatype.uuid(),
-      uri: parentPage.uri,
-      fileNameOnDisk: parentPage.uri,
-      projectId: projectId,
-    },
-  });
 };
 
 export const generateChildRuntimeInformation = ({
   ubo,
   customerName,
-  withAml,
   projectId,
   parentWorkflowId,
 }: {
   customerName: string;
-  withAml: boolean;
   projectId: string;
   parentWorkflowId: string;
   ubo: Workflow['ubos'][number];
@@ -185,7 +242,6 @@ export const generateChildRuntimeInformation = ({
     workflowDefinitionVersion: 1,
     context: createKycRuntime({
       customerName: customerName,
-      withAml: withAml,
       ubo: ubo,
     }),
     state: 'kyc_manual_review',
@@ -209,14 +265,12 @@ export const generateParentRuntimeInformation = ({
   businessId,
   companyName,
   projectId,
-  withAml,
   business,
   ubos,
 }: {
   businessId: string;
   companyName: string;
   projectId: string;
-  withAml: Workflow['withAml'];
   business: Workflow['business'];
   ubos: Workflow['ubos'];
 }) => {
@@ -224,7 +278,7 @@ export const generateParentRuntimeInformation = ({
     businessId: businessId,
     workflowDefinitionId: 'kyb_parent_kyc_session_example',
     workflowDefinitionVersion: 1,
-    context: generateParentRuntimeContext({ companyName, withAml, business, ubos }),
+    context: generateParentRuntimeContext({ companyName, business, ubos }),
     state: 'manual_review',
     status: WorkflowRuntimeDataStatus.active,
     createdAt: faker.date.recent(2),
@@ -253,11 +307,9 @@ export const generateParentRuntimeInformation = ({
 
 export const createKycRuntime = ({
   customerName,
-  withAml,
   ubo,
 }: {
   customerName: string;
-  withAml: boolean;
   ubo: Workflow['ubos'][number];
 }) => ({
   entity: {
@@ -326,7 +378,7 @@ export const createKycRuntime = ({
       kyc_session_1: {
         type: 'kyc',
         result: {
-          aml: createAmlData({ withAml, ubo }),
+          aml: createAmlData({ ubo }),
           entity: {
             data: {
               firstName: ubo.firstName,
@@ -360,8 +412,8 @@ export const createKycRuntime = ({
   workflowRuntimeId: faker.datatype.uuid(),
 });
 
-const createAmlData = ({ withAml, ubo }: { withAml: boolean; ubo: Workflow['ubos'][number] }) => {
-  if (!withAml) {
+const createAmlData = ({ ubo }: { ubo: Workflow['ubos'][number] }) => {
+  if (!ubo.withAml) {
     return {
       hits: [],
       endUserId: ubo.id,
@@ -410,12 +462,10 @@ const generateParentRuntimeContext = ({
   companyName,
   ubos,
   business,
-  withAml,
 }: {
   companyName: string;
   ubos: Workflow['ubos'];
   business: Workflow['business'];
-  withAml: Workflow['withAml'];
 }) => {
   return {
     entity: {
@@ -516,7 +566,7 @@ const generateParentRuntimeContext = ({
                 },
               },
               vendorResult: {
-                aml: createAmlData({ withAml, ubo }),
+                aml: createAmlData({ ubo }),
                 entity: {
                   data: {
                     firstName: ubo.firstName,
