@@ -18,7 +18,7 @@ export const fetchFileContentById = async (fileId: string) => {
 
 export const fetchFileSignedUrlById = async (fileId: string) => {
   const [res, error] = await apiClient({
-    endpoint: `storage/content/${fileId}${process.env.VITE_FETCH_SIGNED_URL ? '?format=signed-url' : ''}`,
+    endpoint: `storage/content/${fileId}${process.env.VITE_FETCH_SIGNED_URL == 'TRUE' ? '?format=signed-url' : ''}`,
     method: Method.GET,
     schema: z.object({ signedUrl: z.string() }),
   });
