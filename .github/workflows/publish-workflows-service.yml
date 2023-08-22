@@ -17,7 +17,10 @@ env:
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
 
 jobs:
-  build-and-push-image:
+  build-push-image:
+    strategy:
+      matrix:
+        platform: ["linux/arm64", "linux/amd64"]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -83,7 +86,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: services/workflows-service
-          platforms: linux/amd64
+          platforms: ${{ matrix.platform }}
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
 
@@ -92,6 +95,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: services/workflows-service
-          platforms: linux/amd64
+          platforms: ${{ matrix.platform }}
           push: true
           tags: ${{ steps.branchmeta.outputs.tags }}
