@@ -11,23 +11,18 @@ export {
   zodErrorToReadable,
   sleep,
   uniqueArray,
-  safeEvery,
-  someDocumentDecisionStatus,
-  everyDocumentDecisionStatus,
-  raise,
-  log,
-  dump,
-  verifySignature,
+  type IErrorWithMessage,
 } from './utils';
 
-export type { IErrorWithMessage } from './utils';
-export type { Serializable, AnyRecord } from './types';
-export type { DefaultContextSchema, TDefaultSchemaDocumentPage, TDocument } from './schemas';
+export { type AnyRecord } from './types';
 
 export {
+  type DefaultContextSchema,
+  type TDefaultSchemaDocumentPage,
   ghanaDocuments,
   certificateOfResidenceGH,
   getDocumentsByCountry,
   getDocumentId,
+  type TDocument,
   defaultContextSchema,
 } from './schemas';

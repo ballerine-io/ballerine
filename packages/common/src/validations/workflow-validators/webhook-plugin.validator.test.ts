@@ -10,12 +10,10 @@ describe('Webhook Validator', () => {
       headers: { some_header: 'some_value' },
       stateNames: ['checkBusinessScore'],
       request: {
-        transform: [
-          {
-            transformer: 'jmespath',
-            mapping: '{data: entity.id}',
-          },
-        ],
+        transform: {
+          transformer: 'jq',
+          mapping: '{data: .entity.id}',
+        },
       },
     };
 
@@ -26,10 +24,8 @@ describe('Webhook Validator', () => {
     });
 
     describe('when webhook has response - throws invalid', () => {
-      const failingWebhookPlugin = structuredClone(webhookPlugin);
-      failingWebhookPlugin.response = {
-        transform: [{ transformer: 'jmespath', mapping: '{result: @}' }],
-      };
+      let failingWebhookPlugin = structuredClone(webhookPlugin);
+      failingWebhookPlugin.response = { transform: { transformer: 'jq', mapping: '{result: .}' } };
 
       it('does not throw validation exception', async () => {
         expect(() => validate(failingWebhookPlugin)).toThrowError(ZodError);
@@ -37,7 +33,7 @@ describe('Webhook Validator', () => {
     });
 
     describe('when webhook no request - throws invalid', () => {
-      const failingWebhookPlugin = structuredClone(webhookPlugin);
+      let failingWebhookPlugin = structuredClone(webhookPlugin);
       failingWebhookPlugin.request = undefined;
 
       it('does not throw validation exception', async () => {
