@@ -1,7 +1,6 @@
 import { BallerineImage } from '../../atoms/BallerineImage';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
-import { useImageViewerContext } from './hooks/useImageViewerContext/useImageViewerContext';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { TSelectedImageProps } from './interfaces';
 

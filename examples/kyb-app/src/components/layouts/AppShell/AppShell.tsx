@@ -29,7 +29,7 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
               <img
                 src={customer.logoImageUri || settings.logo}
                 alt={settings.appName}
-                className="max-h-[78px] max-w-[186px]"
+                className="max-h-[80px] max-w-[200px] object-cover"
               />
             </div>
             <div className="h-full max-h-[440px]">
@@ -52,10 +52,10 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
             </div>
           </div>
           <div>
-            <div
-              dangerouslySetInnerHTML={{ __html: settings.contactInformation }}
-              className="border-b pb-12"
-            ></div>
+            <div className="border-b pb-12">
+              Contact {customer.displayName || 'PayLynk'} for support <br /> example@example.com
+              (000) 123-4567
+            </div>
             <img src={'/poweredby.svg'} className="mt-6" />
           </div>
         </div>
