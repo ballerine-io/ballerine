@@ -1,9 +1,7 @@
-export interface UpdateBusinessDto {
+import { BusinessData } from '@app/domains/collection-flow';
+
+export interface UpdateBusinessDto extends BusinessData {
   businessId: string;
-  companyName?: string;
-  registrationNumber?: string;
-  address?: string;
-  website?: string;
 }
 
 export interface TBusinessInformation {
