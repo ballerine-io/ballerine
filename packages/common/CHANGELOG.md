@@ -1,11 +1,5 @@
 # @ballerine/common
 
-## 0.5.7
-
-### Patch Changes
-
-- updated document schemas
-
 ## 0.5.6
 
 ### Patch Changes

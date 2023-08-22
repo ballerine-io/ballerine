@@ -473,18 +473,10 @@ export class WorkflowService {
       });
 
       // @ts-ignore
-      data?.context?.documents?.forEach(document => {
-        if (document?.decision?.status === 'rejected' || document?.decision?.status === 'revision')
-          return;
+      data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
+        if (!Object.keys(propertiesSchema ?? {})?.length) return;
 
-        const documentsByCountry = getDocumentsByCountry(document?.issuer?.country);
-        const documentByCountry = documentsByCountry?.find(
-          doc => getDocumentId(doc, false) === getDocumentId(document, false),
-        );
-
-        if (!Object.keys(documentByCountry?.propertiesSchema ?? {})?.length) return;
-
-        const validatePropertiesSchema = ajv.compile(documentByCountry?.propertiesSchema ?? {});
+        const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {});
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
         if (!isValidPropertiesSchema) {
