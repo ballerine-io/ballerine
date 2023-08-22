@@ -118,10 +118,15 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                 <DialogHeader>
                   <DialogTitle className={`text-2xl`}>Ask for all re-uploads</DialogTitle>
                   <DialogDescription>
-                    By clicking the button below, an email with a link will be sent to the customer,
-                    directing them to re-upload the documents you have marked as “re-upload needed”.
-                    The case’s status will then change to “Revisions” until the customer will
-                    provide the needed documents and fixes.
+                    <div className="mb-[10px]">
+                      By clicking the button below, an email with a link will be sent to the
+                      customer, directing them to re-upload the documents you have marked as
+                      “re-upload needed”.
+                    </div>
+                    <div>
+                      The case’s status will then change to “Revisions” until the customer will
+                      provide the needed documents and fixes.
+                    </div>
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
