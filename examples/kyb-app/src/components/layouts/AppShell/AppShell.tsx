@@ -29,7 +29,7 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
               <img
                 src={customer.logoImageUri || settings.logo}
                 alt={settings.appName}
-                className="max-h-[78px] max-w-[186px]"
+                className="max-h-[80px] max-w-[200px] object-cover"
               />
             </div>
             <div className="h-full max-h-[440px]">
