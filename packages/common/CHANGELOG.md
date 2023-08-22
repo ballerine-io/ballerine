@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.6.0
+
+### Minor Changes
+
+- 3f69ed94: updated document schemas
+
 ## 0.5.6
 
 ### Patch Changes
