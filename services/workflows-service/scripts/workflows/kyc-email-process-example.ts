@@ -112,6 +112,7 @@ export const kycEmailSessionDefinition = {
               firstName: entity.data.firstName,
               kycLink: pluginsOutput.kyc_session.kyc_session_1.result.metadata.url,
               from: 'no-reply@ballerine.com',
+              name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
               receivers: [entity.data.email],
               subject: '{customerCompanyName} activation, Action needed.',
               preheader: 'Verify your identity for Happy Home Goods activation with {customerCompanyName}.',

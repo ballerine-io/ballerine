@@ -102,6 +102,7 @@ export interface KYBParentKYCSessionExampleContext {
       website: string;
       registrationNumber: number;
       companyName: string;
+      companyDisplayName: string;
       countryOfIncorporation: string;
       address: {
         text: string;

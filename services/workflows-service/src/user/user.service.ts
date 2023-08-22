@@ -19,7 +19,7 @@ export class UserService {
           ? {
               createMany: {
                 data: projectIds
-                  ? projectIds!.map(projectId => {
+                  ? projectIds.map(projectId => {
                       return { projectId };
                     })
                   : [],
