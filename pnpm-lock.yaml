@@ -915,9 +915,6 @@ importers:
       '@babel/preset-typescript':
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
-      '@cspell/cspell-types':
-        specifier: ^6.31.1
-        version: 6.31.1
       '@rollup/plugin-babel':
         specifier: 5.3.1
         version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.0)(rollup@2.70.2)
@@ -954,9 +951,6 @@ importers:
       concurrently:
         specifier: ^7.6.0
         version: 7.6.0
-      cspell:
-        specifier: ^6.31.2
-        version: 6.31.2
       cz-conventional-changelog:
         specifier: ^3.3.0
         version: 3.3.0
@@ -1971,7 +1965,7 @@ importers:
         version: 3.325.0
       '@ballerine/common':
         specifier: 0.5.24
-        version: link:../../packages/common
+        version: 0.5.24
       '@ballerine/workflow-core':
         specifier: 0.4.30
         version: link:../../packages/workflow-core
@@ -7939,6 +7933,14 @@ packages:
 
   /@ballerine/common@0.5.19:
     resolution: {integrity: sha512-WYRqLyBOwtoi193YJvonsz5fdY73/MpAxaO9Sj1dp2nOeqKAv2j880ELUVfyfgYE18ZDBB4qoykvT4X3Rea7KA==}
+    engines: {node: '>=12'}
+    dependencies:
+      ajv: 8.12.0
+      json-schema-to-zod: 0.6.3
+    dev: false
+
+  /@ballerine/common@0.5.24:
+    resolution: {integrity: sha512-1awA6yKs3ZNQ+XeTVyc7RELx9qE2NT0lyEzqyqnlf1NFgjqckLdZNbUkQIkjuXZHMfxPdhuY303pAR/axw4o/Q==}
     engines: {node: '>=12'}
     dependencies:
       ajv: 8.12.0
