@@ -1,16 +1,30 @@
 import { useCompanyInformationQuery } from '@app/pages/CollectionFlow/components/organisms/KYBView/hooks/useCompanyInformationQuery';
-import {
-  AUTOFILLABLE_FIELDS,
-  COUNTRIES_WITH_STATES,
-} from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/const';
+import { COUNTRIES_WITH_STATES } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/const';
 import { CompanyInformationContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/types';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import isEqual from 'lodash/isEqual';
+
+interface FetchData {
+  registrationNumber: string;
+  country: string;
+  state?: string;
+}
+
+function getFetchData(formData: CompanyInformationContext): FetchData {
+  return {
+    registrationNumber: formData.registrationNumber,
+    country: formData.companyCountry,
+    state: formData.state,
+  };
+}
 
 export const useCompanyInformation = (formData: CompanyInformationContext) => {
   const isStateSelectionRequired = useMemo(
     () => COUNTRIES_WITH_STATES.includes(formData.companyCountry?.toLowerCase()),
     [formData.companyCountry],
   );
+
+  const fetchDataRef = useRef<FetchData>(getFetchData(formData));
 
   const isCanFetchAutofillData = useMemo(() => {
     if (!formData.registrationNumber || !formData.companyCountry) return false;
@@ -25,10 +39,12 @@ export const useCompanyInformation = (formData: CompanyInformationContext) => {
   }, [formData, isStateSelectionRequired]);
 
   const isShouldFetchAutofillData = useMemo(() => {
-    return !AUTOFILLABLE_FIELDS.some(fieldName =>
-      Boolean(formData[fieldName as keyof typeof formData]),
-    );
-  }, [formData]);
+    if (!isCanFetchAutofillData) return false;
+
+    if (isEqual(fetchDataRef.current, formData)) return false;
+
+    return true;
+  }, [fetchDataRef, isCanFetchAutofillData, formData]);
 
   const jurisdictionCode = useMemo(
     () =>

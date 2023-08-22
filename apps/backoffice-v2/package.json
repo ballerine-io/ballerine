@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.4.15",
+  "version": "0.4.16",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "repository": {
@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@ballerine/common": "0.5.19",
-    "@ballerine/ui": "0.2.14",
+    "@ballerine/ui": "0.2.15",
     "@ballerine/workflow-browser-sdk": "0.4.22",
     "@ballerine/workflow-node-sdk": "0.4.16",
     "@fontsource/inter": "^4.5.15",

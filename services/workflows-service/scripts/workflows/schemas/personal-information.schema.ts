@@ -28,7 +28,6 @@ export const personalInformationSchema = {
       type: 'string',
       title: 'Date of Birth',
       minLength: 1,
-      format: 'date-time',
     },
     personalPhoneNumber: {
       type: 'string',

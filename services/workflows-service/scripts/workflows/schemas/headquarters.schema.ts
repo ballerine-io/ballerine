@@ -10,6 +10,10 @@ export const headquartersSchema = {
       type: 'string',
       minLength: 1,
     },
+    streetNumber: {
+      title: 'Number',
+      type: 'string',
+    },
     postalCode: {
       title: 'Postal code',
       type: 'number',
@@ -39,7 +43,16 @@ export const headquartersSchema = {
 };
 
 export const headquartersUISchema = {
-  'ui:order': ['address', 'street', 'postalCode', 'country', 'state', 'city', 'phone'],
+  'ui:order': [
+    'address',
+    'street',
+    'streetNumber',
+    'postalCode',
+    'country',
+    'state',
+    'city',
+    'phone',
+  ],
   'ui:options': {
     submitButtonOptions: {
       submitText: 'Continue',
@@ -49,7 +62,10 @@ export const headquartersUISchema = {
     'ui:placeholder': '10 Downing Street, London, UK, SW1A 2AA',
   },
   street: {
-    'ui:placeholder': '10 Downing Street',
+    'ui:placeholder': 'Downing Street',
+  },
+  streetNumber: {
+    'ui:placeholder': '10',
   },
   postalCode: {
     'ui:placeholder': 'SW1A 2AA',

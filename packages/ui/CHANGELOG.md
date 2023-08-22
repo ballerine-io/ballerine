@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.2.15
+
+### Patch Changes
+
+- DatePicker now shows warning on blur
+
 ## 0.2.14
 
 ### Patch Changes
