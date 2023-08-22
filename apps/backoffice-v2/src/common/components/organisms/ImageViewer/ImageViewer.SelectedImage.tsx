@@ -28,7 +28,7 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
       setIsError(false);
     }, [isLoading, selectedImage?.imageUrl]);
 
-    if (selectedImage?.fileType === 'pdf' && 'true' === 'false') {
+    if (selectedImage?.fileType === 'pdf') {
       return (
         <iframe
           src={selectedImage?.imageUrl}
