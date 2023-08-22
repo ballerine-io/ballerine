@@ -21,6 +21,7 @@
     "clsx": "^1.2.1",
     "country-state-city": "^3.1.4",
     "currency-codes": "^2.1.0",
+    "dayjs": "^1.11.6",
     "form-data-encoder": "^3.0.0",
     "i18n-iso-countries": "^7.6.0",
     "ky": "^0.33.3",
