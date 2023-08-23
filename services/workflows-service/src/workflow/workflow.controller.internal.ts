@@ -31,7 +31,6 @@ import {
 } from '@/workflow/dtos/find-workflow.dto';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
-import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 import { WorkflowEventDecisionInput } from '@/workflow/dtos/workflow-event-decision-input';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
@@ -142,7 +141,6 @@ export class WorkflowControllerInternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseKeyAuthInDevGuard()
   @UseGuards(WorkflowAssigneeGuard)
   async updateDecisionAndSendEventById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
@@ -169,7 +167,6 @@ export class WorkflowControllerInternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseKeyAuthInDevGuard()
   @UseGuards(WorkflowAssigneeGuard)
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
@@ -190,7 +187,6 @@ export class WorkflowControllerInternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseKeyAuthInDevGuard()
   @UseGuards(WorkflowAssigneeGuard)
   async updateDocumentDecisionById(
     @common.Param() params: DocumentDecisionParamsInput,
