@@ -9,16 +9,16 @@ import { useCollectionFlowSchemaQuery } from '@app/hooks/useCollectionFlowSchema
 export const Approved = withSessionProtected(() => {
   const { customer } = useCustomer();
   const { documentConfigurations } = useCollectionFlowSchemaQuery();
-  const { isFetching, flowData } = useActiveWorkflowQuery(documentConfigurations);
+  const { isFetching, workflow } = useActiveWorkflowQuery(documentConfigurations);
   const { logoutSilent } = useSignin();
 
   useEffect(() => {
     if (isFetching) return;
 
-    if (flowData.status === 'approve') {
+    if (workflow.state === 'approved') {
       setTimeout(logoutSilent, 250);
     }
-  }, [isFetching, flowData, logoutSilent]);
+  }, [isFetching, workflow, logoutSilent]);
 
   return (
     <div className="flex h-full items-center justify-center">
