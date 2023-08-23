@@ -44,6 +44,11 @@ export interface TFlowStep {
 export interface DocumentConfiguration {
   name: string;
   type: string;
+  provider?: string;
+  properties?: {
+    type: string;
+    category: string;
+  };
 }
 export interface TFlowConfiguration {
   id: string;
@@ -68,6 +73,7 @@ export interface Document {
   properties: object;
   category: string;
   type: string;
+  provider?: string;
 }
 
 export interface UBO {

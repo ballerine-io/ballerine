@@ -89,7 +89,8 @@ export class KYBParentKYCSessionExampleAdapter
           },
         ],
         properties: document.properties,
-        version: '1',
+        // TO DO: Remove before demo merge,changes only for WORKSHOP DEMO
+        version: document.provider === 'http' ? '20' : '1',
         issuingVersion: 1,
       };
     });

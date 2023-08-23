@@ -14,7 +14,7 @@ export const VerticalLayout = ({ children, divider }: Props) => {
   const childsList = useMemo(() => Children.toArray(children as React.ReactNode[]), [children]);
 
   return (
-    <div className="items-between flex flex-col justify-between">
+    <div className="flex flex-col gap-4">
       {childsList.map((child, index) => {
         const isLast = childsList.length - 1 === index;
 

@@ -32,7 +32,7 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
                 className="max-h-[80px] max-w-[200px] object-cover"
               />
             </div>
-            <div className="h-full max-h-[440px]">
+            <div className="max-h-[440px]">
               {isLoading ? null : (
                 <Stepper>
                   <VerticalLayout>

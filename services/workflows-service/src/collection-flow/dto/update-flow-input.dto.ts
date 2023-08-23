@@ -59,6 +59,10 @@ export class CompanyDocument {
   @IsString()
   @IsOptional()
   uri!: string;
+
+  @IsString()
+  @IsOptional()
+  provider!: string;
 }
 
 export class UBOShareholder {
