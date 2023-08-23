@@ -1,8 +1,6 @@
 import { TRunWorkflowDto, WorkflowUBO, WorkflowUpdatePayload } from '@app/domains/workflows/types';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  getFullCountryNameByCode
-} from "@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list.ts";
+import { getFullCountryNameByCode } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list.ts';
 
 function createUBOFromUserInformation(data: WorkflowUpdatePayload): WorkflowUBO {
   const ubo: WorkflowUBO = {

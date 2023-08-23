@@ -28,10 +28,20 @@ export const useActiveWorkflowQuery = (documentConfigurations: DocumentConfigura
     const filesOrIds = documentConfigurations.map(config =>
       traverseObjectAndPickValue(config.name, _flowData),
     );
+
+    // This is exit of useEffect
+    // Checks when all data is assigned
+    // TO DO: Rework flow
     if (
-      filesOrIds.every(
-        file => file instanceof File || file === undefined || (file && !Object.keys(file).length),
-      )
+      filesOrIds.every((file, index) => {
+        const config = documentConfigurations[index];
+
+        if (config.type === 'file' && file instanceof File) return true;
+        if (config.type === 'url' && file) return true;
+        if (file && !Object.keys(file).length) return true;
+        if (file === undefined) return true;
+        return false;
+      })
     )
       return;
 
@@ -45,7 +55,7 @@ export const useActiveWorkflowQuery = (documentConfigurations: DocumentConfigura
           if (fileId instanceof File) return Promise.resolve(null);
           if (fileId && !Object.keys(fileId).length) return Promise.resolve(null);
 
-          return fetchFile(fileId);
+          return config.provider !== 'http' ? fetchFile(fileId) : Promise.resolve(fileId);
         }),
       );
 
@@ -53,17 +63,20 @@ export const useActiveWorkflowQuery = (documentConfigurations: DocumentConfigura
         const filePayload = filesPayload[index];
         if (!filePayload) return;
 
-        const fileId = filePayload.id;
+        if (config.provider !== 'http') {
+          const fileId = filePayload.id;
 
-        const documentFile = new File(
-          [''],
-          filesPayload[index].fileNameInBucket || filesPayload[index].fileNameOnDisk,
-          { type: 'text/plain' },
-        );
+          const documentFile = new File(
+            [''],
+            filesPayload[index].fileNameInBucket || filesPayload[index].fileNameOnDisk,
+            { type: 'text/plain' },
+          );
 
-        collectionFlowFileStorage.registerFile(fileId, documentFile);
-
-        traverseObjectAndSetValue(config.name, documentFile, _flowData);
+          collectionFlowFileStorage.registerFile(fileId, documentFile);
+          traverseObjectAndSetValue(config.name, documentFile, _flowData);
+        } else {
+          traverseObjectAndSetValue(config.name, filePayload, _flowData);
+        }
       });
 
       setFlowData({ ..._flowData });
@@ -73,8 +86,11 @@ export const useActiveWorkflowQuery = (documentConfigurations: DocumentConfigura
     loadFilesAndAssignToFlowData().catch(() => setLoading(false));
   }, [documentConfigurations, flowData, isLoading]);
 
+  console.log('FLOW DATA', flowData);
+
   return {
     flowData,
     isFetching: isFetching || isLoading,
+    workflow: _flowData ? _flowData.workflow : null,
   };
 };
