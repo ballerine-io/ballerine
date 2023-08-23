@@ -26,7 +26,10 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
-import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import {
+  ArrayMergeOption,
+  WorkflowRuntimeDataRepository,
+} from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { InputJsonValue, IObjectWithId, TProjectIds } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
@@ -291,6 +294,18 @@ export class WorkflowService {
     args?: Parameters<WorkflowDefinitionRepository['findById']>[1],
   ) {
     return await this.workflowDefinitionRepository.findById(id, args);
+  }
+
+  async updateWorkflowDefinitionById(
+    id: string,
+    newDefinition: unknown,
+    arrayMergeOption?: ArrayMergeOption,
+  ) {
+    return await this.workflowDefinitionRepository.updateByDefinitionId(
+      id,
+      newDefinition,
+      arrayMergeOption,
+    );
   }
 
   async listActiveWorkflowsRuntimeStates() {
@@ -1379,7 +1394,7 @@ export class WorkflowService {
         machineContext: workflowRuntimeData.context,
         state: workflowRuntimeData.state,
       },
-      extensions: workflowDefinition.extensions,
+      extensions: workflowDefinition.definition.extensions,
       invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
         const runnableChildWorkflow = await this.persistChildEvent(
           childPluginConfiguration,

@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
-import { Business, EndUser, Prisma, PrismaClient } from '@prisma/client';
+import { Business, Customer, EndUser, Prisma, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 
 import { generateUserNationalId } from './generate-user-national-id';
 
-const devconExampleWorkflowStart = {
+const devconExampleWorkflowBeforeChanges = {
   id: 'devcon_example_workflow',
   name: 'devcon_example_workflow',
   version: 1,
@@ -13,12 +13,12 @@ const devconExampleWorkflowStart = {
   definition: {
     id: 'devcon_example_workflow',
     predictableActionArguments: true,
-    initial: 'user_data_collection',
+    initial: 'data_collection',
     context: {
       documents: [],
     },
     states: {
-      user_data_collection: {
+      data_collection: {
         on: {
           start: 'manual_review',
         },
@@ -30,7 +30,7 @@ const devconExampleWorkflowStart = {
         },
       },
       rejected: {
-        type: 'final' as const,
+        type: 'final',
       },
       approved: {
         type: 'final' as const,
@@ -44,22 +44,133 @@ const devconExampleWorkflowStart = {
   },
 };
 
-const devconExampleWorkflowFinish = {
-  id: 'devcon_example_workflow',
-  name: 'devcon_example_workflow',
+const devconExampleWorkflowAfterChanges = {
+  id: 'devcon_example_workflow1',
+  name: 'devcon_example_workflow1',
   version: 1,
   definitionType: 'statechart-json',
   definition: {
-    id: 'devcon_example_workflow',
+    id: 'devcon_example_workflow1',
     predictableActionArguments: true,
-    initial: 'user_data_collection',
+    initial: 'data_collection',
     context: {
       documents: [],
     },
     states: {
-      data_user_data_collectionion: {
+      data_collection: {
         on: {
           start: 'process_documents',
+        },
+        metadata: {
+          uiSettings: {
+            multiForm: {
+              documents: [
+                {
+                  name: 'registrationCertificate',
+                  type: 'file',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Personal information',
+                  description: 'Please provide your personal information',
+                  formSchema: {
+                    type: 'object',
+                    title: 'Personal information',
+                    properties: {
+                      name: {
+                        type: 'object',
+                        title: '',
+                        properties: {
+                          firstName: {
+                            title: 'Name',
+                            type: 'string',
+                            minLength: 1,
+                          },
+                          lastName: {
+                            title: '',
+                            type: 'string',
+                            minLength: 1,
+                          },
+                        },
+                        required: ['firstName', 'lastName'],
+                      },
+                      title: {
+                        title: 'Title',
+                        type: 'string',
+                        minLength: 1,
+                      },
+                      birthDate: {
+                        type: 'string',
+                        title: 'Date of Birth',
+                        minLength: 1,
+                      },
+                      personalPhoneNumber: {
+                        type: 'string',
+                        title: 'Phone Number',
+                        minLength: 1,
+                      },
+                      companyCheck: {
+                        title: 'I have the signing authority for this company',
+                        type: 'boolean',
+                      },
+                    },
+                    required: ['name', 'title', 'birthDate', 'phoneNumber'],
+                  },
+                  uiSchema: {
+                    'ui:order': [
+                      'name',
+                      'title',
+                      'birthDate',
+                      'personalPhoneNumber',
+                      'companyCheck',
+                    ],
+                    personalPhoneNumber: {
+                      'ui:field': 'PhoneInput',
+                      'ui:label': true,
+                    },
+                    birthDate: {
+                      'ui:field': 'DateInput',
+                      'ui:label': true,
+                    },
+                    name: {
+                      'ui:order': ['firstName', 'lastName'],
+                      firstName: {
+                        'ui:placeholder': 'First Name',
+                        'ui:label': true,
+                      },
+                      lastName: {
+                        'ui:placeholder': 'Last Name',
+                        'ui:label': false,
+                      },
+                    },
+                    title: {
+                      'ui:placeholder': 'CEO / Manager / Partner',
+                    },
+                    email: {
+                      'ui:placeholder': 'john@example.com',
+                    },
+                    'ui:options': {
+                      submitButtonOptions: {
+                        submitText: 'Continue',
+                      },
+                    },
+                  },
+                  defaultData: {
+                    title: '',
+                    name: {
+                      firstName: '',
+                      lastName: '',
+                    },
+                    birthDate: '',
+                    phoneNumber: '',
+                    companyCheck: false,
+                  },
+                  key: 'personalInformation',
+                },
+              ],
+            },
+          },
         },
       },
       process_documents: {
@@ -69,11 +180,13 @@ const devconExampleWorkflowFinish = {
               target: 'approved',
               cond: {
                 type: 'json-logic',
-                rule: {
-                  '==': [
-                    { var: 'context.entity.companyName' },
-                    { var: 'response.data.registered_name' },
-                  ],
+                options: {
+                  rule: {
+                    '>': [{ var: 'pluginsOutput.business_data_vendor.name_fuzziness_score' }, 0.5],
+                  },
+                  onFailed: {
+                    manualReviewReason: 'Company name and Registered Business name do not match',
+                  },
                 },
               },
             },
@@ -81,19 +194,21 @@ const devconExampleWorkflowFinish = {
               target: 'manual_review',
             },
           ],
+          API_CALL_ERROR: 'manual_review',
         },
       },
       manual_review: {
         on: {
           approve: 'approved',
           reject: 'rejected',
+          revision: 'data_collection',
         },
       },
       rejected: {
-        type: 'final' as const,
+        type: 'final',
       },
       approved: {
-        type: 'final' as const,
+        type: 'final',
       },
     },
     extensions: {
@@ -103,6 +218,9 @@ const devconExampleWorkflowFinish = {
           pluginKind: 'api',
           url: 'https://unified-api-test.eu.ballerine.app/ocr/extract',
           method: 'POST',
+          headers: {
+            authorization: 'Bearer {secret.UNIFIED_API_TOKEN}',
+          },
           stateNames: ['process_documents'],
           successAction: 'API_CALL_SUCCESS',
           errorAction: 'API_CALL_ERROR',
@@ -110,8 +228,7 @@ const devconExampleWorkflowFinish = {
             transform: [
               {
                 transformer: 'jmespath',
-                mapping:
-                  '{ imageUrl: "https://www.pdffiller.com/preview/27/268/27268737/large.png" }',
+                mapping: `{images: [{remote: {imageUri: documents[0].pages[0].uri}}], schema: { type:'object', properties: { name: {type: 'string'}}}}`,
               },
             ],
             schema: {}, // OPTIONAL
@@ -127,16 +244,15 @@ const devconExampleWorkflowFinish = {
           },
         },
         {
-          name: 'ballerineEnrichment',
-          url: 'https://webhook.site/',
+          name: 'webhook_final_results',
+          url: 'https://webhook.site/91f5bfc1-79d2-4fea-b9d6-a0fe7ce905d5',
           method: 'POST',
           stateNames: ['approved', 'rejected'],
-          headers: {},
           request: {
             transform: [
               {
                 transformer: 'jmespath',
-                mapping: '{id: entity.id}',
+                mapping: '{workflow_decision: state, data: @}',
               },
             ],
           },
@@ -150,7 +266,7 @@ const devconExampleWorkflowFinish = {
 
 const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
-    data: devconExampleWorkflowStart,
+    data: devconExampleWorkflowAfterChanges,
   });
 };
 
@@ -158,7 +274,7 @@ const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {
 const isSeeded = async (prismaClient: PrismaClient) => {
   const workflow = await prismaClient.workflowDefinition.findUnique({
     where: {
-      id: devconExampleWorkflowStart.id,
+      id: devconExampleWorkflowAfterChanges.id,
     },
   });
 
@@ -179,6 +295,39 @@ const trySeed = async () => {
 };
 
 trySeed();
+
+async function createCustomer(
+  client: PrismaClient,
+  id: string,
+  apiKey: string,
+  logoImageUri: string,
+) {
+  return await client.customer.create({
+    data: {
+      id: `customer-${id}`,
+      name: `Customer ${id}`,
+      displayName: `Customer ${id}`,
+      authenticationConfiguration: {
+        apiType: 'API_KEY',
+        authValue: apiKey,
+        validUntil: '',
+        isValid: '',
+      },
+      logoImageUri: logoImageUri,
+      country: 'GB',
+      language: 'en',
+    },
+  });
+}
+async function createProject(client: PrismaClient, customer: Customer, id: string) {
+  return client.project.create({
+    data: {
+      id: `project-${id}`,
+      name: `Project ${id}`,
+      customerId: customer.id,
+    },
+  });
+}
 
 const persistImageFile = async (client: PrismaClient, uri: string) => {
   const file = await client.file.create({
@@ -207,13 +356,29 @@ function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, 
 async function seed(bcryptSalt: number | string) {
   console.info('Seeding database....');
   const client = new PrismaClient();
+  const customer = await createCustomer(
+    client,
+    '1',
+    'secret',
+    'https://empirestartups.com/wp-content/uploads/2023/07/logo_fintech_devcon.png',
+  );
+  const customer2 = await createCustomer(
+    client,
+    '2',
+    `secret-2`,
+    'https://empirestartups.com/wp-content/uploads/2023/02/fintechdevcon2023.png',
+  );
+  const project1 = await createProject(client, customer, '1');
   const users = [
     {
       email: 'admin@admin.com',
-      firstName: 'Devcon',
-      lastName: 'Agent 1',
+      firstName: 'DevCon',
+      lastName: 'Dev',
       password: await hash('admin', bcryptSalt),
       roles: ['user'],
+      userToProjects: {
+        create: { projectId: project1.id },
+      },
     },
   ];
   for (const user of users) {
@@ -367,126 +532,78 @@ async function seed(bcryptSalt: number | string) {
     name: string,
     entity: 'individuals' | 'businesses',
     query: Prisma.WorkflowRuntimeDataFindManyArgs,
+    projectId: string,
   ) {
     return client.filter.create({
       data: {
         entity,
         name,
         query: query as any,
+        projectId: projectId,
       },
     });
   }
 
-  await createFilter('Onboarding - Businesses', 'businesses', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      createdAt: true,
-      context: true,
-      state: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
-          definition: true,
+  await createFilter(
+    'KYB with LLM Workshop cases',
+    'businesses',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        createdAt: true,
+        context: true,
+        state: true,
+        workflowDefinition: {
+          select: {
+            id: true,
+            name: true,
+            contextSchema: true,
+            config: true,
+            definition: true,
+          },
         },
+        business: {
+          select: {
+            id: true,
+            companyName: true,
+            registrationNumber: true,
+            legalForm: true,
+            countryOfIncorporation: true,
+            dateOfIncorporation: true,
+            address: true,
+            phoneNumber: true,
+            email: true,
+            website: true,
+            industry: true,
+            taxIdentificationNumber: true,
+            vatNumber: true,
+            shareholderStructure: true,
+            numberOfEmployees: true,
+            businessPurpose: true,
+            documents: true,
+            approvalState: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+        childWorkflowsRuntimeData: true,
       },
-      business: {
-        select: {
-          id: true,
-          companyName: true,
-          registrationNumber: true,
-          legalForm: true,
-          countryOfIncorporation: true,
-          dateOfIncorporation: true,
-          address: true,
-          phoneNumber: true,
-          email: true,
-          website: true,
-          industry: true,
-          taxIdentificationNumber: true,
-          vatNumber: true,
-          shareholderStructure: true,
-          numberOfEmployees: true,
-          businessPurpose: true,
-          documents: true,
-          approvalState: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
+      where: {
+        workflowDefinitionId: 'devcon_example_workflow1',
+        businessId: { not: null },
       },
     },
-    where: {
-      workflowDefinitionId: 'dynamic_external_request_example',
-      businessId: { not: null },
-    },
-  });
-
-  await createFilter("KYB with UBO's", 'businesses', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      createdAt: true,
-      context: true,
-      state: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
-          definition: true,
-        },
-      },
-      business: {
-        select: {
-          id: true,
-          companyName: true,
-          registrationNumber: true,
-          legalForm: true,
-          countryOfIncorporation: true,
-          dateOfIncorporation: true,
-          address: true,
-          phoneNumber: true,
-          email: true,
-          website: true,
-          industry: true,
-          taxIdentificationNumber: true,
-          vatNumber: true,
-          shareholderStructure: true,
-          numberOfEmployees: true,
-          businessPurpose: true,
-          documents: true,
-          approvalState: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
-      },
-      childWorkflowsRuntimeData: true,
-    },
-    where: {
-      workflowDefinitionId: 'kyb_parent_kyc_session_example',
-      businessId: { not: null },
-    },
-  });
+    project1.id,
+  );
 
   // await client.$transaction(async () =>
   //   endUserIds.map(async (id, index) =>

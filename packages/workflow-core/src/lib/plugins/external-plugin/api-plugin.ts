@@ -30,6 +30,10 @@ export class ApiPlugin {
     this.errorAction = pluginParams.errorAction;
   }
   async invoke(context: TContext) {
+    console.log('API Plguin invokation', {
+      url: this.url,
+      name: this.name,
+    });
     try {
       const requestPayload = await this.transformData(this.request.transformers, context);
       const { isValidRequest, errorMessage } = await this.validateContent(
@@ -70,6 +74,7 @@ export class ApiPlugin {
         );
       }
     } catch (error) {
+      console.error('API Plugin error:', error);
       return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
     }
   }

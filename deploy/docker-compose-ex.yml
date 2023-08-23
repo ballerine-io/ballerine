@@ -61,7 +61,7 @@ services:
       APP_API_URL: https://alon.ballerine.dev
       EMAIL_API_TOKEN: ''
       EMAIL_API_URL: https://api.sendgrid.com/v3/mail/send
-      UNIFIED_API_TOKEN: ""
+      UNIFIED_API_TOKEN: "f9Hss0vXHodA2pqBQ9U$9O2AXe234i$6LPdKsoA$"
     depends_on:
       ballerine-postgres:
         condition: service_healthy
