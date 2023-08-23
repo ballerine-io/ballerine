@@ -58,7 +58,7 @@ export class KYBParentKYCSessionExampleFlowData {
   workflow!: WorkflowRuntimeData;
 
   @IsObject()
-  businessData!: object;
+  businessData!: Record<string, any>;
 
   @IsBoolean()
   isFinished!: boolean;

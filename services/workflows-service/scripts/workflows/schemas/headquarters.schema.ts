@@ -16,7 +16,7 @@ export const headquartersSchema = {
     },
     postalCode: {
       title: 'Postal code',
-      type: 'number',
+      type: 'string',
     },
     country: {
       title: 'Country',
