@@ -23,9 +23,9 @@ export const useCaseCallToActionLogic = ({
     childWorkflowContextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum as Array<string>;
-  const reasons = revisionReasons;
-  const noReasons = !reasons?.length;
-  const [reason, setReason] = useState(reasons?.[0] ?? '');
+
+  const noReasons = !revisionReasons?.length;
+  const [reason, setReason] = useState(revisionReasons?.[0] ?? '');
   const [comment, setComment] = useState('');
   const reasonWithComment = comment ? `${reason} - ${comment}` : reason;
   // /State
@@ -73,9 +73,9 @@ export const useCaseCallToActionLogic = ({
     // State
     reason,
     comment,
-    reasons,
     noReasons,
     isDisabled,
+    reasons: revisionReasons,
     // /State
 
     // Loading state
