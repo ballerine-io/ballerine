@@ -11,6 +11,7 @@ export const fetchFileContentById = async (fileId: string) => {
     method: Method.GET,
     schema: z.instanceof(Blob).transform(blobToBase64),
     isBlob: true,
+    timeout: 30000,
   });
 
   return handleZodError(error, base64);

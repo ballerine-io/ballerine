@@ -240,7 +240,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                                   ),
                                 },
                               )}
-                              pattern={pattern}
+                              {...(pattern && { pattern })}
                               autoComplete={'off'}
                               {...field}
                               value={displayValue(originalValue)}
