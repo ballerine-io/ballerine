@@ -106,9 +106,11 @@ export const useCallToActionLogic = () => {
       },
     [mutateApproveTaskById, mutateRejectTaskById, mutateRevisionTaskById],
   );
+  const workflowLevelResolution =
+    workflow?.workflowDefinition?.config?.workflowLevelResolution ??
+    workflow?.context?.entity?.type === 'business';
 
   return {
-    onMutateTaskDecisionById,
     isLoadingTaskDecisionById,
     caseState,
     action,
@@ -120,5 +122,7 @@ export const useCallToActionLogic = () => {
     onActionChange,
     onCommentChange,
     noReasons,
+    onMutateTaskDecisionById,
+    workflowLevelResolution,
   };
 };

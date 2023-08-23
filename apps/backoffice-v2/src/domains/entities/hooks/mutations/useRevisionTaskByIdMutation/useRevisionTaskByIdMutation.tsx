@@ -70,8 +70,9 @@ export const useRevisionTaskByIdMutation = (workflowId: string) => {
     },
     onError: (_error, _variables, context) => {
       toast.error(
-        t(`toast:${_variables.decision ? ask_revision_document : 'revert_revision'}.error`),
+        t(`toast:${_variables.decision ? 'ask_revision_document' : 'revert_revision'}.error`),
       );
+
       queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);
     },
   });

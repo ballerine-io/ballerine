@@ -37,7 +37,7 @@ export const fetchFileInfoById = async (fileId: string) => {
 };
 export const fetchFileById = async (fileId: string) => {
   const fileInfo = await fetchFileInfoById(fileId);
-  if (fileInfo.fileNameInBucket) {
+  if (fileInfo.fileNameInBucket && import.meta.env.VITE_FETCH_SIGNED_URL === 'TRUE') {
     const res = await fetchFileSignedUrlById(fileInfo.id);
     return res.signedUrl;
   }

@@ -16,6 +16,12 @@ import { Input } from '../../../../common/components/atoms/Input/Input';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
 import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
 import { MotionButton } from '../../../../common/components/molecules/MotionButton/MotionButton';
+import { Button } from '../../../../common/components/atoms/Button/Button';
+import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
+import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
+import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
+import { capitalize } from '../../../../common/utils/capitalize/capitalize';
+import { Send } from 'lucide-react';
 
 const motionProps: ComponentProps<typeof MotionButton> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -38,44 +44,49 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     comment,
     onCommentChange,
     noReasons,
+    workflowLevelResolution,
   } = useCallToActionLogic();
 
-  return value === 'Reject' ? (
+  return value === 'Re-upload needed' ? (
     <Dialog>
       <AnimatePresence>
         <DialogTrigger asChild>
           <MotionButton
             {...motionProps}
-            variant={`destructive`}
+            variant="warning"
             disabled={!caseState.actionButtonsEnabled || data?.disabled}
           >
             {value}
           </MotionButton>
         </DialogTrigger>
       </AnimatePresence>
-      <DialogContent>
-        <div>
-          <label className={`mb-1 font-bold`} htmlFor={`action`}>
-            Action
-          </label>
-          <Select onValueChange={onActionChange} value={action} id={`action`}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {actions?.map(({ label, value }) => {
-                return (
-                  <SelectItem key={action} value={value}>
-                    {label}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-        </div>
+      <DialogContent className={`mb-96`}>
+        <DialogHeader>
+          <DialogTitle className={`text-2xl`}>Ask for all re-uploads</DialogTitle>
+          <DialogDescription asChild>
+            <p className="text-sm">
+              {workflowLevelResolution ? (
+                `Once marked, you can use the “Ask for all re-uploads” button at the top of the
+                  screen to initiate a request for the customer to re-upload all of the documents
+                  you have marked for re-upload.`
+              ) : (
+                <>
+                  <span className="mb-[10px] block">
+                    By clicking the button below, an email with a link will be sent to the customer,
+                    directing them to re-upload the documents you have marked as “re-upload needed”.
+                  </span>
+                  <span>
+                    The case’s status will then change to “Revisions” until the customer will
+                    provide the needed documents and fixes.
+                  </span>
+                </>
+              )}
+            </p>
+          </DialogDescription>
+        </DialogHeader>
         {!noReasons && (
           <div>
-            <label className={`mb-1 font-bold`} htmlFor={`reason`}>
+            <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
               Reason
             </label>
             <Select onValueChange={onReasonChange} value={reason} id={`reason`}>
@@ -85,11 +96,10 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
               <SelectContent>
                 {reasons?.map(reason => {
                   const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
-                  const capitalizedReason =
-                    reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
+                  const capitalizedReason = capitalize(reasonWithSpace);
 
                   return (
-                    <SelectItem key={`${action}${reason}`} value={reason} className={`capitalize`}>
+                    <SelectItem key={reason} value={reason} className={`capitalize`}>
                       {capitalizedReason}
                     </SelectItem>
                   );
@@ -99,7 +109,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
           </div>
         )}
         <div>
-          <label className={`mb-1 font-bold`} htmlFor={`comment`}>
+          <label className={`mb-2 block font-bold`} htmlFor={`comment`}>
             {noReasons ? 'Reason' : 'Comment'}
           </label>
           <Input
@@ -118,23 +128,25 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <button
-              className={ctw(`btn btn-error justify-center`)}
-              // onClick={onMutateRejectEntity({
-              //   action: Action.REVISION,
-              // Currently hardcoded to documentOne.
-              // documentToRevision,
-              // revisionReason,
-              // })}
-              // disabled={!revisionReason}
+            <Button
+              className={ctw(`gap-x-2`, {
+                loading: isLoadingTaskDecisionById,
+              })}
               onClick={onMutateTaskDecisionById({
                 id: data?.id,
                 decision: action,
                 reason: comment ? `${reason} - ${comment}` : reason,
               })}
             >
-              Confirm
-            </button>
+              {workflowLevelResolution ? (
+                'Approve'
+              ) : (
+                <>
+                  <Send size={18} />
+                  Send email
+                </>
+              )}
+            </Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
