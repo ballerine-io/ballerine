@@ -63,6 +63,7 @@ export const useBaseFlow = () => {
         setLoading(true);
 
         await uploadFilesAndSaveToStorage(documentConfigurations, context);
+        const documents = await selectDocuments(context, flowData.documents, documentConfigurations);
 
         const updatePayload: UpdateFlowDto = {
           flowId: context.shared.workflowId,
@@ -70,7 +71,7 @@ export const useBaseFlow = () => {
           payload: {
             mainRepresentative: selectMainRepresentative(context, user),
             ubos: selectUbos(context, user),
-            documents: await selectDocuments(context, flowData.documents, documentConfigurations),
+            documents: documents,
             dynamicData: assignFileIdsToFlowData(context, documentConfigurations).flowData,
             flowState: views.at(-1).key,
             entityData: selectEntityData(context, customer),

@@ -68,6 +68,11 @@ export interface Document {
   properties: object;
   category: string;
   type: string;
+  decision?: {
+    status?: string;
+    revisionReason?: string;
+    rejectionReason?: string;
+  };
 }
 
 export interface UBO {
