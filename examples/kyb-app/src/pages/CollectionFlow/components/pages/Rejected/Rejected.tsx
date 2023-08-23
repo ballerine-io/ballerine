@@ -8,6 +8,7 @@ import { useCustomer } from '@app/components/providers/CustomerProvider';
 
 export const Rejected = withSessionProtected(() => {
   const { documentConfigurations } = useCollectionFlowSchemaQuery();
+  const { customer } = useCustomer();
   const { isFetching, workflow } = useActiveWorkflowQuery(documentConfigurations);
   const { logoutSilent } = useSignin();
 
