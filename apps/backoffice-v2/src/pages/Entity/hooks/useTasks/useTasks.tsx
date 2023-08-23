@@ -21,7 +21,8 @@ import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/use
 import { X } from 'lucide-react';
 import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
-import { z } from 'zod';
+import { isValidUrl } from '../../../../common/utils/is-valid-url';
+import { isBase64 } from '../../../../common/utils/is-base64/is-base64';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -272,9 +273,11 @@ export const useTasks = ({
                 title: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
                   docType,
                 )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                imageUrl: z.string().url().safeParse(results[docIndex][pageIndex]).success
-                  ? results[docIndex][pageIndex]
-                  : octetToFileType(results[docIndex][pageIndex], `application/${type}`),
+                imageUrl:
+                  !isBase64(results[docIndex][pageIndex]) &&
+                  isValidUrl(results[docIndex][pageIndex])
+                    ? results[docIndex][pageIndex]
+                    : octetToFileType(results[docIndex][pageIndex], `application/${type}`),
                 fileType: type,
               })) ?? [],
           },
