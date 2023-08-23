@@ -33,7 +33,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 export const Actions: FunctionComponent<IActionsProps> = ({
   id,
   fullName,
-  showResolutionButtons = true,
+  showResolutionButtons,
 }) => {
   const {
     onMutateApproveEntity,
