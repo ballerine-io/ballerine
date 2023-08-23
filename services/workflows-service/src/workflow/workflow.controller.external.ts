@@ -29,6 +29,7 @@ import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guar
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -76,7 +77,7 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() body: unknown,
   ) {
-    return await this.service.updateWorkflowDefinitionById(params.id, body);
+    return await this.service.updateWorkflowDefinitionById(params.id, body, 'by_index');
   }
 
   @common.Get('/:id')
