@@ -56,7 +56,8 @@ export class KYBParentKYCSessionExampleAdapter
                 dateOfBirth: ubo.birthDate,
 
                 additionalInfo: {
-                  companyName: customer.name,
+                  normalizedCustomerCompany: customer.name,
+                  companyName: payload.businessData.companyName || '',
                   customerCompany: customer.displayName,
                   title: ubo.title,
                 },
@@ -80,7 +81,9 @@ export class KYBParentKYCSessionExampleAdapter
         issuer: {
           country: 'GH',
         },
-        decision: { status: '', revisionReason: '', rejectionReason: '' },
+        decision: document.decision
+          ? document.decision
+          : { status: '', revisionReason: '', rejectionReason: '' },
         pages: [
           {
             ballerineFileId: document.fileId,

@@ -123,6 +123,10 @@ export const selectDocuments = (
         return {
           ...doc,
           id: existingDocument.id,
+          decision:
+            existingDocument?.decision?.status === 'approved'
+              ? existingDocument.decision
+              : undefined,
         };
       }
 

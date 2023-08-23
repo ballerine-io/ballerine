@@ -1,5 +1,6 @@
 import { TRunWorkflowDto, WorkflowUBO, WorkflowUpdatePayload } from '@app/domains/workflows/types';
 import { v4 as uuidv4 } from 'uuid';
+import { getFullCountryNameByCode } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list.ts';
 
 function createUBOFromUserInformation(data: WorkflowUpdatePayload): WorkflowUBO {
   const ubo: WorkflowUBO = {
@@ -40,7 +41,7 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
           website: data.entity.website,
           registrationNumber: data.entity.registrationNumber,
           companyName: data.entity.companyName,
-          countryOfIncorporation: data.entity.country,
+          countryOfIncorporation: getFullCountryNameByCode(data.entity.country),
           address: {
             text: data.entity.address,
           },

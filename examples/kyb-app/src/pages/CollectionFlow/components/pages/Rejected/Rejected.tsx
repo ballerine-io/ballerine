@@ -4,19 +4,21 @@ import { useSignin } from '@app/hooks/useSignin';
 import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Card } from '@ballerine/ui';
 import { useCollectionFlowSchemaQuery } from '@app/hooks/useCollectionFlowSchemaQuery';
+import { useCustomer } from '@app/components/providers/CustomerProvider';
 
 export const Rejected = withSessionProtected(() => {
   const { documentConfigurations } = useCollectionFlowSchemaQuery();
-  const { isFetching, flowData } = useActiveWorkflowQuery(documentConfigurations);
+  const { customer } = useCustomer();
+  const { isFetching, workflow } = useActiveWorkflowQuery(documentConfigurations);
   const { logoutSilent } = useSignin();
 
   useEffect(() => {
     if (isFetching) return;
 
-    if (flowData.status === 'reject') {
+    if (workflow?.state === 'rejected') {
       setTimeout(logoutSilent, 250);
     }
-  }, [isFetching, flowData, logoutSilent]);
+  }, [isFetching, workflow, logoutSilent]);
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -32,7 +34,7 @@ export const Rejected = withSessionProtected(() => {
           <p className="text-muted-foreground text-center text-sm leading-5 opacity-50">
             It seems like there was a problem with activating your account.
             <br /> For more information, please contact support at
-            <br /> support@paylynk.com
+            <br /> {customer.name}@support.com
           </p>
         </div>
       </Card>
