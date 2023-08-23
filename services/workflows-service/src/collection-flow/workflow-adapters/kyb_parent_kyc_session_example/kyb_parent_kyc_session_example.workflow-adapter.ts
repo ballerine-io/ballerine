@@ -81,7 +81,9 @@ export class KYBParentKYCSessionExampleAdapter
         issuer: {
           country: 'GH',
         },
-        decision: { status: '', revisionReason: '', rejectionReason: '' },
+        decision: document.decision
+          ? document.decision
+          : { status: '', revisionReason: '', rejectionReason: '' },
         pages: [
           {
             ballerineFileId: document.fileId,
@@ -90,7 +92,8 @@ export class KYBParentKYCSessionExampleAdapter
           },
         ],
         properties: document.properties,
-        version: '1',
+        // TO DO: Remove before demo merge,changes only for WORKSHOP DEMO
+        version: document.provider === 'http' ? '20' : '1',
         issuingVersion: 1,
       };
     });

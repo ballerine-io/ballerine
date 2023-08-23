@@ -7,6 +7,7 @@ import { Injectable } from '@nestjs/common';
 export class WorkflowAdapterManager {
   private readonly adapters: Record<string, IWorkflowAdapter> = {
     kyb_parent_kyc_session_example: new KYBParentKYCSessionExampleAdapter(),
+    devcon_example_workflow: new KYBParentKYCSessionExampleAdapter(),
   };
 
   getAdapter(type: string) {
