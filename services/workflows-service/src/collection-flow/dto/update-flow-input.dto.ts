@@ -59,6 +59,10 @@ export class CompanyDocument {
   @IsString()
   @IsOptional()
   uri!: string;
+
+  @IsObject()
+  @IsOptional()
+  decision!: Record<string, any>;
 }
 
 export class UBOShareholder {

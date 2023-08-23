@@ -81,7 +81,9 @@ export class KYBParentKYCSessionExampleAdapter
         issuer: {
           country: 'GH',
         },
-        decision: { status: '', revisionReason: '', rejectionReason: '' },
+        decision: document.decision
+          ? document.decision
+          : { status: '', revisionReason: '', rejectionReason: '' },
         pages: [
           {
             ballerineFileId: document.fileId,

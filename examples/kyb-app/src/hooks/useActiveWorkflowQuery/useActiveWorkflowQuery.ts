@@ -73,8 +73,11 @@ export const useActiveWorkflowQuery = (documentConfigurations: DocumentConfigura
     loadFilesAndAssignToFlowData().catch(() => setLoading(false));
   }, [documentConfigurations, flowData, isLoading]);
 
+  console.log('FLOW DATA', flowData);
+
   return {
     flowData,
     isFetching: isFetching || isLoading,
+    workflow: _flowData ? _flowData.workflow : null,
   };
 };
