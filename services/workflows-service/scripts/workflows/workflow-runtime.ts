@@ -22,22 +22,33 @@ type Workflow = {
     };
     phoneNumber: string;
     email: string;
-    website: string;
+    website: string; // URL
     industry: string;
     taxIdentificationNumber: string;
     vatNumber: string;
     numberOfEmployees: number;
     businessPurpose: string;
-    proofOfAddress: string;
+    proofOfAddress: string; // URL
     proofOfAddressIssuerCountry: string;
-    documents: {
-      registrationDocument: string;
-      financialStatement: string;
-    };
+    bankStatement: string; // URL
+    companyStructure: string; // URL
+    registrationCertificate: string; // URL
     shareholderStructure: Array<{
       name: string;
       ownershipPercentage: number;
     }>;
+    bankInformation: {
+      holder: string;
+      account: number;
+      country: string;
+      bankName: string;
+      currency: string;
+    };
+    companyActivity: {
+      model: string;
+      volumeAmount: number;
+      transactionValue: number;
+    };
   };
   ubos: Array<{
     id: string;
@@ -46,17 +57,18 @@ type Workflow = {
     lastName: string;
     email: string;
     phoneNumber: string;
+    title: string;
     dateOfBirth: Date;
-    avatarUrl: string;
+    avatarUrl: string; // URL
     gender: 'M' | 'F';
     nationality: string;
     decision: 'approved' | 'declined' | 'resubmission_requested';
     decisionReason: string | null;
     withAml: boolean;
-    selfie: string;
+    selfie: string; // URL
     passport: {
-      front: string;
-      back: string;
+      front: string; // URL
+      back?: string; // URL
       issuerCountryCode: string;
     };
   }>;
@@ -66,38 +78,53 @@ const workflows: Workflow[] = [
   {
     business: {
       id: faker.datatype.uuid(),
-      name: 'SolTech S.L.',
-      registrationNumber: 'B-12345678',
-      legalForm: 'Sociedad Limitada (S.L.)',
-      countryOfIncorporation: 'Spain',
-      dateOfIncorporation: new Date('2017-03-15'),
-      address: 'Calle Tecnología 15, 28013 Madrid',
+      name: 'ElektroTech GmbH',
+      registrationNumber: 'HRB 987654',
+      legalForm: 'Gesellschaft mit beschränkter Haftung (GmbH)',
+      countryOfIncorporation: 'Germany',
+      dateOfIncorporation: new Date('2018-02-20'),
+      address: 'Technologiepark 5, 76131 Karlsruhe, Baden-Württemberg',
       addressComponents: {
-        country: 'Spain',
-        locality: 'Madrid',
-        postalCode: '28013',
-        region: 'Madrid',
-        streetAddress: 'Calle Tecnología 15',
+        country: 'Germany',
+        locality: 'Karlsruhe',
+        postalCode: '76131',
+        region: 'Baden-Württemberg',
+        streetAddress: 'Technologiepark 5',
       },
-      jurisdictionCode: 'ES',
-      proofOfAddress: 'url_al_comprobante_de_domicilio.pdf',
-      proofOfAddressIssuerCountry: 'Spain',
-      phoneNumber: '+34 910 123 456',
-      email: 'contacto@soltech.es',
-      website: 'www.soltech.es',
-      industry: 'Renewable Energy',
-      taxIdentificationNumber: 'ESB12345678',
-      vatNumber: 'ESA12345678',
-      numberOfEmployees: 60,
-      businessPurpose: 'Desarrollo y venta de soluciones de energía renovable.',
-      documents: {
-        registrationDocument: 'url_al_documento_de_registro.pdf',
-        financialStatement: 'url_al_estado_financiero_2022.pdf',
+      jurisdictionCode: 'DE',
+      proofOfAddressIssuerCountry: 'Germany',
+      proofOfAddress:
+        'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/ElektroTech+GmbH/utility+bill2.jpeg',
+      registrationCertificate:
+        'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/ElektroTech+GmbH/COI1.jpeg',
+      companyStructure:
+        'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/ElektroTech+GmbH/company+structure.png',
+      bankStatement:
+        'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/ElektroTech+GmbH/Bank+Statement1.jpeg',
+      bankInformation: {
+        holder: 'ElektroTech GmbH',
+        country: 'Germany',
+        currency: 'EUR',
+        bankName: 'Deutsche Bank',
+        account: Number(faker.random.numeric(10)),
       },
+      companyActivity: {
+        model: 'we manufacture electronic products.',
+        transactionValue: 50,
+        volumeAmount: 500000,
+      },
+      phoneNumber: '+49 721 909090',
+      email: 'info@elektrotech.de',
+      website: 'www.elektrotech.de',
+      industry: 'Electronics Manufacturing',
+      taxIdentificationNumber: 'DE123456789',
+      vatNumber: 'DE987654321',
+      numberOfEmployees: 80,
+      businessPurpose: 'Herstellung und Vertrieb von Elektronikprodukten.',
       shareholderStructure: [
         {
-          name: 'Maria González',
-          ownershipPercentage: 80,
+          name: 'Max Müller',
+          ownershipPercentage: 70,
         },
       ],
     },
@@ -108,19 +135,23 @@ const workflows: Workflow[] = [
         decision: 'approved',
         decisionReason: null,
         withAml: false,
-        nationality: 'Spain',
-        gender: 'F',
-        firstName: 'Maria',
-        lastName: 'González',
-        email: 'maria.gonzalez@email.es',
-        phoneNumber: '+34 910 123 457',
-        dateOfBirth: new Date('1984-06-10'),
-        avatarUrl: 'url_al_avatar_maria_gonzalez.jpg',
-        selfie: 'url_al_selfie_maria_gonzalez.jpg',
+        nationality: 'DE',
+        gender: 'M',
+        title: faker.name.jobTitle(),
+        firstName: 'Max',
+        lastName: 'Müller',
+        email: 'max.mueller@email.de',
+        phoneNumber: '+49721909091',
+        dateOfBirth: new Date('1980-08-15'),
+        avatarUrl:
+          'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/ElektroTech+GmbH/Nitzan_selfie_with_a_low_quality_camera_50ea035b-05fd-4e21-af97-19523210dc5a.png',
+        selfie:
+          'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/ElektroTech+GmbH/Nitzan_selfie_with_a_low_quality_camera_50ea035b-05fd-4e21-af97-19523210dc5a.png',
         passport: {
-          front: 'url_al_pasaporte_delantero_maria_gonzalez.jpg',
-          back: 'url_al_pasaporte_trasero_maria_gonzalez.jpg',
-          issuerCountryCode: 'ES',
+          front:
+            'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/ElektroTech+GmbH/Germany_ID_front.png',
+          back: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/ElektroTech+GmbH/Germany_ID_bak.png',
+          issuerCountryCode: 'DE',
         },
       },
     ],
@@ -129,7 +160,7 @@ const workflows: Workflow[] = [
 
 export const createDemoMockData = async ({
   prismaClient,
-  customer: { name: customerName },
+  customer: { name: customerName, displayName: customerDisplayName },
   projects,
 }: {
   prismaClient: PrismaClient;
@@ -141,6 +172,7 @@ export const createDemoMockData = async ({
       await createMockParentWithChildWorkflow({
         prismaClient,
         customerName,
+        customerDisplayName,
         projectId,
         business,
         ubos,
@@ -152,22 +184,26 @@ export const createDemoMockData = async ({
 export const createMockParentWithChildWorkflow = async ({
   prismaClient,
   customerName,
+  customerDisplayName,
   projectId,
   business,
   ubos,
 }: {
   prismaClient: PrismaClient;
   customerName: string;
+  customerDisplayName: string;
   projectId: string;
   business: Workflow['business'];
   ubos: Workflow['ubos'];
 }) => {
-  const parentRuntimeInformation = generateParentRuntimeInformation({
+  const parentRuntimeInformation = await generateParentRuntimeInformation({
     businessId: business.id,
-    companyName: customerName,
+    customerName,
+    customerDisplayName,
     projectId,
     business,
     ubos,
+    prismaClient,
   });
   const businessWithWorkflowInformation = generateBusiness({
     projectId: projectId,
@@ -178,25 +214,15 @@ export const createMockParentWithChildWorkflow = async ({
       context: parentRuntimeInformation.context as unknown as Prisma.InputJsonValue,
     },
   });
-  parentRuntimeInformation.context.documents[0]!.pages.forEach(async file => {
-    await prismaClient.file.create({
-      data: {
-        id: file.ballerineFileId,
-        userId: faker.datatype.uuid(),
-        uri: file.uri,
-        fileNameOnDisk: file.uri,
-        projectId: projectId,
-      },
-    });
+  const businessRecord = await prismaClient.business.create({
+    data: businessWithWorkflowInformation,
+    select: { workflowRuntimeData: true },
   });
 
   for (const ubo of ubos) {
-    const businessRecord = await prismaClient.business.create({
-      data: businessWithWorkflowInformation,
-      select: { workflowRuntimeData: true },
-    });
     const childWorkflowRuntimeInformation = generateChildRuntimeInformation({
-      customerName: customerName,
+      customerName,
+      customerDisplayName,
       projectId: projectId,
       parentWorkflowId: businessRecord.workflowRuntimeData[0]!.id,
       ubo,
@@ -229,10 +255,12 @@ export const createMockParentWithChildWorkflow = async ({
 export const generateChildRuntimeInformation = ({
   ubo,
   customerName,
+  customerDisplayName,
   projectId,
   parentWorkflowId,
 }: {
   customerName: string;
+  customerDisplayName: string;
   projectId: string;
   parentWorkflowId: string;
   ubo: Workflow['ubos'][number];
@@ -243,6 +271,7 @@ export const generateChildRuntimeInformation = ({
     context: createKycRuntime({
       customerName: customerName,
       ubo: ubo,
+      customerDisplayName,
     }),
     state: 'kyc_manual_review',
     status: WorkflowRuntimeDataStatus.active,
@@ -261,24 +290,35 @@ export const generateChildRuntimeInformation = ({
   };
 };
 
-export const generateParentRuntimeInformation = ({
+export const generateParentRuntimeInformation = async ({
   businessId,
-  companyName,
+  customerName,
+  customerDisplayName,
   projectId,
   business,
   ubos,
+  prismaClient,
 }: {
   businessId: string;
-  companyName: string;
+  customerName: string;
+  customerDisplayName: string;
   projectId: string;
   business: Workflow['business'];
   ubos: Workflow['ubos'];
+  prismaClient: PrismaClient;
 }) => {
   return {
     businessId: businessId,
     workflowDefinitionId: 'kyb_parent_kyc_session_example',
     workflowDefinitionVersion: 1,
-    context: generateParentRuntimeContext({ companyName, business, ubos }),
+    context: await generateParentRuntimeContext({
+      customerName,
+      customerDisplayName,
+      business,
+      ubos,
+      projectId,
+      prismaClient,
+    }),
     state: 'manual_review',
     status: WorkflowRuntimeDataStatus.active,
     createdAt: faker.date.recent(2),
@@ -307,9 +347,11 @@ export const generateParentRuntimeInformation = ({
 
 export const createKycRuntime = ({
   customerName,
+  customerDisplayName,
   ubo,
 }: {
   customerName: string;
+  customerDisplayName: string;
   ubo: Workflow['ubos'][number];
 }) => ({
   entity: {
@@ -318,9 +360,11 @@ export const createKycRuntime = ({
       firstName: ubo.firstName,
       lastName: ubo.lastName,
       email: ubo.email,
+      dateOfBirth: ubo.dateOfBirth.toISOString(),
       additionalInfo: {
+        title: ubo.title,
         companyName: customerName,
-        customerCompany: customerName,
+        customerCompany: customerDisplayName,
       },
     },
     type: 'individual',
@@ -331,26 +375,36 @@ export const createKycRuntime = ({
       type: 'identification_document',
       pages: [
         {
-          uri: ubo.passport.front,
-          type: 'png',
-          metadata: { side: 'front', pageNumber: '1' },
-          provider: 'http',
-          ballerineFileId: faker.random.alphaNumeric(20),
-        },
-        {
-          uri: ubo.passport.back,
-          type: 'png',
-          metadata: { side: 'back', pageNumber: '2' },
-          provider: 'http',
-          ballerineFileId: faker.random.alphaNumeric(20),
-        },
-        {
           uri: ubo.selfie,
           type: 'png',
-          metadata: { side: 'selfie', pageNumber: '3' },
-          provider: 'http',
+          metadata: {
+            side: 'face',
+          },
+          provider: 'base64',
           ballerineFileId: faker.random.alphaNumeric(20),
         },
+        {
+          uri: ubo.passport.front,
+          type: 'png',
+          metadata: {
+            side: 'front',
+          },
+          provider: 'base64',
+          ballerineFileId: faker.random.alphaNumeric(20),
+        },
+        ...(ubo.passport.back
+          ? [
+              {
+                uri: ubo.passport.back,
+                type: 'png',
+                metadata: {
+                  side: 'back',
+                },
+                provider: 'base64',
+                ballerineFileId: faker.random.alphaNumeric(20),
+              },
+            ]
+          : []),
       ],
       issuer: {
         city: null,
@@ -359,13 +413,13 @@ export const createKycRuntime = ({
         issuingVersion: null,
         additionalDetails: {
           validFrom: faker.date.past().toISOString(),
-          firstIssue: null,
           validUntil: faker.date.future().toISOString(),
+          firstIssue: null,
         },
       },
       category: 'passport',
       properties: {
-        idNumber: faker.datatype.number().toString(),
+        idNumber: ubo.nationalId,
         validFrom: faker.date.past().toISOString(),
         expiryDate: faker.date.future().toISOString(),
         firstIssue: null,
@@ -384,7 +438,7 @@ export const createKycRuntime = ({
               firstName: ubo.firstName,
               lastName: ubo.lastName,
               nationalId: ubo.nationalId,
-              dateOfBirth: ubo.dateOfBirth,
+              dateOfBirth: ubo.dateOfBirth.toISOString().split('T')[0],
               additionalInfo: {
                 gender: ubo.gender,
                 addresses: [],
@@ -458,96 +512,285 @@ const createAmlData = ({ ubo }: { ubo: Workflow['ubos'][number] }) => {
   };
 };
 
-const generateParentRuntimeContext = ({
-  companyName,
+const generateParentRuntimeContext = async ({
+  customerName,
+  customerDisplayName,
   ubos,
   business,
+  prismaClient,
+  projectId,
 }: {
-  companyName: string;
+  customerName: string;
+  customerDisplayName: string;
   ubos: Workflow['ubos'];
   business: Workflow['business'];
+  prismaClient: PrismaClient;
+  projectId: string;
 }) => {
+  const documents = [
+    {
+      id: faker.datatype.uuid(),
+      type: 'bank_statement',
+      pages: [
+        {
+          uri: business.bankStatement,
+          type: 'png',
+          metadata: { side: 'front', pageNumber: '1' },
+          provider: 'http',
+          ballerineFileId: faker.random.alphaNumeric(20),
+        },
+      ],
+      issuer: {
+        country: 'GH',
+      },
+      version: '1',
+      category: 'proof_of_bank_account',
+      decision: {
+        status: '',
+        revisionReason: '',
+        rejectionReason: '',
+      },
+      properties: {
+        name: business.bankInformation.bankName,
+        country: business.bankInformation.country,
+        currency: business.bankInformation.currency,
+        holderName: business.bankInformation.holder,
+        accountNumber: business.bankInformation.account,
+      },
+      issuingVersion: 1,
+    },
+    {
+      id: faker.datatype.uuid(),
+      type: 'shareholders',
+      pages: [
+        {
+          uri: business.companyStructure,
+          type: 'png',
+          metadata: { side: 'front', pageNumber: '1' },
+          provider: 'http',
+          ballerineFileId: faker.random.alphaNumeric(20),
+        },
+      ],
+      issuer: {
+        country: 'GH',
+      },
+      version: '1',
+      category: 'company_structure',
+      decision: {
+        status: '',
+        revisionReason: '',
+        rejectionReason: '',
+      },
+      properties: {},
+      issuingVersion: 1,
+    },
+    {
+      id: faker.datatype.uuid(),
+      type: 'certificate_of_incorporation',
+      pages: [
+        {
+          uri: business.registrationCertificate,
+          type: 'png',
+          metadata: { side: 'front', pageNumber: '1' },
+          provider: 'http',
+          ballerineFileId: faker.random.alphaNumeric(20),
+        },
+      ],
+      issuer: {
+        country: 'GH',
+      },
+      version: '1',
+      category: 'registration_document',
+      decision: {
+        status: '',
+        revisionReason: '',
+        rejectionReason: '',
+      },
+      properties: {
+        vat: business.vatNumber,
+        state: business.addressComponents.region,
+        country: business.addressComponents.country,
+        companyName: business.name,
+        companyType: business.legalForm,
+        establishmentDate: business.dateOfIncorporation.toISOString().split('T')[0],
+      },
+      issuingVersion: 1,
+    },
+    {
+      id: faker.datatype.uuid(),
+      type: 'water_bill',
+      pages: [
+        {
+          uri: business.proofOfAddress,
+          type: 'png',
+          metadata: { side: 'front', pageNumber: '1' },
+          provider: 'http',
+          ballerineFileId: faker.random.alphaNumeric(20),
+        },
+      ],
+      issuer: {
+        country: 'GH',
+      },
+      version: '1',
+      category: 'proof_of_address',
+      decision: {
+        status: '',
+        revisionReason: '',
+        rejectionReason: '',
+      },
+      properties: {
+        userAddress: business.address,
+      },
+      issuingVersion: 1,
+    },
+  ] as const;
+
+  const companyDocuments = {
+    addressProof: '',
+    bankStatement: '',
+    companyStructure: '',
+    registrationCertificate: '',
+  };
+
+  const map = {
+    proof_of_address: 'addressProof',
+    proof_of_bank_account: 'bankStatement',
+    company_structure: 'companyStructure',
+    registration_document: 'registrationCertificate',
+  } as const;
+
+  for (const document of documents) {
+    for (const page of document.pages) {
+      const file = await prismaClient.file.create({
+        data: {
+          id: page.ballerineFileId,
+          userId: faker.datatype.uuid(),
+          uri: page.uri,
+          fileNameOnDisk: page.uri,
+          projectId: projectId,
+        },
+      });
+
+      companyDocuments[map[document.category]] = file.id;
+    }
+  }
+
   return {
     entity: {
-      id: `company_id_${faker.datatype.number()}`,
       data: {
-        companyName: companyName,
+        email: business.email,
+        address: business.address,
+        country: business.addressComponents.country,
+        website: business.website,
+        industry: business.industry,
+        legalForm: business.legalForm,
+        vatNumber: business.vatNumber,
+        companyName: business.name,
+        dynamicInfo: {
+          ubos: {
+            check: true,
+            shareholders: [],
+          },
+          headquarters: {
+            city: business.addressComponents.locality,
+            phone: business.phoneNumber,
+            state: '',
+            street: business.addressComponents.streetAddress,
+            address: '',
+            country: business.addressComponents.country,
+            postalCode: business.addressComponents.postalCode,
+            streetNumber: '',
+          },
+          bankInformation: business.bankInformation,
+          companyActivity: { industry: business.industry, ...business.companyActivity },
+          companyDocuments: companyDocuments,
+          companyInformation: {
+            vat: business.vatNumber,
+            state: business.addressComponents.region,
+            companyName: business.name,
+            companyType: business.legalForm,
+            companyCountry: business.addressComponents.country,
+            registrationDate: business.dateOfIncorporation,
+            registrationNumber: business.registrationNumber,
+          },
+          personalInformation: {
+            name: {
+              firstName: ubos[0]!.firstName,
+              lastName: ubos[0]!.lastName,
+            },
+            title: ubos[0]!.title,
+            birthDate: ubos[0]!.dateOfBirth.toISOString(),
+            phoneNumber: '',
+            companyCheck: true,
+            personalPhoneNumber: ubos[0]!.phoneNumber,
+          },
+        },
+        phoneNumber: '',
         additionalInfo: {
           ubos: ubos.map(ubo => ({
             entity: {
               id: ubo.id,
-              type: 'individual',
               data: {
                 firstName: ubo.firstName,
                 lastName: ubo.lastName,
                 email: ubo.email,
+                dateOfBirth: ubo.dateOfBirth.toISOString(),
                 additionalInfo: {
-                  companyName: companyName,
-                  customerCompany: companyName,
+                  title: ubo.title,
+                  companyName: customerName,
+                  customerCompany: customerDisplayName,
                 },
               },
+              type: 'individual',
             },
           })),
-          registrationNumber: business.registrationNumber,
-          countryOfIncorporation: business.countryOfIncorporation,
-          taxIdentificationNumber: business.taxIdentificationNumber,
+          mainRepresentative: {
+            firstName: ubos[0]!.firstName,
+            lastName: ubos[0]!.lastName,
+            title: ubos[0]!.title,
+            email: ubos[0]!.email,
+            phone: ubos[0]!.phoneNumber,
+            companyName: business.name,
+            dateOfBirth: ubos[0]!.dateOfBirth.toISOString(),
+          },
         },
+        registrationNumber: business.registrationNumber,
+        dateOfIncorporation: business.dateOfIncorporation.toISOString(),
+        countryOfIncorporation: business.countryOfIncorporation,
+        taxIdentificationNumber: business.taxIdentificationNumber,
       },
       type: 'business',
+      endUserId: ubos[0]!.id,
+      ballerineEntityId: business.id,
     },
-    documents: [
-      {
-        id: faker.datatype.uuid(),
-        type: 'unknown',
-        pages: [
-          {
-            uri: business.proofOfAddress,
-            type: 'png',
-            metadata: { side: 'front', pageNumber: '1' },
-            provider: 'http',
-            ballerineFileId: faker.random.alphaNumeric(20),
-          },
-        ],
-        issuer: { country: business.proofOfAddressIssuerCountry },
-        version: '1',
-        category: 'proof_of_address',
-        properties: {},
-        issuingVersion: 1,
-      },
-    ],
+    documents,
     pluginsOutput: {
       open_corporates: {
-        name: companyName,
+        companyNumber: business.registrationNumber,
+        registeredAddress: business.addressComponents,
+        identifiers: [],
+        registeredAddressInFull: business.address,
+        name: business.name,
+        incorporationDate: business.dateOfIncorporation.toISOString(),
         source: {
           url: faker.internet.url(),
-          publisher: faker.company.name(),
-          retrievedAt: faker.date.past().toISOString(),
+          retrievedAt: faker.date.recent().toISOString(),
+          publisher: 'Cartwright - Nikolaus',
         },
-        isBranch: false,
         officers: [],
+        previousNames: [],
+        isInactive: false,
         agentName: null,
         industries: [],
-        isInactive: false,
-        companyType: 'Private Limited Company',
-        identifiers: [],
+        companyType: business.legalForm,
         registryUrl: faker.internet.url(),
-        branchStatus: null,
-        companyNumber: business.registrationNumber,
-        currentStatus: 'Active',
-        previousNames: [],
-        dissolutionDate: null,
-        alternativeNames: [],
-        jurisdictionCode: business.jurisdictionCode,
-        incorporationDate: business.dateOfIncorporation.toISOString(),
         numberOfEmployees: business.numberOfEmployees,
-        registeredAddress: {
-          region: business.addressComponents.region,
-          country: business.addressComponents.country,
-          locality: business.addressComponents.locality,
-          postalCode: business.addressComponents.postalCode,
-          streetAddress: business.addressComponents.streetAddress,
-        },
-        registeredAddressInFull: business.address,
+        jurisdictionCode: business.jurisdictionCode,
+        isBranch: false,
+        dissolutionDate: null,
+        branchStatus: null,
+        currentStatus: 'Active',
+        alternativeNames: [],
       },
     },
     childWorkflows: {
@@ -560,9 +803,11 @@ const generateParentRuntimeContext = ({
                 firstName: ubo.firstName,
                 lastName: ubo.lastName,
                 email: ubo.email,
+                dateOfBirth: ubo.dateOfBirth.toISOString(),
                 additionalInfo: {
-                  companyName: companyName,
-                  customerCompany: companyName,
+                  title: ubo.title,
+                  companyName: customerName,
+                  customerCompany: customerDisplayName,
                 },
               },
               vendorResult: {
@@ -572,7 +817,7 @@ const generateParentRuntimeContext = ({
                     firstName: ubo.firstName,
                     lastName: ubo.lastName,
                     nationalId: ubo.nationalId,
-                    dateOfBirth: ubo.dateOfBirth,
+                    dateOfBirth: ubo.dateOfBirth.toISOString().split('T')[0],
                     additionalInfo: {
                       gender: ubo.gender,
                       addresses: [],
@@ -600,6 +845,6 @@ const generateParentRuntimeContext = ({
         ]),
       ),
     },
-    workflowRuntimeId: faker.random.alphaNumeric(20),
+    workflowRuntimeId: faker.datatype.uuid(),
   };
 };
