@@ -548,7 +548,7 @@ const devconExampleWorkflowAfterChanges = {
             transform: [
               {
                 transformer: 'jmespath',
-                mapping: `{images: [{remote: {imageUri: documents[0].pages[0].uri}}], schema: { type:'object', properties: { name: {type: 'string'}}}}`,
+                mapping: `{images: [{remote: {imageUri: documents[0].pages[0].uri}}], schema: { type:'object', properties: { customerNumber: {type: 'string'}, address: {type: 'string'} }}}`,
               },
             ],
             schema: {}, // OPTIONAL
@@ -625,8 +625,8 @@ async function createCustomer(
   return await client.customer.create({
     data: {
       id: `customer-${id}`,
-      name: `Customer ${id}`,
-      displayName: `Customer ${id}`,
+      name: `fintechdevcon`,
+      displayName: `Fintech Devcon`,
       authenticationConfiguration: {
         apiType: 'API_KEY',
         authValue: apiKey,

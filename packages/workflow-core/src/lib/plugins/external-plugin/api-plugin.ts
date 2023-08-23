@@ -64,7 +64,7 @@ export class ApiPlugin {
         );
         if (!isValidResponse) return this.returnErrorResponse(errorMessage!);
         if (this.successAction) {
-          return this.returnSuccessResponse(this.successAction, responseBody);
+          return this.returnSuccessResponse(this.successAction, responseBody, requestPayload);
         }
         return {};
       } else {
@@ -79,8 +79,12 @@ export class ApiPlugin {
     }
   }
 
-  returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {
-    return { callbackAction, responseBody };
+  returnSuccessResponse(
+    callbackAction: string,
+    responseBody: AnyRecord,
+    requestPayload: AnyRecord,
+  ) {
+    return { callbackAction, responseBody, requestPayload };
   }
 
   returnErrorResponse(errorMessage: string) {
@@ -166,6 +170,7 @@ export class ApiPlugin {
       const variableKey = placeholder.replace(/{|}/g, '');
       const isPlaceholderSecret = variableKey.includes('secret.');
       const placeholderValue = isPlaceholderSecret
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         ? `${process.env[variableKey.replace('secret.', '')]}`
         : // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
