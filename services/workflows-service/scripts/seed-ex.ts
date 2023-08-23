@@ -22,6 +22,117 @@ const devconExampleWorkflowBeforeChanges = {
         on: {
           start: 'manual_review',
         },
+        metadata: {
+          uiSettings: {
+            multiForm: {
+              documents: [
+                {
+                  name: 'registrationCertificate',
+                  type: 'file',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Personal information',
+                  description: 'Please provide your personal information',
+                  formSchema: {
+                    type: 'object',
+                    title: 'Personal information',
+                    properties: {
+                      name: {
+                        type: 'object',
+                        title: '',
+                        properties: {
+                          firstName: {
+                            title: 'Name',
+                            type: 'string',
+                            minLength: 1,
+                          },
+                          lastName: {
+                            title: '',
+                            type: 'string',
+                            minLength: 1,
+                          },
+                        },
+                        required: ['firstName', 'lastName'],
+                      },
+                      title: {
+                        title: 'Title',
+                        type: 'string',
+                        minLength: 1,
+                      },
+                      birthDate: {
+                        type: 'string',
+                        title: 'Date of Birth',
+                        minLength: 1,
+                      },
+                      personalPhoneNumber: {
+                        type: 'string',
+                        title: 'Phone Number',
+                        minLength: 1,
+                      },
+                      companyCheck: {
+                        title: 'I have the signing authority for this company',
+                        type: 'boolean',
+                      },
+                    },
+                    required: ['name', 'title', 'birthDate', 'phoneNumber'],
+                  },
+                  uiSchema: {
+                    'ui:order': [
+                      'name',
+                      'title',
+                      'birthDate',
+                      'personalPhoneNumber',
+                      'companyCheck',
+                    ],
+                    personalPhoneNumber: {
+                      'ui:field': 'PhoneInput',
+                      'ui:label': true,
+                    },
+                    birthDate: {
+                      'ui:field': 'DateInput',
+                      'ui:label': true,
+                    },
+                    name: {
+                      'ui:order': ['firstName', 'lastName'],
+                      firstName: {
+                        'ui:placeholder': 'First Name',
+                        'ui:label': true,
+                      },
+                      lastName: {
+                        'ui:placeholder': 'Last Name',
+                        'ui:label': false,
+                      },
+                    },
+                    title: {
+                      'ui:placeholder': 'CEO / Manager / Partner',
+                    },
+                    email: {
+                      'ui:placeholder': 'john@example.com',
+                    },
+                    'ui:options': {
+                      submitButtonOptions: {
+                        submitText: 'Continue',
+                      },
+                    },
+                  },
+                  defaultData: {
+                    title: '',
+                    name: {
+                      firstName: '',
+                      lastName: '',
+                    },
+                    birthDate: '',
+                    phoneNumber: '',
+                    companyCheck: false,
+                  },
+                  key: 'personalInformation',
+                },
+              ],
+            },
+          },
+        },
       },
       manual_review: {
         on: {
@@ -266,7 +377,7 @@ const devconExampleWorkflowAfterChanges = {
 
 const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
-    data: devconExampleWorkflowAfterChanges,
+    data: devconExampleWorkflowBeforeChanges,
   });
 };
 
@@ -274,7 +385,7 @@ const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {
 const isSeeded = async (prismaClient: PrismaClient) => {
   const workflow = await prismaClient.workflowDefinition.findUnique({
     where: {
-      id: devconExampleWorkflowAfterChanges.id,
+      id: devconExampleWorkflowBeforeChanges.id,
     },
   });
 
@@ -598,7 +709,7 @@ async function seed(bcryptSalt: number | string) {
         childWorkflowsRuntimeData: true,
       },
       where: {
-        workflowDefinitionId: 'devcon_example_workflow1',
+        workflowDefinitionId: 'devcon_example_workflow',
         businessId: { not: null },
       },
     },
