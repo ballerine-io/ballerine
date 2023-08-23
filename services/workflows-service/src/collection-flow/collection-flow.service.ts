@@ -217,4 +217,8 @@ export class CollectionFlowService {
       },
     });
   }
+
+  async resubmitFlow(flowId: string, projectIds: TProjectIds) {
+    await this.workflowService.event({ id: flowId, name: 'RESUBMITTED' }, projectIds);
+  }
 }

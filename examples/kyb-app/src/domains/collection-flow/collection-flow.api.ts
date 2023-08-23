@@ -72,3 +72,7 @@ export const updateFlow = async (dto: UpdateFlowDto) => {
 export const startFlow = async (flowId: string) => {
   await request.post(`collection-flow/finish/${flowId}`);
 };
+
+export const resubmitFlow = async (flowId: string) => {
+  await request.post(`collection-flow/resubmit/${flowId}`);
+};
