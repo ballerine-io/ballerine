@@ -1,14 +1,5 @@
 import * as common from '@nestjs/common';
-import {
-  CallHandler,
-  ExecutionContext,
-  NestInterceptor,
-  Param,
-  Post,
-  Res,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -21,11 +12,11 @@ import { downloadFileFromS3, manageFileByProvider } from '@/storage/get-file-sto
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import * as os from 'os';
 import * as path from 'path';
-import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { CustomerService } from '@/customer/customer.service';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 
 // Temporarily identical to StorageControllerInternal
 @swagger.ApiTags('Storage')
@@ -58,7 +49,7 @@ export class StorageControllerExternal {
       },
     },
   })
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async uploadFile(
     @UploadedFile() file: Partial<Express.MulterS3.File>,
     @ProjectIds() projectIds: TProjectIds,
@@ -77,7 +68,7 @@ export class StorageControllerExternal {
 
   // curl -v http://localhost:3000/api/v1/storage/1679322938093
   @common.Get('/:id')
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async getFileById(
     @ProjectIds() projectIds: TProjectIds,
     @Param('id') id: string,
@@ -100,7 +91,7 @@ export class StorageControllerExternal {
 
   // curl -v http://localhost:3000/api/v1/storage/content/1679322938093
   @common.Get('/content/:id')
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async fetchFileContent(
     @ProjectIds() projectIds: TProjectIds,
     @Param('id') id: string,
