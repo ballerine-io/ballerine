@@ -23,22 +23,16 @@ What we are going to achieve...
    - The images are built from the devcon branch and available in the GitHub Container Registry.
    - Use the following command to fetch and run them:
      ```bash
-     docker-compose pull && docker-compose up
+     cd deploy
+     docker compose -f docker-compose-ex-prebuilt.yml up
      ```
 
 2. **Build Images from Source Code:**
    - You can build the images directly from the source code instead of downloading pre-built images.
    - Use the following command:
      ```bash
-     docker-compose build && docker-compose up
-     ```
-
-3. **Run the Code on the Local Machine (No Docker):**
-   - If you prefer to run the packages directly on your local machine without Docker, you can do so using npm.
-   - Navigate to each package directory and run:
-     ```bash
-     npm install
-     npm start
+     cd deploy
+     docker compose -f docker-compose-ex.yml up
      ```
 
 ### What's Running?
@@ -81,12 +75,71 @@ When everything is running, we will start the walk-through. Below are the steps 
 Flow Diagam:
 
 ### Step 1: Add Fields to the Collection Flow
+
+Import `devcon-workshop.postman_collection.json` as a new collection to post man
+
 We will add website and a file input.
+- **Postman Collection Request:** `1. Workflow Definition - (Update Collection Form)`
 - **cURL Request:**
     ```bash
-    # Insert cURL request here
+    curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer secret' \
+--data '{
+    "states": {
+        "data_collection": {
+            "metadata": {
+                "uiSettings": {
+                    "multiForm": {
+                        "documents": [
+                            {
+                                "id": "url-document",
+                                "type": "url",
+                                "name": "customDocument",
+                                "provider": "http",
+                                "properties": {
+                                    "type": "Custom",
+                                    "category": "Document"
+                                }
+                            }
+                        ],
+                        "steps": [
+                            {
+                                "id": "companyInformation",
+                                "formSchema": {
+                                    "properties": {
+                                        "website": {
+                                            "type": "string",
+                                            "title": "Company Website"
+                                        }
+                                    }
+                                },
+                                "uiSchema": {
+                                    "website": {
+                                        "ui:placeholder": "https://google.com"
+                                    }
+                                }
+                            },
+                            {
+                                "id": "businessDocuments",
+                                "formSchema": {
+                                    "properties": {
+                                        "customDocument": {
+                                            "type": "string",
+                                            "title": "Document Url"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}'
     ```
-- **Postman Collection Request:** `Name_of_Postman_Request_1`
+
 
 ### Step 2: Add the First Plugin
 The first plugin will take the custom file uploaded and will use our API to retrieve JSON by the provided JSON schema.

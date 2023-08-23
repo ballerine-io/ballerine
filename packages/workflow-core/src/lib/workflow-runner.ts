@@ -488,13 +488,23 @@ export class WorkflowRunner {
     if (stateApiPlugins) {
       for (const apiPlugin of stateApiPlugins) {
         // @ts-expect-error - multiple types of plugins return different responses
-        const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
+        const { callbackAction, responseBody, error, requestPayload } = await apiPlugin.invoke?.(
+          this.#__context,
+          this.#__currentState,
+        );
         if (!this.isPluginWithCallbackAction(apiPlugin)) continue;
 
         this.#__context.pluginsOutput = {
           ...(this.#__context.pluginsOutput || {}),
           ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
         };
+        if (true)
+          // find the document by collection flow flagging (version 20)
+          this.#__context.documents[1] = {
+            ...this.#__context.documents[1],
+            properties: responseBody.parsedData,
+            propertiesSchema: requestPayload.schema,
+          };
         await this.sendEvent(callbackAction);
       }
     }

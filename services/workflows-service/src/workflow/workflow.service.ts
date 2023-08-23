@@ -226,7 +226,9 @@ export class WorkflowService {
 
             return {
               ...document,
-              propertiesSchema: documentByCountry?.propertiesSchema ?? {},
+              propertiesSchema:
+                // @ts-expect-error
+                document.propertiesSchema || documentByCountry?.propertiesSchema || {},
             };
           },
         ),
@@ -778,7 +780,7 @@ export class WorkflowService {
 
       // @ts-ignore
       data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
-        if (!Object.keys(propertiesSchema ?? {})?.length) return;
+        if (!Object.keys(propertiesSchema ?? {})?.length || document.version === 20) return;
 
         const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {});
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);

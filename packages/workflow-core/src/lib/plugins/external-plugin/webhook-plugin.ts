@@ -10,8 +10,11 @@ export class WebhookPlugin extends ApiPlugin {
   }
 
   // TODO: Ensure if this is intentional
-  async invoke(context: TContext) {
-    const requestPayload = await this.transformData(this.request.transformers, context);
+  async invoke(context: TContext, currentState?: string) {
+    const requestPayload = await this.transformData(this.request.transformers, {
+      ...context,
+      state: currentState,
+    });
 
     try {
       await this.makeApiRequest(this.url, this.method, requestPayload, this.headers!);
