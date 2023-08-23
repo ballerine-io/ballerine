@@ -8,6 +8,8 @@ import { octetToFileType } from '../../../../../../common/octet-to-file-type/oct
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { safeEvery } from '@ballerine/common';
 import { useCaseDecision } from '../../../Case/hooks/useCaseDecision/useCaseDecision';
+import { isValidUrl } from '../../../../../../common/utils/is-valid-url';
+import { isBase64 } from '../../../../../../common/utils/is-base64/is-base64';
 
 export const useKycBlock = ({
   parentWorkflowId,
@@ -125,9 +127,9 @@ export const useKycBlock = ({
           document?.type,
         )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
         imageUrl:
-          type === 'pdf'
-            ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
-            : results[docIndex][pageIndex],
+          !isBase64(results[docIndex][pageIndex]) && isValidUrl(results[docIndex][pageIndex])
+            ? results[docIndex][pageIndex]
+            : octetToFileType(results[docIndex][pageIndex], `application/${type}`),
         fileType: type,
       })) ?? [],
   );
