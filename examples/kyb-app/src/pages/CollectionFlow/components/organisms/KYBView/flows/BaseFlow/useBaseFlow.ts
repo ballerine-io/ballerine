@@ -9,7 +9,7 @@ import { useWorkflowIssues } from '@app/pages/CollectionFlow/components/organism
 import { useBaseFlowViews } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useBaseFlowViews';
 import { useSessionQuery } from '@app/hooks/useSessionQuery';
 import { selectMainRepresentative } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectMainRepresentative';
-import { UpdateFlowDto, startFlow, updateFlow } from '@app/domains/collection-flow';
+import { UpdateFlowDto, resubmitFlow, startFlow, updateFlow } from '@app/domains/collection-flow';
 import { selectDocuments } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectDocuments';
 import { selectUbos } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectUbos';
 import { selectEntityData } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectEntityData';
@@ -63,6 +63,7 @@ export const useBaseFlow = () => {
         setLoading(true);
 
         await uploadFilesAndSaveToStorage(documentConfigurations, context);
+        const documents = await selectDocuments(context, flowData.documents, documentConfigurations);
 
         const updatePayload: UpdateFlowDto = {
           flowId: context.shared.workflowId,
@@ -70,9 +71,9 @@ export const useBaseFlow = () => {
           payload: {
             mainRepresentative: selectMainRepresentative(context, user),
             ubos: selectUbos(context, user),
-            documents: await selectDocuments(context, flowData.documents, documentConfigurations),
+            documents: documents,
             dynamicData: assignFileIdsToFlowData(context, documentConfigurations).flowData,
-            flowState: context.currentView,
+            flowState: views.at(-1).key,
             entityData: selectEntityData(context, customer),
             businessData: selectBusinessData(context, user),
           },
@@ -80,6 +81,7 @@ export const useBaseFlow = () => {
 
         if (isUpdate) {
           await updateFlow(updatePayload);
+          await resubmitFlow(context.shared.workflowId);
         } else {
           await updateFlow(updatePayload);
           await startFlow(context.shared.workflowId);
@@ -95,7 +97,7 @@ export const useBaseFlow = () => {
         setLoading(false);
       }
     },
-    [user, customer, logoutSilent, navigate],
+    [user, customer, views, logoutSilent, navigate],
   );
 
   return {
