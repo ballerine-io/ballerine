@@ -8,17 +8,16 @@ import { useCustomer } from '@app/components/providers/CustomerProvider';
 
 export const Rejected = withSessionProtected(() => {
   const { documentConfigurations } = useCollectionFlowSchemaQuery();
-  const { isFetching, flowData } = useActiveWorkflowQuery(documentConfigurations);
-  const { customer } = useCustomer();
+  const { isFetching, workflow } = useActiveWorkflowQuery(documentConfigurations);
   const { logoutSilent } = useSignin();
 
   useEffect(() => {
     if (isFetching) return;
 
-    if (flowData.status === 'reject') {
+    if (workflow?.state === 'rejected') {
       setTimeout(logoutSilent, 250);
     }
-  }, [isFetching, flowData, logoutSilent]);
+  }, [isFetching, workflow, logoutSilent]);
 
   return (
     <div className="flex h-full items-center justify-center">
