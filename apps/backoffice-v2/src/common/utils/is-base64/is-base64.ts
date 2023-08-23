@@ -1,8 +1,6 @@
-import { z } from 'zod';
+export const isBase64 = (str: string) => {
+  const withoutPrefix = str?.split(',')[1];
+  const base64Regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
 
-export const isBase64 = (value: unknown): value is string => {
-  return z
-    .string()
-    .regex(/^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/)
-    .safeParse(value).success;
+  return base64Regex.test(withoutPrefix);
 };

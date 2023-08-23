@@ -269,20 +269,17 @@ export const useTasks = ({
           value: {
             isLoading: docsData?.some(({ isLoading }) => isLoading),
             data:
-              documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => {
-                console.log(isBase64(results[docIndex][pageIndex]));
-                return {
-                  title: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
-                    docType,
-                  )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                  imageUrl:
-                    !isBase64(results[docIndex][pageIndex]) &&
-                    isValidUrl(results[docIndex][pageIndex])
-                      ? results[docIndex][pageIndex]
-                      : octetToFileType(results[docIndex][pageIndex], `application/${type}`),
-                  fileType: type,
-                };
-              }) ?? [],
+              documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
+                title: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
+                  docType,
+                )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
+                imageUrl:
+                  !isBase64(results[docIndex][pageIndex]) &&
+                  isValidUrl(results[docIndex][pageIndex])
+                    ? results[docIndex][pageIndex]
+                    : octetToFileType(results[docIndex][pageIndex], `application/${type}`),
+                fileType: type,
+              })) ?? [],
           },
         };
 
