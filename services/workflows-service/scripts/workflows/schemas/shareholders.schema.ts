@@ -53,6 +53,25 @@ export const shareholdersSchema = {
       },
     },
   },
+  allOf: [
+    {
+      if: {
+        properties: {
+          check: {
+            const: false,
+          },
+        },
+      },
+      then: {
+        properties: {
+          shareholders: {
+            minItems: 1,
+          },
+        },
+        required: ['shareholders'],
+      },
+    },
+  ],
 };
 
 export const shareholdersUISchema = {
