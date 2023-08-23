@@ -16,7 +16,10 @@ export const Entity = () => {
         id={workflow?.id}
         fullName={selectedEntity?.name}
         avatarUrl={selectedEntity?.avatarUrl}
-        showResolutionButtons={workflow?.workflowDefinition?.config?.workflowLevelResolution}
+        showResolutionButtons={
+          workflow?.workflowDefinition?.config?.workflowLevelResolution ??
+          workflow?.context?.entity?.type === 'business'
+        }
       />
       <Case.Content key={selectedEntity?.id}>
         {Array.isArray(tasks) &&
