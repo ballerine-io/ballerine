@@ -72,12 +72,12 @@ export class WorkflowControllerExternal {
   @common.Patch('/workflow-definition/:id')
   @ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async updateWorkflowDefinition(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() body: unknown,
   ) {
-    return await this.service.updateWorkflowDefinitionById(params.id, body, 'by_index');
+    return await this.service.updateWorkflowDefinitionById(params.id, body, 'by_id');
   }
 
   @common.Get('/:id')

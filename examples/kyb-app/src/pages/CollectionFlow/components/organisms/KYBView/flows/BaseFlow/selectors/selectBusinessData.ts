@@ -13,7 +13,7 @@ export const selectBusinessData = ({ flowData }: WorkflowFlowData, user: TUser):
     legalForm: traverseObjectAndPickValue('companyType', flowData, ''),
     companyName: traverseObjectAndPickValue('companyName', flowData, ''),
     registrationNumber: traverseObjectAndPickValue('registrationNumber', flowData, ''),
-    country: '',
+    country: traverseObjectAndPickValue('companyCountry', flowData, ''),
     countryOfIncorporation: traverseObjectAndPickValue('companyCountry', flowData, ''),
     dateOfIncorporation: dateOfIncorporation
       ? dayjs(dateOfIncorporation).toISOString()
