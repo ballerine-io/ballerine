@@ -32,7 +32,7 @@ export const Rejected = withSessionProtected(() => {
           <p className="text-muted-foreground text-center text-sm leading-5 opacity-50">
             It seems like there was a problem with activating your account.
             <br /> For more information, please contact support at
-            <br /> support@paylynk.com
+            <br /> support@example.com
           </p>
         </div>
       </Card>
