@@ -219,7 +219,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               mapping: `{
               countryOfIncorporation: entity.data.countryOfIncorporation,
               companyNumber: entity.data.registrationNumber,
-              state: entity.data.additionalInfo.company.state
+              state: entity.data.dynamicInfo.companyInformation.state
               vendor: 'open-corporates'
               }`, // jmespath
             },
@@ -250,12 +250,12 @@ export const parentKybWithSessionWorkflowDefinition = {
               transformer: 'jmespath',
               mapping: `{
               kybCompanyName: entity.data.companyName,
-              customerCompanyName: entity.data.additionalInfo.customerCompany,
+              customerCompanyName: entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}/workflowRuntimeId=',workflowRuntimeId, '?resubmitEvent=RESUBMITTED']),
-              supportEmail: join('',[entity.data.additionalInfo.customerCompany,'@support.com']),
+              resubmissionLink: join('',['https://',entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'.demo.ballerine.app','/workflowRuntimeId=',workflowRuntimeId,'?resubmitEvent=RESUBMITTED']),
+              supportEmail: join('',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'@support.com']),
               from: 'no-reply@ballerine.com',
-              name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
+              name: join(' ',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,'Team']),
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
               templateId: 'd-7305991b3e5840f9a14feec767ea7301',
               revisionReason: documents[].decision[].revisionReason | [0],

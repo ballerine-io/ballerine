@@ -69,7 +69,7 @@ export const useTasks = ({
 
   const registryInfoBlock =
     Object.keys(pluginsOutput ?? {}).length === 0
-      ? {}
+      ? []
       : pluginsOutputKeys
           ?.filter(key => !!Object.keys(pluginsOutput[key] ?? {})?.length)
           ?.map(key => ({
@@ -370,7 +370,7 @@ export const useTasks = ({
         };
 
   return useMemo(() => {
-    return entity ? [registryInfoBlock, ...taskBlocks, entityInfoBlock, mapBlock] : [];
+    return entity ? [entityInfoBlock, ...registryInfoBlock, ...taskBlocks, mapBlock] : [];
   }, [
     address,
     caseState.writeEnabled,

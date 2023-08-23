@@ -74,6 +74,11 @@ export interface Document {
   category: string;
   type: string;
   provider?: string;
+  decision?: {
+    status?: string;
+    revisionReason?: string;
+    rejectionReason?: string;
+  };
 }
 
 export interface UBO {

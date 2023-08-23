@@ -5,18 +5,18 @@ import { LoadingScreen } from '@app/pages/CollectionFlow/components/atoms/Loadin
 import { Outlet, Navigate } from 'react-router-dom';
 
 export const CollectionFlowDumb = () => {
-  const { documentConfigurations } = useCollectionFlowSchemaQuery();
-  const { isFetching, flowData } = useActiveWorkflowQuery(documentConfigurations);
+  const { documentConfigurations, isLoading } = useCollectionFlowSchemaQuery();
+  const { isFetching, workflow } = useActiveWorkflowQuery(documentConfigurations);
 
-  if (isFetching) {
+  if (isFetching || isLoading) {
     return <LoadingScreen />;
   }
 
-  if (flowData?.workflow?.state === 'approve') {
+  if (workflow?.state === 'approved') {
     return <Navigate to="/approved" />;
   }
 
-  if (flowData?.workflow?.state === 'reject') {
+  if (workflow?.state === 'rejected') {
     return <Navigate to="/rejected" />;
   }
 
