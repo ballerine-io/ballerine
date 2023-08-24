@@ -1,5 +1,12 @@
 # Workshop (Fintech Devcon)
-What we are going to achieve...
+Building a basic KYB flow with LLM plugin and automatic decisions.
+
+We are going to:
+* Edit the collection flow with server-side configuration and add form inputs
+* Use these inputs for OCR and data extraction
+* Create rules to automate decisions
+* Get webhook notifications about the workflow decisions
+
 ## Setup
 
 ### Install Docker and Docker Compose
@@ -43,13 +50,13 @@ What we are going to achieve...
 
 ---
 
-## Verifying That is up and running
+## Verifying everything works:
 #### Apps Credentials
 **Username**: `admin@admin.com`
 **Password**: `admin`
 
 1. **Start with the [Collection Flow App](http://localhost:5201):**
-   - Fill in the forms, submit.
+   - Fill in the forms, and submit.
 
 2. **Seeing That the Workflow State Moved to Manual Review:**
    - Go to the [monitoring dashboard](http://localhost:5200).
@@ -60,7 +67,7 @@ What we are going to achieve...
    - Click on the specific view that corresponds to the open case.
 
 4. **Approving the Case in the Case Management:**
-   - Within the case management view, proceed with the approval actions.
+   - In the case management view, you can proceed with the approval actions.
 
 5. **Seeing the Case State as Approved in the Monitoring Dashboard:**
    - Return to the monitoring dashboard.
@@ -68,15 +75,15 @@ What we are going to achieve...
 
 ## Workshop Walkthrough
 
-When everything is running, we will start the walk-through. Below are the steps to follow, and each one involves a request to change the configuration to the backend.
+After everything is running, we can start the walk-through. Below are the steps to follow, and each one involves a request to change the configuration to the backend.
 
-Flow Diagam:
+#### If you are using postman:
+Import `devcon-workshop.postman_collection.json` from the project root folder (or download: https://github.com/ballerine-io/ballerine/blob/fintech_devcon/devcon-workshop.postman_collection.json) as a new collection to postman
+
 
 ### Step 1: Add Fields to the Collection Flow
 
-Import `devcon-workshop.postman_collection.json` as a new collection to post man
-
-We will add website and a file input.
+We will add a website and a file input.
 **Postman Collection Request:** `1. Workflow Definition - (Update Collection Form)`
 
 <details>
@@ -142,8 +149,8 @@ curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows
 ```
 </details>
 
-### Step 2: Edit the workflow (add addtional step)
-
+### Step 2: Edit the workflow (add additional step)
+We will add "process_document" step that will be used to call an API for document data extraction.
 
 **Postman Collection Request:** `2. Workflow Definition - (Add Steps)`
 
@@ -181,8 +188,7 @@ curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows
 </details>
 
 ### Step 3: Add the First Plugin
-The first plugin will take the custom file uploaded and will use our API to retrieve JSON by the provided JSON schema.
-
+The LLM plugin will take the custom file uploaded and will use our API to retrieve JSON by the provided JSON schema.
 
 **Postman Collection Request:** `3. Workflow Definition - (Add Plugin)`
 
@@ -261,7 +267,8 @@ curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows
 </details>
 
 ### Step 4: Create a Rule Based on Data
-We will create a rule to move either to manual review or automatic approval of the flow.
+We will create a rule to move either to manual review or automatic flow approval.
+
 **Postman Collection Request:** `4. Workflow Definition - (Add A Rule For Auto Approve)`
 
 <details>
@@ -317,13 +324,14 @@ curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows
 
 
 ### Step 5: Add the Second Plugin - Webhook Plugin
-We'll add a webhook plugin and guide them through configuring a plugin to receive events from the workflow.
+We'll add a webhook plugin and and setup up an online service to retrieve the webhooks.
+
 **Postman Collection Request:** `5. Workflow Definition - (Add Webhook)`
 
 <details>
 <summary>cURL request</summary>
 
-```bash
+```shell
 curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow?arrayMergeStrategy=concat' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer secret' \

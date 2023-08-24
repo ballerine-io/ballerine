@@ -19,6 +19,7 @@ services:
       VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
   ballerine-workflow-service:
     image: ghcr.io/ballerine-io/workflows-service:fintech_devcon
+    platform: linux/amd64
     command:
       - /bin/sh
       - -c
