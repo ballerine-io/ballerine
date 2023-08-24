@@ -80,65 +80,65 @@ We will add website and a file input.
 - **Postman Collection Request:** `1. Workflow Definition - (Update Collection Form)`
 - **cURL Request:**
 <details open>
-  <summary>Curl</summary>
-  ```bash
-    curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
-    --header 'Content-Type: application/json' \
-    --header 'Authorization: Bearer secret' \
-    --data '{
-        "states": {
-            "data_collection": {
-                "metadata": {
-                    "uiSettings": {
-                        "multiForm": {
-                            "documents": [
-                                {
-                                    "id": "url-document",
-                                    "type": "url",
-                                    "name": "customDocument",
-                                    "provider": "http",
-                                    "properties": {
-                                        "type": "Custom",
-                                        "category": "Document"
-                                    }
+<summary>Curl</summary>
+```bash
+curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer secret' \
+--data '{
+    "states": {
+        "data_collection": {
+            "metadata": {
+                "uiSettings": {
+                    "multiForm": {
+                        "documents": [
+                            {
+                                "id": "url-document",
+                                "type": "url",
+                                "name": "customDocument",
+                                "provider": "http",
+                                "properties": {
+                                    "type": "Custom",
+                                    "category": "Document"
                                 }
-                            ],
-                            "steps": [
-                                {
-                                    "id": "companyInformation",
-                                    "formSchema": {
-                                        "properties": {
-                                            "website": {
-                                                "type": "string",
-                                                "title": "Company Website"
-                                            }
-                                        }
-                                    },
-                                    "uiSchema": {
+                            }
+                        ],
+                        "steps": [
+                            {
+                                "id": "companyInformation",
+                                "formSchema": {
+                                    "properties": {
                                         "website": {
-                                            "ui:placeholder": "https://google.com"
+                                            "type": "string",
+                                            "title": "Company Website"
                                         }
                                     }
                                 },
-                                {
-                                    "id": "businessDocuments",
-                                    "formSchema": {
-                                        "properties": {
-                                            "customDocument": {
-                                                "type": "string",
-                                                "title": "Document Url"
-                                            }
+                                "uiSchema": {
+                                    "website": {
+                                        "ui:placeholder": "https://google.com"
+                                    }
+                                }
+                            },
+                            {
+                                "id": "businessDocuments",
+                                "formSchema": {
+                                    "properties": {
+                                        "customDocument": {
+                                            "type": "string",
+                                            "title": "Document Url"
                                         }
                                     }
                                 }
-                            ]
-                        }
+                            }
+                        ]
                     }
                 }
             }
         }
-    }'
-    ```
+    }
+}'
+```
 </details>
     
 
