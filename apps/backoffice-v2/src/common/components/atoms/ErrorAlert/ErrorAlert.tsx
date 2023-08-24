@@ -8,8 +8,10 @@ export const ErrorAlert: FunctionComponentWithChildren = ({ children }) => {
   return (
     <div className={`mt-3 p-1`}>
       <Alert variant={`destructive`} className={`w-full max-w-lg`}>
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
+        <div className={`flex space-x-1`}>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+        </div>
         <AlertDescription>{children}</AlertDescription>
       </Alert>
     </div>
