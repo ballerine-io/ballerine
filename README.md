@@ -37,7 +37,7 @@ We are going to:
     - Without a clone:
       ```bash
       curl https://raw.githubusercontent.com/ballerine-io/ballerine/fintech_devcon/deploy/docker-compose-ex-prebuilt.yml -O
-      docker-compose -f docker-compose-ex-prebuilt.yml up -d
+      docker-compose -f docker-compose-ex-prebuilt.yml up
       ``````
       
 
