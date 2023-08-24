@@ -77,126 +77,238 @@ Flow Diagam:
 Import `devcon-workshop.postman_collection.json` as a new collection to post man
 
 We will add website and a file input.
-- **Postman Collection Request:** `1. Workflow Definition - (Update Collection Form)`
-- **cURL Request:**
-<details open>
-<summary>Curl</summary>
+**Postman Collection Request:** `1. Workflow Definition - (Update Collection Form)`
+
+<details>
+<summary>cURL request</summary>
+
+```
+curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer secret' \
+--data '{
+    "states": {
+        "data_collection": {
+            "metadata": {
+                "uiSettings": {
+                    "multiForm": {
+                        "documents": [
+                            {
+                                "id": "url-document",
+                                "type": "url",
+                                "name": "customDocument",
+                                "provider": "http",
+                                "properties": {
+                                    "type": "Custom",
+                                    "category": "Document"
+                                }
+                            }
+                        ],
+                        "steps": [
+                            {
+                                "id": "companyInformation",
+                                "formSchema": {
+                                    "properties": {
+                                        "website": {
+                                            "type": "string",
+                                            "title": "Company Website"
+                                        }
+                                    }
+                                },
+                                "uiSchema": {
+                                    "website": {
+                                        "ui:placeholder": "https://google.com"
+                                    }
+                                }
+                            },
+                            {
+                                "id": "businessDocuments",
+                                "formSchema": {
+                                    "properties": {
+                                        "customDocument": {
+                                            "type": "string",
+                                            "title": "Document Url"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}'
+```
+</details>
+
+### Step 2: Edit the workflow (add addtional step)
+
+
+**Postman Collection Request:** `2. Workflow Definition - (Add Steps)`
+
+<details>
+<summary>cURL request</summary>
+
+```bash
+curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow?arrayMergeStrategy=by_index' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer secret' \
+--data '{
+    "states": {
+        "data_collection": {
+            "on": {
+                "start": "process_documents"
+            }
+        },
+        "process_documents": {
+            "on": {
+                "API_CALL_SUCCESS": [
+                    {
+                        "target": "manual_review"
+                    }
+                ],
+                "API_CALL_ERROR": [
+                    {
+                        "target": "manual_review"
+                    }
+                ]
+            }
+        }
+    }
+}'
+```
+</details>
+
+### Step 3: Add the First Plugin
+The first plugin will take the custom file uploaded and will use our API to retrieve JSON by the provided JSON schema.
+
+
+**Postman Collection Request:** `3. Workflow Definition - (Add Plugin)`
+
+<details>
+<summary>cURL request</summary>
+
 ```bash
 curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer secret' \
---data '{
-    "states": {
-        "data_collection": {
-            "metadata": {
-                "uiSettings": {
-                    "multiForm": {
-                        "documents": [
-                            {
-                                "id": "url-document",
-                                "type": "url",
-                                "name": "customDocument",
-                                "provider": "http",
+--data-raw '{
+    "extensions": {
+        "apiPlugins": [
+            {
+                "name": "llm_ocr_extraction",
+                "pluginKind": "api",
+                "url": "https://unified-api-test.eu.ballerine.app/ocr/extract",
+                "method": "POST",
+                "headers": {
+                    "authorization": "Bearer {secret.UNIFIED_API_TOKEN}"
+                },
+                "stateNames": [
+                    "process_documents"
+                ],
+                "successAction": "API_CALL_SUCCESS",
+                "errorAction": "API_CALL_ERROR",
+                "request": {
+                    "transform": [
+                        {
+                            "transformer": "jmespath",
+                            "mapping": "{images: [{remote: {imageUri: entity.data.dynamicInfo.companyDocuments.customDocument}}]}"
+                        }
+                    ],
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "unifiedSocialCreditCode": {
+                                "type": "string"
+                            },
+                            "registerNumber": {
+                                "type": "string"
+                            },
+                            "companyName": {
+                                "type": "number"
+                            },
+                            "address": {
+                                "type": "object",
                                 "properties": {
-                                    "type": "Custom",
-                                    "category": "Document"
-                                }
-                            }
-                        ],
-                        "steps": [
-                            {
-                                "id": "companyInformation",
-                                "formSchema": {
-                                    "properties": {
-                                        "website": {
-                                            "type": "string",
-                                            "title": "Company Website"
-                                        }
-                                    }
-                                },
-                                "uiSchema": {
-                                    "website": {
-                                        "ui:placeholder": "https://google.com"
+                                    "country": {
+                                        "type":"string"
+                                    },
+                                    "city": {
+                                        "type":"string"
+                                    },
+                                    "street": {
+                                        "type":"string"
                                     }
                                 }
                             },
-                            {
-                                "id": "businessDocuments",
-                                "formSchema": {
-                                    "properties": {
-                                        "customDocument": {
-                                            "type": "string",
-                                            "title": "Document Url"
-                                        }
-                                    }
-                                }
+                            "expiryDate": {
+                                "type":"string"
                             }
-                        ]
+                        }
                     }
+                },
+                "response": {
+                    "transform": [
+                        {
+                            "transformer": "jmespath",
+                            "mapping": "@"
+                        }
+                    ]                    
                 }
             }
-        }
+        ]
     }
 }'
 ```
 </details>
-    
-<details>
-<summary>Click to toggle contents of `code`</summary>
 
-```
-curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
+### Step 4: Create a Rule Based on Data
+We will create a rule to move either to manual review or automatic approval of the flow.
+**Postman Collection Request:** `4. Workflow Definition - (Add A Rule For Auto Approve)`
+
+<details>
+<summary>cURL request</summary>
+
+```bash
+curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow?arrayMergeStrategy=by_index' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer secret' \
 --data '{
     "states": {
         "data_collection": {
-            "metadata": {
-                "uiSettings": {
-                    "multiForm": {
-                        "documents": [
-                            {
-                                "id": "url-document",
-                                "type": "url",
-                                "name": "customDocument",
-                                "provider": "http",
-                                "properties": {
-                                    "type": "Custom",
-                                    "category": "Document"
+            "on": {
+                "start": "process_documents"
+            }
+        },
+        "process_documents": {
+            "on": {
+                "API_CALL_SUCCESS": [
+                    {
+                        "target": "approved",
+                        "cond": {
+                            "type": "json-logic",
+                            "options": {
+                                "rule": {
+                                    "==": [
+                                        {
+                                            "var": "pluginsOutput.llm_ocr_extraction.parsedData.unifiedSocialCreditCode"
+                                        },
+                                        "91330782MA2DB8R14C"
+                                    ]
                                 }
                             }
-                        ],
-                        "steps": [
-                            {
-                                "id": "companyInformation",
-                                "formSchema": {
-                                    "properties": {
-                                        "website": {
-                                            "type": "string",
-                                            "title": "Company Website"
-                                        }
-                                    }
-                                },
-                                "uiSchema": {
-                                    "website": {
-                                        "ui:placeholder": "https://google.com"
-                                    }
-                                }
-                            },
-                            {
-                                "id": "businessDocuments",
-                                "formSchema": {
-                                    "properties": {
-                                        "customDocument": {
-                                            "type": "string",
-                                            "title": "Document Url"
-                                        }
-                                    }
-                                }
-                            }
-                        ]
+                        }
+                    },
+                    {
+                        "target": "manual_review"
                     }
-                }
+                ],
+                "API_CALL_ERROR": [
+                    {
+                        "target": "manual_review"
+                    }
+                ]
             }
         }
     }
@@ -204,26 +316,41 @@ curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows
 ```
 </details>
 
-### Step 2: Add the First Plugin
-The first plugin will take the custom file uploaded and will use our API to retrieve JSON by the provided JSON schema.
-- **cURL Request:**
-    ```bash
-    # Insert cURL request here
-    ```
-- **Postman Collection Request:** `Name_of_Postman_Request_2`
 
-### Step 3: Create a Rule Based on Data
-We will create a rule to move either to manual review or automatic approval of the flow.
-- **cURL Request:**
-    ```bash
-    # Insert cURL request here
-    ```
-- **Postman Collection Request:** `Name_of_Postman_Request_3`
-
-### Step 4: Add the Second Plugin - Webhook Plugin
+### Step 5: Add the Second Plugin - Webhook Plugin
 We'll add a webhook plugin and guide them through configuring a plugin to receive events from the workflow.
-- **cURL Request:**
-    ```bash
-    # Insert cURL request here
-    ```
-- **Postman Collection Request:** `Name_of_Postman_Request_4`
+**Postman Collection Request:** `5. Workflow Definition - (Add Webhook)`
+
+<details>
+<summary>cURL request</summary>
+
+```bash
+curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow?arrayMergeStrategy=concat' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer secret' \
+--data-raw '{
+    "extensions": {
+        "apiPlugins": [
+            {
+                "name": "webhook_final_results",
+                "url": "https://webhook.site/91f5bfc1-79d2-4fea-b9d6-a0fe7ce905d5",
+                "method": "POST",
+                "stateNames": [
+                    "approved",
+                    "rejected"
+                ],
+                "request": {
+                    "transform": [
+                        {
+                            "transformer": "jmespath",
+                            "mapping": "{workflow_decision: state, data: @}"
+                        }
+                    ]
+                }
+            }
+        ]
+     
+    }
+}'
+```
+</details>
