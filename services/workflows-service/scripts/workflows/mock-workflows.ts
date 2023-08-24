@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { Workflow } from './workflow-runtime';
 
-export const workflows = ():Workflow[]=> {
+export const workflows = (): Workflow[]=> {
   return [
     // German company
     {
