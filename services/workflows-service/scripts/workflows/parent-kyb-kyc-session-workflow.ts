@@ -206,7 +206,7 @@ export const parentKybWithSessionWorkflowDefinition = {
       {
         name: 'open_corporates',
         pluginKind: 'kyb',
-        url: `{secret.KYB_API_URL}/companies`,
+        url: `${env.UNIFIED_API_URL}/companies`,
         method: 'GET',
         stateNames: ['run_kyb_enrichment'],
         successAction: 'KYB_DONE',

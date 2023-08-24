@@ -85,7 +85,7 @@ export const createDemoMockData = async ({
   projects: Array<{ id: string }>;
 }) => {
   for (const { id: projectId } of projects) {
-    for (const { business, ubos } of workflows) {
+    for (const { business, ubos } of workflows()) {
       await createMockParentWithChildWorkflow({
         prismaClient,
         customerName,

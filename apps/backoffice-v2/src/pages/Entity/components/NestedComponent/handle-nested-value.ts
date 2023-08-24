@@ -13,7 +13,9 @@ export const handleNestedValue = ({
   showUndefined: boolean;
   showNull: boolean;
 }) => {
-  if (isValidDate(value, false) || isValidIsoDate(value)) return formatDate(dayjs(value).toDate());
+  if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value)) {
+    return formatDate(dayjs(value).toDate());
+  }
   if (value === undefined && showUndefined) return 'undefined';
   if (value === null && showNull) return 'null';
   if (!isNullish(value)) return value?.toString();

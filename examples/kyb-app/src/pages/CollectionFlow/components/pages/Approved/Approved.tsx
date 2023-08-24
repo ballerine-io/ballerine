@@ -10,7 +10,7 @@ export const Approved = withSessionProtected(() => {
   const { customer } = useCustomer();
   const { documentConfigurations } = useCollectionFlowSchemaQuery();
   const { isFetching, workflow } = useActiveWorkflowQuery(documentConfigurations);
-  const { logoutSilent } = useSignin();
+  const { logoutSilent, logout } = useSignin();
 
   useEffect(() => {
     if (isFetching) return;
@@ -37,7 +37,7 @@ export const Approved = withSessionProtected(() => {
           </p>
         </div>
         <div className="flex justify-center">
-          <Button variant="secondary" onClick={() => { location.href = '/'; }}>
+          <Button variant="secondary" onClick={logout}>
             Go back to {customer?.displayName} Portal
           </Button>
         </div>
