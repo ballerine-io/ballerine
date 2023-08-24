@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.2.16
+
+### Patch Changes
+
+- Added toogling of checkbox by clicking on label in BooleanField
+
 ## 0.2.15
 
 ### Patch Changes

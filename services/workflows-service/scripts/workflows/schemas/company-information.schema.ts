@@ -7,14 +7,19 @@ export const companyInformationSchema = {
     registrationNumber: {
       title: 'Company Registration Number',
       type: 'string',
+      minLength: 1,
     },
     companyCountry: {
       title: 'Registered Country',
       type: 'string',
-      oneOf: getCountriesList().map(countryData => ({
-        const: countryData.isoCode,
-        title: countryData.fullName,
-      })),
+      oneOf: [
+        // Line below should removed in case when field is required.
+        { const: '', title: '' },
+        ...getCountriesList().map(countryData => ({
+          const: countryData.isoCode,
+          title: countryData.fullName,
+        })),
+      ],
     },
     state: {
       title: 'Jurisdiction / State',

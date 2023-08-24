@@ -50,7 +50,7 @@ export class BusinessService {
 
     try {
       const request$ = this.httpService.get<TCompanyInformation>(
-        `${process.env.KYB_API_URL as string}/companies/${jurisdictionCode}/${registrationNumber}`,
+        `${env.UNIFIED_API_URL}/companies/${jurisdictionCode}/${registrationNumber}`,
         {
           params: { vendor },
           headers: {
