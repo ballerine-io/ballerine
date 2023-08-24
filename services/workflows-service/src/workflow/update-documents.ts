@@ -10,7 +10,7 @@ export const updateDocuments = (
 ): Documents => {
   const updatedDocumentsMap = new Map<string, Document>();
 
-  if (!existingDocuments.length && documentsToUpdate.every(doc => !doc.id)) {
+  if (!existingDocuments?.length && documentsToUpdate?.every(doc => !doc.id)) {
     documentsToUpdate = assignIdToDocuments(documentsToUpdate);
   }
 

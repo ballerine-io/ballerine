@@ -39,6 +39,7 @@ export const env = createEnv({
       .describe(
         `Which mail adapter to use. Use "log" during development to log emails to the console. In production, use "sendgrid" to send emails via SendGrid.`,
       ),
+    UNIFIED_API_URL: z.string().url().describe('The URL of the Unified API.'),
     UNIFIED_API_TOKEN: z
       .string()
       .optional()

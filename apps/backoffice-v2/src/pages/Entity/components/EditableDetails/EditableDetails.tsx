@@ -48,9 +48,17 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected', 'declined'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
+    if (typeof value !== 'string') {
+      return false;
+    }
+
     return isDecisionComponent && value && POSITIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
   const isDecisionNegative = (isDecisionComponent: boolean, value: string) => {
+    if (typeof value !== 'string') {
+      return false;
+    }
+
     return isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
   const defaultValues = formData?.reduce((acc, curr) => {
