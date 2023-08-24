@@ -81,7 +81,7 @@ We will add website and a file input.
 - **cURL Request:**
 <details open>
 <summary>Curl</summary>
-```bash
+```
 curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer secret' \
