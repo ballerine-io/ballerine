@@ -72,7 +72,10 @@ export const useTasks = ({
     Object.keys(pluginsOutput ?? {}).length === 0
       ? []
       : pluginsOutputKeys
-          ?.filter(key => !!Object.keys(pluginsOutput[key] ?? {})?.length)
+          ?.filter(
+            key =>
+              !!Object.keys(pluginsOutput[key] ?? {})?.length && !('error' in pluginsOutput[key]),
+          )
           ?.map(key => ({
             cells: [
               {
