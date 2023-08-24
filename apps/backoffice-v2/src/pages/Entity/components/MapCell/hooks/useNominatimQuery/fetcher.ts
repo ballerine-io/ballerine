@@ -17,9 +17,7 @@ export const fetchNominatimSearch = async (
     fetcher({
       method: Method.GET,
       url: `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-        typeof address === 'string'
-          ? address
-          : `${address?.country} ${address?.city} ${address?.street}`,
+        typeof address === 'string' ? address : `${address?.country} ${address?.city.split('')[0]}`,
       )}&format=json`,
       headers: {},
       schema: z.array(

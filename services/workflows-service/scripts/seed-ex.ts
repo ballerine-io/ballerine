@@ -4,10 +4,6 @@ import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 
 import { generateUserNationalId } from './generate-user-national-id';
-import {
-  companyInformationSchema,
-  companyInformationUISchema,
-} from './workflows/schemas/company-information.schema';
 import { getCountriesList } from './workflows/utils/countries';
 
 const devconExampleWorkflowBeforeChanges = {
@@ -353,7 +349,7 @@ const devconExampleWorkflowBeforeChanges = {
         type: 'final',
       },
       approved: {
-        type: 'final' as const,
+        type: 'final',
       },
     },
     extensions: {
@@ -682,12 +678,7 @@ async function seed(bcryptSalt: number | string) {
     'secret',
     'https://empirestartups.com/wp-content/uploads/2023/07/logo_fintech_devcon.png',
   );
-  const customer2 = await createCustomer(
-    client,
-    '2',
-    `secret-2`,
-    'https://empirestartups.com/wp-content/uploads/2023/02/fintechdevcon2023.png',
-  );
+
   const project1 = await createProject(client, customer, '1');
   const users = [
     {

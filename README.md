@@ -41,8 +41,6 @@ What we are going to achieve...
 - [Monitoring Dashboard](http://localhost:5200) - (`localhost:5200`)
 - [Backend](http://localhost:3000/api) - (`localhost:3000/api`)
 
-
-
 ---
 
 ## Verifying That is up and running
@@ -83,61 +81,61 @@ We will add website and a file input.
 - **cURL Request:**
     ```bash
     curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer secret' \
---data '{
-    "states": {
-        "data_collection": {
-            "metadata": {
-                "uiSettings": {
-                    "multiForm": {
-                        "documents": [
-                            {
-                                "id": "url-document",
-                                "type": "url",
-                                "name": "customDocument",
-                                "provider": "http",
-                                "properties": {
-                                    "type": "Custom",
-                                    "category": "Document"
-                                }
-                            }
-                        ],
-                        "steps": [
-                            {
-                                "id": "companyInformation",
-                                "formSchema": {
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Bearer secret' \
+    --data '{
+        "states": {
+            "data_collection": {
+                "metadata": {
+                    "uiSettings": {
+                        "multiForm": {
+                            "documents": [
+                                {
+                                    "id": "url-document",
+                                    "type": "url",
+                                    "name": "customDocument",
+                                    "provider": "http",
                                     "properties": {
+                                        "type": "Custom",
+                                        "category": "Document"
+                                    }
+                                }
+                            ],
+                            "steps": [
+                                {
+                                    "id": "companyInformation",
+                                    "formSchema": {
+                                        "properties": {
+                                            "website": {
+                                                "type": "string",
+                                                "title": "Company Website"
+                                            }
+                                        }
+                                    },
+                                    "uiSchema": {
                                         "website": {
-                                            "type": "string",
-                                            "title": "Company Website"
+                                            "ui:placeholder": "https://google.com"
                                         }
                                     }
                                 },
-                                "uiSchema": {
-                                    "website": {
-                                        "ui:placeholder": "https://google.com"
-                                    }
-                                }
-                            },
-                            {
-                                "id": "businessDocuments",
-                                "formSchema": {
-                                    "properties": {
-                                        "customDocument": {
-                                            "type": "string",
-                                            "title": "Document Url"
+                                {
+                                    "id": "businessDocuments",
+                                    "formSchema": {
+                                        "properties": {
+                                            "customDocument": {
+                                                "type": "string",
+                                                "title": "Document Url"
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        ]
+                            ]
+                        }
                     }
                 }
             }
         }
-    }
-}'
+    }'
     ```
 
 

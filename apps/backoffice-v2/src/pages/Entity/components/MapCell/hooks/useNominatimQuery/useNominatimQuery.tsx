@@ -17,9 +17,7 @@ export const useNominatimQuery = (
       : isString(address?.country) &&
         !!address?.country?.length &&
         isString(address?.city) &&
-        !!address?.city?.length &&
-        isString(address?.street) &&
-        !!address?.street?.length;
+        !!address?.city?.length;
 
   return useQuery({
     queryKey: ['nominatim', 'search', { address }],

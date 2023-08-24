@@ -357,13 +357,13 @@ export class WorkflowRunner {
 
     const guards: MachineOptions<any, any>['guards'] = {
       'json-logic': (ctx, event, metadata) => {
-        const data = { ...ctx, ...event.payload };
+        const data   = { ...ctx, ...event.payload };
         // @ts-expect-error
         const options = metadata.cond.options;
 
         const ruleResult = jsonLogic.apply(
           options.rule, // Rule
-          data, // Data
+          data, // Data91330782MA2DB8R14C
         );
         if (!ruleResult && options.assignOnFailure) {
           this.#__callback?.({
@@ -488,23 +488,29 @@ export class WorkflowRunner {
     if (stateApiPlugins) {
       for (const apiPlugin of stateApiPlugins) {
         // @ts-expect-error - multiple types of plugins return different responses
-        const { callbackAction, responseBody, error, requestPayload } = await apiPlugin.invoke?.(
+        let { callbackAction, responseBody, error, requestPayload } = await apiPlugin.invoke?.(
           this.#__context,
           this.#__currentState,
         );
         if (!this.isPluginWithCallbackAction(apiPlugin)) continue;
-
-        this.#__context.pluginsOutput = {
-          ...(this.#__context.pluginsOutput || {}),
-          ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
-        };
-        if (true)
-          // find the document by collection flow flagging (version 20)
+        console.log('plugin response:', { callbackAction, responseBody, error, requestPayload });
+        try {
           this.#__context.documents[1] = {
             ...this.#__context.documents[1],
             properties: responseBody.parsedData,
             propertiesSchema: requestPayload.schema,
           };
+        } catch (e: unknown) {
+          console.error('Error while setting document properties', e);
+          // @ts-expect-error
+          error = error + e?.message;
+        }
+
+        this.#__context.pluginsOutput = {
+          ...(this.#__context.pluginsOutput || {}),
+          ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
+        };
+    
         await this.sendEvent(callbackAction);
       }
     }

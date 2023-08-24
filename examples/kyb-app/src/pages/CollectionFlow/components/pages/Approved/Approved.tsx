@@ -37,7 +37,7 @@ export const Approved = withSessionProtected(() => {
           </p>
         </div>
         <div className="flex justify-center">
-          <Button variant="secondary" onClick={() => alert('Not implemented.')}>
+          <Button variant="secondary" onClick={() => { location.href = '/'; }}>
             Go back to {customer?.displayName} Portal
           </Button>
         </div>
