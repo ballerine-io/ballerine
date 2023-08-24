@@ -2,6 +2,7 @@ version: '3'
 services:
   ballerine-case-managment:
     image: ghcr.io/ballerine-io/backoffice:fintech_devcon
+    platform: linux/amd64
     ports:
       - 5137:80
     depends_on:
@@ -9,6 +10,7 @@ services:
     restart: on-failure
   ballerine-kyb-app:
     image: ghcr.io/ballerine-io/kyb-app:fintech_devcon
+    platform: linux/amd64
     ports:
       - 5201:80
     depends_on:
@@ -60,6 +62,7 @@ services:
     restart: on-failure
   ballerine-workflows-dashboard:
     image: ghcr.io/ballerine-io/workflows-dashboard:fintech_devcon
+    platform: linux/amd64
     ports:
       - 5200:80
     depends_on:
