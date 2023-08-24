@@ -8,14 +8,15 @@ export const bankInformationSchema = {
     country: {
       title: 'Bank Country',
       type: 'string',
-      oneOf: getCountriesList().map(country => ({
-        const: country.isoCode,
-        title: country.fullName,
+      oneOf: getCountriesList().map(countryData => ({
+        const: countryData.isoCode,
+        title: countryData.fullName,
       })),
     },
     bankName: {
       title: 'Bank Name',
       type: 'string',
+      minLength: 1,
       // oneOf: [{ const: 'bank', title: 'Some Bank' }],
     },
     holder: {
@@ -25,13 +26,15 @@ export const bankInformationSchema = {
     },
     account: {
       title: 'Account Number',
-      type: 'number',
-      minLength: 1,
+      type: 'string',
     },
     currency: {
       title: 'Account Currency',
       type: 'string',
-      oneOf: currencyCodes.map(code => ({ title: code.code.toUpperCase(), const: code.code })),
+      oneOf: [
+        { title: '', const: '' },
+        ...currencyCodes.map(code => ({ title: code.code.toUpperCase(), const: code.code })),
+      ],
     },
   },
   required: ['country', 'holder', 'bankName'],
