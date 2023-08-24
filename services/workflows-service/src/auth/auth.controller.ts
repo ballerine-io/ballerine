@@ -17,7 +17,6 @@ import { User } from '@prisma/client';
 @Controller('internal/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
   @common.UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(200)

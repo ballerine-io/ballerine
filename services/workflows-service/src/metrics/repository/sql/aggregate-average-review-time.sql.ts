@@ -16,5 +16,7 @@ FROM (
     "WorkflowRuntimeData"."assignedAt" IS NOT NULL
     AND
     "WorkflowRuntimeData"."resolvedAt" >= $1
+    AND
+    "WorkflowRuntimeData"."projectIds" in ($2)
 ) AS T
 `;

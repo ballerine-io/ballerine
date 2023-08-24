@@ -28,6 +28,8 @@ from
     count("status") as status_count
   from
     "WorkflowRuntimeData"
+  where
+    "WorkflowRuntimeData.projectIds" in ($1)
   group by
     "workflowDefinitionId",
     "status"
