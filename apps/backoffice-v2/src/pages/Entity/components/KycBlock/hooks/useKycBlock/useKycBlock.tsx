@@ -51,8 +51,6 @@ export const useKycBlock = ({
         {
           title: 'Verified With',
           value: capitalize(childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor),
-          type: 'text',
-          format: 'text',
           pattern: '',
           isEditable: false,
           dropdownOptions: undefined,
@@ -60,8 +58,6 @@ export const useKycBlock = ({
         {
           title: 'Result',
           value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.status,
-          type: 'text',
-          format: 'text',
           pattern: '',
           isEditable: false,
           dropdownOptions: undefined,
@@ -74,8 +70,6 @@ export const useKycBlock = ({
                 ', ',
               )
             : 'none',
-          type: 'text',
-          format: 'text',
           pattern: '',
           isEditable: false,
           dropdownOptions: undefined,
@@ -85,8 +79,6 @@ export const useKycBlock = ({
               {
                 title: 'Full report',
                 value: childWorkflow?.context?.pluginsOutput?.kyc_session[key],
-                type: 'text',
-                format: 'text',
                 pattern: '',
                 isEditable: false,
                 dropdownOptions: undefined,
@@ -118,8 +110,6 @@ export const useKycBlock = ({
           })?.map(([title, value]) => ({
             title,
             value,
-            type: 'text',
-            format: 'text',
             pattern: '',
             isEditable: false,
             dropdownOptions: undefined,
@@ -131,8 +121,6 @@ export const useKycBlock = ({
   const details = Object.entries(childWorkflow?.context?.entity?.data).map(([title, value]) => ({
     title,
     value,
-    type: 'text',
-    format: 'text',
     pattern: '',
     isEditable: true,
     dropdownOptions: undefined,

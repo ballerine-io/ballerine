@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.5.23
+
+### Patch Changes
+
+- Removed verifiySignature util
+
 ## 0.5.22
 
 ### Patch Changes

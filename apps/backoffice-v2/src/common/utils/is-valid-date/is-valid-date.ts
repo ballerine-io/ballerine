@@ -3,12 +3,19 @@ import { z } from 'zod';
 /**
  * @description Checks if a passed value is a datetime string.
  * @param value
- * @param strict - If false, will return true for strings that match the format YYYY-MM-DD.
+ * @param isStrict - If false, will return true for strings that match the format YYYY-MM-DD.
  */
-export const isValidDate = (value: unknown, strict = true): value is string => {
+export const isValidDate = (
+  value: unknown,
+  {
+    isStrict = true,
+  }: {
+    isStrict?: boolean;
+  } = {},
+): value is string => {
   if (typeof value !== 'string') return false;
 
-  if (!strict && /\d{4}-\d{2}-\d{2}/.test(value)) return true;
+  if (!isStrict && /\d{4}-\d{2}-\d{2}/.test(value)) return true;
 
   return z.string().datetime().safeParse(value).success;
 };
