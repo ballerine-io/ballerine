@@ -24,7 +24,9 @@ export const MapCell: FunctionComponent<IMapCellProps> = ({ value }) => {
       latitude={data?.[0]?.lat}
       longitude={data?.[0]?.lon}
       className={className}
-      popupContent={`${value?.country}, ${value?.city}, ${value?.street}`}
+      popupContent={
+        typeof value === 'string' ? value : `${value?.country}, ${value?.city}, ${value?.street}`
+      }
     />
   );
 };
