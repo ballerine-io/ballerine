@@ -82,7 +82,7 @@ We will add website and a file input.
 <details>
 <summary>cURL request</summary>
 
-```
+```bash
 curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer secret' \
@@ -222,11 +222,8 @@ curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows
                             "unifiedSocialCreditCode": {
                                 "type": "string"
                             },
-                            "registerNumber": {
-                                "type": "string"
-                            },
                             "companyName": {
-                                "type": "number"
+                                "type": "string"
                             },
                             "address": {
                                 "type": "object",
@@ -294,7 +291,9 @@ curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows
                                         {
                                             "var": "pluginsOutput.llm_ocr_extraction.parsedData.unifiedSocialCreditCode"
                                         },
-                                        "91330782MA2DB8R14C"
+                                          {
+                                            "var": "entity.data.registrationNumber"
+                                        }
                                     ]
                                 }
                             }
