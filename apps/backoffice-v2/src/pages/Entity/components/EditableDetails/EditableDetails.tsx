@@ -25,6 +25,8 @@ import { isNullish, isObject } from '@ballerine/common';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { JsonDialog } from '../../../../common/components/molecules/JsonDialog/JsonDialog';
 import { FileJson2 } from 'lucide-react';
+import { isValidDate } from '../../../../common/utils/is-valid-date';
+import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -156,6 +158,21 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                       !Array.isArray(value),
                     ].every(Boolean);
                     const isSelect = isInput && !!dropdownOptions;
+                    const inputType = (() => {
+                      if (format) {
+                        return format;
+                      }
+
+                      if (type === 'string') {
+                        return 'text';
+                      }
+
+                      if (isValidDate(value, false) || isValidIsoDate(value) || type === 'date') {
+                        return 'date';
+                      }
+
+                      return type;
+                    })();
 
                     return (
                       <FormItem>
@@ -224,7 +241,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                         {isInput && !isSelect && (
                           <FormControl>
                             <Input
-                              type={!format ? (type === 'string' ? 'text' : type) : format}
+                              type={inputType}
                               disabled={!isEditable}
                               className={ctw(
                                 `p-1 disabled:cursor-auto disabled:border-none disabled:bg-transparent disabled:opacity-100`,
