@@ -123,7 +123,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
         return 'text';
       }
 
-      if (isValidDate(value, false) || isValidIsoDate(value) || type === 'date') {
+      if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value) || type === 'date') {
         return 'date';
       }
 
