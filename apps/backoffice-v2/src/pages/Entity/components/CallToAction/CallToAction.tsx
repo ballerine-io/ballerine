@@ -36,8 +36,6 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     isLoadingTaskDecisionById,
     caseState,
     action,
-    actions,
-    onActionChange,
     reasons,
     reason,
     onReasonChange,
