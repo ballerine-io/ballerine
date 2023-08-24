@@ -79,7 +79,9 @@ Import `devcon-workshop.postman_collection.json` as a new collection to post man
 We will add website and a file input.
 - **Postman Collection Request:** `1. Workflow Definition - (Update Collection Form)`
 - **cURL Request:**
-    ```bash
+<details open>
+  <summary>Curl</summary>
+  ```bash
     curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
     --header 'Content-Type: application/json' \
     --header 'Authorization: Bearer secret' \
@@ -137,6 +139,8 @@ We will add website and a file input.
         }
     }'
     ```
+</details>
+    
 
 
 ### Step 2: Add the First Plugin
