@@ -38,6 +38,10 @@ export const transformRJSFErrors = (errors: RJSFValidationError[]): RJSFValidati
       }.`;
     }
 
+    if (error.params?.format === 'email') {
+      error.message = 'Please provide valid email address.';
+    }
+
     return error;
   });
 };
