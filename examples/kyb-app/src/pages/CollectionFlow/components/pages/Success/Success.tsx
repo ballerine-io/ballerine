@@ -1,9 +1,11 @@
 import { useCustomer } from '@app/components/providers/CustomerProvider';
 import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
+import { useSignin } from '@app/hooks/useSignin';
 import { Button, Card } from '@ballerine/ui';
 
 export const Success = withSessionProtected(() => {
   const { customer } = useCustomer();
+  const { logout } = useSignin();
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -21,7 +23,7 @@ export const Success = withSessionProtected(() => {
           </h2>
         </div>
         <div className="flex justify-center">
-          <Button variant="secondary" onClick={() => alert('Not implemented.')}>
+          <Button variant="secondary" onClick={logout}>
             Go back to {customer?.displayName} Portal
           </Button>
         </div>
