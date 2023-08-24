@@ -8,6 +8,12 @@ import { Skeleton } from '../../../../common/components/atoms/Skeleton/Skeleton'
 
 export const MapCell: FunctionComponent<IMapCellProps> = ({ value }) => {
   const { data, isLoading, isError } = useNominatimQuery(value);
+  // if (data.length > 0) {
+  //   const res = useNominatimQuery({ country: value.country, city: value.city });
+  //   data = res.data;
+  //   isLoading = res.isLoading;
+  //   isError = res.isError;
+  // }
 
   const className = 'mt-6 h-[600px] w-[600px] rounded-md';
 

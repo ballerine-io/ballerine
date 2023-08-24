@@ -30,12 +30,19 @@ export class ApiPlugin {
     this.errorAction = pluginParams.errorAction;
   }
   async invoke(context: TContext) {
-    console.log('API Plguin invokation', {
+    console.log('API Plguin invocation', {
       url: this.url,
       name: this.name,
+      transformers: this.request.transformers,
     });
     try {
       const requestPayload = await this.transformData(this.request.transformers, context);
+      requestPayload.schema = this.request.schemaValidator?.schema;
+      console.log('API Plguin invocation', {
+        url: this.url,
+        name: this.name,
+        requestPayload: JSON.stringify(requestPayload, null, 2),
+      });
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,
         requestPayload,
@@ -49,6 +56,8 @@ export class ApiPlugin {
         requestPayload,
         this.composeRequestHeaders(this.headers!, context),
       );
+
+      console.log('API Plguin response', { url: this.url, name: this.name, apiResponse });
 
       if (apiResponse.ok) {
         const result = await apiResponse.json();
@@ -170,8 +179,8 @@ export class ApiPlugin {
       const variableKey = placeholder.replace(/{|}/g, '');
       const isPlaceholderSecret = variableKey.includes('secret.');
       const placeholderValue = isPlaceholderSecret
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        ? `${process.env[variableKey.replace('secret.', '')]}`
+        ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          `${process.env[variableKey.replace('secret.', '')]}`
         : // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
       replacedContent = replacedContent.replace(placeholder, placeholderValue);
