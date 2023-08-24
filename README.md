@@ -78,21 +78,22 @@ Watch a brief video explaining what we're building.
 
 ## Features
 View each component's current state in the [roadmap](#roadmap) below.
-####  Released  - 🎉
+####  Live  - 🚀
+
+- **Collection flow** - Front end to enable your customers to provide you with KYB information and documents.
 - [**Back office**](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/back-office.md) - Case management dashboard for manual decision-making.
-
 - **Workflow engine** - Orchestrates and automates the different system's parts.
-
-####  In Development/testing - 🔨
 - **Plugin system** - Integrates with 3rd-party vendors, APIs, and data sources.
+- **Rules using JSON** - Define rules to ensure user compliance with your risk policy.
+- **Email support** - Trigger emails to communicate  back and forth around application issues and requirements.
 
-- **Rule engine** - Leverage various rule types to ensure user compliance with your risk policy.
+####  In Development/Testing - 🔨
 
-####   Planned on roadmap - 📌
-- **Frontend headless SDK**- Real-time modification of KYC/KYB frontend user journeys.
+- **No-Code Rule engine** - Leverage a no-code interface to various rule types, and ensure user compliance with your risk policy.
+
 
 #### Community driven building blocks - 🌍
-- [**User flows UX/UI**](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md) - KYC/KYB/Document collection flows and UI via mobile & web SDK.
+- [**Mobile UX/UI User flows**](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md) - Capture KYC images and document via mobile & web SDK.
 
 
 ## Why Open Source?
@@ -111,7 +112,7 @@ We believe in enabling companies to manage user  identity  and risk according to
 
 **In the following example you can test a simple form of the following infrastructure capabilities**
 
-1. Document collection flow controlled by our **Headless SDK**.
+1. Document collection flow controlled by our **SDK**.
 2. A manual review case management **Back Office**.
 3. Live communication between the parts using a **Workflow Engine**, that also defines the process steps.
 4. A simple JSON containing **Risk Rules** that are checked during the flow.
@@ -202,6 +203,19 @@ Here are some of the ways you can contribute:
 
 ## Roadmap
 ### High level roadmap
+
+#### Collection flow
+- [x] ~~Multi-step flow~~
+	- [x] ~~Forms~~
+	- [x] ~~Documents upload~~
+	- [x] ~~UBO entities~~
+	- [x] ~~Address Autocomplete~~
+	- [x] ~~Company details autocomplete~~
+- [x] ~~Re-submission flows~~
+	- [x] ~~Document re-upload~~
+	- [x] ~~Re-do KYC flow~~
+	- [ ] Input re-fill
+
 #### Back office
 - [x] ~~View, approve, rejece pr ask for re-submittion~~
 	- [x] ~~individuals~~
@@ -212,7 +226,7 @@ Here are some of the ways you can contribute:
 	- [x] ~~Collect audit logs~~
 	- [x] ~~Assign/re-assign agents~~
 	- [x] ~~Decision results and reasons webhooks~~
-	- [ ] Analytics
+	- [x] Analytics
 	- [ ] Enforce policy rules on approval
 	- [ ] Show a case's acceptance criteria
 
@@ -220,14 +234,14 @@ Here are some of the ways you can contribute:
 
 - [x] ~~Trigger a plugin using a workflow~~
 - [x] ~~Create your own custom plugin API~~
-- [ ] Fetch information and pass to other parts
-- [ ] Unified schema
+- [x] Fetch information and pass to other parts
+- [x] Unified schema
 - [x] ~~Plugins~~
 	- [x] ~~Identity verification providers~~
 	- [x] ~~Business website's context~~
 	- [x] ~~AI multilingual names matching~~
-	- [ ] Business data repositories
-	- [ ] Sanctions screening
+	- [x] Business data repositories
+	- [x] Sanctions screening
 	- [ ] Fraud check
 
 **Workflow engine**
