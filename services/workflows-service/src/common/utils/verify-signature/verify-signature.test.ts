@@ -1,6 +1,4 @@
-import { describe, expect, test } from 'vitest';
-
-import { verifySignature } from '@/utils';
+import { verifySignature } from '@/common/utils/verify-signature/verify-signature';
 
 const cases: {
   name: string;
