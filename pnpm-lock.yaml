@@ -61,10 +61,10 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.22
+        specifier: 0.5.23
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.2.15
+        specifier: 0.2.16
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.4.22
@@ -622,7 +622,7 @@ importers:
   examples/kyb-app:
     dependencies:
       '@ballerine/ui':
-        specifier: 0.2.15
+        specifier: 0.2.16
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -1967,7 +1967,7 @@ importers:
         specifier: 3.325.0
         version: 3.325.0
       '@ballerine/common':
-        specifier: 0.5.22
+        specifier: 0.5.23
         version: link:../../packages/common
       '@ballerine/workflow-core':
         specifier: 0.4.30
@@ -14346,7 +14346,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-inspector: 6.0.1(react@18.2.0)
-      telejson: 7.1.0
+      telejson: 7.2.0
       ts-dedent: 2.2.0
       uuid-browser: 3.1.0
     dev: true
@@ -15321,7 +15321,7 @@ packages:
       '@storybook/core-events': 7.0.0-rc.10
       '@storybook/global': 5.0.0
       qs: 6.11.2
-      telejson: 7.1.0
+      telejson: 7.2.0
     dev: true
 
   /@storybook/channel-postmessage@7.0.26:
@@ -15348,7 +15348,7 @@ packages:
       '@storybook/channels': 7.0.0-rc.10
       '@storybook/client-logger': 7.0.0-rc.10
       '@storybook/global': 5.0.0
-      telejson: 7.1.0
+      telejson: 7.2.0
     dev: true
 
   /@storybook/channel-websocket@7.0.26:
@@ -15394,7 +15394,7 @@ packages:
       '@storybook/core-events': 7.2.1
       '@storybook/global': 5.0.0
       qs: 6.11.2
-      telejson: 7.1.0
+      telejson: 7.2.0
       tiny-invariant: 1.3.1
     dev: true
 
@@ -15883,7 +15883,7 @@ packages:
       read-pkg-up: 7.0.1
       semver: 7.5.4
       serve-favicon: 2.5.0
-      telejson: 7.1.0
+      telejson: 7.2.0
       ts-dedent: 2.2.0
       util-deprecate: 1.0.2
       watchpack: 2.4.0
@@ -15933,7 +15933,7 @@ packages:
       read-pkg-up: 7.0.1
       semver: 7.5.4
       serve-favicon: 2.5.0
-      telejson: 7.1.0
+      telejson: 7.2.0
       tiny-invariant: 1.3.1
       ts-dedent: 2.2.0
       util: 0.12.5
@@ -16148,7 +16148,7 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
       semver: 7.5.4
       store2: 2.14.2
-      telejson: 7.1.0
+      telejson: 7.2.0
       ts-dedent: 2.2.0
     dev: true
 
@@ -19049,7 +19049,7 @@ packages:
       '@babel/plugin-transform-react-jsx-self': 7.22.5(@babel/core@7.22.5)
       '@babel/plugin-transform-react-jsx-source': 7.22.5(@babel/core@7.22.5)
       react-refresh: 0.14.0
-      vite: 4.4.9(@types/node@20.4.1)(less@4.2.0)
+      vite: 4.4.9(@types/node@18.15.10)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
     dev: true

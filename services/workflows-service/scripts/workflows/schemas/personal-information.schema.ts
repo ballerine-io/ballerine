@@ -39,7 +39,7 @@ export const personalInformationSchema = {
       type: 'boolean',
     },
   },
-  required: ['name', 'title', 'birthDate', 'phoneNumber'],
+  required: ['name', 'title', 'birthDate'],
 };
 
 export const personalInformationUISchema = {
