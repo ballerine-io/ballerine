@@ -81,7 +81,7 @@ We will add website and a file input.
 - **cURL Request:**
 <details open>
 <summary>Curl</summary>
-```
+```bash
 curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer secret' \
@@ -145,7 +145,62 @@ curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows
 <summary>Click to toggle contents of `code`</summary>
 
 ```
-CODE!
+curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows/workflow-definition/devcon_example_workflow' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer secret' \
+--data '{
+    "states": {
+        "data_collection": {
+            "metadata": {
+                "uiSettings": {
+                    "multiForm": {
+                        "documents": [
+                            {
+                                "id": "url-document",
+                                "type": "url",
+                                "name": "customDocument",
+                                "provider": "http",
+                                "properties": {
+                                    "type": "Custom",
+                                    "category": "Document"
+                                }
+                            }
+                        ],
+                        "steps": [
+                            {
+                                "id": "companyInformation",
+                                "formSchema": {
+                                    "properties": {
+                                        "website": {
+                                            "type": "string",
+                                            "title": "Company Website"
+                                        }
+                                    }
+                                },
+                                "uiSchema": {
+                                    "website": {
+                                        "ui:placeholder": "https://google.com"
+                                    }
+                                }
+                            },
+                            {
+                                "id": "businessDocuments",
+                                "formSchema": {
+                                    "properties": {
+                                        "customDocument": {
+                                            "type": "string",
+                                            "title": "Document Url"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}'
 ```
 </details>
 
