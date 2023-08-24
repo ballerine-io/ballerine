@@ -29,10 +29,17 @@ We are going to:
 1. **(Recommended) Download Pre-built Images from GitHub Container Registry:**
    - The images are built from the devcon branch and available in the GitHub Container Registry.
    - Use the following command to fetch and run them:
+   - With a clone:
      ```bash
      cd deploy
      docker compose -f docker-compose-ex-prebuilt.yml up
      ```
+    - Without a clone:
+      ```bash
+      curl https://raw.githubusercontent.com/ballerine-io/ballerine/fintech_devcon/deploy/docker-compose-ex-prebuilt.yml -O
+      docker-compose -f docker-compose-ex-prebuilt.yml up -d
+      ``````
+      
 
 2. **Build Images from Source Code:**
    - You can build the images directly from the source code instead of downloading pre-built images.
