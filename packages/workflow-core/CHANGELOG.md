@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.4.31
+
+### Patch Changes
+
+- WS version
+
 ## 0.4.30
 
 ### Patch Changes
