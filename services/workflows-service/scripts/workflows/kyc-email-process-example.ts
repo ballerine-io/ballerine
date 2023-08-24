@@ -63,7 +63,7 @@ export const kycEmailSessionDefinition = {
       {
         name: 'kyc_session',
         pluginKind: 'kyc-session',
-        url: `{secret.KYC_API_URL}/individual-verification-sessions`,
+        url: `${env.UNIFIED_API_URL}/individual-verification-sessions`,
         method: 'POST',
         stateNames: ['get_kyc_session'],
         successAction: 'SEND_EMAIL',
