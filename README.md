@@ -141,7 +141,13 @@ curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows
 ```
 </details>
     
+<details>
+<summary>Click to toggle contents of `code`</summary>
 
+```
+CODE!
+```
+</details>
 
 ### Step 2: Add the First Plugin
 The first plugin will take the custom file uploaded and will use our API to retrieve JSON by the provided JSON schema.
