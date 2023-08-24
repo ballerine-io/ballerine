@@ -17,6 +17,6 @@ FROM (
     AND
     "WorkflowRuntimeData"."assignedAt" >= $1
     AND
-    "WorkflowRuntimeData"."projectIds" in ($2)
+    "WorkflowRuntimeData"."projectId" in ($2)
 ) AS T
 `;

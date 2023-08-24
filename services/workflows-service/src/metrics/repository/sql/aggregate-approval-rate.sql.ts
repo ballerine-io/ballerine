@@ -9,10 +9,12 @@ FROM (
   SELECT
     (SELECT COUNT(*)
      FROM "WorkflowRuntimeData"
-     WHERE "resolvedAt" >= $1) AS "resolvedCount" AND "projectIds" in ($2)
+     WHERE "resolvedAt" >= $1
+       AND "projectId" in ($2)) AS "resolvedCount",
     (SELECT COUNT(*)
      FROM "WorkflowRuntimeData"
      WHERE context -> 'documents' @> '[{"decision": {"status": "approved"}}]'
-       AND "resolvedAt" >= $1) AS "approvedCount" AND "projectIds" in ($2)
+       AND "resolvedAt" >= $1
+       AND "projectId" in ($2)) AS "approvedCount"
 ) AS counts;
 `;

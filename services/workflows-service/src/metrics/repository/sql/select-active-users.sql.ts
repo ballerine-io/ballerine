@@ -2,6 +2,6 @@ export const selectActiveUsersQuery = `
 select
 id, "firstName", "lastName", "lastActiveAt"
 from "User"
-joins "UserProject" on "UserProject"."userId" = "User".id
-where "UserProject"."projectId" in ($1)
+inner join "UserToProject" on "UserToProject"."userId" = "User".id
+where "UserToProject"."projectId" in ($1)
 order by "lastActiveAt" desc nulls last`;

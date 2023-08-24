@@ -29,7 +29,7 @@ from
   from
     "WorkflowRuntimeData"
   where
-    "WorkflowRuntimeData.projectIds" in ($1)
+    "projectId" in ($1)
   group by
     "workflowDefinitionId",
     "status"
