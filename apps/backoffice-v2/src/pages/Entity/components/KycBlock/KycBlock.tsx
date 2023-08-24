@@ -18,13 +18,13 @@ export const KycBlock: FunctionComponent<{
 
   return (
     <>
-      {Array.isArray(childTasks) &&
-        childTasks?.length > 0 &&
-        childTasks?.map((childTask, index) => {
+      {Array.isArray(childTasks?.cells) &&
+        childTasks?.cells.length > 0 &&
+        childTasks?.cells.map((childTask, index) => {
           if (!Array.isArray(childTask) || !childTask?.length) return;
 
           return (
-            <Card key={index} className={`me-4`}>
+            <Card key={index} className={`me-4 ${childTasks.className}`}>
               <CardContent
                 className={ctw('grid gap-2', {
                   'grid-cols-2': childTask?.some(field => field?.type === 'multiDocuments'),
