@@ -133,9 +133,9 @@ export const useKycBlock = ({
           document?.type,
         )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
         imageUrl:
-          !isBase64(results[docIndex][pageIndex]) && isValidUrl(results[docIndex][pageIndex])
-            ? results[docIndex][pageIndex]
-            : octetToFileType(results[docIndex][pageIndex], `application/${type}`),
+          document?.type === 'pdf'
+            ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
+            : results[docIndex][pageIndex],
         fileType: type,
       })) ?? [],
   );
