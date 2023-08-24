@@ -171,6 +171,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                         return 'date';
                       }
 
+                      if (!type) {
+                        return 'text';
+                      }
+
                       return type;
                     })();
 
