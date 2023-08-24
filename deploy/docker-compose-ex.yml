@@ -22,7 +22,8 @@ services:
     restart: on-failure
     environment:
       VITE_API_URL: 'http://localhost:3000/api/v1/'
-      VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
+      VITE_KYB_DEFINITION_ID: 'devcon_example_workflow'
+      VITE_API_KEY: 'secret'
   ballerine-workflow-service:
     build:
       context: ../services/workflows-service/
@@ -61,7 +62,7 @@ services:
       APP_API_URL: https://alon.ballerine.dev
       EMAIL_API_TOKEN: ''
       EMAIL_API_URL: https://api.sendgrid.com/v3/mail/send
-      UNIFIED_API_TOKEN: "f9Hss0vXHodA2pqBQ9U$9O2AXe234i$6LPdKsoA$"
+      UNIFIED_API_TOKEN: "f9Hss0vXHodA2pqBQ9U$$9O2AXe234i$$6LPdKsoA$$"
     depends_on:
       ballerine-postgres:
         condition: service_healthy
