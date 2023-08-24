@@ -2,7 +2,9 @@ import ky from 'ky';
 
 export const request = ky.extend({
   prefixUrl: import.meta.env.VITE_API_URL as string,
-  timeout: 60000,
+  // Reference - https://www.npmjs.com/package/ky
+  // Timeout set to false disables timeout
+  timeout: false,
   hooks: {
     beforeRequest: [
       request => {
