@@ -13,6 +13,7 @@ import { useCaseDecision } from '../../../Case/hooks/useCaseDecision/useCaseDeci
 import { isValidUrl } from '../../../../../../common/utils/is-valid-url';
 import { isBase64 } from '../../../../../../common/utils/is-base64/is-base64';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
+import { ctw } from '../../../../../../common/utils/ctw/ctw';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -30,7 +31,6 @@ export const useKycBlock = ({
 }) => {
   const { noAction } = useCaseDecision();
   const results: Array<Array<string>> = [];
-
   const docsData = useStorageFilesQuery(
     childWorkflow?.context?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
@@ -46,8 +46,9 @@ export const useKycBlock = ({
     });
   });
 
-  const decision = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.length
-    ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.flatMap(key => [
+  const kycSessionKeys = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {});
+  const decision = kycSessionKeys.length
+    ? kycSessionKeys?.flatMap(key => [
         {
           title: 'Verified With',
           value: capitalize(childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor),
@@ -88,10 +89,8 @@ export const useKycBlock = ({
       ]) ?? []
     : [];
 
-  const documentExtractedData = Object.keys(
-    childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
-  )?.length
-    ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.map(key => ({
+  const documentExtractedData = kycSessionKeys?.length
+    ? kycSessionKeys?.map(key => ({
         id: 'decision',
         type: 'details',
         value: {
@@ -219,6 +218,117 @@ export const useKycBlock = ({
     ],
   };
 
+  const detailsCell = {
+    type: 'container',
+    value: [
+      {
+        id: 'header',
+        type: 'heading',
+        value: 'Details',
+      },
+      {
+        id: 'decision',
+        type: 'details',
+        value: {
+          id: 1,
+          title: `Details`,
+          data: details,
+        },
+      },
+    ],
+  };
+
+  const documentExtractedDataCell = {
+    type: 'container',
+    value: [
+      {
+        id: 'header',
+        type: 'heading',
+        value: 'Document Extracted Data',
+      },
+      ...documentExtractedData,
+    ],
+  };
+
+  const documentVerificationCell = {
+    type: 'container',
+    value: [
+      {
+        id: 'header',
+        type: 'heading',
+        value: 'Document Verification Results',
+      },
+      {
+        id: 'decision',
+        type: 'details',
+        value: {
+          id: 1,
+          title: `Decision`,
+          data: decision,
+        },
+      },
+    ],
+  };
+  const amlCells =
+    kycSessionKeys?.flatMap(key => {
+      const { aml } = childWorkflow?.context?.pluginsOutput?.kyc_session[key] ?? {};
+
+      if (!aml) return [];
+
+      const { hits, matchStatus, totalHits } = aml;
+      const amlCell =
+        Object.keys(aml ?? {})?.length === 0
+          ? {}
+          : {
+              type: 'container',
+              value: [
+                {
+                  id: 'header',
+                  type: 'heading',
+                  value: 'Compliance Check',
+                },
+                {
+                  id: 'decision',
+                  type: 'details',
+                  value: {
+                    id: 1,
+                    title: `Compliance Check`,
+                    data: [
+                      {
+                        title: 'Total Hits',
+                        value: totalHits,
+                        props: {
+                          className: ctw({
+                            'text-destructive':
+                              matchStatus === 'possible_match' || matchStatus === 'positive_match',
+                            'text-success': matchStatus === 'no_match',
+                          }),
+                        },
+                      },
+                      {
+                        title: 'Match Status',
+                        value: capitalize(matchStatus)?.replace(/_/g, ' '),
+                        props: {
+                          className: ctw({
+                            'text-destructive':
+                              matchStatus === 'possible_match' || matchStatus === 'positive_match',
+                            'text-success': matchStatus === 'no_match',
+                          }),
+                        },
+                      },
+                      ...(Object.entries({ hits })?.map(([title, value]) => ({
+                        title,
+                        value,
+                      })) ?? []),
+                    ],
+                  },
+                },
+              ],
+            };
+
+      return amlCell;
+    }) ?? [];
+
   return {
     className:
       childWorkflow.state === 'revision'
@@ -234,55 +344,10 @@ export const useKycBlock = ({
             {
               type: 'container',
               value: [
-                {
-                  type: 'container',
-                  value: [
-                    {
-                      id: 'header',
-                      type: 'heading',
-                      value: 'Details',
-                    },
-                    {
-                      id: 'decision',
-                      type: 'details',
-                      value: {
-                        id: 1,
-                        title: `Details`,
-                        data: details,
-                      },
-                    },
-                  ],
-                },
-                {
-                  type: 'container',
-                  value: [
-                    {
-                      id: 'header',
-                      type: 'heading',
-                      value: 'Document Extracted Data',
-                    },
-                    ...documentExtractedData,
-                  ],
-                },
-                {
-                  type: 'container',
-                  value: [
-                    {
-                      id: 'header',
-                      type: 'heading',
-                      value: 'Document Verification Results',
-                    },
-                    {
-                      id: 'decision',
-                      type: 'details',
-                      value: {
-                        id: 1,
-                        title: `Decision`,
-                        data: decision,
-                      },
-                    },
-                  ],
-                },
+                detailsCell,
+                documentExtractedDataCell,
+                documentVerificationCell,
+                ...amlCells,
               ],
             },
             {

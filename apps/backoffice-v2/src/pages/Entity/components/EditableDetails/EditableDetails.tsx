@@ -143,6 +143,9 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     },
     [],
   );
+  const getPropsByTitle = (title: string) => {
+    return data?.find(field => field?.title === title)?.props;
+  };
 
   useWatchDropdownOptions({ form, data, setFormData });
   useInitialCategorySetValue({
@@ -284,6 +287,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                                     field.value,
                                   ),
                                 },
+                                getPropsByTitle(field.name)?.className,
                               )}
                               {...(pattern && { pattern })}
                               autoComplete={'off'}
