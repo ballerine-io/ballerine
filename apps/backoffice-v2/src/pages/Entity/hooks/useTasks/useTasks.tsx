@@ -81,7 +81,7 @@ export const useTasks = ({
               {
                 id: 'nested-details-heading',
                 type: 'heading',
-                value: 'Registry information',
+                value: `Plugin (${key})`,
               },
               {
                 type: 'details',

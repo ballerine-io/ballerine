@@ -60,6 +60,10 @@ export class CompanyDocument {
   @IsOptional()
   uri!: string;
 
+  @IsString()
+  @IsOptional()
+  provider!: string;
+
   @IsObject()
   @IsOptional()
   decision!: Record<string, any>;
