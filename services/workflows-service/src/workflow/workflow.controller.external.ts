@@ -29,6 +29,9 @@ import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guar
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { AnyRecord } from '@ballerine/common';
+import { ArrayMergeOption } from './workflow-runtime-data.repository';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -66,6 +69,22 @@ export class WorkflowControllerExternal {
   @UseCustomerAuthGuard()
   async getWorkflowDefinition(@common.Param() params: WorkflowDefinitionWhereUniqueInput) {
     return await this.service.getWorkflowDefinitionById(params.id);
+  }
+
+  @common.Patch('/workflow-definition/:id')
+  @ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @UseCustomerAuthGuard()
+  async updateWorkflowDefinition(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @common.Body() body: unknown,
+    @common.Query() queryParams: AnyRecord = {},
+  ) {
+    return await this.service.updateWorkflowDefinitionById(
+      params.id,
+      body,
+      queryParams?.arrayMergeStrategy as ArrayMergeOption,
+    );
   }
 
   @common.Get('/:id')

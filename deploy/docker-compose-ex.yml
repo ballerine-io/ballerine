@@ -22,7 +22,8 @@ services:
     restart: on-failure
     environment:
       VITE_API_URL: 'http://localhost:3000/api/v1/'
-      VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
+      VITE_KYB_DEFINITION_ID: 'devcon_example_workflow'
+      VITE_API_KEY: 'secret'
   ballerine-workflow-service:
     build:
       context: ../services/workflows-service/
@@ -56,10 +57,10 @@ services:
       KYB_EXAMPLE_CORS_ORIGIN: http://localhost:${KYB_APP_PORT}
       IS_DEMO: true
       WEBHOOK_SECRET: webhook_secret
-      APP_API_URL: https://alon.ballerine.dev
+      APP_API_URL: ""
       EMAIL_API_TOKEN: ''
-      EMAIL_API_URL: https://api.sendgrid.com/v3/mail/send
-      UNIFIED_API_URL: 'https://unified-api-test.eu.ballerine.app'
+      EMAIL_API_URL: ""
+      UNIFIED_API_URL: ""
       UNIFIED_API_TOKEN: ""
       UNIFIED_API_SHARED_SECRET: ""
     depends_on:

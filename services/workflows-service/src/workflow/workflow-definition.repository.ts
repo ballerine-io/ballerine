@@ -1,6 +1,7 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { Prisma, WorkflowDefinition } from '@prisma/client';
+import { Prisma, WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import { ArrayMergeOption } from './workflow-runtime-data.repository';
 
 @Injectable()
 export class WorkflowDefinitionRepository {
@@ -46,5 +47,24 @@ export class WorkflowDefinitionRepository {
       where: { id },
       ...args,
     });
+  }
+
+  async updateByDefinitionId(
+    id: string,
+    newDefinition: unknown,
+    arrayMergeOption: ArrayMergeOption = 'by_id',
+  ): Promise<WorkflowDefinition> {
+    const stringifiedDefinition = JSON.stringify(newDefinition);
+    console.log(
+      `UPDATE "WorkflowDefinition" SET "definition" = jsonb_deep_merge_with_options("definition", ${stringifiedDefinition}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id}`,
+    );
+    const affectedRows = await this.prisma
+      .$executeRaw`UPDATE "WorkflowDefinition" SET "definition" = jsonb_deep_merge_with_options("definition", ${stringifiedDefinition}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id}`;
+
+    if (affectedRows === 0) {
+      throw new Error(`No WorkflowDefinition found with the id "${id}"`);
+    }
+
+    return this.findById(id);
   }
 }
