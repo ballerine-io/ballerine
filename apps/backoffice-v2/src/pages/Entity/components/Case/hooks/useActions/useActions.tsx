@@ -118,5 +118,6 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
     hasDecision,
     isLoadingCase,
     documentsToReviseCount,
+    state: workflow?.state,
   };
 };
