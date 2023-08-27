@@ -2,7 +2,6 @@ import { TWorkflowById } from '../../../../domains/workflows/fetchers';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
 import {
   composePickableCategoryType,
   convertSnakeCaseToTitleCase,
@@ -11,7 +10,7 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import { getDocumentsByCountry, isObject } from '@ballerine/common';
+import { getDocumentsByCountry } from '@ballerine/common';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
@@ -21,8 +20,8 @@ import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/use
 import { X } from 'lucide-react';
 import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
-import { isValidUrl } from '../../../../common/utils/is-valid-url';
-import { isBase64 } from '../../../../common/utils/is-base64/is-base64';
+import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
+import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -64,7 +63,8 @@ export const useTasks = ({
     });
   });
   const pluginsOutputKeys = Object.keys(pluginsOutput ?? {});
-  const address = getAddressDeep(pluginsOutput);
+  const address = getAddressDeep(pluginsOutput, { propertyName: 'registeredAddressInFull' });
+  const { data: locations } = useNominatimQuery(address);
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
 
@@ -336,42 +336,46 @@ export const useTasks = ({
     Object.keys(address ?? {})?.length === 0
       ? {}
       : {
-          cells: [
-            {
-              id: 'map-container',
-              type: 'container',
-              value: [
-                {
-                  id: 'header',
-                  type: 'heading',
-                  value: `${toStartCase(entity?.type)} Address`,
-                },
-                {
-                  type: 'details',
-                  value: {
-                    title: `${toStartCase(entity?.type)} Address`,
-                    data: !isObject(address)
-                      ? [
-                          {
-                            title: 'Address',
-                            value: address,
-                            isEditable: false,
-                          },
-                        ]
-                      : Object.entries(address ?? {})?.map(([title, value]) => ({
-                          title,
-                          value,
-                          isEditable: false,
-                        })),
+          cells: locations &&
+            locations.length && [
+              {
+                id: 'map-container',
+                type: 'container',
+                value: [
+                  {
+                    id: 'header',
+                    type: 'heading',
+                    value: `${toStartCase(entity?.type)} Address`,
                   },
-                },
-                {
-                  type: 'map',
-                  value: address,
-                },
-              ],
-            },
-          ],
+                  {
+                    type: 'details',
+                    value: {
+                      title: `${toStartCase(entity?.type)} Address`,
+                      data:
+                        typeof address === 'string'
+                          ? [
+                              {
+                                title: 'Address',
+                                value: address,
+                                isEditable: false,
+                              },
+                            ]
+                          : Object.entries(address ?? {})?.map(([title, value]) => ({
+                              title,
+                              value,
+                              isEditable: false,
+                            })),
+                    },
+                  },
+                  {
+                    type: 'map',
+                    address,
+                    latitude: locations[0].lat,
+                    longitude: locations[0].lon,
+                  },
+                ],
+              },
+            ],
         };
 
   return useMemo(() => {
