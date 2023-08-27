@@ -19,19 +19,16 @@ import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { IntentResponse, WorkflowService } from './workflow.service';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
-import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
-import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { GetActiveFlowDto } from '@/workflow/dtos/get-active-workflow-input.dto';
-import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
+import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -43,6 +40,7 @@ export class WorkflowControllerExternal {
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
+
   // GET /workflows
   @common.Get('/')
   @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeOutputDto] })
@@ -65,32 +63,16 @@ export class WorkflowControllerExternal {
   @common.Get('/workflow-definition/:id')
   @ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @UseCustomerAuthGuard()
   async getWorkflowDefinition(@common.Param() params: WorkflowDefinitionWhereUniqueInput) {
     return await this.service.getWorkflowDefinitionById(params.id);
-  }
-
-  @common.Get('/active-flow')
-  @UseKeyAuthOrSessionGuard()
-  async getActiveFlow(
-    @common.Query() query: GetActiveFlowDto,
-    @ProjectIds() projectIds: TProjectIds,
-  ) {
-    const activeWorkflow = await this.service.getLastActiveFlow({
-      email: query.email,
-      workflowRuntimeDefinitionId: query.workflowRuntimeDefinitionId,
-      projectIds,
-    });
-
-    return {
-      result: activeWorkflow,
-    };
   }
 
   @common.Get('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async getRunnableWorkflowDataById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
   ): Promise<RunnableWorkflowData> {
@@ -114,7 +96,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
@@ -134,7 +116,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async intent(
     @common.Body() { intentName, entityId }: IntentDto,
     @ProjectIds() projectIds: TProjectIds,
@@ -214,6 +196,7 @@ export class WorkflowControllerExternal {
       projectIds,
     );
   }
+
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')
   @UseCustomerAuthGuard()
@@ -237,16 +220,16 @@ export class WorkflowControllerExternal {
   @common.Post('/:id/hook/:event')
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
-  @Public()
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @VerifyUnifiedApiSignatureDecorator()
   async hook(
     @common.Param() params: WorkflowIdWithEventInput,
     @common.Query() query: WorkflowHookQuery,
     @common.Body() hookResponse: any,
-    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
     try {
       const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
+      const projectIds = [workflowRuntime.projectId!];
       await this.normalizeService.handleHookResponse({
         workflowRuntime: workflowRuntime,
         data: hookResponse,
@@ -254,20 +237,20 @@ export class WorkflowControllerExternal {
         processName: query.processName,
         projectIds,
       });
+
+      return await this.service.event(
+        {
+          id: params.id,
+          name: params.event,
+        },
+        projectIds,
+      );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
       throw error;
     }
-
-    return await this.service.event(
-      {
-        id: params.id,
-        name: params.event,
-      },
-      projectIds,
-    );
 
     return;
   }

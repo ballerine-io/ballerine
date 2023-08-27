@@ -7,6 +7,15 @@ import {
   Assignee,
 } from '../../../../common/components/atoms/AssignButton/AssignButton';
 import { Button } from '../../../../common/components/atoms/Button/Button';
+import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
+import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
+import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
+import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
+import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
+import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
+import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
+import { Send } from 'lucide-react';
+import { DialogClose } from '@radix-ui/react-dialog';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -24,7 +33,7 @@ import { Button } from '../../../../common/components/atoms/Button/Button';
 export const Actions: FunctionComponent<IActionsProps> = ({
   id,
   fullName,
-  showResolutionButtons = true,
+  showResolutionButtons,
 }) => {
   const {
     onMutateApproveEntity,
@@ -33,20 +42,18 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     onMutateAssignWorkflow,
     debouncedIsLoadingApproveEntity,
     debouncedIsLoadingRejectEntity,
-    debouncedIsLoadingAssignEntity,
+    debouncedIsLoadingRevisionCase,
     isLoading,
     isLoadingCase,
-    initials,
     canApprove,
     canReject,
     canRevision,
     caseState,
     authenticatedUser,
     assignees,
-    isActionButtonDisabled,
     onTriggerAssignToMe,
-    isAssignedToMe,
     hasDecision,
+    documentsToReviseCount,
   } = useActions({ workflowId: id, fullName });
 
   return (
@@ -90,16 +97,49 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           </h2>
         </div>
         {showResolutionButtons && (
-          <div className={`pe-[3.35rem] flex items-center space-x-6`}>
-            <Button
-              className={ctw({
-                loading: debouncedIsLoadingRejectEntity,
-              })}
-              disabled={isLoading || !canRevision}
-              onClick={onMutateRevisionCase}
-            >
-              Ask for all revisions
-            </Button>
+          <div className={`flex items-center space-x-6 pe-[3.35rem]`}>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  className={ctw('bg-orange-400 hover:!bg-orange-400/90', {
+                    loading: debouncedIsLoadingRejectEntity,
+                  })}
+                  disabled={isLoading || !canRevision}
+                >
+                  Ask for all re-uploads {canRevision && `(${documentsToReviseCount})`}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className={`mb-96`}>
+                <DialogHeader>
+                  <DialogTitle className={`text-2xl`}>Ask for all re-uploads</DialogTitle>
+                  <DialogDescription>
+                    <div className="mb-[10px]">
+                      By clicking the button below, an email with a link will be sent to the
+                      customer, directing them to re-upload the documents you have marked as
+                      “re-upload needed”.
+                    </div>
+                    <div>
+                      The case’s status will then change to “Revisions” until the customer will
+                      provide the needed documents and fixes.
+                    </div>
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button
+                      className={ctw(`gap-x-2`, {
+                        loading: debouncedIsLoadingRevisionCase,
+                      })}
+                      disabled={isLoading || !canRevision}
+                      onClick={onMutateRevisionCase}
+                    >
+                      <Send size={18} />
+                      Send email
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <Button
               variant={`destructive`}
               className={ctw({

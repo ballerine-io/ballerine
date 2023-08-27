@@ -60,7 +60,6 @@ export class UserRepository {
       ...args,
       data: {
         ...args.data,
-
         password:
           args.data.password &&
           (await transformStringFieldUpdateInput(args.data.password, password =>

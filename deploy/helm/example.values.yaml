@@ -12,6 +12,86 @@ postgresql:
   volumePermissions:
     enabled: true
 
+backoffice:
+  enabled: true
+  replicas: 1
+  strategyType: RollingUpdate
+  updateStrategy:
+    maxSurge: 1
+    maxUnavailable: "0"
+  nameOverride: backoffice
+  service:
+    port: 80
+    type: ClusterIP
+    protocol: TCP
+  image:
+    registry: ghcr.io
+    repository: "pratapalakshmi/backoffice"
+    pullPolicy: Always
+    pullSecrets: ""
+    tag: "dev"
+
+headlessexample:
+  enabled: true
+  replicas: 1
+  strategyType: RollingUpdate
+  updateStrategy:
+    maxSurge: 1
+    maxUnavailable: "0"
+  nameOverride: headlessexample
+  service:
+    port: 80
+    type: ClusterIP
+    protocol: TCP
+  image:
+    registry: ghcr.io
+    repository: "pratapalakshmi/headless-example"
+    pullPolicy: Always
+    pullSecrets: ""
+    tag: "dev"
+
+workflowsdashboard:
+  enabled: true
+  replicas: 1
+  strategyType: RollingUpdate
+  updateStrategy:
+    maxSurge: 1
+    maxUnavailable: "0"
+  nameOverride: workflowsdashboard
+  service:
+    port: 80
+    type: ClusterIP
+    protocol: TCP
+  image:
+    registry: ghcr.io
+    repository: "pratapalakshmi/workflows-dashboard"
+    pullPolicy: Always
+    pullSecrets: ""
+    tag: "dev"
+
+websocketService:
+  enabled: true
+  replicas: 1
+  strategyType: RollingUpdate
+  updateStrategy:
+    maxSurge: 1
+    maxUnavailable: "0"
+  nameOverride: websocketservice
+  migration: true
+  service:
+    port: 3500
+    type: ClusterIP
+    protocol: TCP
+  image:
+    registry: ghcr.io
+    repository: "pratapalakshmi/websocket-service"
+    pullPolicy: Always
+    tag: "dev"
+  applicationConfig:
+    PORT: 3500
+    NODE_ENV: development
+    COMPOSE_PROJECT_NAME: ballerine-x
+
 workflowService:
   enabled: true
   replicas: 1
@@ -26,10 +106,11 @@ workflowService:
     type: ClusterIP
     protocol: TCP
   image:
-    registry: index.docker.io
-    repository: ""
+    registry: ghcr.io
+    repository: "pratapalakshmi/workflows-service"
     pullPolicy: Always
-    tag: "latest"
+    pullSecrets: ""
+    tag: "dev"
   applicationConfig:
     BCRYPT_SALT: "10"
     JWT_SECRET_KEY: "secret"
@@ -48,3 +129,4 @@ workflowService:
     SENTRY_DSN: ""
     WEBHOOK_URL: ""
     WEBHOOK_SECRET: "webhook_secret"
+    WORKFLOW_DASHBOARD_CORS_ORIGIN: "http://localhost:5200"

@@ -1,0 +1,18 @@
+{{- if .Values.backoffice.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ .Values.backoffice.nameOverride }}
+    namespace: {{ .Release.Namespace | quote }}
+    labels:
+      app: {{ .Values.backoffice.nameOverride }}
+spec:
+    ports:
+    - name: {{ .Values.backoffice.nameOverride }}
+      port: {{ .Values.backoffice.service.port }}
+      protocol: {{ .Values.backoffice.service.protocol }}
+      targetPort: {{ .Values.backoffice.service.port }}
+    selector:
+        app: {{ .Values.backoffice.nameOverride }}
+    type: {{ .Values.backoffice.service.type }}
+{{- end }}

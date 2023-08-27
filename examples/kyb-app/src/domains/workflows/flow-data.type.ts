@@ -1,8 +1,5 @@
 import { ViewsData } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository/types';
-import { BankInformationContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/BankInformationView/types';
-import { CompanyActivityConext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyActivityView/types';
-import { CompanyInformationContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/CompanyInformationView/types';
-import { HeadquartersContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/types';
+import { AnyObject } from '@ballerine/ui';
 
 export interface PersonalInformationContext {
   name: {
@@ -28,7 +25,7 @@ export interface BusinessAddressContext {
 }
 
 export interface UBOSContext {
-  checked: boolean;
+  check: boolean;
   shareholders: {
     name: {
       firstName: string;
@@ -46,13 +43,5 @@ export interface WorkflowFlowData extends ViewsData {
     businessId?: string;
     workflowId?: string;
   };
-  flowData: {
-    personalInformation: PersonalInformationContext;
-    companyInformation: CompanyInformationContext;
-    headquarters: HeadquartersContext;
-    companyActivity: CompanyActivityConext;
-    bankInformation: BankInformationContext;
-    companyDocuments: DocumentsContext;
-    ubos: UBOSContext;
-  };
+  flowData: AnyObject;
 }

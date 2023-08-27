@@ -1,12 +1,17 @@
-import { withSessionProtected } from '@app/hooks/useSignin/hocs/withSessionProtected';
+import { useCustomer } from '@app/components/providers/CustomerProvider';
+import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
+import { useSignin } from '@app/hooks/useSignin';
 import { Button, Card } from '@ballerine/ui';
 
 export const Success = withSessionProtected(() => {
+  const { customer } = useCustomer();
+  const { logout } = useSignin();
+
   return (
     <div className="flex h-full items-center justify-center">
       <Card className="w-full max-w-[646px] p-12">
         <div className="mb-9 flex justify-center">
-          <img src="/public/papers-checked.svg" className="h-[156px] w-[156px]" />
+          <img src="/papers-checked.svg" className="h-[156px] w-[156px]" />
         </div>
         <div className="mb-10">
           <h1 className="mb-6 text-center text-3xl font-bold leading-8">
@@ -18,8 +23,8 @@ export const Success = withSessionProtected(() => {
           </h2>
         </div>
         <div className="flex justify-center">
-          <Button variant="secondary" onClick={() => alert('Not implemented.')}>
-            Go back to PayLynk’s Portal
+          <Button variant="secondary" onClick={logout}>
+            Go back to {customer?.displayName} Portal
           </Button>
         </div>
       </Card>

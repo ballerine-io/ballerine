@@ -1,16 +1,22 @@
-FROM node:18.16-alpine3.17 as dev
+FROM node:18.17.1-bullseye-slim as dev
 
-RUN apk add dumb-init
+RUN apt-get update
+RUN apt-get install dumb-init
 
 WORKDIR /app
 
+COPY ./package.json .
+
+RUN npm install
+
 COPY . .
 
-RUN npm install; npm run prisma:generate ; npm run build;
+RUN npm run prisma:generate
+RUN npm run build
 
 CMD [ "dumb-init", "npm", "run", "dev", "--host" ]
 
-FROM node:18.16-alpine3.17 as prod
+FROM node:18.17.1-bullseye-slim as prod
 
 WORKDIR /app
 
@@ -20,6 +26,7 @@ COPY --from=dev /app/package.json ./package.json
 COPY --from=dev /app/dist ./dist
 COPY --from=dev /app/prisma ./prisma
 COPY --from=dev /app/scripts ./scripts
+COPY --from=dev /app/src ./src
 
 EXPOSE 3000
 

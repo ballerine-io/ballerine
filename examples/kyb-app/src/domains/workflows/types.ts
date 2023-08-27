@@ -77,6 +77,7 @@ export interface WorkflowUpdatePayload {
   endUserId: string;
   businessId: string;
   entity: WorkflowEntity;
+  isShareholder: boolean;
   documents: WorkflowRunDocument[];
 }
 
@@ -99,6 +100,7 @@ export interface WorkflowAdditionalInformation {
   email: string;
   dateOfBirth: string;
   companyName: string;
+  title: string;
 }
 
 export interface TRunWorkflowDto {
@@ -161,7 +163,7 @@ export interface WorkflowDocument {
 export interface Workflow {
   id: string;
   workflowDefinitionId: string;
-  state: 'approve' | 'reject';
+  state: 'approved' | 'rejected';
   businessId: string;
   endUserId: string;
   context: {

@@ -20,7 +20,7 @@ export const useRejectEntityMutation = ({
       fetchWorkflowEvent({
         workflowId,
         body: {
-          name: Action.REJECT.toLowerCase(),
+          name: Action.REJECT,
         },
       }),
     onSuccess: () => {

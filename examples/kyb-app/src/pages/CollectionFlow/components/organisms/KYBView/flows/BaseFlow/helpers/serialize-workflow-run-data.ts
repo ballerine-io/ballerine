@@ -5,12 +5,12 @@ import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { WorkflowUpdatePayload } from '@app/domains/workflows/types';
 import { base64ToFile } from '@ballerine/ui';
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '@app/hooks/useSignin';
 import { getFullCountryNameByCode } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list';
+import { TUser } from '@app/domains/collection-flow';
 
 export const serializeWorkflowRunData = async (
   context: WorkflowFlowData,
-  user: User,
+  user: TUser,
 ): Promise<WorkflowUpdatePayload> => {
   const { endUserId, businessId } = context.shared;
   const {
@@ -67,6 +67,7 @@ export const serializeWorkflowRunData = async (
     workflowId: import.meta.env.VITE_KYB_DEFINITION_ID as string,
     endUserId,
     businessId,
+    isShareholder: context.flowData.ubos.check,
     entity: {
       type: 'business',
       website: companyActivity.website,

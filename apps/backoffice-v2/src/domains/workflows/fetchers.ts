@@ -84,6 +84,8 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
     .array(
       BaseWorkflowByIdSchema.omit({
         nextEvents: true,
+      }).extend({
+        state: z.string(),
       }),
     )
     .optional(),
@@ -168,7 +170,7 @@ export const fetchWorkflowDecision = async ({
 }: IWorkflowId & {
   documentId: string;
   body: {
-    decision: string;
+    decision: string | null;
     reason?: string;
   };
 }) => {

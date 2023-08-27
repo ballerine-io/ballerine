@@ -9,16 +9,6 @@ import {
   GetActiveWorkflowDto,
 } from '@app/domains/workflows/types';
 
-export const runWorkflowRequest = async (dto: WorkflowUpdatePayload): Promise<void> => {
-  const runPayload = serializeWorkflowUpdatePayload(dto);
-
-  await request
-    .post('external/workflows/run', {
-      json: runPayload,
-    })
-    .json<{ workflowRuntimeId: string }>();
-};
-
 export const runAndStartWorkflowRequest = async (
   dto: WorkflowUpdatePayload,
 ): Promise<{ workflowRuntimeId: string }> => {
@@ -51,17 +41,4 @@ export const updateWorkflow = async (dto: UpdateWorkflowDto) => {
   await request.patch(`external/workflows/${dto.workflowId}`, {
     json: payload,
   });
-};
-
-export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<Workflow | null> => {
-  const result = await request
-    .get('external/workflows/active-flow', {
-      searchParams: {
-        email: dto.email,
-        workflowRuntimeDefinitionId: import.meta.env.VITE_KYB_DEFINITION_ID as string,
-      },
-    })
-    .json<{ result: Workflow }>();
-
-  return result.result;
 };

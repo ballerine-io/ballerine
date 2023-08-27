@@ -1,5 +1,23 @@
 # @ballerine/common
 
+## 0.5.23
+
+### Patch Changes
+
+- Removed verifiySignature util
+
+## 0.5.22
+
+### Patch Changes
+
+- Added `verifySignature` function
+
+## 0.5.20
+
+### Patch Changes
+
+- GH schemas update
+
 ## 0.5.19
 
 ### Patch Changes

@@ -1,17 +1,21 @@
 import { useEffect } from 'react';
 import { useSignin } from '@app/hooks/useSignin';
-import { withSessionProtected } from '@app/hooks/useSignin/hocs/withSessionProtected';
+import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
 import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
+import { useCustomer } from '@app/components/providers/CustomerProvider';
+import { useCollectionFlowSchemaQuery } from '@app/hooks/useCollectionFlowSchemaQuery';
 
 export const Approved = withSessionProtected(() => {
-  const { isFetching, workflow } = useActiveWorkflowQuery();
-  const { logoutSilent } = useSignin();
+  const { customer } = useCustomer();
+  const { documentConfigurations } = useCollectionFlowSchemaQuery();
+  const { isFetching, workflow } = useActiveWorkflowQuery(documentConfigurations);
+  const { logoutSilent, logout } = useSignin();
 
   useEffect(() => {
     if (isFetching) return;
 
-    if (workflow.state === 'approve') {
+    if (workflow.state === 'approved') {
       setTimeout(logoutSilent, 250);
     }
   }, [isFetching, workflow, logoutSilent]);
@@ -20,8 +24,8 @@ export const Approved = withSessionProtected(() => {
     <div className="flex h-full items-center justify-center">
       <Card className="w-full max-w-[646px] p-12">
         <div className="mb-9 flex flex-col items-center gap-9">
-          <img src="/public/app-logo.svg" className="h-[40px] w-[95px]" />
-          <img src="/public/success-circle.svg" className="h-[156px] w-[156px]" />
+          <img src="/app-logo.svg" className="h-[40px] w-[95px]" />
+          <img src="/success-circle.svg" className="h-[156px] w-[156px]" />
         </div>
         <div className="mb-10">
           <h1 className="mb-6 text-center text-3xl font-bold leading-8">
@@ -29,12 +33,12 @@ export const Approved = withSessionProtected(() => {
             successfully!
           </h1>
           <p className="text-muted-foreground text-center text-sm leading-5 opacity-50">
-            Go back to PayLynk’s portal to use the system
+            Go back to {customer?.displayName} portal to use the system
           </p>
         </div>
         <div className="flex justify-center">
-          <Button variant="secondary" onClick={() => alert('Not implemented.')}>
-            Go back to PayLynk’s Portal
+          <Button variant="secondary" onClick={logout}>
+            Go back to {customer?.displayName} Portal
           </Button>
         </div>
       </Card>

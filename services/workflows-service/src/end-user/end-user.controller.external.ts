@@ -15,15 +15,13 @@ import { EndUserWhereUniqueInput } from './dtos/end-user-where-unique-input';
 import { EndUserModel } from './end-user.model';
 import { EndUserService } from './end-user.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
-import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 import { WorkflowDefinitionModel } from '@/workflow/workflow-definition.model';
 import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definition-find-many-args';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
-import { Public } from '@/common/decorators/public.decorator';
-import { DemoGuard } from '@/common/guards/demo.guard';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 
 @swagger.ApiTags('external/end-users')
 @common.Controller('external/end-users')
@@ -38,7 +36,7 @@ export class EndUserControllerExternal {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [EndUserModel] })
   @swagger.ApiForbiddenResponse()
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async create(
     @common.Body() data: EndUserCreateDto,
   ): Promise<Pick<EndUserModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>> {
@@ -61,7 +59,7 @@ export class EndUserControllerExternal {
   }
 
   @common.Post('/create-with-business')
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async createWithBusiness(
     @common.Body() data: EndUserCreateDto,
     @ProjectIds() projectIds: TProjectIds,
@@ -87,7 +85,7 @@ export class EndUserControllerExternal {
   @swagger.ApiOkResponse({ type: EndUserModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
     try {
       const endUser = await this.service.getById(params.id);
@@ -108,7 +106,7 @@ export class EndUserControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.HttpCode(200)
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async listWorkflowRuntimeDataByEndUserId(@Param('endUserId') endUserId: string) {
     const workflowRuntimeDataWithDefinition =
       await this.workflowService.listFullWorkflowDataByUserId({

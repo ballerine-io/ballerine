@@ -19,7 +19,7 @@ export const useRevisionCaseAndDocumentsMutation = ({
       fetchWorkflowEventDecision({
         workflowId,
         body: {
-          name: Action.REVISION.toLowerCase(),
+          name: Action.REVISION,
           reason: revisionReason,
         },
       }),
