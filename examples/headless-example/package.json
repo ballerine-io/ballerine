@@ -1,9 +1,10 @@
 {
   "name": "@ballerine/headless-example",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.18",
   "type": "module",
   "scripts": {
+    "spellcheck": "cspell \"*\"",
     "format": "prettier --plugin-search-dir=. --write .",
     "format:check": "prettier --plugin-search-dir=. --check .",
     "dev": "vite",
@@ -20,6 +21,8 @@
     "@types/node": "^20.3.2",
     "@xstate/inspect": "^0.7.1",
     "autoprefixer": "^10.4.7",
+    "cspell": "^6.31.2",
+    "@cspell/cspell-types": "^6.31.1",
     "postcss": "^8.4.21",
     "prettier": "^2.8.8",
     "prettier-plugin-svelte": "^2.8.0",
@@ -31,8 +34,8 @@
     "vite": "^4.1.0"
   },
   "dependencies": {
-    "@ballerine/common": "0.5.6",
-    "@ballerine/workflow-browser-sdk": "^0.4.9",
+    "@ballerine/common": "0.5.20",
+    "@ballerine/workflow-browser-sdk": "0.4.23",
     "@felte/reporter-svelte": "^1.1.5",
     "@felte/validator-zod": "^1.0.13",
     "@fontsource/inter": "^4.5.15",

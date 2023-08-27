@@ -17,6 +17,7 @@ export const useEntities = () => {
     page,
     pageSize,
   });
+
   const {
     meta: { totalPages },
     data: cases,

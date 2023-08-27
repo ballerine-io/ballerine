@@ -1,4 +1,4 @@
-import { Button } from '@components/atoms/Button/Button';
+import { Button } from './Button';
 
 export default {
   component: Button,

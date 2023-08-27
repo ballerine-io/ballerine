@@ -1,5 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+
+import '@ballerine/ui/dist/style.css';
+import '@fontsource/inter';
+
 import './index.css';
 import './i18n';
 import { env } from './common/env/env';

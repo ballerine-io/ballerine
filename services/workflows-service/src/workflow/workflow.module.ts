@@ -18,26 +18,47 @@ import { FilterService } from '@/filter/filter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
+import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-changed-webhook-caller';
+import { EntityRepository } from '@/common/entity/entity.repository';
+import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
+import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webhook-caller';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { EndUserService } from '@/end-user/end-user.service';
+import { ProjectModule } from '@/project/project.module';
+import { PrismaModule } from '@/prisma/prisma.module';
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
+  imports: [ACLModule, forwardRef(() => AuthModule), HttpModule, ProjectModule, PrismaModule],
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
   providers: [
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
+    ProjectScopeService,
     EndUserRepository,
+    EndUserService,
     BusinessRepository,
+    EntityRepository,
     StorageService,
     FileRepository,
     WorkflowService,
+    HookCallbackHandlerService,
     FileService,
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
+    WorkflowCompletedWebhookCaller,
+    WorkflowStateChangedWebhookCaller,
     FilterRepository,
     FilterService,
     UserService,
     UserRepository,
   ],
-  exports: [WorkflowService, ACLModule, AuthModule, StorageService, FileRepository],
+  exports: [
+    WorkflowService,
+    HookCallbackHandlerService,
+    ACLModule,
+    AuthModule,
+    StorageService,
+    FileRepository,
+  ],
 })
 export class WorkflowModule {}

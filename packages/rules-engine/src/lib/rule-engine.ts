@@ -1,7 +1,8 @@
 import * as jsonLogic from 'json-logic-js';
-
+// @ts-ignore
+import { search } from 'jmespath';
 export interface RuleEngineOptions {
-  Provider: 'json-logic' | 'json-rule-engine';
+  Provider: 'json-logic' | 'json-rule-engine' | 'jmespath';
 }
 
 export interface RuleEngine {
@@ -25,5 +26,18 @@ export class JsonLogicRule {
       this.#__rule, // Rule
       data, // Data
     );
+  }
+}
+
+export class JmesPathRule {
+  #__rule: any;
+  constructor(rule: any) {
+    this.#__rule = rule;
+  }
+
+  evaluate(data: any) {
+    const resultValue = search(data, this.#__rule);
+
+    return resultValue;
   }
 }

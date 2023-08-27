@@ -1,6 +1,5 @@
-import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker';
-import { Business, EndUser, Prisma, PrismaClient } from '@prisma/client';
+import { Business, Customer, EndUser, Prisma, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -11,26 +10,27 @@ import {
   generateEndUser,
 } from './generate-end-user';
 import { defaultContextSchema } from '@ballerine/common';
-import { Salt } from '../src/auth/password/password.service';
-import { env } from '../src/env';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
+import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
+import { generateParentKybWithKycs } from './workflows/parent-kyb-workflow';
+import { generateKybDefintion } from './workflows';
+import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
+import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
+import { env } from '../src/env';
 
-if (require.main === module) {
-  dotenv.config();
+seed(10).catch(error => {
+  console.error(error);
+  process.exit(1);
+});
 
-  seed(env.BCRYPT_SALT).catch(error => {
-    console.error(error);
-    process.exit(1);
-  });
-}
-
-const persistImageFile = async (client: PrismaClient, uri: string) => {
+const persistImageFile = async (client: PrismaClient, uri: string, projectId: string) => {
   const file = await client.file.create({
     data: {
       userId: '',
       fileNameOnDisk: uri,
       uri: uri,
+      projectId: projectId,
     },
   });
 
@@ -49,17 +49,78 @@ function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, 
   return faker.image.people(1000, 2000, true);
 }
 
-async function seed(bcryptSalt: Salt) {
+async function createCustomer(
+  client: PrismaClient,
+  id: string,
+  apiKey: string,
+  logoImageUri: string,
+) {
+  return await client.customer.create({
+    data: {
+      id: `customer-${id}`,
+      name: `Customer ${id}`,
+      displayName: `Customer ${id}`,
+      authenticationConfiguration: {
+        apiType: 'API_KEY',
+        authValue: apiKey,
+        validUntil: '',
+        isValid: '',
+      },
+      logoImageUri: logoImageUri,
+      country: 'GB',
+      language: 'en',
+    },
+  });
+}
+
+async function createProject(client: PrismaClient, customer: Customer, id: string) {
+  return client.project.create({
+    data: {
+      id: `project-${id}`,
+      name: `Project ${id}`,
+      customerId: customer.id,
+    },
+  });
+}
+
+async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
   const client = new PrismaClient();
   await generateDynamicDefinitionForE2eTest(client);
+  const customer = await createCustomer(
+    client,
+    '1',
+    env.API_KEY,
+    'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645511cb3d3dd84ee28fe04d_CyberAgent.svg',
+  );
+  const customer2 = await createCustomer(
+    client,
+    '2',
+    `${env.API_KEY}2`,
+    'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645d26f285bd18467470e7cd_zenhub-logo.svg',
+  );
+  const project1 = await createProject(client, customer, '1');
+  const project2 = await createProject(client, customer2, '2');
   const users = [
+    {
+      email: 'admin@admin.com',
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      password: await hash('admin', bcryptSalt),
+      roles: ['user'],
+      userToProjects: {
+        create: { projectId: project1.id },
+      },
+    },
     {
       email: 'agent1@ballerine.com',
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
       password: await hash('agent1', bcryptSalt),
       roles: ['user'],
+      userToProjects: {
+        create: { projectId: project2.id },
+      },
     },
     {
       email: 'agent2@ballerine.com',
@@ -67,6 +128,9 @@ async function seed(bcryptSalt: Salt) {
       lastName: faker.name.lastName(),
       password: await hash('agent2', bcryptSalt),
       roles: ['user'],
+      userToProjects: {
+        create: { projectId: project2.id },
+      },
     },
     {
       email: 'agent3@ballerine.com',
@@ -74,13 +138,9 @@ async function seed(bcryptSalt: Salt) {
       lastName: faker.name.lastName(),
       password: await hash('agent3', bcryptSalt),
       roles: ['user'],
-    },
-    {
-      email: 'admin@admin.com',
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      password: await hash('admin', bcryptSalt),
-      roles: ['user'],
+      userToProjects: {
+        create: { projectId: project1.id },
+      },
     },
   ];
   for (const user of users) {
@@ -91,12 +151,17 @@ async function seed(bcryptSalt: Salt) {
     });
   }
 
-  const manualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
+  const kycManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
+  const kybManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9bbb';
   const manualMachineVersion = 1;
 
   const onboardingMachineKycId = 'COLLECT_DOCS_b0002zpeid7bq9aaa';
   const onboardingMachineKybId = 'COLLECT_DOCS_b0002zpeid7bq9bbb';
   const riskScoreMachineKybId = 'risk-score-improvement-dev';
+
+  // KYB Flows
+  const onboardingMachineId = 'kyb-onboarding';
+  const riskScoreMachineId = 'kyb-risk-score';
 
   const user = await client.endUser.create({
     data: {
@@ -106,6 +171,19 @@ async function seed(bcryptSalt: Salt) {
       email: 'nadia@ballerine.com',
       correlationId: '1',
       dateOfBirth: '2000-11-04T12:45:51.695Z',
+      projectId: project1.id,
+    },
+  });
+
+  const user2 = await client.endUser.create({
+    data: {
+      id: '43a0a298-0d02-4a2e-a8cc-73c06b465311',
+      firstName: 'Nadin',
+      lastName: 'Mami',
+      email: 'ndain@ballerine.com',
+      correlationId: '2',
+      dateOfBirth: '2000-11-04T12:45:51.695Z',
+      projectId: project1.id,
     },
   });
 
@@ -171,7 +249,7 @@ async function seed(bcryptSalt: Salt) {
               uri: imageUri1,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri1),
+              ballerineFileId: await persistImageFile(client, imageUri1, project1.id),
               metadata: {
                 side: 'front',
                 pageNumber: '1',
@@ -182,7 +260,7 @@ async function seed(bcryptSalt: Salt) {
               uri: imageUri2,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri2),
+              ballerineFileId: await persistImageFile(client, imageUri2, project1.id),
               metadata: {
                 side: 'back',
                 pageNumber: '1',
@@ -216,8 +294,8 @@ async function seed(bcryptSalt: Salt) {
             {
               provider: 'http',
               uri: imageUri3,
-              type: 'pdf',
-              ballerineFileId: await persistImageFile(client, imageUri3),
+              type: 'png',
+              ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               data: '',
               metadata: {},
             },
@@ -291,7 +369,7 @@ async function seed(bcryptSalt: Salt) {
               uri: imageUri1,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri1),
+              ballerineFileId: await persistImageFile(client, imageUri1, project1.id),
               metadata: {
                 side: 'front',
                 pageNumber: '1',
@@ -302,7 +380,7 @@ async function seed(bcryptSalt: Salt) {
               uri: imageUri2,
               type: 'jpg',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri2),
+              ballerineFileId: await persistImageFile(client, imageUri2, project1.id),
               metadata: {
                 side: 'back',
                 pageNumber: '1',
@@ -340,9 +418,9 @@ async function seed(bcryptSalt: Salt) {
             {
               provider: 'http',
               uri: imageUri3,
-              type: 'pdf',
+              type: 'png',
               data: '',
-              ballerineFileId: await persistImageFile(client, imageUri3),
+              ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               metadata: {},
             },
           ],
@@ -369,12 +447,14 @@ async function seed(bcryptSalt: Salt) {
     name: string,
     entity: 'individuals' | 'businesses',
     query: Prisma.WorkflowRuntimeDataFindManyArgs,
+    projectId: string,
   ) {
     return client.filter.create({
       data: {
         entity,
         name,
         query: query as any,
+        projectId: projectId,
       },
     });
   }
@@ -425,40 +505,65 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  // Manual Review
-  await client.workflowDefinition.create({
-    data: {
-      id: manualMachineId,
-      name: 'manual_review',
-      version: manualMachineVersion,
-      definitionType: 'statechart-json',
-      definition: {
-        id: 'Manual Review',
-        initial: 'review',
-        states: {
-          review: {
-            on: {
-              approve: {
-                target: 'approved',
-              },
-              reject: {
-                target: 'rejected',
-              },
-              resubmit: {
-                target: 'review',
-              },
+  const baseManualReviewDefinition = {
+    name: 'manual_review',
+    version: manualMachineVersion,
+    definitionType: 'statechart-json',
+    definition: {
+      id: 'Manual Review',
+      initial: 'review',
+      states: {
+        review: {
+          on: {
+            approve: {
+              target: 'approved',
+            },
+            reject: {
+              target: 'rejected',
+            },
+            revision: {
+              target: 'revision',
             },
           },
-          approved: {
-            type: 'final',
-          },
-          rejected: {
-            type: 'final',
+        },
+        approved: {
+          type: 'final',
+        },
+        rejected: {
+          type: 'final',
+        },
+        revision: {
+          on: {
+            review: {
+              target: 'review',
+            },
           },
         },
       },
-      persistStates: [],
-      submitStates: [],
+    },
+    persistStates: [],
+    submitStates: [],
+  } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
+
+  // KYC Manual Review (workflowLevelResolution false)
+  await client.workflowDefinition.create({
+    data: {
+      ...baseManualReviewDefinition,
+      id: kycManualMachineId,
+      config: {
+        workflowLevelResolution: false,
+      },
+    },
+  });
+
+  // KYB Manual Review (workflowLevelResolution true)
+  await client.workflowDefinition.create({
+    data: {
+      ...baseManualReviewDefinition,
+      id: kybManualMachineId,
+      config: {
+        workflowLevelResolution: true,
+      },
     },
   });
 
@@ -466,7 +571,7 @@ async function seed(bcryptSalt: Salt) {
   await client.workflowDefinition.create({
     data: {
       id: onboardingMachineKycId, // should be auto generated normally
-      reviewMachineId: manualMachineId,
+      reviewMachineId: kycManualMachineId,
       name: 'kyc',
       version: 1,
       definitionType: 'statechart-json',
@@ -546,7 +651,7 @@ async function seed(bcryptSalt: Salt) {
   await client.workflowDefinition.create({
     data: {
       id: onboardingMachineKybId, // should be auto generated normally
-      reviewMachineId: manualMachineId,
+      reviewMachineId: kybManualMachineId,
       name: 'kyb',
       version: 1,
       definitionType: 'statechart-json',
@@ -634,258 +739,400 @@ async function seed(bcryptSalt: Salt) {
     },
   });
 
-  await createFilter('Onboarding - Businesses with enriched data', 'businesses', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      createdAt: true,
-      context: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
+  await createFilter(
+    'Onboarding - Businesses with enriched data',
+    'businesses',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        createdAt: true,
+        context: true,
+        state: true,
+        workflowDefinition: {
+          select: {
+            id: true,
+            name: true,
+            contextSchema: true,
+            config: true,
+            definition: true,
+          },
+        },
+        business: {
+          select: {
+            id: true,
+            companyName: true,
+            registrationNumber: true,
+            legalForm: true,
+            countryOfIncorporation: true,
+            dateOfIncorporation: true,
+            address: true,
+            phoneNumber: true,
+            email: true,
+            website: true,
+            industry: true,
+            taxIdentificationNumber: true,
+            vatNumber: true,
+            shareholderStructure: true,
+            numberOfEmployees: true,
+            businessPurpose: true,
+            documents: true,
+            approvalState: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
         },
       },
-      business: {
-        select: {
-          id: true,
-          companyName: true,
-          registrationNumber: true,
-          legalForm: true,
-          countryOfIncorporation: true,
-          dateOfIncorporation: true,
-          address: true,
-          phoneNumber: true,
-          email: true,
-          website: true,
-          industry: true,
-          taxIdentificationNumber: true,
-          vatNumber: true,
-          shareholderStructure: true,
-          numberOfEmployees: true,
-          businessPurpose: true,
-          documents: true,
-          approvalState: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
+      where: {
+        workflowDefinitionId: 'dynamic_external_request_example',
+        businessId: { not: null },
       },
     },
-    where: {
-      workflowDefinitionId: 'dynamic_external_request_example',
-      businessId: { not: null },
+    project1.id,
+  );
+
+  await createFilter(
+    'Onboarding - Individuals',
+    'individuals',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        context: true,
+        createdAt: true,
+        state: true,
+        workflowDefinition: {
+          select: {
+            id: true,
+            name: true,
+            contextSchema: true,
+            config: true,
+            definition: true,
+          },
+        },
+        endUser: {
+          select: {
+            id: true,
+            correlationId: true,
+            endUserType: true,
+            approvalState: true,
+            stateReason: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            phone: true,
+            dateOfBirth: true,
+            avatarUrl: true,
+            additionalInfo: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      where: {
+        workflowDefinitionId: kycManualMachineId,
+        endUserId: { not: null },
+      },
+    },
+    project1.id,
+  );
+
+  // KYB Onboarding
+  await client.workflowDefinition.create({
+    data: {
+      id: onboardingMachineId,
+      name: 'kyb_onboarding',
+      version: 1,
+      definitionType: 'statechart-json',
+      config: {
+        workflowLevelResolution: true,
+        completedWhenTasksResolved: false,
+        allowMultipleActiveWorkflows: false,
+      },
+      definition: {
+        id: 'kyb_onboarding',
+        predictableActionArguments: true,
+        initial: 'review',
+
+        context: {
+          documents: [],
+        },
+
+        states: {
+          review: {
+            on: {
+              approve: {
+                target: 'approved',
+              },
+              reject: {
+                target: 'rejected',
+              },
+              revision: {
+                target: 'revision',
+              },
+            },
+          },
+          approved: {
+            type: 'final',
+          },
+          rejected: {
+            type: 'final',
+          },
+          revision: {
+            on: {
+              review: {
+                target: 'review',
+              },
+            },
+          },
+        },
+      },
     },
   });
 
-  await createFilter('Onboarding - Individuals', 'individuals', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      context: true,
-      createdAt: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
+  // KYB Risk Score Improvement
+  await client.workflowDefinition.create({
+    data: {
+      id: riskScoreMachineId,
+      name: 'kyb_risk_score',
+      version: 1,
+      definitionType: 'statechart-json',
+      config: {
+        workflowLevelResolution: false,
+        completedWhenTasksResolved: true,
+        allowMultipleActiveWorkflows: true,
+      },
+      definition: {
+        id: 'kyb_risk_score',
+        predictableActionArguments: true,
+        initial: 'review',
+
+        context: {
+          documents: [],
+        },
+
+        states: {
+          review: {
+            on: {
+              approve: {
+                target: 'approved',
+              },
+              reject: {
+                target: 'rejected',
+              },
+              revision: {
+                target: 'revision',
+              },
+            },
+          },
+          approved: {
+            type: 'final',
+          },
+          rejected: {
+            type: 'final',
+          },
+          revision: {
+            on: {
+              review: {
+                target: 'review',
+              },
+            },
+          },
         },
       },
-      endUser: {
-        select: {
-          id: true,
-          correlationId: true,
-          endUserType: true,
-          approvalState: true,
-          stateReason: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          phone: true,
-          dateOfBirth: true,
-          avatarUrl: true,
-          additionalInfo: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
-      },
-    },
-    where: {
-      workflowDefinitionId: manualMachineId,
-      endUserId: { not: null },
     },
   });
 
-  await createFilter('Risk Score Improvement - Individuals', 'individuals', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      createdAt: true,
-      context: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
+  await createFilter(
+    'Risk Score Improvement - Individuals',
+    'individuals',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        createdAt: true,
+        context: true,
+        state: true,
+        workflowDefinition: {
+          select: {
+            id: true,
+            name: true,
+            contextSchema: true,
+            config: true,
+            definition: true,
+          },
+        },
+        endUser: {
+          select: {
+            id: true,
+            correlationId: true,
+            endUserType: true,
+            approvalState: true,
+            stateReason: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            phone: true,
+            dateOfBirth: true,
+            avatarUrl: true,
+            additionalInfo: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
         },
       },
-      endUser: {
-        select: {
-          id: true,
-          correlationId: true,
-          endUserType: true,
-          approvalState: true,
-          stateReason: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          phone: true,
-          dateOfBirth: true,
-          avatarUrl: true,
-          additionalInfo: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
+      where: {
+        workflowDefinitionId: riskScoreMachineKybId,
+        endUserId: { not: null },
       },
     },
-    where: {
-      workflowDefinitionId: riskScoreMachineKybId,
-      endUserId: { not: null },
-    },
-  });
+    project1.id,
+  );
 
-  await createFilter('Risk Score Improvement - Businesses', 'businesses', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      createdAt: true,
-      context: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
+  await createFilter(
+    'Risk Score Improvement - Businesses',
+    'businesses',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        createdAt: true,
+        context: true,
+        state: true,
+        workflowDefinition: {
+          select: {
+            id: true,
+            name: true,
+            contextSchema: true,
+            config: true,
+            definition: true,
+          },
+        },
+        business: {
+          select: {
+            id: true,
+            companyName: true,
+            registrationNumber: true,
+            legalForm: true,
+            countryOfIncorporation: true,
+            dateOfIncorporation: true,
+            address: true,
+            phoneNumber: true,
+            email: true,
+            website: true,
+            industry: true,
+            taxIdentificationNumber: true,
+            vatNumber: true,
+            shareholderStructure: true,
+            numberOfEmployees: true,
+            businessPurpose: true,
+            documents: true,
+            approvalState: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
         },
       },
-      business: {
-        select: {
-          id: true,
-          companyName: true,
-          registrationNumber: true,
-          legalForm: true,
-          countryOfIncorporation: true,
-          dateOfIncorporation: true,
-          address: true,
-          phoneNumber: true,
-          email: true,
-          website: true,
-          industry: true,
-          taxIdentificationNumber: true,
-          vatNumber: true,
-          shareholderStructure: true,
-          numberOfEmployees: true,
-          businessPurpose: true,
-          documents: true,
-          approvalState: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
+      where: {
+        workflowDefinitionId: riskScoreMachineKybId,
+        businessId: { not: null },
       },
     },
-    where: {
-      workflowDefinitionId: riskScoreMachineKybId,
-      businessId: { not: null },
-    },
-  });
+    project1.id,
+  );
 
-  await createFilter('KYB', 'businesses', {
-    select: {
-      id: true,
-      status: true,
-      assigneeId: true,
-      createdAt: true,
-      context: true,
-      workflowDefinition: {
-        select: {
-          id: true,
-          name: true,
-          contextSchema: true,
-          config: true,
+  await createFilter(
+    "KYB with UBO's",
+    'businesses',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        createdAt: true,
+        context: true,
+        state: true,
+        workflowDefinition: {
+          select: {
+            id: true,
+            name: true,
+            contextSchema: true,
+            config: true,
+            definition: true,
+          },
         },
+        business: {
+          select: {
+            id: true,
+            companyName: true,
+            registrationNumber: true,
+            legalForm: true,
+            countryOfIncorporation: true,
+            dateOfIncorporation: true,
+            address: true,
+            phoneNumber: true,
+            email: true,
+            website: true,
+            industry: true,
+            taxIdentificationNumber: true,
+            vatNumber: true,
+            shareholderStructure: true,
+            numberOfEmployees: true,
+            businessPurpose: true,
+            documents: true,
+            approvalState: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+        childWorkflowsRuntimeData: true,
       },
-      business: {
-        select: {
-          id: true,
-          companyName: true,
-          registrationNumber: true,
-          legalForm: true,
-          countryOfIncorporation: true,
-          dateOfIncorporation: true,
-          address: true,
-          phoneNumber: true,
-          email: true,
-          website: true,
-          industry: true,
-          taxIdentificationNumber: true,
-          vatNumber: true,
-          shareholderStructure: true,
-          numberOfEmployees: true,
-          businessPurpose: true,
-          documents: true,
-          approvalState: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-      assignee: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
+      where: {
+        workflowDefinitionId: 'kyb_parent_kyc_session_example',
+        businessId: { not: null },
       },
     },
-    where: {
-      workflowDefinitionId: manualMachineId,
-      businessId: { not: null },
-    },
-  });
+    project1.id,
+  );
 
   await client.$transaction(async () =>
     endUserIds.map(async (id, index) =>
@@ -894,10 +1141,11 @@ async function seed(bcryptSalt: Salt) {
         data: generateEndUser({
           id,
           workflow: {
-            workflowDefinitionId: manualMachineId,
+            workflowDefinitionId: kycManualMachineId,
             workflowDefinitionVersion: manualMachineVersion,
             context: await createMockEndUserContextData(id, index + 1),
           },
+          projectId: project1.id,
         }),
       }),
     ),
@@ -910,12 +1158,14 @@ async function seed(bcryptSalt: Salt) {
         workflowDefinitionVersion: 1,
         context: await createMockBusinessContextData(id, index + 1),
         createdAt: faker.date.recent(2),
+        projectId: project1.id,
       });
 
       return client.business.create({
         data: generateBusiness({
           id,
           workflow: await riskWf(),
+          projectId: project1.id,
         }),
       });
     });
@@ -933,6 +1183,7 @@ async function seed(bcryptSalt: Salt) {
         data: generateBusiness({
           id,
           workflow: exampleWf,
+          projectId: project1.id,
         }),
       });
     });
@@ -961,6 +1212,10 @@ async function seed(bcryptSalt: Salt) {
 
   console.info('Seeding database with custom seed...');
   customSeed();
-
+  await generateKybDefintion(client);
+  await generateKycSessionDefinition(client);
+  await generateParentKybWithSessionKycs(client);
+  await generateKycForE2eTest(client);
+  await generateParentKybWithKycs(client);
   console.info('Seeded database successfully');
 }

@@ -10,11 +10,11 @@ import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const usersStatsQueryKeys = createQueryKeys('users-stats', {
   casesResolvedStats: (query: GetUsersCaseResolvingStats) => ({
-    queryKey: [query],
+    queryKey: [{ query }],
     queryFn: () => fetchUsersResolvedCasesStats(query),
   }),
   casesAssignedStats: (query: GetUsersAssignedCasesStatsDto) => ({
-    queryKey: [query],
+    queryKey: [{ query }],
     queryFn: () => fetchUsersAssignedCasesStats(query),
   }),
 });

@@ -19,8 +19,9 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@/prisma/prisma.service';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
+import { EntityRepository } from '@/common/entity/entity.repository';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { createCustomer } from '@/test/helpers/create-customer';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -31,7 +32,9 @@ describe('#EndUserControllerExternal', () => {
   beforeAll(async () => {
     const servicesProviders = [
       EndUserRepository,
+      EntityRepository,
       FilterService,
+      ProjectScopeService,
       FilterRepository,
       FileRepository,
       FileService,
@@ -59,19 +62,24 @@ describe('#EndUserControllerExternal', () => {
       [EndUserControllerExternal],
       [PrismaModule],
     );
+
+    await createCustomer(await app.get(PrismaService), String(Date.now()), 'secret', '');
   });
 
   describe('POST /end-user', () => {
-    it('it creates an end-user', async () => {
+    it('creates an end-user', async () => {
       expect(await endUserService.list({})).toHaveLength(0);
 
-      const response = await request(app.getHttpServer()).post('/external/end-users').send({
-        correlationId: faker.datatype.uuid(),
-        endUserType: faker.random.word(),
-        approvalState: 'APPROVED',
-        firstName: 'test',
-        lastName: 'lastName',
-      });
+      const response = await request(app.getHttpServer())
+        .post('/external/end-users')
+        .send({
+          correlationId: faker.datatype.uuid(),
+          endUserType: faker.random.word(),
+          approvalState: 'APPROVED',
+          firstName: 'test',
+          lastName: 'lastName',
+        })
+        .set('authorization', 'Bearer secret');
 
       expect(response.status).toBe(201);
       const allEndUsers = await endUserService.list({});

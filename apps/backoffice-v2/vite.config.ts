@@ -11,6 +11,8 @@ export default defineConfig(configEnv => {
       open: true,
       host: true,
       port: 5137,
+      // port: 443,
+      // https: true,
     },
     plugins: [
       terminal({
@@ -18,6 +20,7 @@ export default defineConfig(configEnv => {
         strip: false,
       }),
       react(),
+      // mkcert(),
     ],
     resolve: {
       alias: {

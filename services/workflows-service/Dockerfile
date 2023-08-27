@@ -1,34 +1,33 @@
-FROM node:18.12.1 AS base
+FROM node:18.17.1-bullseye-slim as dev
 
-RUN apt-get update && apt-get install -y --no-install-recommends dumb-init
+RUN apt-get update
+RUN apt-get install dumb-init
 
 WORKDIR /app
 
-COPY package.json ./
+COPY ./package.json .
 
 RUN npm install
 
-COPY prisma/schema.prisma ./prisma/
-
-RUN npm run prisma:generate
-
 COPY . .
 
+RUN npm run prisma:generate
 RUN npm run build
 
-FROM node:18.12.1 AS prod
+CMD [ "dumb-init", "npm", "run", "dev", "--host" ]
+
+FROM node:18.17.1-bullseye-slim as prod
 
 WORKDIR /app
 
-COPY --from=base /usr/bin/dumb-init /usr/bin/dumb-init
-COPY --from=base /app/node_modules/ ./node_modules
-COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/dist ./dist
-COPY --from=base /app/prisma ./prisma
-COPY --from=base /app/scripts ./scripts
-COPY --from=base /app/src ./src
-COPY --from=base /app/tsconfig* ./
+COPY --from=dev /usr/bin/dumb-init /usr/bin/dumb-init
+COPY --from=dev /app/node_modules/ ./node_modules
+COPY --from=dev /app/package.json ./package.json
+COPY --from=dev /app/dist ./dist
+COPY --from=dev /app/prisma ./prisma
+COPY --from=dev /app/scripts ./scripts
+COPY --from=dev /app/src ./src
 
-EXPOSE 3007
+EXPOSE 3000
 
 CMD [ "dumb-init", "npm", "run", "prod" ]

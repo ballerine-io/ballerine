@@ -1,10 +1,12 @@
+import { PrismaClient } from '@prisma/client';
+
 export const kybWithExternalRequestWorkflowExample = {
-  id: 'external_request_example',
-  name: 'external_request_example',
+  id: 'kyb_external_request_example',
+  name: 'kyb_external_request_example',
   version: 1,
   definitionType: 'statechart-json',
   definition: {
-    id: 'kyb_example_v1',
+    id: 'kyb_example_external_request_v1',
     predictableActionArguments: true,
     initial: 'idle',
     context: {
@@ -24,19 +26,9 @@ export const kybWithExternalRequestWorkflowExample = {
               cond: {
                 type: 'json-logic',
                 rule: {
-                  or: [
-                    {
-                      '==': [
-                        { var: 'context.entity.companyName' },
-                        { var: 'response.data.registered_name' },
-                      ],
-                    },
-                    {
-                      '>=': [
-                        { var: 'context.external_request_example.data.name_fuzziness_score' },
-                        0.8,
-                      ],
-                    },
+                  '==': [
+                    { var: 'context.entity.companyName' },
+                    { var: 'response.data.registered_name' },
                   ],
                 },
               },
@@ -102,72 +94,85 @@ export const kybWithExternalRequestWorkflowExample = {
           data_updated: 'check_business_details',
         },
       },
+      reject: {
+        type: 'final',
+      },
     },
   },
-  externalRequests: [
-    {
-      name: 'external_request_example',
-      strategy: 'direct-api',
-      successCallback: 'API_CALL_SUCCESS',
-      errorCallback: 'API_CALL_FAILURE',
-      url: 'https://mocks.ballerine.dev/api/businesses/risk/{context.entity.regestrationNumber}',
-      when: 'pre',
-      method: 'POST',
-      request: {
-        transform: {
-          transformer: 'jq',
-          mapping:
-            '{ business_name: .context .entity .companyName, regestration_number:  .context .entity .registrationNumber}',
-        }, // JQ
-        schema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          type: 'object',
-          properties: {
-            business_name: {
-              type: 'string',
+  extensions: {
+    apiPlugins: [
+      {
+        name: 'external_request_example',
+        strategy: 'direct-api',
+        successCallback: 'API_CALL_SUCCESS',
+        errorCallback: 'API_CALL_FAILURE',
+        url: 'https://mocks.ballerine.dev/api/businesses/risk/{context.entity.regestrationNumber}',
+        when: 'pre',
+        method: 'POST',
+        request: {
+          transformers: [
+            {
+              transformer: 'jmespath',
+              mapping:
+                '{business_name: context.entity.companyName, regestration_number:  context.entity.registrationNumber}',
             },
-            registration_number: {
-              type: 'string',
-            },
-          },
-          required: ['business_name', 'registration_number'],
-        }, // Schema is OPTIONAL, but if provided, it will be used to validate the request body
-      },
-      response: {
-        transform: {}, // JQ
-        schema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          type: 'object',
-          properties: {
-            business_details: {
-              type: 'object',
-              properties: {
-                registered_name: {
-                  type: 'string',
-                },
-                registration_number: {
-                  type: 'string',
-                },
-                address: {
-                  type: 'string',
-                },
-                contact_number: {
-                  type: 'string',
-                },
+          ], // JQ
+          schema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            type: 'object',
+            properties: {
+              business_name: {
+                type: 'string',
+              },
+              registration_number: {
+                type: 'string',
               },
             },
-            name_fuzziness_score: {
-              type: 'number',
-              minimum: 0,
-              maximum: 1,
+            required: ['business_name', 'registration_number'],
+          }, // Schema is OPTIONAL, but if provided, it will be used to validate the request body
+        },
+        response: {
+          transformers: [{}], // JQ
+          schema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            type: 'object',
+            properties: {
+              business_details: {
+                type: 'object',
+                properties: {
+                  registered_name: {
+                    type: 'string',
+                  },
+                  registration_number: {
+                    type: 'string',
+                  },
+                  address: {
+                    type: 'string',
+                  },
+                  contact_number: {
+                    type: 'string',
+                  },
+                },
+              },
+              name_fuzziness_score: {
+                type: 'number',
+                minimum: 0,
+                maximum: 1,
+              },
             },
-          },
-        }, // OPTIONAL
+          }, // OPTIONAL
+        },
+        headers: {
+          authorization: 'Bearer {secrets.BUSINESS_DATA__VENDOR_API_KEY}',
+        },
+        stateNames: ['check_company_data'],
       },
-      headers: {
-        authorization: 'Bearer {secrets.BUSINESS_DATA__VENDOR_API_KEY}',
-      },
-      states: ['check_company_data'],
-    },
-  ],
+    ],
+  },
+};
+
+export const generateKybDefintion = async (prismaClient: PrismaClient) => {
+  return await prismaClient.workflowDefinition.create({
+    data: kybWithExternalRequestWorkflowExample,
+  });
 };

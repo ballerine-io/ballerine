@@ -33,7 +33,7 @@ export const useSignOutMutation = () => {
       });
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: authenticatedUser.queryKey });
+      void queryClient.invalidateQueries();
     },
   });
 };

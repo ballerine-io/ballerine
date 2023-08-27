@@ -73,12 +73,12 @@ describe('UserSessionAuditMiddleware', () => {
 
       it('will be set on middleware call', async () => {
         await middleware.use(
-          { user: testUser, session: testUser } as any,
+          { user: { user: testUser }, session: testUser } as any,
           {} as Response,
           callback,
         );
 
-        const updatedUser = await app.get(UserService).getById(testUser.id);
+        const updatedUser = await app.get(UserService).getByIdUnscoped(testUser.id);
 
         expect(updatedUser.lastActiveAt).toBeTruthy();
         expect(callback).toHaveBeenCalledTimes(1);
@@ -95,10 +95,12 @@ describe('UserSessionAuditMiddleware', () => {
       });
 
       it('will not be changed when lastActiveAt not expired', async () => {
-        const nonExpiredDate = dayjs().subtract(middleware.UPDATE_INTERVAL - 10, 'ms');
+        const nonExpiredDateString = dayjs()
+          .subtract(middleware.UPDATE_INTERVAL - 10, 'ms')
+          .toISOString();
 
-        testUser = await userService.updateById(testUser.id, {
-          data: { lastActiveAt: nonExpiredDate.toDate() },
+        testUser = await userService.updateByIdUnscoped(testUser.id, {
+          data: { lastActiveAt: nonExpiredDateString },
         });
 
         await middleware.use(
@@ -107,9 +109,9 @@ describe('UserSessionAuditMiddleware', () => {
           callback,
         );
 
-        const user = await userService.getById(testUser.id);
+        const user = await userService.getByIdUnscoped(testUser.id);
 
-        expect(user.lastActiveAt).toEqual(nonExpiredDate.toDate());
+        expect(user.lastActiveAt?.toISOString()).toBe(nonExpiredDateString);
         expect(callback).toBeCalledTimes(1);
       });
 
@@ -119,14 +121,15 @@ describe('UserSessionAuditMiddleware', () => {
         testUser.lastActiveAt = expiredDate.toDate();
 
         await middleware.use(
-          { user: testUser, session: testUser } as any,
+          { user: { user: testUser }, session: testUser } as any,
           {} as Response,
           callback,
         );
 
-        const updatedUser = await userService.getById(testUser.id);
+        // @ts-ignore
+        const updatedUser = await userService.getByIdUnscoped(testUser.id);
 
-        expect(Number(updatedUser.lastActiveAt)).toBeGreaterThan(Number(expiredDate.toDate()));
+        expect(Number(updatedUser.lastActiveAt)).toBeGreaterThan(Number(expiredDate));
         expect(callback).toBeCalledTimes(1);
       });
     });

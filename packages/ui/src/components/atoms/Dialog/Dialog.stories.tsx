@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from '@components/atoms/Dialog/Dialog';
+import { Dialog, DialogContent } from './Dialog';
 
 export default {
   component: Dialog,

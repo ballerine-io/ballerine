@@ -31,6 +31,12 @@ import {
 } from '@/workflow/dtos/find-workflow.dto';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
+import { WorkflowEventDecisionInput } from '@/workflow/dtos/workflow-event-decision-input';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TProjectIds } from '@/types';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
+import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -40,6 +46,7 @@ export class WorkflowControllerInternal {
     protected readonly filterService: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly scopeService: ProjectScopeService,
   ) {}
 
   @common.Post()
@@ -59,9 +66,13 @@ export class WorkflowControllerInternal {
   @ApiNestedQuery(FindWorkflowsListDto)
   @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema, 'query'))
   async listWorkflowRuntimeData(
+    @ProjectIds() projectIds: TProjectIds,
     @common.Query() { filterId, page, filter: filters, ...queryParams }: FindWorkflowsListDto,
   ) {
-    const filter = await this.filterService.getById(filterId);
+    const filter = await this.filterService.getById(
+      filterId,
+      this.scopeService.scopeFindOne({}, projectIds),
+    );
 
     const entityType = filter.entity as 'individuals' | 'businesses';
 
@@ -73,6 +84,7 @@ export class WorkflowControllerInternal {
       orderBy,
       page,
       filters,
+      projectIds,
     });
   }
 
@@ -113,11 +125,41 @@ export class WorkflowControllerInternal {
   async event(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowEventInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
-    return await this.service.event({
-      ...data,
-      id: params.id,
-    });
+    return await this.service.event(
+      {
+        ...data,
+        id: params.id,
+      },
+      projectIds,
+    );
+  }
+
+  // PATCH /workflows/:id/event-decision
+  @common.Patch('/:id/event-decision')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(WorkflowAssigneeGuard)
+  async updateDecisionAndSendEventById(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @common.Body() data: WorkflowEventDecisionInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<WorkflowRuntimeData> {
+    try {
+      return this.service.updateDecisionAndSendEvent({
+        id: params?.id,
+        name: data?.name,
+        reason: data?.reason,
+        projectIds,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
   }
 
   // PATCH /workflows/:id
@@ -132,6 +174,35 @@ export class WorkflowControllerInternal {
   ): Promise<WorkflowRuntimeData> {
     try {
       return await this.service.updateWorkflowRuntimeData(params.id, data);
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+      }
+      throw error;
+    }
+  }
+
+  // PATCH /workflows/:workflowId/decision/:documentId
+  @common.Patch('/:id/decision/:documentId')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(WorkflowAssigneeGuard)
+  async updateDocumentDecisionById(
+    @common.Param() params: DocumentDecisionParamsInput,
+    @common.Body() data: DocumentDecisionUpdateInput,
+  ): Promise<WorkflowRuntimeData> {
+    try {
+      return await this.service.updateDocumentDecisionById(
+        {
+          workflowId: params?.id,
+          documentId: params?.documentId,
+        },
+        {
+          status: data?.decision,
+          reason: data?.reason,
+        },
+      );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
