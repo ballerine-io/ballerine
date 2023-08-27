@@ -17,18 +17,17 @@ export class CustomerControllerExternal {
   constructor(
     protected readonly service: CustomerService,
     protected readonly prisma: PrismaService,
-  ) {
-  }
+  ) {}
 
   @common.Post()
   @UseGuards(AdminAuthGuard)
-  @swagger.ApiCreatedResponse({type: [CustomerCreateDto]})
+  @swagger.ApiCreatedResponse({ type: [CustomerCreateDto] })
   @swagger.ApiForbiddenResponse()
   async create(@common.Body() customerCreateModel: CustomerCreateDto) {
-    const {projectName, ...customer} = customerCreateModel;
+    const { projectName, ...customer } = customerCreateModel;
     if (projectName) {
       (customer as Prisma.CustomerCreateInput).projects = {
-        create: {name: customerCreateModel.projectName!},
+        create: { name: customerCreateModel.projectName! },
       };
     }
 
@@ -59,7 +58,7 @@ export class CustomerControllerExternal {
 
   @common.Get('/me')
   @UseGuards(CustomerAuthGuard)
-  @swagger.ApiOkResponse({type: [CustomerModel]})
+  @swagger.ApiOkResponse({ type: [CustomerModel] })
   @swagger.ApiForbiddenResponse()
   find(@Request() req: any): Partial<Customer> {
     return (req.user as AuthenticatedEntity).customer!;

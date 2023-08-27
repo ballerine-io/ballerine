@@ -1,5 +1,9 @@
 import React, { FunctionComponent } from 'react';
+import { Send } from 'lucide-react';
+import { DialogClose } from '@radix-ui/react-dialog';
+import { Badge } from '@ballerine/ui';
 import { IActionsProps } from './interfaces';
+
 import { useActions } from './hooks/useActions/useActions';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import {
@@ -14,8 +18,14 @@ import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dia
 import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
-import { Send } from 'lucide-react';
-import { DialogClose } from '@radix-ui/react-dialog';
+import { convertSnakeCaseToTitleCase } from '../../hooks/useEntity/utils';
+
+const stateToBadgeVariant = {
+  approve: { variant: 'success', text: 'Approved' },
+  revision: { variant: 'warning', text: 'Revisions' },
+  reject: { variant: 'destructive', text: 'Rejected' },
+  manual_review: { variant: 'info', text: 'Manual Review' },
+};
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -49,6 +59,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     canReject,
     canRevision,
     caseState,
+    state,
     authenticatedUser,
     assignees,
     onTriggerAssignToMe,
@@ -57,7 +68,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
   } = useActions({ workflowId: id, fullName });
 
   return (
-    <div className={`sticky top-0 z-50 col-span-2 bg-base-100 px-4 pt-4`}>
+    <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>
       <div className={`flex flex-row space-x-3.5`}>
         <AssignButton
           assignees={[
@@ -86,7 +97,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         />
       </div>
       <div className={`flex h-20 justify-between`}>
-        <div className={`flex items-center space-x-8`}>
+        <div className={`flex flex-col space-y-4`}>
           <h2
             className={ctw(`text-2xl font-bold`, {
               'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
@@ -95,6 +106,14 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           >
             {fullName}
           </h2>
+          {stateToBadgeVariant[state] ? (
+            <div className={`flex items-center`}>
+              <span className={`mr-[8px] text-sm font-bold`}>Status</span>
+              <Badge variant={stateToBadgeVariant[state].variant} className={`text-sm font-bold`}>
+                {convertSnakeCaseToTitleCase(stateToBadgeVariant[state].text)}
+              </Badge>
+            </div>
+          ) : null}
         </div>
         {showResolutionButtons && (
           <div className={`flex items-center space-x-6 pe-[3.35rem]`}>
