@@ -26,7 +26,7 @@ backoffice:
     protocol: TCP
   image:
     registry: ghcr.io
-    repository: "pratapalakshmi/backoffice"
+    repository: "ballerine-io/backoffice"
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
@@ -45,7 +45,7 @@ headlessexample:
     protocol: TCP
   image:
     registry: ghcr.io
-    repository: "pratapalakshmi/headless-example"
+    repository: "ballerine-io/headless-example"
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
@@ -64,7 +64,7 @@ workflowsdashboard:
     protocol: TCP
   image:
     registry: ghcr.io
-    repository: "pratapalakshmi/workflows-dashboard"
+    repository: "ballerine-io/workflows-dashboard"
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
@@ -84,7 +84,7 @@ websocketService:
     protocol: TCP
   image:
     registry: ghcr.io
-    repository: "pratapalakshmi/websocket-service"
+    repository: "ballerine-io/websocket-service"
     pullPolicy: Always
     tag: "dev"
   applicationConfig:
@@ -107,7 +107,7 @@ workflowService:
     protocol: TCP
   image:
     registry: ghcr.io
-    repository: "pratapalakshmi/workflows-service"
+    repository: "ballerine-io/workflows-service"
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
