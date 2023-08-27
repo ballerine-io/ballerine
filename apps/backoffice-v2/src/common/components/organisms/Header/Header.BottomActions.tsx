@@ -79,7 +79,7 @@ export const BottomActions = () => {
         </ul>
       </div>
       <button
-        className={`btn-ghost btn-block btn justify-start gap-x-2 focus:outline-primary`}
+        className={`btn btn-ghost btn-block justify-start gap-x-2 focus:outline-primary`}
         onClick={onSignOut}
       >
         <LogOutSvg /> Log out

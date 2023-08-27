@@ -24,6 +24,24 @@ export const transformRJSFErrors = (errors: RJSFValidationError[]): RJSFValidati
       error.message = '';
     }
 
+    if (error.params?.type === 'number') {
+      error.message = 'This field is required';
+    }
+
+    if (error.params?.type === 'object') {
+      error.message = 'This field is required';
+    }
+
+    if (error.name === 'minItems') {
+      error.message = `Plead add at least ${error?.params.limit} item${
+        error?.params.limit > 1 ? 's' : ''
+      }.`;
+    }
+
+    if (error.params?.format === 'email') {
+      error.message = 'Please provide valid email address.';
+    }
+
     return error;
   });
 };

@@ -17,7 +17,7 @@ export const useRejectTaskByIdMutation = (workflowId: string) => {
         workflowId,
         documentId,
         body: {
-          decision: Action.REJECT.toLowerCase(),
+          decision: Action.REJECT,
           reason,
         },
       }),

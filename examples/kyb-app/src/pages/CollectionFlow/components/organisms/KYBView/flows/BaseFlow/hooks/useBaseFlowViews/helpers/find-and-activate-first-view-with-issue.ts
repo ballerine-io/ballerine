@@ -1,7 +1,7 @@
 import { View } from '@app/common/providers/ViewStateProvider';
 
-export const findAndActivateFirstViewWithIssue = (views: View[]): View[] => {
-  const firstViewWithWarningStatus = views.find(view => view.meta?.status === 'warning');
+export const findAndActivateFirstViewWithIssue = <T>(views: View<T>[]): View<T>[] => {
+  const firstViewWithWarningStatus = views.find(view => view.stepMetadata?.status === 'warning');
 
   if (firstViewWithWarningStatus) {
     firstViewWithWarningStatus.active = true;

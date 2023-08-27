@@ -15,7 +15,7 @@ export class EmailPlugin extends ApiPlugin {
     payload: AnyRecord,
     headers: HeadersInit,
   ) {
-    const from = { from: { email: payload.from } };
+    const from = { from: { email: payload.from, ...(payload.name ? { name: payload.name } : {}) } };
     const subject = payload.subject
       ? { subject: this.replaceValuePlaceholders(payload.subject as string, payload) }
       : {};
@@ -45,6 +45,18 @@ export class EmailPlugin extends ApiPlugin {
       ],
       ...templateId,
     };
+
+    payload.adapter ??= 'sendgrid';
+
+    if (payload.adapter === 'log') {
+      console.log('Email payload: ', emailPayload);
+
+      return {
+        ok: true,
+        json: () => Promise.resolve({}),
+        statusText: 'OK',
+      };
+    }
 
     return await super.makeApiRequest(url, method, emailPayload, headers);
   }

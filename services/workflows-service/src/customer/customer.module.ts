@@ -4,9 +4,10 @@ import { CustomerControllerInternal } from '@/customer/customer.controller.inter
 import { CustomerRepository } from '@/customer/customer.repository';
 import { CustomerService } from '@/customer/customer.service';
 import { CustomerControllerExternal } from '@/customer/customer.controller.external';
+import { PrismaModule } from '@/prisma/prisma.module';
 
 @Module({
-  imports: [ACLModule],
+  imports: [ACLModule, PrismaModule],
   controllers: [CustomerControllerInternal, CustomerControllerExternal],
   providers: [CustomerService, CustomerRepository],
   exports: [ACLModule, CustomerService],

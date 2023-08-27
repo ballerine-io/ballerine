@@ -3,7 +3,7 @@ import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/R
 
 export const BooleanFieldAdapter: RJSVInputAdapter<boolean> = ({ formData, schema, onChange }) => {
   return (
-    <div className="flex flex-row items-center gap-3">
+    <label className="flex flex-row items-center gap-3">
       <Checkbox
         className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground"
         color="primary"
@@ -12,7 +12,7 @@ export const BooleanFieldAdapter: RJSVInputAdapter<boolean> = ({ formData, schem
           onChange(Boolean(e));
         }}
       />
-      <span>{schema.description}</span>
-    </div>
+      <span>{schema.title}</span>
+    </label>
   );
 };

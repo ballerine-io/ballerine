@@ -6,6 +6,8 @@ import { UserCreateDto } from '@/user/dtos/user-create';
 import { Prisma } from '@prisma/client';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { UseGuards } from '@nestjs/common';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TProjectIds } from '@/types';
 
 @swagger.ApiTags('internal/users')
 @common.Controller('internal/users')
@@ -15,18 +17,21 @@ export class UserControllerInternal {
   @common.Get()
   @swagger.ApiOkResponse({ type: [UserModel] })
   @swagger.ApiForbiddenResponse()
-  async list(): Promise<UserModel[]> {
-    return this.service.list({
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        phone: true,
-        updatedAt: true,
-        createdAt: true,
+  async list(@ProjectIds() projectIds: TProjectIds): Promise<UserModel[]> {
+    return this.service.list(
+      {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          updatedAt: true,
+          createdAt: true,
+        },
       },
-    });
+      projectIds,
+    );
   }
 
   @common.Post()
@@ -34,10 +39,10 @@ export class UserControllerInternal {
   @UseGuards(AdminAuthGuard)
   @swagger.ApiForbiddenResponse()
   async create(@common.Body() userCreatInfo: UserCreateDto) {
-    const { projectIds, ...user } = userCreatInfo;
+    const { projectIds, ...userInfo } = userCreatInfo;
 
     if (projectIds && projectIds.length > 0) {
-      (user as Prisma.UserCreateInput).userToProjects = {
+      (userCreatInfo as Prisma.UserCreateInput).userToProjects = {
         createMany: {
           data: projectIds.map(projectId => {
             return { projectId };
@@ -47,8 +52,11 @@ export class UserControllerInternal {
       };
     }
 
+    // @ts-ignore
+    delete userCreatInfo.projectIds;
+
     return this.service.create({
-      data: user,
+      data: userCreatInfo,
       select: {
         id: true,
         firstName: true,

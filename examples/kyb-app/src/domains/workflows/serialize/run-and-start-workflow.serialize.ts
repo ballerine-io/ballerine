@@ -1,6 +1,37 @@
-import { TRunWorkflowDto, WorkflowUpdatePayload } from '@app/domains/workflows/types';
+import { TRunWorkflowDto, WorkflowUBO, WorkflowUpdatePayload } from '@app/domains/workflows/types';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  getFullCountryNameByCode
+} from "@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list.ts";
+
+function createUBOFromUserInformation(data: WorkflowUpdatePayload): WorkflowUBO {
+  const ubo: WorkflowUBO = {
+    entity: {
+      id: uuidv4(),
+      type: 'individual',
+      data: {
+        firstName: data.entity.mainRepresentative.name.firstName,
+        lastName: data.entity.mainRepresentative.name.lastName,
+        email: data.entity.email,
+        dateOfBirth: new Date(+data.entity.mainRepresentative.birthDate).toISOString(),
+      },
+    },
+  };
+
+  return ubo;
+}
 
 export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRunWorkflowDto => {
+  const ubos = data.entity.ubos.map(ubo => {
+    ubo.entity.data.additionalInfo = {
+      ...(ubo.entity.data.additionalInfo || {}),
+      companyName: data.entity.companyName,
+      customerCompany: data.entity.companyName,
+    };
+
+    return ubo;
+  });
+
   const payload: TRunWorkflowDto = {
     workflowId: data.workflowId,
     context: {
@@ -12,7 +43,7 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
           website: data.entity.website,
           registrationNumber: data.entity.registrationNumber,
           companyName: data.entity.companyName,
-          countryOfIncorporation: data.entity.country,
+          countryOfIncorporation: getFullCountryNameByCode(data.entity.country),
           address: {
             text: data.entity.address,
           },
@@ -25,16 +56,9 @@ export const serializeWorkflowUpdatePayload = (data: WorkflowUpdatePayload): TRu
               dateOfBirth: data.entity.birthDate,
               companyName: data.entity.companyName,
               email: data.entity.email,
+              title: data.entity.mainRepresentative.title,
             },
-            ubos: data.entity.ubos.map(ubo => {
-              ubo.entity.data.additionalInfo = {
-                ...(ubo.entity.data.additionalInfo || {}),
-                companyName: data.entity.companyName,
-                customerCompany: data.entity.companyName,
-              };
-
-              return ubo;
-            }),
+            ubos: data.isShareholder ? [createUBOFromUserInformation(data), ...ubos] : ubos,
           },
         },
       },

@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.2.10",
+  "version": "0.2.16",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -62,7 +62,6 @@
     "@storybook/react": "^7.0.26",
     "@storybook/react-vite": "^7.0.26",
     "@storybook/testing-library": "^0.0.14-next.2",
-    "@tailwindcss/line-clamp": "0.4.4",
     "@types/lodash": "^4.14.191",
     "@types/node": "^20.4.1",
     "@types/react": "^18.0.37",
