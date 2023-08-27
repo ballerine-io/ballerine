@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-error';
 import { Method } from '../../common/enums';
 import { AuthenticatedUserSchema } from './validation-schemas';
+import { sleep } from '@ballerine/common';
 
 export const fetchSignOut = async ({ callbackUrl }: ISignInProps) => {
   const [session, error] = await apiClient({
@@ -51,6 +52,7 @@ export const fetchAuthenticatedUser = async () => {
       user: AuthenticatedUserSchema,
     }),
   });
+  await sleep(2000);
 
   return handleZodError(error, session);
 };
