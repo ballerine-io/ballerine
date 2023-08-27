@@ -53,6 +53,7 @@ export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
   status: z.string(),
+  state: z.string(),
   nextEvents: z.array(z.any()),
   workflowDefinition: ObjectWithIdSchema.extend({
     name: z.string(),
@@ -84,8 +85,6 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
     .array(
       BaseWorkflowByIdSchema.omit({
         nextEvents: true,
-      }).extend({
-        state: z.string(),
       }),
     )
     .optional(),
