@@ -4,7 +4,7 @@ import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const usersKeys = createQueryKeys('users', {
   activeUsers: (query: GetActiveUsersDto) => ({
-    queryKey: [{}, query],
+    queryKey: [{ query }],
     queryFn: () => fetchActiveUsers(query),
   }),
 });

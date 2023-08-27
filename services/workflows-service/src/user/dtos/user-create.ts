@@ -38,6 +38,13 @@ export class UserCreateDto {
   @IsString({ each: true })
   roles!: InputJsonValue;
 
+  @ApiProperty({
+    required: true,
+    type: Array,
+  })
+  @IsArray()
+  @IsString({ each: true })
+  projectIds!: Array<string>;
   // @ApiProperty({
   //   required: false,
   //   type: () => WorkflowCreateNestedManyWithoutUsersInput,

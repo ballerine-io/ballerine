@@ -23,11 +23,33 @@ export const env = createEnv({
     BACKOFFICE_CORS_ORIGIN: z.string().url(),
     HEADLESS_EXAMPLE_CORS_ORIGIN: z.string().url(),
     WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().url(),
+    KYB_EXAMPLE_CORS_ORIGIN: z.string().url(),
     AWS_S3_BUCKET_NAME: z.string().optional(),
     AWS_S3_BUCKET_KEY: z.string().optional(),
     AWS_S3_BUCKET_SECRET: z.string().optional(),
     API_KEY: z.string(),
     SENTRY_DSN: z.string().nullable().optional(),
+    WEBHOOK_URL: z.string().url().optional(),
+    WEBHOOK_SECRET: z.string().optional(),
+    IS_DEMO: z.string().optional(),
+    ADMIN_API_KEY: z.string().optional(),
+    MAIL_ADAPTER: z
+      .enum(['sendgrid', 'log'])
+      .default('sendgrid')
+      .describe(
+        `Which mail adapter to use. Use "log" during development to log emails to the console. In production, use "sendgrid" to send emails via SendGrid.`,
+      ),
+    UNIFIED_API_URL: z.string().url().describe('The URL of the Unified API.'),
+    UNIFIED_API_TOKEN: z
+      .string()
+      .optional()
+      .describe(
+        'API token for the Unified API. Used for authenticating outgoing requests to the Unified API.',
+      ),
+    UNIFIED_API_SHARED_SECRET: z
+      .string()
+      .optional()
+      .describe('Shared secret for the Unified API. Used for verifying incoming callbacks.'),
   },
   client: {},
   /**

@@ -3,6 +3,7 @@ import { Prisma, User } from '@prisma/client';
 import { PasswordService } from '../auth/password/password.service';
 import { transformStringFieldUpdateInput } from '../prisma/prisma.util';
 import { Injectable } from '@nestjs/common';
+import { UserWithProjects } from '@/types';
 
 @Injectable()
 export class UserRepository {
@@ -33,7 +34,7 @@ export class UserRepository {
   async findById<T extends Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>(
     id: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
-  ): Promise<User> {
+  ): Promise<UserWithProjects> {
     return this.prisma.user.findUniqueOrThrow({
       where: { id },
       ...args,
@@ -59,7 +60,6 @@ export class UserRepository {
       ...args,
       data: {
         ...args.data,
-
         password:
           args.data.password &&
           (await transformStringFieldUpdateInput(args.data.password, password =>

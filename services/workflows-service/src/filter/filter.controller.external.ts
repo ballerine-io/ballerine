@@ -10,12 +10,18 @@ import { FilterFindManyArgs } from '@/filter/dtos/filter-find-many-args';
 import { FilterModel } from '@/filter/filter.model';
 import { FilterWhereUniqueInput } from '@/filter/dtos/filter-where-unique-input';
 import { FilterService } from '@/filter/filter.service';
-import { UsePipes } from '@nestjs/common';
+import { UseGuards, UsePipes } from '@nestjs/common';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterCreateDto } from '@/filter/dtos/filter-create';
 import { FilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
-import { InputJsonValue } from '@/types';
-import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
+import { InputJsonValue, TProjectIds } from '@/types';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
+import { BusinessModel } from '@/business/business.model';
+import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
+import { BusinessCreateDto } from '@/business/dtos/business-create';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 @swagger.ApiTags('external/filters')
 @common.Controller('external/filters')
@@ -24,6 +30,7 @@ export class FilterControllerExternal {
     protected readonly service: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly scopeService: ProjectScopeService,
   ) {}
 
   @common.Get()
@@ -54,15 +61,16 @@ export class FilterControllerExternal {
   }
 
   @common.Post()
-  @UseKeyAuthGuard()
+  @UseGuards(CustomerAuthGuard)
   @swagger.ApiCreatedResponse({ type: FilterModel })
   @swagger.ApiForbiddenResponse()
   @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
-  async createFilter(@common.Body() data: FilterCreateDto) {
+  async createFilter(@ProjectIds() projectIds: TProjectIds, @common.Body() data: FilterCreateDto) {
     return await this.service.create({
       data: {
         ...data,
         query: data?.query as InputJsonValue,
+        projectId: projectIds?.[0],
       },
     });
   }

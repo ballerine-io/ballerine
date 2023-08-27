@@ -1,28 +1,28 @@
-
-FROM node:18.15 AS base
+FROM node:18.17.1-bullseye-slim as dev
 
 WORKDIR /app
+
+COPY ./package.json .
+
+RUN npm install --legacy-peer-deps
 
 COPY . .
-RUN rm -rf /app/node_modules
-RUN npm install 1> /dev/null
-RUN npm run build 1> /dev/null
 
-FROM node:18.15 AS prod
+RUN mv /app/.env.example /app/.env
+RUN npm run build
 
-WORKDIR /app
+ENV PATH="$PATH:/app/node_modules/.bin"
 
-COPY --from=base /app/node_modules/ ./node_modules
-COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/vite.config.ts ./vite.config.ts
-COPY --from=base /app/dist ./dist
-COPY --from=base /app/tsconfig* ./
+EXPOSE 5137
 
-ENV VITE_API_URL=http://localhost:3000/api/internal
-ENV VITE_API_KEY=KVfOlhMgK1V3MXTSHOTACgrAUK9qeI
-ENV VITE_AUTH_ENABLED=false
-ENV VITE_MOCK_SERVER=false
-ENV PATH="$PATH:./node_modules/.bin"
-EXPOSE ${BACKOFFICE_PORT}
+CMD ["npm", "run", "dev", "--host"]
 
-CMD [ "vite", "preview", "--port", "5173", "--host", "--no-open"]
+FROM nginx:stable-alpine as prod
+
+COPY --from=dev /app/dist /usr/share/nginx/html
+
+COPY example.nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
