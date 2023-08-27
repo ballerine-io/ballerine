@@ -277,9 +277,10 @@ export const useTasks = ({
                   docType,
                 )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
                 imageUrl:
-                  type === 'pdf'
-                    ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
-                    : results[docIndex][pageIndex],
+                  !isBase64(results[docIndex][pageIndex]) &&
+                  isValidUrl(results[docIndex][pageIndex])
+                    ? results[docIndex][pageIndex]
+                    : octetToFileType(results[docIndex][pageIndex], `application/${type}`),
                 fileType: type,
               })) ?? [],
           },
