@@ -8,6 +8,7 @@ import {
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { User } from '@sentry/node';
+import { TProjectIds } from '@/types';
 
 export interface RunnableWorkflowData {
   workflowDefinition: WorkflowDefinition;
@@ -34,6 +35,7 @@ export interface ListWorkflowsRuntimeParams {
   status?: WorkflowRuntimeDataStatus[];
   orderBy?: string;
   orderDirection?: SortOrder;
+  projectIds?: TProjectIds;
 }
 
 export interface ListRuntimeDataResult {

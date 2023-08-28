@@ -422,10 +422,12 @@ export class WorkflowService {
     status,
     orderBy,
     orderDirection,
+    projectIds,
   }: ListWorkflowsRuntimeParams): Promise<ListRuntimeDataResult> {
     const query = {
       where: {
         ...(status ? { status: { in: status } } : undefined),
+        ...(projectIds ? { projectId: { in: projectIds } } : undefined),
       },
     };
 
