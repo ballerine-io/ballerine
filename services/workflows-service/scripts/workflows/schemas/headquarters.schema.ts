@@ -17,14 +17,19 @@ export const headquartersSchema = {
     postalCode: {
       title: 'Postal code',
       type: 'string',
+      minLength: 1,
     },
     country: {
       title: 'Country',
       type: 'string',
-      oneOf: getCountriesList().map(country => ({
-        const: country.isoCode,
-        title: country.fullName,
-      })),
+      oneOf: [
+        // Line below should removed in case when field is required.
+        { const: '', title: '' },
+        ...getCountriesList().map(countryData => ({
+          const: countryData.isoCode,
+          title: countryData.fullName,
+        })),
+      ],
     },
     state: {
       title: 'State (if country has)',

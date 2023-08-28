@@ -53,6 +53,7 @@ export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
   status: z.string(),
+  state: z.string().nullable(),
   nextEvents: z.array(z.any()),
   workflowDefinition: ObjectWithIdSchema.extend({
     name: z.string(),

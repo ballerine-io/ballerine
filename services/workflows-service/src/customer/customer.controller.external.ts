@@ -52,6 +52,7 @@ export class CustomerControllerExternal {
         projects: createdCustomer.projects,
       });
     }
+
     return createdCustomer;
   }
 

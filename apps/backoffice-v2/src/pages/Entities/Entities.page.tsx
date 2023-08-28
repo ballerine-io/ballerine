@@ -20,7 +20,6 @@ export const Entities: FunctionComponent = () => {
     page,
     totalPages,
     skeletonEntities,
-    entity,
   } = useEntities();
 
   return (
