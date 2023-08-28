@@ -26,6 +26,7 @@ from
   from
     "WorkflowRuntimeData"
   where "createdAt" >= coalesce($1, '1900-01-01'::timestamp)
+  AND "projectId" in ($2)
   group by
     "status"
 ) as workflow_runtime_data`;
