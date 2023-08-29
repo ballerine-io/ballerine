@@ -11811,7 +11811,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-inspector: 6.0.1(react@18.2.0)
-      telejson: 7.2.0
+      telejson: 7.1.0
       ts-dedent: 2.2.0
       uuid-browser: 3.1.0
     dev: true
@@ -12702,7 +12702,7 @@ packages:
       '@storybook/core-events': 7.0.0-rc.10
       '@storybook/global': 5.0.0
       qs: 6.11.2
-      telejson: 7.2.0
+      telejson: 7.1.0
     dev: true
 
   /@storybook/channel-postmessage@7.0.26:
@@ -12724,7 +12724,7 @@ packages:
       '@storybook/core-events': 7.0.27
       '@storybook/global': 5.0.0
       qs: 6.11.2
-      telejson: 7.2.0
+      telejson: 7.1.0
     dev: true
 
   /@storybook/channel-websocket@7.0.0-rc.10:
@@ -12733,7 +12733,7 @@ packages:
       '@storybook/channels': 7.0.0-rc.10
       '@storybook/client-logger': 7.0.0-rc.10
       '@storybook/global': 5.0.0
-      telejson: 7.2.0
+      telejson: 7.1.0
     dev: true
 
   /@storybook/channel-websocket@7.0.26:
@@ -13179,7 +13179,7 @@ packages:
       read-pkg-up: 7.0.1
       semver: 7.5.3
       serve-favicon: 2.5.0
-      telejson: 7.2.0
+      telejson: 7.1.0
       ts-dedent: 2.2.0
       util-deprecate: 1.0.2
       watchpack: 2.4.0
@@ -13230,7 +13230,7 @@ packages:
       read-pkg-up: 7.0.1
       semver: 7.5.3
       serve-favicon: 2.5.0
-      telejson: 7.2.0
+      telejson: 7.1.0
       ts-dedent: 2.2.0
       util-deprecate: 1.0.2
       watchpack: 2.4.0
@@ -13408,7 +13408,7 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
       semver: 7.5.3
       store2: 2.14.2
-      telejson: 7.2.0
+      telejson: 7.1.0
       ts-dedent: 2.2.0
     dev: true
 
