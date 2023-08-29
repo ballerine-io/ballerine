@@ -1350,7 +1350,6 @@ export class WorkflowService {
     context: DefaultContextSchema,
   ) {
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
-    console.log('test');
 
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate(context);
@@ -1421,6 +1420,7 @@ export class WorkflowService {
     const updatedRuntimeData = await this.updateWorkflowRuntimeData(workflowRuntimeData.id, {
       context,
       state: currentState,
+      tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
       status: isFinal ? 'completed' : workflowRuntimeData.status,
     });
 

@@ -91,31 +91,34 @@ export const useKycBlock = ({
   const documentExtractedData = Object.keys(
     childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
   )?.length
-    ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.map(key => ({
-        id: 'decision',
-        type: 'details',
-        value: {
-          id: childWorkflow?.id,
-          title: `Details`,
-          data: Object.entries({
-            ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
-            ...omitPropsFromObject(
-              childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
-                ?.properties,
-              'issuer',
-            ),
-            issuer:
-              childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
-                ?.issuer?.country,
-          })?.map(([title, value]) => ({
-            title,
-            value,
-            pattern: '',
-            isEditable: false,
-            dropdownOptions: undefined,
-          })),
-        },
-      })) ?? []
+    ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.map(
+        (key, index, collection) => ({
+          id: 'decision',
+          type: 'details',
+          value: {
+            id: childWorkflow?.id,
+            title: `Details`,
+            hideSeparator: index === collection.length - 1,
+            data: Object.entries({
+              ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
+              ...omitPropsFromObject(
+                childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
+                  ?.properties,
+                'issuer',
+              ),
+              issuer:
+                childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
+                  ?.issuer?.country,
+            })?.map(([title, value]) => ({
+              title,
+              value,
+              pattern: '',
+              isEditable: false,
+              dropdownOptions: undefined,
+            })),
+          },
+        }),
+      ) ?? []
     : [];
 
   const details = Object.entries(childWorkflow?.context?.entity?.data).map(([title, value]) => ({
@@ -275,6 +278,7 @@ export const useKycBlock = ({
                     {
                       id: 'decision',
                       type: 'details',
+                      hideSeparator: true,
                       value: {
                         id: 1,
                         title: `Decision`,
