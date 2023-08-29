@@ -704,7 +704,6 @@ async function seed(bcryptSalt: string | number) {
             },
           },
           certificate_of_incorporation_review: {
-            tags: [StateTag.MANUAL_REVIEW],
             on: {
               USER_PREV_STEP: 'certificate_of_incorporation',
               USER_NEXT_STEP: 'selfie',
