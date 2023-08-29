@@ -59,7 +59,7 @@ export const useFlowContext = (flow: FlowData, issues: Issue[]): WorkflowFlowDat
     eraseContextWithIssues(context, issues);
 
     return context;
-  }, [flow, user, issues]);
+  }, [flow, user, issues, steps]);
 
   return workflowContext;
 };

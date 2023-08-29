@@ -32,6 +32,7 @@ module.exports = {
     'tailwindcss/classnames-order': 'off',
     'tailwindcss/no-custom-classname': 'off',
     '@typescript-eslint/no-misused-promises': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'warn',
   },
   settings: {
     ...config.settings,
