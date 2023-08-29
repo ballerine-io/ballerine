@@ -1,3 +1,4 @@
-import { isCuid } from '@app/common/utils/is-cuid';
+import { isCuid } from '@paralleldrive/cuid2';
 
-export const isFileId = (str: unknown): str is string => isCuid(str);
+export const isFileId = (str: unknown): str is string =>
+  typeof str === 'string' ? isCuid(str) : false;
