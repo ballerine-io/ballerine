@@ -19,6 +19,7 @@ export interface TUser {
 
 export interface GetActiveWorkflowDto {
   endUserId: string;
+  documentConfigurations: DocumentConfiguration[];
 }
 
 export interface FlowData {

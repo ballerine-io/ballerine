@@ -1,5 +1,4 @@
 import {
-  authorizeUser,
   fetchActiveWorkflow,
   fetchCollectionFlowSchema,
   getFlowSession,

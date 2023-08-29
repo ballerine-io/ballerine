@@ -3,6 +3,7 @@ import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
 import { buildCompanyAddress } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/helpers/serialize-business-data';
 import { getFullCountryNameByCode } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list';
+import { HeadquartersContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/views/HeadquartersView/types';
 import { traverseObjectAndPickValue } from '@app/utils/traverse-object-and-pick-value';
 
 type FileInputName = string;
@@ -14,16 +15,16 @@ interface FileHelpers {
 
 const fileHelpers: Record<FileInputName, FileHelpers> = {
   addressProof: {
-    getProperties: ({ flowData }) => {
+    getProperties: ({ flowData }: WorkflowFlowData) => {
       return {
-        userAddress: buildCompanyAddress(flowData.headquarters),
+        userAddress: buildCompanyAddress(flowData.headquarters as HeadquartersContext),
       };
     },
     fileType: 'water_bill',
     fileCategory: 'proof_of_address',
   },
   bankStatement: {
-    getProperties: ({ flowData }) => {
+    getProperties: ({ flowData }: WorkflowFlowData) => {
       return {
         country: flowData?.bankInformation?.country,
         name: flowData?.bankInformation?.bankName,

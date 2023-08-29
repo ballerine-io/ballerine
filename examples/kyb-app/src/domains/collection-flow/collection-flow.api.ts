@@ -1,4 +1,8 @@
 import { request } from '@app/common/utils/request';
+import { assignFileEntitiesToFlowData } from '@app/domains/collection-flow/helpers/assignFileEntitiesToFlowData';
+import { downloadAndBuildFiles } from '@app/domains/collection-flow/helpers/downloadAndBuildFiles';
+import { extractFilesMetadata } from '@app/domains/collection-flow/helpers/extract-files-metadata';
+import { registerFilesInStorage } from '@app/domains/collection-flow/helpers/registerFilesInStorage';
 import {
   AuthorizeDto,
   DocumentConfiguration,
@@ -61,7 +65,18 @@ export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<Fl
     })
     .json<{ result: FlowData }>();
 
-  return result.result;
+  const flowData = result.result;
+  const filesMetadata = extractFilesMetadata(flowData, dto.documentConfigurations);
+
+  const files = await downloadAndBuildFiles(filesMetadata);
+
+  // Persisting files in memory so they could be accessed by ID within components
+  registerFilesInStorage(files);
+
+  // Overriding fileIds in flowData with File entities so they could be used in file inputs
+  assignFileEntitiesToFlowData(files, flowData);
+
+  return flowData;
 };
 
 export const updateFlow = async (dto: UpdateFlowDto) => {

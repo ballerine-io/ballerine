@@ -35,12 +35,12 @@ export const useBaseFlow = () => {
   const views = useBaseFlowViews(workflowContext, issues);
 
   const handleViewUpdate = useCallback(
-    (values: WorkflowFlowData) => {
+    async (values: WorkflowFlowData) => {
       setUpdating(true);
 
-      updateFlow({
+      await updateFlow({
         flowId: values.shared.workflowId,
-        flowType: import.meta.env.VITE_KYB_DEFINITION_ID,
+        flowType: import.meta.env.VITE_KYB_DEFINITION_ID as string,
         payload: {
           mainRepresentative: selectMainRepresentative(values, user),
           ubos: [],
@@ -50,7 +50,9 @@ export const useBaseFlow = () => {
           entityData: selectEntityData(values, customer),
           businessData: selectBusinessData(values, user),
         },
-      }).then(() => setUpdating(false));
+      });
+
+      setUpdating(false);
     },
     [user, customer],
   );
@@ -63,15 +65,11 @@ export const useBaseFlow = () => {
         setLoading(true);
 
         await uploadFilesAndSaveToStorage(documentConfigurations, context);
-        const documents = await selectDocuments(
-          context,
-          flowData.documents,
-          documentConfigurations,
-        );
+        const documents = selectDocuments(context, flowData.documents, documentConfigurations);
 
         const updatePayload: UpdateFlowDto = {
           flowId: context.shared.workflowId,
-          flowType: import.meta.env.VITE_KYB_DEFINITION_ID,
+          flowType: import.meta.env.VITE_KYB_DEFINITION_ID as string,
           payload: {
             mainRepresentative: selectMainRepresentative(context, user),
             ubos: selectUbos(context, user),
@@ -94,14 +92,22 @@ export const useBaseFlow = () => {
         setTimeout(() => logoutSilent(), 50);
         navigate('success');
       } catch (error) {
-        console.log(
-          `Failed to perform ${isUpdate ? 'update' : 'create'},`,
-          error.message as string,
-        );
+        if (error instanceof Error) {
+          console.log(`Failed to perform ${isUpdate ? 'update' : 'create'},`, error.message);
+        }
         setLoading(false);
       }
     },
-    [user, customer, views, logoutSilent, navigate],
+    [
+      user,
+      customer,
+      views,
+      documentConfigurations,
+      flowData.documents,
+      flowData.isFinished,
+      logoutSilent,
+      navigate,
+    ],
   );
 
   return {
