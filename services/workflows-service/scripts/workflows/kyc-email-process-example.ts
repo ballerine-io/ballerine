@@ -18,6 +18,7 @@ export const kycEmailSessionDefinition = {
         },
       },
       get_kyc_session: {
+        tags: [StateTag.PENDING_PROCESS],
         on: {
           SEND_EMAIL: [{ target: 'email_sent' }],
           API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],

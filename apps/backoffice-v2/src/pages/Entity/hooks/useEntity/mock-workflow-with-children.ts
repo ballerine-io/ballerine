@@ -513,6 +513,7 @@ export const workflow = {
               on: { KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }] },
             },
             get_kyc_session: {
+              tags: [StateTag.PENDING_PROCESS],
               on: {
                 SEND_EMAIL: [{ target: 'email_sent' }],
                 API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
@@ -699,6 +700,7 @@ export const workflow = {
               on: { KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }] },
             },
             get_kyc_session: {
+              tags: [StateTag.PENDING_PROCESS],
               on: {
                 SEND_EMAIL: [{ target: 'email_sent' }],
                 API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
