@@ -202,11 +202,8 @@ export class CollectionFlowService {
   }
 
   async finishFlow(flowId: string, projectIds: TProjectIds) {
-    await this.workflowService.event({ id: flowId, name: 'start' }, projectIds);
-
     const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(flowId);
-
-    return await this.workflowService.updateContextById(workflowRuntimeData.id, {
+    const updatedRuntime = await this.workflowService.updateContextById(workflowRuntimeData.id, {
       ...workflowRuntimeData.context,
       entity: {
         ...workflowRuntimeData.context.entity,
@@ -216,6 +213,9 @@ export class CollectionFlowService {
         },
       },
     });
+
+    void this.workflowService.event({ id: flowId, name: 'start' }, projectIds);
+    return updatedRuntime;
   }
 
   async resubmitFlow(flowId: string, projectIds: TProjectIds) {
