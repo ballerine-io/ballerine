@@ -61,7 +61,7 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.6
+        specifier: 0.6.1
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
         specifier: ^0.4.9
@@ -502,7 +502,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.5.6
-        version: link:../../packages/common
+        version: 0.5.6
       '@ballerine/workflow-browser-sdk':
         specifier: ^0.4.9
         version: link:../../sdks/workflow-browser-sdk
@@ -959,7 +959,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.5.6
-        version: link:../common
+        version: 0.5.6
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
@@ -1098,7 +1098,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.5.6
-        version: link:../../packages/common
+        version: 0.5.6
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
         version: 0.8.0
@@ -1219,7 +1219,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.5.6
-        version: link:../../packages/common
+        version: 0.5.6
       '@ballerine/workflow-core':
         specifier: ^0.4.16
         version: link:../../packages/workflow-core
@@ -1569,8 +1569,8 @@ importers:
         specifier: 3.325.0
         version: 3.325.0
       '@ballerine/common':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.6.1
+        version: link:../../packages/common
       '@ballerine/workflow-node-sdk':
         specifier: 0.4.3
         version: link:../../sdks/workflow-node-sdk
@@ -1841,7 +1841,7 @@ importers:
         version: 4.0.0(astro@2.7.2)(tailwindcss@3.3.2)(ts-node@10.9.1)
       '@ballerine/common':
         specifier: 0.5.6
-        version: link:../../packages/common
+        version: 0.5.6
       '@docsearch/css':
         specifier: ^3.1.0
         version: 3.1.0
@@ -6804,7 +6804,7 @@ packages:
       '@babel/helper-plugin-utils': 7.20.2
       '@babel/plugin-proposal-unicode-property-regex': 7.18.6(@babel/core@7.21.3)
       '@babel/plugin-transform-dotall-regex': 7.18.6(@babel/core@7.21.3)
-      '@babel/types': 7.21.3
+      '@babel/types': 7.22.5
       esutils: 2.0.3
     dev: true
 
@@ -6817,7 +6817,7 @@ packages:
       '@babel/helper-plugin-utils': 7.20.2
       '@babel/plugin-proposal-unicode-property-regex': 7.18.6(@babel/core@7.22.5)
       '@babel/plugin-transform-dotall-regex': 7.18.6(@babel/core@7.22.5)
-      '@babel/types': 7.21.3
+      '@babel/types': 7.22.5
       esutils: 2.0.3
     dev: true
 
@@ -6950,8 +6950,8 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
-  /@ballerine/common@0.6.0:
-    resolution: {integrity: sha512-1bskhVoac4WbG49VuMA0JE1Asa8G3k+//Q8+Y8Hh63IN1fxJ+Xn1XhNdtA5Tt+JTAnDp1NFNDYJAA33Gyg8OSg==}
+  /@ballerine/common@0.5.6:
+    resolution: {integrity: sha512-OJsZny4x55+1IzI1hAKetPllSRkQHwLZw6sM1rZUJ+WAbHAP14LL0q3pQJY3G/y1hEW8O/4Lv44aUKCnn/znFA==}
     engines: {node: '>=12'}
     dependencies:
       ajv: 8.12.0
@@ -12765,14 +12765,14 @@ packages:
     resolution: {integrity: sha512-YppvPa1qMyC+oCQJ3tf7Quzpf2NnBlvIRLPJiGAMssUwX5qE0iKe9lTtkNwMaNxEvzz6rDxewSlz+f/MWr4gPw==}
     dev: true
 
-  /@storybook/channels@7.4.0-alpha.0:
-    resolution: {integrity: sha512-Mh07rR524vtpDTG1BRNpHqH+BfH95DDqVIeG9YZI/z093B+MTwTAaVOcr5iReY4de01VeeC3mPDkPfvvHfqnSQ==}
+  /@storybook/channels@7.4.0-alpha.2:
+    resolution: {integrity: sha512-uTUR6VBwZCv17V/9vTKPoBcUIZWdyYel2oze8X1nJZEZj6F2tabjo6XYF6QXhKSk7xhrh2mi/C8cGQF5ZD/qfA==}
     dependencies:
-      '@storybook/client-logger': 7.4.0-alpha.0
-      '@storybook/core-events': 7.4.0-alpha.0
+      '@storybook/client-logger': 7.4.0-alpha.2
+      '@storybook/core-events': 7.4.0-alpha.2
       '@storybook/global': 5.0.0
       qs: 6.11.2
-      telejson: 7.1.0
+      telejson: 7.2.0
       tiny-invariant: 1.3.1
     dev: true
 
@@ -12899,8 +12899,8 @@ packages:
       '@storybook/global': 5.0.0
     dev: true
 
-  /@storybook/client-logger@7.4.0-alpha.0:
-    resolution: {integrity: sha512-gQTfh3gFVHpmw2CGZSWsk9qZDZuY/AdZZYC+uvyXtXLF1+TrmBkmJTWBEjk93Hm9LJu83Q+z1scCqIUyu6aGHQ==}
+  /@storybook/client-logger@7.4.0-alpha.2:
+    resolution: {integrity: sha512-Shyim+y0PgXdPb8+MT5xvrKzPPATzEgbCj6ABWacGRR5xNNcUM1YPymjxh9LKdimZyye17EuLU7z1PFmnhMb/Q==}
     dependencies:
       '@storybook/global': 5.0.0
     dev: true
@@ -13133,8 +13133,10 @@ packages:
     resolution: {integrity: sha512-sNnqgO5i5DUIqeQfNbr987KWvAciMN9FmMBuYdKjVFMqWFyr44HTgnhfKwZZKl+VMDYkHA9Do7UGSYZIKy0P4g==}
     dev: true
 
-  /@storybook/core-events@7.4.0-alpha.0:
-    resolution: {integrity: sha512-+W41+PQVGruVKRqBmyubl88QmUj88fKefKU8qObNaJZnAicHa6ohb7cgBTD+qGuPwt1S4oWwAXFLvZxU21K6mQ==}
+  /@storybook/core-events@7.4.0-alpha.2:
+    resolution: {integrity: sha512-/vn9T5Gbc5VBtNLE5cjnHFeD+azUhRORhaHLRSSnzQQ72W7C5Hok7IdDH5I/JounDx2CM37u47yC+Ev2BMsJLw==}
+    dependencies:
+      ts-dedent: 2.2.0
     dev: true
 
   /@storybook/core-server@7.0.0-rc.10:
@@ -13375,14 +13377,14 @@ packages:
       '@storybook/preview-api': 7.0.26
     dev: true
 
-  /@storybook/instrumenter@7.4.0-alpha.0:
-    resolution: {integrity: sha512-FuH+GZ1QI+tQT+UmQ7aJbgEToQ21pzWkkb+dszbPDSwbOpsBRDhxBacJSkST+GnS+3nFCpEkpwIieWkGBhMuXw==}
+  /@storybook/instrumenter@7.4.0-alpha.2:
+    resolution: {integrity: sha512-vq1aRz1/wvxo4VDHTEy0UZ7iLeB00GsluluVT3sMOuI8IdGLIEFLVNt7N0sRl/v4KMGl3ZplP3j7+q2nipFWWA==}
     dependencies:
-      '@storybook/channels': 7.4.0-alpha.0
-      '@storybook/client-logger': 7.4.0-alpha.0
-      '@storybook/core-events': 7.4.0-alpha.0
+      '@storybook/channels': 7.4.0-alpha.2
+      '@storybook/client-logger': 7.4.0-alpha.2
+      '@storybook/core-events': 7.4.0-alpha.2
       '@storybook/global': 5.0.0
-      '@storybook/preview-api': 7.4.0-alpha.0
+      '@storybook/preview-api': 7.4.0-alpha.2
     dev: true
 
   /@storybook/manager-api@7.0.0-rc.10(react-dom@18.2.0)(react@18.2.0):
@@ -13571,15 +13573,15 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
-  /@storybook/preview-api@7.4.0-alpha.0:
-    resolution: {integrity: sha512-iZVBsRtNST8MqQ1Sj/6nPszuL1qFKlw6ByQfWsoCgYPLAgb3nh3/vckapszAWud+YyW8QZbm53fL/Yg+aN4YUg==}
+  /@storybook/preview-api@7.4.0-alpha.2:
+    resolution: {integrity: sha512-U84+69KJ+ATr2h2tieCtEO5xLb22s5pk5Y975H43+pf7rY6HyFg/EaMWXY7ScT8QKTyaBu2X1GVuzLyhDwK05A==}
     dependencies:
-      '@storybook/channels': 7.4.0-alpha.0
-      '@storybook/client-logger': 7.4.0-alpha.0
-      '@storybook/core-events': 7.4.0-alpha.0
+      '@storybook/channels': 7.4.0-alpha.2
+      '@storybook/client-logger': 7.4.0-alpha.2
+      '@storybook/core-events': 7.4.0-alpha.2
       '@storybook/csf': 0.1.0
       '@storybook/global': 5.0.0
-      '@storybook/types': 7.4.0-alpha.0
+      '@storybook/types': 7.4.0-alpha.2
       '@types/qs': 6.9.7
       dequal: 2.0.3
       lodash: 4.17.21
@@ -13851,8 +13853,8 @@ packages:
   /@storybook/testing-library@0.0.14-next.1:
     resolution: {integrity: sha512-1CAl40IKIhcPaCC4pYCG0b9IiYNymktfV/jTrX7ctquRY3akaN7f4A1SippVHosksft0M+rQTFE0ccfWW581fw==}
     dependencies:
-      '@storybook/client-logger': 7.4.0-alpha.0
-      '@storybook/instrumenter': 7.4.0-alpha.0
+      '@storybook/client-logger': 7.4.0-alpha.2
+      '@storybook/instrumenter': 7.4.0-alpha.2
       '@testing-library/dom': 8.20.0
       '@testing-library/user-event': 13.5.0(@testing-library/dom@8.20.0)
       ts-dedent: 2.2.0
@@ -13951,10 +13953,10 @@ packages:
       file-system-cache: 2.3.0
     dev: true
 
-  /@storybook/types@7.4.0-alpha.0:
-    resolution: {integrity: sha512-fUkrqGaI3kn8lfvcshmaNmQXs2LXG91iZSts2Sbmbk/Gnr1CnqV/NxIFc+qOAiesOwaLf9a7zD8+/izsLQUtQw==}
+  /@storybook/types@7.4.0-alpha.2:
+    resolution: {integrity: sha512-BpPG0MSxTh2WDeu9tRzqphFv+kFURL9BvL5I479uqJYZc31WT9zXISx8IaCL1WtaaWR1R4eTbyBd56Q5jDU8Qg==}
     dependencies:
-      '@storybook/channels': 7.4.0-alpha.0
+      '@storybook/channels': 7.4.0-alpha.2
       '@types/babel__core': 7.20.1
       '@types/express': 4.17.9
       file-system-cache: 2.3.0
@@ -15635,7 +15637,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.22.5(@babel/core@7.22.5)
       magic-string: 0.27.0
       react-refresh: 0.14.0
-      vite: 4.4.6(@types/node@18.15.10)(less@4.1.3)
+      vite: 4.4.6(@types/node@20.4.1)(less@4.1.3)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -29123,7 +29125,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.2.7(postcss@8.4.21)(ts-node@10.9.1)
+      tailwindcss: 3.2.7(postcss@8.4.24)(ts-node@10.9.1)
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.2):
@@ -29291,6 +29293,12 @@ packages:
 
   /telejson@7.1.0:
     resolution: {integrity: sha512-jFJO4P5gPebZAERPkJsqMAQ0IMA1Hi0AoSfxpnUaV6j6R2SZqlpkbS20U6dEUtA3RUYt2Ak/mTlkQzHH9Rv/hA==}
+    dependencies:
+      memoizerific: 1.11.3
+    dev: true
+
+  /telejson@7.2.0:
+    resolution: {integrity: sha512-1QTEcJkJEhc8OnStBx/ILRu5J2p0GjvWsBx56bmZRqnrkdBMUe+nX92jxV+p3dB4CP6PZCdJMQJwCggkNBMzkQ==}
     dependencies:
       memoizerific: 1.11.3
     dev: true
