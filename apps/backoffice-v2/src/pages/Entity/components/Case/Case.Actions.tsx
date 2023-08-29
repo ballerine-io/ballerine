@@ -1,10 +1,11 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import { Send } from 'lucide-react';
-import { DialogClose } from '@radix-ui/react-dialog';
 import { Badge } from '@ballerine/ui';
-import { IActionsProps } from './interfaces';
+import { StateTag } from '@ballerine/common';
+import { DialogClose } from '@radix-ui/react-dialog';
 
-import { useActions } from './hooks/useActions/useActions';
+import { IActionsProps } from './interfaces';
+import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import {
   AssignButton,
@@ -19,13 +20,7 @@ import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dial
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { convertSnakeCaseToTitleCase } from '../../hooks/useEntity/utils';
-
-const stateToBadgeVariant = {
-  approve: { variant: 'success', text: 'Approved' },
-  revision: { variant: 'warning', text: 'Revisions' },
-  reject: { variant: 'destructive', text: 'Rejected' },
-  manual_review: { variant: 'info', text: 'Manual Review' },
-};
+import { tagToBadgeData } from './consts';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -59,13 +54,13 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     canReject,
     canRevision,
     caseState,
-    state,
+    tag,
     authenticatedUser,
     assignees,
     onTriggerAssignToMe,
     hasDecision,
     documentsToReviseCount,
-  } = useActions({ workflowId: id, fullName });
+  } = useCaseActionsLogic({ workflowId: id, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>
@@ -106,14 +101,19 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           >
             {fullName}
           </h2>
-          {stateToBadgeVariant[state] ? (
+          {tag && (
             <div className={`flex items-center`}>
               <span className={`mr-[8px] text-sm font-bold`}>Status</span>
-              <Badge variant={stateToBadgeVariant[state].variant} className={`text-sm font-bold`}>
-                {convertSnakeCaseToTitleCase(stateToBadgeVariant[state].text)}
+              <Badge
+                variant={tagToBadgeData[tag].variant}
+                className={ctw(`text-sm font-bold`, {
+                  'bg-info/20 text-info': tag === StateTag.MANUAL_REVIEW,
+                })}
+              >
+                {convertSnakeCaseToTitleCase(tagToBadgeData[tag].text)}
               </Badge>
             </div>
-          ) : null}
+          )}
         </div>
         {showResolutionButtons && (
           <div className={`flex items-center space-x-6 pe-[3.35rem]`}>

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FilterRepository } from '@/filter/filter.repository';
-import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class FilterService {
