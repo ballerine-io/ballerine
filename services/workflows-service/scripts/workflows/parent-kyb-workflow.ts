@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { kycDynamicExample } from './kyc-dynamic-process-example';
 import { env } from '../../src/env';
+import { StateTag } from '@ballerine/common';
 
 export const kybParentDynamicExample = {
   id: 'dynamic_kyb_parent_example',
@@ -21,12 +22,14 @@ export const kybParentDynamicExample = {
         },
       },
       run_ubos: {
+        tags: [StateTag.PENDING_PROCESS],
         on: {
           CONTINUE: [{ target: 'run_kyb_enrichment' }],
           FAILED: [{ target: 'auto_reject' }],
         },
       },
       run_kyb_enrichment: {
+        tags: [StateTag.PENDING_PROCESS],
         on: {
           KYB_DONE: [{ target: 'pending_kyc_response_to_finish' }],
           // TODO: add 404 handling
@@ -34,6 +37,7 @@ export const kybParentDynamicExample = {
         },
       },
       pending_kyc_response_to_finish: {
+        tags: [StateTag.PENDING_PROCESS],
         on: {
           KYC_RESPONDED: [
             {
@@ -49,9 +53,11 @@ export const kybParentDynamicExample = {
         },
       },
       manual_review: {
+        tags: [StateTag.MANUAL_REVIEW],
         type: 'final' as const,
       },
       auto_reject: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
     },

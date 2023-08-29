@@ -241,6 +241,7 @@ export class WorkflowService {
       endUser: undefined,
       business: undefined,
       nextEvents,
+      tags: workflow.workflowDefinition.definition.states[workflow.state]?.tags,
       childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
         this.formatWorkflow(childWorkflow, false),
       ),
@@ -1350,7 +1351,6 @@ export class WorkflowService {
     context: DefaultContextSchema,
   ) {
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
-    console.log('test');
 
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate(context);

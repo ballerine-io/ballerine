@@ -9,7 +9,7 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import { defaultContextSchema } from '@ballerine/common';
+import { defaultContextSchema, StateTag } from '@ballerine/common';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
@@ -480,6 +480,7 @@ async function seed(bcryptSalt: string | number) {
         initial: 'idle',
         states: {
           review: {
+            tags: [StateTag.MANUAL_REVIEW],
             on: {
               idle: {
                 target: 'review',
@@ -494,12 +495,16 @@ async function seed(bcryptSalt: string | number) {
           },
           idle: {},
           approved: {
+            tags: [StateTag.APPROVED],
             type: 'final',
           },
           rejected: {
+            tags: [StateTag.REJECTED],
             type: 'final',
           },
-          revision: {},
+          revision: {
+            tags: [StateTag.REVISION],
+          },
         },
       },
     },
@@ -514,6 +519,7 @@ async function seed(bcryptSalt: string | number) {
       initial: 'review',
       states: {
         review: {
+          tags: [StateTag.MANUAL_REVIEW],
           on: {
             approve: {
               target: 'approved',
@@ -527,12 +533,15 @@ async function seed(bcryptSalt: string | number) {
           },
         },
         approved: {
+          tags: [StateTag.APPROVED],
           type: 'final',
         },
         rejected: {
+          tags: [StateTag.REJECTED],
           type: 'final',
         },
         revision: {
+          tags: [StateTag.REVISION],
           on: {
             review: {
               target: 'review',
@@ -591,30 +600,35 @@ async function seed(bcryptSalt: string | number) {
             },
           },
           document_selection: {
+            tags: [StateTag.COLLECTION_FLOW],
             on: {
               USER_PREV_STEP: 'welcome',
               USER_NEXT_STEP: 'document_photo',
             },
           },
           document_photo: {
+            tags: [StateTag.COLLECTION_FLOW],
             on: {
               USER_PREV_STEP: 'document_selection',
               USER_NEXT_STEP: 'document_review',
             },
           },
           document_review: {
+            tags: [StateTag.MANUAL_REVIEW],
             on: {
               USER_PREV_STEP: 'document_photo',
               USER_NEXT_STEP: 'selfie',
             },
           },
           selfie: {
+            tags: [StateTag.COLLECTION_FLOW],
             on: {
               USER_PREV_STEP: 'document_review',
               USER_NEXT_STEP: 'selfie_review',
             },
           },
           selfie_review: {
+            tags: [StateTag.MANUAL_REVIEW],
             on: {
               USER_PREV_STEP: 'selfie',
               USER_NEXT_STEP: 'final',
@@ -671,42 +685,49 @@ async function seed(bcryptSalt: string | number) {
             },
           },
           document_selection: {
+            tags: [StateTag.COLLECTION_FLOW],
             on: {
               USER_PREV_STEP: 'welcome',
               USER_NEXT_STEP: 'document_photo',
             },
           },
           document_photo: {
+            tags: [StateTag.COLLECTION_FLOW],
             on: {
               USER_PREV_STEP: 'document_selection',
               USER_NEXT_STEP: 'document_review',
             },
           },
           document_review: {
+            tags: [StateTag.MANUAL_REVIEW],
             on: {
               USER_PREV_STEP: 'document_photo',
               USER_NEXT_STEP: 'certificate_of_incorporation',
             },
           },
           certificate_of_incorporation: {
+            tags: [StateTag.COLLECTION_FLOW],
             on: {
               USER_PREV_STEP: 'document_review',
               USER_NEXT_STEP: 'certificate_of_incorporation_review',
             },
           },
           certificate_of_incorporation_review: {
+            tags: [StateTag.MANUAL_REVIEW],
             on: {
               USER_PREV_STEP: 'certificate_of_incorporation',
               USER_NEXT_STEP: 'selfie',
             },
           },
           selfie: {
+            tags: [StateTag.COLLECTION_FLOW],
             on: {
               USER_PREV_STEP: 'certificate_of_incorporation_review',
               USER_NEXT_STEP: 'selfie_review',
             },
           },
           selfie_review: {
+            tags: [StateTag.MANUAL_REVIEW],
             on: {
               USER_PREV_STEP: 'selfie',
               USER_NEXT_STEP: 'final',
@@ -876,6 +897,7 @@ async function seed(bcryptSalt: string | number) {
 
         states: {
           review: {
+            tags: [StateTag.MANUAL_REVIEW],
             on: {
               approve: {
                 target: 'approved',
@@ -889,12 +911,15 @@ async function seed(bcryptSalt: string | number) {
             },
           },
           approved: {
+            tags: [StateTag.APPROVED],
             type: 'final',
           },
           rejected: {
+            tags: [StateTag.REJECTED],
             type: 'final',
           },
           revision: {
+            tags: [StateTag.REVISION],
             on: {
               review: {
                 target: 'review',
@@ -929,6 +954,7 @@ async function seed(bcryptSalt: string | number) {
 
         states: {
           review: {
+            tags: [StateTag.MANUAL_REVIEW],
             on: {
               approve: {
                 target: 'approved',
@@ -942,12 +968,15 @@ async function seed(bcryptSalt: string | number) {
             },
           },
           approved: {
+            tags: [StateTag.APPROVED],
             type: 'final',
           },
           rejected: {
+            tags: [StateTag.REJECTED],
             type: 'final',
           },
           revision: {
+            tags: [StateTag.REVISION],
             on: {
               review: {
                 target: 'review',

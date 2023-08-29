@@ -1,3 +1,5 @@
+import { StateTag } from '@ballerine/common';
+
 import { individuals } from '../../../individuals/mock-service-worker/individuals.data';
 
 export const workflows = {
@@ -32,12 +34,15 @@ export const workflows = {
             },
           },
           APPROVE: {
+            tags: [StateTag.APPROVED],
             type: 'final',
           },
           REJECT: {
+            tags: [StateTag.REJECTED],
             type: 'final',
           },
           RECOLLECT: {
+            tags: [StateTag.COLLECTION_FLOW],
             type: 'final',
           },
         },

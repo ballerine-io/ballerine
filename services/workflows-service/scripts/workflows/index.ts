@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { StateTag } from '@ballerine/common';
 
 export const kybWithExternalRequestWorkflowExample = {
   id: 'kyb_external_request_example',
@@ -19,6 +20,7 @@ export const kybWithExternalRequestWorkflowExample = {
         },
       },
       check_business_details: {
+        tags: [StateTag.PENDING_PROCESS],
         on: {
           API_CALL_SUCCESS: [
             {
@@ -74,6 +76,7 @@ export const kybWithExternalRequestWorkflowExample = {
         },
       },
       manual_review: {
+        tags: [StateTag.MANUAL_REVIEW],
         on: {
           approve: 'approve',
           reject: 'reject',
@@ -81,20 +84,25 @@ export const kybWithExternalRequestWorkflowExample = {
         },
       },
       auto_approve: {
+        tags: [StateTag.APPROVED],
         type: 'final',
       },
       auto_reject: {
+        tags: [StateTag.REJECTED],
         type: 'final',
       },
       approve: {
+        tags: [StateTag.APPROVED],
         type: 'final',
       },
       revision: {
+        tags: [StateTag.REVISION],
         on: {
           data_updated: 'check_business_details',
         },
       },
       reject: {
+        tags: [StateTag.REJECTED],
         type: 'final',
       },
     },

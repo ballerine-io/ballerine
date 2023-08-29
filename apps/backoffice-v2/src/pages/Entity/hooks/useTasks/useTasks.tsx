@@ -76,7 +76,7 @@ export const useTasks = ({
             key =>
               !!Object.keys(pluginsOutput[key] ?? {})?.length && !('error' in pluginsOutput[key]),
           )
-          ?.map(key => ({
+          ?.map((key, index, collection) => ({
             cells: [
               {
                 id: 'nested-details-heading',
@@ -85,6 +85,7 @@ export const useTasks = ({
               },
               {
                 type: 'details',
+                hideSeparator: index === collection.length - 1,
                 value: {
                   data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
                     title,
@@ -105,16 +106,21 @@ export const useTasks = ({
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
 
-        const isRevision = decision?.status === 'revision' && (!isDoneWithRevision || noAction);
+        const isDocumentRevision =
+          decision?.status === 'revision' && (!isDoneWithRevision || noAction);
+
+        const isRevisionState = ['pending_resubmission', 'pending_kyc_response_to_finish'].includes(
+          workflow?.state?.toLowerCase(),
+        );
 
         const getDecisionStatusOrAction = (
-          isRevision: boolean,
+          isDocumentRevision: boolean,
           decision: { status: 'revision' | 'rejected' | 'approved'; reason: string },
         ) => {
           const badgeClassNames = 'text-sm font-bold';
 
-          if (isRevision) {
-            return noAction
+          if (isDocumentRevision) {
+            return isRevisionState
               ? [
                   {
                     type: 'badge',
@@ -210,7 +216,7 @@ export const useTasks = ({
             {
               id: 'actions',
               type: 'container',
-              value: getDecisionStatusOrAction(isRevision, decision),
+              value: getDecisionStatusOrAction(isDocumentRevision, decision),
             },
           ],
         };
@@ -258,6 +264,7 @@ export const useTasks = ({
               value: {
                 id,
                 title: 'Decision',
+                hideSeparator: true,
                 data: Object.entries(decision ?? {}).map(([title, value]) => ({
                   title,
                   value,
@@ -286,9 +293,9 @@ export const useTasks = ({
         };
 
         return {
-          className: isRevision
+          className: isDocumentRevision
             ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning ${
-                noAction ? '' : 'bg-warning/10'
+                isRevisionState ? '' : 'bg-warning/10'
               }`
             : '',
           cells: [headerCell, detailsCell, documentsCell],
@@ -308,6 +315,7 @@ export const useTasks = ({
             {
               id: 'entity-details',
               type: 'details',
+              hideSeparator: true,
               value: {
                 title: `${toStartCase(entity?.type)} Information`,
                 data: [
@@ -349,6 +357,7 @@ export const useTasks = ({
                   },
                   {
                     type: 'details',
+                    hideSeparator: true,
                     value: {
                       title: `${toStartCase(entity?.type)} Address`,
                       data:
