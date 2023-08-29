@@ -241,7 +241,6 @@ export class WorkflowService {
       endUser: undefined,
       business: undefined,
       nextEvents,
-      tags: workflow.workflowDefinition.definition.states[workflow.state]?.tags,
       childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
         this.formatWorkflow(childWorkflow, false),
       ),
@@ -1421,6 +1420,7 @@ export class WorkflowService {
     const updatedRuntimeData = await this.updateWorkflowRuntimeData(workflowRuntimeData.id, {
       context,
       state: currentState,
+      tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
       status: isFinal ? 'completed' : workflowRuntimeData.status,
     });
 

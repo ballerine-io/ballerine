@@ -5,7 +5,7 @@ import { StateTag } from '@ballerine/common';
 import { DialogClose } from '@radix-ui/react-dialog';
 
 import { IActionsProps } from './interfaces';
-import { useActions } from './hooks/useActions/useActions';
+import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import {
   AssignButton,
@@ -20,13 +20,7 @@ import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dial
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { convertSnakeCaseToTitleCase } from '../../hooks/useEntity/utils';
-
-const tagToBadgeData = {
-  [StateTag.APPROVED]: { variant: 'success', text: 'Approved' },
-  [StateTag.REVISION]: { variant: 'warning', text: 'Revisions' },
-  [StateTag.REJECTED]: { variant: 'destructive', text: 'Rejected' },
-  [StateTag.MANUAL_REVIEW]: { variant: 'info', text: 'Manual Review' },
-} as const;
+import { tagToBadgeData } from './consts';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -60,15 +54,13 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     canReject,
     canRevision,
     caseState,
-    tags,
+    tag,
     authenticatedUser,
     assignees,
     onTriggerAssignToMe,
     hasDecision,
     documentsToReviseCount,
-  } = useActions({ workflowId: id, fullName });
-
-  const tag = useMemo(() => tags?.find(t => tagToBadgeData[t]), [tags]);
+  } = useCaseActionsLogic({ workflowId: id, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>
@@ -109,7 +101,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           >
             {fullName}
           </h2>
-          {tag ? (
+          {tag && (
             <div className={`flex items-center`}>
               <span className={`mr-[8px] text-sm font-bold`}>Status</span>
               <Badge
@@ -121,7 +113,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                 {convertSnakeCaseToTitleCase(tagToBadgeData[tag].text)}
               </Badge>
             </div>
-          ) : null}
+          )}
         </div>
         {showResolutionButtons && (
           <div className={`flex items-center space-x-6 pe-[3.35rem]`}>

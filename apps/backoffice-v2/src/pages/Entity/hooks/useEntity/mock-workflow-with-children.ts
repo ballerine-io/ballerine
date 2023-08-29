@@ -330,7 +330,6 @@ export const workflow = {
         approve: { tags: [StateTag.APPROVED], type: 'final' },
         revision: { tags: [StateTag.REVISION], type: 'final' },
         run_ubos: {
-          tags: [StateTag.PENDING_PROCESS],
           on: {
             FAILED: [{ target: 'auto_reject' }],
             CONTINUE: [{ target: 'run_kyb_enrichment' }],
@@ -342,14 +341,12 @@ export const workflow = {
           on: { reject: 'reject', approve: 'approve', revision: 'revision' },
         },
         run_kyb_enrichment: {
-          tags: [StateTag.PENDING_PROCESS],
           on: {
             FAILED: [{ target: 'auto_reject' }],
             KYB_DONE: [{ target: 'pending_kyc_response_to_finish' }],
           },
         },
         pending_kyc_response_to_finish: {
-          tags: [StateTag.COLLECTION_FLOW],
           on: {
             KYC_RESPONDED: [
               {
@@ -512,11 +509,10 @@ export const workflow = {
             reject: { tags: [StateTag.REJECTED], type: 'final' },
             approve: { tags: [StateTag.APPROVED], type: 'final' },
             email_sent: {
-              tags: [StateTag.COLLECTION_FLOW],
+              tags: [StateTag.REVISION],
               on: { KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }] },
             },
             get_kyc_session: {
-              tags: [StateTag.COLLECTION_FLOW],
               on: {
                 SEND_EMAIL: [{ target: 'email_sent' }],
                 API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
@@ -697,13 +693,12 @@ export const workflow = {
           states: {
             idle: { on: { start: 'get_kyc_session' } },
             reject: { tags: [StateTag.REJECTED], type: 'final' },
-            approve: { tags: [StateTag.COLLECTION_FLOW], type: 'final' },
+            approve: { tags: [StateTag.APPROVED], type: 'final' },
             email_sent: {
-              tags: [StateTag.COLLECTION_FLOW],
+              tags: [StateTag.REVISION],
               on: { KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }] },
             },
             get_kyc_session: {
-              tags: [StateTag.COLLECTION_FLOW],
               on: {
                 SEND_EMAIL: [{ target: 'email_sent' }],
                 API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],

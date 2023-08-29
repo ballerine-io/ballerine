@@ -29,7 +29,7 @@ export const Details: FunctionComponent<IDetailsProps> = ({ id, value, hideSepar
         title={value?.title}
         data={value?.data}
       />
-      {!hideSeparator ? <Separator className={`my-2`} /> : null}
+      {!hideSeparator && <Separator className={`my-2`} />}
     </div>
   );
 };

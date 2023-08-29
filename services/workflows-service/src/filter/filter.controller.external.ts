@@ -15,11 +15,7 @@ import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterCreateDto } from '@/filter/dtos/filter-create';
 import { FilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
 import { InputJsonValue, TProjectIds } from '@/types';
-import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
-import { BusinessModel } from '@/business/business.model';
-import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
-import { BusinessCreateDto } from '@/business/dtos/business-create';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
@@ -48,9 +44,7 @@ export class FilterControllerExternal {
   @swagger.ApiForbiddenResponse()
   async getById(@common.Param() params: FilterWhereUniqueInput): Promise<FilterModel | null> {
     try {
-      const filter = await this.service.getById(params.id);
-
-      return filter;
+      return await this.service.getById(params.id);
     } catch (err) {
       if (isRecordNotFoundError(err)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

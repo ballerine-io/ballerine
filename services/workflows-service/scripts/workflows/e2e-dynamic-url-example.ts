@@ -23,7 +23,6 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         },
       },
       check_business_details: {
-        tags: [StateTag.PENDING_PROCESS],
         on: {
           API_CALL_SUCCESS: [
             {

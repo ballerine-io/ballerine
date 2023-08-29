@@ -18,14 +18,13 @@ export const kycEmailSessionDefinition = {
         },
       },
       get_kyc_session: {
-        tags: [StateTag.COLLECTION_FLOW],
         on: {
           SEND_EMAIL: [{ target: 'email_sent' }],
           API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
         },
       },
       email_sent: {
-        tags: [StateTag.COLLECTION_FLOW],
+        tags: [StateTag.REVISION],
         on: {
           KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }],
         },
@@ -154,6 +153,7 @@ export const kycEmailSessionDefinition = {
     schema: defaultContextSchema,
   },
 };
+
 export const generateKycSessionDefinition = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
     data: kycEmailSessionDefinition,

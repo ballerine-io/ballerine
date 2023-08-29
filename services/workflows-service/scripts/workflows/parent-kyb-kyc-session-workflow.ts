@@ -49,7 +49,6 @@ export const parentKybWithSessionWorkflowDefinition = {
     },
     states: {
       data_collection: {
-        tags: [StateTag.COLLECTION_FLOW],
         on: {
           start: 'run_ubos',
         },
@@ -136,14 +135,12 @@ export const parentKybWithSessionWorkflowDefinition = {
         },
       },
       run_ubos: {
-        tags: [StateTag.PENDING_PROCESS],
         on: {
           CONTINUE: [{ target: 'run_kyb_enrichment' }],
           FAILED: [{ target: 'auto_reject' }],
         },
       },
       run_kyb_enrichment: {
-        tags: [StateTag.COLLECTION_FLOW],
         on: {
           KYB_DONE: [{ target: 'pending_kyc_response_to_finish' }],
           // TODO: add 404 handling
@@ -151,7 +148,6 @@ export const parentKybWithSessionWorkflowDefinition = {
         },
       },
       pending_kyc_response_to_finish: {
-        tags: [StateTag.COLLECTION_FLOW],
         on: {
           KYC_RESPONDED: [
             {

@@ -22,14 +22,12 @@ export const kybParentDynamicExample = {
         },
       },
       run_ubos: {
-        tags: [StateTag.PENDING_PROCESS],
         on: {
           CONTINUE: [{ target: 'run_kyb_enrichment' }],
           FAILED: [{ target: 'auto_reject' }],
         },
       },
       run_kyb_enrichment: {
-        tags: [StateTag.PENDING_PROCESS],
         on: {
           KYB_DONE: [{ target: 'pending_kyc_response_to_finish' }],
           // TODO: add 404 handling
@@ -37,7 +35,6 @@ export const kybParentDynamicExample = {
         },
       },
       pending_kyc_response_to_finish: {
-        tags: [StateTag.PENDING_PROCESS],
         on: {
           KYC_RESPONDED: [
             {

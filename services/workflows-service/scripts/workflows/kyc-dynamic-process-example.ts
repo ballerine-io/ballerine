@@ -21,7 +21,6 @@ export const kycDynamicExample = {
         },
       },
       run_kyc: {
-        tags: [StateTag.PENDING_PROCESS],
         on: {
           PENDING_KYC: [{ target: 'pending_kyc_response' }],
           API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],

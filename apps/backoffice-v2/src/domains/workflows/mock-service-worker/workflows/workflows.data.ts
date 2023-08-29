@@ -42,7 +42,6 @@ export const workflows = {
             type: 'final',
           },
           RECOLLECT: {
-            tags: [StateTag.COLLECTION_FLOW],
             type: 'final',
           },
         },
