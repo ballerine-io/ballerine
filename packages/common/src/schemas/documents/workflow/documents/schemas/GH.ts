@@ -258,6 +258,9 @@ export const ghanaDocuments: TDocument[] = [
           type: 'string',
           format: 'date',
         },
+        salaryAmount: {
+          type: 'number',
+        },
       },
     },
   },
@@ -352,43 +355,6 @@ export const ghanaDocuments: TDocument[] = [
         },
         physicalAddress: {
           type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
-        },
-      },
-    },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'birth_certificate',
-    issuer: {
-      type: 'government',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        birthPlace: {
-          type: 'string',
-        },
-        dateOfBirth: {
-          type: 'string',
-          format: 'date',
         },
         issuingDate: {
           type: 'string',
