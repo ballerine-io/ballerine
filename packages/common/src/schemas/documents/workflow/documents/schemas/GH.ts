@@ -299,6 +299,9 @@ export const getGhanaDocuments = (): TDocument[] => {
             format: 'date',
           },
         },
+        salaryAmount: {
+          type: 'number',
+        },
       },
     },
     {
