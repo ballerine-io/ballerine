@@ -1,5 +1,5 @@
 import { ComponentProps } from 'react';
-import { isObject, safeEvery, StateTag, TStateTags } from '@ballerine/common';
+import { isObject, safeEvery } from '@ballerine/common';
 
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
@@ -147,10 +147,10 @@ export const useKycBlock = ({
     safeEvery(childWorkflow?.context?.documents, document => !!document?.decision?.status) ||
     noAction;
 
-  const getDecisionStatusOrAction = (tags: TStateTags) => {
+  const getDecisionStatusOrAction = (status: 'revision' | 'rejected' | 'approved') => {
     const badgeClassNames = 'text-sm font-bold';
 
-    if (tags.includes(StateTag.REVISION)) {
+    if (status === 'revision') {
       return [
         {
           type: 'badge',
@@ -164,7 +164,7 @@ export const useKycBlock = ({
       ];
     }
 
-    if (tags.includes(StateTag.APPROVED)) {
+    if (status === 'approved') {
       return [
         {
           type: 'badge',
@@ -173,20 +173,6 @@ export const useKycBlock = ({
             ...motionProps,
             variant: 'success',
             className: `${badgeClassNames} bg-success/20`,
-          },
-        },
-      ];
-    }
-
-    if (tags.includes(StateTag.REJECTED)) {
-      return [
-        {
-          type: 'badge',
-          value: 'Rejected',
-          props: {
-            ...motionProps,
-            variant: 'destructive',
-            className: `${badgeClassNames}`,
           },
         },
       ];
@@ -229,7 +215,9 @@ export const useKycBlock = ({
       {
         id: 'actions',
         type: 'container',
-        value: getDecisionStatusOrAction(childWorkflow?.tags),
+        value: getDecisionStatusOrAction(
+          childWorkflow?.state as 'revision' | 'rejected' | 'approved',
+        ),
       },
     ],
   };

@@ -10,7 +10,7 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import { getDocumentsByCountry, StateTag } from '@ballerine/common';
+import { getDocumentsByCountry } from '@ballerine/common';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
@@ -109,11 +109,18 @@ export const useTasks = ({
         const isDocumentRevision =
           decision?.status === 'revision' && (!isDoneWithRevision || noAction);
 
-        const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
+        const isRevisionState = ['pending_resubmission', 'pending_kyc_response_to_finish'].includes(
+          workflow?.state?.toLowerCase(),
+        );
+
+        const getDecisionStatusOrAction = (
+          isDocumentRevision: boolean,
+          decision: { status: 'revision' | 'rejected' | 'approved'; reason: string },
+        ) => {
           const badgeClassNames = 'text-sm font-bold';
 
           if (isDocumentRevision) {
-            return workflow?.tags?.includes(StateTag.REVISION)
+            return isRevisionState
               ? [
                   {
                     type: 'badge',
@@ -146,7 +153,7 @@ export const useTasks = ({
                 ];
           }
 
-          if (decision?.status === StateTag.APPROVED) {
+          if (decision?.status === 'approved') {
             return [
               {
                 type: 'badge',
@@ -160,7 +167,7 @@ export const useTasks = ({
             ];
           }
 
-          if (decision?.status === StateTag.REJECTED) {
+          if (decision?.status === 'rejected') {
             return [
               {
                 type: 'badge',
@@ -209,7 +216,7 @@ export const useTasks = ({
             {
               id: 'actions',
               type: 'container',
-              value: getDecisionStatusOrAction(isDocumentRevision),
+              value: getDecisionStatusOrAction(isDocumentRevision, decision),
             },
           ],
         };
@@ -288,7 +295,7 @@ export const useTasks = ({
         return {
           className: isDocumentRevision
             ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning ${
-                workflow?.tags?.includes(StateTag.REVISION) ? '' : 'bg-warning/10'
+                isRevisionState ? '' : 'bg-warning/10'
               }`
             : '',
           cells: [headerCell, detailsCell, documentsCell],
