@@ -4,6 +4,7 @@ const ghNationalIdNumber = '^$|^GHA-\\d{9}-\\d{1}$';
 const alphaNumeric = '^[a-zA-Z0-9]*$';
 
 export const ghanaDocuments: TDocument[] = [
+  // Financial Information
   {
     category: 'financial_information',
     type: 'mtn_statement',
@@ -41,6 +42,8 @@ export const ghanaDocuments: TDocument[] = [
       },
     },
   },
+
+  // Proof of Address
   {
     category: 'proof_of_address',
     type: 'water_bill',
@@ -152,78 +155,6 @@ export const ghanaDocuments: TDocument[] = [
     },
   },
   {
-    category: 'proof_of_employment',
-    type: 'payslip',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        employeeName: {
-          type: 'string',
-        },
-        position: {
-          type: 'string',
-        },
-        salaryAmount: {
-          type: 'number',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
-        },
-      },
-    },
-  },
-  {
-    category: 'proof_of_employment',
-    type: 'appointment_letter',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        employeeName: {
-          type: 'string',
-        },
-        position: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
-        },
-        salaryAmount: {
-          type: 'number',
-        },
-      },
-    },
-  },
-  {
     category: 'proof_of_address',
     type: 'bank_statement',
     issuer: {
@@ -318,6 +249,179 @@ export const ghanaDocuments: TDocument[] = [
         issuingDate: {
           type: 'string',
           format: 'date',
+        },
+      },
+    },
+  },
+  {
+    category: 'proof_of_address',
+    type: 'form_a',
+    issuer: {
+      type: 'government',
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        nationalIdNumber: {
+          type: 'string',
+          pattern: ghNationalIdNumber,
+        },
+        docNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        userAddress: {
+          type: 'string',
+        },
+        physicalAddress: {
+          type: 'string',
+        },
+        issuingDate: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
+    category: 'proof_of_address',
+    type: 'form_3',
+    issuer: {
+      type: 'government',
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        nationalIdNumber: {
+          type: 'string',
+          pattern: ghNationalIdNumber,
+        },
+        docNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        userAddress: {
+          type: 'string',
+        },
+        physicalAddress: {
+          type: 'string',
+        },
+        issuingDate: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
+    category: 'proof_of_address',
+    type: 'form_4',
+    issuer: {
+      type: 'government',
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        nationalIdNumber: {
+          type: 'string',
+          pattern: ghNationalIdNumber,
+        },
+        docNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        userAddress: {
+          type: 'string',
+        },
+        physicalAddress: {
+          type: 'string',
+        },
+        issuingDate: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+
+  // Proof of Employment
+  {
+    category: 'proof_of_employment',
+    type: 'payslip',
+    issuer: {
+      type: 'private',
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        nationalIdNumber: {
+          type: 'string',
+          pattern: ghNationalIdNumber,
+        },
+        docNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        employeeName: {
+          type: 'string',
+        },
+        position: {
+          type: 'string',
+        },
+        salaryAmount: {
+          type: 'number',
+        },
+        issuingDate: {
+          type: 'string',
+          format: 'date',
+        },
+      },
+    },
+  },
+  {
+    category: 'proof_of_employment',
+    type: 'appointment_letter',
+    issuer: {
+      type: 'private',
+      country: 'GH',
+    },
+    issuingVersion: 1,
+    version: 1,
+    propertiesSchema: {
+      type: 'object',
+      properties: {
+        nationalIdNumber: {
+          type: 'string',
+          pattern: ghNationalIdNumber,
+        },
+        docNumber: {
+          type: 'string',
+          pattern: alphaNumeric,
+        },
+        employeeName: {
+          type: 'string',
+        },
+        position: {
+          type: 'string',
+        },
+        issuingDate: {
+          type: 'string',
+          format: 'date',
+        },
+        salaryAmount: {
+          type: 'number',
         },
       },
     },
@@ -428,39 +532,6 @@ export const ghanaDocuments: TDocument[] = [
     },
   },
   {
-    category: 'proof_of_address',
-    type: 'form_a',
-    issuer: {
-      type: 'government',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
-        },
-      },
-    },
-  },
-  {
     category: 'proof_of_employment',
     type: 'form_3',
     issuer: {
@@ -487,72 +558,6 @@ export const ghanaDocuments: TDocument[] = [
           type: 'string',
         },
         employerName: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
-        },
-      },
-    },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'form_3',
-    issuer: {
-      type: 'government',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
-        },
-      },
-    },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'form_4',
-    issuer: {
-      type: 'government',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
           type: 'string',
         },
         issuingDate: {
@@ -598,6 +603,8 @@ export const ghanaDocuments: TDocument[] = [
       },
     },
   },
+
+  // Proof of Registration
   {
     category: 'proof_of_registration',
     type: 'certificate_of_registration',
