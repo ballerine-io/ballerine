@@ -3,45 +3,6 @@ import { TDocument } from '../types';
 const ghNationalIdNumber = '^$|^GHA-\\d{9}-\\d{1}$';
 const alphaNumeric = '^[a-zA-Z0-9]*$';
 
-export const certificateOfResidenceGH: TDocument = {
-  category: 'proof_of_address',
-  type: 'water_bill',
-  issuer: {
-    type: 'local_authority',
-    city: 'Accra',
-    name: 'Accra Metropolitan Assembly',
-    country: 'GH',
-  },
-  issuingVersion: 1,
-  version: 1,
-  propertiesSchema: {
-    type: 'object',
-    properties: {
-      nationalIdNumber: {
-        type: 'string',
-        pattern: ghNationalIdNumber,
-      },
-      docNumber: {
-        type: 'string',
-        pattern: alphaNumeric,
-      },
-      userAddress: {
-        type: 'string',
-      },
-      physicalAddress: {
-        type: 'string',
-      },
-      amountDue: {
-        type: 'number',
-      },
-      issuingDate: {
-        type: 'string',
-        format: 'date',
-      },
-    },
-  },
-};
-
 export const ghanaDocuments: TDocument[] = [
   {
     category: 'financial_information',
