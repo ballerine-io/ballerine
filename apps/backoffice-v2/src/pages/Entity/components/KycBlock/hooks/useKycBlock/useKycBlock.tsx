@@ -192,6 +192,20 @@ export const useKycBlock = ({
       ];
     }
 
+    if (tags.includes(StateTag.PENDING_PROCESS)) {
+      return [
+        {
+          type: 'badge',
+          value: 'Pending ID verification',
+          props: {
+            ...motionProps,
+            variant: 'warning',
+            className: `${badgeClassNames}`,
+          },
+        },
+      ];
+    }
+
     return [
       {
         type: 'caseCallToAction',
