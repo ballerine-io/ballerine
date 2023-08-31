@@ -1,6 +1,6 @@
 import { TDocument } from '@/schemas';
 
-export const canadaDocuments: TDocument[] = [
+export const getCanadaDocuments = (): TDocument[] => [
   {
     category: 'incorporation',
     type: 'pdf',

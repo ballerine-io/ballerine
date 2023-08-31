@@ -72,7 +72,10 @@ const ajv = new Ajv({
   strict: false,
   coerceTypes: true,
 });
-addFormats(ajv, { formats: ['email', 'uri', 'date'] });
+addFormats(ajv, {
+  formats: ['email', 'uri', 'date'],
+  keywords: true,
+});
 addKeywords(ajv);
 
 export const ResubmissionReason = {

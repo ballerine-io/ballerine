@@ -19,7 +19,7 @@ export { type AnyRecord } from './types';
 export {
   type DefaultContextSchema,
   type TDefaultSchemaDocumentPage,
-  ghanaDocuments,
+  getGhanaDocuments,
   getDocumentsByCountry,
   getDocumentId,
   type TDocument,
