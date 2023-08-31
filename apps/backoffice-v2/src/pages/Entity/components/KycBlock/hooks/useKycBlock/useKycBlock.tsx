@@ -10,8 +10,6 @@ import {
 import { octetToFileType } from '../../../../../../common/octet-to-file-type/octet-to-file-type';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { useCaseDecision } from '../../../Case/hooks/useCaseDecision/useCaseDecision';
-import { isValidUrl } from '../../../../../../common/utils/is-valid-url';
-import { isBase64 } from '../../../../../../common/utils/is-base64/is-base64';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
@@ -147,10 +145,10 @@ export const useKycBlock = ({
     safeEvery(childWorkflow?.context?.documents, document => !!document?.decision?.status) ||
     noAction;
 
-  const getDecisionStatusOrAction = (tags: TStateTags) => {
+  const getDecisionStatusOrAction = (tags?: TStateTags) => {
     const badgeClassNames = 'text-sm font-bold';
 
-    if (tags.includes(StateTag.REVISION)) {
+    if (tags?.includes(StateTag.REVISION)) {
       return [
         {
           type: 'badge',
@@ -164,7 +162,7 @@ export const useKycBlock = ({
       ];
     }
 
-    if (tags.includes(StateTag.APPROVED)) {
+    if (tags?.includes(StateTag.APPROVED)) {
       return [
         {
           type: 'badge',
@@ -178,7 +176,7 @@ export const useKycBlock = ({
       ];
     }
 
-    if (tags.includes(StateTag.REJECTED)) {
+    if (tags?.includes(StateTag.REJECTED)) {
       return [
         {
           type: 'badge',
@@ -192,7 +190,7 @@ export const useKycBlock = ({
       ];
     }
 
-    if (tags.includes(StateTag.PENDING_PROCESS)) {
+    if (tags?.includes(StateTag.PENDING_PROCESS)) {
       return [
         {
           type: 'badge',
