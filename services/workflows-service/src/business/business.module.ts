@@ -18,9 +18,10 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 import { HttpModule } from '@nestjs/axios';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { EndUserService } from '@/end-user/end-user.service';
+import { ProjectModule } from '@/project/project.module';
 
 @Module({
-  imports: [HttpModule, AppLoggerModule],
+  imports: [HttpModule, AppLoggerModule, ProjectModule],
   controllers: [BusinessControllerInternal, BusinessControllerExternal],
   providers: [
     BusinessRepository,

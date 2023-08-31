@@ -42,10 +42,26 @@ export class ProjectScopeService {
     return args!;
   }
 
-  scopeFindOne<T>(args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>, projectIds?: TProjectIds) {
+  scopeFindOne<T>(
+    args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
+    projectIds?: TProjectIds,
+  ): T {
     // @ts-expect-error
     args.where = {
       // @ts-expect-error
+      ...args.where,
+      project: {
+        id: {
+          in: projectIds,
+        },
+      },
+    };
+
+    return args as T;
+  }
+
+  scopeFindFirst<T>(args: any, projectIds?: TProjectIds): any {
+    args.where = {
       ...args.where,
       project: {
         id: {
@@ -127,6 +143,22 @@ export class ProjectScopeService {
         },
       },
     };
+    return args;
+  }
+
+  scopeGroupBy<T>(
+    args: Prisma.SubsetIntersection<T, Prisma.WorkflowRuntimeDataGroupByArgs, any>,
+    projectIds?: TProjectIds,
+  ): Prisma.SubsetIntersection<T, Prisma.WorkflowRuntimeDataGroupByArgs, any> {
+    args.where = {
+      ...args.where,
+      project: {
+        id: {
+          in: projectIds,
+        },
+      },
+    };
+
     return args;
   }
 }

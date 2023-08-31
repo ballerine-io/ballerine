@@ -69,9 +69,14 @@ export class CollectionFlowService {
     return endUser;
   }
 
-  async getFlowConfiguration(configurationId: string): Promise<FlowConfigurationModel> {
+  async getFlowConfiguration(
+    configurationId: string,
+    projectIds: TProjectIds,
+  ): Promise<FlowConfigurationModel> {
     const workflowDefinition = await this.workflowService.getWorkflowDefinitionById(
       configurationId,
+      {},
+      projectIds,
     );
 
     return plainToClass(FlowConfigurationModel, {
@@ -88,8 +93,13 @@ export class CollectionFlowService {
   async updateFlowConfiguration(
     configurationId: string,
     steps: FlowStepModel[],
+    projectIds: TProjectIds,
   ): Promise<FlowConfigurationModel> {
-    const definition = await this.workflowDefinitionRepository.findById(configurationId);
+    const definition = await this.workflowDefinitionRepository.findById(
+      configurationId,
+      {},
+      projectIds,
+    );
     if (!definition) throw new NotFoundException();
 
     const providedStepsMap = keyBy(steps, 'key');
@@ -107,18 +117,21 @@ export class CollectionFlowService {
       return step;
     });
 
-    const updatedDefinition = await this.workflowDefinitionRepository.updateById(configurationId, {
-      data: {
-        definition: {
-          ...definition.definition,
-          states: {
-            ...definition.definition?.states,
-            data_collection: {
-              ...definition.definition?.states?.data_collection,
-              metadata: {
-                uiSettings: {
-                  multiForm: {
-                    steps: mergedSteps,
+    const updatedDefinition = await this.workflowDefinitionRepository.updateById(
+      configurationId,
+      {
+        data: {
+          definition: {
+            ...definition.definition,
+            states: {
+              ...definition.definition?.states,
+              data_collection: {
+                ...definition.definition?.states?.data_collection,
+                metadata: {
+                  uiSettings: {
+                    multiForm: {
+                      steps: mergedSteps,
+                    },
                   },
                 },
               },
@@ -126,7 +139,8 @@ export class CollectionFlowService {
           },
         },
       },
-    });
+      projectIds,
+    );
 
     return plainToClass(FlowConfigurationModel, {
       id: updatedDefinition.id,
@@ -157,7 +171,7 @@ export class CollectionFlowService {
 
     this.logger.log(`Getting last active workflow`, query);
 
-    const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query);
+    const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query, projectIds);
 
     this.logger.log('Last active workflow', { workflowId: workflowData ? workflowData.id : null });
 
@@ -171,7 +185,7 @@ export class CollectionFlowService {
     projectIds: TProjectIds,
     customer: Customer,
   ) {
-    const workflow = await this.workflowRuntimeDataRepository.findById(flowId);
+    const workflow = await this.workflowRuntimeDataRepository.findById(flowId, {}, projectIds);
 
     if (!workflow) throw new NotFoundException();
 
@@ -188,9 +202,13 @@ export class CollectionFlowService {
 
     const workflowData = adapter.deserialize(flowData as any, workflow, customer);
 
-    await this.businessService.updateById(workflow.businessId, {
-      data: updatePayload.businessData,
-    });
+    await this.businessService.updateById(
+      workflow.businessId,
+      {
+        data: updatePayload.businessData,
+      },
+      projectIds,
+    );
 
     await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowData.workflowDefinitionId,
@@ -204,18 +222,26 @@ export class CollectionFlowService {
   async finishFlow(flowId: string, projectIds: TProjectIds) {
     await this.workflowService.event({ id: flowId, name: 'start' }, projectIds);
 
-    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(flowId);
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+      flowId,
+      {},
+      projectIds,
+    );
 
-    return await this.workflowService.updateContextById(workflowRuntimeData.id, {
-      ...workflowRuntimeData.context,
-      entity: {
-        ...workflowRuntimeData.context.entity,
-        data: {
-          ...workflowRuntimeData.context.entity.data,
-          __isFinished: true,
+    return await this.workflowService.updateContextById(
+      workflowRuntimeData.id,
+      {
+        ...workflowRuntimeData.context,
+        entity: {
+          ...workflowRuntimeData.context.entity,
+          data: {
+            ...workflowRuntimeData.context.entity.data,
+            __isFinished: true,
+          },
         },
       },
-    });
+      projectIds,
+    );
   }
 
   async resubmitFlow(flowId: string, projectIds: TProjectIds) {

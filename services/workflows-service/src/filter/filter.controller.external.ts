@@ -33,18 +33,24 @@ export class FilterControllerExternal {
   @swagger.ApiOkResponse({ type: [FilterModel] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(FilterFindManyArgs)
-  async list(@common.Req() request: Request): Promise<FilterModel[]> {
+  async list(
+    @ProjectIds() projectIds: TProjectIds,
+    @common.Req() request: Request,
+  ): Promise<FilterModel[]> {
     const args = plainToClass(FilterFindManyArgs, request.query);
-    return this.service.list(args);
+    return this.service.list(args, projectIds);
   }
 
   @common.Get(':id')
   @swagger.ApiOkResponse({ type: FilterModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  async getById(@common.Param() params: FilterWhereUniqueInput): Promise<FilterModel | null> {
+  async getById(
+    @ProjectIds() projectIds: TProjectIds,
+    @common.Param() params: FilterWhereUniqueInput,
+  ): Promise<FilterModel | null> {
     try {
-      return await this.service.getById(params.id);
+      return await this.service.getById(params.id, {}, projectIds);
     } catch (err) {
       if (isRecordNotFoundError(err)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -60,12 +66,15 @@ export class FilterControllerExternal {
   @swagger.ApiForbiddenResponse()
   @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
   async createFilter(@ProjectIds() projectIds: TProjectIds, @common.Body() data: FilterCreateDto) {
-    return await this.service.create({
-      data: {
-        ...data,
-        query: data?.query as InputJsonValue,
-        projectId: projectIds?.[0],
+    return await this.service.create(
+      {
+        data: {
+          ...data,
+          query: data?.query as InputJsonValue,
+          projectId: projectIds?.[0],
+        },
       },
-    });
+      projectIds,
+    );
   }
 }

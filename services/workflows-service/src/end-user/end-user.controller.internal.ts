@@ -10,8 +10,9 @@ import { Request } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { EndUserService } from './end-user.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
-import { InputJsonValue } from '@/types';
+import { InputJsonValue, TProjectIds } from '@/types';
 import { JsonValue } from 'type-fest';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 
 @swagger.ApiTags('internal/end-users')
 @common.Controller('internal/end-users')
@@ -26,14 +27,20 @@ export class EndUserControllerInternal {
   @swagger.ApiOkResponse({ type: [EndUserModel] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EndUserFindManyArgs)
-  async list(@common.Req() request: Request): Promise<EndUserModel[]> {
+  async list(
+    @ProjectIds() projectIds: TProjectIds,
+    @common.Req() request: Request,
+  ): Promise<EndUserModel[]> {
     const args = plainToClass(EndUserFindManyArgs, request.query);
     const query: JsonValue = {};
 
-    return this.service.list({
-      ...args,
-      ...(query as InputJsonValue),
-    });
+    return this.service.list(
+      {
+        ...args,
+        ...(query as InputJsonValue),
+      },
+      projectIds,
+    );
   }
 
   @common.Get(':id')

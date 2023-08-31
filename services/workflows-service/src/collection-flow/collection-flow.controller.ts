@@ -59,16 +59,18 @@ export class ColectionFlowController {
   @common.Get('/configuration')
   async getFlowConfiguration(
     @common.Query() query: GetFlowConfigurationDto,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<FlowConfigurationModel> {
-    return this.service.getFlowConfiguration(query.flowType);
+    return this.service.getFlowConfiguration(query.flowType, projectIds);
   }
 
   @common.Put('/configuration/:configurationId')
   async updateFlowConfiguration(
     @common.Param('configurationId') configurationId: string,
     @common.Body() dto: UpdateConfigurationDto,
+    @ProjectIds() projectIds: TProjectIds,
   ) {
-    return this.service.updateFlowConfiguration(configurationId, dto.steps);
+    return this.service.updateFlowConfiguration(configurationId, dto.steps, projectIds);
   }
 
   @common.Put('/:flowId')

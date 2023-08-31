@@ -50,14 +50,16 @@ export class WorkflowControllerExternal {
     @Query() query: GetWorkflowsRuntimeInputDto,
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<GetWorkflowsRuntimeOutputDto> {
-    const results = await this.service.listRuntimeData({
-      page: query.page,
-      size: query.limit,
-      status: query.status,
-      orderBy: query.orderBy,
-      orderDirection: query.orderDirection,
+    const results = await this.service.listRuntimeData(
+      {
+        page: query.page,
+        size: query.limit,
+        status: query.status,
+        orderBy: query.orderBy,
+        orderDirection: query.orderDirection,
+      },
       projectIds,
-    });
+    );
 
     return plainToClass(GetWorkflowsRuntimeOutputDto, results);
   }
@@ -66,8 +68,11 @@ export class WorkflowControllerExternal {
   @ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @UseCustomerAuthGuard()
-  async getWorkflowDefinition(@common.Param() params: WorkflowDefinitionWhereUniqueInput) {
-    return await this.service.getWorkflowDefinitionById(params.id);
+  async getWorkflowDefinition(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return await this.service.getWorkflowDefinitionById(params.id, {}, projectIds);
   }
 
   @common.Get('/:id')
@@ -77,14 +82,21 @@ export class WorkflowControllerExternal {
   @UseCustomerAuthGuard()
   async getRunnableWorkflowDataById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<RunnableWorkflowData> {
-    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(params.id);
+    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(
+      params.id,
+      {},
+      projectIds,
+    );
     if (!workflowRuntimeData) {
       throw new NotFoundException(`No resource with id [${params.id}] was found`);
     }
 
     const workflowDefinition = await this.service.getWorkflowDefinitionById(
       workflowRuntimeData.workflowDefinitionId,
+      {},
+      projectIds,
     );
 
     return {
@@ -102,9 +114,10 @@ export class WorkflowControllerExternal {
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.updateWorkflowRuntimeData(params.id, data);
+      return await this.service.updateWorkflowRuntimeData(params.id, data, projectIds);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -205,9 +218,12 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async getWorkflowRuntimeDataContext(@common.Param('id') id: string) {
+  async getWorkflowRuntimeDataContext(
+    @common.Param('id') id: string,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
     try {
-      const context = await this.service.getWorkflowRuntimeDataContext(id);
+      const context = await this.service.getWorkflowRuntimeDataContext(id, projectIds);
 
       return { context };
     } catch (err) {
@@ -228,10 +244,14 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowIdWithEventInput,
     @common.Query() query: WorkflowHookQuery,
     @common.Body() hookResponse: any,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<void> {
     try {
-      const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
-      const projectIds = [workflowRuntime.projectId!];
+      const workflowRuntime = await this.service.getWorkflowRuntimeDataById(
+        params.id,
+        {},
+        projectIds,
+      );
       await this.normalizeService.handleHookResponse({
         workflowRuntime: workflowRuntime,
         data: hookResponse,

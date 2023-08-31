@@ -28,15 +28,19 @@ export class SessionSerializer extends PassportSerializer {
     done: (err: unknown, user: AuthenticatedEntity | null) => void,
   ) {
     try {
-      const userResult = await this.userService.getByIdUnscoped(user.user!.id!, {
-        select: {
-          id: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          userToProjects: { select: { projectId: true } },
+      const userResult = await this.userService.getByIdUnscoped(
+        user.user!.id!,
+        {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            userToProjects: { select: { projectId: true } },
+          },
         },
-      });
+        null,
+      );
 
       const { userToProjects, ...userData } = userResult;
       const authenticatedEntity = {

@@ -33,9 +33,13 @@ export class HookCallbackHandlerService {
     }
 
     const updatedContext = { ...workflowRuntime.context, [resultDestinationPath]: data };
-    await this.workflowService.updateWorkflowRuntimeData(workflowRuntime.id, {
-      context: updatedContext,
-    });
+    await this.workflowService.updateWorkflowRuntimeData(
+      workflowRuntime.id,
+      {
+        context: updatedContext,
+      },
+      projectIds,
+    );
 
     return data;
   }
@@ -77,7 +81,11 @@ export class HookCallbackHandlerService {
 
     this.setNestedProperty(context, attributePath, result);
     context.documents = persistedDocuments;
-    await this.workflowService.updateWorkflowRuntimeData(workflowRuntime.id, { context: context });
+    await this.workflowService.updateWorkflowRuntimeData(
+      workflowRuntime.id,
+      { context: context },
+      proejctIds,
+    );
   }
 
   private formatDocuments(

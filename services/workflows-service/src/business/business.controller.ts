@@ -12,6 +12,8 @@ import { BusinessService } from './business.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TProjectIds } from '@/types';
 
 @swagger.ApiTags('internal/businesses')
 @common.Controller('internal/businesses')
@@ -28,31 +30,38 @@ export class BusinessControllerExternal {
   @swagger.ApiForbiddenResponse()
   async create(
     @common.Body() data: BusinessCreateDto,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return this.service.create({
-      data: {
-        ...data,
-        legalForm: 'name',
-        countryOfIncorporation: 'US',
-        address: 'addess',
-        industry: 'telecom',
-        documents: 's',
+    return this.service.create(
+      {
+        data: {
+          ...data,
+          legalForm: 'name',
+          countryOfIncorporation: 'US',
+          address: 'addess',
+          industry: 'telecom',
+          documents: 's',
+        },
+        select: {
+          id: true,
+          companyName: true,
+        },
       },
-      select: {
-        id: true,
-        companyName: true,
-      },
-    });
+      projectIds,
+    );
   }
 
   @common.Get()
   @swagger.ApiOkResponse({ type: [BusinessModel] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(BusinessFindManyArgs)
-  async list(@common.Req() request: Request): Promise<BusinessModel[]> {
+  async list(
+    @common.Req() request: Request,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<BusinessModel[]> {
     const args = plainToClass(BusinessFindManyArgs, request.query);
-    return this.service.list(args);
+    return this.service.list(args, projectIds);
   }
 
   @common.Get(':id')
@@ -61,7 +70,7 @@ export class BusinessControllerExternal {
   @swagger.ApiForbiddenResponse()
   async getById(@common.Param() params: BusinessWhereUniqueInput): Promise<BusinessModel | null> {
     try {
-      const business = await this.service.getById(params.id);
+      const business = await this.service.getById(params.id, {});
 
       return business;
     } catch (err) {

@@ -3,14 +3,10 @@ import { FileRepository } from './storage.repository';
 import { IFileIds } from './types';
 import { Prisma } from '@prisma/client';
 import { TProjectIds } from '@/types';
-import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
 export class StorageService {
-  constructor(
-    protected readonly fileRepository: FileRepository,
-    protected readonly projectScopeService: ProjectScopeService,
-  ) {}
+  constructor(protected readonly fileRepository: FileRepository) {}
 
   async createFileLink({
     uri,
@@ -22,26 +18,24 @@ export class StorageService {
     projectIds: TProjectIds;
   }) {
     const file = await this.fileRepository.create(
-      this.projectScopeService.scopeCreate(
-        {
-          data: {
-            uri,
-            fileNameOnDisk,
-            userId,
-            fileNameInBucket,
-          },
-          select: {
-            id: true,
-          },
+      {
+        data: {
+          uri,
+          fileNameOnDisk,
+          userId,
+          fileNameInBucket,
         },
-        projectIds,
-      ),
+        select: {
+          id: true,
+        },
+      },
+      projectIds,
     );
 
     return file.id;
   }
 
-  async getFileNameById({ id }: IFileIds, args?: Prisma.FileFindFirstArgs) {
-    return await this.fileRepository.findById({ id }, args || {});
+  async getFileNameById({ id }: IFileIds, args: Prisma.FileFindFirstArgs, projectIds: TProjectIds) {
+    return await this.fileRepository.findById({ id }, args || {}, projectIds);
   }
 }

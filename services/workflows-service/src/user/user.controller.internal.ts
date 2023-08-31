@@ -55,17 +55,20 @@ export class UserControllerInternal {
     // @ts-ignore
     delete userCreatInfo.projectIds;
 
-    return this.service.create({
-      data: userCreatInfo,
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        phone: true,
-        roles: true,
-        workflowRuntimeData: true,
+    return this.service.create(
+      {
+        data: userCreatInfo,
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          roles: true,
+          workflowRuntimeData: true,
+        },
       },
-    });
+      projectIds,
+    );
   }
 }

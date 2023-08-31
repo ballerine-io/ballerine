@@ -21,7 +21,6 @@ import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
-import { ProjectScopeService } from '@/project/project-scope.service';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -31,7 +30,6 @@ export class StorageControllerInternal {
     protected readonly service: StorageService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-    protected readonly scopeService: ProjectScopeService,
   ) {}
 
   // TODO - update file to be multitenant to the speicific s3 bucket
@@ -79,10 +77,7 @@ export class StorageControllerInternal {
     @Res() res: Response,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById(
-      { id },
-      this.scopeService.scopeFindOne({}, projectIds),
-    );
+    const persistedFile = await this.service.getFileNameById({ id }, {}, projectIds);
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }
@@ -99,10 +94,7 @@ export class StorageControllerInternal {
     @Query('format') format: string,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById(
-      { id },
-      this.scopeService.scopeFindOne({}, projectIds),
-    );
+    const persistedFile = await this.service.getFileNameById({ id }, {}, projectIds);
 
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');

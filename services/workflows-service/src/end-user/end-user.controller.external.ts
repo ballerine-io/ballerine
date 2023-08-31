@@ -39,23 +39,27 @@ export class EndUserControllerExternal {
   @UseCustomerAuthGuard()
   async create(
     @common.Body() data: EndUserCreateDto,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<Pick<EndUserModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>> {
-    return this.service.create({
-      data: {
-        ...data,
-        correlationId: data.correlationId || randomUUID(),
-        email: data.email || faker.internet.email(data.firstName, data.lastName),
-        phone: data.phone || faker.phone.number('+##########'),
-        dateOfBirth: data.dateOfBirth || faker.date.past(60),
-        avatarUrl: data.avatarUrl || faker.image.avatar(),
+    return this.service.create(
+      {
+        data: {
+          ...data,
+          correlationId: data.correlationId || randomUUID(),
+          email: data.email || faker.internet.email(data.firstName, data.lastName),
+          phone: data.phone || faker.phone.number('+##########'),
+          dateOfBirth: data.dateOfBirth || faker.date.past(60),
+          avatarUrl: data.avatarUrl || faker.image.avatar(),
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          avatarUrl: true,
+        },
       },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        avatarUrl: true,
-      },
-    });
+      projectIds,
+    );
   }
 
   @common.Post('/create-with-business')
@@ -76,9 +80,12 @@ export class EndUserControllerExternal {
   @swagger.ApiOkResponse({ type: [EndUserModel] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EndUserFindManyArgs)
-  async list(@common.Req() request: Request): Promise<EndUserModel[]> {
+  async list(
+    @common.Req() request: Request,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<EndUserModel[]> {
     const args = plainToClass(EndUserFindManyArgs, request.query);
-    return this.service.list(args);
+    return this.service.list(args, projectIds);
   }
 
   @common.Get(':id')
@@ -107,13 +114,20 @@ export class EndUserControllerExternal {
   @common.HttpCode(200)
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   @UseCustomerAuthGuard()
-  async listWorkflowRuntimeDataByEndUserId(@Param('endUserId') endUserId: string) {
+  async listWorkflowRuntimeDataByEndUserId(
+    @Param('endUserId') endUserId: string,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
     const workflowRuntimeDataWithDefinition =
-      await this.workflowService.listFullWorkflowDataByUserId({
-        entityId: endUserId,
-        entity: 'endUser',
-      });
+      await this.workflowService.listFullWorkflowDataByUserId(
+        {
+          entityId: endUserId,
+          entity: 'endUser',
+        },
+        projectIds,
+      );
 
+    //@ts-expect-error
     return makeFullWorkflow(workflowRuntimeDataWithDefinition);
   }
 }

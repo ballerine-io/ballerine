@@ -79,7 +79,8 @@ export class StorageControllerExternal {
       {
         id,
       },
-      this.scopeService.scopeFindOne({}, projectIds),
+      {},
+      projectIds,
     );
 
     if (!persistedFile) {
@@ -102,7 +103,8 @@ export class StorageControllerExternal {
       {
         id,
       },
-      this.scopeService.scopeFindOne({}, projectIds),
+      {},
+      projectIds,
     );
 
     if (!persistedFile) {

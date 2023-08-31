@@ -136,7 +136,7 @@ export class WorkflowService {
     private readonly projectScopeService: ProjectScopeService,
   ) {}
 
-  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
+  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectIds: TProjectIds) {
     const select = {
       id: true,
       name: true,
@@ -149,41 +149,52 @@ export class WorkflowService {
       submitStates: true,
       parentRuntimeDataId: true,
     };
-    return await this.workflowDefinitionRepository.create({ data, select });
+    return await this.workflowDefinitionRepository.create({ data, select }, projectIds);
   }
 
   async getWorkflowRuntimeDataById(
     id: string,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    projectIds: TProjectIds,
   ) {
-    return await this.workflowRuntimeDataRepository.findById(id, args);
+    return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
   }
 
   async getWorkflowRuntimeWithChildrenDataById(
     id: string,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    projectIds: TProjectIds,
   ) {
-    return await this.workflowRuntimeDataRepository.findById(id, {
-      ...args,
-    });
+    return await this.workflowRuntimeDataRepository.findById(
+      id,
+      {
+        ...args,
+      },
+      projectIds,
+    );
   }
 
   async getWorkflowByIdWithRelations(
     id: string,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    projectIds: TProjectIds,
   ) {
     const allEntities = { endUser: true, business: true };
     const childWorkflowSelectArgs = {
       select: { ...args?.select, ...allEntities },
       include: args?.include,
     };
-    const workflow = (await this.workflowRuntimeDataRepository.findById(id, {
-      ...args,
-      select: {
-        ...(args?.select || {}),
-        childWorkflowsRuntimeData: { ...childWorkflowSelectArgs },
+    const workflow = (await this.workflowRuntimeDataRepository.findById(
+      id,
+      {
+        ...args,
+        select: {
+          ...(args?.select || {}),
+          childWorkflowsRuntimeData: { ...childWorkflowSelectArgs },
+        },
       },
-    })) as TWorkflowWithRelations;
+      projectIds,
+    )) as TWorkflowWithRelations;
 
     return this.formatWorkflow(workflow);
   }
@@ -259,6 +270,8 @@ export class WorkflowService {
 
     const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(
       childPluginConfig.parentWorkflowRuntimeId,
+      {},
+      projectIds,
     );
 
     if (childWorkflow) {
@@ -274,60 +287,70 @@ export class WorkflowService {
         contextToPersist,
       );
 
-      await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
+      await this.updateWorkflowRuntimeData(
+        parentWorkflowRuntime.id,
+        { context: parentContext },
+        projectIds,
+      );
     }
 
     return childWorkflow;
   }
   async getWorkflowRuntimeDataByCorrelationId(
     id: string,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    projectIds: TProjectIds,
   ) {
-    return await this.workflowRuntimeDataRepository.findById(id, args);
+    return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
   }
 
   async getWorkflowDefinitionById(
     id: string,
-    args?: Parameters<WorkflowDefinitionRepository['findById']>[1],
+    args: Parameters<WorkflowDefinitionRepository['findById']>[1],
+    projectIds: TProjectIds,
   ) {
-    return await this.workflowDefinitionRepository.findById(id, args);
+    return await this.workflowDefinitionRepository.findById(id, args, projectIds);
   }
 
-  async listActiveWorkflowsRuntimeStates() {
-    return await this.workflowRuntimeDataRepository.findMany({
-      select: {
-        state: true,
-        endUserId: true,
-        businessId: true,
-        assigneeId: true,
-        id: true,
-        status: true,
-        workflowDefinitionId: true,
+  async listActiveWorkflowsRuntimeStates(projectIds: TProjectIds) {
+    return await this.workflowRuntimeDataRepository.findMany(
+      {
+        select: {
+          state: true,
+          endUserId: true,
+          businessId: true,
+          assigneeId: true,
+          id: true,
+          status: true,
+          workflowDefinitionId: true,
+        },
       },
-    });
+      projectIds,
+    );
   }
 
-  async listWorkflowRuntimeDataWithRelations({
-    args,
-    entityType,
-    orderBy,
-    page,
-    filters,
-    projectIds,
-  }: {
-    args: Parameters<WorkflowRuntimeDataRepository['findMany']>[0];
-    entityType: 'individuals' | 'businesses';
-    orderBy: Parameters<typeof toPrismaOrderBy>[0];
-    page: {
-      number: number;
-      size: number;
-    };
-    filters?: {
-      assigneeId?: (string | null)[];
-      status?: WorkflowRuntimeDataStatus[];
-    };
-    projectIds: TProjectIds;
-  }) {
+  async listWorkflowRuntimeDataWithRelations(
+    {
+      args,
+      entityType,
+      orderBy,
+      page,
+      filters,
+    }: {
+      args: Parameters<WorkflowRuntimeDataRepository['findMany']>[0];
+      entityType: 'individuals' | 'businesses';
+      orderBy: Parameters<typeof toPrismaOrderBy>[0];
+      page: {
+        number: number;
+        size: number;
+      };
+      filters?: {
+        assigneeId?: (string | null)[];
+        status?: WorkflowRuntimeDataStatus[];
+      };
+    },
+    projectIds: TProjectIds,
+  ) {
     const query = this.projectScopeService.scopeFindMany(
       merge(
         args,
@@ -347,15 +370,18 @@ export class WorkflowService {
       projectIds,
     );
 
-    const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count({
-      where: query.where,
-    });
+    const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count(
+      {
+        where: query.where,
+      },
+      projectIds,
+    );
 
     if (page.number > 1 && totalWorkflowsCount < (page.number - 1) * page.size + 1) {
       throw new NotFoundException('Page not found');
     }
 
-    const workflows = await this.workflowRuntimeDataRepository.findMany(query);
+    const workflows = await this.workflowRuntimeDataRepository.findMany(query, projectIds);
 
     return {
       data: this.formatWorkflowsRuntimeData(workflows as unknown as TWorkflowWithRelations[]),
@@ -395,35 +421,40 @@ export class WorkflowService {
     });
   }
 
-  async listWorkflowRuntimeDataByUserId(userId: string) {
-    return await this.workflowRuntimeDataRepository.findMany({
-      where: { endUserId: userId },
-    });
-  }
-
-  async listFullWorkflowDataByUserId({
-    entityId,
-    entity,
-  }: {
-    entityId: string;
-    entity: TEntityType;
-  }) {
-    return await this.workflowRuntimeDataRepository.findMany({
-      where: {
-        [`${entity}Id`]: entityId,
+  async listWorkflowRuntimeDataByUserId(userId: string, projectIds: TProjectIds) {
+    return await this.workflowRuntimeDataRepository.findMany(
+      {
+        where: { endUserId: userId },
       },
-      include: { workflowDefinition: true },
-    });
+      projectIds,
+    );
   }
 
-  async listRuntimeData({
-    page,
-    size,
-    status,
-    orderBy,
-    orderDirection,
-    projectIds,
-  }: ListWorkflowsRuntimeParams): Promise<ListRuntimeDataResult> {
+  async listFullWorkflowDataByUserId(
+    {
+      entityId,
+      entity,
+    }: {
+      entityId: string;
+      entity: TEntityType;
+    },
+    projectIds: TProjectIds,
+  ) {
+    return await this.workflowRuntimeDataRepository.findMany(
+      {
+        where: {
+          [`${entity}Id`]: entityId,
+        },
+        include: { workflowDefinition: true },
+      },
+      projectIds,
+    );
+  }
+
+  async listRuntimeData(
+    { page, size, status, orderBy, orderDirection }: ListWorkflowsRuntimeParams,
+    projectIds: TProjectIds,
+  ): Promise<ListRuntimeDataResult> {
     const query = {
       where: {
         ...(status ? { status: { in: status } } : undefined),
@@ -432,20 +463,24 @@ export class WorkflowService {
     };
 
     const [workflowsRuntimeCount, workflowsRuntime] = await Promise.all([
-      this.workflowRuntimeDataRepository.count(query),
-      this.workflowRuntimeDataRepository.findMany({
-        ...query,
-        skip: page && size ? (page - 1) * size : undefined,
-        take: size,
-        include: {
-          workflowDefinition: true,
-          assignee: true,
+      this.workflowRuntimeDataRepository.count(query, projectIds),
+      this.workflowRuntimeDataRepository.findMany(
+        {
+          ...query,
+          skip: page && size ? (page - 1) * size : undefined,
+          take: size,
+          include: {
+            workflowDefinition: true,
+            assignee: true,
+          },
+          orderBy: this._resolveOrderByParams(orderBy, orderDirection),
         },
-        orderBy: this._resolveOrderByParams(orderBy, orderDirection),
-      }),
+        projectIds,
+      ),
     ]);
 
     const result: ListRuntimeDataResult = {
+      //@ts-expect-error
       results: this.workflowsRuntimeListItemsFactory(workflowsRuntime),
       meta: {
         pages: size ? Math.max(Math.ceil(workflowsRuntimeCount / size)) : 0,
@@ -501,7 +536,7 @@ export class WorkflowService {
     });
   }
 
-  async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {
+  async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs, projectIds: TProjectIds) {
     const select = {
       id: true,
       name: true,
@@ -513,7 +548,7 @@ export class WorkflowService {
       persistStates: true,
       submitStates: true,
     };
-    return await this.workflowDefinitionRepository.findMany({ ...args, select });
+    return await this.workflowDefinitionRepository.findMany({ ...args, select }, projectIds);
   }
 
   async updateDecisionAndSendEvent({
@@ -527,7 +562,7 @@ export class WorkflowService {
     reason?: string;
     projectIds: TProjectIds;
   }) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(id, {}, projectIds);
     // `name` is always `approve` and not `approved` etc.
     const Status = {
       approve: 'approved',
@@ -569,12 +604,16 @@ export class WorkflowService {
         },
       }),
     );
-    const updatedWorkflow = await this.updateWorkflowRuntimeData(id, {
-      context: {
-        ...runtimeData?.context,
-        documents: documentsWithDecision,
+    const updatedWorkflow = await this.updateWorkflowRuntimeData(
+      id,
+      {
+        context: {
+          ...runtimeData?.context,
+          documents: documentsWithDecision,
+        },
       },
-    });
+      projectIds,
+    );
 
     await this.event(
       {
@@ -599,10 +638,13 @@ export class WorkflowService {
       status: 'approve' | 'reject' | 'revision' | 'revised' | null;
       reason?: string;
     },
+    projectIds: TProjectIds,
   ) {
-    const workflow = await this.workflowRuntimeDataRepository.findById(workflowId);
+    const workflow = await this.workflowRuntimeDataRepository.findById(workflowId, {}, projectIds);
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflow?.workflowDefinitionId,
+      {},
+      projectIds,
     );
 
     this.__validateWorkflowDefinitionContext(workflowDefinition, {
@@ -665,9 +707,13 @@ export class WorkflowService {
       },
     );
 
-    const updatedWorkflow = await this.updateContextById(workflowId, {
-      documents: documentsWithDecision,
-    });
+    const updatedWorkflow = await this.updateContextById(
+      workflowId,
+      {
+        documents: documentsWithDecision,
+      },
+      projectIds,
+    );
     const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow);
     const entityId = updatedWorkflow.businessId || updatedWorkflow.endUserId;
 
@@ -717,6 +763,7 @@ export class WorkflowService {
           resolvedAt: isResolved ? new Date().toISOString() : null,
         },
       },
+      projectIds,
     );
 
     if (isResolved) {
@@ -733,14 +780,28 @@ export class WorkflowService {
     return updatedWorkflowWithResolve;
   }
 
-  async updateContextById(id: string, context: WorkflowRuntimeData['context']) {
-    return this.workflowRuntimeDataRepository.updateContextById(id, context);
+  async updateContextById(
+    id: string,
+    context: WorkflowRuntimeData['context'],
+    projectIds: TProjectIds,
+  ) {
+    return this.workflowRuntimeDataRepository.updateContextById(id, context, undefined, projectIds);
   }
 
-  async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
+  async updateWorkflowRuntimeData(
+    workflowRuntimeId: string,
+    data: WorkflowDefinitionUpdateInput,
+    projectIds: TProjectIds,
+  ) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+      {},
+      projectIds,
+    );
     const workflowDef = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
+      {},
+      projectIds,
     );
 
     const correlationId: string = await this.getCorrelationIdFromWorkflow(runtimeData);
@@ -842,47 +903,60 @@ export class WorkflowService {
             },
           },
         },
+        projectIds,
       );
 
       // Updates the collect documents workflow with the manual review workflow's decision.
-      await this.workflowRuntimeDataRepository.updateById(parentMachine?.id, {
-        data: {
-          status: 'active',
-          state: parentMachine?.workflowDefinition?.definition?.initial as string,
-          context: {
-            ...parentMachine?.context,
-            documents: parentMachine?.context?.documents?.map((document: any) => {
-              if (document.id !== documentToRevise.id) return document;
+      await this.workflowRuntimeDataRepository.updateById(
+        parentMachine?.id,
+        {
+          data: {
+            status: 'active',
+            state: parentMachine?.workflowDefinition?.definition?.initial as string,
+            context: {
+              ...parentMachine?.context,
+              documents: parentMachine?.context?.documents?.map((document: any) => {
+                if (document.id !== documentToRevise.id) return document;
 
-              return {
-                ...document,
-                decision: documentToRevise.decision,
-              };
-            }),
-          },
-        },
-      });
-
-      updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
-        data: {
-          ...data,
-          context: {
-            ...data.context,
-            parentMachine: {
-              id: parentMachine?.id,
-              status: 'active',
+                return {
+                  ...document,
+                  decision: documentToRevise.decision,
+                };
+              }),
             },
           },
-          resolvedAt: isResolved ? new Date().toISOString() : null,
         },
-      });
+        projectIds,
+      );
+
+      updatedResult = await this.workflowRuntimeDataRepository.updateById(
+        workflowRuntimeId,
+        {
+          data: {
+            ...data,
+            context: {
+              ...data.context,
+              parentMachine: {
+                id: parentMachine?.id,
+                status: 'active',
+              },
+            },
+            resolvedAt: isResolved ? new Date().toISOString() : null,
+          },
+        },
+        projectIds,
+      );
     } else {
-      updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
-        data: {
-          ...data,
-          resolvedAt: isResolved ? new Date().toISOString() : null,
+      updatedResult = await this.workflowRuntimeDataRepository.updateById(
+        workflowRuntimeId,
+        {
+          data: {
+            ...data,
+            resolvedAt: isResolved ? new Date().toISOString() : null,
+          },
         },
-      });
+        projectIds,
+      );
     }
 
     if (contextHasChanged) {
@@ -905,9 +979,15 @@ export class WorkflowService {
     return updatedResult;
   }
 
-  async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
+  async assignWorkflowToUser(
+    workflowRuntimeId: string,
+    { assigneeId }: WorkflowAssigneeId,
+    projectIds: TProjectIds,
+  ) {
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
       workflowRuntimeId,
+      {},
+      projectIds,
     );
     const hasDecision =
       workflowRuntimeData?.context?.documents?.length &&
@@ -924,6 +1004,7 @@ export class WorkflowService {
     const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
       { data: { assigneeId: assigneeId, assignedAt: new Date() } },
+      projectIds,
     );
 
     return updatedWorkflowRuntimeData;
@@ -932,11 +1013,11 @@ export class WorkflowService {
   private async getCorrelationIdFromWorkflow(runtimeData: WorkflowRuntimeData) {
     let correlationId: string;
     if (runtimeData.businessId) {
-      correlationId = (await this.businessRepository.getCorrelationIdById(
+      correlationId = (await this.businessRepository.getCorrelationIdByIdUnscoped(
         runtimeData.businessId,
       )) as string;
     } else if (runtimeData.endUserId) {
-      correlationId = (await this.endUserRepository.getCorrelationIdById(
+      correlationId = (await this.endUserRepository.getCorrelationIdByIdUnscoped(
         runtimeData.endUserId,
       )) as string;
     } else {
@@ -949,9 +1030,10 @@ export class WorkflowService {
 
   async deleteWorkflowDefinitionById(
     id: string,
-    args?: Parameters<WorkflowDefinitionRepository['deleteById']>[1],
+    args: Parameters<WorkflowDefinitionRepository['deleteById']>[1],
+    projectIds: TProjectIds,
   ) {
-    return await this.workflowDefinitionRepository.deleteById(id, args);
+    return await this.workflowDefinitionRepository.deleteById(id, args, projectIds);
   }
 
   async handleRuntimeFinalState(
@@ -967,17 +1049,25 @@ export class WorkflowService {
     const endUserId = runtime.endUserId;
     const businessId = runtime.businessId;
     endUserId &&
-      (await this.endUserRepository.updateById(endUserId, {
-        data: {
-          approvalState: ApprovalState.PROCESSING,
+      (await this.endUserRepository.updateById(
+        endUserId,
+        {
+          data: {
+            approvalState: ApprovalState.PROCESSING,
+          },
         },
-      }));
+        projectIds,
+      ));
     businessId &&
-      (await this.businessRepository.updateById(businessId, {
-        data: {
-          approvalState: ApprovalState.PROCESSING,
+      (await this.businessRepository.updateById(
+        businessId,
+        {
+          data: {
+            approvalState: ApprovalState.PROCESSING,
+          },
         },
-      }));
+        projectIds,
+      ));
 
     const entityId = endUserId || businessId;
 
@@ -987,7 +1077,7 @@ export class WorkflowService {
     });
 
     // will throw exception if review machine def is missing
-    await this.workflowDefinitionRepository.findById(workflow.reviewMachineId);
+    await this.workflowDefinitionRepository.findById(workflow.reviewMachineId, {}, projectIds);
 
     const entitySearch: { businessId?: string; endUserId?: string } = {};
 
@@ -998,32 +1088,38 @@ export class WorkflowService {
       entitySearch.endUserId = runtime.endUserId as string;
     }
 
-    const manualReviewWorkflow = await this.workflowRuntimeDataRepository.findOne({
-      where: {
-        ...entitySearch,
-        context: {
-          path: ['parentMachine', 'id'],
-          equals: runtime.id,
+    const manualReviewWorkflow = await this.workflowRuntimeDataRepository.findOne(
+      {
+        where: {
+          ...entitySearch,
+          context: {
+            path: ['parentMachine', 'id'],
+            equals: runtime.id,
+          },
         },
       },
-    });
+      projectIds,
+    );
 
     if (!manualReviewWorkflow) {
-      await this.workflowRuntimeDataRepository.create({
-        data: {
-          ...entitySearch,
-          workflowDefinitionVersion: workflow.version,
-          workflowDefinitionId: workflow.reviewMachineId,
-          context: {
-            ...context,
-            parentMachine: {
-              id: runtime.id,
-              status: 'completed',
+      await this.workflowRuntimeDataRepository.create(
+        {
+          data: {
+            ...entitySearch,
+            workflowDefinitionVersion: workflow.version,
+            workflowDefinitionId: workflow.reviewMachineId,
+            context: {
+              ...context,
+              parentMachine: {
+                id: runtime.id,
+                status: 'completed',
+              },
             },
+            status: 'active',
           },
-          status: 'active',
         },
-      });
+        projectIds,
+      );
     } else {
       if (manualReviewWorkflow.state === 'revision') {
         await this.event(
@@ -1035,22 +1131,30 @@ export class WorkflowService {
         );
       }
 
-      await this.workflowRuntimeDataRepository.updateById(manualReviewWorkflow.id, {
-        data: {
-          context: {
-            ...manualReviewWorkflow.context,
-            parentMachine: {
-              id: runtime.id,
-              status: 'completed',
+      await this.workflowRuntimeDataRepository.updateById(
+        manualReviewWorkflow.id,
+        {
+          data: {
+            context: {
+              ...manualReviewWorkflow.context,
+              parentMachine: {
+                id: runtime.id,
+                status: 'completed',
+              },
             },
           },
         },
-      });
+        projectIds,
+      );
     }
 
-    await this.updateWorkflowRuntimeData(runtime.id, {
-      status: 'completed',
-    });
+    await this.updateWorkflowRuntimeData(
+      runtime.id,
+      {
+        status: 'completed',
+      },
+      projectIds,
+    );
   }
 
   async resolveIntent(
@@ -1061,8 +1165,10 @@ export class WorkflowService {
   ): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies[intent as keyof typeof policies];
     const entity = await (async () => {
-      if (entityType === 'business') return await this.businessRepository.findById(entityId);
-      if (entityType === 'endUser') return await this.endUserRepository.findById(entityId);
+      if (entityType === 'business')
+        return await this.businessRepository.findByIdUnscoped(entityId, {});
+      if (entityType === 'endUser')
+        return await this.endUserRepository.findByIdUnscoped(entityId, {});
 
       throw new BadRequestException(`Invalid entity type ${entityType}`);
     })();
@@ -1107,6 +1213,8 @@ export class WorkflowService {
   }): Promise<RunnableWorkflowData[]> {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
+      {},
+      projectIds,
     );
     config = merge(workflowDefinition.config, config);
     let validatedConfig: WorkflowConfig;
@@ -1120,11 +1228,14 @@ export class WorkflowService {
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
 
     const existingWorkflowRuntimeData =
-      await this.workflowRuntimeDataRepository.findActiveWorkflowByEntity({
-        entityId,
-        entityType,
-        workflowDefinitionId: workflowDefinition.id,
-      });
+      await this.workflowRuntimeDataRepository.findActiveWorkflowByEntity(
+        {
+          entityId,
+          entityType,
+          workflowDefinitionId: workflowDefinition.id,
+        },
+        projectIds,
+      );
 
     let contextToInsert = structuredClone(context);
 
@@ -1139,26 +1250,24 @@ export class WorkflowService {
     if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
       contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId, projectIds);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
-        this.projectScopeService.scopeCreate(
-          {
-            data: {
-              ...entityConnect,
-              workflowDefinitionVersion: workflowDefinition.version,
-              context: contextToInsert as InputJsonValue,
-              config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
-              status: 'active',
-              workflowDefinition: {
-                connect: {
-                  id: workflowDefinition.id,
-                },
+        {
+          data: {
+            ...entityConnect,
+            workflowDefinitionVersion: workflowDefinition.version,
+            context: contextToInsert as InputJsonValue,
+            config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
+            status: 'active',
+            workflowDefinition: {
+              connect: {
+                id: workflowDefinition.id,
               },
-              ...(parentWorkflowId && {
-                parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
-              }),
             },
+            ...(parentWorkflowId && {
+              parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
+            }),
           },
-          projectIds,
-        ),
+        },
+        projectIds,
       );
       newWorkflowCreated = true;
     } else {
@@ -1180,6 +1289,7 @@ export class WorkflowService {
             ) as InputJsonValue,
           },
         },
+        projectIds,
       );
       newWorkflowCreated = false;
     }
@@ -1296,15 +1406,13 @@ export class WorkflowService {
     projectIds: TProjectIds,
   ) {
     const { id } = await this.endUserRepository.create(
-      this.projectScopeService.scopeCreate(
-        {
-          data: {
-            correlationId: entity.id,
-            ...(context.entity.data as object),
-          } as Prisma.EndUserCreateInput,
-        },
-        projectIds,
-      ),
+      {
+        data: {
+          correlationId: entity.id,
+          ...(context.entity.data as object),
+        } as Prisma.EndUserCreateInput,
+      },
+      projectIds,
     );
     return id;
   }
@@ -1315,15 +1423,13 @@ export class WorkflowService {
     projectIds: TProjectIds,
   ) {
     const { id } = await this.businessRepository.create(
-      this.projectScopeService.scopeCreate(
-        {
-          data: {
-            correlationId: entity.id,
-            ...(context.entity.data as object),
-          } as Prisma.BusinessCreateInput,
-        },
-        projectIds,
-      ),
+      {
+        data: {
+          correlationId: entity.id,
+          ...(context.entity.data as object),
+        } as Prisma.BusinessCreateInput,
+      },
+      projectIds,
     );
 
     return id;
@@ -1336,10 +1442,16 @@ export class WorkflowService {
       return entity.ballerineEntityId as TEntityId;
     } else {
       if (entity.type === 'business') {
-        const res = await this.businessRepository.findByCorrelationId(entity.id as TEntityId);
+        const res = await this.businessRepository.findByCorrelationIdUnscoped(
+          entity.id as TEntityId,
+          {},
+        );
         return res && res.id;
       } else {
-        const res = await this.endUserRepository.findByCorrelationId(entity.id as TEntityId);
+        const res = await this.endUserRepository.findByCorrelationIdUnscoped(
+          entity.id as TEntityId,
+          {},
+        );
         return res && res.id;
       }
     }
@@ -1367,9 +1479,15 @@ export class WorkflowService {
 
   async event({ name: type, id }: WorkflowEventInput & IObjectWithId, projectIds: TProjectIds) {
     this.logger.log('Workflow event received', { id, type });
-    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(id);
+    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+      id,
+      {},
+      projectIds,
+    );
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowRuntimeData.workflowDefinitionId,
+      {} as any,
+      projectIds,
     );
 
     const service = createWorkflow({
@@ -1417,12 +1535,16 @@ export class WorkflowService {
       from: workflowRuntimeData.state,
       to: currentState,
     });
-    const updatedRuntimeData = await this.updateWorkflowRuntimeData(workflowRuntimeData.id, {
-      context,
-      state: currentState,
-      tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
-      status: isFinal ? 'completed' : workflowRuntimeData.status,
-    });
+    const updatedRuntimeData = await this.updateWorkflowRuntimeData(
+      workflowRuntimeData.id,
+      {
+        context,
+        state: currentState,
+        tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
+        status: isFinal ? 'completed' : workflowRuntimeData.status,
+      },
+      projectIds,
+    );
 
     if (workflowRuntimeData.parentRuntimeDataId) {
       await this.persistChildWorkflowToParent(
@@ -1456,19 +1578,27 @@ export class WorkflowService {
     }
 
     if (entityType === 'endUser') {
-      await this.entityRepository[entityType].updateById(entityId, {
-        data: {
-          approvalState,
+      await this.entityRepository[entityType].updateById(
+        entityId,
+        {
+          data: {
+            approvalState,
+          },
         },
-      });
+        projectIds,
+      );
     }
 
     if (entityType === 'business') {
-      await this.entityRepository[entityType].updateById(entityId, {
-        data: {
-          approvalState,
+      await this.entityRepository[entityType].updateById(
+        entityId,
+        {
+          data: {
+            approvalState,
+          },
         },
-      });
+        projectIds,
+      );
     }
   }
 
@@ -1482,9 +1612,12 @@ export class WorkflowService {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       workflowRuntimeData.parentRuntimeDataId,
       { include: { childWorkflowsRuntimeData: true } },
+      projectIds,
     );
     const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
       parentWorkflowRuntime.workflowDefinitionId,
+      {},
+      projectIds,
     );
 
     const callbackTransformation = (
@@ -1517,7 +1650,11 @@ export class WorkflowService {
       isPersistableState,
     );
 
-    await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
+    await this.updateWorkflowRuntimeData(
+      parentWorkflowRuntime.id,
+      { context: parentContext },
+      projectIds,
+    );
 
     if (
       childWorkflowCallback.deliverEvent &&
@@ -1666,8 +1803,8 @@ export class WorkflowService {
     return bucketName;
   }
 
-  async getWorkflowRuntimeDataContext(id: string) {
-    return this.workflowRuntimeDataRepository.findContext(id);
+  async getWorkflowRuntimeDataContext(id: string, projectIds: TProjectIds) {
+    return this.workflowRuntimeDataRepository.findContext(id, projectIds);
   }
 
   async getLastActiveFlow({
@@ -1677,20 +1814,20 @@ export class WorkflowService {
   }: GetLastActiveFlowParams): Promise<WorkflowRuntimeData | null> {
     const endUser = await this.endUserService.getByEmail(email, projectIds);
 
-    if (!endUser || !endUser.businesses.length) return null;
+    if (!endUser || !(endUser as any).businesses.length) return null;
 
     const query = {
       endUserId: endUser.id,
       ...{
         workflowDefinitionId: workflowRuntimeDefinitionId,
-        businessId: endUser.businesses.at(-1)!.id,
+        businessId: (endUser as any).businesses.at(-1)!.id,
       },
       projectIds,
     };
 
     this.logger.log(`Getting last active workflow`, query);
 
-    const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query);
+    const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query, projectIds);
 
     this.logger.log('Last active workflow', { workflowId: workflowData ? workflowData.id : null });
 
