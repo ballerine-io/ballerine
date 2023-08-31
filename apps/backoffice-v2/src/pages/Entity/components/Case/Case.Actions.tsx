@@ -108,6 +108,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                 variant={tagToBadgeData[tag].variant}
                 className={ctw(`text-sm font-bold`, {
                   'bg-info/20 text-info': tag === StateTag.MANUAL_REVIEW,
+                  'bg-violet-500/20 text-violet-500': tag === StateTag.COLLECTION_FLOW,
                 })}
               >
                 {convertSnakeCaseToTitleCase(tagToBadgeData[tag].text)}
