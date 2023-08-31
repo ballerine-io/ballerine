@@ -1,18 +1,18 @@
-import { ghanaDocuments } from './GH';
+import { getGhanaDocuments } from './GH';
 import { TDocument } from '../types';
 import { countryCodes } from '@/countries';
 import { DefaultContextSchema } from '@/schemas';
-import { canadaDocuments } from './CA';
-import { ugandaDocuments } from '@/schemas/documents/workflow/documents/schemas/UG';
+import { getCanadaDocuments } from './CA';
+import { getUgandaDocuments } from '@/schemas/documents/workflow/documents/schemas/UG';
 
-const documentIdsByCountry: Partial<Record<(typeof countryCodes)[number], TDocument[]>> = {
-  GH: ghanaDocuments,
-  CA: canadaDocuments,
-  UG: ugandaDocuments,
+const documentIdsByCountry: Partial<Record<(typeof countryCodes)[number], () => TDocument[]>> = {
+  GH: getGhanaDocuments,
+  CA: getCanadaDocuments,
+  UG: getUgandaDocuments,
 };
 
 export const getDocumentsByCountry = (countryCode: (typeof countryCodes)[number]): TDocument[] => {
-  return documentIdsByCountry[countryCode] || [];
+  return documentIdsByCountry[countryCode]?.() || [];
 };
 
 export const getDocumentId = (
