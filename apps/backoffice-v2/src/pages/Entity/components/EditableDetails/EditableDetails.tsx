@@ -123,68 +123,94 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
             'grid-cols-3': id === 'entity-details',
           })}
         >
-          {formData?.map(({ title, isEditable, type, format, pattern, value, dropdownOptions }) =>
-            isDecisionComponent && !value ? null : (
-              <FormField
-                key={title}
-                control={form.control}
-                name={title}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
-                    {dropdownOptions ? (
-                      <Select
-                        disabled={!isEditable}
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {dropdownOptions?.map(({ label, value }, index) => {
-                            return (
-                              <SelectItem
-                                key={keyFactory(id, valueId, label, index?.toString())}
-                                value={value}
-                              >
-                                {label}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <FormControl>
-                        <Input
-                          type={!format ? (type === 'string' ? 'text' : type) : format}
-                          disabled={!isEditable}
-                          className={ctw(
-                            `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
-                            {
-                              'font-bold text-success': isDecisionPositive(
-                                isDecisionComponent,
-                                field.value,
-                              ),
-                              'font-bold text-destructive': isDecisionNegative(
-                                isDecisionComponent,
-                                field.value,
-                              ),
-                            },
-                          )}
-                          pattern={pattern}
-                          autoComplete={'off'}
-                          {...field}
-                        />
-                      </FormControl>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ),
+          {formData?.map(
+            ({
+              title,
+              isEditable,
+              type,
+              format,
+              minimum,
+              maximum,
+              pattern,
+              value,
+              dropdownOptions,
+            }) =>
+              isDecisionComponent && !value ? null : (
+                <FormField
+                  key={title}
+                  control={form.control}
+                  name={title}
+                  render={({ field }) => {
+                    let inputType: string;
+
+                    if (!format) {
+                      inputType = type === 'string' ? 'text' : type;
+                    } else if (format === 'date-time') {
+                      inputType = 'datetime-local';
+                    } else {
+                      inputType = format;
+                    }
+
+                    return (
+                      <FormItem>
+                        <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
+                        {dropdownOptions ? (
+                          <Select
+                            disabled={!isEditable}
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {dropdownOptions?.map(({ label, value }, index) => {
+                                return (
+                                  <SelectItem
+                                    key={keyFactory(id, valueId, label, index?.toString())}
+                                    value={value}
+                                  >
+                                    {label}
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <FormControl>
+                            <Input
+                              type={inputType}
+                              {...(inputType === 'datetime-local' && { step: '1' })}
+                              {...(minimum && { min: minimum })}
+                              {...(maximum && { max: maximum })}
+                              disabled={!isEditable}
+                              className={ctw(
+                                `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
+                                {
+                                  'font-bold text-success': isDecisionPositive(
+                                    isDecisionComponent,
+                                    field.value,
+                                  ),
+                                  'font-bold text-destructive': isDecisionNegative(
+                                    isDecisionComponent,
+                                    field.value,
+                                  ),
+                                },
+                              )}
+                              pattern={pattern}
+                              autoComplete={'off'}
+                              {...field}
+                            />
+                          </FormControl>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              ),
           )}
         </div>
         <div className={`flex justify-end`}>

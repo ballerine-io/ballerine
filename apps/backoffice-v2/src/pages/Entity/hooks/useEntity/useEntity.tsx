@@ -139,7 +139,16 @@ export const useEntity = () => {
                       )?.map(
                         ([
                           title,
-                          { type, format, pattern, isEditable = true, dropdownOptions, value },
+                          {
+                            type,
+                            format,
+                            pattern,
+                            isEditable = true,
+                            dropdownOptions,
+                            value,
+                            formatMinimum,
+                            formatMaximum,
+                          },
                         ]) => {
                           const fieldValue = value || (properties?.[title] ?? '');
                           const isEditableDecision = isDoneWithRevision || !decision?.status;
@@ -154,6 +163,8 @@ export const useEntity = () => {
                               isEditableDecision &&
                               caseState.writeEnabled &&
                               getIsEditable(isEditable, title),
+                            minimum: formatMinimum,
+                            maximum: formatMaximum,
                             dropdownOptions,
                           };
                         },
