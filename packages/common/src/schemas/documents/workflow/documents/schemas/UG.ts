@@ -74,7 +74,7 @@ export const getUgandaDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        dateOfStatement: Type.String({ format: 'iso-date-time' }),
+        dateOfStatement: Type.String({ format: 'date-time' }),
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
         mobileNumber: Type.String({ pattern: '^233[0-9]{9}$' }),

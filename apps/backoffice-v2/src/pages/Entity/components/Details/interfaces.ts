@@ -13,6 +13,8 @@ export interface IDetailsProps {
       dropdownOptions?: Array<{ label: string; value: string }>;
       dependantOn?: string;
       dependantValue?: string;
+      minimum?: string;
+      maximum?: string;
     }>;
   };
 }

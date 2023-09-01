@@ -8,7 +8,7 @@ export const getGhanaDocuments = (): TDocument[] => {
   const TypeAlphanumericString = Type.String({ pattern: '^[a-zA-Z0-9]*$' });
   const TypePastDate = Type.String({
     format: 'date',
-    formatMaximum: new Date().toISOString().split('T')[0], // @TODO: Test this
+    formatMaximum: new Date().toISOString().split('T')[0],
   });
   const TypeFutureDate = Type.String({
     format: 'date',
@@ -30,7 +30,7 @@ export const getGhanaDocuments = (): TDocument[] => {
         accountHolderName: TypeStringAtLeastOneWord,
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
-        timeRun: Type.String({ format: 'iso-date-time' }),
+        timeRun: Type.String({ format: 'date-time' }),
       }),
     },
     {
@@ -64,7 +64,7 @@ export const getGhanaDocuments = (): TDocument[] => {
           Type.Literal('United Bank for Africa Ghana Limited'),
           Type.Literal('Zenith Bank Ghana Limited'),
         ]),
-        printDate: Type.String({ format: 'iso-date-time' }),
+        printDate: Type.String({ format: 'date-time' }),
         accountHolderName: TypeStringAtLeastOneWord,
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
@@ -637,7 +637,7 @@ export const getGhanaDocuments = (): TDocument[] => {
     {
       category: 'proof_of_registration',
       type: 'certificate_of_registration',
-      issuer: { country: 'UG' },
+      issuer: { country: 'GH' },
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
@@ -650,7 +650,7 @@ export const getGhanaDocuments = (): TDocument[] => {
     {
       category: 'proof_of_registration',
       type: 'operating_permit',
-      issuer: { country: 'UG' },
+      issuer: { country: 'GH' },
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
@@ -663,7 +663,7 @@ export const getGhanaDocuments = (): TDocument[] => {
     {
       category: 'proof_of_registration',
       type: 'district_assembly_certificate',
-      issuer: { country: 'UG' },
+      issuer: { country: 'GH' },
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({

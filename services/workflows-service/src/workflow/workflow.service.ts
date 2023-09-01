@@ -55,6 +55,7 @@ import {
   DefaultContextSchema,
   getDocumentId,
   getDocumentsByCountry,
+  isObject,
   TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -73,7 +74,7 @@ const ajv = new Ajv({
   coerceTypes: true,
 });
 addFormats(ajv, {
-  formats: ['email', 'uri', 'date'],
+  formats: ['email', 'uri', 'date', 'date-time'],
   keywords: true,
 });
 addKeywords(ajv);
@@ -179,9 +180,26 @@ export class WorkflowService {
               doc => getDocumentId(doc, false) === getDocumentId(document, false),
             );
 
+            const propertiesSchema = documentByCountry?.propertiesSchema ?? {};
+
+            Object.entries(propertiesSchema?.properties ?? {}).forEach(([key, value]) => {
+              if (!(key in document.properties)) return;
+              if (!isObject(value) || !('anyOf' in value)) return;
+              if (!value.anyOf || !Array.isArray(value.anyOf) || !value.anyOf.length) return;
+              if (
+                !value.anyOf.every(item => item.type === 'string' && typeof item.const === 'string')
+              )
+                return;
+
+              value.dropdownOptions = value.anyOf.map(item => ({
+                value: item.const,
+                label: item.const,
+              }));
+            });
+
             return {
               ...document,
-              propertiesSchema: documentByCountry?.propertiesSchema ?? {},
+              propertiesSchema,
             };
           },
         ),
