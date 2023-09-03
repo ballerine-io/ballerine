@@ -16,6 +16,11 @@ export const getGhanaDocuments = (): TDocument[] => {
   });
   const TypeNationalIdNumber = Type.String({ pattern: ghNationalIdNumber });
   const TypeStringAtLeastOneWord = Type.String({ minLength: 1 });
+  const TypeStringEnum = <T extends string[]>(values: [...T]) =>
+    Type.Unsafe<T[number]>({
+      type: 'string',
+      enum: values,
+    });
 
   return [
     // Financial Information
@@ -40,29 +45,29 @@ export const getGhanaDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        issuer: Type.Union([
-          Type.Literal('Absa Bank Ghana Limited'),
-          Type.Literal('Access Bank Ghana Plc'),
-          Type.Literal('Agricultural Development Bank of Ghana'),
-          Type.Literal('Bank of Africa Ghana Limited'),
-          Type.Literal('CalBank Limited'),
-          Type.Literal('Consolidated Bank Ghana Limited'),
-          Type.Literal('Ecobank Ghana Limited'),
-          Type.Literal('FBN Bank Ghana Limited'),
-          Type.Literal('Fidelity Bank Ghana Limited'),
-          Type.Literal('First Atlantic Bank Limited'),
-          Type.Literal('First National Bank Ghana'),
-          Type.Literal('GCB Bank Limited'),
-          Type.Literal('Guaranty Trust Bank Ghana Limited'),
-          Type.Literal('National Investment Bank Limited'),
-          Type.Literal('OmniBSIC Bank Ghana Limited'),
-          Type.Literal('Prudential Bank Limited'),
-          Type.Literal('Republic Bank Ghana'),
-          Type.Literal('Societe Generale Ghana Limited'),
-          Type.Literal('Stanbic Bank Ghana Limited'),
-          Type.Literal('Standard Chartered Bank Ghana Limited'),
-          Type.Literal('United Bank for Africa Ghana Limited'),
-          Type.Literal('Zenith Bank Ghana Limited'),
+        issuer: TypeStringEnum([
+          'Absa Bank Ghana Limited',
+          'Access Bank Ghana Plc',
+          'Agricultural Development Bank of Ghana',
+          'Bank of Africa Ghana Limited',
+          'CalBank Limited',
+          'Consolidated Bank Ghana Limited',
+          'Ecobank Ghana Limited',
+          'FBN Bank Ghana Limited',
+          'Fidelity Bank Ghana Limited',
+          'First Atlantic Bank Limited',
+          'First National Bank Ghana',
+          'GCB Bank Limited',
+          'Guaranty Trust Bank Ghana Limited',
+          'National Investment Bank Limited',
+          'OmniBSIC Bank Ghana Limited',
+          'Prudential Bank Limited',
+          'Republic Bank Ghana',
+          'Societe Generale Ghana Limited',
+          'Stanbic Bank Ghana Limited',
+          'Standard Chartered Bank Ghana Limited',
+          'United Bank for Africa Ghana Limited',
+          'Zenith Bank Ghana Limited',
         ]),
         printDate: Type.String({ format: 'date-time' }),
         accountHolderName: TypeStringAtLeastOneWord,

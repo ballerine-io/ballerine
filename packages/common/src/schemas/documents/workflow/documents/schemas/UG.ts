@@ -7,8 +7,13 @@ export const getUgandaDocuments = (): TDocument[] => {
     format: 'date',
     formatMaximum: new Date().toISOString().split('T')[0],
   });
-
+  const TypeStringEnum = <T extends string[]>(values: [...T]) =>
+    Type.Unsafe<T[number]>({
+      type: 'string',
+      enum: values,
+    });
   const TypeStringAtLeastOneWord = Type.String({ minLength: 1 });
+
   return [
     // Proof of Registration
     {
@@ -32,7 +37,7 @@ export const getUgandaDocuments = (): TDocument[] => {
       propertiesSchema: Type.Object({
         businessName: Type.String(),
         registrationNumber: TypeAlphanumericString,
-        issuer: Type.Union([Type.Literal('KCCA'), Type.Literal('Other')]),
+        issuer: TypeStringEnum(['KCCA', 'Other']),
         expirationDate: Type.Optional(TypePastDate),
       }),
     },
@@ -101,33 +106,33 @@ export const getUgandaDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        bankName: Type.Union([
-          Type.Literal('ABC Bank Uganda Limited'),
-          Type.Literal('Absa Bank Uganda Limited'),
-          Type.Literal('Bank of Africa Uganda Limited'),
-          Type.Literal('Bank of Baroda Uganda Limited'),
-          Type.Literal('Bank of India Uganda Limited'),
-          Type.Literal('Cairo Bank Uganda'),
-          Type.Literal('Centenary Bank'),
-          Type.Literal('Citibank Uganda'),
-          Type.Literal('DFCU Bank'),
-          Type.Literal('Diamond Trust Bank'),
-          Type.Literal('Ecobank Uganda'),
-          Type.Literal('Equity Bank Uganda Limited'),
-          Type.Literal('Exim Bank (Uganda)'),
-          Type.Literal('Finance Trust Bank'),
-          Type.Literal('Guaranty Trust Bank'),
-          Type.Literal('Housing Finance Bank'),
-          Type.Literal('I&M Bank Uganda'),
-          Type.Literal('KCB Bank Uganda Limited'),
-          Type.Literal('NCBA Bank Uganda'),
-          Type.Literal('Opportunity Bank Uganda Limited'),
-          Type.Literal('PostBank Uganda'),
-          Type.Literal('Stanbic Bank Uganda Limited'),
-          Type.Literal('Standard Chartered Uganda'),
-          Type.Literal('Tropical Bank'),
-          Type.Literal('United Bank for Africa'),
-          Type.Literal('Other'),
+        bankName: TypeStringEnum([
+          'ABC Bank Uganda Limited',
+          'Absa Bank Uganda Limited',
+          'Bank of Africa Uganda Limited',
+          'Bank of Baroda Uganda Limited',
+          'Bank of India Uganda Limited',
+          'Cairo Bank Uganda',
+          'Centenary Bank',
+          'Citibank Uganda',
+          'DFCU Bank',
+          'Diamond Trust Bank',
+          'Ecobank Uganda',
+          'Equity Bank Uganda Limited',
+          'Exim Bank (Uganda)',
+          'Finance Trust Bank',
+          'Guaranty Trust Bank',
+          'Housing Finance Bank',
+          'I&M Bank Uganda',
+          'KCB Bank Uganda Limited',
+          'NCBA Bank Uganda',
+          'Opportunity Bank Uganda Limited',
+          'PostBank Uganda',
+          'Stanbic Bank Uganda Limited',
+          'Standard Chartered Uganda',
+          'Tropical Bank',
+          'United Bank for Africa',
+          'Other',
         ]),
         printDate: Type.Optional(Type.String({ format: 'date' })),
         from: Type.String({ format: 'date' }),

@@ -184,16 +184,11 @@ export class WorkflowService {
 
             Object.entries(propertiesSchema?.properties ?? {}).forEach(([key, value]) => {
               if (!(key in document.properties)) return;
-              if (!isObject(value) || !('anyOf' in value)) return;
-              if (!value.anyOf || !Array.isArray(value.anyOf) || !value.anyOf.length) return;
-              if (
-                !value.anyOf.every(item => item.type === 'string' && typeof item.const === 'string')
-              )
-                return;
+              if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string') return;
 
-              value.dropdownOptions = value.anyOf.map(item => ({
-                value: item.const,
-                label: item.const,
+              value.dropdownOptions = value.enum.map(item => ({
+                value: item,
+                label: item,
               }));
             });
 
