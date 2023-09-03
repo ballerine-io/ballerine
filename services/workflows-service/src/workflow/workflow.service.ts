@@ -1560,7 +1560,7 @@ export class WorkflowService {
 
     const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query);
 
-    this.logger.log('Last active workflow', { workflowId: workflowData ? workflowData.id : null });
+    this.logger.log('Last active workflow: ', { workflowId: workflowData ? workflowData.id : null });
 
     return workflowData ? workflowData : null;
   }
