@@ -497,3 +497,49 @@ export const NoCasesSvg = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 );
+
+export const NoTasksSvg = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    width="80"
+    height="92"
+    viewBox="0 0 80 92"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle cx="39" cy="53" r="39" fill="#D9D9D9" />
+    <path
+      d="M6 37C6 35.3431 7.34315 34 9 34H68C69.6569 34 71 35.3431 71 37V82C71 83.6569 69.6569 85 68 85H9C7.34315 85 6 83.6569 6 82V37Z"
+      fill="#D9D9D9"
+      stroke="black"
+      strokeWidth="2"
+    />
+    <path
+      d="M46 1L48.5 1.5L57 9L65 16.5L66 19H50C47.7909 19 46 17.2091 46 15V1Z"
+      fill="#B8B8B8"
+      fillOpacity="0.6"
+    />
+    <path
+      d="M11 5C11 2.79086 12.7909 1 15 1H46.4717C47.4559 1 48.4055 1.36281 49.1389 2.01903L57.5 9.5L64.7415 16.3155C65.5446 17.0714 66 18.1254 66 19.2283V61.5C66 63.7091 64.2091 65.5 62 65.5H15C12.7909 65.5 11 63.7091 11 61.5V5Z"
+      fill="white"
+      fillOpacity="0.6"
+      stroke="#9B9B9B"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeDasharray="4 8"
+    />
+    <path
+      d="M46 4.5V15C46 17.2091 47.7909 19 50 19H62.5"
+      stroke="#9B9B9B"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeDasharray="4 8"
+    />
+    <path
+      d="M14.9839 41.4088C15.2655 40.0079 16.4961 39 17.925 39H46.6364C47.2914 39 47.9284 39.2143 48.4501 39.6103L52.4461 42.643C53.3156 43.303 54.3772 43.6602 55.4688 43.6602H62.4561H75.1576C77.0417 43.6602 78.4594 45.3765 78.1036 47.2267L71.3085 82.5665C71.0369 83.979 69.8009 85 68.3625 85H9.88411C7.98977 85 6.56961 83.2659 6.94295 81.4088L14.9839 41.4088Z"
+      fill="white"
+      stroke="black"
+      strokeWidth="2"
+    />
+  </svg>
+);
