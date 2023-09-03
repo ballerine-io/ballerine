@@ -50,6 +50,11 @@ export const env = createEnv({
       .string()
       .optional()
       .describe('Shared secret for the Unified API. Used for verifying incoming callbacks.'),
+    SALESFORCE_API_VERSION: z
+      .string()
+      .optional()
+      .default('latest')
+      .describe('Salesforce API version'),
     SALESFORCE_CONSUMER_KEY: z.string().optional().describe('Salesforce consumer key'),
     SALESFORCE_CONSUMER_SECRET: z.string().optional().describe('Salesforce consumer secret'),
     APP_API_URL: z.string().url().describe('The URL of the workflows-service API'),

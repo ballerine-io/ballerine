@@ -304,12 +304,16 @@ model UserToProject {
 }
 
 model SalesforceIntegration {
-  id             String  @id @default(cuid()) @db.VarChar(500)
-  projectId      String  @unique @db.VarChar(500)
-  project        Project @relation(fields: [projectId], references: [id])
-  accessToken    String  @db.VarChar(500)
-  refreshToken   String  @db.VarChar(500)
-  instanceUrl    String  @db.VarChar(500)
-  userId         String  @db.VarChar(500)
-  organizationId String  @db.VarChar(500)
+  id                  String   @id @default(cuid()) @db.VarChar(500)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  projectId           String   @unique @db.VarChar(500)
+  project             Project  @relation(fields: [projectId], references: [id])
+  accessToken         String   @db.VarChar(500)
+  accessTokenIssuedAt DateTime
+  refreshToken        String   @db.VarChar(500)
+  instanceUrl         String   @db.VarChar(500)
+  userId              String   @db.VarChar(500)
+  organizationId      String   @db.VarChar(500)
+  idUrl               String   @db.VarChar(500)
 }
