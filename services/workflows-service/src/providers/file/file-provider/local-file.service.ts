@@ -9,31 +9,28 @@ export class LocalFileService implements IFileProvider {
     this.client = fs;
   }
 
-  async downloadFile(
+  async download(
     remoteFileConfig: TRemoteFileConfig,
     localFilePath: TLocalFilePath,
   ): Promise<TLocalFilePath> {
-    return await this.copyFile(remoteFileConfig as TRemoteUri, localFilePath);
+    return await this.copy(remoteFileConfig as TRemoteUri, localFilePath);
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  async isRemoteFileExists(remoteFileConfig: TLocalFilePath): Promise<boolean> {
+  async isRemoteExists(remoteFileConfig: TLocalFilePath): Promise<boolean> {
     const localFilePath = remoteFileConfig;
 
     return this.client.existsSync(localFilePath);
   }
 
-  async copyFile(
-    fromFilePath: TLocalFilePath,
-    toFilePath: TLocalFilePath,
-  ): Promise<TLocalFilePath> {
+  async copy(fromFilePath: TLocalFilePath, toFilePath: TLocalFilePath): Promise<TLocalFilePath> {
     // eslint-disable-next-line @typescript-eslint/await-thenable
     await this.client.copyFileSync(fromFilePath, toFilePath);
 
     return toFilePath;
   }
 
-  async uploadFile(
+  async upload(
     localFilePath: TLocalFilePath,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TRemoteFileConfig> {
@@ -45,7 +42,7 @@ export class LocalFileService implements IFileProvider {
     return Promise.resolve(toLocalFilePath);
   }
 
-  generateRemoteFilePath(fileName: string, directory?: string): string {
+  generateRemotePath(fileName: string, directory?: string): string {
     return `${os.tmpdir()}/${fileName}`;
   }
 }

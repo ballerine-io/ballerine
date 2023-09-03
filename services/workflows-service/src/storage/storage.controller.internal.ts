@@ -140,7 +140,7 @@ export class StorageControllerInternal {
 
   private async __downloadFileFromRemote(persistedFile: File) {
     const localeFilePath = `${os.tmpdir()}/${persistedFile.id}`;
-    const downloadedFilePath = await new HttpFileService().downloadFile(
+    const downloadedFilePath = await new HttpFileService().download(
       persistedFile.uri,
       localeFilePath,
     );
