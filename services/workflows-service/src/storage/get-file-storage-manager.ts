@@ -12,6 +12,7 @@ import path from 'path';
 import os from 'os';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getSignedUrl as getSignedUrlCF } from 'aws-cloudfront-sign';
+import console from "console";
 
 export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
   if (AwsS3FileConfig.isConfigured(processEnv)) {
@@ -108,12 +109,15 @@ export const s3PresignedUrl = async ({
 };
 
 export const cloudfrontPresignedUrl = ({ fileNameInBucket }: { fileNameInBucket: string }) => {
+  const cfPrivateKey = decodeFromBase64(process.env.AWS_S3_CF_PRIVATE_KEY_BASE64) ||
+    (process.env.AWS_S3_CF_PRIVATE_KEY as string);
+  console.log("CloudFront Private Key: " + cfPrivateKey)
+
   return getSignedUrlCF(`${process.env.AWS_S3_CF_URL as string}/${fileNameInBucket}`, {
     keypairId: process.env.AWS_S3_CF_KEYPAIR_ID as string,
     expireTime: Date.now() + 1800 * 1000,
     privateKeyString:
-      decodeFromBase64(process.env.AWS_S3_CF_PRIVATE_KEY_BASE64) ||
-      (process.env.AWS_S3_CF_PRIVATE_KEY as string),
+      cfPrivateKey,
   });
 };
 
