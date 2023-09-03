@@ -41,7 +41,7 @@ export const Modal: FunctionComponent<IModalProps> = ({
             <Dialog.Content className={ctw(`modal-box w-full max-w-7xl`, className)} {...props}>
               <div className={`flex justify-end`}>
                 <Dialog.Close
-                  className={`btn-ghost btn-sm btn-square  btn mb-4 focus:outline-primary`}
+                  className={`btn btn-square btn-ghost  btn-sm mb-4 focus:outline-primary`}
                   aria-label={`Close`}
                 >
                   <XMarkSvg />
