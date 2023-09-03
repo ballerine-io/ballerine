@@ -21,7 +21,7 @@ import { Readable } from 'stream';
 export class FileService {
   constructor(private readonly storageService: StorageService) {}
 
-  async copyFileFromSourceToDestination(
+  async copyFromSourceToDestination(
     sourceServiceProvider: TFileServiceProvider,
     sourceRemoteFileConfig: TRemoteFileConfig,
     targetServiceProvider: TFileServiceProvider,
@@ -34,7 +34,7 @@ export class FileService {
       );
 
       if (bothServicesSupportStream) {
-        const { remoteFileConfig, mimeType } = await this.copyFileThroughStream(
+        const { remoteFileConfig, mimeType } = await this.copyThroughStream(
           sourceServiceProvider as IStreamableFileProvider,
           sourceRemoteFileConfig,
           targetServiceProvider as IStreamableFileProvider,
@@ -49,7 +49,7 @@ export class FileService {
         };
       }
 
-      const filePaths = await this.copyFileThroughFileSystem(
+      const filePaths = await this.copyThroughFileSystem(
         sourceServiceProvider,
         sourceRemoteFileConfig,
         targetServiceProvider,
@@ -74,18 +74,18 @@ export class FileService {
     }
   }
 
-  async copyFileThroughStream(
+  async copyThroughStream(
     sourceServiceProvider: IStreamableFileProvider,
     sourceRemoteFileConfig: TRemoteFileConfig,
     targetServiceProvider: IStreamableFileProvider,
     targetFileConfig: TRemoteFileConfig,
   ) {
-    const streamableDownstream = await sourceServiceProvider.fetchRemoteFileDownStream(
+    const streamableDownstream = await sourceServiceProvider.fetchRemoteDownStream(
       sourceRemoteFileConfig,
     );
     const buffer = await streamToBuffer(streamableDownstream);
     const stream = Readable.from(buffer);
-    const remoteFileConfig = await targetServiceProvider.uploadFileStream(stream, targetFileConfig);
+    const remoteFileConfig = await targetServiceProvider.uploadStream(stream, targetFileConfig);
     const fileType = await fromBuffer(buffer);
 
     return {
@@ -94,18 +94,18 @@ export class FileService {
     };
   }
 
-  async copyFileThroughFileSystem(
+  async copyThroughFileSystem(
     sourceServiceProvider: TFileServiceProvider,
     sourceRemoteFileConfig: TRemoteFileConfig,
     targetServiceProvider: TFileServiceProvider,
     targetFileConfig: TRemoteFileConfig,
   ) {
     const tmpFile = tmp.fileSync();
-    const localFilePath = await sourceServiceProvider.downloadFile(
+    const localFilePath = await sourceServiceProvider.download(
       sourceRemoteFileConfig,
       tmpFile.name,
     );
-    const remoteFilePath = await targetServiceProvider.uploadFile(localFilePath, targetFileConfig);
+    const remoteFilePath = await targetServiceProvider.upload(localFilePath, targetFileConfig);
     const fileType = await fromFile(localFilePath);
 
     return {
@@ -115,12 +115,12 @@ export class FileService {
     };
   }
 
-  async downloadFile(
+  async download(
     sourceServiceProvider: TFileServiceProvider,
     sourceRemoteFileConfig: TRemoteFileConfig,
     targetLocaleFilePath: TLocalFilePath,
   ) {
-    return await sourceServiceProvider.downloadFile(sourceRemoteFileConfig, targetLocaleFilePath);
+    return await sourceServiceProvider.download(sourceRemoteFileConfig, targetLocaleFilePath);
   }
 
   private isBothServicesSupportStream(
@@ -203,7 +203,7 @@ export class FileService {
     if (this.__fetchBucketName(process.env, false)) {
       const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
       const awsFileService = new AwsS3FileService(s3ClientConfig);
-      const remoteFileNameInDocument = awsFileService.generateRemoteFilePath(fileName, entityId);
+      const remoteFileNameInDocument = awsFileService.generateRemotePath(fileName, entityId);
       const awsConfigForClient = this.__fetchAwsConfigForFileNameInBucket(remoteFileNameInDocument);
 
       return {
@@ -214,7 +214,7 @@ export class FileService {
     }
 
     const localFileService = new LocalFileService();
-    const toFileStoragePath = localFileService.generateRemoteFilePath(fileName);
+    const toFileStoragePath = localFileService.generateRemotePath(fileName);
 
     return {
       targetServiceProvider: localFileService,
@@ -223,7 +223,7 @@ export class FileService {
     };
   }
 
-  async copyFileToDestinationAndCreateFile(
+  async copyToDestinationAndCreate(
     document: TDocumentWithoutPageType,
     entityId: string,
     documentPage: TDocumentWithoutPageType['pages'][number],
@@ -236,7 +236,7 @@ export class FileService {
       this.__fetchSourceServiceProviders(documentPage);
     const { targetServiceProvider, targetRemoteFileConfig, remoteFileNameInDirectory } =
       this.__fetchTargetServiceProviders(entityId, remoteFileName);
-    const fileInfo = await this.copyFileFromSourceToDestination(
+    const fileInfo = await this.copyFromSourceToDestination(
       sourceServiceProvider,
       sourceRemoteFileConfig,
       targetServiceProvider,

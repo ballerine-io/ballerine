@@ -23,7 +23,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     this.client = new S3Client(s3ClientConfig);
   }
 
-  async downloadFile(
+  async download(
     remoteFileConfig: TRemoteFileConfig,
     localeFilePath: TLocalFilePath,
   ): Promise<TLocalFilePath> {
@@ -53,7 +53,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     }
   }
 
-  async isRemoteFileExists(remoteFileConfig: TS3BucketConfig): Promise<boolean> {
+  async isRemoteExists(remoteFileConfig: TS3BucketConfig): Promise<boolean> {
     const getObjectParams = this._fetchBucketPath(remoteFileConfig);
 
     try {
@@ -72,7 +72,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     }
   }
 
-  async uploadFile(
+  async upload(
     localFilePath: TLocalFilePath,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TS3BucketConfig> {
@@ -86,7 +86,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     return await this._uploadFileViaClient(putObjectCommand, isPrivate, remoteFileName);
   }
 
-  async fetchRemoteFileDownStream(remoteFileConfig: TRemoteFileConfig): Promise<Readable> {
+  async fetchRemoteDownStream(remoteFileConfig: TRemoteFileConfig): Promise<Readable> {
     const fetchBucketConfig = this._fetchBucketPath(remoteFileConfig as TS3BucketConfig);
     const getObjectCommand = new GetObjectCommand(fetchBucketConfig);
     const response = await this.client.send(getObjectCommand);
@@ -95,7 +95,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     return (await response.Body) as Readable;
   }
 
-  async uploadFileStream(
+  async uploadStream(
     fileStream: Readable,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TRemoteFileConfig> {
@@ -167,7 +167,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     return `https://${bucketName}.s3.amazonaws.com/${fileName}`;
   }
 
-  generateRemoteFilePath(fileName: string, directory?: string): string {
+  generateRemotePath(fileName: string, directory?: string): string {
     return `${directory !== undefined ? `${directory}/` : ''}${fileName}`;
   }
 }

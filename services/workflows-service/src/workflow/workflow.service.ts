@@ -1230,7 +1230,7 @@ export class WorkflowService {
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
-        const persistedFile = await this.fileService.copyFileToDestinationAndCreateFile(
+        const persistedFile = await this.fileService.copyToDestinationAndCreate(
           document,
           entityId,
           documentPage,

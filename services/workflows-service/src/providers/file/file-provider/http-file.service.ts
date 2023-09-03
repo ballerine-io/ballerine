@@ -10,7 +10,7 @@ export class HttpFileService implements IStreamableFileProvider {
     this.client = axios;
   }
 
-  async downloadFile(
+  async download(
     remoteFileConfig: TRemoteFileConfig,
     localFilePath: TLocalFilePath,
   ): Promise<TLocalFilePath> {
@@ -32,7 +32,7 @@ export class HttpFileService implements IStreamableFileProvider {
     }
   }
 
-  async isRemoteFileExists(remoteFileConfig: TRemoteUri): Promise<boolean> {
+  async isRemoteExists(remoteFileConfig: TRemoteUri): Promise<boolean> {
     try {
       const response = await this.client.head(remoteFileConfig);
       return response.status >= 200 && response.status < 300;
@@ -43,11 +43,11 @@ export class HttpFileService implements IStreamableFileProvider {
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  async uploadFile(...any: any): Promise<TRemoteFileConfig> {
+  async upload(...any: any): Promise<TRemoteFileConfig> {
     throw new Error('Unable to use upload to uri client');
   }
 
-  async fetchRemoteFileDownStream(remoteFileConfig: TRemoteFileConfig): Promise<Readable> {
+  async fetchRemoteDownStream(remoteFileConfig: TRemoteFileConfig): Promise<Readable> {
     const remoteUri = remoteFileConfig as TRemoteUri;
 
     const response: AxiosResponse<Readable> = await axios.get(remoteUri, {
@@ -57,14 +57,14 @@ export class HttpFileService implements IStreamableFileProvider {
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  async uploadFileStream(
+  async uploadStream(
     fileStream: Readable,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TRemoteFileConfig> {
     throw new Error('Unable to use upload to uri client');
   }
 
-  generateRemoteFilePath(fileName: string, directory?: string): string {
+  generateRemotePath(fileName: string, directory?: string): string {
     throw new Error('Unable to use upload to uri client');
   }
 }
