@@ -1,5 +1,6 @@
 import type { JsonValue } from 'type-fest';
 import { Customer, Project, User, UserToProject } from '@prisma/client';
+import { DefaultContextSchema } from '@ballerine/common';
 
 export type InputJsonValue = Omit<JsonValue, 'null'>;
 
@@ -20,3 +21,9 @@ export type AuthenticatedEntity = {
   projectIds: TProjectIds;
   type: 'user' | 'customer' | 'admin';
 };
+
+export type TDocumentWithoutPageType = Omit<DefaultContextSchema['documents'][number], 'pages'> & {
+  pages: Array<Omit<DefaultContextSchema['documents'][number]['pages'][number], 'type'>>;
+};
+
+export type TDocumentsWithoutPageType = Array<TDocumentWithoutPageType>;

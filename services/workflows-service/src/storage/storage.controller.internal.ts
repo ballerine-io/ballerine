@@ -1,5 +1,5 @@
 import * as common from '@nestjs/common';
-import { Param, Post, Res, UploadedFile, UseInterceptors, Query } from '@nestjs/common';
+import { Param, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -34,7 +34,7 @@ export class StorageControllerInternal {
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
-  // TODO - update file to be multitenant to the speicific s3 bucket
+  // TODO - update file to be multi-tenant to the specific s3 bucket
   // curl -v -F "file=@a.jpg" http://localhost:3000/api/v1/storage
   @Post()
   @UseInterceptors(
@@ -66,6 +66,7 @@ export class StorageControllerInternal {
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
       projectIds,
+      mimeType: file.mimetype,
     });
 
     return { id };
@@ -112,21 +113,24 @@ export class StorageControllerInternal {
 
     if (persistedFile.fileNameInBucket) {
       if (format === 'signed-url') {
-        const fileTypeByEnding = persistedFile.fileNameInBucket.split('.').pop();
         const signedUrl = await createPresignedUrlWithClient({
           bucketName: AwsS3FileConfig.getBucketName(process.env) as string,
           fileNameInBucket: persistedFile.fileNameInBucket,
-          fileTypeByEnding,
+          mimeType: persistedFile.mimeType,
         });
+
         return res.json({ signedUrl });
       }
+
       const localFilePath = await downloadFileFromS3(
         AwsS3FileConfig.getBucketName(process.env) as string,
         persistedFile.fileNameInBucket,
       );
+
       return res.sendFile(localFilePath, { root: '/' });
     } else if (this.__isImageUrl(persistedFile)) {
       const downloadFilePath = await this.__downloadFileFromRemote(persistedFile);
+
       return res.sendFile(downloadFilePath, { root: root });
     } else {
       return res.sendFile(persistedFile.fileNameOnDisk, { root: root });

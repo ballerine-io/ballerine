@@ -206,7 +206,7 @@ model WorkflowRuntimeData {
 
 model File {
   id               String   @id @default(cuid())
-  type             String?
+  mimeType         String?
   userId           String
   fileNameOnDisk   String
   uri              String
