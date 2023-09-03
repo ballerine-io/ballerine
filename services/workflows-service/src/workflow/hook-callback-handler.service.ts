@@ -6,7 +6,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as tmp from 'tmp';
 import fs from 'fs';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -38,7 +38,7 @@ export class HookCallbackHandlerService {
       {
         context: updatedContext,
       },
-      projectIds,
+      projectIds?.[0] as TProjectId,
     );
 
     return data;
@@ -69,7 +69,7 @@ export class HookCallbackHandlerService {
       await this.workflowService.copyFileAndCreate(
         { documents: documents } as DefaultContextSchema,
         context.entity.id,
-        proejctIds,
+        proejctIds?.[0] as TProjectId,
       )
     ).documents;
 
@@ -84,7 +84,7 @@ export class HookCallbackHandlerService {
     await this.workflowService.updateWorkflowRuntimeData(
       workflowRuntime.id,
       { context: context },
-      proejctIds,
+      proejctIds?.[0] as TProjectId,
     );
   }
 

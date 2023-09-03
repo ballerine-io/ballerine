@@ -7,7 +7,7 @@ import { Prisma } from '@prisma/client';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 
 @swagger.ApiTags('internal/users')
 @common.Controller('internal/users')
@@ -68,7 +68,7 @@ export class UserControllerInternal {
           workflowRuntimeData: true,
         },
       },
-      projectIds,
+      projectIds?.[0] as TProjectId,
     );
   }
 }

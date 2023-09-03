@@ -10,10 +10,8 @@ import { GetFlowConfigurationDto } from '@/collection-flow/dto/get-flow-configur
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
-import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
-import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
-import { Request } from 'express';
+import { TProjectId, TProjectIds } from '@/types';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @common.Controller('collection-flow')
 export class ColectionFlowController {
@@ -25,9 +23,9 @@ export class ColectionFlowController {
   @common.Post('/authorize')
   async authorizeUser(
     @common.Body() dto: AuthorizeDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() projectId: TProjectId,
   ): Promise<EndUser> {
-    return this.service.authorize({ email: dto.email, flowType: dto.flowType }, projectIds);
+    return this.service.authorize({ email: dto.email, flowType: dto.flowType }, projectId);
   }
 
   @common.Get('/active-flow')
@@ -68,9 +66,9 @@ export class ColectionFlowController {
   async updateFlowConfiguration(
     @common.Param('configurationId') configurationId: string,
     @common.Body() dto: UpdateConfigurationDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() projectId: TProjectId,
   ) {
-    return this.service.updateFlowConfiguration(configurationId, dto.steps, projectIds);
+    return this.service.updateFlowConfiguration(configurationId, dto.steps, projectId);
   }
 
   @common.Put('/:flowId')
@@ -78,7 +76,7 @@ export class ColectionFlowController {
     @common.Param('flowId') flowId: string,
     @common.Body() dto: UpdateFlowDto,
     @common.Request() request: any,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() projectId: TProjectId,
   ) {
     try {
       const adapter = this.adapterManager.getAdapter(dto.flowType);
@@ -87,7 +85,7 @@ export class ColectionFlowController {
         adapter,
         dto.payload,
         flowId,
-        projectIds,
+        projectId,
         request.user.customer as Customer,
       );
     } catch (error) {

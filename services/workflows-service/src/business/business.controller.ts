@@ -13,7 +13,8 @@ import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('internal/businesses')
 @common.Controller('internal/businesses')
@@ -30,7 +31,7 @@ export class BusinessControllerExternal {
   @swagger.ApiForbiddenResponse()
   async create(
     @common.Body() data: BusinessCreateDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() projectId: TProjectId,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.service.create(
@@ -48,7 +49,7 @@ export class BusinessControllerExternal {
           companyName: true,
         },
       },
-      projectIds,
+      projectId,
     );
   }
 
