@@ -22,23 +22,23 @@ export class FileService {
   constructor(private readonly storageService: StorageService) {}
 
   async copyFileFromSourceToDestination(
-    fromServiceProvider: TFileServiceProvider,
-    fromRemoteFileConfig: TRemoteFileConfig,
-    toServiceProvider: TFileServiceProvider,
-    toFileConfig: TRemoteFileConfig,
+    sourceServiceProvider: TFileServiceProvider,
+    sourceRemoteFileConfig: TRemoteFileConfig,
+    targetServiceProvider: TFileServiceProvider,
+    targetFileConfig: TRemoteFileConfig,
   ) {
     try {
       const bothServicesSupportStream = this.isBothServicesSupportStream(
-        fromServiceProvider,
-        toServiceProvider,
+        sourceServiceProvider,
+        targetServiceProvider,
       );
 
       if (bothServicesSupportStream) {
         const { remoteFileConfig, mimeType } = await this.copyFileThroughStream(
-          fromServiceProvider as IStreamableFileProvider,
-          fromRemoteFileConfig,
-          toServiceProvider as IStreamableFileProvider,
-          toFileConfig,
+          sourceServiceProvider as IStreamableFileProvider,
+          sourceRemoteFileConfig,
+          targetServiceProvider as IStreamableFileProvider,
+          targetFileConfig,
         );
 
         return {
@@ -50,18 +50,18 @@ export class FileService {
       }
 
       const filePaths = await this.copyFileThroughFileSystem(
-        fromServiceProvider,
-        fromRemoteFileConfig,
-        toServiceProvider,
-        toFileConfig,
+        sourceServiceProvider,
+        sourceRemoteFileConfig,
+        targetServiceProvider,
+        targetFileConfig,
       );
 
       return filePaths;
     } catch (err) {
       const remoteFileName =
-        typeof fromRemoteFileConfig !== 'string'
-          ? fromRemoteFileConfig.fileNameInBucket
-          : fromRemoteFileConfig;
+        typeof sourceRemoteFileConfig !== 'string'
+          ? sourceRemoteFileConfig.fileNameInBucket
+          : sourceRemoteFileConfig;
 
       console.warn(
         `Unable to download file - ${remoteFileName} - ` +
@@ -75,17 +75,17 @@ export class FileService {
   }
 
   async copyFileThroughStream(
-    fromServiceProvider: IStreamableFileProvider,
-    fromRemoteFileConfig: TRemoteFileConfig,
-    toServiceProvider: IStreamableFileProvider,
-    toFileConfig: TRemoteFileConfig,
+    sourceServiceProvider: IStreamableFileProvider,
+    sourceRemoteFileConfig: TRemoteFileConfig,
+    targetServiceProvider: IStreamableFileProvider,
+    targetFileConfig: TRemoteFileConfig,
   ) {
-    const streamableDownstream = await fromServiceProvider.fetchRemoteFileDownStream(
-      fromRemoteFileConfig,
+    const streamableDownstream = await sourceServiceProvider.fetchRemoteFileDownStream(
+      sourceRemoteFileConfig,
     );
     const buffer = await streamToBuffer(streamableDownstream);
     const stream = Readable.from(buffer);
-    const remoteFileConfig = await toServiceProvider.uploadFileStream(stream, toFileConfig);
+    const remoteFileConfig = await targetServiceProvider.uploadFileStream(stream, targetFileConfig);
     const fileType = await fromBuffer(buffer);
 
     return {
@@ -95,17 +95,17 @@ export class FileService {
   }
 
   async copyFileThroughFileSystem(
-    fromServiceProvider: TFileServiceProvider,
-    fromRemoteFileConfig: TRemoteFileConfig,
-    toServiceProvider: TFileServiceProvider,
-    toFileConfig: TRemoteFileConfig,
+    sourceServiceProvider: TFileServiceProvider,
+    sourceRemoteFileConfig: TRemoteFileConfig,
+    targetServiceProvider: TFileServiceProvider,
+    targetFileConfig: TRemoteFileConfig,
   ) {
     const tmpFile = tmp.fileSync();
-    const localFilePath = await fromServiceProvider.downloadFile(
-      fromRemoteFileConfig,
+    const localFilePath = await sourceServiceProvider.downloadFile(
+      sourceRemoteFileConfig,
       tmpFile.name,
     );
-    const remoteFilePath = await toServiceProvider.uploadFile(localFilePath, toFileConfig);
+    const remoteFilePath = await targetServiceProvider.uploadFile(localFilePath, targetFileConfig);
     const fileType = await fromFile(localFilePath);
 
     return {
@@ -116,19 +116,20 @@ export class FileService {
   }
 
   async downloadFile(
-    fromServiceProvider: TFileServiceProvider,
-    fromRemoteFileConfig: TRemoteFileConfig,
-    toLocaleFilePath: TLocalFilePath,
+    sourceServiceProvider: TFileServiceProvider,
+    sourceRemoteFileConfig: TRemoteFileConfig,
+    targetLocaleFilePath: TLocalFilePath,
   ) {
-    return await fromServiceProvider.downloadFile(fromRemoteFileConfig, toLocaleFilePath);
+    return await sourceServiceProvider.downloadFile(sourceRemoteFileConfig, targetLocaleFilePath);
   }
 
   private isBothServicesSupportStream(
-    fromServiceProvider: TFileServiceProvider,
-    toServiceProvider: TFileServiceProvider,
+    sourceServiceProvider: TFileServiceProvider,
+    targetServiceProvider: TFileServiceProvider,
   ) {
     return (
-      'fetchRemoteFileDownStream' in fromServiceProvider && 'uploadFileStream' in toServiceProvider
+      'fetchRemoteFileDownStream' in sourceServiceProvider &&
+      'uploadFileStream' in targetServiceProvider
     );
   }
 
@@ -153,16 +154,19 @@ export class FileService {
   }
 
   /**
-   * Returns an object with `fromServiceProvider` and `fromRemoteFileConfig` based on the `documentPage.provider` and `documentPage.uri`
+   * Returns an object with `sourceServiceProvider` and `fromRemoteFileConfig` based on the `documentPage.provider` and `documentPage.uri`
    * @param documentPage
    * @private
    */
-  private __fetchFromServiceProviders(documentPage: TDocumentWithoutPageType['pages'][number]): {
-    fromServiceProvider: TFileServiceProvider;
-    fromRemoteFileConfig: TRemoteFileConfig;
+  private __fetchSourceServiceProviders(documentPage: TDocumentWithoutPageType['pages'][number]): {
+    sourceServiceProvider: TFileServiceProvider;
+    sourceRemoteFileConfig: TRemoteFileConfig;
   } {
     if (documentPage.provider == 'http' && z.string().parse(documentPage.uri)) {
-      return { fromServiceProvider: new HttpFileService(), fromRemoteFileConfig: documentPage.uri };
+      return {
+        sourceServiceProvider: new HttpFileService(),
+        sourceRemoteFileConfig: documentPage.uri,
+      };
     }
 
     if (documentPage.provider == 'aws_s3' && z.string().parse(documentPage.uri)) {
@@ -171,26 +175,29 @@ export class FileService {
       const s3BucketConfig = this.__fetchAwsConfigForFileNameInBucket(documentPage.uri);
 
       return {
-        fromServiceProvider: new AwsS3FileService(s3ClientConfig),
-        fromRemoteFileConfig: s3BucketConfig,
+        sourceServiceProvider: new AwsS3FileService(s3ClientConfig),
+        sourceRemoteFileConfig: s3BucketConfig,
       };
     }
 
-    return { fromServiceProvider: new LocalFileService(), fromRemoteFileConfig: documentPage.uri };
+    return {
+      sourceServiceProvider: new LocalFileService(),
+      sourceRemoteFileConfig: documentPage.uri,
+    };
   }
 
   /**
-   * Returns an object with `toServiceProvider` and `toRemoteFileConfig` based on the `document.provider` and `document.uri`
+   * Returns an object with `targetServiceProvider` and `targetRemoteFileConfig` based on the `document.provider` and `document.uri`
    * @private
    * @param entityId
    * @param fileName
    */
-  private __fetchToServiceProviders(
+  private __fetchTargetServiceProviders(
     entityId: string,
     fileName: string,
   ): {
-    toServiceProvider: TFileServiceProvider;
-    toRemoteFileConfig: TRemoteFileConfig;
+    targetServiceProvider: TFileServiceProvider;
+    targetRemoteFileConfig: TRemoteFileConfig;
     remoteFileNameInDirectory: string;
   } {
     if (this.__fetchBucketName(process.env, false)) {
@@ -200,8 +207,8 @@ export class FileService {
       const awsConfigForClient = this.__fetchAwsConfigForFileNameInBucket(remoteFileNameInDocument);
 
       return {
-        toServiceProvider: awsFileService,
-        toRemoteFileConfig: awsConfigForClient,
+        targetServiceProvider: awsFileService,
+        targetRemoteFileConfig: awsConfigForClient,
         remoteFileNameInDirectory: awsConfigForClient.fileNameInBucket,
       };
     }
@@ -210,8 +217,8 @@ export class FileService {
     const toFileStoragePath = localFileService.generateRemoteFilePath(fileName);
 
     return {
-      toServiceProvider: localFileService,
-      toRemoteFileConfig: toFileStoragePath,
+      targetServiceProvider: localFileService,
+      targetRemoteFileConfig: toFileStoragePath,
       remoteFileNameInDirectory: toFileStoragePath,
     };
   }
@@ -225,15 +232,15 @@ export class FileService {
     const remoteFileName = `${
       document.id! || getDocumentId(document, false)
     }_${crypto.randomUUID()}`;
-    const { fromServiceProvider, fromRemoteFileConfig } =
-      this.__fetchFromServiceProviders(documentPage);
-    const { toServiceProvider, toRemoteFileConfig, remoteFileNameInDirectory } =
-      this.__fetchToServiceProviders(entityId, remoteFileName);
+    const { sourceServiceProvider, sourceRemoteFileConfig } =
+      this.__fetchSourceServiceProviders(documentPage);
+    const { targetServiceProvider, targetRemoteFileConfig, remoteFileNameInDirectory } =
+      this.__fetchTargetServiceProviders(entityId, remoteFileName);
     const fileInfo = await this.copyFileFromSourceToDestination(
-      fromServiceProvider,
-      fromRemoteFileConfig,
-      toServiceProvider,
-      toRemoteFileConfig,
+      sourceServiceProvider,
+      sourceRemoteFileConfig,
+      targetServiceProvider,
+      targetRemoteFileConfig,
     );
     const isFileInfoWithFileNameInBucket = isType(
       z.object({
