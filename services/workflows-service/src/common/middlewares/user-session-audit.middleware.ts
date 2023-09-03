@@ -21,11 +21,7 @@ export class UserSessionAuditMiddleware implements NestMiddleware {
     const user = authenticatedEntity?.user;
     if (req.session && user) {
       if (this.isUpdateCanBePerformed(user.lastActiveAt!)) {
-        await this.trackAuthorizedAction(
-          user,
-          new Date(),
-          (req.user as any)?.projectIds as TProjectIds,
-        );
+        await this.trackAuthorizedAction(user, new Date());
       }
     }
 
@@ -44,17 +40,9 @@ export class UserSessionAuditMiddleware implements NestMiddleware {
     return now - pastDate >= updateIntervalInMs;
   }
 
-  private async trackAuthorizedAction(
-    user: Partial<User>,
-    activeDate = new Date(),
-    projectIds: TProjectIds,
-  ) {
+  private async trackAuthorizedAction(user: Partial<User>, activeDate = new Date()) {
     this.logger.log(`Updating user presence`, { userId: user.id });
-    await this.userService.updateByIdUnscoped(
-      user.id!,
-      { data: { lastActiveAt: activeDate } },
-      projectIds,
-    );
+    await this.userService.updateByIdUnscoped(user.id!, { data: { lastActiveAt: activeDate } });
     this.logger.log(`Updated user presence`, { userId: user.id });
   }
 }

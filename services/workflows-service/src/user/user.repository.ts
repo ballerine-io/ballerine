@@ -37,7 +37,23 @@ export class UserRepository {
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>,
     projectIds: TProjectIds,
   ): Promise<User[]> {
-    return this.prisma.user.findMany(this.scopeService.scopeFindMany(args, projectIds));
+    const scopedArgs = {
+      ...args,
+      where: {
+        ...args?.where,
+        userToProjects: !args?.where?.userToProjects
+          ? {
+              every: {
+                projectId: {
+                  in: projectIds!.map(projectId => projectId),
+                },
+              },
+            }
+          : args.where.userToProjects,
+      },
+    };
+
+    return this.prisma.user.findMany(scopedArgs);
   }
 
   async findById<T extends Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>(
@@ -45,24 +61,20 @@ export class UserRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
     projectIds?: TProjectIds,
   ): Promise<UserWithProjects> {
-    return this.prisma.user.findFirstOrThrow(
-      {
-        where: {id, userToProjects: {some: {projectId: {in: projectIds || []}}}},
-        ...args,
-      }
-    )
+    return this.prisma.user.findFirstOrThrow({
+      where: { id, userToProjects: { some: { projectId: { in: projectIds || [] } } } },
+      ...args,
+    });
   }
 
   async findByIdUnscoped<T extends Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>
+    args: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
   ): Promise<UserWithProjects> {
-    return this.prisma.user.findUniqueOrThrow(
-      {
-        where: {id},
-        ...args,
-      }
-    )
+    return this.prisma.user.findUniqueOrThrow({
+      where: { id },
+      ...args,
+    });
   }
 
   async findByEmailUnscoped<T extends Omit<Prisma.UserFindUniqueArgs, 'where'>>(
@@ -75,28 +87,22 @@ export class UserRepository {
     });
   }
 
-  async updateById<T extends Omit<Prisma.UserUpdateArgs, 'where'>>(
+  async updateByIdUnscoped<T extends Omit<Prisma.UserUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.UserUpdateArgs, 'where'>>,
-    projectIds: TProjectIds,
   ): Promise<User> {
-    return this.prisma.user.update<T & { where: { id: string } }>(
-      this.scopeService.scopeUpdate(
-        {
-          where: { id },
-          ...args,
-          data: {
-            ...args.data,
-            password:
-              args.data.password &&
-              (await transformStringFieldUpdateInput(args.data.password, password =>
-                this.passwordService.hash(password),
-              )),
-          },
-        } as any,
-        projectIds,
-      ),
-    );
+    return this.prisma.user.update<T & { where: { id: string } }>({
+      where: { id },
+      ...args,
+      data: {
+        ...args.data,
+        password:
+          args.data.password &&
+          (await transformStringFieldUpdateInput(args.data.password, password =>
+            this.passwordService.hash(password),
+          )),
+      },
+    });
   }
 
   async deleteById<T extends Omit<Prisma.UserDeleteArgs, 'where'>>(

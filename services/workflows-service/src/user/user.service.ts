@@ -34,30 +34,10 @@ export class UserService {
   }
 
   async list(args: Parameters<UserRepository['findMany']>[0], projectIds: TProjectIds) {
-    return this.repository.findMany(
-      {
-        ...args,
-        where: {
-          ...args?.where,
-          userToProjects: !args?.where?.userToProjects
-            ? {
-                every: {
-                  projectId: {
-                    in: projectIds!.map(projectId => projectId),
-                  },
-                },
-              }
-            : args.where.userToProjects,
-        },
-      },
-      projectIds,
-    );
+    return this.repository.findMany(args, projectIds);
   }
 
-  async getByIdUnscoped(
-    id: string,
-    args: Parameters<UserRepository['findByIdUnscoped']>[1],
-  ) {
+  async getByIdUnscoped(id: string, args: Parameters<UserRepository['findByIdUnscoped']>[1]) {
     return this.repository.findByIdUnscoped(id, args);
   }
 
@@ -68,12 +48,8 @@ export class UserService {
     return this.repository.findByEmailUnscoped(email, args);
   }
 
-  async updateByIdUnscoped(
-    id: string,
-    args: Parameters<UserRepository['updateById']>[1],
-    projectIds: TProjectIds,
-  ) {
-    return this.repository.updateById(id, args, projectIds);
+  async updateByIdUnscoped(id: string, args: Parameters<UserRepository['updateByIdUnscoped']>[1]) {
+    return this.repository.updateByIdUnscoped(id, args);
   }
 
   async deleteById(
