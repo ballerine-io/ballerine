@@ -5,7 +5,7 @@ export const getUgandaDocuments = (): TDocument[] => {
   const TypeAlphanumericString = Type.String({ pattern: '^[a-zA-Z0-9]*$' });
   const TypePastDate = Type.String({
     format: 'date',
-    formatMaximum: new Date().toISOString().split('T')[0], // @TODO: Test this
+    formatMaximum: new Date().toISOString().split('T')[0],
   });
 
   const TypeStringAtLeastOneWord = Type.String({ minLength: 1 });
