@@ -149,6 +149,7 @@ export class WorkflowService {
       submitStates: true,
       parentRuntimeDataId: true,
     };
+
     return await this.workflowDefinitionRepository.create({ data, select }, projectIds);
   }
 
