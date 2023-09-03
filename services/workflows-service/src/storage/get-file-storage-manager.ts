@@ -74,7 +74,7 @@ export const createPresignedUrlWithClient = async ({
     service === 'cloudfront' &&
     process.env.AWS_S3_CF_URL &&
     process.env.AWS_S3_CF_KEYPAIR_ID &&
-    process.env.AWS_S3_CF_PRIVATE_KEY
+    (process.env.AWS_S3_CF_PRIVATE_KEY || process.env.AWS_S3_CF_PRIVATE_KEY_BASE64)
   ) {
     return cloudfrontPresignedUrl({
       fileNameInBucket,
@@ -111,6 +111,15 @@ export const cloudfrontPresignedUrl = ({ fileNameInBucket }: { fileNameInBucket:
   return getSignedUrlCF(`${process.env.AWS_S3_CF_URL as string}/${fileNameInBucket}`, {
     keypairId: process.env.AWS_S3_CF_KEYPAIR_ID as string,
     expireTime: Date.now() + 1800 * 1000,
-    privateKeyString: process.env.AWS_S3_CF_PRIVATE_KEY as string,
+    privateKeyString:
+      decodeFromBase64(process.env.AWS_S3_CF_PRIVATE_KEY_BASE64) ||
+      (process.env.AWS_S3_CF_PRIVATE_KEY as string),
   });
+};
+
+const decodeFromBase64 = (encodedPrivateKey?: string): string | undefined => {
+  if (!encodedPrivateKey) {
+    return;
+  }
+  return Buffer.from(encodedPrivateKey, 'base64').toString('utf-8');
 };
