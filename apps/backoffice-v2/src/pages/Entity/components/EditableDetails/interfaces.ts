@@ -8,6 +8,8 @@ export interface IEditableDetails {
     type: string;
     format?: string;
     pattern?: string;
+    maximum?: string;
+    minimum?: string;
     dropdownOptions?: Array<TDropdownOption>;
   }>;
   valueId: string;

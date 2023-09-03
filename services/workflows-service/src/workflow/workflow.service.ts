@@ -55,6 +55,7 @@ import {
   DefaultContextSchema,
   getDocumentId,
   getDocumentsByCountry,
+  isObject,
   TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -72,7 +73,10 @@ const ajv = new Ajv({
   strict: false,
   coerceTypes: true,
 });
-addFormats(ajv, { formats: ['email', 'uri', 'date'] });
+addFormats(ajv, {
+  formats: ['email', 'uri', 'date', 'date-time'],
+  keywords: true,
+});
 addKeywords(ajv);
 
 export const ResubmissionReason = {
@@ -176,9 +180,21 @@ export class WorkflowService {
               doc => getDocumentId(doc, false) === getDocumentId(document, false),
             );
 
+            const propertiesSchema = documentByCountry?.propertiesSchema ?? {};
+
+            Object.entries(propertiesSchema?.properties ?? {}).forEach(([key, value]) => {
+              if (!(key in document.properties)) return;
+              if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string') return;
+
+              value.dropdownOptions = value.enum.map(item => ({
+                value: item,
+                label: item,
+              }));
+            });
+
             return {
               ...document,
-              propertiesSchema: documentByCountry?.propertiesSchema ?? {},
+              propertiesSchema,
             };
           },
         ),
