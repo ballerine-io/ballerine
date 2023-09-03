@@ -7,11 +7,8 @@ import {
   convertSnakeCaseToTitleCase,
   omitPropsFromObject,
 } from '../../../../hooks/useEntity/utils';
-import { octetToFileType } from '../../../../../../common/octet-to-file-type/octet-to-file-type';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { useCaseDecision } from '../../../Case/hooks/useCaseDecision/useCaseDecision';
-import { isValidUrl } from '../../../../../../common/utils/is-valid-url';
-import { isBase64 } from '../../../../../../common/utils/is-base64/is-base64';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
@@ -128,17 +125,13 @@ export const useKycBlock = ({
     isEditable: true,
     dropdownOptions: undefined,
   }));
-
   const documents = childWorkflow?.context?.documents?.flatMap(
     (document, docIndex) =>
       document?.pages?.map(({ type, metadata, data }, pageIndex) => ({
         title: `${convertSnakeCaseToTitleCase(document?.category)} - ${convertSnakeCaseToTitleCase(
           document?.type,
         )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-        imageUrl:
-          document?.type === 'pdf'
-            ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
-            : results[docIndex][pageIndex],
+        imageUrl: results[docIndex][pageIndex],
         fileType: type,
       })) ?? [],
   );

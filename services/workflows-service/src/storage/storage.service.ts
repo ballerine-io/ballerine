@@ -37,16 +37,17 @@ export class StorageService {
           },
           select: {
             id: true,
+            mimeType: true,
           },
         },
         projectIds,
       ),
     );
 
-    return file.id;
+    return file;
   }
 
-  async getFileNameById({ id }: IFileIds, args?: Prisma.FileFindFirstArgs) {
+  async getFileById({ id }: IFileIds, args?: Prisma.FileFindFirstArgs) {
     return await this.fileRepository.findById({ id }, args || {});
   }
 }

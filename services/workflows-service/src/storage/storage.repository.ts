@@ -24,6 +24,7 @@ export class FileRepository {
     args: Prisma.SelectSubset<T, Prisma.FileFindFirstArgs>,
   ): Promise<File | null> {
     const { where, ...restArgs } = args;
+
     return await this.prisma.file.findFirst({
       ...restArgs,
       where: { ...(where || {}), id },

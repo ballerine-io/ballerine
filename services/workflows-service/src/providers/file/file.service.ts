@@ -3,7 +3,7 @@ import * as tmp from 'tmp';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { IStreamableFileProvider } from './types/interfaces';
 import { TFileServiceProvider } from './types';
-import { isErrorWithMessage } from '@ballerine/common';
+import { getDocumentId, isErrorWithMessage } from '@ballerine/common';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TDocumentWithoutPageType, TProjectIds } from '@/types';
 import crypto from 'crypto';
@@ -13,7 +13,9 @@ import { StorageService } from '@/storage/storage.service';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
 import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
-import { fromFile, fromStream } from 'file-type';
+import { fromBuffer, fromFile } from 'file-type';
+import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
+import { Readable } from 'stream';
 
 @Injectable()
 export class FileService {
@@ -81,11 +83,10 @@ export class FileService {
     const streamableDownstream = await fromServiceProvider.fetchRemoteFileDownStream(
       fromRemoteFileConfig,
     );
-    const remoteFileConfig = await toServiceProvider.uploadFileStream(
-      streamableDownstream,
-      toFileConfig,
-    );
-    const fileType = await fromStream(streamableDownstream);
+    const buffer = await streamToBuffer(streamableDownstream);
+    const stream = Readable.from(buffer);
+    const remoteFileConfig = await toServiceProvider.uploadFileStream(stream, toFileConfig);
+    const fileType = await fromBuffer(buffer);
 
     return {
       remoteFileConfig,
@@ -221,7 +222,9 @@ export class FileService {
     documentPage: TDocumentWithoutPageType['pages'][number],
     projectIds: TProjectIds,
   ) {
-    const remoteFileName = `${document.id!}_${crypto.randomUUID()}`;
+    const remoteFileName = `${
+      document.id! || getDocumentId(document, false)
+    }_${crypto.randomUUID()}`;
     const { fromServiceProvider, fromRemoteFileConfig } =
       this.__fetchFromServiceProviders(documentPage);
     const { toServiceProvider, toRemoteFileConfig, remoteFileNameInDirectory } =
@@ -237,7 +240,7 @@ export class FileService {
         fileNameInBucket: z.string(),
       }),
     )(fileInfo);
-    const ballerineFileId = await this.storageService.createFileLink({
+    const { id: ballerineFileId, mimeType } = await this.storageService.createFileLink({
       uri: remoteFileNameInDirectory,
       fileNameOnDisk: remoteFileNameInDirectory,
       userId: entityId,
@@ -246,6 +249,9 @@ export class FileService {
       mimeType: fileInfo?.mimeType,
     });
 
-    return ballerineFileId;
+    return {
+      ballerineFileId,
+      mimeType,
+    };
   }
 }

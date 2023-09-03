@@ -55,7 +55,7 @@ export const BaseWorkflowByIdSchema = z.object({
   status: z.string(),
   state: z.string().nullable(),
   nextEvents: z.array(z.any()),
-  tags: z.array(z.string()).optional(),
+  tags: z.array(z.string()).nullable(),
   workflowDefinition: ObjectWithIdSchema.extend({
     name: z.string(),
     contextSchema: z.record(z.any(), z.any()).nullable(),
