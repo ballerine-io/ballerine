@@ -61,6 +61,7 @@ export class StorageControllerExternal {
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
       projectIds,
+      mimeType: file.mimetype,
     });
 
     return { id };

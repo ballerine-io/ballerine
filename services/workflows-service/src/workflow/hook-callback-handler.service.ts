@@ -49,7 +49,7 @@ export class HookCallbackHandlerService {
     data: AnyRecord,
     workflowRuntime: WorkflowRuntimeData,
     resultDestinationPath: string,
-    proejctIds: TProjectIds,
+    projectIds: TProjectIds,
   ) {
     const attributePath = resultDestinationPath.split('.');
     const context = workflowRuntime.context;
@@ -61,13 +61,11 @@ export class HookCallbackHandlerService {
     const decision = this.formatDecision(data);
     const documentCategory = kycDocument.type as string;
     const documents = this.formatDocuments(documentCategory, pages, issuer, documentProperties);
-    const persistedDocuments = (
-      await this.workflowService.copyFileAndCreate(
-        { documents: documents } as DefaultContextSchema,
-        context.entity.id,
-        proejctIds,
-      )
-    ).documents;
+    const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
+      documents as DefaultContextSchema['documents'],
+      context.entity.id,
+      projectIds,
+    );
 
     const result = {
       entity: entity,
