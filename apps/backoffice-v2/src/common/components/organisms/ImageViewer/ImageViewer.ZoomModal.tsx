@@ -4,6 +4,7 @@ import { IZoomModalProps } from './interfaces';
 import { Modal } from '../Modal/Modal';
 import { BallerineImage } from '../../atoms/BallerineImage';
 import { ctw } from '../../../utils/ctw/ctw';
+import { isPdf } from '../../../utils/is-pdf/is-pdf';
 
 /**
  * @description To be used by {@link ImageViewer}. Uses the {@link Modal} component with default styling to display an enlarged version of the selected image.
@@ -32,30 +33,28 @@ export const ZoomModal: FunctionComponent<IZoomModalProps> = ({
       hideTitle
       {...rest}
     >
-      {(selectedImage?.fileType === 'application/pdf' ||
-        selectedImage?.imageUrl?.endsWith('.pdf')) && (
+      {isPdf(selectedImage) && (
         <iframe
           src={selectedImage?.imageUrl}
           className={ctw(`d-full`, imageClassName)}
           {...restImage}
         />
       )}
-      {selectedImage?.fileType !== 'application/pdf' &&
-        !selectedImage?.imageUrl?.endsWith('.pdf') && (
-          <BallerineImage
-            withPlaceholder
-            src={selectedImage?.imageUrl}
-            alt={'Zoomed selected image'}
-            className={ctw(
-              `w-full`,
-              {
-                'h-full': !selectedImage?.imageUrl,
-              },
-              imageClassName,
-            )}
-            {...restImage}
-          />
-        )}
+      {!isPdf(selectedImage) && (
+        <BallerineImage
+          withPlaceholder
+          src={selectedImage?.imageUrl}
+          alt={'Zoomed selected image'}
+          className={ctw(
+            `w-full`,
+            {
+              'h-full': !selectedImage?.imageUrl,
+            },
+            imageClassName,
+          )}
+          {...restImage}
+        />
+      )}
     </Modal>
   );
 };
