@@ -59,7 +59,7 @@ export class StorageControllerInternal {
     @UploadedFile() file: Partial<Express.MulterS3.File>,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    const id = await this.service.createFileLink({
+    const fileInfo = await this.service.createFileLink({
       uri: file.location || String(file.path),
       fileNameOnDisk: String(file.path),
       fileNameInBucket: file.key,
@@ -69,26 +69,23 @@ export class StorageControllerInternal {
       mimeType: file.mimetype,
     });
 
-    return { id };
+    return fileInfo;
   }
 
   // curl -v http://localhost:3000/api/v1/internal/storage/1679322938093
   @common.Get('/:id')
-  async getFileById(
-    @ProjectIds() projectIds: TProjectIds,
-    @Param('id') id: string,
-    @Res() res: Response,
-  ) {
+  async getFileById(@ProjectIds() projectIds: TProjectIds, @Param('id') id: string) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById(
+    const persistedFile = await this.service.getFileById(
       { id },
       this.scopeService.scopeFindOne({}, projectIds),
     );
+
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }
 
-    return res.send(persistedFile);
+    return persistedFile;
   }
 
   // curl -v http://localhost:3000/api/v1/storage/content/1679322938093
@@ -100,7 +97,7 @@ export class StorageControllerInternal {
     @Query('format') format: string,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById(
+    const persistedFile = await this.service.getFileById(
       { id },
       this.scopeService.scopeFindOne({}, projectIds),
     );
@@ -111,30 +108,34 @@ export class StorageControllerInternal {
 
     const root = path.parse(os.homedir()).root;
 
+    if (persistedFile.fileNameInBucket && format === 'signed-url') {
+      const signedUrl = await createPresignedUrlWithClient({
+        bucketName: AwsS3FileConfig.getBucketName(process.env) as string,
+        fileNameInBucket: persistedFile.fileNameInBucket,
+        mimeType: persistedFile.mimeType ?? undefined,
+      });
+
+      return res.json({ signedUrl, mimeType: persistedFile.mimeType });
+    }
+
+    res.set('Content-Type', persistedFile.mimeType ?? 'application/octet-stream');
+
     if (persistedFile.fileNameInBucket) {
-      if (format === 'signed-url') {
-        const signedUrl = await createPresignedUrlWithClient({
-          bucketName: AwsS3FileConfig.getBucketName(process.env) as string,
-          fileNameInBucket: persistedFile.fileNameInBucket,
-          mimeType: persistedFile.mimeType,
-        });
-
-        return res.json({ signedUrl });
-      }
-
       const localFilePath = await downloadFileFromS3(
         AwsS3FileConfig.getBucketName(process.env) as string,
         persistedFile.fileNameInBucket,
       );
 
       return res.sendFile(localFilePath, { root: '/' });
-    } else if (this.__isImageUrl(persistedFile)) {
+    }
+
+    if (this.__isImageUrl(persistedFile)) {
       const downloadFilePath = await this.__downloadFileFromRemote(persistedFile);
 
       return res.sendFile(downloadFilePath, { root: root });
-    } else {
-      return res.sendFile(persistedFile.fileNameOnDisk, { root: root });
     }
+
+    return res.sendFile(persistedFile.fileNameOnDisk, { root: root });
   }
 
   private async __downloadFileFromRemote(persistedFile: File) {

@@ -1230,16 +1230,15 @@ export class WorkflowService {
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
-        const ballerineFileId =
-          documentPage.ballerineFileId ||
-          (await this.fileService.copyFileToDestinationAndCreateFile(
-            document,
-            entityId,
-            documentPage,
-            projectIds,
-          ));
+        const persistedFile = await this.fileService.copyFileToDestinationAndCreateFile(
+          document,
+          entityId,
+          documentPage,
+          projectIds,
+        );
+        const ballerineFileId = documentPage.ballerineFileId || persistedFile?.ballerineFileId;
 
-        return { ...documentPage, ballerineFileId };
+        return { ...documentPage, type: persistedFile?.mimeType, ballerineFileId };
       }),
     );
   }

@@ -14,8 +14,6 @@ import { getDocumentsByCountry } from '@ballerine/common';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
-
-import { octetToFileType } from '../../../../common/octet-to-file-type/octet-to-file-type';
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 import { X } from 'lucide-react';
 import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
@@ -283,10 +281,7 @@ export const useTasks = ({
                 title: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
                   docType,
                 )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                imageUrl:
-                  type === 'pdf'
-                    ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
-                    : results[docIndex][pageIndex],
+                imageUrl: results[docIndex][pageIndex],
                 fileType: type,
               })) ?? [],
           },

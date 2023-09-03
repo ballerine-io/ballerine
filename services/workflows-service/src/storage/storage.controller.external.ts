@@ -54,7 +54,7 @@ export class StorageControllerExternal {
     @UploadedFile() file: Partial<Express.MulterS3.File>,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    const id = await this.service.createFileLink({
+    const fileInfo = await this.service.createFileLink({
       uri: file.location || String(file.path),
       fileNameOnDisk: String(file.path),
       fileNameInBucket: file.key,
@@ -64,7 +64,7 @@ export class StorageControllerExternal {
       mimeType: file.mimetype,
     });
 
-    return { id };
+    return fileInfo;
   }
 
   // curl -v http://localhost:3000/api/v1/storage/1679322938093
@@ -76,7 +76,7 @@ export class StorageControllerExternal {
     @Res() res: Response,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById(
+    const persistedFile = await this.service.getFileById(
       {
         id,
       },
@@ -99,7 +99,7 @@ export class StorageControllerExternal {
     @Res() res: Response,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileNameById(
+    const persistedFile = await this.service.getFileById(
       {
         id,
       },
@@ -118,6 +118,7 @@ export class StorageControllerExternal {
         AwsS3FileConfig.getBucketName(process.env) as string,
         persistedFile.fileNameInBucket,
       );
+
       return res.sendFile(localFilePath, { root: '/' });
     } else {
       const root = path.parse(os.homedir()).root;
