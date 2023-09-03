@@ -43,17 +43,14 @@ export class UserRepository {
   async findById<T extends Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
-    projectIds: TProjectIds,
+    projectIds?: TProjectIds,
   ): Promise<UserWithProjects> {
-    return this.prisma.user.findUniqueOrThrow(
-      this.scopeService.scopeFindOne(
-        {
-          where: { id },
-          ...args,
-        },
-        projectIds,
-      ),
-    );
+    return this.prisma.user.findFirstOrThrow(
+      {
+        where: {id, userToProjects: {some: {projectId: {in: projectIds || []}}}},
+        ...args,
+      }
+    )
   }
 
   async findByEmailUnscoped<T extends Omit<Prisma.UserFindUniqueArgs, 'where'>>(

@@ -57,9 +57,8 @@ export class UserService {
   async getByIdUnscoped(
     id: string,
     args: Parameters<UserRepository['findById']>[1],
-    projectIds: TProjectIds,
   ) {
-    return this.repository.findById(id, args, projectIds);
+    return this.repository.findById(id, args);
   }
 
   async getByEmailUnscoped(
