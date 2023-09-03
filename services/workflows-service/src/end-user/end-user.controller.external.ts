@@ -93,9 +93,12 @@ export class EndUserControllerExternal {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
   @UseCustomerAuthGuard()
-  async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
+  async getById(
+    @common.Param() params: EndUserWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<EndUserModel | null> {
     try {
-      const endUser = await this.service.getById(params.id);
+      const endUser = await this.service.getById(params.id, {}, projectIds);
 
       return endUser;
     } catch (err) {

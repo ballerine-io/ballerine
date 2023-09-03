@@ -27,32 +27,49 @@ export class BusinessRepository {
     return await this.prisma.business.findMany(this.scopeService.scopeFindMany(args, projectIds));
   }
 
-  async findByIdUnscoped<T extends Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>(
+  async findById<T extends Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>,
+    projectIds: TProjectIds,
   ) {
-    return await this.prisma.business.findUniqueOrThrow({
-      where: { id },
-      ...args,
-    });
+    return await this.prisma.business.findFirstOrThrow(
+      this.scopeService.scopeFindFirst(
+        {
+          where: { id },
+          ...args,
+        },
+        projectIds,
+      ),
+    );
   }
 
-  async findByCorrelationIdUnscoped<T extends Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>(
+  async findByCorrelationId<T extends Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>(
     id: string,
-    args?: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>,
+    projectIds: TProjectIds,
   ) {
-    return await this.prisma.business.findUnique({
-      where: { correlationId: id },
-      ...args,
-    });
+    return await this.prisma.business.findFirst(
+      this.scopeService.scopeFindFirst(
+        {
+          where: { correlationId: id },
+          ...args,
+        },
+        projectIds,
+      ),
+    );
   }
 
-  async getCorrelationIdByIdUnscoped(id: string): Promise<string | null> {
+  async getCorrelationIdById(id: string, projectIds: TProjectIds): Promise<string | null> {
     return (
-      await this.prisma.business.findUniqueOrThrow({
-        where: { id },
-        select: { correlationId: true },
-      })
+      await this.prisma.business.findFirstOrThrow(
+        this.scopeService.scopeFindFirst(
+          {
+            where: { id },
+            select: { correlationId: true },
+          },
+          projectIds,
+        ),
+      )
     ).correlationId;
   }
 

@@ -30,8 +30,12 @@ export class BusinessService {
     return await this.repository.findMany(args, projectIds);
   }
 
-  async getById(id: string, args: Parameters<BusinessRepository['findByIdUnscoped']>[1]) {
-    return await this.repository.findByIdUnscoped(id, args);
+  async getById(
+    id: string,
+    args: Parameters<BusinessRepository['findById']>[1],
+    projectIds: TProjectIds,
+  ) {
+    return await this.repository.findById(id, args, projectIds);
   }
 
   async updateById(

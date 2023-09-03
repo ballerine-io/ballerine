@@ -90,9 +90,12 @@ export class BusinessControllerExternal {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
   @UseCustomerAuthGuard()
-  async getById(@common.Param() params: BusinessWhereUniqueInput): Promise<BusinessModel | null> {
+  async getById(
+    @common.Param() params: BusinessWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<BusinessModel | null> {
     try {
-      const business = await this.service.getById(params.id, {});
+      const business = await this.service.getById(params.id, {}, projectIds);
 
       return business;
     } catch (err) {

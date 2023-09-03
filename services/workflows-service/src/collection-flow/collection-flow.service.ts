@@ -154,9 +154,13 @@ export class CollectionFlowService {
     { endUserId, workflowRuntimeDefinitionId }: GetActiveFlowParams,
     projectIds: TProjectIds,
   ) {
-    const endUser = (await this.endUserService.getById(endUserId, {
-      include: { businesses: true },
-    })) as EndUser & { businesses: Business[] };
+    const endUser = (await this.endUserService.getById(
+      endUserId,
+      {
+        include: { businesses: true },
+      },
+      projectIds,
+    )) as EndUser & { businesses: Business[] };
 
     if (!endUser || !endUser.businesses.length) return null;
 

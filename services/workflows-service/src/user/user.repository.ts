@@ -67,16 +67,6 @@ export class UserRepository {
     });
   }
 
-  async findByIdUnscoped<T extends Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>(
-    id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
-  ): Promise<UserWithProjects> {
-    return this.prisma.user.findUniqueOrThrow({
-      where: { id },
-      ...args,
-    });
-  }
-
   async findByEmailUnscoped<T extends Omit<Prisma.UserFindUniqueArgs, 'where'>>(
     email: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueArgs, 'where'>>,

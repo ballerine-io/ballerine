@@ -1,5 +1,4 @@
 const config = require('../../packages/config/eslintrc.base.cjs');
-const checkRepositoryArgsPlugin = require('./plugins/check-repository-args');
 
 module.exports = {
   ...config,
@@ -34,7 +33,7 @@ module.exports = {
     '@typescript-eslint/no-unsafe-return': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
-    'ballerine/check-repository-args': 'error',
+    'ballerine/verify-repository-project-scoped': 'error',
   },
   ignorePatterns: ['.eslintrc.cjs'],
   plugins: ['ballerine'],

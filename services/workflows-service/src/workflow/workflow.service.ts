@@ -714,7 +714,7 @@ export class WorkflowService {
       },
       projectIds,
     );
-    const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow);
+    const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, projectIds);
     const entityId = updatedWorkflow.businessId || updatedWorkflow.endUserId;
 
     this.workflowEventEmitter.emit('workflow.context.changed', {
@@ -804,7 +804,7 @@ export class WorkflowService {
       projectIds,
     );
 
-    const correlationId: string = await this.getCorrelationIdFromWorkflow(runtimeData);
+    const correlationId: string = await this.getCorrelationIdFromWorkflow(runtimeData, projectIds);
 
     let contextHasChanged, mergedContext;
     if (data.context) {
@@ -1010,15 +1010,20 @@ export class WorkflowService {
     return updatedWorkflowRuntimeData;
   }
 
-  private async getCorrelationIdFromWorkflow(runtimeData: WorkflowRuntimeData) {
+  private async getCorrelationIdFromWorkflow(
+    runtimeData: WorkflowRuntimeData,
+    projectIds: TProjectIds,
+  ) {
     let correlationId: string;
     if (runtimeData.businessId) {
-      correlationId = (await this.businessRepository.getCorrelationIdByIdUnscoped(
+      correlationId = (await this.businessRepository.getCorrelationIdById(
         runtimeData.businessId,
+        projectIds,
       )) as string;
     } else if (runtimeData.endUserId) {
-      correlationId = (await this.endUserRepository.getCorrelationIdByIdUnscoped(
+      correlationId = (await this.endUserRepository.getCorrelationIdById(
         runtimeData.endUserId,
+        projectIds,
       )) as string;
     } else {
       correlationId = '';
@@ -1166,9 +1171,9 @@ export class WorkflowService {
     const workflowDefinitionResolver = policies[intent as keyof typeof policies];
     const entity = await (async () => {
       if (entityType === 'business')
-        return await this.businessRepository.findByIdUnscoped(entityId, {});
+        return await this.businessRepository.findById(entityId, {}, projectIds);
       if (entityType === 'endUser')
-        return await this.endUserRepository.findByIdUnscoped(entityId, {});
+        return await this.endUserRepository.findById(entityId, {}, projectIds);
 
       throw new BadRequestException(`Invalid entity type ${entityType}`);
     })();
@@ -1383,7 +1388,7 @@ export class WorkflowService {
     projectIds: TProjectIds,
   ) {
     const { entity } = context;
-    const entityId = await this.__tryToFetchExistingEntityId(entity);
+    const entityId = await this.__tryToFetchExistingEntityId(entity, projectIds);
 
     if (entityId) {
       return entityId;
@@ -1435,16 +1440,20 @@ export class WorkflowService {
     return id;
   }
 
-  private async __tryToFetchExistingEntityId(entity: {
-    [p: string]: unknown;
-  }): Promise<TEntityId | null> {
+  private async __tryToFetchExistingEntityId(
+    entity: {
+      [p: string]: unknown;
+    },
+    projectIds: TProjectIds,
+  ): Promise<TEntityId | null> {
     if (entity.ballerineEntityId) {
       return entity.ballerineEntityId as TEntityId;
     } else {
       if (entity.type === 'business') {
-        const res = await this.businessRepository.findByCorrelationIdUnscoped(
+        const res = await this.businessRepository.findByCorrelationId(
           entity.id as TEntityId,
           {},
+          projectIds,
         );
         return res && res.id;
       } else {
