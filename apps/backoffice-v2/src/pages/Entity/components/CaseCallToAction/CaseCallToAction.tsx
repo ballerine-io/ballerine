@@ -119,7 +119,7 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
           <DialogFooter>
             <DialogClose asChild>
               <button
-                className={ctw(`btn-error btn justify-center`)}
+                className={ctw(`btn btn-error justify-center`)}
                 onClick={action === 'revision' ? onMutateRevisionCase : onMutateRejectCase}
               >
                 Confirm
