@@ -16,12 +16,14 @@ export class HookCallbackHandlerService {
     resultDestinationPath,
     processName,
     projectIds,
+    currentProjectId,
   }: {
     workflowRuntime: WorkflowRuntimeData;
     data: AnyRecord;
     resultDestinationPath: string;
     processName?: UnifiedCallbackNames;
     projectIds: TProjectIds;
+    currentProjectId: TProjectId;
   }) {
     if (processName === 'kyc-unified-api') {
       return await this.mapCallbackDataToIndividual(
@@ -38,7 +40,7 @@ export class HookCallbackHandlerService {
       {
         context: updatedContext,
       },
-      projectIds?.[0] as TProjectId,
+      currentProjectId,
     );
 
     return data;

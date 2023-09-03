@@ -258,13 +258,18 @@ export class WorkflowService {
     };
   }
 
-  async persistChildEvent(childPluginConfig: ChildPluginCallbackOutput, projectIds: TProjectIds) {
+  async persistChildEvent(
+    childPluginConfig: ChildPluginCallbackOutput,
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
+  ) {
     const childWorkflow = (
       await this.createOrUpdateWorkflowRuntime({
         workflowDefinitionId: childPluginConfig.definitionId,
         context: childPluginConfig.initOptions.context as unknown as DefaultContextSchema,
         parentWorkflowId: childPluginConfig.parentWorkflowRuntimeId,
         projectIds,
+        currentProjectId,
       })
     )[0];
 
@@ -290,7 +295,7 @@ export class WorkflowService {
       await this.updateWorkflowRuntimeData(
         parentWorkflowRuntime.id,
         { context: parentContext },
-        projectIds?.[0] as TProjectId,
+        currentProjectId,
       );
     }
 
@@ -625,6 +630,7 @@ export class WorkflowService {
         name,
       },
       projectId ? [projectId] : null,
+      projectId,
     );
 
     return updatedWorkflow;
@@ -643,6 +649,7 @@ export class WorkflowService {
       reason?: string;
     },
     projectIds: TProjectIds,
+    currentProjectId: TProjectId,
   ) {
     const workflow = await this.workflowRuntimeDataRepository.findById(workflowId, {}, projectIds);
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
@@ -767,7 +774,7 @@ export class WorkflowService {
           resolvedAt: isResolved ? new Date().toISOString() : null,
         },
       },
-      projectIds?.[0] as TProjectId,
+      currentProjectId,
     );
 
     if (isResolved) {
@@ -989,6 +996,7 @@ export class WorkflowService {
     workflowRuntimeId: string,
     { assigneeId }: WorkflowAssigneeId,
     projectIds: TProjectIds,
+    currentProjectId: TProjectId,
   ) {
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
       workflowRuntimeId,
@@ -1010,7 +1018,7 @@ export class WorkflowService {
     const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
       { data: { assigneeId: assigneeId, assignedAt: new Date() } },
-      projectIds?.[0] as TProjectId,
+      currentProjectId,
     );
 
     return updatedWorkflowRuntimeData;
@@ -1052,6 +1060,7 @@ export class WorkflowService {
     context: Record<string, unknown>,
     workflow: WorkflowDefinition,
     projectIds: TProjectIds,
+    currentProjectId: TProjectId,
   ) {
     // discuss error handling
     if (!workflow.reviewMachineId) {
@@ -1067,7 +1076,7 @@ export class WorkflowService {
             approvalState: ApprovalState.PROCESSING,
           },
         },
-        projectIds?.[0] as TProjectId,
+        currentProjectId,
       ));
     businessId &&
       (await this.businessRepository.updateById(
@@ -1077,7 +1086,7 @@ export class WorkflowService {
             approvalState: ApprovalState.PROCESSING,
           },
         },
-        projectIds?.[0] as TProjectId,
+        currentProjectId,
       ));
 
     const entityId = endUserId || businessId;
@@ -1129,7 +1138,7 @@ export class WorkflowService {
             status: 'active',
           },
         },
-        projectIds?.[0] as TProjectId,
+        currentProjectId,
       );
     } else {
       if (manualReviewWorkflow.state === 'revision') {
@@ -1139,6 +1148,7 @@ export class WorkflowService {
             id: manualReviewWorkflow.id,
           },
           projectIds,
+          currentProjectId,
         );
       }
 
@@ -1155,7 +1165,7 @@ export class WorkflowService {
             },
           },
         },
-        projectIds?.[0] as TProjectId,
+        currentProjectId,
       );
     }
 
@@ -1164,7 +1174,7 @@ export class WorkflowService {
       {
         status: 'completed',
       },
-      projectIds?.[0] as TProjectId,
+      currentProjectId,
     );
   }
 
@@ -1173,6 +1183,7 @@ export class WorkflowService {
     entityId: string,
     entityType: TEntityType,
     projectIds: TProjectIds,
+    currentProjectId: TProjectId,
   ): Promise<RunnableWorkflowData[]> {
     const workflowDefinitionResolver = policies[intent as keyof typeof policies];
     const entity = await (async () => {
@@ -1206,7 +1217,12 @@ export class WorkflowService {
       },
       documents: [],
     };
-    return this.createOrUpdateWorkflowRuntime({ workflowDefinitionId, context, projectIds });
+    return this.createOrUpdateWorkflowRuntime({
+      workflowDefinitionId,
+      context,
+      projectIds,
+      currentProjectId,
+    });
   }
 
   async createOrUpdateWorkflowRuntime({
@@ -1215,12 +1231,14 @@ export class WorkflowService {
     config,
     parentWorkflowId,
     projectIds,
+    currentProjectId,
   }: {
     workflowDefinitionId: string;
     context: DefaultContextSchema;
     config?: WorkflowConfig;
     parentWorkflowId?: string;
     projectIds: TProjectIds;
+    currentProjectId: TProjectId;
   }): Promise<RunnableWorkflowData[]> {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
@@ -1235,7 +1253,11 @@ export class WorkflowService {
       throw new BadRequestException(error);
     }
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
-    const entityId = await this.__findOrPersistEntityInformation(context, projectIds);
+    const entityId = await this.__findOrPersistEntityInformation(
+      context,
+      projectIds,
+      currentProjectId,
+    );
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
 
     const existingWorkflowRuntimeData =
@@ -1259,11 +1281,7 @@ export class WorkflowService {
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
     if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
-      contextToInsert = await this.copyFileAndCreate(
-        contextToInsert,
-        entityId,
-        projectIds?.[0] as TProjectId,
-      );
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId, currentProjectId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
         {
           data: {
@@ -1282,7 +1300,7 @@ export class WorkflowService {
             }),
           },
         },
-        projectIds?.[0] as TProjectId,
+        currentProjectId,
       );
       newWorkflowCreated = true;
     } else {
@@ -1291,11 +1309,7 @@ export class WorkflowService {
         context.documents,
       );
 
-      contextToInsert = await this.copyFileAndCreate(
-        contextToInsert,
-        entityId,
-        projectIds?.[0] as TProjectId,
-      );
+      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId, currentProjectId);
       workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
         existingWorkflowRuntimeData.id,
         {
@@ -1308,7 +1322,7 @@ export class WorkflowService {
             ) as InputJsonValue,
           },
         },
-        projectIds?.[0] as TProjectId,
+        currentProjectId,
       );
       newWorkflowCreated = false;
     }
@@ -1399,6 +1413,7 @@ export class WorkflowService {
   private async __findOrPersistEntityInformation(
     context: DefaultContextSchema,
     projectIds: TProjectIds,
+    currentProjectId: TProjectId,
   ) {
     const { entity } = context;
     const entityId = await this.__tryToFetchExistingEntityId(entity, projectIds);
@@ -1412,9 +1427,9 @@ export class WorkflowService {
     }
 
     if (entity.type === 'individual') {
-      return await this.__persistEndUserInfo(entity, context, projectIds?.[0] as TProjectId);
+      return await this.__persistEndUserInfo(entity, context, currentProjectId);
     } else {
-      return await this.__persistBusinessInformation(entity, context, projectIds);
+      return await this.__persistBusinessInformation(entity, context, projectIds, currentProjectId);
     }
   }
 
@@ -1439,6 +1454,7 @@ export class WorkflowService {
     entity: { [p: string]: unknown },
     context: DefaultContextSchema,
     projectIds: TProjectIds,
+    currentProjectId: TProjectId,
   ) {
     const { id } = await this.businessRepository.create(
       {
@@ -1447,7 +1463,7 @@ export class WorkflowService {
           ...(context.entity.data as object),
         } as Prisma.BusinessCreateInput,
       },
-      projectIds?.[0] as TProjectId,
+      currentProjectId,
     );
 
     return id;
@@ -1499,7 +1515,11 @@ export class WorkflowService {
     );
   }
 
-  async event({ name: type, id }: WorkflowEventInput & IObjectWithId, projectIds: TProjectIds) {
+  async event(
+    { name: type, id }: WorkflowEventInput & IObjectWithId,
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
+  ) {
     this.logger.log('Workflow event received', { id, type });
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
       id,
@@ -1525,6 +1545,7 @@ export class WorkflowService {
         const runnableChildWorkflow = await this.persistChildEvent(
           childPluginConfiguration,
           projectIds,
+          currentProjectId,
         );
 
         if (runnableChildWorkflow && childPluginConfiguration.initOptions.event) {
@@ -1535,6 +1556,7 @@ export class WorkflowService {
               name: childPluginConfiguration.initOptions.event,
             },
             projectIds,
+            currentProjectId,
           );
         }
       },
@@ -1565,7 +1587,7 @@ export class WorkflowService {
         tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
         status: isFinal ? 'completed' : workflowRuntimeData.status,
       },
-      projectIds?.[0] as TProjectId,
+      currentProjectId,
     );
 
     if (workflowRuntimeData.parentRuntimeDataId) {
@@ -1607,7 +1629,7 @@ export class WorkflowService {
             approvalState,
           },
         },
-        projectIds?.[0] as TProjectId,
+        currentProjectId,
       );
     }
 
@@ -1619,7 +1641,7 @@ export class WorkflowService {
             approvalState,
           },
         },
-        projectIds?.[0] as TProjectId,
+        currentProjectId,
       );
     }
   }
@@ -1629,6 +1651,7 @@ export class WorkflowService {
     workflowDefinition: WorkflowDefinition,
     isFinal: boolean,
     projectIds: TProjectIds,
+    currentProjectId: TProjectId,
     childRuntimeState?: string,
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
@@ -1675,7 +1698,7 @@ export class WorkflowService {
     await this.updateWorkflowRuntimeData(
       parentWorkflowRuntime.id,
       { context: parentContext },
-      projectIds?.[0] as TProjectId,
+      currentProjectId,
     );
 
     if (
@@ -1689,6 +1712,7 @@ export class WorkflowService {
           name: childWorkflowCallback.deliverEvent,
         },
         projectIds,
+        currentProjectId,
       );
     }
   }

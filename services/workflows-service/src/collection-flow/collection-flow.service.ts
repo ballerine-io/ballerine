@@ -48,6 +48,7 @@ export class CollectionFlowService {
           documents: [],
         },
         projectIds: projectId ? [projectId] : [],
+        currentProjectId: projectId,
       });
 
       return newUser;
@@ -221,13 +222,14 @@ export class CollectionFlowService {
       workflowDefinitionId: workflowData.workflowDefinitionId,
       context: workflowData.context,
       projectIds: [projectId] as TProjectIds,
+      currentProjectId: projectId,
     });
 
     return flowData;
   }
 
-  async finishFlow(flowId: string, projectIds: TProjectIds) {
-    await this.workflowService.event({ id: flowId, name: 'start' }, projectIds);
+  async finishFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
+    await this.workflowService.event({ id: flowId, name: 'start' }, projectIds, currentProjectId);
 
     const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
       flowId,
@@ -251,7 +253,11 @@ export class CollectionFlowService {
     );
   }
 
-  async resubmitFlow(flowId: string, projectIds: TProjectIds) {
-    await this.workflowService.event({ id: flowId, name: 'RESUBMITTED' }, projectIds);
+  async resubmitFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
+    await this.workflowService.event(
+      { id: flowId, name: 'RESUBMITTED' },
+      projectIds,
+      currentProjectId,
+    );
   }
 }

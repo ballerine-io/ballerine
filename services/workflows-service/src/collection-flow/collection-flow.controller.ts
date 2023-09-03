@@ -98,15 +98,20 @@ export class ColectionFlowController {
   }
 
   @common.Post('finish/:flowId')
-  async finishFlow(@common.Param('flowId') flowId: string, @ProjectIds() projectIds: TProjectIds) {
-    return this.service.finishFlow(flowId, projectIds);
+  async finishFlow(
+    @common.Param('flowId') flowId: string,
+    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    return this.service.finishFlow(flowId, projectIds, currentProjectId);
   }
 
   @common.Post('resubmit/:flowId')
   async resubmitFlow(
     @common.Param('flowId') flowId: string,
     @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
-    return this.service.resubmitFlow(flowId, projectIds);
+    return this.service.resubmitFlow(flowId, projectIds, currentProjectId);
   }
 }

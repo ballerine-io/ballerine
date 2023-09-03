@@ -127,6 +127,7 @@ export class WorkflowControllerInternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowEventInput,
     @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<void> {
     return await this.service.event(
       {
@@ -134,6 +135,7 @@ export class WorkflowControllerInternal {
         id: params.id,
       },
       projectIds,
+      currentProjectId,
     );
   }
 
@@ -194,6 +196,7 @@ export class WorkflowControllerInternal {
     @common.Param() params: DocumentDecisionParamsInput,
     @common.Body() data: DocumentDecisionUpdateInput,
     @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
       return await this.service.updateDocumentDecisionById(
@@ -206,6 +209,7 @@ export class WorkflowControllerInternal {
           reason: data?.reason,
         },
         projectIds,
+        currentProjectId,
       );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -228,9 +232,10 @@ export class WorkflowControllerInternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowAssigneeId,
     @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.assignWorkflowToUser(params.id, data, projectIds);
+      return await this.service.assignWorkflowToUser(params.id, data, projectIds, currentProjectId);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
