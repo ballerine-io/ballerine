@@ -78,7 +78,7 @@ describe('UserSessionAuditMiddleware', () => {
           callback,
         );
 
-        const updatedUser = await app.get(UserService).getById(testUser.id);
+        const updatedUser = await app.get(UserService).getByIdUnscoped(testUser.id);
 
         expect(updatedUser.lastActiveAt).toBeTruthy();
         expect(callback).toHaveBeenCalledTimes(1);
@@ -109,7 +109,7 @@ describe('UserSessionAuditMiddleware', () => {
           callback,
         );
 
-        const user = await userService.getById(testUser.id);
+        const user = await userService.getByIdUnscoped(testUser.id);
 
         expect(user.lastActiveAt?.toISOString()).toBe(nonExpiredDateString);
         expect(callback).toBeCalledTimes(1);
@@ -127,7 +127,7 @@ describe('UserSessionAuditMiddleware', () => {
         );
 
         // @ts-ignore
-        const updatedUser = await userService.getById(testUser.id);
+        const updatedUser = await userService.getByIdUnscoped(testUser.id);
 
         expect(Number(updatedUser.lastActiveAt)).toBeGreaterThan(Number(expiredDate));
         expect(callback).toBeCalledTimes(1);
