@@ -4,7 +4,7 @@ import { ctw } from '../../common/utils/ctw/ctw';
 import { Card } from '../../common/components/atoms/Card/Card';
 import { CardContent } from '../../common/components/atoms/Card/Card.Content';
 import { KycBlock } from './components/KycBlock/KycBlock';
-import { NoCasesSvg } from '../../common/components/atoms/icons';
+import { NoTasksSvg } from '../../common/components/atoms/icons';
 
 export const Entity = () => {
   const { workflow, selectedEntity, tasks, cells, isLoading } = useEntity();
@@ -57,7 +57,7 @@ export const Entity = () => {
           <div className="mb-72 flex items-center justify-center border-l-[1px] p-4">
             <div className="inline-flex flex-col  items-start gap-4 rounded-md border-[1px] border-[#CBD5E1] p-6">
               <div className="flex w-[464px] items-center justify-center">
-                <NoCasesSvg width={96} height={81} />
+                <NoTasksSvg width={80} height={91} />
               </div>
 
               <div className="flex w-[464px] flex-col items-start gap-2">
