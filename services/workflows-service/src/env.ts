@@ -53,7 +53,7 @@ export const env = createEnv({
     SALESFORCE_API_VERSION: z
       .string()
       .optional()
-      .default('latest')
+      .default('58.0')
       .describe('Salesforce API version'),
     SALESFORCE_CONSUMER_KEY: z.string().optional().describe('Salesforce consumer key'),
     SALESFORCE_CONSUMER_SECRET: z.string().optional().describe('Salesforce consumer secret'),
