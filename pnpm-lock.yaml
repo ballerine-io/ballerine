@@ -2202,8 +2202,8 @@ importers:
         specifier: ^3.5.3
         version: 3.5.3(eslint-plugin-import@2.27.5)(eslint@8.36.0)
       eslint-plugin-ballerine:
-        specifier: link:plugins/verify-repository-project-scoped
-        version: link:plugins/verify-repository-project-scoped
+        specifier: file:./plugins/verify-repository-project-scoped
+        version: file:services/workflows-service/plugins/verify-repository-project-scoped
       eslint-plugin-import:
         specifier: ^2.27.5
         version: 2.27.5(@typescript-eslint/parser@5.56.0)(eslint-import-resolver-typescript@3.5.3)(eslint@8.36.0)
@@ -36752,3 +36752,8 @@ packages:
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: false
+
+  file:services/workflows-service/plugins/verify-repository-project-scoped:
+    resolution: {directory: services/workflows-service/plugins/verify-repository-project-scoped, type: directory}
+    name: eslint-plugin-ballerine
+    dev: true
