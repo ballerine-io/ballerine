@@ -7,9 +7,16 @@ import { WorkflowRuntimeData } from '@prisma/client';
 import * as tmp from 'tmp';
 import fs from 'fs';
 import { TProjectIds } from '@/types';
+import { CustomerService } from '@/customer/customer.service';
 
 @Injectable()
 export class HookCallbackHandlerService {
+  constructor(
+    protected readonly workflowService: WorkflowService,
+    protected readonly customerService: CustomerService,
+    private readonly logger: AppLoggerService,
+  ) {}
+
   async handleHookResponse({
     workflowRuntime,
     data,
@@ -39,17 +46,11 @@ export class HookCallbackHandlerService {
 
     return data;
   }
-
-  constructor(
-    protected readonly workflowService: WorkflowService,
-    private readonly logger: AppLoggerService,
-  ) {}
-
   async mapCallbackDataToIndividual(
     data: AnyRecord,
     workflowRuntime: WorkflowRuntimeData,
     resultDestinationPath: string,
-    proejctIds: TProjectIds,
+    projectIds: TProjectIds,
   ) {
     const attributePath = resultDestinationPath.split('.');
     const context = workflowRuntime.context;
@@ -61,11 +62,13 @@ export class HookCallbackHandlerService {
     const decision = this.formatDecision(data);
     const documentCategory = kycDocument.type as string;
     const documents = this.formatDocuments(documentCategory, pages, issuer, documentProperties);
+    const customer = await this.customerService.getByProjectId(projectIds![0]!);
     const persistedDocuments = (
       await this.workflowService.copyFileAndCreate(
         { documents: documents } as DefaultContextSchema,
         context.entity.id,
-        proejctIds,
+        projectIds,
+        customer.name,
       )
     ).documents;
 

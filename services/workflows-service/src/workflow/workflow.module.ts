@@ -26,9 +26,17 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { ProjectModule } from '@/project/project.module';
 import { PrismaModule } from '@/prisma/prisma.module';
+import { CustomerModule } from '@/customer/customer.module';
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), HttpModule, ProjectModule, PrismaModule],
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    HttpModule,
+    ProjectModule,
+    PrismaModule,
+    CustomerModule,
+  ],
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
   providers: [
     WorkflowDefinitionRepository,
