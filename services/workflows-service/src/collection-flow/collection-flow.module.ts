@@ -26,9 +26,10 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { CustomerModule } from '@/customer/customer.module';
 
 @Module({
-  imports: [AppLoggerModule, HttpModule, ProjectModule],
+  imports: [AppLoggerModule, HttpModule, ProjectModule, CustomerModule],
   controllers: [ColectionFlowController],
   providers: [
     CollectionFlowService,

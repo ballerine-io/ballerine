@@ -39,7 +39,7 @@ export class HttpFileService implements IStreamableFileProvider {
       const response = await this.client.head(remoteFileConfig);
       return response.status >= 200 && response.status < 300;
     } catch (error) {
-      console.error('Error checking if remote file exists:', error);
+      console.error('Error checking if remote file exists: ', error);
       throw error;
     }
   }
@@ -66,7 +66,15 @@ export class HttpFileService implements IStreamableFileProvider {
     throw new Error('Unable to use upload to uri client');
   }
 
-  generateRemoteFilePath(fileName: string, directory?: string): string {
+  generateRemoteFilePath({
+    fileName,
+    customerName,
+    directory,
+  }: {
+    fileName: string;
+    customerName: string;
+    directory?: string;
+  }): string {
     throw new Error('Unable to use upload to uri client');
   }
 }
