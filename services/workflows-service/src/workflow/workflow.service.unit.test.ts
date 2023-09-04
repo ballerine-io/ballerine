@@ -89,6 +89,7 @@ describe('WorkflowService', () => {
   let workflowRuntimeDataRepo;
   let projectScopeService;
   let businessRepo;
+  let customerService;
   let endUserRepo;
   let entityRepo;
   const numbUserInfo = Symbol();
@@ -116,6 +117,7 @@ describe('WorkflowService', () => {
     businessRepo = new FakeBusinessRepo();
     endUserRepo = new FakeEndUserRepo();
     entityRepo = new FakeEntityRepo();
+    customerService = new FakeEntityRepo();
 
     fakeHttpService = {
       requests: [],
@@ -154,6 +156,7 @@ describe('WorkflowService', () => {
       {} as any,
       businessRepo,
       entityRepo,
+      customerService,
       {} as any,
       {} as any,
       eventEmitter as any,

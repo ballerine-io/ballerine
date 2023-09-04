@@ -507,6 +507,7 @@ async function seed(bcryptSalt: string | number) {
           },
         },
       },
+      projectId: project1.id,
     },
   });
 
@@ -562,6 +563,8 @@ async function seed(bcryptSalt: string | number) {
       config: {
         workflowLevelResolution: false,
       },
+      version: 2,
+      projectId: project1.id,
     },
   });
 
@@ -573,6 +576,7 @@ async function seed(bcryptSalt: string | number) {
       config: {
         workflowLevelResolution: true,
       },
+      projectId: project1.id,
     },
   });
 
@@ -653,6 +657,7 @@ async function seed(bcryptSalt: string | number) {
           state: 'document_photo',
         },
       ],
+      projectId: project1.id,
     },
   });
 
@@ -745,6 +750,7 @@ async function seed(bcryptSalt: string | number) {
           state: 'document_photo',
         },
       ],
+      projectId: project1.id,
     },
   });
 
