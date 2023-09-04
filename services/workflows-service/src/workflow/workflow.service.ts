@@ -160,7 +160,7 @@ export class WorkflowService {
       name: true,
       version: true,
       projectId: true,
-      isTemplate: true,
+      isPublic: true,
       definitionType: true,
       definition: true,
       contextSchema: true,

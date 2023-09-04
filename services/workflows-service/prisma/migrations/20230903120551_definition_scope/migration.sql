@@ -6,7 +6,7 @@
 
 */
 -- AlterTable
-ALTER TABLE "WorkflowDefinition" ADD COLUMN     "isTemplate" BOOLEAN NOT NULL DEFAULT false,
+ALTER TABLE "WorkflowDefinition" ADD COLUMN     "isPublic" BOOLEAN NOT NULL DEFAULT false,
 ADD COLUMN     "projectId" TEXT;
 
 -- CreateIndex

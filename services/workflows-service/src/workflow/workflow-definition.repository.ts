@@ -53,7 +53,7 @@ export class WorkflowDefinitionRepository {
     projectId?: string,
   ): Promise<WorkflowDefinition> {
     return await this.prisma.workflowDefinition.findFirstOrThrow({
-      where: { id, isTemplate: true, projectId: projectId ?? null },
+      where: { id, isPublic: true, projectId: projectId ?? null },
       ...args,
     });
   }

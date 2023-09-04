@@ -141,8 +141,8 @@ model WorkflowDefinition {
   name            String
   version         Int     @default(1)
 
-  projectId       String?
-  isTemplate      Boolean @default(false)
+  projectId String?
+  isPublic  Boolean @default(false)
 
   definitionType     String
   definition         Json

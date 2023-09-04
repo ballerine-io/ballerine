@@ -1,3 +1,3 @@
 ALTER TABLE "WorkflowDefinition"
-ADD CONSTRAINT "isTemplate_projectId_check"
-CHECK (("isTemplate" = true AND "projectId" IS NULL) OR ("isTemplate" = false));
+ADD CONSTRAINT "isPublic_projectId_check"
+CHECK (("isPublic" = true AND "projectId" IS NULL) OR ("isPublic" = false));
