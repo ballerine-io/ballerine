@@ -28,13 +28,7 @@ import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
-import {
-  InputJsonValue,
-  IObjectWithId,
-  TDocumentsWithoutPageType,
-  TDocumentWithoutPageType,
-  TProjectIds,
-} from '@/types';
+import { InputJsonValue, IObjectWithId, TProjectIds } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
 import Ajv from 'ajv';
@@ -77,6 +71,7 @@ import {
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { GetLastActiveFlowParams } from '@/workflow/types/params';
+import { TDocumentsWithoutPageType, TDocumentWithoutPageType } from '@/common/types';
 
 type TEntityId = string;
 
