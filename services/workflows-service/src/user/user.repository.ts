@@ -56,9 +56,9 @@ export class UserRepository {
     return this.prisma.user.findMany(scopedArgs);
   }
 
-  async findById<T extends Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>(
+  async findById<T extends Omit<Prisma.UserFindFirstOrThrowArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Omit<Prisma.UserFindFirstOrThrowArgs, 'where'>>,
     projectIds?: TProjectIds,
   ): Promise<UserWithProjects> {
     return this.prisma.user.findFirstOrThrow({
