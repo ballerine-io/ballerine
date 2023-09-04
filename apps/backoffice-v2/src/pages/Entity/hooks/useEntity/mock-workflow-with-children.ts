@@ -1,3 +1,5 @@
+import { StateTag } from '@ballerine/common';
+
 export const workflow = {
   id: 'clkb7ougv000wy8fhwnechfg3',
   state: 'manual_review',
@@ -324,17 +326,20 @@ export const workflow = {
       id: 'kyb_parent_kyc_session_example_v1',
       states: {
         idle: { on: { start: 'run_ubos' } },
-        reject: { type: 'final' },
-        approve: { type: 'final' },
-        revision: { type: 'final' },
+        reject: { tags: [StateTag.REJECTED], type: 'final' },
+        approve: { tags: [StateTag.APPROVED], type: 'final' },
+        revision: { tags: [StateTag.REVISION], type: 'final' },
         run_ubos: {
           on: {
             FAILED: [{ target: 'auto_reject' }],
             CONTINUE: [{ target: 'run_kyb_enrichment' }],
           },
         },
-        auto_reject: { type: 'final' },
-        manual_review: { on: { reject: 'reject', approve: 'approve', revision: 'revision' } },
+        auto_reject: { tags: [StateTag.REJECTED], type: 'final' },
+        manual_review: {
+          tags: [StateTag.MANUAL_REVIEW],
+          on: { reject: 'reject', approve: 'approve', revision: 'revision' },
+        },
         run_kyb_enrichment: {
           on: {
             FAILED: [{ target: 'auto_reject' }],
@@ -501,17 +506,21 @@ export const workflow = {
           id: 'kyc_email_session_example_v1',
           states: {
             idle: { on: { start: 'get_kyc_session' } },
-            reject: { type: 'final' },
-            approve: { type: 'final' },
-            email_sent: { on: { KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }] } },
+            reject: { tags: [StateTag.REJECTED], type: 'final' },
+            approve: { tags: [StateTag.APPROVED], type: 'final' },
+            email_sent: {
+              tags: [StateTag.REVISION],
+              on: { KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }] },
+            },
             get_kyc_session: {
+              tags: [StateTag.PENDING_PROCESS],
               on: {
                 SEND_EMAIL: [{ target: 'email_sent' }],
                 API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
               },
             },
-            kyc_auto_reject: { type: 'final' },
-            kyc_manual_review: { type: 'final' },
+            kyc_auto_reject: { tags: [StateTag.REJECTED], type: 'final' },
+            kyc_manual_review: { tags: [StateTag.MANUAL_REVIEW], type: 'final' },
           },
           initial: 'idle',
           predictableActionArguments: true,
@@ -684,17 +693,21 @@ export const workflow = {
           id: 'kyc_email_session_example_v1',
           states: {
             idle: { on: { start: 'get_kyc_session' } },
-            reject: { type: 'final' },
-            approve: { type: 'final' },
-            email_sent: { on: { KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }] } },
+            reject: { tags: [StateTag.REJECTED], type: 'final' },
+            approve: { tags: [StateTag.APPROVED], type: 'final' },
+            email_sent: {
+              tags: [StateTag.REVISION],
+              on: { KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }] },
+            },
             get_kyc_session: {
+              tags: [StateTag.PENDING_PROCESS],
               on: {
                 SEND_EMAIL: [{ target: 'email_sent' }],
                 API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
               },
             },
-            kyc_auto_reject: { type: 'final' },
-            kyc_manual_review: { type: 'final' },
+            kyc_auto_reject: { tags: [StateTag.REJECTED], type: 'final' },
+            kyc_manual_review: { tags: [StateTag.MANUAL_REVIEW], type: 'final' },
           },
           initial: 'idle',
           predictableActionArguments: true,

@@ -63,11 +63,7 @@ export const useBaseFlow = () => {
         setLoading(true);
 
         await uploadFilesAndSaveToStorage(documentConfigurations, context);
-        const documents = await selectDocuments(
-          context,
-          flowData.documents,
-          documentConfigurations,
-        );
+        const documents = await selectDocuments(context, flowData.documents, documentConfigurations);
 
         const updatePayload: UpdateFlowDto = {
           flowId: context.shared.workflowId,

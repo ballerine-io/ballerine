@@ -33,6 +33,8 @@ import {
 } from './schemas/company-documents.schema';
 import { env } from '../../src/env';
 
+import { defaultContextSchema, StateTag } from '@ballerine/common';
+
 export const parentKybWithSessionWorkflowDefinition = {
   id: 'kyb_parent_kyc_session_example',
   name: 'kyb_parent_kyc_session_example',
@@ -172,6 +174,7 @@ export const parentKybWithSessionWorkflowDefinition = {
         ],
       },
       manual_review: {
+        tags: [StateTag.MANUAL_REVIEW],
         on: {
           approve: 'approved',
           reject: 'rejected',
@@ -179,14 +182,17 @@ export const parentKybWithSessionWorkflowDefinition = {
         },
       },
       pending_resubmission: {
+        tags: [StateTag.REVISION],
         on: {
           RESUBMITTED: 'manual_review',
         },
       },
       approved: {
+        tags: [StateTag.APPROVED],
         type: 'final' as const,
       },
       revision: {
+        tags: [StateTag.REVISION],
         always: [
           {
             target: 'pending_resubmission',
@@ -194,9 +200,11 @@ export const parentKybWithSessionWorkflowDefinition = {
         ],
       },
       rejected: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
       auto_reject: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
     },
@@ -220,7 +228,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               countryOfIncorporation: entity.data.countryOfIncorporation,
               companyNumber: entity.data.registrationNumber,
               state: entity.data.dynamicInfo.companyInformation.state
-              vendor: 'open-corporates'
+              vendor: 'veriff'
               }`, // jmespath
             },
           ],
@@ -315,6 +323,10 @@ export const parentKybWithSessionWorkflowDefinition = {
         deliverEvent: 'KYC_RESPONDED',
       },
     ],
+  },
+  contextSchema: {
+    type: 'json-schema',
+    schema: defaultContextSchema,
   },
 };
 export const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {

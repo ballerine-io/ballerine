@@ -34,17 +34,8 @@ import { BusinessRepository } from '@/business/business.repository';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import addKeywords from 'ajv-keywords';
-import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
-import { z } from 'zod';
-import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
-import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
-import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
 import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
-import * as process from 'process';
-import * as crypto from 'crypto';
-import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
-import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
@@ -55,7 +46,6 @@ import {
   getDocumentId,
   getDocumentsByCountry,
   safeEvery,
-  TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
@@ -81,6 +71,7 @@ import {
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { GetLastActiveFlowParams } from '@/workflow/types/params';
+import { TDocumentsWithoutPageType, TDocumentWithoutPageType } from '@/common/types';
 
 type TEntityId = string;
 
@@ -422,10 +413,12 @@ export class WorkflowService {
     status,
     orderBy,
     orderDirection,
+    projectIds,
   }: ListWorkflowsRuntimeParams): Promise<ListRuntimeDataResult> {
     const query = {
       where: {
         ...(status ? { status: { in: status } } : undefined),
+        ...(projectIds ? { projectId: { in: projectIds } } : undefined),
       },
     };
 
@@ -1090,6 +1083,13 @@ export class WorkflowService {
     return this.createOrUpdateWorkflowRuntime({ workflowDefinitionId, context, projectIds });
   }
 
+  omitTypeFromDocumentsPages(documents: DefaultContextSchema['documents']) {
+    return documents?.map(document => ({
+      ...document,
+      pages: document?.pages?.map(({ type: _type, ...page }) => page),
+    }));
+  }
+
   async createOrUpdateWorkflowRuntime({
     workflowDefinitionId,
     context,
@@ -1135,14 +1135,25 @@ export class WorkflowService {
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
     if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
-      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId, projectIds);
+      const contextWithoutDocumentPageType = {
+        ...contextToInsert,
+        documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
+      };
+      const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
+        contextWithoutDocumentPageType?.documents,
+        entityId,
+        projectIds,
+      );
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
         this.projectScopeService.scopeCreate(
           {
             data: {
               ...entityConnect,
               workflowDefinitionVersion: workflowDefinition.version,
-              context: contextToInsert as InputJsonValue,
+              context: {
+                ...contextToInsert,
+                documents: documentsWithPersistedImages,
+              } as InputJsonValue,
               config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
               status: 'active',
               workflowDefinition: {
@@ -1164,8 +1175,17 @@ export class WorkflowService {
         existingWorkflowRuntimeData.context.documents,
         context.documents,
       );
+      const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
+        contextToInsert?.documents,
+        entityId,
+        projectIds,
+      );
 
-      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId, projectIds);
+      contextToInsert = {
+        ...contextToInsert,
+        documents: documentsWithPersistedImages as DefaultContextSchema['documents'],
+      };
+
       workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
         existingWorkflowRuntimeData.id,
         {
@@ -1198,72 +1218,24 @@ export class WorkflowService {
     ];
   }
 
-  async copyFileAndCreate(
-    context: DefaultContextSchema,
-    entityId: TEntityId,
-    projectIds: TProjectIds,
-  ): Promise<DefaultContextSchema> {
-    if (!context?.documents?.length) return context;
-
-    const documentsWithPersistedImages = await Promise.all(
-      context?.documents?.map(async document => ({
-        ...document,
-        pages: await this.__persistDocumentPagesFiles(document, entityId, projectIds),
-      })),
-    );
-
-    return { ...context, documents: documentsWithPersistedImages };
-  }
   private async __persistDocumentPagesFiles(
-    document: DefaultContextSchema['documents'][number],
+    document: TDocumentWithoutPageType,
     entityId: string,
     projectIds: TProjectIds,
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
-        const ballerineFileId =
-          documentPage.ballerineFileId ||
-          (await this.__copyFileToDestinationAndCraeteFile(
-            document,
-            entityId,
-            documentPage,
-            projectIds,
-          ));
+        const persistedFile = await this.fileService.copyToDestinationAndCreate(
+          document,
+          entityId,
+          documentPage,
+          projectIds,
+        );
+        const ballerineFileId = documentPage.ballerineFileId || persistedFile?.ballerineFileId;
 
-        return { ...documentPage, ballerineFileId };
+        return { ...documentPage, type: persistedFile?.mimeType, ballerineFileId };
       }),
     );
-  }
-
-  private async __copyFileToDestinationAndCraeteFile(
-    document: DefaultContextSchema['documents'][number],
-    entityId: string,
-    documentPage: TDefaultSchemaDocumentPage,
-    projectIds: TProjectIds,
-  ) {
-    const remoteFileName = `${document.id!}_${crypto.randomUUID()}.${documentPage.type}`;
-
-    const { fromServiceProvider, fromRemoteFileConfig } =
-      this.__fetchFromServiceProviders(documentPage);
-    const { toServiceProvider, toRemoteFileConfig, remoteFileNameInDirectory } =
-      this.__fetchToServiceProviders(entityId, remoteFileName);
-    const { remoteFilePath, fileNameInBucket } =
-      await this.fileService.copyFileFromSourceToDestination(
-        fromServiceProvider,
-        fromRemoteFileConfig,
-        toServiceProvider,
-        toRemoteFileConfig,
-      );
-    const userId = entityId;
-    const ballerineFileId = await this.storageService.createFileLink({
-      uri: remoteFileNameInDirectory,
-      fileNameOnDisk: remoteFileNameInDirectory,
-      userId,
-      fileNameInBucket,
-      projectIds,
-    });
-
-    return ballerineFileId;
   }
 
   private async __findOrPersistEntityInformation(
@@ -1348,7 +1320,6 @@ export class WorkflowService {
     context: DefaultContextSchema,
   ) {
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
-    console.log('test');
 
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate(context);
@@ -1419,6 +1390,7 @@ export class WorkflowService {
     const updatedRuntimeData = await this.updateWorkflowRuntimeData(workflowRuntimeData.id, {
       context,
       state: currentState,
+      tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
       status: isFinal ? 'completed' : workflowRuntimeData.status,
     });
 
@@ -1594,76 +1566,6 @@ export class WorkflowService {
     return parentWorkflowContext;
   }
 
-  private __fetchFromServiceProviders(document: TDefaultSchemaDocumentPage): {
-    fromServiceProvider: TFileServiceProvider;
-    fromRemoteFileConfig: TRemoteFileConfig;
-  } {
-    if (document.provider == 'http' && z.string().parse(document.uri)) {
-      return { fromServiceProvider: new HttpFileService(), fromRemoteFileConfig: document.uri };
-    }
-    if (document.provider == 'aws_s3' && z.string().parse(document.uri)) {
-      const prefixConfigName = `REMOTE`;
-      const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env, prefixConfigName);
-      const s3BucketConfig = this.__fetchAwsConfigFor(document.uri);
-
-      return {
-        fromServiceProvider: new AwsS3FileService(s3ClientConfig),
-        fromRemoteFileConfig: s3BucketConfig,
-      };
-    }
-
-    return { fromServiceProvider: new LocalFileService(), fromRemoteFileConfig: document.uri };
-  }
-
-  private __fetchToServiceProviders(
-    entityId: string,
-    fileName: string,
-  ): {
-    toServiceProvider: TFileServiceProvider;
-    toRemoteFileConfig: TRemoteFileConfig;
-    remoteFileNameInDirectory: string;
-  } {
-    if (this.__fetchBucketName(process.env, false)) {
-      const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
-      const awsFileService = new AwsS3FileService(s3ClientConfig);
-      const remoteFileNameInDocument = awsFileService.generateRemoteFilePath(fileName, entityId);
-      const awsConfigForClient = this.__fetchAwsConfigFor(remoteFileNameInDocument);
-      return {
-        toServiceProvider: awsFileService,
-        toRemoteFileConfig: awsConfigForClient,
-        remoteFileNameInDirectory: awsConfigForClient.fileNameInBucket,
-      };
-    }
-
-    const localFileService = new LocalFileService();
-    const toFileStoragePath = localFileService.generateRemoteFilePath(fileName);
-    return {
-      toServiceProvider: localFileService,
-      toRemoteFileConfig: toFileStoragePath,
-      remoteFileNameInDirectory: toFileStoragePath,
-    };
-  }
-
-  private __fetchAwsConfigFor(fileNameInBucket: string): TS3BucketConfig {
-    const bucketName = this.__fetchBucketName(process.env, true) as string;
-
-    return {
-      bucketName: bucketName,
-      fileNameInBucket: fileNameInBucket,
-      private: true,
-    };
-  }
-
-  private __fetchBucketName(processEnv: NodeJS.ProcessEnv, isThrowOnMissing = true) {
-    const bucketName = AwsS3FileConfig.getBucketName(processEnv);
-
-    if (isThrowOnMissing && !bucketName) {
-      throw new Error(`S3 Bucket name is not set`);
-    }
-
-    return bucketName;
-  }
-
   async getWorkflowRuntimeDataContext(id: string) {
     return this.workflowRuntimeDataRepository.findContext(id);
   }
@@ -1693,5 +1595,22 @@ export class WorkflowService {
     this.logger.log('Last active workflow', { workflowId: workflowData ? workflowData.id : null });
 
     return workflowData ? workflowData : null;
+  }
+
+  async copyDocumentsPagesFilesAndCreate(
+    documents: TDocumentsWithoutPageType,
+    entityId: string,
+    projectIds: TProjectIds,
+  ) {
+    if (!documents?.length) return documents;
+
+    const documentsWithPersistedImages = await Promise.all(
+      documents?.map(async document => ({
+        ...document,
+        pages: await this.__persistDocumentPagesFiles(document, entityId, projectIds),
+      })),
+    );
+
+    return documentsWithPersistedImages;
   }
 }
