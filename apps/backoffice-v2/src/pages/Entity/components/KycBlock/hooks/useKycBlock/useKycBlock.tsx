@@ -1,5 +1,5 @@
 import { ComponentProps } from 'react';
-import { isObject, safeEvery } from '@ballerine/common';
+import { isObject, safeEvery, StateTag, TStateTags } from '@ballerine/common';
 
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
@@ -140,10 +140,10 @@ export const useKycBlock = ({
     safeEvery(childWorkflow?.context?.documents, document => !!document?.decision?.status) ||
     noAction;
 
-  const getDecisionStatusOrAction = (status: 'revision' | 'rejected' | 'approved') => {
+  const getDecisionStatusOrAction = (tags?: TStateTags) => {
     const badgeClassNames = 'text-sm font-bold';
 
-    if (status === 'revision') {
+    if (tags?.includes(StateTag.REVISION)) {
       return [
         {
           type: 'badge',
@@ -157,7 +157,7 @@ export const useKycBlock = ({
       ];
     }
 
-    if (status === 'approved') {
+    if (tags?.includes(StateTag.APPROVED)) {
       return [
         {
           type: 'badge',
@@ -166,6 +166,34 @@ export const useKycBlock = ({
             ...motionProps,
             variant: 'success',
             className: `${badgeClassNames} bg-success/20`,
+          },
+        },
+      ];
+    }
+
+    if (tags?.includes(StateTag.REJECTED)) {
+      return [
+        {
+          type: 'badge',
+          value: 'Rejected',
+          props: {
+            ...motionProps,
+            variant: 'destructive',
+            className: `${badgeClassNames}`,
+          },
+        },
+      ];
+    }
+
+    if (tags?.includes(StateTag.PENDING_PROCESS)) {
+      return [
+        {
+          type: 'badge',
+          value: 'Pending ID verification',
+          props: {
+            ...motionProps,
+            variant: 'warning',
+            className: `${badgeClassNames}`,
           },
         },
       ];
@@ -208,9 +236,7 @@ export const useKycBlock = ({
       {
         id: 'actions',
         type: 'container',
-        value: getDecisionStatusOrAction(
-          childWorkflow?.state as 'revision' | 'rejected' | 'approved',
-        ),
+        value: getDecisionStatusOrAction(childWorkflow?.tags),
       },
     ],
   };
