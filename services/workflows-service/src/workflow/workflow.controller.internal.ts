@@ -33,11 +33,12 @@ import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { WorkflowEventDecisionInput } from '@/workflow/dtos/workflow-event-decision-input';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
 import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -54,11 +55,10 @@ export class WorkflowControllerInternal {
   @swagger.ApiCreatedResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createWorkflowDefinition(
-    @UserData() userInfo: UserInfo,
     @common.Body() data: WorkflowDefinitionCreateDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @ProjectIds() projectId: TProjectId,
   ) {
-    return await this.service.createWorkflowDefinition(data, projectIds);
+    return await this.service.createWorkflowDefinition(data, projectId);
   }
 
   @common.Post('/clone')
@@ -138,6 +138,7 @@ export class WorkflowControllerInternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowEventInput,
     @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<void> {
     return await this.service.event(
       {
@@ -145,6 +146,7 @@ export class WorkflowControllerInternal {
         id: params.id,
       },
       projectIds,
+      currentProjectId,
     );
   }
 
@@ -157,14 +159,14 @@ export class WorkflowControllerInternal {
   async updateDecisionAndSendEventById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowEventDecisionInput,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
       return this.service.updateDecisionAndSendEvent({
         id: params?.id,
         name: data?.name,
         reason: data?.reason,
-        projectIds,
+        projectId: currentProjectId,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -183,10 +185,10 @@ export class WorkflowControllerInternal {
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.updateWorkflowRuntimeData(params.id, data, projectIds);
+      return await this.service.updateWorkflowRuntimeData(params.id, data, currentProjectId);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -205,6 +207,7 @@ export class WorkflowControllerInternal {
     @common.Param() params: DocumentDecisionParamsInput,
     @common.Body() data: DocumentDecisionUpdateInput,
     @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
       return await this.service.updateDocumentDecisionById(
@@ -217,6 +220,7 @@ export class WorkflowControllerInternal {
           reason: data?.reason,
         },
         projectIds,
+        currentProjectId,
       );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -239,9 +243,10 @@ export class WorkflowControllerInternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowAssigneeId,
     @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.assignWorkflowToUser(params.id, data, projectIds);
+      return await this.service.assignWorkflowToUser(params.id, data, projectIds, currentProjectId);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

@@ -1,6 +1,6 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Prisma, WorkflowDefinition } from '@prisma/client';
 
@@ -13,10 +13,10 @@ export class WorkflowDefinitionRepository {
 
   async create<T extends Prisma.WorkflowDefinitionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionCreateArgs>,
-    projectIds: TProjectIds,
+    projectId?: TProjectId,
   ): Promise<WorkflowDefinition> {
     return await this.prisma.workflowDefinition.create<T>(
-      this.scopeService.scopeCreate(args, projectIds),
+      this.scopeService.scopeCreate(args, projectId),
     );
   }
 
@@ -61,7 +61,7 @@ export class WorkflowDefinitionRepository {
   async updateById<T extends Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ): Promise<WorkflowDefinition> {
     return await this.prisma.workflowDefinition.update(
       this.scopeService.scopeUpdate(
@@ -69,7 +69,7 @@ export class WorkflowDefinitionRepository {
           where: { id },
           ...args,
         },
-        projectIds,
+        projectId,
       ),
     );
   }

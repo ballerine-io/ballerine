@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EndUserRepository } from './end-user.repository';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { Business, EndUser } from '@prisma/client';
 
@@ -12,21 +12,25 @@ export class EndUserService {
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
-  async create(args: Parameters<EndUserRepository['create']>[0], projectIds: TProjectIds) {
-    return await this.repository.create(args, projectIds);
+  async create(args: Parameters<EndUserRepository['create']>[0], projectId: TProjectId) {
+    return await this.repository.create(args, projectId);
   }
 
   async list(args: Parameters<EndUserRepository['findMany']>[0], projectIds: TProjectIds) {
     return await this.repository.findMany(args, projectIds);
   }
 
-  async getById(id: string, args?: Parameters<EndUserRepository['findByIdUnscoped']>[1]) {
-    return await this.repository.findByIdUnscoped(id, args);
+  async getById(
+    id: string,
+    args: Parameters<EndUserRepository['findById']>[1],
+    projectIds: TProjectIds,
+  ) {
+    return await this.repository.findById(id, args, projectIds);
   }
 
   async createWithBusiness(
     endUser: EndUserCreateDto,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ): Promise<EndUser & { businesses: Business[] }> {
     const { companyName = '', ...userData } = endUser;
 
@@ -34,16 +38,16 @@ export class EndUserService {
       {
         data: {
           ...userData,
-          projectId: projectIds?.at(-1),
+          projectId: projectId,
           businesses: {
-            create: { companyName, projectId: projectIds?.at(-1) },
+            create: { companyName, projectId: projectId },
           },
         },
         include: {
           businesses: true,
         },
       },
-      projectIds,
+      projectId,
     );
 
     return user as any;

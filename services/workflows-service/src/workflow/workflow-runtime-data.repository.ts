@@ -7,7 +7,7 @@ import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { FindLastActiveFlowParams } from '@/workflow/types/params';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { SortOrder } from '@/common/query-filters/sort-order';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
@@ -21,7 +21,7 @@ export class WorkflowRuntimeDataRepository {
 
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     return await this.prisma.workflowRuntimeData.create<T>(
       this.scopeService.scopeCreate(
@@ -35,7 +35,7 @@ export class WorkflowRuntimeDataRepository {
             },
           },
         } as any,
-        projectIds,
+        projectId,
       ),
     );
   }
@@ -71,7 +71,7 @@ export class WorkflowRuntimeDataRepository {
   async updateById<T extends Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     return await this.prisma.workflowRuntimeData.update(
       this.scopeService.scopeUpdate(
@@ -79,7 +79,7 @@ export class WorkflowRuntimeDataRepository {
           where: { id },
           ...args,
         },
-        projectIds,
+        projectId,
       ),
     );
   }
@@ -92,7 +92,9 @@ export class WorkflowRuntimeDataRepository {
   ): Promise<WorkflowRuntimeData> {
     const stringifiedContext = JSON.stringify(newContext);
     const affectedRows = await this.prisma
-      .$executeRaw`UPDATE "WorkflowRuntimeData" SET "context" = jsonb_deep_merge_with_options("context", ${stringifiedContext}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds})`;
+      .$executeRaw`UPDATE "WorkflowRuntimeData" SET "context" = jsonb_deep_merge_with_options("context", ${stringifiedContext}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
+      ',',
+    )})`;
 
     // Retrieve and return the updated record
     if (affectedRows === 0) {
@@ -163,7 +165,7 @@ export class WorkflowRuntimeDataRepository {
 
   async findContext(id: string, projectIds: TProjectIds) {
     return (
-      await this.prisma.workflowRuntimeData.findUniqueOrThrow(
+      await this.prisma.workflowRuntimeData.findFirstOrThrow(
         this.scopeService.scopeFindOne(
           {
             where: { id },

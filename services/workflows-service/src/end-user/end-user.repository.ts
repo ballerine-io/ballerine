@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EndUserModel } from './end-user.model';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
@@ -14,9 +14,9 @@ export class EndUserRepository {
 
   async create<T extends Prisma.EndUserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EndUserCreateArgs>,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ) {
-    return await this.prisma.endUser.create(this.scopeService.scopeCreate(args, projectIds));
+    return await this.prisma.endUser.create(this.scopeService.scopeCreate(args, projectId));
   }
 
   async findMany<T extends Prisma.EndUserFindManyArgs>(
@@ -33,14 +33,20 @@ export class EndUserRepository {
     return await this.prisma.endUser.findFirst(this.scopeService.scopeFindOne(args, projectIds));
   }
 
-  async findByIdUnscoped<T extends Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>(
+  async findById<T extends Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>(
     id: string,
-    args?: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>,
+    projectIds: TProjectIds,
   ) {
-    return await this.prisma.endUser.findUniqueOrThrow({
-      where: { id },
-      ...args,
-    });
+    return await this.prisma.endUser.findFirstOrThrow(
+      this.scopeService.scopeFindFirst(
+        {
+          where: { id },
+          ...args,
+        },
+        projectIds,
+      ),
+    );
   }
 
   async findByCorrelationIdUnscoped<T extends Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>(
@@ -56,7 +62,7 @@ export class EndUserRepository {
   async updateById<T extends Omit<Prisma.EndUserUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.EndUserUpdateArgs, 'where'>>,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ): Promise<EndUserModel> {
     return await this.prisma.endUser.update(
       this.scopeService.scopeUpdate(
@@ -64,17 +70,22 @@ export class EndUserRepository {
           where: { id },
           ...args,
         },
-        projectIds,
+        projectId,
       ),
     );
   }
 
-  async getCorrelationIdByIdUnscoped(id: string): Promise<string | null> {
-    return (
-      await this.prisma.endUser.findUniqueOrThrow({
-        where: { id },
-        select: { correlationId: true },
-      })
-    ).correlationId;
+  async getCorrelationIdById(id: string, projectIds: TProjectIds): Promise<string | null> {
+    const endUser = await this.prisma.endUser.findFirst(
+      this.scopeService.scopeFindFirst(
+        {
+          where: { id },
+          select: { correlationId: true },
+        },
+        projectIds,
+      ),
+    );
+
+    return endUser ? endUser.correlationId : null;
   }
 }

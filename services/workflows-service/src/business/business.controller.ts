@@ -13,7 +13,8 @@ import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('internal/businesses')
 @common.Controller('internal/businesses')
@@ -30,7 +31,7 @@ export class BusinessControllerExternal {
   @swagger.ApiForbiddenResponse()
   async create(
     @common.Body() data: BusinessCreateDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.service.create(
@@ -48,7 +49,7 @@ export class BusinessControllerExternal {
           companyName: true,
         },
       },
-      projectIds,
+      currentProjectId,
     );
   }
 
@@ -68,9 +69,12 @@ export class BusinessControllerExternal {
   @swagger.ApiOkResponse({ type: BusinessModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  async getById(@common.Param() params: BusinessWhereUniqueInput): Promise<BusinessModel | null> {
+  async getById(
+    @common.Param() params: BusinessWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<BusinessModel | null> {
     try {
-      const business = await this.service.getById(params.id, {});
+      const business = await this.service.getById(params.id, {}, projectIds);
 
       return business;
     } catch (err) {

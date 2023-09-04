@@ -22,12 +22,15 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { createCustomer } from '@/test/helpers/create-customer';
+import { Project } from '@prisma/client';
+import { createProject } from '@/test/helpers/create-project';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
   let endUserService: EndUserService;
-  beforeEach(cleanupDatabase);
-  afterEach(tearDownDatabase);
+  let project: Project;
+  beforeAll(cleanupDatabase);
+  afterAll(tearDownDatabase);
 
   beforeAll(async () => {
     const servicesProviders = [
@@ -63,12 +66,18 @@ describe('#EndUserControllerExternal', () => {
       [PrismaModule],
     );
 
-    await createCustomer(await app.get(PrismaService), String(Date.now()), 'secret', '');
+    const customer = await createCustomer(
+      await app.get(PrismaService),
+      String(Date.now()),
+      'secret',
+      '',
+    );
+    project = await createProject(await app.get(PrismaService), customer, String(Date.now()));
   });
 
   describe('POST /end-user', () => {
     it('creates an end-user', async () => {
-      expect(await endUserService.list({})).toHaveLength(0);
+      expect(await endUserService.list({}, [project.id])).toHaveLength(0);
 
       const response = await request(app.getHttpServer())
         .post('/external/end-users')
@@ -82,7 +91,7 @@ describe('#EndUserControllerExternal', () => {
         .set('authorization', 'Bearer secret');
 
       expect(response.status).toBe(201);
-      const allEndUsers = await endUserService.list({});
+      const allEndUsers = await endUserService.list({}, [project.id]);
       expect(allEndUsers[0]).toMatchObject({
         firstName: 'test',
         lastName: 'lastName',

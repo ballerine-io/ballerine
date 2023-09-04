@@ -14,10 +14,11 @@ import { UseGuards, UsePipes } from '@nestjs/common';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterCreateDto } from '@/filter/dtos/filter-create';
 import { FilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
-import { InputJsonValue, TProjectIds } from '@/types';
+import { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('external/filters')
 @common.Controller('external/filters')
@@ -65,16 +66,19 @@ export class FilterControllerExternal {
   @swagger.ApiCreatedResponse({ type: FilterModel })
   @swagger.ApiForbiddenResponse()
   @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
-  async createFilter(@ProjectIds() projectIds: TProjectIds, @common.Body() data: FilterCreateDto) {
+  async createFilter(
+    @CurrentProject() currentProjectId: TProjectId,
+    @common.Body() data: FilterCreateDto,
+  ) {
     return await this.service.create(
       {
         data: {
           ...data,
           query: data?.query as InputJsonValue,
-          projectId: projectIds?.[0],
+          projectId: currentProjectId,
         },
       },
-      projectIds,
+      currentProjectId,
     );
   }
 }

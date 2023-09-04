@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FilterRepository } from '@/filter/filter.repository';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class FilterService {
   constructor(protected readonly repository: FilterRepository) {}
 
-  async create(args: Parameters<FilterRepository['create']>[0], projectIds: TProjectIds) {
-    return await this.repository.create(args, projectIds);
+  async create(args: Parameters<FilterRepository['create']>[0], projectId: TProjectId) {
+    return await this.repository.create(args, projectId);
   }
 
   async list(args: Parameters<FilterRepository['findMany']>[0], projectIds: TProjectIds) {

@@ -47,9 +47,12 @@ export class EndUserControllerInternal {
   @swagger.ApiOkResponse({ type: EndUserModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
+  async getById(
+    @common.Param() params: EndUserWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<EndUserModel | null> {
     try {
-      return await this.service.getById(params?.id);
+      return await this.service.getById(params?.id, {}, projectIds);
     } catch (err) {
       if (isRecordNotFoundError(err)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

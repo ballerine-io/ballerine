@@ -12,7 +12,7 @@ import { env } from '@/env';
 import { lastValueFrom } from 'rxjs';
 import { plainToClass } from 'class-transformer';
 import { AxiosError } from 'axios';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class BusinessService {
@@ -21,25 +21,29 @@ export class BusinessService {
     protected readonly logger: AppLoggerService,
     protected readonly httpService: HttpService,
   ) {}
-  async create(args: Parameters<BusinessRepository['create']>[0], projectIds: TProjectIds) {
+  async create(args: Parameters<BusinessRepository['create']>[0], projectId: TProjectId) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return await this.repository.create(args, projectIds);
+    return await this.repository.create(args, projectId);
   }
 
   async list(args: Parameters<BusinessRepository['findMany']>[0], projectIds: TProjectIds) {
     return await this.repository.findMany(args, projectIds);
   }
 
-  async getById(id: string, args: Parameters<BusinessRepository['findByIdUnscoped']>[1]) {
-    return await this.repository.findByIdUnscoped(id, args);
+  async getById(
+    id: string,
+    args: Parameters<BusinessRepository['findById']>[1],
+    projectIds: TProjectIds,
+  ) {
+    return await this.repository.findById(id, args, projectIds);
   }
 
   async updateById(
     id: string,
     args: Parameters<BusinessRepository['updateById']>[1],
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ) {
-    return await this.repository.updateById(id, args, projectIds);
+    return await this.repository.updateById(id, args, projectId);
   }
 
   async fetchCompanyInformation({

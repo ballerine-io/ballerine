@@ -3,7 +3,7 @@ module.exports = {
     type: 'problem',
     severiry: 'error',
     docs: {
-      description: 'Check if repository methods receive projectId: TProjectId',
+      description: 'Check if repository methods recieve projectId: TProjectId',
       category: 'Best Practices',
       recommended: true,
     },
@@ -21,11 +21,9 @@ module.exports = {
 
         if (isUnscoped) return;
 
-        const isProjectIdsIncluded =
-          node.value.params.length &&
-          node.value.params.some(
-            param => param.type === 'Identifier' && param.name.toLowerCase().includes('projectid'),
-          );
+        const isProjectIdsIncluded = node.value.params.some(
+          param => param.type === 'Identifier' && param.name.toLowerCase().includes('projectid'),
+        );
 
         if (!isProjectIdsIncluded) {
           context.report({
