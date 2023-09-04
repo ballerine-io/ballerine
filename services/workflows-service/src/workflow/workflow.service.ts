@@ -176,7 +176,6 @@ export class WorkflowService {
     );
 
     return await this.workflowDefinitionRepository.create(
-      // @ts-expect-error - types of workflow definition does not propagate to the prisma creation type
       {
         data: { ...workflowDefinition, name: data.name, projectId: projectId, isPublic: false },
         select,
