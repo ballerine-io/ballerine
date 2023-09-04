@@ -55,8 +55,8 @@ export const Navbar: FunctionComponent = () => {
           <NavItem
             href={`/en/case-management/entities?filterId=${id}`}
             key={id}
-            className={ctw(`capitalize`, {
-              'bg-muted font-bold': id === searchParams?.filterId,
+            className={ctw(`px-2 capitalize active:bg-muted-foreground/30 active:text-foreground`, {
+              'bg-primary/10 font-bold': id === searchParams?.filterId,
             })}
           >
             <span>

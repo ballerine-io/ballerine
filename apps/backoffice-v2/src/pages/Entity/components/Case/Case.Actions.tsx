@@ -92,9 +92,9 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         />
       </div>
       <div className={`flex h-20 justify-between`}>
-        <div className={`flex flex-col space-y-4`}>
+        <div className={`flex flex-col space-y-3`}>
           <h2
-            className={ctw(`text-2xl font-bold`, {
+            className={ctw(`text-4xl font-semibold leading-9`, {
               'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
                 isLoadingCase,
             })}
@@ -103,7 +103,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           </h2>
           {tag && (
             <div className={`flex items-center`}>
-              <span className={`mr-[8px] text-sm font-bold`}>Status</span>
+              <span className={`mr-[8px] text-sm leading-6`}>Status</span>
               <Badge
                 variant={tagToBadgeData[tag].variant}
                 className={ctw(`text-sm font-bold`, {
@@ -117,14 +117,14 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           )}
         </div>
         {showResolutionButtons && (
-          <div className={`flex items-center space-x-6 pe-[3.35rem]`}>
+          <div className={`flex items-center space-x-4 self-start pe-[3.35rem]`}>
             <Dialog>
               <DialogTrigger asChild>
                 <Button
-                  className={ctw('bg-orange-400 hover:!bg-orange-400/90', {
-                    loading: debouncedIsLoadingRejectEntity,
-                  })}
+                  size="md"
+                  variant="warning"
                   disabled={isLoading || !canRevision}
+                  className={ctw({ loading: debouncedIsLoadingRejectEntity })}
                 >
                   Ask for all re-uploads {canRevision && `(${documentsToReviseCount})`}
                 </Button>
@@ -161,22 +161,24 @@ export const Actions: FunctionComponent<IActionsProps> = ({
               </DialogContent>
             </Dialog>
             <Button
-              variant={`destructive`}
+              size="md"
+              variant="destructive"
+              onClick={onMutateRejectEntity}
+              disabled={isLoading || !canReject}
               className={ctw({
                 loading: debouncedIsLoadingRejectEntity,
               })}
-              disabled={isLoading || !canReject}
-              onClick={onMutateRejectEntity}
             >
               Reject
             </Button>
             <Button
+              size="md"
+              variant="success"
+              onClick={onMutateApproveEntity}
+              disabled={isLoading || !canApprove}
               className={ctw({
                 loading: debouncedIsLoadingApproveEntity,
               })}
-              variant={`success`}
-              disabled={isLoading || !canApprove}
-              onClick={onMutateApproveEntity}
             >
               Approve
             </Button>

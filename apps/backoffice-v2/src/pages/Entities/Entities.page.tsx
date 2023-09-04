@@ -31,7 +31,7 @@ export const Entities: FunctionComponent = () => {
         onSortDirToggle={onSortDirToggle}
         search={search}
       >
-        <MotionScrollArea className={`h-[calc(100vh-210px)]`}>
+        <MotionScrollArea className={`h-[calc(100vh-210px)] py-2`}>
           <Cases.List>
             {isLoading
               ? skeletonEntities.map(index => (

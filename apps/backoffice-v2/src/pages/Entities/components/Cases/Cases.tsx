@@ -57,7 +57,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
             </div>
             <input
               type="text"
-              className="input input-md w-full !border-0 !outline-none !ring-0 placeholder:text-base-content"
+              className="input input-md w-full !border-0 text-base !outline-none !ring-0 placeholder:text-base-content"
               placeholder={`Search by user info`}
               onChange={onSearch}
               value={search}
@@ -66,9 +66,9 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
           </div>
         </div>
         <div className={`flex items-center justify-between`}>
-          <div className="dropdown-hover dropdown dropdown-bottom z-[60]">
+          <div className="dropdown dropdown-bottom dropdown-hover z-[60]">
             <button
-              className={`btn btn-ghost btn-sm h-[2.125rem] gap-2 border-neutral/10 text-xs focus-visible:outline-primary theme-dark:border-neutral/50`}
+              className={`btn btn-ghost btn-sm h-8 gap-2 border-neutral/10 px-4 text-sm capitalize focus-visible:outline-primary theme-dark:border-neutral/50`}
               tabIndex={0}
               ref={filterRef}
               onMouseEnter={handleDropdown}
@@ -77,7 +77,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
               Filter
             </button>
             <div
-              className={`dropdown-content space-y-2 rounded-md  border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
+              className={`dropdown-content space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
             >
               {filterByOptions.map(({ label, value, options }) => {
                 return (
@@ -97,7 +97,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
                       <Checkbox.Item
                         key={`${label}${key ?? ''}`}
                         value={value}
-                        className={`text-sm  text-base-content`}
+                        className={`text-sm text-base-content`}
                         checkboxProps={{
                           className: 'd-4',
                         }}
@@ -122,7 +122,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
                 <SortSvg />
               </button>
               <select
-                className={`select select-bordered select-sm w-[7.5rem] !border-0 text-xs leading-snug !outline-none !ring-0`}
+                className={`select select-bordered select-sm w-[7.5rem] !border-0 pl-1 text-sm leading-snug !outline-none !ring-0`}
                 onChange={onSortBy}
                 value={sortBy}
               >

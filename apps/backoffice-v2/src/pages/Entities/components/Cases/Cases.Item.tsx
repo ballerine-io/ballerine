@@ -8,7 +8,6 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { createInitials } from '../../../../common/utils/create-initials/create-initials';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { useEllipsesWithTitle } from '../../../../common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
-import { Cases } from './Cases';
 
 /**
  * @description To be used by {@link Cases}, and be wrapped by {@link Cases.List}. Uses an li element with default styling to display a single case's data. Navigates to the selected entity on click by setting the entity id into the path param.
@@ -38,15 +37,20 @@ export const Item: FunctionComponent<IItemProps> = ({
   const timePast = getTimePastFromNow(new Date(createdAt));
   const assigneeInitials = createInitials(assigneeFullName);
   const entityInitials = createInitials(fullName);
-  const { ref, styles } = useEllipsesWithTitle();
+  const { ref, styles } = useEllipsesWithTitle<HTMLDivElement>();
   const { search } = useLocation();
 
   return (
-    <li className={`rounded-md p-2 px-1`}>
+    <li className={`h-[64px] w-full px-4`}>
       <NavLink
         to={`/en/case-management/entities/${id}${search}`}
         className={({ isActive }) =>
-          ctw(`flex items-center gap-x-4 rounded-md px-3 outline-none`, { 'bg-muted': isActive })
+          ctw(
+            `flex h-[64px] items-center gap-x-4 rounded-lg px-5 py-4 outline-none active:bg-muted-foreground/30 active:text-foreground`,
+            {
+              'bg-muted': isActive,
+            },
+          )
         }
       >
         <div className={`indicator`}>
@@ -71,19 +75,18 @@ export const Item: FunctionComponent<IItemProps> = ({
             className={`pt-1.5 d-9`}
           />
         </div>
-        <div>
-          <div className={'w-[15ch]'}>
-            <span ref={ref} style={styles}>
-              {fullName}
-            </span>
+        <div className={`max-w-[115px]`}>
+          <div ref={ref} className={`mb-[2px] text-sm font-bold`} style={styles}>
+            {fullName}
           </div>
-          <div className={`text-sm`}>Waiting {timePast}</div>
+          <div className={`text-xs`}>
+            Waiting <span className={`font-bold`}>{timePast}</span>
+          </div>
         </div>
         <div className={`ml-auto mr-1 flex -space-x-2 overflow-hidden`}>
           {!!assigneeId && (
             <Avatar
               key={assigneeId}
-              // src={assignedTo}
               src={''}
               placeholder={assigneeInitials}
               alt={`assigned to: ${assigneeFullName}`}
