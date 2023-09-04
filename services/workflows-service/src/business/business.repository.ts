@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { BusinessModel } from './business.model';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class BusinessRepository {
@@ -14,10 +14,10 @@ export class BusinessRepository {
 
   async create<T extends Prisma.BusinessCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessCreateArgs>,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return await this.prisma.business.create(this.scopeService.scopeCreate(args, projectIds));
+    return await this.prisma.business.create(this.scopeService.scopeCreate(args, projectId));
   }
 
   async findMany<T extends Prisma.BusinessFindManyArgs>(
@@ -76,7 +76,7 @@ export class BusinessRepository {
   async updateById<T extends Omit<Prisma.BusinessUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.BusinessUpdateArgs, 'where'>>,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ): Promise<BusinessModel> {
     return await this.prisma.business.update(
       this.scopeService.scopeUpdate(
@@ -84,7 +84,7 @@ export class BusinessRepository {
           where: { id },
           ...args,
         },
-        projectIds,
+        projectId,
       ),
     );
   }

@@ -3,7 +3,7 @@ import { Prisma, User } from '@prisma/client';
 import { PasswordService } from '../auth/password/password.service';
 import { transformStringFieldUpdateInput } from '../prisma/prisma.util';
 import { Injectable } from '@nestjs/common';
-import { TProjectIds, UserWithProjects } from '@/types';
+import { TProjectId, TProjectIds, UserWithProjects } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class UserRepository {
 
   async create<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ): Promise<User> {
     return this.prisma.user.create<T>(
       this.scopeService.scopeCreate(
@@ -28,7 +28,7 @@ export class UserRepository {
             password: await this.passwordService.hash(args.data.password),
           },
         } as any,
-        projectIds,
+        projectId,
       ),
     );
   }

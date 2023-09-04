@@ -13,10 +13,11 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import * as os from 'os';
 import * as path from 'path';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { CustomerService } from '@/customer/customer.service';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 // Temporarily identical to StorageControllerInternal
 @swagger.ApiTags('Storage')
@@ -52,7 +53,7 @@ export class StorageControllerExternal {
   @UseCustomerAuthGuard()
   async uploadFile(
     @UploadedFile() file: Partial<Express.MulterS3.File>,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
     const id = await this.service.createFileLink({
       uri: file.location || String(file.path),
@@ -60,7 +61,7 @@ export class StorageControllerExternal {
       fileNameInBucket: file.key,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
-      projectIds,
+      projectId: currentProjectId,
     });
 
     return { id };

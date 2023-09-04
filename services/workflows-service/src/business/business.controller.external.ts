@@ -21,7 +21,8 @@ import { BusinessInformation } from '@/business/dtos/business-information';
 import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('external/businesses')
 @common.Controller('external/businesses')
@@ -39,7 +40,7 @@ export class BusinessControllerExternal {
   @UseCustomerAuthGuard()
   async create(
     @common.Body() data: BusinessCreateDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.service.create(
@@ -57,7 +58,7 @@ export class BusinessControllerExternal {
           companyName: true,
         },
       },
-      projectIds,
+      currentProjectId,
     );
   }
 
@@ -112,7 +113,7 @@ export class BusinessControllerExternal {
   async update(
     @common.Param('id') businessId: string,
     @common.Body() data: BusinessUpdateDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
     return this.service.updateById(
       businessId,
@@ -129,7 +130,7 @@ export class BusinessControllerExternal {
               : undefined,
         },
       },
-      projectIds,
+      currentProjectId,
     );
   }
 

@@ -9,7 +9,7 @@ import { KYBParentKYCSessionExampleFlowData } from '@/collection-flow/workflow-a
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
@@ -29,11 +29,12 @@ export class CollectionFlowService {
     protected readonly businessService: BusinessService,
   ) {}
 
-  async authorize(credentials: SigninCredentials, projectIds: TProjectIds): Promise<EndUser> {
-    const existingEndUser = await this.endUserService.getByEmail(credentials.email, projectIds);
+  async authorize(credentials: SigninCredentials, projectId: TProjectId): Promise<EndUser> {
+    //@ts-expect-error
+    const existingEndUser = await this.endUserService.getByEmail(credentials.email, projectId);
 
     if (!existingEndUser) {
-      const newUser = await this.initializeNewEndUser(credentials, projectIds);
+      const newUser = await this.initializeNewEndUser(credentials, projectId);
 
       await this.workflowService.createOrUpdateWorkflowRuntime({
         workflowDefinitionId: credentials.flowType,
@@ -46,7 +47,8 @@ export class CollectionFlowService {
           },
           documents: [],
         },
-        projectIds,
+        projectIds: projectId ? [projectId] : [],
+        currentProjectId: projectId,
       });
 
       return newUser;
@@ -55,7 +57,7 @@ export class CollectionFlowService {
     return existingEndUser;
   }
 
-  private async initializeNewEndUser(credentials: SigninCredentials, projectIds: TProjectIds) {
+  private async initializeNewEndUser(credentials: SigninCredentials, projectId: TProjectId) {
     const endUser = await this.endUserService.createWithBusiness(
       {
         firstName: '',
@@ -63,7 +65,7 @@ export class CollectionFlowService {
         email: credentials.email,
         companyName: '',
       },
-      projectIds,
+      projectId,
     );
 
     return endUser;
@@ -94,6 +96,7 @@ export class CollectionFlowService {
     configurationId: string,
     steps: FlowStepModel[],
     projectIds: TProjectIds,
+    projectId: TProjectId,
   ): Promise<FlowConfigurationModel> {
     const definition = await this.workflowDefinitionRepository.findById(
       configurationId,
@@ -139,7 +142,7 @@ export class CollectionFlowService {
           },
         },
       },
-      projectIds,
+      projectId,
     );
 
     return plainToClass(FlowConfigurationModel, {
@@ -186,10 +189,12 @@ export class CollectionFlowService {
     adapter: IWorkflowAdapter,
     updatePayload: UpdateFlowPayload,
     flowId: string,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
     customer: Customer,
   ) {
-    const workflow = await this.workflowRuntimeDataRepository.findById(flowId, {}, projectIds);
+    const workflow = await this.workflowRuntimeDataRepository.findById(flowId, {}, [
+      projectId,
+    ] as TProjectIds);
 
     if (!workflow) throw new NotFoundException();
 
@@ -211,20 +216,21 @@ export class CollectionFlowService {
       {
         data: updatePayload.businessData,
       },
-      projectIds,
+      projectId,
     );
 
     await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowData.workflowDefinitionId,
       context: workflowData.context,
-      projectIds,
+      projectIds: [projectId] as TProjectIds,
+      currentProjectId: projectId,
     });
 
     return flowData;
   }
 
-  async finishFlow(flowId: string, projectIds: TProjectIds) {
-    await this.workflowService.event({ id: flowId, name: 'start' }, projectIds);
+  async finishFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
+    await this.workflowService.event({ id: flowId, name: 'start' }, projectIds, currentProjectId);
 
     const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
       flowId,
@@ -248,7 +254,11 @@ export class CollectionFlowService {
     );
   }
 
-  async resubmitFlow(flowId: string, projectIds: TProjectIds) {
-    await this.workflowService.event({ id: flowId, name: 'RESUBMITTED' }, projectIds);
+  async resubmitFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
+    await this.workflowService.event(
+      { id: flowId, name: 'RESUBMITTED' },
+      projectIds,
+      currentProjectId,
+    );
   }
 }

@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 
 export interface PrismaGeneralQueryArgs {
@@ -44,16 +44,14 @@ export class ProjectScopeService {
 
   scopeFindOne<T>(
     args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
-    projectIds?: TProjectIds,
+    projectIds: TProjectIds,
   ): T {
     // @ts-expect-error
     args.where = {
       // @ts-expect-error
       ...args.where,
-      project: {
-        id: {
-          in: projectIds,
-        },
+      projectId: {
+        in: projectIds,
       },
     };
 
@@ -73,22 +71,18 @@ export class ProjectScopeService {
     return args;
   }
 
-  scopeCreate<T>(args: Prisma.SelectSubset<T, PrismaGeneralInsertArgs>, projectIds?: TProjectIds) {
+  scopeCreate<T>(args: Prisma.SelectSubset<T, PrismaGeneralInsertArgs>, projectId?: TProjectId) {
     // @ts-expect-error - dynamically typed for all queries
     args.data = {
       // @ts-expect-error - dynamically typed for all queries
       ...args.data,
-      project: {
-        connect: {
-          id: projectIds?.[0],
-        },
-      },
+      projectId,
     };
 
     return args;
   }
 
-  scopeUpdate<T>(args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>, projectIds?: TProjectIds) {
+  scopeUpdate<T>(args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>, projectId: TProjectId) {
     args = this.scopeCreate(args);
     // @ts-expect-error - dynamically typed for all queries
     args.data = {
@@ -96,7 +90,7 @@ export class ProjectScopeService {
       ...args.data,
       project: {
         connect: {
-          id: projectIds?.[0],
+          id: projectId,
         },
       },
     };
@@ -104,7 +98,11 @@ export class ProjectScopeService {
     return args;
   }
 
-  scopeUpsert<T>(args: Prisma.SelectSubset<T, PrismaGeneralUpsertArgs>, projectIds?: TProjectIds) {
+  scopeUpsert<T>(
+    args: Prisma.SelectSubset<T, PrismaGeneralUpsertArgs>,
+    projectIds: TProjectIds,
+    projectId: TProjectId,
+  ) {
     // @ts-expect-error - dynamically typed for all queries
     args.where = {
       // @ts-expect-error - dynamically typed for all queries
@@ -117,7 +115,7 @@ export class ProjectScopeService {
     args.update = {
       // @ts-expect-error - dynamically typed for all queries
       ...args.update,
-      projectId: projectIds?.[0],
+      projectId: projectId,
     };
     // @ts-expect-error - dynamically typed for all queries
     args.create = {
@@ -125,7 +123,7 @@ export class ProjectScopeService {
       ...args.create,
       project: {
         connect: {
-          id: projectIds?.[0],
+          id: projectId,
         },
       },
     };

@@ -20,8 +20,9 @@ import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definit
 import { WorkflowService } from '@/workflow/workflow.service';
 import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('external/end-users')
 @common.Controller('external/end-users')
@@ -39,7 +40,7 @@ export class EndUserControllerExternal {
   @UseCustomerAuthGuard()
   async create(
     @common.Body() data: EndUserCreateDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<EndUserModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>> {
     return this.service.create(
       {
@@ -58,7 +59,7 @@ export class EndUserControllerExternal {
           avatarUrl: true,
         },
       },
-      projectIds,
+      currentProjectId,
     );
   }
 
@@ -66,9 +67,9 @@ export class EndUserControllerExternal {
   @UseCustomerAuthGuard()
   async createWithBusiness(
     @common.Body() data: EndUserCreateDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const endUser = await this.service.createWithBusiness(data, projectIds);
+    const endUser = await this.service.createWithBusiness(data, currentProjectId);
 
     return {
       endUserId: endUser.id,

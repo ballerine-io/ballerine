@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EndUserModel } from './end-user.model';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
@@ -14,9 +14,9 @@ export class EndUserRepository {
 
   async create<T extends Prisma.EndUserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EndUserCreateArgs>,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ) {
-    return await this.prisma.endUser.create(this.scopeService.scopeCreate(args, projectIds));
+    return await this.prisma.endUser.create(this.scopeService.scopeCreate(args, projectId));
   }
 
   async findMany<T extends Prisma.EndUserFindManyArgs>(
@@ -62,7 +62,7 @@ export class EndUserRepository {
   async updateById<T extends Omit<Prisma.EndUserUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.EndUserUpdateArgs, 'where'>>,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ): Promise<EndUserModel> {
     return await this.prisma.endUser.update(
       this.scopeService.scopeUpdate(
@@ -70,7 +70,7 @@ export class EndUserRepository {
           where: { id },
           ...args,
         },
-        projectIds,
+        projectId,
       ),
     );
   }
