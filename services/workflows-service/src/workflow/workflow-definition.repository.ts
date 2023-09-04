@@ -29,12 +29,12 @@ export class WorkflowDefinitionRepository {
     );
   }
 
-  async findById<T extends Omit<Prisma.WorkflowDefinitionFindUniqueOrThrowArgs, 'where'>>(
+  async findById<T extends Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionFindUniqueOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
   ): Promise<WorkflowDefinition> {
-    return await this.prisma.workflowDefinition.findUniqueOrThrow(
+    return await this.prisma.workflowDefinition.findFirstOrThrow(
       this.scopeService.scopeFindOne(
         {
           where: { id },
