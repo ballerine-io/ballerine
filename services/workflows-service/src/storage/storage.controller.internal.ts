@@ -76,7 +76,7 @@ export class StorageControllerInternal {
   @common.Get('/:id')
   async getFileById(@ProjectIds() projectIds: TProjectIds, @Param('id') id: string) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileById({ id }, {}, projectIds);
+    const persistedFile = await this.service.getFileById({ id }, projectIds, {});
 
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
@@ -94,7 +94,7 @@ export class StorageControllerInternal {
     @Query('format') format: string,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileById({ id }, {}, projectIds);
+    const persistedFile = await this.service.getFileById({ id }, projectIds, {});
 
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');

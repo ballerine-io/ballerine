@@ -168,8 +168,8 @@ export class AwsS3FileService implements IStreamableFileProvider {
   }
 
   generateRemotePath({
-    fileName,
     customerName,
+    fileName,
     directory,
   }: {
     fileName: string;
