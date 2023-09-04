@@ -20,7 +20,8 @@
     "svelte.config.js",
     "playwright.config.ts",
     "vitest.config.ts",
-    "e2e"
+    "e2e",
+    "cspell.config.cjs"
   ],
   "exclude": ["node_modules", "dist", "coverage"]
 }

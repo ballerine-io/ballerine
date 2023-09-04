@@ -22,14 +22,20 @@ import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-chang
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webhook-caller';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { EndUserService } from '@/end-user/end-user.service';
+import { ProjectModule } from '@/project/project.module';
+import { PrismaModule } from '@/prisma/prisma.module';
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
+  imports: [ACLModule, forwardRef(() => AuthModule), HttpModule, ProjectModule, PrismaModule],
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
   providers: [
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
+    ProjectScopeService,
     EndUserRepository,
+    EndUserService,
     BusinessRepository,
     EntityRepository,
     StorageService,

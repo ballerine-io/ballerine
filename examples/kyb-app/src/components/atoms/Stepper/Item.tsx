@@ -2,6 +2,7 @@ import { StepStatus } from '@app/components/atoms/Stepper/types';
 import { useStepperContext } from '@app/components/atoms/Stepper/hooks/useStepperContext/useStepperContext';
 import { Current } from '@app/components/atoms/Stepper/components/atoms/indicators/Current';
 import { BaseLabel } from '@app/components/atoms/Stepper/components/atoms/BaseLabel/BaseLabel';
+import clsx from 'clsx';
 
 interface Props {
   status: StepStatus;
@@ -17,7 +18,7 @@ export const Item = ({ status = 'idle', label, active, onClick }: Props) => {
 
   return (
     <div
-      className="flex flex-row items-center gap-4 first:bg-white last:bg-white"
+      className={clsx('last:bg- flex flex-row items-center gap-4 first:bg-white')}
       onClick={onClick}
     >
       {active && status === 'idle' ? (

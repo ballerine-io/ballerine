@@ -51,7 +51,8 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
             <TransformComponent
               wrapperClass={`max-w-[441px]`}
               contentClass={ctw(`overflow-x-auto`, {
-                'hover:cursor-move': selectedImage?.fileType !== 'pdf',
+                'hover:cursor-move':
+                  selectedImage?.fileType !== 'pdf' && !selectedImage?.imageUrl?.endsWith('.pdf'),
               })}
               wrapperStyle={{
                 width: '100%',
@@ -66,10 +67,14 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
                 crop={crop}
                 onChange={onCrop}
                 disabled={
-                  !isCropping || selectedImage?.fileType === 'pdf' || isRotatedOrTransformed
+                  !isCropping ||
+                  selectedImage?.fileType === 'pdf' ||
+                  selectedImage?.imageUrl?.endsWith('.pdf') ||
+                  isRotatedOrTransformed
                 }
                 className={ctw({
-                  'd-full [&>div]:d-full': selectedImage?.fileType === 'pdf',
+                  'd-full [&>div]:d-full':
+                    selectedImage?.fileType === 'pdf' || selectedImage?.imageUrl?.endsWith('.pdf'),
                   'rotate-90': documentRotation === 90,
                   'rotate-180': documentRotation === 180,
                   'rotate-[270deg]': documentRotation === 270,
@@ -85,12 +90,12 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
             </TransformComponent>
           </TransformWrapper>
           <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
-            {selectedImage?.fileType !== 'pdf' && (
+            {selectedImage?.fileType !== 'pdf' && !selectedImage?.imageUrl?.endsWith('.pdf') && (
               <>
                 <button
                   type={`button`}
                   className={ctw(
-                    `btn-ghost btn-sm btn-circle btn bg-base-300/70 text-[0.688rem] focus:outline-primary`,
+                    `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
                   )}
                   onClick={onRotateDocument}
                 >
@@ -98,7 +103,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
                 </button>
                 <button
                   className={ctw(
-                    'btn-ghost btn-sm btn-circle btn bg-base-300/70 focus:outline-primary',
+                    'btn btn-circle btn-ghost btn-sm bg-base-300/70 focus:outline-primary',
                     {
                       hidden: !isCropping,
                     },
@@ -117,7 +122,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
                   <button
                     type={`button`}
                     className={ctw(
-                      `btn-ghost btn-sm btn-circle btn bg-base-300/70 text-[0.688rem] focus:outline-primary`,
+                      `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
                       { loading: isLoadingOCR },
                     )}
                     onClick={onOcr}

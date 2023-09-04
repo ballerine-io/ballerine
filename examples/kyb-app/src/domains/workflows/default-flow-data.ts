@@ -1,30 +1,8 @@
-import { kybViews } from '@app/components/organisms/KYBView/views';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 
 export const defaultFlowData: WorkflowFlowData = {
-  currentView: kybViews[0].key || '',
-  flowData: {
-    personalInformation: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      companyName: '',
-    },
-    businessInformation: {
-      registrationNumber: '',
-      website: '',
-    },
-    businessAddress: {
-      address: '',
-      country: '',
-    },
-    ubos: [],
-    documents: {
-      registrationCertificate: '',
-      addressProof: '',
-    },
-  },
+  currentView: 'personalInformation',
   shared: {},
   completionMap: {},
+  flowData: {},
 };

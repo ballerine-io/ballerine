@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { kycDynamicExample } from './kyc-dynamic-process-example';
+import { env } from '../../src/env';
 
 export const kybParentDynamicExample = {
   id: 'dynamic_kyb_parent_example',
@@ -60,7 +61,7 @@ export const kybParentDynamicExample = {
       {
         name: 'open_corporates',
         pluginKind: 'kyb',
-        url: `{secret.KYB_API_URL}/companies`,
+        url: `${env.UNIFIED_API_URL}/companies`,
         method: 'GET',
         stateNames: ['run_kyb_enrichment'],
         successAction: 'KYB_DONE',
@@ -71,10 +72,11 @@ export const kybParentDynamicExample = {
             {
               transformer: 'jmespath',
               mapping: `{
-              countryOfIncorporation: entity.data.countryOfIncorporation,
-              companyNumber: entity.data.registrationNumber,
-              vendor: 'open-corporates'
-              }`, // jmespath
+                countryOfIncorporation: entity.data.countryOfIncorporation,
+                companyNumber: entity.data.registrationNumber,
+                state: entity.data.additionalInfo.company.state
+                vendor: 'open-corporates'
+                }`, // jmespath
             },
           ],
         },

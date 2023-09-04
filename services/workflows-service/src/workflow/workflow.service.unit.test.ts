@@ -87,6 +87,7 @@ function buildDocument(category, status) {
 describe('WorkflowService', () => {
   let service;
   let workflowRuntimeDataRepo;
+  let projectScopeService;
   let businessRepo;
   let endUserRepo;
   let entityRepo;
@@ -150,12 +151,14 @@ describe('WorkflowService', () => {
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
       endUserRepo,
+      {} as any,
       businessRepo,
       entityRepo,
       {} as any,
       {} as any,
       eventEmitter as any,
       testingModule.get(AppLoggerService),
+      projectScopeService,
     );
   });
 

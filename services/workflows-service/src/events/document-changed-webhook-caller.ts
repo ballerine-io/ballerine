@@ -80,6 +80,7 @@ export class DocumentChangedWebhookCaller {
       this.configService.get('NODE_ENV'),
       this.configService.get('WEBHOOK_URL'),
       this.configService.get('WEBHOOK_SECRET'),
+      'workflow.context.document.changed',
     );
 
     if (!url) {

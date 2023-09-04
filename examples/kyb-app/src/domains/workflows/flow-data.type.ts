@@ -1,21 +1,22 @@
 import { ViewsData } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository/types';
+import { AnyObject } from '@ballerine/ui';
 
 export interface PersonalInformationContext {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  companyName: string;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  title: string;
+  birthDate: string;
+  phoneNumber: string;
+  companyCheck: boolean;
 }
 
 export interface DocumentsContext {
   registrationCertificate: string;
   addressProof: string;
-}
-
-export interface BusinessInformationContext {
-  registrationNumber: string;
-  website: string;
+  bankStatement: string;
+  companyStructure: string;
 }
 
 export interface BusinessAddressContext {
@@ -24,21 +25,23 @@ export interface BusinessAddressContext {
 }
 
 export interface UBOSContext {
-  firstName: string;
-  lastName: string;
-  email: string;
+  check: boolean;
+  shareholders: {
+    name: {
+      firstName: string;
+      lastName: string;
+    };
+    title: string;
+    birthDate: string;
+    email: string;
+  }[];
 }
 
 export interface WorkflowFlowData extends ViewsData {
   shared: {
     endUserId?: string;
     businessId?: string;
+    workflowId?: string;
   };
-  flowData: {
-    personalInformation: PersonalInformationContext | null;
-    businessInformation: BusinessInformationContext | null;
-    businessAddress: BusinessAddressContext | null;
-    documents: DocumentsContext | null;
-    ubos: UBOSContext[] | null;
-  };
+  flowData: AnyObject;
 }

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { env } from '../../src/env';
 
 export const kycDynamicExample = {
   id: 'dynamic_kyc_example',
@@ -48,7 +49,7 @@ export const kycDynamicExample = {
       {
         name: 'request_kyc',
         pluginKind: 'kyc',
-        url: `{secret.KYC_API_URL}/individual-verifications`,
+        url: `${env.UNIFIED_API_URL}/individual-verifications`,
         method: 'POST',
         stateNames: ['run_kyc'],
         successAction: 'PENDING_KYC',

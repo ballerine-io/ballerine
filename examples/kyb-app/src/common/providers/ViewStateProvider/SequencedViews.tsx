@@ -1,6 +1,6 @@
 import { stateContext } from './state.context';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnyChildren, AnyObject } from '@ballerine/ui';
+import { AnyChildren, AnyObject, InputsWarnings } from '@ballerine/ui';
 import { View, ViewStateContext } from '@app/common/providers/ViewStateProvider/types';
 import { ViewResolver } from '@app/common/providers/ViewStateProvider/components/ViewResolver';
 import { useStepper } from '@app/common/hooks/useStepper';
@@ -9,31 +9,34 @@ import { getInitialStepIndexFromContext } from '@app/common/providers/ViewStateP
 import { convertViewsToPaths } from '@app/common/providers/ViewStateProvider/utils/convertViewsToPaths';
 import { ViewsData } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository/types';
 import { useViewsDataRepository } from '@app/common/providers/ViewStateProvider/hooks/useViewsDataRepository';
-import { InputsWarnings } from '@app/common/components/organisms/DynamicForm';
 
 const { Provider } = stateContext;
 interface Props<TContext extends ViewsData> {
   views: View[];
-  viewWrapper: React.ComponentType<{ children: AnyChildren }>;
+  globalWrapper: React.ComponentType<{ children: AnyChildren }>;
   initialContext?: TContext;
   warnings?: InputsWarnings;
+  isLoading?: boolean;
   afterUpdate?: (viewsData: AnyObject) => void;
+  afterTransition?: (viewsData: AnyObject) => void;
   onViewChange?: (context: TContext, viewKey: string) => void;
   onFinish?: (context: TContext) => void;
 }
 
 export function SequencedViews<TContext extends ViewsData>({
-  views,
+  views: originViews,
   initialContext,
-  viewWrapper,
+  globalWrapper,
   warnings,
+  isLoading = false,
   onViewChange,
   afterUpdate,
+  afterTransition,
   onFinish,
 }: Props<TContext>) {
-  const ViewWrapperComponent = viewWrapper;
-
   const [isFinished, setFinished] = useState(false);
+  const [views, setViews] = useState(originViews);
+
   const paths = useMemo(() => convertViewsToPaths(views), [views]);
 
   const initialSteps = useMemo(() => convertViewsToSteps(views), [views]);
@@ -48,10 +51,20 @@ export function SequencedViews<TContext extends ViewsData>({
   const { steps, currentStep, nextStep, prevStep, completeCurrent } = useStepper(initialSteps, {
     initialStepIndex: initialStep,
   });
+  const currentView = useMemo(
+    () => views.find(view => view.key === currentStep.dataAlias) || null,
+    [currentStep],
+  );
 
-  const { data: viewsData, update: _update } = useViewsDataRepository(initialContext);
+  const { data: viewsData, update: _update, setData } = useViewsDataRepository(initialContext);
 
   const contextRef = useRef(viewsData);
+
+  const ViewWrapperComponent = useMemo(() => {
+    const currentView = views.find(view => view.key === currentStep.dataAlias);
+
+    return currentView.disableWrapper ? null : globalWrapper;
+  }, [views, currentStep, globalWrapper]);
 
   useEffect(() => {
     contextRef.current = viewsData;
@@ -87,8 +100,9 @@ export function SequencedViews<TContext extends ViewsData>({
     async (payload: Partial<TContext['flowData']>, shared?: object): Promise<TContext> => {
       const savedData = await save(payload, shared);
       completeCurrent();
-      nextStep();
+      const step = nextStep();
 
+      afterTransition && afterTransition({ ...savedData, currentView: step.dataAlias });
       return savedData;
     },
     [save, nextStep, completeCurrent],
@@ -109,16 +123,21 @@ export function SequencedViews<TContext extends ViewsData>({
       steps: steps,
       stepper: {
         currentStep: currentStep.index + 1,
-        totalSteps: steps.length,
+        totalSteps: steps.filter(step => !step.hidden).length,
       },
       warnings,
       isFinished,
+      views,
+      isLoading,
+      activeView: currentView,
       finish,
       update,
+      updateViews: setViews,
       save,
       saveAndPerformTransition,
       next: nextStep,
       prev: prevStep,
+      setData,
     };
 
     return ctx;
@@ -128,6 +147,10 @@ export function SequencedViews<TContext extends ViewsData>({
     steps,
     warnings,
     isFinished,
+    isLoading,
+    views,
+    currentView,
+    setData,
     update,
     save,
     nextStep,
@@ -138,9 +161,13 @@ export function SequencedViews<TContext extends ViewsData>({
 
   return (
     <Provider value={context}>
-      <ViewWrapperComponent>
+      {ViewWrapperComponent ? (
+        <ViewWrapperComponent>
+          <ViewResolver paths={paths} />
+        </ViewWrapperComponent>
+      ) : (
         <ViewResolver paths={paths} />
-      </ViewWrapperComponent>
+      )}
     </Provider>
   );
 }
