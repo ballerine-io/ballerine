@@ -37,7 +37,6 @@ export class HookCallbackHandlerService {
         data,
         workflowRuntime,
         resultDestinationPath,
-        projectIds,
         currentProjectId,
       );
     }
@@ -57,7 +56,6 @@ export class HookCallbackHandlerService {
     data: AnyRecord,
     workflowRuntime: WorkflowRuntimeData,
     resultDestinationPath: string,
-    proejctIds: TProjectIds,
     currentProjectId: TProjectId,
   ) {
     const attributePath = resultDestinationPath.split('.');
