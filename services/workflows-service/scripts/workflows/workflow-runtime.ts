@@ -376,7 +376,7 @@ export const createKycRuntime = ({
             url: faker.internet.url(),
           },
         },
-        vendor: 'test',
+        vendor: 'veriff',
       },
     },
   },
