@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.5.25
+
+### Patch Changes
+
+- c2a13806: Added StateTags
+
 ## 0.5.23
 
 ### Patch Changes
