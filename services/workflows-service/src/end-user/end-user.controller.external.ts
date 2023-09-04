@@ -42,6 +42,7 @@ export class EndUserControllerExternal {
     @common.Body() data: EndUserCreateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<EndUserModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>> {
+    console.log('current project id', currentProjectId);
     return this.service.create(
       {
         data: {

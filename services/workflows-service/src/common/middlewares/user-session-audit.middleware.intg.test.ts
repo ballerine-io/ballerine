@@ -14,6 +14,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { createCustomer } from '@/test/helpers/create-customer';
 import { createProject } from '@/test/helpers/create-project';
 import { ProjectModule } from '@/project/project.module';
+import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 
 @Injectable()
 class FakePasswordService {
@@ -42,6 +43,8 @@ describe('UserSessionAuditMiddleware', () => {
   let project: Project;
 
   beforeEach(async () => {
+    await cleanupDatabase();
+
     app = await Test.createTestingModule({
       imports: [PrismaModule, ProjectModule, ...commonTestingModules],
       providers: [
@@ -58,10 +61,12 @@ describe('UserSessionAuditMiddleware', () => {
     userService = app.get(UserService);
     const prismaService = app.get(PrismaService);
     const customer = await createCustomer(prismaService, String(Date.now()), 'secret', '');
-    project = await createProject(prismaService, customer, String(Date.now()));
+    project = await createProject(prismaService, customer, '1');
 
     callback = jest.fn(() => null);
   });
+
+  afterEach(tearDownDatabase);
 
   describe('when request not includes session and user', () => {
     it('will call callback', async () => {
@@ -74,11 +79,11 @@ describe('UserSessionAuditMiddleware', () => {
   describe('when session and user in request', () => {
     describe('when lastActiveAt unset', () => {
       beforeEach(async () => {
-        testUser = await app.get(UserService).create({ data: testUserPayload as any }, project.id);
+        testUser = await app.get(UserService).create({ data: testUserPayload as any });
       });
 
       afterEach(async () => {
-        await app.get(UserService).deleteById(testUser.id, {}, [project.id]);
+        await app.get(UserService).deleteById(testUser.id, {});
       });
 
       it('will be set on middleware call', async () => {
@@ -97,11 +102,11 @@ describe('UserSessionAuditMiddleware', () => {
 
     describe('when lastActiveAt is set', () => {
       beforeEach(async () => {
-        testUser = await app.get(UserService).create({ data: testUserPayload as any }, project.id);
+        testUser = await app.get(UserService).create({ data: testUserPayload as any });
       });
 
       afterEach(async () => {
-        await app.get(UserService).deleteById(testUser.id, {}, [project.id]);
+        await app.get(UserService).deleteById(testUser.id, {});
       });
 
       it('will not be changed when lastActiveAt not expired', async () => {

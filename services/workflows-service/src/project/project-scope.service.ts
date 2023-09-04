@@ -136,11 +136,15 @@ export class ProjectScopeService {
     args.where = {
       // @ts-expect-error - dynamically typed for all queries
       ...args.where,
-      project: {
-        id: {
-          in: projectIds,
-        },
-      },
+      ...(projectIds
+        ? {
+            project: {
+              id: {
+                in: projectIds,
+              },
+            },
+          }
+        : {}),
     };
     return args;
   }

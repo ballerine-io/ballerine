@@ -16,7 +16,7 @@ export class UserRepository {
 
   async create<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>,
-    projectId: TProjectId,
+    projectId?: TProjectId,
   ): Promise<User> {
     return this.prisma.user.create<T>(
       this.scopeService.scopeCreate(
@@ -108,7 +108,7 @@ export class UserRepository {
   async deleteById<T extends Omit<Prisma.UserDeleteArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.UserDeleteArgs, 'where'>>,
-    projectIds: TProjectIds,
+    projectIds?: TProjectIds,
   ): Promise<User> {
     return this.prisma.user.delete(
       this.scopeService.scopeDelete(

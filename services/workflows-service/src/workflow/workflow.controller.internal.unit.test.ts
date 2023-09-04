@@ -141,7 +141,7 @@ describe('WorkflowControllerInternal', () => {
           data: initialRuntimeData,
         });
 
-        await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(2));
+        await controller.createWorkflowDefinition(buildWorkflowDeifintion(2));
         await controller.event({ id: '2' }, { name: 'COMPLETE' });
 
         const runtimeData = await workflowRuntimeDataRepo.findById('2');

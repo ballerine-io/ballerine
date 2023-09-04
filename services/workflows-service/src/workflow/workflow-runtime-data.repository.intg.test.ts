@@ -32,6 +32,8 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
   // afterEach(tearDownDatabase);
 
   beforeAll(async () => {
+    await cleanupDatabase();
+
     const servicesProviders = [
       EndUserRepository,
       EndUserService,
@@ -67,9 +69,15 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       PrismaModule,
     ])) as unknown as PrismaService;
 
-    const customer = await createCustomer(prismaService, String(Date.now()), 'secret', '');
-    project = await createProject(prismaService, customer, String(Date.now()));
+    const customer = await createCustomer(prismaService, '1', 'secret', '');
+    project = await createProject(prismaService, customer, '1');
   });
+
+  afterAll(async () => {
+    await cleanupDatabase();
+    await tearDownDatabase();
+  });
+
   describe('Workflow Runtime Data Repository: Jsonb Merge', () => {
     beforeAll(async () => {
       await workflowDefinitionRepository.create({

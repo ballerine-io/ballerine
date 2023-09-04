@@ -30,9 +30,11 @@ describe('#EndUserControllerExternal', () => {
   let endUserService: EndUserService;
   let project: Project;
   beforeAll(cleanupDatabase);
-  afterAll(tearDownDatabase);
+  afterEach(tearDownDatabase);
 
   beforeAll(async () => {
+    await cleanupDatabase();
+
     const servicesProviders = [
       EndUserRepository,
       EntityRepository,
@@ -72,7 +74,7 @@ describe('#EndUserControllerExternal', () => {
       'secret',
       '',
     );
-    project = await createProject(await app.get(PrismaService), customer, String(Date.now()));
+    project = await createProject(await app.get(PrismaService), customer, '1');
   });
 
   describe('POST /end-user', () => {
@@ -91,8 +93,9 @@ describe('#EndUserControllerExternal', () => {
         .set('authorization', 'Bearer secret');
 
       expect(response.status).toBe(201);
-      const allEndUsers = await endUserService.list({}, [project.id]);
-      expect(allEndUsers[0]).toMatchObject({
+
+      const createdUser = await endUserService.getById(response.body.id, {}, [project.id]);
+      expect(createdUser).toMatchObject({
         firstName: 'test',
         lastName: 'lastName',
       });

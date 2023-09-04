@@ -12,7 +12,7 @@ export class UserService {
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
-  async create(args: Parameters<UserRepository['create']>[0], projectId: TProjectId) {
+  async create(args: Parameters<UserRepository['create']>[0], projectId?: TProjectId) {
     return await this.repository.create(
       {
         ...args,
@@ -61,7 +61,7 @@ export class UserService {
   async deleteById(
     id: string,
     args: Parameters<UserRepository['deleteById']>[1],
-    projectIds: TProjectIds,
+    projectIds?: TProjectIds,
   ) {
     return this.repository.deleteById(id, args, projectIds);
   }
