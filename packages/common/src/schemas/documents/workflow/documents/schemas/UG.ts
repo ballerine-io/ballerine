@@ -13,6 +13,7 @@ export const getUgandaDocuments = (): TDocument[] => {
       enum: values,
     });
   const TypeStringAtLeastOneWord = Type.String({ minLength: 1 });
+  const TypeUgandaMobileNumber = Type.String({ pattern: '^256[0-9]{9}$' });
 
   return [
     // Proof of Registration
@@ -82,7 +83,7 @@ export const getUgandaDocuments = (): TDocument[] => {
         dateOfStatement: Type.String({ format: 'date-time' }),
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
-        mobileNumber: Type.String({ pattern: '^233[0-9]{9}$' }),
+        mobileNumber: TypeUgandaMobileNumber,
         accountHolderName: TypeStringAtLeastOneWord,
       }),
     },
@@ -95,7 +96,7 @@ export const getUgandaDocuments = (): TDocument[] => {
       propertiesSchema: Type.Object({
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
-        mobileNumber: Type.String({ pattern: '^233[0-9]{9}$' }),
+        mobileNumber: TypeUgandaMobileNumber,
         accountHolderName: TypeStringAtLeastOneWord,
       }),
     },
