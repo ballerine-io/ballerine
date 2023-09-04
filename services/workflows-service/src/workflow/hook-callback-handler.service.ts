@@ -159,7 +159,7 @@ export class HookCallbackHandlerService {
       documentImages.push({
         uri: tmpFile,
         provider: 'base64',
-        type: 'png',
+        type: 'image/png',
         metadata: {
           side: image.context?.replace('document-', ''),
         },
