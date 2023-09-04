@@ -6,10 +6,17 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as tmp from 'tmp';
 import fs from 'fs';
+import { CustomerService } from '@/customer/customer.service';
 import { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class HookCallbackHandlerService {
+  constructor(
+    protected readonly workflowService: WorkflowService,
+    protected readonly customerService: CustomerService,
+    private readonly logger: AppLoggerService,
+  ) {}
+
   async handleHookResponse({
     workflowRuntime,
     data,
@@ -30,7 +37,6 @@ export class HookCallbackHandlerService {
         data,
         workflowRuntime,
         resultDestinationPath,
-        projectIds,
         currentProjectId,
       );
     }
@@ -46,17 +52,10 @@ export class HookCallbackHandlerService {
 
     return data;
   }
-
-  constructor(
-    protected readonly workflowService: WorkflowService,
-    private readonly logger: AppLoggerService,
-  ) {}
-
   async mapCallbackDataToIndividual(
     data: AnyRecord,
     workflowRuntime: WorkflowRuntimeData,
     resultDestinationPath: string,
-    proejctIds: TProjectIds,
     currentProjectId: TProjectId,
   ) {
     const attributePath = resultDestinationPath.split('.');
@@ -69,11 +68,13 @@ export class HookCallbackHandlerService {
     const decision = this.formatDecision(data);
     const documentCategory = kycDocument.type as string;
     const documents = this.formatDocuments(documentCategory, pages, issuer, documentProperties);
+    const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = (
       await this.workflowService.copyFileAndCreate(
         { documents: documents } as DefaultContextSchema,
         context.entity.id,
         currentProjectId,
+        customer.name,
       )
     ).documents;
 

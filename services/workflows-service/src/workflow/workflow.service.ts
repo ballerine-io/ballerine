@@ -81,6 +81,7 @@ import {
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { GetLastActiveFlowParams } from '@/workflow/types/params';
+import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 
 type TEntityId = string;
@@ -130,6 +131,7 @@ export class WorkflowService {
     protected readonly endUserService: EndUserService,
     protected readonly businessRepository: BusinessRepository,
     protected readonly entityRepository: EntityRepository,
+    protected readonly customerService: CustomerService,
     protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
@@ -1292,7 +1294,7 @@ export class WorkflowService {
       currentProjectId,
     );
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
-
+    const customer = await this.customerService.getByProjectId(projectIds![0]!);
     const existingWorkflowRuntimeData =
       await this.workflowRuntimeDataRepository.findActiveWorkflowByEntity(
         {
@@ -1314,7 +1316,12 @@ export class WorkflowService {
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
     if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
-      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId, currentProjectId);
+      contextToInsert = await this.copyFileAndCreate(
+        contextToInsert,
+        entityId,
+        currentProjectId,
+        customer.name,
+      );
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
         {
           data: {
@@ -1342,7 +1349,12 @@ export class WorkflowService {
         context.documents,
       );
 
-      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId, currentProjectId);
+      contextToInsert = await this.copyFileAndCreate(
+        contextToInsert,
+        entityId,
+        currentProjectId,
+        customer.name,
+      );
       workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
         existingWorkflowRuntimeData.id,
         {
@@ -1380,13 +1392,14 @@ export class WorkflowService {
     context: DefaultContextSchema,
     entityId: TEntityId,
     projectId: TProjectId,
+    customerName: string,
   ): Promise<DefaultContextSchema> {
     if (!context?.documents?.length) return context;
 
     const documentsWithPersistedImages = await Promise.all(
       context?.documents?.map(async document => ({
         ...document,
-        pages: await this.__persistDocumentPagesFiles(document, entityId, projectId),
+        pages: await this.__persistDocumentPagesFiles(document, entityId, projectId, customerName),
       })),
     );
 
@@ -1396,16 +1409,18 @@ export class WorkflowService {
     document: DefaultContextSchema['documents'][number],
     entityId: string,
     projectId: TProjectId,
+    customerName: string,
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
         const ballerineFileId =
           documentPage.ballerineFileId ||
-          (await this.__copyFileToDestinationAndCraeteFile(
+          (await this.__copyFileToDestinationAndCreateFile(
             document,
             entityId,
             documentPage,
             projectId,
+            customerName,
           ));
 
         return { ...documentPage, ballerineFileId };
@@ -1413,24 +1428,26 @@ export class WorkflowService {
     );
   }
 
-  private async __copyFileToDestinationAndCraeteFile(
+  private async __copyFileToDestinationAndCreateFile(
     document: DefaultContextSchema['documents'][number],
     entityId: string,
     documentPage: TDefaultSchemaDocumentPage,
     projectId: TProjectId,
+    customerName: string,
   ) {
     const remoteFileName = `${document.id!}_${crypto.randomUUID()}.${documentPage.type}`;
 
     const { fromServiceProvider, fromRemoteFileConfig } =
       this.__fetchFromServiceProviders(documentPage);
     const { toServiceProvider, toRemoteFileConfig, remoteFileNameInDirectory } =
-      this.__fetchToServiceProviders(entityId, remoteFileName);
-    const { fileNameInBucket } = await this.fileService.copyFileFromSourceToDestination(
-      fromServiceProvider,
-      fromRemoteFileConfig,
-      toServiceProvider,
-      toRemoteFileConfig,
-    );
+      this.__fetchToServiceProviders(entityId, customerName, remoteFileName);
+    const { remoteFilePath, fileNameInBucket } =
+      await this.fileService.copyFileFromSourceToDestination(
+        fromServiceProvider,
+        fromRemoteFileConfig,
+        toServiceProvider,
+        toRemoteFileConfig,
+      );
     const userId = entityId;
     const ballerineFileId = await this.storageService.createFileLink({
       uri: remoteFileNameInDirectory,
@@ -1836,6 +1853,7 @@ export class WorkflowService {
   private __fetchToServiceProviders(
     entityId: string,
     fileName: string,
+    customerName: string,
   ): {
     toServiceProvider: TFileServiceProvider;
     toRemoteFileConfig: TRemoteFileConfig;
@@ -1844,7 +1862,11 @@ export class WorkflowService {
     if (this.__fetchBucketName(process.env, false)) {
       const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
       const awsFileService = new AwsS3FileService(s3ClientConfig);
-      const remoteFileNameInDocument = awsFileService.generateRemoteFilePath(fileName, entityId);
+      const remoteFileNameInDocument = awsFileService.generateRemoteFilePath({
+        fileName,
+        customerName,
+        directory: entityId,
+      });
       const awsConfigForClient = this.__fetchAwsConfigFor(remoteFileNameInDocument);
       return {
         toServiceProvider: awsFileService,
@@ -1854,7 +1876,7 @@ export class WorkflowService {
     }
 
     const localFileService = new LocalFileService();
-    const toFileStoragePath = localFileService.generateRemoteFilePath(fileName);
+    const toFileStoragePath = localFileService.generateRemoteFilePath({ fileName, customerName });
     return {
       toServiceProvider: localFileService,
       toRemoteFileConfig: toFileStoragePath,

@@ -19,9 +19,10 @@ import { HttpModule } from '@nestjs/axios';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { EndUserService } from '@/end-user/end-user.service';
 import { ProjectModule } from '@/project/project.module';
+import { CustomerModule } from '@/customer/customer.module';
 
 @Module({
-  imports: [HttpModule, AppLoggerModule, ProjectModule],
+  imports: [HttpModule, AppLoggerModule, ProjectModule, CustomerModule],
   controllers: [BusinessControllerInternal, BusinessControllerExternal],
   providers: [
     BusinessRepository,
