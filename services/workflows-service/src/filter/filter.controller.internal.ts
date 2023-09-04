@@ -12,7 +12,6 @@ import { FilterWhereUniqueInput } from '@/filter/dtos/filter-where-unique-input'
 import { FilterService } from '@/filter/filter.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
-import { ProjectScopeService } from '@/project/project-scope.service';
 
 @swagger.ApiTags('internal/filters')
 @common.Controller('internal/filters')
@@ -21,7 +20,6 @@ export class FilterControllerInternal {
     protected readonly service: FilterService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-    protected readonly scopeService: ProjectScopeService,
   ) {}
 
   @common.Get()
@@ -33,7 +31,7 @@ export class FilterControllerInternal {
     @common.Req() request: Request,
   ): Promise<FilterModel[]> {
     const args = plainToClass(FilterFindManyArgs, request.query);
-    return this.service.list(this.scopeService.scopeFindMany(args, projectIds));
+    return this.service.list(args, projectIds);
   }
 
   @common.Get(':id')
@@ -45,7 +43,7 @@ export class FilterControllerInternal {
     @common.Param() params: FilterWhereUniqueInput,
   ): Promise<FilterModel | null> {
     try {
-      return await this.service.getById(params.id, this.scopeService.scopeFindOne({}, projectIds));
+      return await this.service.getById(params.id, {}, projectIds);
     } catch (err) {
       if (isRecordNotFoundError(err)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

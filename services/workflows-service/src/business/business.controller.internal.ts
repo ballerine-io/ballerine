@@ -37,13 +37,11 @@ export class BusinessControllerInternal {
     const query: JsonValue = {};
 
     return this.service.list(
-      this.projectScopeService.scopeFindMany(
-        {
-          ...args,
-          ...(query as InputJsonValue),
-        },
-        projectIds,
-      ),
+      {
+        ...args,
+        ...(query as InputJsonValue),
+      },
+      projectIds,
     );
   }
 
@@ -51,9 +49,12 @@ export class BusinessControllerInternal {
   @swagger.ApiOkResponse({ type: BusinessModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  async getById(@common.Param() params: BusinessWhereUniqueInput): Promise<BusinessModel | null> {
+  async getById(
+    @common.Param() params: BusinessWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<BusinessModel | null> {
     try {
-      return await this.service.getById(params?.id);
+      return await this.service.getById(params?.id, {}, projectIds);
     } catch (err) {
       if (isRecordNotFoundError(err)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

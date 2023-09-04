@@ -5,7 +5,7 @@ import { IStreamableFileProvider } from './types/interfaces';
 import { TFileServiceProvider } from './types';
 import { getDocumentId, isErrorWithMessage } from '@ballerine/common';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import crypto from 'crypto';
 import { isType } from '@/common/is-type/is-type';
 import { z } from 'zod';
@@ -195,6 +195,7 @@ export class FileService {
    */
   private __fetchTargetServiceProviders(
     entityId: string,
+    customerName: string,
     fileName: string,
   ): {
     targetServiceProvider: TFileServiceProvider;
@@ -204,7 +205,11 @@ export class FileService {
     if (this.__fetchBucketName(process.env, false)) {
       const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
       const awsFileService = new AwsS3FileService(s3ClientConfig);
-      const remoteFileNameInDocument = awsFileService.generateRemotePath(fileName, entityId);
+      const remoteFileNameInDocument = awsFileService.generateRemotePath({
+        customerName,
+        fileName,
+        directory: entityId,
+      });
       const awsConfigForClient = this.__fetchAwsConfigForFileNameInBucket(remoteFileNameInDocument);
 
       return {
@@ -215,7 +220,7 @@ export class FileService {
     }
 
     const localFileService = new LocalFileService();
-    const toFileStoragePath = localFileService.generateRemotePath(fileName);
+    const toFileStoragePath = localFileService.generateRemotePath({ customerName, fileName });
 
     return {
       targetServiceProvider: localFileService,
@@ -228,7 +233,8 @@ export class FileService {
     document: TDocumentWithoutPageType,
     entityId: string,
     documentPage: TDocumentWithoutPageType['pages'][number],
-    projectIds: TProjectIds,
+    projectId: TProjectId,
+    customerName: string,
   ) {
     const remoteFileName = `${
       document.id! || getDocumentId(document, false)
@@ -236,7 +242,7 @@ export class FileService {
     const { sourceServiceProvider, sourceRemoteFileConfig } =
       this.__fetchSourceServiceProviders(documentPage);
     const { targetServiceProvider, targetRemoteFileConfig, remoteFileNameInDirectory } =
-      this.__fetchTargetServiceProviders(entityId, remoteFileName);
+      this.__fetchTargetServiceProviders(entityId, customerName, remoteFileName);
     const fileInfo = await this.copyFromSourceToDestination(
       sourceServiceProvider,
       sourceRemoteFileConfig,
@@ -253,7 +259,7 @@ export class FileService {
       fileNameOnDisk: remoteFileNameInDirectory,
       userId: entityId,
       fileNameInBucket: isFileInfoWithFileNameInBucket ? fileInfo?.fileNameInBucket : undefined,
-      projectIds,
+      projectId,
       mimeType: fileInfo?.mimeType,
     });
 

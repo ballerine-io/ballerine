@@ -4,12 +4,17 @@ import { PrismaModule } from '@/prisma/prisma.module';
 import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@prisma/client';
+import { Project, User } from '@prisma/client';
 import { Request, Response } from 'express';
 import dayjs from 'dayjs';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { Injectable } from '@nestjs/common';
 import { PasswordService } from '@/auth/password/password.service';
+import { PrismaService } from 'nestjs-prisma';
+import { createCustomer } from '@/test/helpers/create-customer';
+import { createProject } from '@/test/helpers/create-project';
+import { ProjectModule } from '@/project/project.module';
+import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 
 @Injectable()
 class FakePasswordService {
@@ -35,10 +40,13 @@ describe('UserSessionAuditMiddleware', () => {
   let middleware: UserSessionAuditMiddleware;
   let userService: UserService;
   let callback: jest.Mock;
+  let project: Project;
 
   beforeEach(async () => {
+    await cleanupDatabase();
+
     app = await Test.createTestingModule({
-      imports: [PrismaModule, ...commonTestingModules],
+      imports: [PrismaModule, ProjectModule, ...commonTestingModules],
       providers: [
         {
           provide: PasswordService,
@@ -46,12 +54,19 @@ describe('UserSessionAuditMiddleware', () => {
         },
         UserService,
         UserRepository,
+        PrismaService,
       ],
     }).compile();
     middleware = new UserSessionAuditMiddleware(app.get(AppLoggerService), app.get(UserService));
     userService = app.get(UserService);
+    const prismaService = app.get(PrismaService);
+    const customer = await createCustomer(prismaService, String(Date.now()), 'secret', '');
+    project = await createProject(prismaService, customer, '1');
+
     callback = jest.fn(() => null);
   });
+
+  afterEach(tearDownDatabase);
 
   describe('when request not includes session and user', () => {
     it('will call callback', async () => {
@@ -68,7 +83,7 @@ describe('UserSessionAuditMiddleware', () => {
       });
 
       afterEach(async () => {
-        await app.get(UserService).deleteById(testUser.id);
+        await app.get(UserService).deleteById(testUser.id, {});
       });
 
       it('will be set on middleware call', async () => {
@@ -78,7 +93,7 @@ describe('UserSessionAuditMiddleware', () => {
           callback,
         );
 
-        const updatedUser = await app.get(UserService).getByIdUnscoped(testUser.id);
+        const updatedUser = await app.get(UserService).getByIdUnscoped(testUser.id, {});
 
         expect(updatedUser.lastActiveAt).toBeTruthy();
         expect(callback).toHaveBeenCalledTimes(1);
@@ -91,7 +106,7 @@ describe('UserSessionAuditMiddleware', () => {
       });
 
       afterEach(async () => {
-        await app.get(UserService).deleteById(testUser.id);
+        await app.get(UserService).deleteById(testUser.id, {});
       });
 
       it('will not be changed when lastActiveAt not expired', async () => {
@@ -99,7 +114,7 @@ describe('UserSessionAuditMiddleware', () => {
           .subtract(middleware.UPDATE_INTERVAL - 10, 'ms')
           .toISOString();
 
-        testUser = await userService.updateByIdUnscoped(testUser.id, {
+        testUser = await userService.updateById(testUser.id, {
           data: { lastActiveAt: nonExpiredDateString },
         });
 
@@ -109,7 +124,7 @@ describe('UserSessionAuditMiddleware', () => {
           callback,
         );
 
-        const user = await userService.getByIdUnscoped(testUser.id);
+        const user = await userService.getByIdUnscoped(testUser.id, {});
 
         expect(user.lastActiveAt?.toISOString()).toBe(nonExpiredDateString);
         expect(callback).toBeCalledTimes(1);
