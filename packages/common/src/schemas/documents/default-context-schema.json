@@ -149,7 +149,7 @@
                   "format": "uri"
                 },
                 "type": {
-                  "enum": ["application/pdf", "image/png", "image/jpg"]
+                  "enum": ["pdf", "png", "jpg"]
                 },
                 "data": {
                   "type": "string"
