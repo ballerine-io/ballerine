@@ -1,5 +1,6 @@
 export interface IDetailsProps {
   id: string;
+  hideSeparator?: boolean;
   value: {
     id: string;
     title: string;
