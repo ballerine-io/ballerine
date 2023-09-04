@@ -66,7 +66,16 @@ export class HttpFileService implements IStreamableFileProvider {
     throw new Error('Unable to use upload to uri client');
   }
 
-  generateRemoteFilePath(fileName: string, directory?: string): string {
+  generateRemoteFilePath(
+    {
+      fileName,
+      customerName,
+      directory,
+    }: {
+      fileName: string;
+      customerName: string;
+      directory?: string;
+    }): string {
     throw new Error('Unable to use upload to uri client');
   }
 }
