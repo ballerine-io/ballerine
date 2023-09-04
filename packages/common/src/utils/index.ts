@@ -17,4 +17,3 @@ export { raise } from './raise';
 export { log } from './log';
 export { dump } from './dump';
 export { type IErrorWithMessage } from './is-error-with-message';
-export { verifySignature } from './verify-signature';
