@@ -10,10 +10,8 @@ import { GetFlowConfigurationDto } from '@/collection-flow/dto/get-flow-configur
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
-import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
-import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
-import { Request } from 'express';
+import { TProjectId, TProjectIds } from '@/types';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @common.Controller('collection-flow')
 export class ColectionFlowController {
@@ -25,9 +23,9 @@ export class ColectionFlowController {
   @common.Post('/authorize')
   async authorizeUser(
     @common.Body() dto: AuthorizeDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<EndUser> {
-    return this.service.authorize({ email: dto.email, flowType: dto.flowType }, projectIds);
+    return this.service.authorize({ email: dto.email, flowType: dto.flowType }, currentProjectId);
   }
 
   @common.Get('/active-flow')
@@ -59,16 +57,24 @@ export class ColectionFlowController {
   @common.Get('/configuration')
   async getFlowConfiguration(
     @common.Query() query: GetFlowConfigurationDto,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<FlowConfigurationModel> {
-    return this.service.getFlowConfiguration(query.flowType);
+    return this.service.getFlowConfiguration(query.flowType, projectIds);
   }
 
   @common.Put('/configuration/:configurationId')
   async updateFlowConfiguration(
     @common.Param('configurationId') configurationId: string,
     @common.Body() dto: UpdateConfigurationDto,
+    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
-    return this.service.updateFlowConfiguration(configurationId, dto.steps);
+    return this.service.updateFlowConfiguration(
+      configurationId,
+      dto.steps,
+      projectIds,
+      currentProjectId,
+    );
   }
 
   @common.Put('/:flowId')
@@ -76,7 +82,7 @@ export class ColectionFlowController {
     @common.Param('flowId') flowId: string,
     @common.Body() dto: UpdateFlowDto,
     @common.Request() request: any,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
     try {
       const adapter = this.adapterManager.getAdapter(dto.flowType);
@@ -85,7 +91,7 @@ export class ColectionFlowController {
         adapter,
         dto.payload,
         flowId,
-        projectIds,
+        currentProjectId,
         request.user.customer as Customer,
       );
     } catch (error) {
@@ -98,15 +104,20 @@ export class ColectionFlowController {
   }
 
   @common.Post('finish/:flowId')
-  async finishFlow(@common.Param('flowId') flowId: string, @ProjectIds() projectIds: TProjectIds) {
-    return this.service.finishFlow(flowId, projectIds);
+  async finishFlow(
+    @common.Param('flowId') flowId: string,
+    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    return this.service.finishFlow(flowId, projectIds, currentProjectId);
   }
 
   @common.Post('resubmit/:flowId')
   async resubmitFlow(
     @common.Param('flowId') flowId: string,
     @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
-    return this.service.resubmitFlow(flowId, projectIds);
+    return this.service.resubmitFlow(flowId, projectIds, currentProjectId);
   }
 }
