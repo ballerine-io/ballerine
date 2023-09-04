@@ -49,9 +49,9 @@ export class EndUserRepository {
     );
   }
 
-  async findByCorrelationIdUnscoped<T extends Omit<Prisma.EndUserFindFirstOrThrowArgs, 'where'>>(
+  async findByCorrelationIdUnscoped<T extends Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindFirstOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>,
   ) {
     return await this.prisma.endUser.findUnique({
       where: { correlationId: id },
