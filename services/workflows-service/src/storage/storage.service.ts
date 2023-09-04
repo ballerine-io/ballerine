@@ -2,46 +2,40 @@ import { Injectable } from '@nestjs/common';
 import { FileRepository } from './storage.repository';
 import { IFileIds } from './types';
 import { Prisma } from '@prisma/client';
-import { TProjectIds } from '@/types';
-import { ProjectScopeService } from '@/project/project-scope.service';
+import { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class StorageService {
-  constructor(
-    protected readonly fileRepository: FileRepository,
-    protected readonly projectScopeService: ProjectScopeService,
-  ) {}
+  constructor(protected readonly fileRepository: FileRepository) {}
 
   async createFileLink({
     uri,
     fileNameOnDisk,
     userId,
     fileNameInBucket,
-    projectIds,
+    projectId,
   }: Pick<Prisma.FileCreateInput, 'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket'> & {
-    projectIds: TProjectIds;
+    projectId: TProjectId;
   }) {
     const file = await this.fileRepository.create(
-      this.projectScopeService.scopeCreate(
-        {
-          data: {
-            uri,
-            fileNameOnDisk,
-            userId,
-            fileNameInBucket,
-          },
-          select: {
-            id: true,
-          },
+      {
+        data: {
+          uri,
+          fileNameOnDisk,
+          userId,
+          fileNameInBucket,
         },
-        projectIds,
-      ),
+        select: {
+          id: true,
+        },
+      },
+      projectId,
     );
 
     return file.id;
   }
 
-  async getFileNameById({ id }: IFileIds, args?: Prisma.FileFindFirstArgs) {
-    return await this.fileRepository.findById({ id }, args || {});
+  async getFileNameById({ id }: IFileIds, args: Prisma.FileFindFirstArgs, projectIds: TProjectIds) {
+    return await this.fileRepository.findById({ id }, args || {}, projectIds);
   }
 }
