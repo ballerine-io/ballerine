@@ -1,5 +1,4 @@
 FROM node:18.17.1-bullseye-slim as dev
-ENV NODE_ENV=production
 
 RUN apt-get update
 RUN apt-get install dumb-init
@@ -8,7 +7,7 @@ WORKDIR /app
 
 COPY ./package.json .
 
-RUN npm install --production
+RUN npm install
 
 COPY . .
 
