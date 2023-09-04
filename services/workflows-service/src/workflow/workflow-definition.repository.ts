@@ -45,6 +45,19 @@ export class WorkflowDefinitionRepository {
     );
   }
 
+  async findTemplateByIdUnscoped<
+    T extends Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>,
+  >(
+    id: string,
+    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>>,
+    projectId?: string,
+  ): Promise<WorkflowDefinition> {
+    return await this.prisma.workflowDefinition.findFirstOrThrow({
+      where: { id, isPublic: true, projectId: projectId ?? null },
+      ...args,
+    });
+  }
+
   async updateById<T extends Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>,

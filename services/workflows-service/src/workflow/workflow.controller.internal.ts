@@ -37,6 +37,7 @@ import { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
 import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
+import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('internal/workflows')
@@ -58,6 +59,16 @@ export class WorkflowControllerInternal {
     @ProjectIds() projectId: TProjectId,
   ) {
     return await this.service.createWorkflowDefinition(data, projectId);
+  }
+
+  @common.Post('/clone')
+  @swagger.ApiCreatedResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async cloneWorkflowDefinition(
+    @common.Body() data: WorkflowDefinitionCloneDto,
+    @CurrentProject() currentProject: TProjectId,
+  ) {
+    return await this.service.cloneWorkflowDefinition(data, currentProject);
   }
 
   @common.Get()

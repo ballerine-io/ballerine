@@ -81,6 +81,7 @@ import {
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { GetLastActiveFlowParams } from '@/workflow/types/params';
+import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 
 type TEntityId = string;
 
@@ -149,7 +150,39 @@ export class WorkflowService {
       submitStates: true,
       parentRuntimeDataId: true,
     };
+
     return await this.workflowDefinitionRepository.create({ data, select }, projectId);
+  }
+
+  async cloneWorkflowDefinition(data: WorkflowDefinitionCloneDto, projectId: string) {
+    const select = {
+      reviewMachineId: true,
+      name: true,
+      version: true,
+      definitionType: true,
+      definition: true,
+      contextSchema: true,
+      config: true,
+      supportedPlatforms: true,
+      extensions: true,
+      backend: true,
+      persistStates: true,
+      submitStates: true,
+    };
+
+    const workflowDefinition = await this.workflowDefinitionRepository.findTemplateByIdUnscoped(
+      data.id,
+      { select },
+    );
+
+    return await this.workflowDefinitionRepository.create(
+      // @ts-expect-error - types of workflow definition does not propagate to the prisma creation type
+      {
+        data: { ...workflowDefinition, name: data.name, projectId: projectId, isPublic: false },
+        select,
+      },
+      [projectId],
+    );
   }
 
   async getWorkflowRuntimeDataById(
