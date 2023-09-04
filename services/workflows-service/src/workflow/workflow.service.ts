@@ -511,7 +511,9 @@ export class WorkflowService {
     ]);
 
     const result: ListRuntimeDataResult = {
-      results: this.workflowsRuntimeListItemsFactory(workflowsRuntime),
+      results: this.workflowsRuntimeListItemsFactory(
+        workflowsRuntime as unknown as WorkflowRuntimeListQueryResult[],
+      ),
       meta: {
         pages: size ? Math.max(Math.ceil(workflowsRuntimeCount / size)) : 0,
         total: workflowsRuntimeCount,
@@ -1320,7 +1322,6 @@ export class WorkflowService {
       const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
         contextWithoutDocumentPageType?.documents,
         entityId,
-        projectIds,
         currentProjectId,
         customer.name,
       );
@@ -1789,8 +1790,8 @@ export class WorkflowService {
     return parentWorkflowContext;
   }
 
-  async getWorkflowRuntimeDataContext(id: string) {
-    return this.workflowRuntimeDataRepository.findContext(id);
+  async getWorkflowRuntimeDataContext(id: string, projectIds: TProjectIds) {
+    return this.workflowRuntimeDataRepository.findContext(id, projectIds);
   }
 
   async getLastActiveFlow({
@@ -1800,7 +1801,7 @@ export class WorkflowService {
   }: GetLastActiveFlowParams): Promise<WorkflowRuntimeData | null> {
     const endUser = await this.endUserService.getByEmail(email, projectIds);
 
-    if (!endUser || !endUser.businesses.length) return null;
+    if (!endUser || !endUser?.businesses?.length) return null;
 
     const query = {
       endUserId: endUser.id,
@@ -1823,14 +1824,15 @@ export class WorkflowService {
   async copyDocumentsPagesFilesAndCreate(
     documents: TDocumentsWithoutPageType,
     entityId: string,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
+    customerName: string,
   ) {
     if (!documents?.length) return documents;
 
     const documentsWithPersistedImages = await Promise.all(
       documents?.map(async document => ({
         ...document,
-        pages: await this.__persistDocumentPagesFiles(document, entityId, projectIds),
+        pages: await this.__persistDocumentPagesFiles(document, entityId, projectId, customerName),
       })),
     );
 

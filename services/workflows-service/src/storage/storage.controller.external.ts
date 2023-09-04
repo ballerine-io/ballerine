@@ -81,8 +81,8 @@ export class StorageControllerExternal {
       {
         id,
       },
-      {},
       projectIds,
+      {},
     );
 
     if (!persistedFile) {
@@ -105,8 +105,8 @@ export class StorageControllerExternal {
       {
         id,
       },
-      {},
       projectIds,
+      {},
     );
 
     if (!persistedFile) {

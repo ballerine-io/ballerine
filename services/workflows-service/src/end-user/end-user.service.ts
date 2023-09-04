@@ -53,7 +53,10 @@ export class EndUserService {
     return user as any;
   }
 
-  async getByEmail(email: string, projectIds: TProjectIds) {
+  async getByEmail(
+    email: string,
+    projectIds: TProjectIds,
+  ): Promise<(EndUser & { businesses?: Business[] }) | null> {
     return await this.repository.find(
       {
         where: {
