@@ -45,15 +45,14 @@ export class CustomerControllerExternal {
       },
     })) as Customer & { projects: { id: string }[] };
 
-    try {
+    if (projectName == 'demo') {
       await createDemoMockData({
         prismaClient: this.prisma,
         customer: customerCreateModel,
         projects: createdCustomer.projects,
       });
-    } catch (error) {
-      console.error(error);
     }
+
     return createdCustomer;
   }
 

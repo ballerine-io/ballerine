@@ -2,7 +2,6 @@ import { TWorkflowById } from '../../../../domains/workflows/fetchers';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
 import {
   composePickableCategoryType,
   convertSnakeCaseToTitleCase,
@@ -11,7 +10,7 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import { getDocumentsByCountry, isObject } from '@ballerine/common';
+import { getDocumentsByCountry, StateTag } from '@ballerine/common';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
@@ -21,8 +20,8 @@ import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/use
 import { X } from 'lucide-react';
 import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
-import { isValidUrl } from '../../../../common/utils/is-valid-url';
-import { isBase64 } from '../../../../common/utils/is-base64/is-base64';
+import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
+import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -64,7 +63,8 @@ export const useTasks = ({
     });
   });
   const pluginsOutputKeys = Object.keys(pluginsOutput ?? {});
-  const address = getAddressDeep(pluginsOutput);
+  const address = getAddressDeep(pluginsOutput, { propertyName: 'registeredAddressInFull' });
+  const { data: locations } = useNominatimQuery(address);
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
 
@@ -76,7 +76,7 @@ export const useTasks = ({
             key =>
               !!Object.keys(pluginsOutput[key] ?? {})?.length && !('error' in pluginsOutput[key]),
           )
-          ?.map(key => ({
+          ?.map((key, index, collection) => ({
             cells: [
               {
                 id: 'nested-details-heading',
@@ -85,6 +85,7 @@ export const useTasks = ({
               },
               {
                 type: 'details',
+                hideSeparator: index === collection.length - 1,
                 value: {
                   data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
                     title,
@@ -105,16 +106,14 @@ export const useTasks = ({
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
 
-        const isRevision = decision?.status === 'revision' && (!isDoneWithRevision || noAction);
+        const isDocumentRevision =
+          decision?.status === 'revision' && (!isDoneWithRevision || noAction);
 
-        const getDecisionStatusOrAction = (
-          isRevision: boolean,
-          decision: { status: 'revision' | 'rejected' | 'approved'; reason: string },
-        ) => {
+        const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
           const badgeClassNames = 'text-sm font-bold';
 
-          if (isRevision) {
-            return noAction
+          if (isDocumentRevision) {
+            return workflow?.tags?.includes(StateTag.REVISION)
               ? [
                   {
                     type: 'badge',
@@ -147,7 +146,7 @@ export const useTasks = ({
                 ];
           }
 
-          if (decision?.status === 'approved') {
+          if (decision?.status === StateTag.APPROVED) {
             return [
               {
                 type: 'badge',
@@ -161,7 +160,7 @@ export const useTasks = ({
             ];
           }
 
-          if (decision?.status === 'rejected') {
+          if (decision?.status === StateTag.REJECTED) {
             return [
               {
                 type: 'badge',
@@ -210,7 +209,7 @@ export const useTasks = ({
             {
               id: 'actions',
               type: 'container',
-              value: getDecisionStatusOrAction(isRevision, decision),
+              value: getDecisionStatusOrAction(isDocumentRevision),
             },
           ],
         };
@@ -258,6 +257,7 @@ export const useTasks = ({
               value: {
                 id,
                 title: 'Decision',
+                hideSeparator: true,
                 data: Object.entries(decision ?? {}).map(([title, value]) => ({
                   title,
                   value,
@@ -277,19 +277,18 @@ export const useTasks = ({
                   docType,
                 )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
                 imageUrl:
-                  !isBase64(results[docIndex][pageIndex]) &&
-                  isValidUrl(results[docIndex][pageIndex])
-                    ? results[docIndex][pageIndex]
-                    : octetToFileType(results[docIndex][pageIndex], `application/${type}`),
+                  type === 'pdf'
+                    ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
+                    : results[docIndex][pageIndex],
                 fileType: type,
               })) ?? [],
           },
         };
 
         return {
-          className: isRevision
+          className: isDocumentRevision
             ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning ${
-                noAction ? '' : 'bg-warning/10'
+                workflow?.tags?.includes(StateTag.REVISION) ? '' : 'bg-warning/10'
               }`
             : '',
           cells: [headerCell, detailsCell, documentsCell],
@@ -309,6 +308,7 @@ export const useTasks = ({
             {
               id: 'entity-details',
               type: 'details',
+              hideSeparator: true,
               value: {
                 title: `${toStartCase(entity?.type)} Information`,
                 data: [
@@ -337,42 +337,47 @@ export const useTasks = ({
     Object.keys(address ?? {})?.length === 0
       ? {}
       : {
-          cells: [
-            {
-              id: 'map-container',
-              type: 'container',
-              value: [
-                {
-                  id: 'header',
-                  type: 'heading',
-                  value: `${toStartCase(entity?.type)} Address`,
-                },
-                {
-                  type: 'details',
-                  value: {
-                    title: `${toStartCase(entity?.type)} Address`,
-                    data: !isObject(address)
-                      ? [
-                          {
-                            title: 'Address',
-                            value: address,
-                            isEditable: false,
-                          },
-                        ]
-                      : Object.entries(address ?? {})?.map(([title, value]) => ({
-                          title,
-                          value,
-                          isEditable: false,
-                        })),
+          cells: locations &&
+            locations.length && [
+              {
+                id: 'map-container',
+                type: 'container',
+                value: [
+                  {
+                    id: 'header',
+                    type: 'heading',
+                    value: `${toStartCase(entity?.type)} Address`,
                   },
-                },
-                {
-                  type: 'map',
-                  value: address,
-                },
-              ],
-            },
-          ],
+                  {
+                    type: 'details',
+                    hideSeparator: true,
+                    value: {
+                      title: `${toStartCase(entity?.type)} Address`,
+                      data:
+                        typeof address === 'string'
+                          ? [
+                              {
+                                title: 'Address',
+                                value: address,
+                                isEditable: false,
+                              },
+                            ]
+                          : Object.entries(address ?? {})?.map(([title, value]) => ({
+                              title,
+                              value,
+                              isEditable: false,
+                            })),
+                    },
+                  },
+                  {
+                    type: 'map',
+                    address,
+                    latitude: locations[0].lat,
+                    longitude: locations[0].lon,
+                  },
+                ],
+              },
+            ],
         };
 
   return useMemo(() => {

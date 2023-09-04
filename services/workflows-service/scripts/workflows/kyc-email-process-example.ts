@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { env } from '../../src/env';
+import { defaultContextSchema, StateTag } from '@ballerine/common';
 
 export const kycEmailSessionDefinition = {
   id: 'kyc_email_session_example',
@@ -17,17 +18,20 @@ export const kycEmailSessionDefinition = {
         },
       },
       get_kyc_session: {
+        tags: [StateTag.PENDING_PROCESS],
         on: {
           SEND_EMAIL: [{ target: 'email_sent' }],
           API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
         },
       },
       email_sent: {
+        tags: [StateTag.REVISION],
         on: {
           KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }],
         },
       },
       kyc_manual_review: {
+        tags: [StateTag.MANUAL_REVIEW],
         on: {
           approve: {
             target: 'approved',
@@ -41,6 +45,7 @@ export const kycEmailSessionDefinition = {
         },
       },
       revision: {
+        tags: [StateTag.REVISION],
         always: [
           {
             target: 'get_kyc_session',
@@ -48,12 +53,15 @@ export const kycEmailSessionDefinition = {
         ],
       },
       kyc_auto_reject: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
       rejected: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
       approved: {
+        tags: [StateTag.APPROVED],
         type: 'final' as const,
       },
     },
@@ -141,7 +149,12 @@ export const kycEmailSessionDefinition = {
       deliverEvent: 'KYC_DONE',
     },
   },
+  contextSchema: {
+    type: 'json-schema',
+    schema: defaultContextSchema,
+  },
 };
+
 export const generateKycSessionDefinition = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
     data: kycEmailSessionDefinition,
