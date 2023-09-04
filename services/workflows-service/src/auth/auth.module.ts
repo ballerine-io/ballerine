@@ -14,6 +14,7 @@ import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
 import { PassportModule } from '@nestjs/passport';
 import { env } from '@/env';
+import { ProjectModule } from '@/project/project.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { env } from '@/env';
         };
       },
     }),
+    ProjectModule,
   ],
   providers: [
     AuthService,
