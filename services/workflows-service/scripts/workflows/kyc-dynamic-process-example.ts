@@ -88,7 +88,7 @@ export const kycDynamicExample = {
               address: {
                 fullAddress: entity.data.additionalInfo.address
                 },
-              vendor: 'veriff'
+              vendor: 'test'
               }`, // jmespath
             },
             {

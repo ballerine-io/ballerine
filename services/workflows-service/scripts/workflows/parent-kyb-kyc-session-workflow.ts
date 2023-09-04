@@ -228,7 +228,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               countryOfIncorporation: entity.data.countryOfIncorporation,
               companyNumber: entity.data.registrationNumber,
               state: entity.data.dynamicInfo.companyInformation.state
-              vendor: 'open-corporates'
+              vendor: 'test'
               }`, // jmespath
             },
           ],
