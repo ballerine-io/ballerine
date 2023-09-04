@@ -1,14 +1,9 @@
-import { faker } from '@faker-js/faker';
-import { Business, EndUser, Prisma, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
+import { faker } from '@faker-js/faker';
+import { StateTag } from '@ballerine/common';
+import { Business, Prisma, PrismaClient } from '@prisma/client';
+
 import { customSeed } from './custom-seed';
-import {
-  businessIds,
-  businessRiskIds,
-  endUserIds,
-  generateBusiness,
-  generateEndUser,
-} from './generate-end-user';
 import { generateUserNationalId } from './generate-user-national-id';
 
 const devconExampleWorkflow = {
@@ -30,15 +25,18 @@ const devconExampleWorkflow = {
         },
       },
       manual_review: {
+        tags: [StateTag.MANUAL_REVIEW],
         on: {
           approve: 'approved',
           reject: 'rejected',
         },
       },
       rejected: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
       approved: {
+        tags: [StateTag.APPROVED],
         type: 'final' as const,
       },
     },
@@ -154,7 +152,7 @@ async function seed(bcryptSalt: number | string) {
       true,
     );
 
-    const mockData = {
+    return {
       entity: {
         type: 'business',
         data: {
@@ -262,8 +260,6 @@ async function seed(bcryptSalt: number | string) {
         },
       ],
     };
-
-    return mockData;
   };
 
   function createFilter(

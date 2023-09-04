@@ -12,6 +12,7 @@ import { ListUserCasesResolvedDailyParams } from '@/metrics/repository/types/lis
 import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/user-workflow-processing-statistic.model';
 import { GetUserWorkflowProcessingStatisticParams } from '@/metrics/service/types/get-user-workflow-processing-statistic.params';
 import { Injectable } from '@nestjs/common';
+import { TProjectIds } from '@/types';
 
 @Injectable()
 export class MetricsService {
@@ -19,39 +20,42 @@ export class MetricsService {
 
   async getRuntimesStatusCaseCount(
     params: GetRuntimeStatusCaseCountParams,
+    projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeStatusCaseCountModel> {
-    return await this.metricsRepository.getRuntimeStatusCaseCount(params);
+    return await this.metricsRepository.getRuntimeStatusCaseCount(params, projectIds);
   }
 
-  async listRuntimesStatistic(): Promise<WorkflowRuntimeStatisticModel[]> {
-    return await this.metricsRepository.findRuntimeStatistic();
+  async listRuntimesStatistic(projectIds: TProjectIds): Promise<WorkflowRuntimeStatisticModel[]> {
+    return await this.metricsRepository.findRuntimeStatistic(projectIds);
   }
 
   async listUsersAssignedCasesStatistic(
     params: FindUsersAssignedCasesStatisticParams,
+    projectIds: TProjectIds,
   ): Promise<UserAssignedCasesStatisticModel[]> {
-    return await this.metricsRepository.findUsersAssignedCasesStatistic(params);
+    return await this.metricsRepository.findUsersAssignedCasesStatistic(params, projectIds);
   }
 
   async listUsersResolvedCasesStatistic(
     params: FindUsersResolvedCasesStatisticParams,
+    projectIds: TProjectIds,
   ): Promise<UserResolvedCasesStatisticModel[]> {
-    return await this.metricsRepository.findUsersResolvedCasesStatistic(params);
+    return await this.metricsRepository.findUsersResolvedCasesStatistic(params, projectIds);
   }
 
   async getUserWorkflowProcessingStatistic(
     params: GetUserWorkflowProcessingStatisticParams,
+    projectIds: TProjectIds,
   ): Promise<UserWorkflowProcessingStatisticModel> {
     const commonParams = {
       fromDate: params.fromDate,
     };
 
     const results = await Promise.all([
-      this.metricsRepository.getUserApprovalRate(commonParams),
-      this.metricsRepository.getUserAverageAssignmentTime(commonParams),
-      this.metricsRepository.getUserAverageResolutionTime(commonParams),
-
-      this.metricsRepository.getUserAverageReviewTime(commonParams),
+      this.metricsRepository.getUserApprovalRate(commonParams, projectIds),
+      this.metricsRepository.getUserAverageAssignmentTime(commonParams, projectIds),
+      this.metricsRepository.getUserAverageResolutionTime(commonParams, projectIds),
+      this.metricsRepository.getUserAverageReviewTime(commonParams, projectIds),
     ]);
 
     const [
@@ -74,11 +78,12 @@ export class MetricsService {
 
   async listUserCasesResolvedDaily(
     params: ListUserCasesResolvedDailyParams,
+    projectIds: TProjectIds,
   ): Promise<CasesResolvedInDay[]> {
-    return await this.metricsRepository.listCasesResolvedDaily(params);
+    return await this.metricsRepository.listCasesResolvedDaily(params, projectIds);
   }
 
-  async listActiveUsers(): Promise<MetricsUserModel[]> {
-    return await this.metricsRepository.listUsers();
+  async listActiveUsers(projectIds: TProjectIds): Promise<MetricsUserModel[]> {
+    return await this.metricsRepository.listUsers(projectIds);
   }
 }

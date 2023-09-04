@@ -3,13 +3,14 @@ import { ctw } from '@utils/ctw';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const badgeVariants = cva(
-  'inline-flex px-3 items-center justify-center rounded-full cursor-default transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex px-3 items-center justify-center rounded-full cursor-default transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 max-h-[24px]',
   {
     variants: {
       variant: {
         outline: 'text-foreground',
         default: 'bg-primary text-primary',
         secondary: 'bg-secondary text-secondary',
+        info: 'bg-info/20 text-info',
         success: 'bg-success/20 text-success',
         warning: 'bg-warning/20 text-warning',
         destructive: 'bg-destructive/20 text-destructive',

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useApproveCaseMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveCaseMutation/useApproveCaseMutation';
 import { useDebounce } from '../../../../../../common/hooks/useDebounce/useDebounce';
 import { createInitials } from '../../../../../../common/utils/create-initials/create-initials';
@@ -13,8 +13,10 @@ import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/quer
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
 import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
+import { tagToBadgeData } from '../../consts';
+import { StateTag } from '@ballerine/common';
 
-export const useActions = ({ workflowId, fullName }: IUseActions) => {
+export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
   const filterId = useFilterId();
   const { data: workflow, isLoading: isLoadingCase } = useWorkflowQuery({ workflowId, filterId });
@@ -66,35 +68,20 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
       }),
     [mutateAssignWorkflow],
   );
+
+  const tag = useMemo(() => {
+    if (!workflow?.context?.entity?.data?.__isFinished) {
+      return StateTag.COLLECTION_FLOW;
+    }
+
+    return workflow?.tags?.find(t => tagToBadgeData[t]);
+  }, [workflow]);
+
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
   const onTriggerAssignToMe = true;
   const documentsToReviseCount = workflow?.context?.documents?.filter(
     document => document?.decision?.status === 'revision',
   )?.length;
-
-  // useDocumentListener('keydown', event => {
-  //   if (!event.ctrlKey || document.activeElement !== document.body) return;
-  //
-  //   event.preventDefault();
-  //
-  //   switch (event.key) {
-  //     case 'ArrowDown':
-  //       onSelectNextEntity();
-  //       break;
-  //
-  //     // Approve end user on 'Ctrl + A'
-  //     case 'a':
-  //       onMutateApproveEntity();
-  //       break;
-  //
-  //     // Reject end user on 'Ctrl + J'
-  //     case 'j':
-  //       onMutateRejectEntity({
-  //         action: Action.REJECT,
-  //       });
-  //       break;
-  //   }
-  // });
 
   return {
     onTriggerAssignToMe,
@@ -118,5 +105,6 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
     hasDecision,
     isLoadingCase,
     documentsToReviseCount,
+    tag,
   };
 };

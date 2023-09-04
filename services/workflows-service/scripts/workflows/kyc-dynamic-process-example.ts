@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { env } from '../../src/env';
+import { StateTag } from '@ballerine/common';
 
 export const kycDynamicExample = {
   id: 'dynamic_kyc_example',
@@ -26,20 +27,25 @@ export const kycDynamicExample = {
         },
       },
       pending_kyc_response: {
+        tags: [StateTag.PENDING_PROCESS],
         on: {
           KYC_RESPONDED: [{ target: 'kyc_manual_review' }],
         },
       },
       kyc_manual_review: {
+        tags: [StateTag.MANUAL_REVIEW],
         type: 'final' as const,
       },
       kyc_auto_reject: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
       reject: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
       approve: {
+        tags: [StateTag.APPROVED],
         type: 'final' as const,
       },
     },
