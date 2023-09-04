@@ -141,6 +141,9 @@ model WorkflowDefinition {
   name            String
   version         Int     @default(1)
 
+  projectId String?
+  isPublic  Boolean @default(false)
+
   definitionType     String
   definition         Json
   contextSchema      Json?
@@ -155,7 +158,11 @@ model WorkflowDefinition {
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   createdBy           String                @default("SYSTEM")
+  project             Project?              @relation(fields: [projectId], references: [id])
   workflowRuntimeData WorkflowRuntimeData[]
+
+  @@unique([name, version, projectId, definitionType])
+  @@index([projectId, name, definitionType])
 }
 
 enum WorkflowRuntimeDataStatus {
@@ -285,6 +292,7 @@ model Project {
   business            Business[]
   workflowRuntimeData WorkflowRuntimeData[]
   files               File[]
+  workflowDefinitions WorkflowDefinition[]
 
   @@unique([name, customerId])
   @@index(name)

@@ -1645,11 +1645,11 @@ export class WorkflowService {
     if (this.__fetchBucketName(process.env, false)) {
       const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
       const awsFileService = new AwsS3FileService(s3ClientConfig);
-      const remoteFileNameInDocument = awsFileService.generateRemoteFilePath(
+      const remoteFileNameInDocument = awsFileService.generateRemoteFilePath({
         fileName,
         customerName,
-        entityId,
-      );
+        directory: entityId,
+      });
       const awsConfigForClient = this.__fetchAwsConfigFor(remoteFileNameInDocument);
       return {
         toServiceProvider: awsFileService,
@@ -1659,7 +1659,7 @@ export class WorkflowService {
     }
 
     const localFileService = new LocalFileService();
-    const toFileStoragePath = localFileService.generateRemoteFilePath(fileName, customerName);
+    const toFileStoragePath = localFileService.generateRemoteFilePath({ fileName, customerName });
     return {
       toServiceProvider: localFileService,
       toRemoteFileConfig: toFileStoragePath,
