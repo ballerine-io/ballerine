@@ -22,6 +22,7 @@ import { HttpFileService } from '@/providers/file/file-provider/http-file.servic
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { isBase64 } from '@/common/utils/is-base64/is-base64';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -129,7 +130,7 @@ export class StorageControllerInternal {
       return res.sendFile(localFilePath, { root: '/' });
     }
 
-    if (this.__isImageUrl(persistedFile)) {
+    if (!isBase64(persistedFile.uri) && this.__isImageUrl(persistedFile)) {
       const downloadFilePath = await this.__downloadFileFromRemote(persistedFile);
 
       return res.sendFile(downloadFilePath, { root: root });
