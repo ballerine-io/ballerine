@@ -14,7 +14,7 @@ import { BottomActions } from './Header.BottomActions';
  */
 export const Header: FunctionComponent = () => {
   return (
-    <header className={`flex flex-col bg-base-100 bg-muted p-4`}>
+    <header className={`flex flex-col bg-[#F9FAFC] p-4`}>
       <Logo />
       <Navbar />
       <BottomActions />

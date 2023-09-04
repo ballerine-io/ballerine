@@ -135,18 +135,19 @@ export const CogSvg: FunctionComponent<SVGProps<SVGSVGElement>> = props => {
 export const LogOutSvg: FunctionComponent<SVGProps<SVGSVGElement>> = props => {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
+      width="15"
+      height="14"
+      viewBox="0 0 15 14"
       fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className="h-6 w-6"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+        opacity="0.5"
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M8.56185 2.5C8.56185 2.36193 8.44992 2.25 8.31185 2.25L1.97852 2.25C1.84044 2.25 1.72852 2.36193 1.72852 2.5L1.72852 11.5C1.72852 11.6381 1.84044 11.75 1.97851 11.75H8.31185C8.44992 11.75 8.56185 11.6381 8.56185 11.5V10.5C8.56185 10.0858 8.89763 9.75 9.31185 9.75C9.72606 9.75 10.0618 10.0858 10.0618 10.5V11.5C10.0618 12.4665 9.27835 13.25 8.31185 13.25H1.97851C1.01202 13.25 0.228516 12.4665 0.228516 11.5V2.5C0.228516 1.5335 1.01202 0.75 1.97852 0.75H8.31185C9.27835 0.75 10.0618 1.5335 10.0618 2.5V3.5C10.0618 3.91421 9.72606 4.25 9.31185 4.25C8.89763 4.25 8.56185 3.91421 8.56185 3.5V2.5ZM8.06879 7C8.06879 6.60113 8.39214 6.27778 8.79102 6.27778H12.2042L11.4159 5.521C11.1281 5.24477 11.1188 4.78758 11.395 4.49984C11.6712 4.2121 12.1284 4.20277 12.4162 4.479L14.4995 6.479C14.6414 6.61519 14.7216 6.80334 14.7216 7C14.7216 7.19666 14.6414 7.38481 14.4995 7.521L12.4162 9.521C12.1284 9.79723 11.6712 9.7879 11.395 9.50016C11.1188 9.21242 11.1281 8.75523 11.4159 8.479L12.2042 7.72222H8.79102C8.39214 7.72222 8.06879 7.39887 8.06879 7Z"
+        fill="black"
       />
     </svg>
   );
@@ -454,6 +455,39 @@ export const PhotoSvg = (props: SVGProps<SVGSVGElement>) => {
     </svg>
   );
 };
+
+export const CheckFolderSvg = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    {...props}
+    width="14"
+    height="18"
+    viewBox="0 0 14 18"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M9.25 1.5H4.75C4.33579 1.5 4 1.83579 4 2.25V3.75C4 4.16421 4.33579 4.5 4.75 4.5H9.25C9.66421 4.5 10 4.16421 10 3.75V2.25C10 1.83579 9.66421 1.5 9.25 1.5Z"
+      stroke="black"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M10 3H11.5C11.8978 3 12.2794 3.15804 12.5607 3.43934C12.842 3.72064 13 4.10218 13 4.5V15C13 15.3978 12.842 15.7794 12.5607 16.0607C12.2794 16.342 11.8978 16.5 11.5 16.5H2.5C2.10218 16.5 1.72064 16.342 1.43934 16.0607C1.15804 15.7794 1 15.3978 1 15V4.5C1 4.10218 1.15804 3.72064 1.43934 3.43934C1.72064 3.15804 2.10218 3 2.5 3H4"
+      stroke="black"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M4.75 10.5L6.25 12L9.25 9"
+      stroke="black"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+);
 
 export const NoCasesSvg = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 81" fill="none" {...props}>
