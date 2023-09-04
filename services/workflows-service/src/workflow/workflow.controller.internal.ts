@@ -66,9 +66,9 @@ export class WorkflowControllerInternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async cloneWorkflowDefinition(
     @common.Body() data: WorkflowDefinitionCloneDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProject: TProjectId,
   ) {
-    return await this.service.cloneWorkflowDefinition(data, projectIds);
+    return await this.service.cloneWorkflowDefinition(data, currentProject);
   }
 
   @common.Get()
