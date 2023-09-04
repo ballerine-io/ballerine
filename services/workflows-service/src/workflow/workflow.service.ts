@@ -154,13 +154,11 @@ export class WorkflowService {
     return await this.workflowDefinitionRepository.create({ data, select }, projectIds);
   }
 
-  async cloneWorkflowDefinition(data: WorkflowDefinitionCloneDto, projectIds: TProjectIds) {
+  async cloneWorkflowDefinition(data: WorkflowDefinitionCloneDto, projectId: string) {
     const select = {
       reviewMachineId: true,
       name: true,
       version: true,
-      projectId: true,
-      isPublic: true,
       definitionType: true,
       definition: true,
       contextSchema: true,
@@ -179,8 +177,8 @@ export class WorkflowService {
 
     return await this.workflowDefinitionRepository.create(
       // @ts-expect-error - types of workflow definition does not propagate to the prisma creation type
-      { data: { ...workflowDefinition, name: data.name }, select },
-      projectIds,
+      { data: { ...workflowDefinition, name: data.name, projectId: projectId, isPublic: false }, select },
+      [projectId],
     );
   }
 
