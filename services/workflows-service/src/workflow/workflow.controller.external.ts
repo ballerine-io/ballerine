@@ -48,6 +48,7 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   async listWorkflowRuntimeData(
     @Query() query: GetWorkflowsRuntimeInputDto,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<GetWorkflowsRuntimeOutputDto> {
     const results = await this.service.listRuntimeData({
       page: query.page,
@@ -55,6 +56,7 @@ export class WorkflowControllerExternal {
       status: query.status,
       orderBy: query.orderBy,
       orderDirection: query.orderDirection,
+      projectIds,
     });
 
     return plainToClass(GetWorkflowsRuntimeOutputDto, results);

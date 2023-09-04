@@ -45,12 +45,7 @@ export class FilterControllerInternal {
     @common.Param() params: FilterWhereUniqueInput,
   ): Promise<FilterModel | null> {
     try {
-      const filter = await this.service.getById(
-        params.id,
-        this.scopeService.scopeFindOne({}, projectIds),
-      );
-
-      return filter;
+      return await this.service.getById(params.id, this.scopeService.scopeFindOne({}, projectIds));
     } catch (err) {
       if (isRecordNotFoundError(err)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

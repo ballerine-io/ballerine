@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { kycDynamicExample } from './kyc-dynamic-process-example';
 import { env } from '../../src/env';
+import { StateTag } from '@ballerine/common';
 
 export const kybParentDynamicExample = {
   id: 'dynamic_kyb_parent_example',
@@ -49,9 +50,11 @@ export const kybParentDynamicExample = {
         },
       },
       manual_review: {
+        tags: [StateTag.MANUAL_REVIEW],
         type: 'final' as const,
       },
       auto_reject: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
     },
@@ -75,7 +78,7 @@ export const kybParentDynamicExample = {
                 countryOfIncorporation: entity.data.countryOfIncorporation,
                 companyNumber: entity.data.registrationNumber,
                 state: entity.data.additionalInfo.company.state
-                vendor: 'open-corporates'
+                vendor: 'veriff'
                 }`, // jmespath
             },
           ],
