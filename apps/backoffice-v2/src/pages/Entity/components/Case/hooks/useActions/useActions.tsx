@@ -11,13 +11,8 @@ import { useRejectEntityMutation } from '../../../../../../domains/entities/hook
 import { useSelectNextEntity } from '../../../../../../domains/entities/hooks/useSelectNextEntity/useSelectNextEntity';
 import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
-import {
-  everyDocumentDecisionStatus,
-  safeEvery,
-  someDocumentDecisionStatus,
-} from '@ballerine/common';
 import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
-import { Action } from '../../../../../../common/enums';
+import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 
 export const useActions = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -51,26 +46,7 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
   const caseState = useCaseState(authenticatedUser, workflow);
   const { data: users } = useUsersQuery();
   const assignees = users?.filter(assignee => assignee?.id !== authenticatedUser?.id);
-  const hasDecision = safeEvery(
-    workflow?.context?.documents,
-    document => !!document?.decision?.status,
-  );
-  const canTakeAction = caseState.actionButtonsEnabled && hasDecision;
-  // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
-  // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
-  const canReject =
-    canTakeAction &&
-    workflow?.nextEvents?.includes(Action.REJECT.toLowerCase()) &&
-    someDocumentDecisionStatus(workflow?.context?.documents, 'rejected');
-  const canRevision =
-    canTakeAction &&
-    !canReject &&
-    workflow?.nextEvents?.includes(Action.REVISION.toLowerCase()) &&
-    someDocumentDecisionStatus(workflow?.context?.documents, 'revision');
-  const canApprove =
-    canTakeAction &&
-    workflow?.nextEvents?.includes(Action.APPROVE.toLowerCase()) &&
-    everyDocumentDecisionStatus(workflow?.context?.documents, 'approved');
+  const { hasDecision, canApprove, canReject, canRevision } = useCaseDecision();
 
   // Only display the button spinners if the request is longer than 300ms
   const debouncedIsLoadingRejectEntity = useDebounce(isLoadingRejectEntity, 300);
@@ -92,6 +68,9 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
   );
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
   const onTriggerAssignToMe = true;
+  const documentsToReviseCount = workflow?.context?.documents?.filter(
+    document => document?.decision?.status === 'revision',
+  )?.length;
 
   // useDocumentListener('keydown', event => {
   //   if (!event.ctrlKey || document.activeElement !== document.body) return;
@@ -138,5 +117,6 @@ export const useActions = ({ workflowId, fullName }: IUseActions) => {
     assignees,
     hasDecision,
     isLoadingCase,
+    documentsToReviseCount,
   };
 };

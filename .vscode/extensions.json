@@ -6,6 +6,7 @@
     "statelyai.stately-vscode",
     "prisma.prisma",
     "bradlc.vscode-tailwindcss",
-    "github.vscode-github-actions"
+    "github.vscode-github-actions",
+    "streetsidesoftware.code-spell-checker"
   ]
 }

@@ -5,7 +5,7 @@ import { toStartCase } from '../../../../common/utils/to-start-case/to-start-cas
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Button, buttonVariants } from '../../../../common/components/atoms/Button/Button';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
 import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
@@ -21,10 +21,12 @@ import { SelectValue } from '../../../../common/components/atoms/Select/Select.V
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
-import { isObject } from '@ballerine/common';
+import { isNullish, isObject } from '@ballerine/common';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { JsonDialog } from '../../../../common/components/molecules/JsonDialog/JsonDialog';
 import { FileJson2 } from 'lucide-react';
+import { isValidDate } from '../../../../common/utils/is-valid-date';
+import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -46,9 +48,17 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected', 'declined'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
+    if (typeof value !== 'string') {
+      return false;
+    }
+
     return isDecisionComponent && value && POSITIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
   const isDecisionNegative = (isDecisionComponent: boolean, value: string) => {
+    if (typeof value !== 'string') {
+      return false;
+    }
+
     return isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
   const defaultValues = formData?.reduce((acc, curr) => {
@@ -103,6 +113,36 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     });
   };
   const isDecisionComponent = title === 'Decision';
+  const getInputType = useCallback(
+    ({
+      format,
+      type,
+      value,
+    }: {
+      format: string | undefined;
+      type: string | undefined;
+      value: unknown;
+    }) => {
+      if (format) {
+        return format;
+      }
+
+      if (type === 'string') {
+        return 'text';
+      }
+
+      if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value) || type === 'date') {
+        return 'date';
+      }
+
+      if (!type) {
+        return 'text';
+      }
+
+      return type;
+    },
+    [],
+  );
 
   useWatchDropdownOptions({ form, data, setFormData });
   useInitialCategorySetValue({
@@ -128,6 +168,20 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
         >
           {formData?.map(
             ({ title, isEditable, type, format, pattern, value, valueAlias, dropdownOptions }) => {
+              const originalValue = form.watch(title);
+
+              const displayValue = (value: unknown) => {
+                if (isEditable) return originalValue;
+
+                return isNullish(value) || value === '' ? 'Unavailable' : value;
+              };
+
+              const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+                const inputValue = event.target.value;
+
+                form.setValue(title, inputValue === 'Unavailable' ? '' : inputValue);
+              };
+
               return (
                 <FormField
                   key={keyFactory(valueId, title, `form-field`)}
@@ -142,6 +196,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                       !Array.isArray(value),
                     ].every(Boolean);
                     const isSelect = isInput && !!dropdownOptions;
+                    const inputType = getInputType({
+                      format,
+                      type,
+                      value,
+                    });
 
                     return (
                       <FormItem>
@@ -167,7 +226,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             key={keyFactory(valueId, title, `form-field`)}
                             className={buttonVariants({
                               variant: 'link',
-                              className: '!block cursor-pointer !p-0',
+                              className: '!block cursor-pointer !p-0 !text-blue-500',
                             })}
                             target={'_blank'}
                             rel={'noopener noreferrer'}
@@ -210,10 +269,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                         {isInput && !isSelect && (
                           <FormControl>
                             <Input
-                              type={!format ? (type === 'string' ? 'text' : type) : format}
+                              type={inputType}
                               disabled={!isEditable}
                               className={ctw(
-                                `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
+                                `p-1 disabled:cursor-auto disabled:border-none disabled:bg-transparent disabled:opacity-100`,
                                 {
                                   '!h-[unset] !p-0': !isEditable,
                                   'font-bold text-success': isDecisionPositive(
@@ -226,9 +285,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                                   ),
                                 },
                               )}
-                              pattern={pattern}
+                              {...(pattern && { pattern })}
                               autoComplete={'off'}
                               {...field}
+                              value={displayValue(originalValue)}
+                              onChange={handleInputChange}
                             />
                           </FormControl>
                         )}

@@ -1,3 +1,4 @@
 {
-  "*.{js,cjs,mjs,jsx,ts,tsx,json,css,svelte}": "pnpm format"
+  "*.{js,cjs,mjs,jsx,ts,tsx,json,css,svelte}": "pnpm format",
+  "*": "pnpm spellcheck"
 }

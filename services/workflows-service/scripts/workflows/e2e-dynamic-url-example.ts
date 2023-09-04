@@ -31,8 +31,10 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                 options: {
                   rule: {
                     '==': [
-                      { var: 'context.entity.companyName' },
-                      { var: 'response.data.registered_name' },
+                      { var: 'entity.data.companyName' },
+                      {
+                        var: 'pluginsOutput.business_data_vendor.business_details.registered_name',
+                      },
                     ],
                   },
                 },
@@ -46,7 +48,9 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                   rule: {
                     '>': [{ var: 'pluginsOutput.business_data_vendor.name_fuzziness_score' }, 0.5],
                   },
-                  onFailed: { manualReviewReason: 'name not matching ... ' },
+                  onFailed: {
+                    manualReviewReason: 'Company name and Registered Business name do not match',
+                  },
                 },
               },
             },
@@ -56,12 +60,12 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
                 type: 'json-logic',
                 options: {
                   rule: {
-                    '<': [
-                      { var: 'pluginsOutput.external_request_example.name_fuzziness_score' },
-                      0.5,
-                    ],
+                    '<': [{ var: 'pluginsOutput.business_data_vendor.name_fuzziness_score' }, 0.5],
                   },
-                  onFailed: { manualReviewReason: 'Fuzzy fail and does not match' },
+                  onFailed: {
+                    manualReviewReason:
+                      'Company name and Registered Business name do not match and fuzziness failed',
+                  },
                 },
               },
             },
@@ -126,7 +130,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
             {
               transformer: 'jmespath',
               mapping:
-                '{ business_name: entity.data.companyName, registration_number: entity.data.registrationNumber}',
+                '{ business_name: entity.data.companyName, registration_number: entity.data.registrationNumber }',
             },
           ], // jmespath
           schema: {

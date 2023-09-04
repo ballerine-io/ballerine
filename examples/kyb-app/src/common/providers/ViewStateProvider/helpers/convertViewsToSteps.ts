@@ -7,7 +7,8 @@ export const convertViewsToSteps = (views: View[]): IStep[] => {
       index,
       label: view.label,
       dataAlias: view.key,
-      meta: view.meta,
+      meta: view.stepMetadata,
+      hidden: view.hidden,
     };
   });
 };

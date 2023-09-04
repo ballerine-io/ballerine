@@ -19,7 +19,8 @@
     "jsx": "react-jsx",
     "paths": {
       "@app/*": ["src/*"]
-    }
+    },
+    "typeRoots": ["./types/**/*"]
   },
   "include": ["src", "e2e"]
 }

@@ -44,6 +44,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    sourcemap: 'inline',
     lib: {
       entry: {
         ...entries,

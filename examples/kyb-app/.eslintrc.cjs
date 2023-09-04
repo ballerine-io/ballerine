@@ -31,6 +31,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'tailwindcss/classnames-order': 'off',
     'tailwindcss/no-custom-classname': 'off',
+    '@typescript-eslint/no-misused-promises': 'off',
   },
   settings: {
     ...config.settings,

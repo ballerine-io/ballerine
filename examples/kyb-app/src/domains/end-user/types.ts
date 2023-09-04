@@ -1,9 +1,12 @@
+import { AnyObject } from '@ballerine/ui';
+
 export interface CreateEndUserDto {
   firstName: string;
   lastName: string;
   phone: string;
   email: string;
-  companyName: string;
+  dateOfBirth: string;
+  additionalInformation?: AnyObject;
 }
 
 export interface CreateEndUserResponse {

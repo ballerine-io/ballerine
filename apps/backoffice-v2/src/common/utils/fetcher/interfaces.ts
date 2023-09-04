@@ -11,7 +11,7 @@ export interface IFetcher {
     method: typeof Method.POST | typeof Method.PUT | typeof Method.PATCH;
     body?: TBody;
     headers?: RequestInit['headers'];
-    options?: Omit<RequestInit, 'body'>;
+    options?: Omit<RequestInit, 'body' | 'headers'>;
     timeout?: number;
     schema: TZodSchema;
     isBlob?: boolean;
@@ -21,7 +21,7 @@ export interface IFetcher {
     url: string;
     method: typeof Method.GET | typeof Method.DELETE;
     headers?: RequestInit['headers'];
-    options?: Omit<RequestInit, 'body'>;
+    options?: Omit<RequestInit, 'body' | 'headers'>;
     timeout?: number;
     schema: TZodSchema;
   }): Promise<z.infer<TZodSchema>>;

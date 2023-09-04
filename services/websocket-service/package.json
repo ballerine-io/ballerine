@@ -1,9 +1,10 @@
 {
   "name": "@ballerine/websocket-service",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "websocket-service",
   "private": false,
   "scripts": {
+    "spellcheck": "cspell \"*\"",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -42,6 +43,8 @@
     "@types/supertest": "2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
+    "cspell": "^6.31.2",
+    "@cspell/cspell-types": "^6.31.1",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.7.0",
     "eslint-import-resolver-typescript": "^3.5.3",

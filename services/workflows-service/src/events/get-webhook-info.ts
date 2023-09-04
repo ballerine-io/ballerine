@@ -8,10 +8,11 @@ export const getWebhookInfo = (
   NODE_ENV: string | undefined,
   WEBHOOK_URL: string | undefined,
   WEBHOOK_SECRET: string | undefined,
+  event: string,
 ) => {
   const id = randomUUID();
   const environment = NODE_ENV;
-  const url = getDynamicWebhookUrl(config, 'workflow.context.document.changed') || WEBHOOK_URL;
+  const url = getDynamicWebhookUrl(config, event) || WEBHOOK_URL;
   const authSecret = WEBHOOK_SECRET;
 
   return { id, environment, url, authSecret, apiVersion: packageJson.version };
