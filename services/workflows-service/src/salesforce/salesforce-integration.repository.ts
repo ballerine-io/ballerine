@@ -33,4 +33,10 @@ export class SalesforceIntegrationRepository {
       data: data,
     });
   }
+
+  async removeByProjectId(projectId: string) {
+    return await this.prisma.salesforceIntegration.delete({
+      where: { projectId },
+    });
+  }
 }

@@ -14,7 +14,10 @@ export class SalesforceController {
     const salesforceIntegration = await this.salesforceService.findByProjectId(projectIds![0]!);
 
     if (salesforceIntegration) {
-      throw new HttpException('Salesforce integration already exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'This project already has a Salesforce integration.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const authorizationUrl = this.salesforceService.getAuthorizationUrl();
@@ -27,7 +30,10 @@ export class SalesforceController {
     const salesforceIntegration = await this.salesforceService.findByProjectId(projectIds![0]!);
 
     if (salesforceIntegration) {
-      throw new HttpException('Salesforce integration already exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'This project already has a Salesforce integration.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const { code } = req.query;
