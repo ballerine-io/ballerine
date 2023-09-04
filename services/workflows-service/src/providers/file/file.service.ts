@@ -5,7 +5,7 @@ import { IStreamableFileProvider } from './types/interfaces';
 import { TFileServiceProvider } from './types';
 import { getDocumentId, isErrorWithMessage } from '@ballerine/common';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
-import { TDocumentWithoutPageType, TProjectIds } from '@/types';
+import { TProjectIds } from '@/types';
 import crypto from 'crypto';
 import { isType } from '@/common/is-type/is-type';
 import { z } from 'zod';
@@ -16,6 +16,7 @@ import { LocalFileService } from '@/providers/file/file-provider/local-file.serv
 import { fromBuffer, fromFile } from 'file-type';
 import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
 import { Readable } from 'stream';
+import { TDocumentWithoutPageType } from '@/common/types';
 
 @Injectable()
 export class FileService {
