@@ -3,37 +3,73 @@ import { Prisma, User } from '@prisma/client';
 import { PasswordService } from '../auth/password/password.service';
 import { transformStringFieldUpdateInput } from '../prisma/prisma.util';
 import { Injectable } from '@nestjs/common';
-import { UserWithProjects } from '@/types';
+import { TProjectId, TProjectIds, UserWithProjects } from '@/types';
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
 export class UserRepository {
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly passwordService: PasswordService,
+    protected readonly scopeService: ProjectScopeService,
   ) {}
 
   async create<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>,
+    projectId: TProjectId,
   ): Promise<User> {
-    return this.prisma.user.create<T>({
-      ...args,
-      data: {
-        ...args.data,
-        // Use Prisma middleware
-        password: await this.passwordService.hash(args.data.password),
-      },
-    });
+    return this.prisma.user.create<T>(
+      this.scopeService.scopeCreate(
+        {
+          ...args,
+          data: {
+            ...args.data,
+            // Use Prisma middleware
+            password: await this.passwordService.hash(args.data.password),
+          },
+        } as any,
+        projectId,
+      ),
+    );
   }
 
   async findMany<T extends Prisma.UserFindManyArgs>(
-    args?: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>,
+    args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>,
+    projectIds: TProjectIds,
   ): Promise<User[]> {
-    return this.prisma.user.findMany(args);
+    const scopedArgs = {
+      ...args,
+      where: {
+        ...args?.where,
+        userToProjects: !args?.where?.userToProjects
+          ? {
+              every: {
+                projectId: {
+                  in: projectIds!.map(projectId => projectId),
+                },
+              },
+            }
+          : args.where.userToProjects,
+      },
+    };
+
+    return this.prisma.user.findMany(scopedArgs);
   }
 
   async findById<T extends Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>(
     id: string,
-    args?: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
+    projectIds?: TProjectIds,
+  ): Promise<UserWithProjects> {
+    return this.prisma.user.findFirstOrThrow({
+      where: { id, userToProjects: { some: { projectId: { in: projectIds || [] } } } },
+      ...args,
+    });
+  }
+
+  async findByIdUnscoped<T extends Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>(
+    id: string,
+    args: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueOrThrowArgs, 'where'>>,
   ): Promise<UserWithProjects> {
     return this.prisma.user.findUniqueOrThrow({
       where: { id },
@@ -41,7 +77,7 @@ export class UserRepository {
     });
   }
 
-  async findByEmail<T extends Omit<Prisma.UserFindUniqueArgs, 'where'>>(
+  async findByEmailUnscoped<T extends Omit<Prisma.UserFindUniqueArgs, 'where'>>(
     email: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueArgs, 'where'>>,
   ): Promise<any> {
@@ -51,7 +87,7 @@ export class UserRepository {
     });
   }
 
-  async updateById<T extends Omit<Prisma.UserUpdateArgs, 'where'>>(
+  async updateByIdUnscoped<T extends Omit<Prisma.UserUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.UserUpdateArgs, 'where'>>,
   ): Promise<User> {
@@ -71,15 +107,21 @@ export class UserRepository {
 
   async deleteById<T extends Omit<Prisma.UserDeleteArgs, 'where'>>(
     id: string,
-    args?: Prisma.SelectSubset<T, Omit<Prisma.UserDeleteArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Omit<Prisma.UserDeleteArgs, 'where'>>,
+    projectIds: TProjectIds,
   ): Promise<User> {
-    return this.prisma.user.delete({
-      where: { id },
-      ...args,
-    });
+    return this.prisma.user.delete(
+      this.scopeService.scopeDelete(
+        {
+          where: { id },
+          ...args,
+        },
+        projectIds,
+      ),
+    );
   }
 
-  async queryRaw<TValue>(query: string, values: any[] = []): Promise<TValue> {
+  async queryRawUnscoped<TValue>(query: string, values: any[] = []): Promise<TValue> {
     return (await this.prisma.$queryRawUnsafe.apply(this.prisma, [query, ...values])) as TValue;
   }
 }

@@ -6,8 +6,8 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as tmp from 'tmp';
 import fs from 'fs';
-import { TProjectIds } from '@/types';
 import { CustomerService } from '@/customer/customer.service';
+import { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -23,12 +23,14 @@ export class HookCallbackHandlerService {
     resultDestinationPath,
     processName,
     projectIds,
+    currentProjectId,
   }: {
     workflowRuntime: WorkflowRuntimeData;
     data: AnyRecord;
     resultDestinationPath: string;
     processName?: UnifiedCallbackNames;
     projectIds: TProjectIds;
+    currentProjectId: TProjectId;
   }) {
     if (processName === 'kyc-unified-api') {
       return await this.mapCallbackDataToIndividual(
@@ -36,13 +38,18 @@ export class HookCallbackHandlerService {
         workflowRuntime,
         resultDestinationPath,
         projectIds,
+        currentProjectId,
       );
     }
 
     const updatedContext = { ...workflowRuntime.context, [resultDestinationPath]: data };
-    await this.workflowService.updateWorkflowRuntimeData(workflowRuntime.id, {
-      context: updatedContext,
-    });
+    await this.workflowService.updateWorkflowRuntimeData(
+      workflowRuntime.id,
+      {
+        context: updatedContext,
+      },
+      currentProjectId,
+    );
 
     return data;
   }
@@ -50,7 +57,8 @@ export class HookCallbackHandlerService {
     data: AnyRecord,
     workflowRuntime: WorkflowRuntimeData,
     resultDestinationPath: string,
-    projectIds: TProjectIds,
+    proejctIds: TProjectIds,
+    currentProjectId: TProjectId,
   ) {
     const attributePath = resultDestinationPath.split('.');
     const context = workflowRuntime.context;
@@ -62,12 +70,12 @@ export class HookCallbackHandlerService {
     const decision = this.formatDecision(data);
     const documentCategory = kycDocument.type as string;
     const documents = this.formatDocuments(documentCategory, pages, issuer, documentProperties);
-    const customer = await this.customerService.getByProjectId(projectIds![0]!);
+    const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = (
       await this.workflowService.copyFileAndCreate(
         { documents: documents } as DefaultContextSchema,
         context.entity.id,
-        projectIds,
+        currentProjectId,
         customer.name,
       )
     ).documents;
@@ -80,7 +88,11 @@ export class HookCallbackHandlerService {
 
     this.setNestedProperty(context, attributePath, result);
     context.documents = persistedDocuments;
-    await this.workflowService.updateWorkflowRuntimeData(workflowRuntime.id, { context: context });
+    await this.workflowService.updateWorkflowRuntimeData(
+      workflowRuntime.id,
+      { context: context },
+      currentProjectId,
+    );
   }
 
   private formatDocuments(

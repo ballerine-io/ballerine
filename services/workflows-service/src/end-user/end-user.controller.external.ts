@@ -20,8 +20,9 @@ import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definit
 import { WorkflowService } from '@/workflow/workflow.service';
 import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('external/end-users')
 @common.Controller('external/end-users')
@@ -39,32 +40,36 @@ export class EndUserControllerExternal {
   @UseCustomerAuthGuard()
   async create(
     @common.Body() data: EndUserCreateDto,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<EndUserModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>> {
-    return this.service.create({
-      data: {
-        ...data,
-        correlationId: data.correlationId || randomUUID(),
-        email: data.email || faker.internet.email(data.firstName, data.lastName),
-        phone: data.phone || faker.phone.number('+##########'),
-        dateOfBirth: data.dateOfBirth || faker.date.past(60),
-        avatarUrl: data.avatarUrl || faker.image.avatar(),
+    return this.service.create(
+      {
+        data: {
+          ...data,
+          correlationId: data.correlationId || randomUUID(),
+          email: data.email || faker.internet.email(data.firstName, data.lastName),
+          phone: data.phone || faker.phone.number('+##########'),
+          dateOfBirth: data.dateOfBirth || faker.date.past(60),
+          avatarUrl: data.avatarUrl || faker.image.avatar(),
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          avatarUrl: true,
+        },
       },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        avatarUrl: true,
-      },
-    });
+      currentProjectId,
+    );
   }
 
   @common.Post('/create-with-business')
   @UseCustomerAuthGuard()
   async createWithBusiness(
     @common.Body() data: EndUserCreateDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const endUser = await this.service.createWithBusiness(data, projectIds);
+    const endUser = await this.service.createWithBusiness(data, currentProjectId);
 
     return {
       endUserId: endUser.id,
@@ -76,9 +81,12 @@ export class EndUserControllerExternal {
   @swagger.ApiOkResponse({ type: [EndUserModel] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EndUserFindManyArgs)
-  async list(@common.Req() request: Request): Promise<EndUserModel[]> {
+  async list(
+    @common.Req() request: Request,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<EndUserModel[]> {
     const args = plainToClass(EndUserFindManyArgs, request.query);
-    return this.service.list(args);
+    return this.service.list(args, projectIds);
   }
 
   @common.Get(':id')
@@ -86,9 +94,12 @@ export class EndUserControllerExternal {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
   @UseCustomerAuthGuard()
-  async getById(@common.Param() params: EndUserWhereUniqueInput): Promise<EndUserModel | null> {
+  async getById(
+    @common.Param() params: EndUserWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<EndUserModel | null> {
     try {
-      const endUser = await this.service.getById(params.id);
+      const endUser = await this.service.getById(params.id, {}, projectIds);
 
       return endUser;
     } catch (err) {
@@ -107,13 +118,20 @@ export class EndUserControllerExternal {
   @common.HttpCode(200)
   @ApiNestedQuery(WorkflowDefinitionFindManyArgs)
   @UseCustomerAuthGuard()
-  async listWorkflowRuntimeDataByEndUserId(@Param('endUserId') endUserId: string) {
+  async listWorkflowRuntimeDataByEndUserId(
+    @Param('endUserId') endUserId: string,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
     const workflowRuntimeDataWithDefinition =
-      await this.workflowService.listFullWorkflowDataByUserId({
-        entityId: endUserId,
-        entity: 'endUser',
-      });
+      await this.workflowService.listFullWorkflowDataByUserId(
+        {
+          entityId: endUserId,
+          entity: 'endUser',
+        },
+        projectIds,
+      );
 
+    //@ts-expect-error
     return makeFullWorkflow(workflowRuntimeDataWithDefinition);
   }
 }

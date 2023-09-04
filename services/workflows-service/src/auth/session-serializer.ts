@@ -1,7 +1,6 @@
 import { PassportSerializer } from '@nestjs/passport';
 import { Inject } from '@nestjs/common';
 import { UserService } from '@/user/user.service';
-import { User } from '@prisma/client';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { AuthenticatedEntity, UserWithProjects } from '@/types';
 

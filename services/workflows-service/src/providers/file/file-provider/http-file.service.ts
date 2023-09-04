@@ -39,7 +39,7 @@ export class HttpFileService implements IStreamableFileProvider {
       const response = await this.client.head(remoteFileConfig);
       return response.status >= 200 && response.status < 300;
     } catch (error) {
-      console.error('Error checking if remote file exists:', error);
+      console.error('Error checking if remote file exists: ', error);
       throw error;
     }
   }
