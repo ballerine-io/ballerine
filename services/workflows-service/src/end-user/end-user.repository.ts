@@ -33,9 +33,9 @@ export class EndUserRepository {
     return await this.prisma.endUser.findFirst(this.scopeService.scopeFindOne(args, projectIds));
   }
 
-  async findById<T extends Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>(
+  async findById<T extends Omit<Prisma.EndUserFindFirstOrThrowArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
   ) {
     return await this.prisma.endUser.findFirstOrThrow(
@@ -49,9 +49,9 @@ export class EndUserRepository {
     );
   }
 
-  async findByCorrelationIdUnscoped<T extends Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>(
+  async findByCorrelationIdUnscoped<T extends Omit<Prisma.EndUserFindFirstOrThrowArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindUniqueOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindFirstOrThrowArgs, 'where'>>,
   ) {
     return await this.prisma.endUser.findUnique({
       where: { correlationId: id },

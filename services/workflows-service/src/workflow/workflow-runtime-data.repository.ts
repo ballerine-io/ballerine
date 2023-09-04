@@ -58,9 +58,9 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
-  async findById<T extends Omit<Prisma.WorkflowRuntimeDataFindUniqueOrThrowArgs, 'where'>>(
+  async findById<T extends Omit<Prisma.WorkflowRuntimeDataFindFirstOrThrowArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataFindUniqueOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
     return await this.prisma.workflowRuntimeData.findFirstOrThrow(
