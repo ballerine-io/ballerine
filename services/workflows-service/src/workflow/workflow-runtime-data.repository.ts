@@ -92,7 +92,9 @@ export class WorkflowRuntimeDataRepository {
   ): Promise<WorkflowRuntimeData> {
     const stringifiedContext = JSON.stringify(newContext);
     const affectedRows = await this.prisma
-      .$executeRaw`UPDATE "WorkflowRuntimeData" SET "context" = jsonb_deep_merge_with_options("context", ${stringifiedContext}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds})`;
+      .$executeRaw`UPDATE "WorkflowRuntimeData" SET "context" = jsonb_deep_merge_with_options("context", ${stringifiedContext}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
+      ',',
+    )})`;
 
     // Retrieve and return the updated record
     if (affectedRows === 0) {
@@ -163,7 +165,7 @@ export class WorkflowRuntimeDataRepository {
 
   async findContext(id: string, projectIds: TProjectIds) {
     return (
-      await this.prisma.workflowRuntimeData.findUniqueOrThrow(
+      await this.prisma.workflowRuntimeData.findFirstOrThrow(
         this.scopeService.scopeFindOne(
           {
             where: { id },

@@ -50,10 +50,8 @@ export class ProjectScopeService {
     args.where = {
       // @ts-expect-error
       ...args.where,
-      project: {
-        id: {
-          in: projectIds,
-        },
+      projectId: {
+        in: projectIds,
       },
     };
 
@@ -78,11 +76,7 @@ export class ProjectScopeService {
     args.data = {
       // @ts-expect-error - dynamically typed for all queries
       ...args.data,
-      project: {
-        connect: {
-          id: projectId,
-        },
-      },
+      projectId,
     };
 
     return args;
@@ -104,13 +98,17 @@ export class ProjectScopeService {
     return args;
   }
 
-  scopeUpsert<T>(args: Prisma.SelectSubset<T, PrismaGeneralUpsertArgs>, projectId?: TProjectId) {
+  scopeUpsert<T>(
+    args: Prisma.SelectSubset<T, PrismaGeneralUpsertArgs>,
+    projectIds: TProjectIds,
+    projectId: TProjectId,
+  ) {
     // @ts-expect-error - dynamically typed for all queries
     args.where = {
       // @ts-expect-error - dynamically typed for all queries
       ...args.where,
       project: {
-        id: { in: projectId ? [projectId] : [] },
+        id: { in: projectIds },
       },
     };
     // @ts-expect-error - dynamically typed for all queries

@@ -56,7 +56,7 @@ export class StorageControllerInternal {
   })
   async uploadFile(
     @UploadedFile() file: Partial<Express.MulterS3.File>,
-    @CurrentProject() projectId: TProjectId,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
     const id = await this.service.createFileLink({
       uri: file.location || String(file.path),
@@ -64,7 +64,7 @@ export class StorageControllerInternal {
       fileNameInBucket: file.key,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
-      projectId,
+      projectId: currentProjectId,
     });
 
     return { id };

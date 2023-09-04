@@ -13,7 +13,7 @@ export class WorkflowDefinitionRepository {
 
   async create<T extends Prisma.WorkflowDefinitionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionCreateArgs>,
-    projectId: TProjectId,
+    projectId?: TProjectId,
   ): Promise<WorkflowDefinition> {
     return await this.prisma.workflowDefinition.create<T>(
       this.scopeService.scopeCreate(args, projectId),

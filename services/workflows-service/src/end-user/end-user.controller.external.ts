@@ -40,7 +40,7 @@ export class EndUserControllerExternal {
   @UseCustomerAuthGuard()
   async create(
     @common.Body() data: EndUserCreateDto,
-    @CurrentProject() projectId: TProjectId,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<EndUserModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>> {
     return this.service.create(
       {
@@ -59,7 +59,7 @@ export class EndUserControllerExternal {
           avatarUrl: true,
         },
       },
-      projectId,
+      currentProjectId,
     );
   }
 
@@ -67,9 +67,9 @@ export class EndUserControllerExternal {
   @UseCustomerAuthGuard()
   async createWithBusiness(
     @common.Body() data: EndUserCreateDto,
-    @CurrentProject() projectId: TProjectId,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const endUser = await this.service.createWithBusiness(data, projectId);
+    const endUser = await this.service.createWithBusiness(data, currentProjectId);
 
     return {
       endUserId: endUser.id,

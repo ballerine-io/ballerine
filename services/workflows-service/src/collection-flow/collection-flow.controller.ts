@@ -23,9 +23,9 @@ export class ColectionFlowController {
   @common.Post('/authorize')
   async authorizeUser(
     @common.Body() dto: AuthorizeDto,
-    @CurrentProject() projectId: TProjectId,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<EndUser> {
-    return this.service.authorize({ email: dto.email, flowType: dto.flowType }, projectId);
+    return this.service.authorize({ email: dto.email, flowType: dto.flowType }, currentProjectId);
   }
 
   @common.Get('/active-flow')
@@ -66,9 +66,15 @@ export class ColectionFlowController {
   async updateFlowConfiguration(
     @common.Param('configurationId') configurationId: string,
     @common.Body() dto: UpdateConfigurationDto,
-    @CurrentProject() projectId: TProjectId,
+    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
-    return this.service.updateFlowConfiguration(configurationId, dto.steps, projectId);
+    return this.service.updateFlowConfiguration(
+      configurationId,
+      dto.steps,
+      projectIds,
+      currentProjectId,
+    );
   }
 
   @common.Put('/:flowId')
@@ -76,7 +82,7 @@ export class ColectionFlowController {
     @common.Param('flowId') flowId: string,
     @common.Body() dto: UpdateFlowDto,
     @common.Request() request: any,
-    @CurrentProject() projectId: TProjectId,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
     try {
       const adapter = this.adapterManager.getAdapter(dto.flowType);
@@ -85,7 +91,7 @@ export class ColectionFlowController {
         adapter,
         dto.payload,
         flowId,
-        projectId,
+        currentProjectId,
         request.user.customer as Customer,
       );
     } catch (error) {

@@ -40,7 +40,7 @@ export class BusinessControllerExternal {
   @UseCustomerAuthGuard()
   async create(
     @common.Body() data: BusinessCreateDto,
-    @CurrentProject() projectId: TProjectId,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.service.create(
@@ -58,7 +58,7 @@ export class BusinessControllerExternal {
           companyName: true,
         },
       },
-      projectId,
+      currentProjectId,
     );
   }
 
@@ -113,7 +113,7 @@ export class BusinessControllerExternal {
   async update(
     @common.Param('id') businessId: string,
     @common.Body() data: BusinessUpdateDto,
-    @CurrentProject() projectId: TProjectId,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
     return this.service.updateById(
       businessId,
@@ -130,7 +130,7 @@ export class BusinessControllerExternal {
               : undefined,
         },
       },
-      projectId,
+      currentProjectId,
     );
   }
 

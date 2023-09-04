@@ -31,7 +31,7 @@ export class BusinessControllerExternal {
   @swagger.ApiForbiddenResponse()
   async create(
     @common.Body() data: BusinessCreateDto,
-    @CurrentProject() projectId: TProjectId,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.service.create(
@@ -49,7 +49,7 @@ export class BusinessControllerExternal {
           companyName: true,
         },
       },
-      projectId,
+      currentProjectId,
     );
   }
 

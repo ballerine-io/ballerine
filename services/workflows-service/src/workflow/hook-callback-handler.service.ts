@@ -31,6 +31,7 @@ export class HookCallbackHandlerService {
         workflowRuntime,
         resultDestinationPath,
         projectIds,
+        currentProjectId,
       );
     }
 
@@ -56,6 +57,7 @@ export class HookCallbackHandlerService {
     workflowRuntime: WorkflowRuntimeData,
     resultDestinationPath: string,
     proejctIds: TProjectIds,
+    currentProjectId: TProjectId,
   ) {
     const attributePath = resultDestinationPath.split('.');
     const context = workflowRuntime.context;
@@ -71,7 +73,7 @@ export class HookCallbackHandlerService {
       await this.workflowService.copyFileAndCreate(
         { documents: documents } as DefaultContextSchema,
         context.entity.id,
-        proejctIds?.[0] as TProjectId,
+        currentProjectId,
       )
     ).documents;
 
@@ -86,7 +88,7 @@ export class HookCallbackHandlerService {
     await this.workflowService.updateWorkflowRuntimeData(
       workflowRuntime.id,
       { context: context },
-      proejctIds?.[0] as TProjectId,
+      currentProjectId,
     );
   }
 

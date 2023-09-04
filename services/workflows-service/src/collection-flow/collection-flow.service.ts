@@ -95,12 +95,13 @@ export class CollectionFlowService {
   async updateFlowConfiguration(
     configurationId: string,
     steps: FlowStepModel[],
+    projectIds: TProjectIds,
     projectId: TProjectId,
   ): Promise<FlowConfigurationModel> {
     const definition = await this.workflowDefinitionRepository.findById(
       configurationId,
       {},
-      projectId ? [projectId] : null,
+      projectIds,
     );
     if (!definition) throw new NotFoundException();
 
