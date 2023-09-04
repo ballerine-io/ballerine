@@ -20,8 +20,8 @@ import { File } from '@prisma/client';
 import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
-import { ProjectScopeService } from '@/project/project-scope.service';
+import { TProjectId, TProjectIds } from '@/types';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { isBase64 } from '@/common/utils/is-base64/is-base64';
 
 // Temporarily identical to StorageControllerExternal
@@ -32,7 +32,6 @@ export class StorageControllerInternal {
     protected readonly service: StorageService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-    protected readonly scopeService: ProjectScopeService,
   ) {}
 
   // TODO - update file to be multi-tenant to the specific s3 bucket
@@ -58,7 +57,7 @@ export class StorageControllerInternal {
   })
   async uploadFile(
     @UploadedFile() file: Partial<Express.MulterS3.File>,
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
     const fileInfo = await this.service.createFileLink({
       uri: file.location || String(file.path),
@@ -66,7 +65,7 @@ export class StorageControllerInternal {
       fileNameInBucket: file.key,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
-      projectIds,
+      projectId: currentProjectId,
       mimeType: file.mimetype,
     });
 
@@ -77,10 +76,7 @@ export class StorageControllerInternal {
   @common.Get('/:id')
   async getFileById(@ProjectIds() projectIds: TProjectIds, @Param('id') id: string) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileById(
-      { id },
-      this.scopeService.scopeFindOne({}, projectIds),
-    );
+    const persistedFile = await this.service.getFileById({ id }, projectIds, {});
 
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
@@ -98,10 +94,7 @@ export class StorageControllerInternal {
     @Query('format') format: string,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileById(
-      { id },
-      this.scopeService.scopeFindOne({}, projectIds),
-    );
+    const persistedFile = await this.service.getFileById({ id }, projectIds, {});
 
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');

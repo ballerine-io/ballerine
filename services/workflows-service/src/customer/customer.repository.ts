@@ -44,8 +44,8 @@ export class CustomerRepository {
   async findByProjectId<T extends Omit<Prisma.CustomerFindFirstArgsBase, 'where'>>(
     projectId: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.CustomerFindFirstArgsBase, 'where'>>,
-  ): Promise<Customer | null> {
-    return this.prisma.customer.findFirst({
+  ): Promise<Customer> {
+    return this.prisma.customer.findFirstOrThrow({
       where: { projects: { some: { id: projectId } } },
       ...args,
     });

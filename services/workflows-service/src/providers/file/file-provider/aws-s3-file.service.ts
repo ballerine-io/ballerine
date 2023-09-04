@@ -167,7 +167,15 @@ export class AwsS3FileService implements IStreamableFileProvider {
     return `https://${bucketName}.s3.amazonaws.com/${fileName}`;
   }
 
-  generateRemotePath(fileName: string, directory?: string): string {
-    return `${directory !== undefined ? `${directory}/` : ''}${fileName}`;
+  generateRemotePath({
+    customerName,
+    fileName,
+    directory,
+  }: {
+    fileName: string;
+    customerName: string;
+    directory?: string;
+  }): string {
+    return [customerName, directory, fileName].filter(pathPart => !!pathPart).join('/');
   }
 }
