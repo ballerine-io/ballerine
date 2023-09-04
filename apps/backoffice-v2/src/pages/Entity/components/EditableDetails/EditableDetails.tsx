@@ -127,7 +127,18 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
           })}
         >
           {formData?.map(
-            ({ title, isEditable, type, format, pattern, value, valueAlias, dropdownOptions }) => {
+            ({
+              title,
+              isEditable,
+              type,
+              format,
+              minimum,
+              maximum,
+              pattern,
+              value,
+              valueAlias,
+              dropdownOptions,
+            }) => {
               const originalValue = form.watch(title);
 
               const displayValue = (value: unknown) => {
@@ -156,6 +167,16 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                       !Array.isArray(value),
                     ].every(Boolean);
                     const isSelect = isInput && !!dropdownOptions;
+
+                    let inputType: string;
+
+                    if (!format) {
+                      inputType = type === 'string' ? 'text' : type;
+                    } else if (format === 'date-time') {
+                      inputType = 'datetime-local';
+                    } else {
+                      inputType = format;
+                    }
 
                     return (
                       <FormItem>
@@ -224,7 +245,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                         {isInput && !isSelect && (
                           <FormControl>
                             <Input
-                              type={!format ? (type === 'string' ? 'text' : type) : format}
+                              type={inputType}
+                              {...(inputType === 'datetime-local' && { step: '1' })}
+                              {...(minimum && { min: minimum })}
+                              {...(maximum && { max: maximum })}
                               disabled={!isEditable}
                               className={ctw(
                                 `p-1 disabled:cursor-auto disabled:border-none disabled:bg-background disabled:opacity-100`,
