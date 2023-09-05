@@ -14,10 +14,11 @@ import { UseGuards, UsePipes } from '@nestjs/common';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterCreateDto } from '@/filter/dtos/filter-create';
 import { FilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
-import { InputJsonValue, TProjectIds } from '@/types';
+import { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('external/filters')
 @common.Controller('external/filters')
@@ -33,18 +34,24 @@ export class FilterControllerExternal {
   @swagger.ApiOkResponse({ type: [FilterModel] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(FilterFindManyArgs)
-  async list(@common.Req() request: Request): Promise<FilterModel[]> {
+  async list(
+    @ProjectIds() projectIds: TProjectIds,
+    @common.Req() request: Request,
+  ): Promise<FilterModel[]> {
     const args = plainToClass(FilterFindManyArgs, request.query);
-    return this.service.list(args);
+    return this.service.list(args, projectIds);
   }
 
   @common.Get(':id')
   @swagger.ApiOkResponse({ type: FilterModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  async getById(@common.Param() params: FilterWhereUniqueInput): Promise<FilterModel | null> {
+  async getById(
+    @ProjectIds() projectIds: TProjectIds,
+    @common.Param() params: FilterWhereUniqueInput,
+  ): Promise<FilterModel | null> {
     try {
-      return await this.service.getById(params.id);
+      return await this.service.getById(params.id, {}, projectIds);
     } catch (err) {
       if (isRecordNotFoundError(err)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -59,13 +66,19 @@ export class FilterControllerExternal {
   @swagger.ApiCreatedResponse({ type: FilterModel })
   @swagger.ApiForbiddenResponse()
   @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
-  async createFilter(@ProjectIds() projectIds: TProjectIds, @common.Body() data: FilterCreateDto) {
-    return await this.service.create({
-      data: {
-        ...data,
-        query: data?.query as InputJsonValue,
-        projectId: projectIds?.[0],
+  async createFilter(
+    @CurrentProject() currentProjectId: TProjectId,
+    @common.Body() data: FilterCreateDto,
+  ) {
+    return await this.service.create(
+      {
+        data: {
+          ...data,
+          query: data?.query as InputJsonValue,
+          projectId: currentProjectId,
+        },
       },
-    });
+      currentProjectId,
+    );
   }
 }
