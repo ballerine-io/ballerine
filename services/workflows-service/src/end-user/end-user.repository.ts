@@ -55,11 +55,10 @@ export class EndUserRepository {
     projectIds: TProjectIds,
   ) {
     return await this.prisma.endUser.findFirst({
-        where: {correlationId: id, projectId: {in: projectIds}},
-      ...args
+      where: { correlationId: id, projectId: { in: projectIds } },
+      ...args,
     });
   }
-
 
   async findByCorrelationIdUnscoped<T extends Omit<Prisma.EndUserFindUniqueArgs, 'where'>>(
     id: string,
