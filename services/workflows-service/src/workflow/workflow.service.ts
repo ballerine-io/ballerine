@@ -1044,7 +1044,7 @@ export class WorkflowService {
 
     const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
-      { data: { assigneeId: assigneeId, assignedAt: new Date() } },
+      { data: { assigneeId, assignedAt: new Date() } },
       currentProjectId,
     );
 
