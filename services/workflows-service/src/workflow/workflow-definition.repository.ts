@@ -40,9 +40,9 @@ export class WorkflowDefinitionRepository {
           },
           {
             ...queryArgs.where,
-            project: {is: null},
+            project: { is: null },
             isPublic: true,
-          }
+          },
         ],
       };
     }
@@ -66,9 +66,9 @@ export class WorkflowDefinitionRepository {
           isPublic: true,
         },
         {
-          project: {id: {in: projectIds!}}
-        }
-      ]
+          project: { id: { in: projectIds! } },
+        },
+      ],
     };
     return await this.prisma.workflowDefinition.findFirstOrThrow(queryArgs);
   }

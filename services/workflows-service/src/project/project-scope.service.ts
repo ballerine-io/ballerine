@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
-import {isUpdateOrCreateByAssociation} from "@/common/utils/prisma-helpers";
+import { isUpdateOrCreateByAssociation } from '@/common/utils/prisma-helpers';
 
 export interface PrismaGeneralQueryArgs {
   select?: Record<string, unknown> | null;
@@ -36,7 +36,7 @@ export class ProjectScopeService {
       // @ts-expect-error - dynamically typed for all queries
       ...args?.where,
       project: {
-        is: { in: projectIds },
+        id: { in: projectIds },
       },
     };
 
@@ -74,25 +74,23 @@ export class ProjectScopeService {
 
   scopeCreate<T>(args: Prisma.SelectSubset<T, PrismaGeneralInsertArgs>, projectId?: TProjectId) {
     // @ts-expect-error - dynamically typed for all queries
-    if ( isUpdateOrCreateByAssociation(args.data)) {
+    if (isUpdateOrCreateByAssociation(args.data)) {
       // @ts-expect-error - dynamically typed for all queries
       args.data = {
         // @ts-expect-error - dynamically typed for all queries
         ...args.data,
         project: {
-          connect: {id: projectId}
+          connect: { id: projectId },
         },
-      }
+      };
     } else {
       // @ts-expect-error - dynamically typed for all queries
       args.data = {
         // @ts-expect-error - dynamically typed for all queries
         ...args.data,
         projectId,
-      }
+      };
     }
-;
-
     return args;
   }
 
