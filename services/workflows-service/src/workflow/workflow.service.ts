@@ -153,6 +153,10 @@ export class WorkflowService {
       parentRuntimeDataId: true,
     };
 
+    if (data.isPublic) {
+      return await this.workflowDefinitionRepository.createUnscoped({ data, select });
+    }
+
     return await this.workflowDefinitionRepository.create({ data, select }, projectId);
   }
 

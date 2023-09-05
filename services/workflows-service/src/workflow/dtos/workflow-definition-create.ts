@@ -95,4 +95,12 @@ export class WorkflowDefinitionCreateDto {
   @IsArray()
   @IsOptional()
   submitStates?: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @Type(() => Boolean)
+  @IsOptional()
+  isPublic?: boolean;
 }

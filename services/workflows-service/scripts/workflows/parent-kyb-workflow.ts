@@ -138,6 +138,7 @@ export const kybParentDynamicExample = {
       },
     ],
   },
+  isPublic: true
 };
 export const generateParentKybWithKycs = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
