@@ -3,8 +3,6 @@ import { promises as fsPromises } from 'fs';
 import axios, { AxiosResponse } from 'axios';
 import { Readable } from 'stream';
 import { IStreamableFileProvider } from '../types/interfaces';
-import { isErrorWithMessage } from '@ballerine/common';
-import * as common from '@nestjs/common';
 
 export class HttpFileService implements IStreamableFileProvider {
   protected client;
