@@ -11,6 +11,8 @@ on:
       - test
       - prod
       - staging
+      - sb
+      - demo
 
 env:
   REGISTRY: ghcr.io
@@ -37,7 +39,7 @@ jobs:
         uses: docker/setup-qemu-action@v2
         with:
           platforms: 'arm64,arm'
-  
+
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
@@ -50,7 +52,7 @@ jobs:
         run: |
           PACKAGE_VERSION=$(jq -r '.version' services/workflows-service/package.json)
           echo "::set-output name=version::$PACKAGE_VERSION"
-      
+
       - name: Print the version
         run: echo "The version was ${{ steps.get_version.outputs.version }}"
 
@@ -77,13 +79,13 @@ jobs:
             type=raw,value=commit-${{ github.sha }}-prod
             type=raw,value=${{ steps.get_version.outputs.version }}-prod
             type=raw,value=latest
-  
+
       - name: Build and push Docker image for Prod
         if: github.ref == 'refs/heads/prod'
         uses: docker/build-push-action@v4
         with:
           context: services/workflows-service
-          platforms: linux/amd64, linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
 
@@ -92,6 +94,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: services/workflows-service
-          platforms: linux/amd64, linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.branchmeta.outputs.tags }}
