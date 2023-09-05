@@ -40,10 +40,13 @@ export class CollectionFlowService {
         workflowDefinitionId: credentials.flowType,
         context: {
           entity: {
-            endUserId: newUser.id,
             ballerineEntityId: newUser.businesses.at(-1)?.id,
             type: 'business',
-            data: {},
+            data: {
+              additionalInformation: {
+                endUserId: newUser.id,
+              },
+            },
           },
           documents: [],
         },

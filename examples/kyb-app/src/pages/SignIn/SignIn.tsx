@@ -1,3 +1,4 @@
+import { AppNavigate } from '@app/common/components/organisms/NavigateWithToken';
 import { delay } from '@app/common/utils/delay';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
 import { useSessionQuery, withSessionProtected } from '@app/hooks/useSessionQuery';
@@ -26,7 +27,7 @@ export const SignIn = () => {
   );
 
   if (user) {
-    return <Navigate to={'/collection-flow'} />;
+    return <AppNavigate to={'/collection-flow'} />;
   }
 
   return (

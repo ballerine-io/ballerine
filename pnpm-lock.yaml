@@ -1973,8 +1973,8 @@ importers:
         specifier: 3.325.0
         version: 3.325.0
       '@ballerine/common':
-        specifier: 0.5.27
-        version: link:../../packages/common
+        specifier: 0.5.28
+        version: 0.5.28
       '@ballerine/workflow-core':
         specifier: 0.4.30
         version: link:../../packages/workflow-core
@@ -7953,6 +7953,14 @@ packages:
 
   /@ballerine/common@0.5.20:
     resolution: {integrity: sha512-NgWAwDF3OQoQY5NBxzeVfVYBQMBcG+csdWS5EKfJ8FwXhjQScrtN/ajdwJtZ5a7kWhxkf6xWGDmhDliPsyA+dQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      ajv: 8.12.0
+      json-schema-to-zod: 0.6.3
+    dev: false
+
+  /@ballerine/common@0.5.28:
+    resolution: {integrity: sha512-ISopOVmYqe69dg2bB0VoasrDMI7mTSlcAem0vr6uVtDXPQv/5W2WgncUtmlkA05b84D2yB2MbIz4ULRnigz3IA==}
     engines: {node: '>=12'}
     dependencies:
       ajv: 8.12.0
