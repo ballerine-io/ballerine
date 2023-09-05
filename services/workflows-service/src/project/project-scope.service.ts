@@ -95,17 +95,7 @@ export class ProjectScopeService {
   }
 
   scopeUpdate<T>(args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>, projectId: TProjectId) {
-    args = this.scopeCreate(args);
-    // @ts-expect-error - dynamically typed for all queries
-    args.data = {
-      // @ts-expect-error - dynamically typed for all queries
-      ...args.data,
-      project: {
-        connect: {
-          id: projectId,
-        },
-      },
-    };
+    args = this.scopeCreate(args, projectId);
 
     return args;
   }
