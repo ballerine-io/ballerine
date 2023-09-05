@@ -1219,7 +1219,7 @@ export class WorkflowService {
     entityType: TEntityType,
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
-  ): Promise<RunnableWorkflowData[]> {
+  ) {
     const workflowDefinitionResolver = policies[intent as keyof typeof policies];
     const entity = await (async () => {
       if (entityType === 'business')
@@ -1274,7 +1274,7 @@ export class WorkflowService {
     parentWorkflowId?: string;
     projectIds: TProjectIds;
     currentProjectId: TProjectId;
-  }): Promise<RunnableWorkflowData[]> {
+  }) {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
       {},
@@ -1385,7 +1385,7 @@ export class WorkflowService {
         workflowRuntimeData,
         ballerineEntityId: entityId,
       },
-    ];
+    ] as const;
   }
 
   async copyFileAndCreate(
