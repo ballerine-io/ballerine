@@ -1,4 +1,3 @@
-
 export const isUpdateOrCreateByAssociation = (data: unknown): boolean => {
   const associationInputKeys = [
     'connect',
@@ -28,4 +27,4 @@ export const isUpdateOrCreateByAssociation = (data: unknown): boolean => {
 
     return isUpdateOrCreateByAssociation(value);
   });
-}
+};
