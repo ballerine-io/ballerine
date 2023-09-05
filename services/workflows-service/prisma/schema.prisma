@@ -72,8 +72,9 @@ model EndUser {
   businesses           Business[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  projectId                String?
+  project                  Project?                   @relation(fields: [projectId], references: [id])
+  WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
 
   @@index([endUserType])
   @@index([approvalState])
@@ -194,9 +195,10 @@ model WorkflowRuntimeData {
   resolvedAt                DateTime?
   assignedAt                DateTime?
 
-  parentRuntimeDataId       String?               @map("parent_runtime_data_id")
-  parentWorkflowRuntimeData WorkflowRuntimeData?  @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
-  childWorkflowsRuntimeData WorkflowRuntimeData[] @relation("ParentChild")
+  parentRuntimeDataId       String?                    @map("parent_runtime_data_id")
+  parentWorkflowRuntimeData WorkflowRuntimeData?       @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
+  childWorkflowsRuntimeData WorkflowRuntimeData[]      @relation("ParentChild")
+  WorkflowRuntimeDataToken  WorkflowRuntimeDataToken[]
 
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id])
@@ -287,14 +289,14 @@ model Project {
 
   userToProjects UserToProject[]
 
-  filters               Filter[]
-  endUsers              EndUser[]
-  business              Business[]
-  workflowRuntimeData   WorkflowRuntimeData[]
-  files                 File[]
-  SalesforceIntegration SalesforceIntegration?
-  workflowDefinitions   WorkflowDefinition[]
-
+  filters                  Filter[]
+  endUsers                 EndUser[]
+  business                 Business[]
+  workflowRuntimeData      WorkflowRuntimeData[]
+  files                    File[]
+  SalesforceIntegration    SalesforceIntegration?
+  workflowDefinitions      WorkflowDefinition[]
+  WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -325,4 +327,19 @@ model SalesforceIntegration {
   userId              String   @db.VarChar(500)
   organizationId      String   @db.VarChar(500)
   idUrl               String   @db.VarChar(500)
+}
+
+model WorkflowRuntimeDataToken {
+  id                    String              @id @default(cuid()) @db.VarChar(500)
+  token                 String              @unique @db.VarChar(500)
+  workflowRuntimeDataId String              @db.VarChar(500)
+  workflowRuntimeData   WorkflowRuntimeData @relation(fields: [workflowRuntimeDataId], references: [id])
+  endUserId             String              @db.VarChar(500)
+  endUser               EndUser             @relation(fields: [endUserId], references: [id])
+  projectId             String              @db.VarChar(500)
+  project               Project             @relation(fields: [projectId], references: [id])
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  expiresAt             DateTime
+  deletedAt             DateTime?
 }
