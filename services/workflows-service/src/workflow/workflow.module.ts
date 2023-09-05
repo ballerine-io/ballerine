@@ -64,7 +64,6 @@ import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.re
     UserRepository,
     WorkflowTokenRepository,
     WorkflowTokenService,
-    EndUserService,
   ],
   exports: [
     WorkflowService,
