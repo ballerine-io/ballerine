@@ -9,8 +9,11 @@ on:
     branches:
       - dev
       - test
-      - staging
       - prod
+      - staging
+      - sb
+      - demo
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/backoffice

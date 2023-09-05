@@ -144,7 +144,16 @@ export const useTasks = ({
                         )?.map(
                           ([
                             title,
-                            { type, format, pattern, isEditable = true, dropdownOptions, value },
+                            {
+                              type,
+                              format,
+                              pattern,
+                              isEditable = true,
+                              dropdownOptions,
+                              value,
+                              formatMinimum,
+                              formatMaximum,
+                            },
                           ]) => {
                             const fieldValue = value || (properties?.[title] ?? '');
                             const isEditableDecision = isDoneWithRevision || !decision?.status;
@@ -160,6 +169,8 @@ export const useTasks = ({
                                 caseState.writeEnabled &&
                                 getIsEditable(isEditable, title),
                               dropdownOptions,
+                              minimum: formatMinimum,
+                              maximum: formatMaximum,
                             };
                           },
                         ),
