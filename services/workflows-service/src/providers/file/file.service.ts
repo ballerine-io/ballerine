@@ -5,7 +5,7 @@ import { IStreamableFileProvider } from './types/interfaces';
 import { TFileServiceProvider } from './types';
 import { getDocumentId, isErrorWithMessage } from '@ballerine/common';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
-import { TProjectId, TProjectIds } from '@/types';
+import { TProjectId } from '@/types';
 import crypto from 'crypto';
 import { isType } from '@/common/is-type/is-type';
 import { z } from 'zod';
@@ -251,14 +251,18 @@ export class FileService {
     );
     const isFileInfoWithFileNameInBucket = isType(
       z.object({
-        fileNameInBucket: z.string(),
+        remoteFilePath: z.object({
+          fileNameInBucket: z.string(),
+        }),
       }),
     )(fileInfo);
     const { id: ballerineFileId, mimeType } = await this.storageService.createFileLink({
       uri: remoteFileNameInDirectory,
       fileNameOnDisk: remoteFileNameInDirectory,
       userId: entityId,
-      fileNameInBucket: isFileInfoWithFileNameInBucket ? fileInfo?.fileNameInBucket : undefined,
+      fileNameInBucket: isFileInfoWithFileNameInBucket
+        ? fileInfo?.remoteFilePath?.fileNameInBucket
+        : undefined,
       projectId,
       mimeType: fileInfo?.mimeType,
     });
