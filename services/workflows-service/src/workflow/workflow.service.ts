@@ -1500,7 +1500,7 @@ export class WorkflowService {
         const res = await this.endUserRepository.findByCorrelationId(
           entity.id as TEntityId,
           {},
-          projectIds
+          projectIds,
         );
         return res && res.id;
       }
