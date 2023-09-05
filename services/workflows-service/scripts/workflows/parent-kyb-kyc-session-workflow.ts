@@ -328,6 +328,7 @@ export const parentKybWithSessionWorkflowDefinition = {
     type: 'json-schema',
     schema: defaultContextSchema,
   },
+  isPublic: true
 };
 export const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient, projectId?: string) => {
   return await prismaClient.workflowDefinition.create({
