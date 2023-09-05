@@ -11,8 +11,6 @@ import { AuthenticatedEntity, TProjectIds } from '@/types';
 export class WorkflowAssigneeGuard implements CanActivate {
   constructor(private service: WorkflowService) {}
   async canActivate(context: ExecutionContext) {
-    if (env.IS_DEMO) return true;
-
     const request = context.switchToHttp().getRequest<Request>();
     const workflowId = request.params.id;
     const requestingUserId = (request.user! as unknown as AuthenticatedEntity).user!.id;
