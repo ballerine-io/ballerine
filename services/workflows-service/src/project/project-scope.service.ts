@@ -73,29 +73,74 @@ export class ProjectScopeService {
 
   scopeCreate<T>(args: Prisma.SelectSubset<T, PrismaGeneralInsertArgs>, projectId?: TProjectId) {
     // @ts-expect-error - dynamically typed for all queries
-    args.data = {
-      // @ts-expect-error - dynamically typed for all queries
-      ...args.data,
-      projectId,
-    };
+    if (this.__isUncheckedInput(args.data)) {
+      return {
+        // @ts-expect-error - dynamically typed for all queries
+        ...args,
+        data: {
+          // @ts-expect-error - dynamically typed for all queries
+          ...args.data,
+          project: {
+            connect: {
+              id: projectId,
+            },
+          },
+        },
+      };
+    }
 
-    return args;
+    // @ts-expect-error - dynamically typed for all queries
+    if (!this.__isUncheckedInput(args.data)) {
+      return {
+        // @ts-expect-error - dynamically typed for all queries
+        ...args,
+        data: {
+          // @ts-expect-error - dynamically typed for all queries
+          ...args.data,
+          projectId,
+        },
+      };
+    }
   }
 
   scopeUpdate<T>(args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>, projectId: TProjectId) {
-    args = this.scopeCreate(args);
-    // @ts-expect-error - dynamically typed for all queries
-    args.data = {
-      // @ts-expect-error - dynamically typed for all queries
-      ...args.data,
-      project: {
-        connect: {
-          id: projectId,
-        },
-      },
-    };
+    return this.scopeCreate(args);
+  }
 
-    return args;
+  /**
+   * Used to determine if `project` should be connected via `connect` or `projectId`.
+   * @param data
+   * @private
+   */
+  private __isUncheckedInput(data: unknown): boolean {
+    const uncheckedInputKeys = [
+      'connect',
+      'create',
+      'connectOrCreate',
+      'disconnect',
+      'set',
+      'update',
+      'delete',
+      'deleteMany',
+      'updateMany',
+      'upsert',
+    ];
+
+    if (Array.isArray(data)) {
+      return data.some(this.__isUncheckedInput.bind(this));
+    }
+
+    if (typeof data !== 'object' || data === null) {
+      return false;
+    }
+
+    return Object.entries(data).some(([key, value]) => {
+      if (uncheckedInputKeys.includes(key)) {
+        return true;
+      }
+
+      return this.__isUncheckedInput(value);
+    });
   }
 
   scopeUpsert<T>(
