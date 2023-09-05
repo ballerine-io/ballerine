@@ -1536,9 +1536,10 @@ export class WorkflowService {
         );
         return res && res.id;
       } else {
-        const res = await this.endUserRepository.findByCorrelationIdUnscoped(
+        const res = await this.endUserRepository.findByCorrelationId(
           entity.id as TEntityId,
           {},
+          projectIds
         );
         return res && res.id;
       }
