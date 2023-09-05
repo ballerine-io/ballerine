@@ -11,6 +11,7 @@ on:
       - test
       - prod
       - staging
+      - sb
       - demo
 
 env:

@@ -10,6 +10,7 @@ module.exports = {
     '[a-zA-Z0-9+/]{2,}={0,2}',
   ],
   words: [
+    'géné',
     'Lilyan',
     'Brockside',
     'buhgdawe',

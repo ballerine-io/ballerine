@@ -1,11 +1,22 @@
 # Install ballerine using helm chart
 
-Ballerine is a collection of services like workflow-service, backendoffice.
+Ballerine is a collection of services like workflow-service, backoffice.
 In values.yaml we have sections to enable/disable them based on the necessity like below
 
 ``` bash
 workflowService:
   enabled: true
+.
+.
+
+backoffice:
+  enabled: true
+.
+.
+headlessexample:
+  enabled: true
+.
+.
 ```
 
 ## Prerequisites
@@ -69,7 +80,8 @@ postgresql:
 ### Installing Ballerine helm chart
 
 ``` bash
-helm install ballerine . -n ballerine --create-namespace -f values.yaml
+helm dep build
+helm install ballerine . -n ballerine --create-namespace -f example.values.yaml
 ```
 
 ### Troubleshooting
