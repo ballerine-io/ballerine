@@ -8,7 +8,7 @@ export class CustomerAuthGuard implements CanActivate {
     const req = context.switchToHttp().getRequest<Request>();
     const user = req.user as unknown as AuthenticatedEntity;
 
-    if (user.type !== 'customer') {
+    if (user?.type !== 'customer') {
       throw new UnauthorizedException('Unauthorized');
     }
 

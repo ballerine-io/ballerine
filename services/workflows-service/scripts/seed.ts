@@ -58,7 +58,7 @@ async function createCustomer(
   return await client.customer.create({
     data: {
       id: `customer-${id}`,
-      name: `Customer ${id}`,
+      name: `customer-1${id}`,
       displayName: `Customer ${id}`,
       authenticationConfiguration: {
         apiType: 'API_KEY',
@@ -1242,7 +1242,7 @@ async function seed(bcryptSalt: string | number) {
   customSeed();
   await generateKybDefintion(client);
   await generateKycSessionDefinition(client);
-  await generateParentKybWithSessionKycs(client);
+  await generateParentKybWithSessionKycs(client, project1.id);
   await generateKycForE2eTest(client);
   await generateParentKybWithKycs(client);
   console.info('Seeded database successfully');
