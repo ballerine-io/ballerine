@@ -294,7 +294,7 @@ async function seed(bcryptSalt: string | number) {
             {
               provider: 'http',
               uri: imageUri3,
-              type: 'png',
+              type: 'image/png',
               ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               data: '',
               metadata: {},
@@ -418,7 +418,7 @@ async function seed(bcryptSalt: string | number) {
             {
               provider: 'http',
               uri: imageUri3,
-              type: 'png',
+              type: 'image/png',
               data: '',
               ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               metadata: {},
@@ -1242,7 +1242,7 @@ async function seed(bcryptSalt: string | number) {
   customSeed();
   await generateKybDefintion(client);
   await generateKycSessionDefinition(client);
-  await generateParentKybWithSessionKycs(client, project1.id);
+  await generateParentKybWithSessionKycs(client);
   await generateKycForE2eTest(client);
   await generateParentKybWithKycs(client);
   console.info('Seeded database successfully');

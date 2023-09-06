@@ -34,12 +34,16 @@ export class WorkflowDefinitionRepository {
 
     if (args.where?.projectId) {
       queryArgs.where = {
-        ...queryArgs.where,
-        OR: {
-          ...queryArgs.where,
-          projectId: null,
-          isPublic: true,
-        },
+        OR: [
+          {
+            ...queryArgs.where,
+          },
+          {
+            ...queryArgs.where,
+            project: { is: null },
+            isPublic: true,
+          },
+        ],
       };
     }
 
@@ -51,20 +55,20 @@ export class WorkflowDefinitionRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
   ): Promise<WorkflowDefinition> {
-    const queryArgs = this.scopeService.scopeFindMany(
-      args,
-      projectIds,
-    ) as Prisma.WorkflowDefinitionFindFirstOrThrowArgs;
+    const queryArgs = args as Prisma.WorkflowDefinitionFindFirstOrThrowArgs;
 
     queryArgs.where = {
       ...queryArgs.where,
       id,
-      OR: {
-        ...queryArgs.where,
-        projectId: null,
-        isPublic: true,
-        id,
-      },
+      OR: [
+        {
+          projectId: null,
+          isPublic: true,
+        },
+        {
+          project: { id: { in: projectIds! } },
+        },
+      ],
     };
     return await this.prisma.workflowDefinition.findFirstOrThrow(queryArgs);
   }
