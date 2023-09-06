@@ -61,7 +61,7 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.0
+        specifier: 0.7.1
         version: link:../../packages/common
       '@ballerine/ui':
         specifier: 0.3.0
@@ -525,7 +525,7 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.0
+        specifier: 0.7.1
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.1
@@ -1326,7 +1326,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.0
+        specifier: 0.7.1
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1474,7 +1474,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.0
+        specifier: 0.7.1
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -1601,7 +1601,7 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.0
+        specifier: 0.7.1
         version: link:../../packages/common
       '@ballerine/workflow-core':
         specifier: 0.5.1
@@ -1973,7 +1973,7 @@ importers:
         specifier: 3.325.0
         version: 3.325.0
       '@ballerine/common':
-        specifier: 0.7.0
+        specifier: 0.7.1
         version: link:../../packages/common
       '@ballerine/workflow-core':
         specifier: 0.5.1
