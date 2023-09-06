@@ -330,13 +330,13 @@ model SalesforceIntegration {
 }
 
 model WorkflowRuntimeDataToken {
-  id                    String              @id @default(cuid()) @db.VarChar(500)
+  id                    String              @id @default(cuid())
   token                 String              @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workflowRuntimeDataId String              @db.VarChar(500)
+  workflowRuntimeDataId String
   workflowRuntimeData   WorkflowRuntimeData @relation(fields: [workflowRuntimeDataId], references: [id])
-  endUserId             String              @db.VarChar(500)
+  endUserId             String
   endUser               EndUser             @relation(fields: [endUserId], references: [id])
-  projectId             String              @db.VarChar(500)
+  projectId             String
   project               Project             @relation(fields: [projectId], references: [id])
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
