@@ -18,7 +18,6 @@ import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
 import { Readable } from 'stream';
 import { TDocumentWithoutPageType } from '@/common/types';
 import fs from 'fs';
-import { file } from 'tmp';
 
 @Injectable()
 export class FileService {
