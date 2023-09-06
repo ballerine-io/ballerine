@@ -331,7 +331,7 @@ model SalesforceIntegration {
 
 model WorkflowRuntimeDataToken {
   id                    String              @id @default(cuid()) @db.VarChar(500)
-  token                 String              @unique @db.VarChar(500)
+  token                 String              @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   workflowRuntimeDataId String              @db.VarChar(500)
   workflowRuntimeData   WorkflowRuntimeData @relation(fields: [workflowRuntimeDataId], references: [id])
   endUserId             String              @db.VarChar(500)

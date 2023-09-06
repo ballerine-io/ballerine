@@ -38,7 +38,6 @@ export class EndUserService {
       {
         data: {
           ...userData,
-          projectId: projectId,
           businesses: {
             create: { companyName, projectId: projectId },
           },

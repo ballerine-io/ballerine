@@ -2,7 +2,6 @@ import { Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { TProjectId } from '@/types';
 import { PrismaService } from '@/prisma/prisma.service';
-import { randomUUID } from 'crypto';
 
 @Injectable()
 export class WorkflowTokenRepository {
@@ -15,12 +14,9 @@ export class WorkflowTokenRepository {
       'workflowRuntimeDataId' | 'endUserId' | 'expiresAt'
     >,
   ) {
-    const token = randomUUID();
-
     return await this.prisma.workflowRuntimeDataToken.create({
       data: {
         ...data,
-        token,
         projectId,
       },
     });
@@ -30,7 +26,7 @@ export class WorkflowTokenRepository {
     return await this.prisma.workflowRuntimeDataToken.findFirst({
       where: {
         token,
-        OR: [{ expiresAt: { gt: new Date() } }, { deletedAt: null }],
+        AND: [{ expiresAt: { gt: new Date() } }, { deletedAt: null }],
       },
     });
   }
@@ -42,7 +38,7 @@ export class WorkflowTokenRepository {
       },
       where: {
         token,
-        OR: [{ expiresAt: { gt: new Date() } }, { deletedAt: null }],
+        AND: [{ expiresAt: { gt: new Date() } }, { deletedAt: null }],
       },
     });
   }

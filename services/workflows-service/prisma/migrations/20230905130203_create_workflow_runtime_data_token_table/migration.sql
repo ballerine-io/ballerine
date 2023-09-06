@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "WorkflowRuntimeDataToken" (
     "id" VARCHAR(500) NOT NULL,
-    "token" VARCHAR(500) NOT NULL,
+    "token" UUID NOT NULL DEFAULT gen_random_uuid(),
     "workflowRuntimeDataId" VARCHAR(500) NOT NULL,
     "endUserId" VARCHAR(500) NOT NULL,
     "projectId" VARCHAR(500) NOT NULL,
