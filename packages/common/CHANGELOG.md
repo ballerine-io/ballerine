@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.6.0
+
+### Minor Changes
+
+- Fixes
+
 ## 0.5.25
 
 ### Patch Changes
