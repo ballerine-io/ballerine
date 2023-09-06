@@ -1313,6 +1313,7 @@ export class WorkflowService {
     parentWorkflowId,
     projectIds,
     currentProjectId,
+    ...salesforceData
   }: {
     workflowDefinitionId: string;
     context: DefaultContextSchema;
@@ -1320,7 +1321,8 @@ export class WorkflowService {
     parentWorkflowId?: string;
     projectIds: TProjectIds;
     currentProjectId: TProjectId;
-  }) {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+  } & ({ salesforceObjectName: string; salesforceRecordId: string } | {})) {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
       {},
@@ -1378,6 +1380,7 @@ export class WorkflowService {
             ...(parentWorkflowId && {
               parentWorkflowRuntimeDataId: parentWorkflowId,
             }),
+            ...('salesforceObjectName' in salesforceData && salesforceData),
           },
         },
         currentProjectId,

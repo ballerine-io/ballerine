@@ -334,6 +334,11 @@ export class WorkflowControllerExternal {
       },
       projectIds: [currentProjectId],
       currentProjectId: currentProjectId,
+      ...('salesforceObjectName' in body &&
+        'salesforceRecordId' in body && {
+          salesforceObjectName: body.salesforceObjectName,
+          salesforceRecordId: body.salesforceRecordId,
+        }),
     });
 
     const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
