@@ -17,6 +17,7 @@ import { fromBuffer, fromFile } from 'file-type';
 import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
 import { Readable } from 'stream';
 import { TDocumentWithoutPageType } from '@/common/types';
+import fs from 'fs';
 
 @Injectable()
 export class FileService {
@@ -29,12 +30,13 @@ export class FileService {
     targetFileConfig: TRemoteFileConfig,
   ) {
     try {
+      const isDeprecated = true;
       const bothServicesSupportStream = this.isBothServicesSupportStream(
         sourceServiceProvider,
         targetServiceProvider,
       );
 
-      if (bothServicesSupportStream) {
+      if (!isDeprecated && bothServicesSupportStream) {
         const { remoteFileConfig, mimeType } = await this.copyThroughStream(
           sourceServiceProvider as IStreamableFileProvider,
           sourceRemoteFileConfig,
@@ -75,6 +77,13 @@ export class FileService {
     }
   }
 
+  /**
+   * @deprecated - No direct way of generating a file extension for S3/Cloudfront with stream.
+   * @param sourceServiceProvider
+   * @param sourceRemoteFileConfig
+   * @param targetServiceProvider
+   * @param targetFileConfig
+   */
   async copyThroughStream(
     sourceServiceProvider: IStreamableFileProvider,
     sourceRemoteFileConfig: TRemoteFileConfig,
@@ -108,6 +117,8 @@ export class FileService {
     );
     const remoteFilePath = await targetServiceProvider.upload(localFilePath, targetFileConfig);
     const fileType = await fromFile(localFilePath);
+
+    fs.unlinkSync(localFilePath);
 
     return {
       remoteFilePath,
@@ -236,13 +247,23 @@ export class FileService {
     projectId: TProjectId,
     customerName: string,
   ) {
+    const copiedFile = await this.copyThroughFileSystem(
+      new LocalFileService(),
+      documentPage.uri,
+      new LocalFileService(),
+      documentPage.uri,
+    );
+    const fileExtension = copiedFile?.mimeType?.split('/')[1];
+
     const remoteFileName = `${
       document.id! || getDocumentId(document, false)
-    }_${crypto.randomUUID()}`;
+    }_${crypto.randomUUID()}${fileExtension ? `.${fileExtension}` : ''}`;
+
     const { sourceServiceProvider, sourceRemoteFileConfig } =
       this.__fetchSourceServiceProviders(documentPage);
     const { targetServiceProvider, targetRemoteFileConfig, remoteFileNameInDirectory } =
       this.__fetchTargetServiceProviders(entityId, customerName, remoteFileName);
+
     const fileInfo = await this.copyFromSourceToDestination(
       sourceServiceProvider,
       sourceRemoteFileConfig,
