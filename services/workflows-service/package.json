@@ -74,6 +74,7 @@
     "class-validator": "0.14.0",
     "cookie-session": "^2.0.0",
     "express-cookie": "^4.17.1",
+    "file-type": "^16.5.4",
     "helmet": "^6.0.1",
     "i18n-iso-countries": "^7.6.0",
     "is-what": "^4.1.15",
