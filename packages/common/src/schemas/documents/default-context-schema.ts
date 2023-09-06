@@ -153,6 +153,7 @@ export const defaultContextSchema = {
                     'application/pdf',
                     'image/png',
                     'image/jpg',
+                    'image/jpeg',
                     // Backwards compatibility
                     'pdf',
                     'png',

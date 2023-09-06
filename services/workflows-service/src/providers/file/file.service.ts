@@ -18,6 +18,7 @@ import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
 import { Readable } from 'stream';
 import { TDocumentWithoutPageType } from '@/common/types';
 import fs from 'fs';
+import { file } from 'tmp';
 
 @Injectable()
 export class FileService {
@@ -247,20 +248,22 @@ export class FileService {
     projectId: TProjectId,
     customerName: string,
   ) {
-    const copiedFile = await this.copyThroughFileSystem(
-      new LocalFileService(),
-      documentPage.uri,
-      new LocalFileService(),
-      documentPage.uri,
+    const { sourceServiceProvider, sourceRemoteFileConfig } =
+      this.__fetchSourceServiceProviders(documentPage);
+
+    const tmpFile = tmp.fileSync();
+    const localFilePath = await sourceServiceProvider.download(
+      sourceRemoteFileConfig,
+      tmpFile.name,
     );
-    const fileExtension = copiedFile?.mimeType?.split('/')[1];
+    const file = await fromFile(localFilePath);
 
     const remoteFileName = `${
       document.id! || getDocumentId(document, false)
-    }_${crypto.randomUUID()}${fileExtension ? `.${fileExtension}` : ''}`;
+    }_${crypto.randomUUID()}${file?.ext ? `.${file?.ext}` : ''}`;
 
-    const { sourceServiceProvider, sourceRemoteFileConfig } =
-      this.__fetchSourceServiceProviders(documentPage);
+    fs.unlinkSync(localFilePath);
+
     const { targetServiceProvider, targetRemoteFileConfig, remoteFileNameInDirectory } =
       this.__fetchTargetServiceProviders(entityId, customerName, remoteFileName);
 
