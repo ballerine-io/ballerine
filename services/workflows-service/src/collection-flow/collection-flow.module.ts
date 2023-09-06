@@ -27,9 +27,10 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CustomerModule } from '@/customer/customer.module';
+import { TokenAuthModule } from '@/common/guards/token-guard/token-auth.module';
 
 @Module({
-  imports: [AppLoggerModule, HttpModule, ProjectModule, CustomerModule],
+  imports: [AppLoggerModule, HttpModule, ProjectModule, CustomerModule, TokenAuthModule],
   controllers: [ColectionFlowController],
   providers: [
     CollectionFlowService,

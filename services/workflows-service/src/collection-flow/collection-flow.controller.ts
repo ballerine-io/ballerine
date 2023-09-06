@@ -12,7 +12,11 @@ import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configurati
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
+import { Public } from '@/common/decorators/public.decorator';
 
+@Public()
+@UseTokenAuthGuard()
 @common.Controller('collection-flow')
 export class ColectionFlowController {
   constructor(
@@ -54,6 +58,7 @@ export class ColectionFlowController {
     }
   }
 
+  @UseTokenAuthGuard()
   @common.Get('/configuration')
   async getFlowConfiguration(
     @common.Query() query: GetFlowConfigurationDto,
