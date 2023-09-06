@@ -1,5 +1,5 @@
 import * as common from '@nestjs/common';
-import { Param, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Param, Post, Res, UploadedFile, UseInterceptors, Query } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -134,7 +134,7 @@ export class StorageControllerInternal {
 
   private async __downloadFileFromRemote(persistedFile: File) {
     const localeFilePath = `${os.tmpdir()}/${persistedFile.id}`;
-    const downloadedFilePath = await new HttpFileService().download(
+    const downloadedFilePath = await new HttpFileService().downloadFile(
       persistedFile.uri,
       localeFilePath,
     );

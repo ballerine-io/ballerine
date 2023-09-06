@@ -34,12 +34,12 @@ export class LocalFileService implements IFileProvider {
     localFilePath: TLocalFilePath,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TRemoteFileConfig> {
-    const toLocalFilePath = remoteFileConfig as TLocalFilePath;
+    const toLocalFilePAth = remoteFileConfig as TLocalFilePath;
     this.client
       .createReadStream(localFilePath)
-      .pipe(this.client.createWriteStream(toLocalFilePath));
+      .pipe(this.client.createWriteStream(toLocalFilePAth));
 
-    return Promise.resolve(toLocalFilePath);
+    return Promise.resolve(toLocalFilePAth);
   }
 
   generateRemotePath({

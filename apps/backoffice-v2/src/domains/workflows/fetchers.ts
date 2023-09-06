@@ -86,8 +86,6 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
     .array(
       BaseWorkflowByIdSchema.omit({
         nextEvents: true,
-      }).extend({
-        state: z.string(),
       }),
     )
     .optional(),

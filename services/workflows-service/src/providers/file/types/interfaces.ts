@@ -23,7 +23,7 @@ export interface IFileProvider {
 }
 
 export interface IStreamableFileProvider extends IFileProvider {
-  fetchRemoteDownStream(remoteFileConfig: TRemoteFileConfig): Promise<Readable>;
+  fetchRemoteFileDownStream(remoteFileConfig: TRemoteFileConfig): Promise<Readable>;
   uploadStream(
     fileStream: Readable,
     remoteFileConfig: TRemoteFileConfig,
