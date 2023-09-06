@@ -61,17 +61,17 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.28
+        specifier: 0.7.0
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.2.16
+        specifier: 0.3.0
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.4.22
-        version: 0.4.22
+        specifier: 0.5.1
+        version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.4.16
-        version: 0.4.16
+        specifier: 0.5.1
+        version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
         version: 4.5.15
@@ -525,10 +525,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.20
-        version: 0.5.20
+        specifier: 0.7.0
+        version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.4.23
+        specifier: 0.5.1
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -622,7 +622,7 @@ importers:
   examples/kyb-app:
     dependencies:
       '@ballerine/ui':
-        specifier: 0.2.16
+        specifier: 0.3.0
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -899,6 +899,9 @@ importers:
 
   packages/common:
     dependencies:
+      '@sinclair/typebox':
+        specifier: ^0.31.7
+        version: 0.31.7
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
@@ -939,6 +942,9 @@ importers:
       '@types/json-logic-js':
         specifier: ^2.0.1
         version: 2.0.1
+      '@types/json-schema':
+        specifier: ^7.0.12
+        version: 7.0.12
       '@types/node':
         specifier: ^18.14.0
         version: 18.15.10
@@ -1320,8 +1326,8 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.20
-        version: 0.5.20
+        specifier: 0.7.0
+        version: link:../common
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
@@ -1468,8 +1474,8 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.20
-        version: 0.5.20
+        specifier: 0.7.0
+        version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
         version: 0.8.0
@@ -1595,10 +1601,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.5.20
-        version: 0.5.20
+        specifier: 0.7.0
+        version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.4.30
+        specifier: 0.5.1
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1731,7 +1737,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.4.30
+        specifier: 0.5.1
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -1967,13 +1973,13 @@ importers:
         specifier: 3.325.0
         version: 3.325.0
       '@ballerine/common':
-        specifier: 0.5.28
+        specifier: 0.7.0
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.4.30
+        specifier: 0.5.1
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.4.17
+        specifier: 0.5.1
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2601,7 +2607,7 @@ packages:
     resolution: {integrity: sha512-r1w81DpR+KyRWd3f+rk6TNqMgedmAxZP5v5KWlXQWlgMUUtyEJch0DKEci1SorPMiSeM8XPl7MZ3miJ60JIpQg==}
     dependencies:
       '@jsdevtools/ono': 7.1.3
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       call-me-maybe: 1.0.2
       js-yaml: 4.1.0
     dev: false
@@ -7948,44 +7954,6 @@ packages:
       json-schema-to-zod: 0.6.3
     dev: false
 
-  /@ballerine/common@0.5.20:
-    resolution: {integrity: sha512-NgWAwDF3OQoQY5NBxzeVfVYBQMBcG+csdWS5EKfJ8FwXhjQScrtN/ajdwJtZ5a7kWhxkf6xWGDmhDliPsyA+dQ==}
-    engines: {node: '>=12'}
-    dependencies:
-      ajv: 8.12.0
-      json-schema-to-zod: 0.6.3
-    dev: false
-
-  /@ballerine/workflow-browser-sdk@0.4.22:
-    resolution: {integrity: sha512-//c60vhVIiesFzxKzpmLrNcN1qUKSOb9dfrdUAn3VL/95CyXm9b7Uas0rLXI1AnPhu4LpA3OnAFQDwz9QXoV5g==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@ballerine/common': 0.5.19
-      '@ballerine/workflow-core': 0.4.29
-      xstate: 4.38.0
-    dev: false
-
-  /@ballerine/workflow-core@0.4.29:
-    resolution: {integrity: sha512-JFphCE0adQF4ppADTkqrpMq8YRJNGA5/dbkiZhrvuEeIY8nYdeLJRt8UJ5bCOvjpNGEJAuhN4OiHA3ersZDs7g==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@ballerine/common': 0.5.19
-      ajv: 8.12.0
-      i18n-iso-countries: 7.6.0
-      jmespath: 0.16.0
-      json-logic-js: 2.0.2
-      xstate: 4.38.0
-    dev: false
-
-  /@ballerine/workflow-node-sdk@0.4.16:
-    resolution: {integrity: sha512-Tp+5Edgup/Lx3VkESspXI/MZRGVfBDBG064+0iIQQj4US/8GdkTB38ZoWlJ9qBMvCNo58h+jJ+17LlEpbXUJqQ==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@ballerine/workflow-core': 0.4.29
-      json-logic-js: 2.0.2
-      xstate: 4.38.0
-    dev: false
-
   /@base2/pretty-print-object@1.0.1:
     resolution: {integrity: sha512-4iri8i1AqYHJE2DstZYkyEprg6Pq6sKx3xn5FpySk9sNhH7qN2LLlHJCfDTZRILNwQNPD7mATWM0TBui7uC1pA==}
     dev: true
@@ -7995,7 +7963,7 @@ packages:
     engines: {node: '>= 16'}
     dependencies:
       '@jsdevtools/ono': 7.1.3
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       call-me-maybe: 1.0.2
       js-yaml: 4.1.0
     dev: true
@@ -14234,6 +14202,10 @@ packages:
     resolution: {integrity: sha512-XJfwUVUKDHF5ugKwIcxEgc9k8b7HbznCp6eUfWgu710hMPNIO4aw4/zB5RogDQz8nd6gyCDpU9O/m6qYEWY6yQ==}
     dev: true
 
+  /@sinclair/typebox@0.31.7:
+    resolution: {integrity: sha512-cl6qKMXSK95aMwIzSQJeenKBtPmE1+hqts3vJe93EaSa7cIaNjz3A5yMKkgW/bAhjnOpa/yiCCV1pOG1bzzv0A==}
+    dev: false
+
   /@sinonjs/commons@1.8.6:
     resolution: {integrity: sha512-Ky+XkAkqPZSm3NLBeUng77EBQl3cmeJhITaGHdYH8kjVB+aun3S4XBRti2zt17mtt0mIUDiNxYeoJm6drVvBJQ==}
     dependencies:
@@ -17412,7 +17384,7 @@ packages:
     resolution: {integrity: sha512-fa7GkppZVEByMWGbTtE5MbmXWJTVbrjjaS8K6uQj+XtuuUv1fsuPAxhygfqLmsb/Ufb3CV8deFCpiMfAgi00Sw==}
     dependencies:
       '@types/estree': 1.0.0
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
     dev: true
 
   /@types/estree-jsx@1.0.0:
@@ -17541,8 +17513,8 @@ packages:
     resolution: {integrity: sha512-exWt46x9L1dSe8xLH/REujkeb5Gcqm1Ygdxukmv2sSVZujJRIl6ARNgq73vONvosiN7miX8gYeBTzxivqiNSgw==}
     dev: true
 
-  /@types/json-schema@7.0.11:
-    resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
+  /@types/json-schema@7.0.12:
+    resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
 
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
@@ -18177,7 +18149,7 @@ packages:
     peerDependencies:
       eslint: '*'
     dependencies:
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@typescript-eslint/scope-manager': 4.33.0
       '@typescript-eslint/types': 4.33.0
       '@typescript-eslint/typescript-estree': 4.33.0(typescript@4.9.5)
@@ -18195,7 +18167,7 @@ packages:
     peerDependencies:
       eslint: '*'
     dependencies:
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@typescript-eslint/scope-manager': 4.33.0
       '@typescript-eslint/types': 4.33.0
       '@typescript-eslint/typescript-estree': 4.33.0(typescript@5.1.6)
@@ -18213,7 +18185,7 @@ packages:
     peerDependencies:
       eslint: '*'
     dependencies:
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@typescript-eslint/scope-manager': 4.33.0
       '@typescript-eslint/types': 4.33.0
       '@typescript-eslint/typescript-estree': 4.33.0(typescript@5.1.6)
@@ -18787,7 +18759,7 @@ packages:
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.22.0)
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@types/semver': 7.3.13
       '@typescript-eslint/scope-manager': 5.56.0
       '@typescript-eslint/types': 5.56.0
@@ -18807,7 +18779,7 @@ packages:
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.36.0)
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@types/semver': 7.3.13
       '@typescript-eslint/scope-manager': 5.56.0
       '@typescript-eslint/types': 5.56.0
@@ -18827,7 +18799,7 @@ packages:
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.36.0)
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@types/semver': 7.3.13
       '@typescript-eslint/scope-manager': 5.56.0
       '@typescript-eslint/types': 5.56.0
@@ -18847,7 +18819,7 @@ packages:
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.38.0)
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@types/semver': 7.3.13
       '@typescript-eslint/scope-manager': 5.59.0
       '@typescript-eslint/types': 5.59.0
@@ -18867,7 +18839,7 @@ packages:
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.46.0)
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@types/semver': 7.3.13
       '@typescript-eslint/scope-manager': 5.59.0
       '@typescript-eslint/types': 5.59.0
@@ -18887,7 +18859,7 @@ packages:
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.46.0)
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@types/semver': 7.3.13
       '@typescript-eslint/scope-manager': 5.59.0
       '@typescript-eslint/types': 5.59.0
@@ -18907,7 +18879,7 @@ packages:
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.46.0)
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@types/semver': 7.3.13
       '@typescript-eslint/scope-manager': 5.61.0
       '@typescript-eslint/types': 5.61.0
@@ -18927,7 +18899,7 @@ packages:
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.46.0)
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@types/semver': 7.3.13
       '@typescript-eslint/scope-manager': 5.61.0
       '@typescript-eslint/types': 5.61.0
@@ -18947,7 +18919,7 @@ packages:
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.44.0)
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@types/semver': 7.3.13
       '@typescript-eslint/scope-manager': 5.62.0
       '@typescript-eslint/types': 5.62.0
@@ -27893,7 +27865,7 @@ packages:
     hasBin: true
     dependencies:
       '@bcherny/json-schema-ref-parser': 10.0.5-fork
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       '@types/lodash': 4.14.191
       '@types/prettier': 2.7.2
       cli-color: 2.0.3
@@ -27913,7 +27885,7 @@ packages:
     hasBin: true
     dependencies:
       '@apidevtools/json-schema-ref-parser': 9.1.2
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       prettier: 2.8.8
     dev: false
 
@@ -32457,7 +32429,7 @@ packages:
     resolution: {integrity: sha512-Y5PQxS4ITlC+EahLuXaY86TXfR7Dc5lw294alXOq86JAHCihAIZfqv8nNCWvaEJvaC51uN9hbLGeV0cFBdH+Fw==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/json-schema': 7.0.11
+      '@types/json-schema': 7.0.12
       ajv: 6.12.6
       ajv-keywords: 3.5.2(ajv@6.12.6)
     dev: true

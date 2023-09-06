@@ -11,6 +11,8 @@ on:
       - test
       - prod
       - staging
+      - sb
+      - demo
 
 env:
   REGISTRY: ghcr.io
