@@ -21,7 +21,6 @@ export class WorkflowRuntimeDataRepository {
 
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
-    projectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     return await this.prisma.workflowRuntimeData.create<T>({
       ...args,
@@ -31,7 +30,6 @@ export class WorkflowRuntimeDataRepository {
           ...((args.data?.context ?? {}) as any),
           documents: assignIdToDocuments((args.data?.context as any)?.documents),
         },
-        projectId,
       },
     } as any);
   }

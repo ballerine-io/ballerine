@@ -14,9 +14,8 @@ export class FileRepository {
 
   async create<T extends Prisma.FileCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.FileCreateArgs>,
-    projectId: TProjectId,
   ): Promise<File> {
-    return await this.prisma.file.create<T>(this.scopeService.scopeCreate(args, projectId));
+    return await this.prisma.file.create<T>(args);
   }
 
   async findMany<T extends Prisma.FileFindManyArgs>(

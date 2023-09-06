@@ -72,8 +72,8 @@ model EndUser {
   businesses           Business[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
   @@index([endUserType])
   @@index([approvalState])
@@ -125,8 +125,8 @@ model Business {
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
   @@index([companyName])
   @@index([approvalState])
@@ -198,8 +198,8 @@ model WorkflowRuntimeData {
   parentWorkflowRuntimeData WorkflowRuntimeData?  @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
   childWorkflowsRuntimeData WorkflowRuntimeData[] @relation("ParentChild")
 
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
   @@index([assigneeId, status])
   @@index([endUserId, status])
@@ -221,8 +221,8 @@ model File {
   createdAt        DateTime @default(now())
   createdBy        String   @default("SYSTEM")
 
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
   @@index([userId])
   @@index([projectId])
@@ -242,8 +242,8 @@ model Filter {
   entity String
   query  Json
 
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

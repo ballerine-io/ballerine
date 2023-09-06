@@ -52,6 +52,7 @@ export class BusinessControllerExternal {
           address: 'addess',
           industry: 'telecom',
           documents: 's',
+          projectId: currentProjectId,
         },
         select: {
           id: true,

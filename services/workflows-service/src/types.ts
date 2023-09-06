@@ -9,7 +9,7 @@ export interface IObjectWithId {
 
 export type Unpacked<T> = T extends (infer U)[] ? U : T;
 
-export type TProjectIds = Array<string> | null;
+export type TProjectIds = Array<string>;
 export type TProjectId = string;
 
 export type UserWithProjects = User & { userToProjects?: Omit<UserToProject[], 'userId'> };

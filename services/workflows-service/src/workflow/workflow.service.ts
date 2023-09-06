@@ -626,11 +626,7 @@ export class WorkflowService {
     reason?: string;
     projectId: TProjectId;
   }) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(
-      id,
-      {},
-      projectId ? [projectId] : null,
-    );
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(id, {}, [projectId]);
     // `name` is always `approve` and not `approved` etc.
     const Status = {
       approve: 'approved',
@@ -688,7 +684,7 @@ export class WorkflowService {
         id,
         name,
       },
-      projectId ? [projectId] : null,
+      [projectId],
       projectId,
     );
 
@@ -863,7 +859,7 @@ export class WorkflowService {
     data: WorkflowDefinitionUpdateInput,
     projectId: TProjectId,
   ) {
-    const projectIds: TProjectIds = projectId ? [projectId] : null;
+    const projectIds: TProjectIds = [projectId];
 
     const runtimeData = await this.workflowRuntimeDataRepository.findById(
       workflowRuntimeId,
@@ -1195,24 +1191,22 @@ export class WorkflowService {
     );
 
     if (!manualReviewWorkflow) {
-      await this.workflowRuntimeDataRepository.create(
-        {
-          data: {
-            ...entitySearch,
-            workflowDefinitionVersion: workflow.version,
-            workflowDefinitionId: workflow.reviewMachineId,
-            context: {
-              ...context,
-              parentMachine: {
-                id: runtime.id,
-                status: 'completed',
-              },
+      await this.workflowRuntimeDataRepository.create({
+        data: {
+          ...entitySearch,
+          workflowDefinitionVersion: workflow.version,
+          workflowDefinitionId: workflow.reviewMachineId,
+          context: {
+            ...context,
+            parentMachine: {
+              id: runtime.id,
+              status: 'completed',
             },
-            status: 'active',
           },
+          status: 'active',
+          projectId: currentProjectId,
         },
-        currentProjectId,
-      );
+      });
     } else {
       if (manualReviewWorkflow.state === 'revision') {
         await this.event(
@@ -1371,29 +1365,27 @@ export class WorkflowService {
         currentProjectId,
         customer.name,
       );
-      workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
-        {
-          data: {
-            ...entityConnect,
-            workflowDefinitionVersion: workflowDefinition.version,
-            context: {
-              ...contextToInsert,
-              documents: documentsWithPersistedImages,
-            } as InputJsonValue,
-            config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
-            status: 'active',
-            workflowDefinition: {
-              connect: {
-                id: workflowDefinition.id,
-              },
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
+        data: {
+          ...entityConnect,
+          workflowDefinitionVersion: workflowDefinition.version,
+          context: {
+            ...contextToInsert,
+            documents: documentsWithPersistedImages,
+          } as InputJsonValue,
+          config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
+          status: 'active',
+          workflowDefinition: {
+            connect: {
+              id: workflowDefinition.id,
             },
-            ...(parentWorkflowId && {
-              parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
-            }),
           },
+          ...(parentWorkflowId && {
+            parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
+          }),
+          project: { connect: { id: currentProjectId } },
         },
-        currentProjectId,
-      );
+      });
       newWorkflowCreated = true;
     } else {
       contextToInsert.documents = updateDocuments(
@@ -1495,15 +1487,13 @@ export class WorkflowService {
     context: DefaultContextSchema,
     projectId: TProjectId,
   ) {
-    const { id } = await this.endUserRepository.create(
-      {
-        data: {
-          correlationId: entity.id,
-          ...(context.entity.data as object),
-        } as Prisma.EndUserCreateInput,
-      },
-      projectId,
-    );
+    const { id } = await this.endUserRepository.create({
+      data: {
+        correlationId: entity.id,
+        project: { connect: { id: projectId } },
+        ...(context.entity.data as object),
+      } as Prisma.EndUserCreateInput,
+    });
     return id;
   }
 

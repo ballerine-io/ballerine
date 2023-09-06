@@ -40,7 +40,7 @@ export class WorkflowDefinitionRepository {
           },
           {
             ...queryArgs.where,
-            project: { is: null },
+            projectId: null,
             isPublic: true,
           },
         ],

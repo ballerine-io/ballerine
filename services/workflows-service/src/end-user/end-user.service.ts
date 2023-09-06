@@ -12,8 +12,8 @@ export class EndUserService {
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
-  async create(args: Parameters<EndUserRepository['create']>[0], projectId: TProjectId) {
-    return await this.repository.create(args, projectId);
+  async create(args: Parameters<EndUserRepository['create']>[0]) {
+    return await this.repository.create(args);
   }
 
   async list(args: Parameters<EndUserRepository['findMany']>[0], projectIds: TProjectIds) {
@@ -34,21 +34,18 @@ export class EndUserService {
   ): Promise<EndUser & { businesses: Business[] }> {
     const { companyName = '', ...userData } = endUser;
 
-    const user = await this.repository.create(
-      {
-        data: {
-          ...userData,
-          projectId: projectId,
-          businesses: {
-            create: { companyName, projectId: projectId },
-          },
-        },
-        include: {
-          businesses: true,
+    const user = await this.repository.create({
+      data: {
+        ...userData,
+        projectId: projectId,
+        businesses: {
+          create: { companyName, projectId: projectId },
         },
       },
-      projectId,
-    );
+      include: {
+        businesses: true,
+      },
+    });
 
     return user as any;
   }

@@ -14,9 +14,8 @@ export class EndUserRepository {
 
   async create<T extends Prisma.EndUserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EndUserCreateArgs>,
-    projectId: TProjectId,
   ) {
-    return await this.prisma.endUser.create(this.scopeService.scopeCreate(args, projectId));
+    return await this.prisma.endUser.create(args);
   }
 
   async findMany<T extends Prisma.EndUserFindManyArgs>(
