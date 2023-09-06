@@ -58,7 +58,7 @@ async function createCustomer(
   return await client.customer.create({
     data: {
       id: `customer-${id}`,
-      name: `customer-1${id}`,
+      name: `customer-${id}`,
       displayName: `Customer ${id}`,
       authenticationConfiguration: {
         apiType: 'API_KEY',
