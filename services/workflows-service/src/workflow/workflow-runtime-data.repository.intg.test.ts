@@ -107,9 +107,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
               },
               documents: ['file1', 'file2'],
             },
+            projectId: project.id
           },
         },
-        project.id,
       );
 
       // Update the context with a new object
@@ -152,9 +152,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
                 id: '1',
               },
             },
+            projectId: project.id
           },
         },
-        project.id,
       );
 
       const res = await workflowRuntimeRepository.updateById(
@@ -195,9 +195,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             workflowDefinitionId: 'test-definition',
             workflowDefinitionVersion: 1,
             context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+            projectId: project.id
           },
         },
-        project.id,
       );
       const newContext = {
         key2: 'new-value',
@@ -238,9 +238,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             workflowDefinitionId: 'test-definition',
             workflowDefinitionVersion: 1,
             context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+            projectId: project.id
           },
         },
-        project.id,
       );
       const newContext = {};
 
@@ -270,9 +270,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             workflowDefinitionId: 'test-definition',
             workflowDefinitionVersion: 1,
             context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+            projectId: project.id
           },
         },
-        project.id,
       );
       const newContext = { key3: 'value3' };
 
@@ -304,9 +304,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             workflowDefinitionId: 'test-definition',
             workflowDefinitionVersion: 1,
             context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+            projectId: project.id
           },
         },
-        project.id,
       );
       const newContext = { key2: 'new-value2' };
 
@@ -341,9 +341,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             key2: { nestedKey1: 'nestedValue1' },
             documents: [{ id: '1', name: 'doc1' }],
           },
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = { key2: { nestedKey2: 'nestedValue2' } };
 
@@ -372,9 +372,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             key2: { nestedKey1: 'nestedValue1' },
             documents: [{ id: '1', name: 'doc1' }],
           },
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = { key2: { nestedKey1: 'new-nestedValue1' } };
 
@@ -399,9 +399,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           workflowDefinitionId: 'test-definition',
           workflowDefinitionVersion: 1,
           context: { key1: 'value1', key2: ['element1'], documents: [{ id: '1', name: 'doc1' }] },
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = { key2: ['element2'] };
 
@@ -430,9 +430,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             key2: ['element1', 'element2'],
             documents: [{ id: '1', name: 'doc1' }],
           },
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = { key2: ['element3'] };
 
@@ -468,9 +468,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           workflowDefinitionId: 'test-definition',
           workflowDefinitionVersion: 1,
           context: { key1: 'value1', largeKey: new Array(1000).fill('value').join('') },
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = { key2: 'value2' };
 
@@ -498,9 +498,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             key1: 'value1',
             key2: { nestedKey: ['value2'] },
           },
+          projectId: project.id
         },
       },
-      project.id,
     );
 
     const newContext = {
@@ -530,9 +530,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             key1: 'value1',
             key2: { nestedKey: [{ id: '1', value: 'value2' }] },
           },
+          projectId: project.id
         },
       },
-      project.id,
     );
 
     const newContext = {
@@ -567,9 +567,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             key1: 'value1',
             key2: { nestedKey: { anotherNestedKey: ['value2'] } },
           },
+          projectId: project.id
         },
       },
-      project.id,
     );
 
     const newContext = {
@@ -598,9 +598,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           context: {
             key1: { key2: { key3: { key4: { key5: 'value1' } } } },
           },
+          projectId: project.id
         },
       },
-      project.id,
     );
 
     const newContext = {
@@ -629,9 +629,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             key1: 'value1',
             key2: { nestedKey1: 'value2', nestedKey2: ['value3'] },
           },
+          projectId: project.id
         },
       },
-      project.id,
     );
 
     const newContext = {
@@ -659,9 +659,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           workflowDefinitionId: 'test-definition',
           workflowDefinitionVersion: 1,
           context: { key1: [{ id: '1', data: 'data1' }], key2: [{ id: '1', data: 'data1' }] },
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = { key1: [{ id: '1', data: 'data2' }], key2: [{ id: '2', data: 'data2' }] };
 
@@ -689,9 +689,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           workflowDefinitionId: 'test-definition',
           workflowDefinitionVersion: 1,
           context: { key1: ['element1', 'element2'], key2: ['element1', 'element2'] },
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = { key1: ['element3'], key2: ['element3', 'element4'] };
 
@@ -715,9 +715,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           workflowDefinitionId: 'test-definition',
           workflowDefinitionVersion: 1,
           context: { key1: ['element1', 'element2'], key2: ['element1', 'element2'] },
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = { key1: ['element3'], key2: ['element3', 'element4'] };
 
@@ -756,9 +756,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           workflowDefinitionId: 'test-definition',
           workflowDefinitionVersion: 1,
           context: initialContext,
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = {
       entity: {
@@ -816,9 +816,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           workflowDefinitionId: 'test-definition',
           workflowDefinitionVersion: 1,
           context: initialContext,
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = {
       documents: [
@@ -881,9 +881,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           workflowDefinitionId: 'test-definition',
           workflowDefinitionVersion: 1,
           context: initialContext,
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = {
       entity: {
@@ -973,9 +973,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           workflowDefinitionId: 'test-definition',
           workflowDefinitionVersion: 1,
           context: initialContext,
+          projectId: project.id
         },
       },
-      project.id,
     );
     const newContext = {
       entity: {
