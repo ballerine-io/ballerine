@@ -1,5 +1,5 @@
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
-import { fetchServiceFromModule, initiateNestApp } from '@/test/helpers/nest-app-helper';
+import { fetchServiceFromModule } from '@/test/helpers/nest-app-helper';
 import { PrismaModule } from 'nestjs-prisma';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { FilterService } from '@/filter/filter.service';

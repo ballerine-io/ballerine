@@ -7,7 +7,6 @@ import {
   convertSnakeCaseToTitleCase,
   omitPropsFromObject,
 } from '../../../../hooks/useEntity/utils';
-import { octetToFileType } from '../../../../../../common/octet-to-file-type/octet-to-file-type';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { useCaseDecision } from '../../../Case/hooks/useCaseDecision/useCaseDecision';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
@@ -126,17 +125,13 @@ export const useKycBlock = ({
     isEditable: true,
     dropdownOptions: undefined,
   }));
-
   const documents = childWorkflow?.context?.documents?.flatMap(
     (document, docIndex) =>
       document?.pages?.map(({ type, metadata, data }, pageIndex) => ({
         title: `${convertSnakeCaseToTitleCase(document?.category)} - ${convertSnakeCaseToTitleCase(
           document?.type,
         )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-        imageUrl:
-          document?.type === 'pdf'
-            ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
-            : results[docIndex][pageIndex],
+        imageUrl: results[docIndex][pageIndex],
         fileType: type,
       })) ?? [],
   );
