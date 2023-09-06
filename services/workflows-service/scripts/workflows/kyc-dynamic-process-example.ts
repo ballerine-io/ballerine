@@ -141,6 +141,7 @@ export const kycDynamicExample = {
       deliverEvent: 'KYC_DONE',
     },
   },
+  isPublic: true,
 };
 export const generateKycForE2eTest = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({

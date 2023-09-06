@@ -58,7 +58,7 @@ async function createCustomer(
   return await client.customer.create({
     data: {
       id: `customer-${id}`,
-      name: `Customer ${id}`,
+      name: `customer-1${id}`,
       displayName: `Customer ${id}`,
       authenticationConfiguration: {
         apiType: 'API_KEY',
@@ -294,7 +294,7 @@ async function seed(bcryptSalt: string | number) {
             {
               provider: 'http',
               uri: imageUri3,
-              type: 'image/png',
+              type: 'png',
               ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               data: '',
               metadata: {},
@@ -418,7 +418,7 @@ async function seed(bcryptSalt: string | number) {
             {
               provider: 'http',
               uri: imageUri3,
-              type: 'image/png',
+              type: 'png',
               data: '',
               ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
               metadata: {},

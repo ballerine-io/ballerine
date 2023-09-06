@@ -153,6 +153,7 @@ export const kycEmailSessionDefinition = {
     type: 'json-schema',
     schema: defaultContextSchema,
   },
+  isPublic: true,
 };
 
 export const generateKycSessionDefinition = async (prismaClient: PrismaClient) => {

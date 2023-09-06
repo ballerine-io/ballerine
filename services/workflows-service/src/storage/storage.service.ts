@@ -14,11 +14,7 @@ export class StorageService {
     userId,
     fileNameInBucket,
     projectId,
-    mimeType,
-  }: Pick<
-    Prisma.FileCreateInput,
-    'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket' | 'mimeType'
-  > & {
+  }: Pick<Prisma.FileCreateInput, 'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket'> & {
     projectId: TProjectId;
   }) {
     const file = await this.fileRepository.create(
@@ -28,20 +24,18 @@ export class StorageService {
           fileNameOnDisk,
           userId,
           fileNameInBucket,
-          mimeType,
         },
         select: {
           id: true,
-          mimeType: true,
         },
       },
       projectId,
     );
 
-    return file;
+    return file.id;
   }
 
-  async getFileById({ id }: IFileIds, projectIds: TProjectIds, args?: Prisma.FileFindFirstArgs) {
+  async getFileNameById({ id }: IFileIds, args: Prisma.FileFindFirstArgs, projectIds: TProjectIds) {
     return await this.fileRepository.findById({ id }, args || {}, projectIds);
   }
 }
