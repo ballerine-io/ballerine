@@ -23,17 +23,21 @@ export class WorkflowRuntimeDataRepository {
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
     projectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.create<T>({
-      ...args,
-      data: {
-        ...args.data,
-        context: {
-          ...((args.data?.context ?? {}) as any),
-          documents: assignIdToDocuments((args.data?.context as any)?.documents),
-        },
+    return await this.prisma.workflowRuntimeData.create<T>(
+      this.scopeService.scopeCreate(
+        {
+          ...args,
+          data: {
+            ...args.data,
+            context: {
+              ...((args.data?.context ?? {}) as any),
+              documents: assignIdToDocuments((args.data?.context as any)?.documents),
+            },
+          },
+        } as any,
         projectId,
-      },
-    } as any);
+      ),
+    );
   }
 
   async findMany<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
