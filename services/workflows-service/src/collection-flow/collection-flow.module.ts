@@ -28,6 +28,8 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CustomerModule } from '@/customer/customer.module';
 import { TokenAuthModule } from '@/common/guards/token-guard/token-auth.module';
+import { CustomerService } from '@/customer/customer.service';
+import { CustomerRepository } from '@/customer/customer.repository';
 
 @Module({
   imports: [AppLoggerModule, HttpModule, ProjectModule, CustomerModule, TokenAuthModule],
@@ -56,6 +58,8 @@ import { TokenAuthModule } from '@/common/guards/token-guard/token-auth.module';
     UserService,
     UserRepository,
     PasswordService,
+    CustomerService,
+    CustomerRepository,
   ],
 })
 export class CollectionFlowModule {}

@@ -1,12 +1,8 @@
 import * as common from '@nestjs/common';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
-import { AuthorizeDto } from '@/collection-flow/dto/authorize-input.dto';
-import { Customer, EndUser } from '@prisma/client';
-import { GetActiveFlowDto } from '@/collection-flow/dto/get-active-workflow-input.dto';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
 import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
 import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
-import { GetFlowConfigurationDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
@@ -14,6 +10,7 @@ import { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { Public } from '@/common/decorators/public.decorator';
+import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 
 @Public()
 @UseTokenAuthGuard()
@@ -24,47 +21,50 @@ export class ColectionFlowController {
     protected readonly adapterManager: WorkflowAdapterManager,
   ) {}
 
-  @common.Post('/authorize')
-  async authorizeUser(
-    @common.Body() dto: AuthorizeDto,
-    @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<EndUser> {
-    return this.service.authorize({ email: dto.email, flowType: dto.flowType }, currentProjectId);
+  @common.Get('/customer')
+  async getCustomer(@TokenScope() tokenScope: ITokenScope) {
+    return this.service.getCustomerDetails(tokenScope.projectId);
+  }
+
+  @common.Get('/user')
+  async getUser(@TokenScope() tokenScope: ITokenScope) {
+    return this.service.getUser(tokenScope.endUserId, tokenScope.projectId);
   }
 
   @common.Get('/active-flow')
-  async getActiveFlow(
-    @common.Query() query: GetActiveFlowDto,
-    @ProjectIds() projectIds: TProjectIds,
-  ) {
-    const activeWorkflow = await this.service.getActiveFlow(
-      {
-        endUserId: query.endUserId,
-        workflowRuntimeDefinitionId: query.flowType,
-      },
-      projectIds,
-    );
+  async getActiveFlow(@TokenScope() tokenScope: ITokenScope) {
+    const activeWorkflow = await this.service.getActiveFlow(tokenScope.workflowRuntimeDataId, [
+      tokenScope.projectId,
+    ]);
+
+    if (!activeWorkflow) throw new common.InternalServerErrorException('Workflow not found.');
 
     try {
-      const adapter = this.adapterManager.getAdapter(query.flowType);
+      const adapter = this.adapterManager.getAdapter(activeWorkflow.workflowDefinitionId);
       return {
         result: activeWorkflow ? adapter.serialize(activeWorkflow) : null,
       };
     } catch (error) {
       if (error instanceof UnsupportedFlowTypeException) {
-        throw new common.BadRequestException(`${query.flowType} is not supported.`);
+        throw new common.BadRequestException(
+          `${activeWorkflow.workflowDefinitionId as string} is not supported.`,
+        );
       }
       throw error;
     }
   }
 
-  @UseTokenAuthGuard()
   @common.Get('/configuration')
   async getFlowConfiguration(
-    @common.Query() query: GetFlowConfigurationDto,
-    @ProjectIds() projectIds: TProjectIds,
+    @TokenScope() tokenScope: ITokenScope,
   ): Promise<FlowConfigurationModel> {
-    return this.service.getFlowConfiguration(query.flowType, projectIds);
+    const workflow = await this.service.getActiveFlow(tokenScope.workflowRuntimeDataId, [
+      tokenScope.projectId,
+    ]);
+
+    if (!workflow) throw new common.InternalServerErrorException('Workflow not found.');
+
+    return this.service.getFlowConfiguration(workflow.workflowDefinitionId, [tokenScope.projectId]);
   }
 
   @common.Put('/configuration/:configurationId')
@@ -82,47 +82,51 @@ export class ColectionFlowController {
     );
   }
 
-  @common.Put('/:flowId')
-  async updateFlow(
-    @common.Param('flowId') flowId: string,
-    @common.Body() dto: UpdateFlowDto,
-    @common.Request() request: any,
-    @CurrentProject() currentProjectId: TProjectId,
-  ) {
+  @common.Put('')
+  async updateFlow(@common.Body() dto: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
+    const [customer, workflow] = await Promise.all([
+      await this.service.getCustomerDetails(tokenScope.projectId),
+      await this.service.getActiveFlow(tokenScope.workflowRuntimeDataId, [tokenScope.projectId]),
+    ]);
+
+    if (!workflow) throw new common.InternalServerErrorException('Workflow not found.');
+
     try {
-      const adapter = this.adapterManager.getAdapter(dto.flowType);
+      const adapter = this.adapterManager.getAdapter(workflow.workflowDefinitionId);
 
       return this.service.updateFlow(
         adapter,
         dto.payload,
-        flowId,
-        currentProjectId,
-        request.user.customer as Customer,
+        tokenScope.workflowRuntimeDataId,
+        tokenScope.projectId,
+        customer,
       );
     } catch (error) {
       if (error instanceof UnsupportedFlowTypeException) {
-        throw new common.BadRequestException(`${dto.flowType} is not supported.`);
+        throw new common.BadRequestException(
+          `${workflow.workflowDefinitionId as string} is not supported.`,
+        );
       }
 
       throw error;
     }
   }
 
-  @common.Post('finish/:flowId')
-  async finishFlow(
-    @common.Param('flowId') flowId: string,
-    @ProjectIds() projectIds: TProjectIds,
-    @CurrentProject() currentProjectId: TProjectId,
-  ) {
-    return this.service.finishFlow(flowId, projectIds, currentProjectId);
+  @common.Post('finish')
+  async finishFlow(@TokenScope() tokenScope: ITokenScope) {
+    return this.service.finishFlow(
+      tokenScope.workflowRuntimeDataId,
+      [tokenScope.projectId],
+      tokenScope.projectId,
+    );
   }
 
-  @common.Post('resubmit/:flowId')
-  async resubmitFlow(
-    @common.Param('flowId') flowId: string,
-    @ProjectIds() projectIds: TProjectIds,
-    @CurrentProject() currentProjectId: TProjectId,
-  ) {
-    return this.service.resubmitFlow(flowId, projectIds, currentProjectId);
+  @common.Post('resubmit')
+  async resubmitFlow(@TokenScope() tokenScope: ITokenScope) {
+    return this.service.resubmitFlow(
+      tokenScope.workflowRuntimeDataId,
+      [tokenScope.workflowRuntimeDataId],
+      tokenScope.projectId,
+    );
   }
 }

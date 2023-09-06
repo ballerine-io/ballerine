@@ -7,6 +7,7 @@ import { GetActiveFlowParams, SigninCredentials } from '@/collection-flow/types/
 import { IWorkflowAdapter } from '@/collection-flow/workflow-adapters/abstract-workflow-adapter';
 import { KYBParentKYCSessionExampleFlowData } from '@/collection-flow/workflow-adapters/kyb_parent_kyc_session_example/kyb_parent_kyc_session_example.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { CustomerService } from '@/customer/customer.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { TProjectId, TProjectIds } from '@/types';
@@ -27,37 +28,17 @@ export class CollectionFlowService {
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowService: WorkflowService,
     protected readonly businessService: BusinessService,
+    protected readonly customerService: CustomerService,
   ) {}
 
-  async authorize(credentials: SigninCredentials, projectId: TProjectId): Promise<EndUser> {
-    //@ts-expect-error
-    const existingEndUser = await this.endUserService.getByEmail(credentials.email, projectId);
+  async getCustomerDetails(projectId: TProjectId): Promise<Customer> {
+    return this.customerService.getByProjectId(projectId);
+  }
 
-    if (!existingEndUser) {
-      const newUser = await this.initializeNewEndUser(credentials, projectId);
+  async getUser(endUserId: string, projectId: TProjectId): Promise<EndUser> {
+    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
 
-      await this.workflowService.createOrUpdateWorkflowRuntime({
-        workflowDefinitionId: credentials.flowType,
-        context: {
-          entity: {
-            ballerineEntityId: newUser.businesses.at(-1)?.id,
-            type: 'business',
-            data: {
-              additionalInformation: {
-                endUserId: newUser.id,
-              },
-            },
-          },
-          documents: [],
-        },
-        projectIds: projectId ? [projectId] : [],
-        currentProjectId: projectId,
-      });
-
-      return newUser;
-    }
-
-    return existingEndUser;
+    return endUser;
   }
 
   private async initializeNewEndUser(credentials: SigninCredentials, projectId: TProjectId) {
@@ -156,34 +137,16 @@ export class CollectionFlowService {
     });
   }
 
-  async getActiveFlow(
-    { endUserId, workflowRuntimeDefinitionId }: GetActiveFlowParams,
-    projectIds: TProjectIds,
-  ) {
-    const endUser = (await this.endUserService.getById(
-      endUserId,
-      {
-        include: { businesses: true },
-      },
+  async getActiveFlow(workflowRuntimeId: string, projectIds: TProjectIds) {
+    this.logger.log(`Getting active workflow ${workflowRuntimeId}`);
+
+    const workflowData = await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+      {},
       projectIds,
-    )) as EndUser & { businesses: Business[] };
+    );
 
-    if (!endUser || !endUser.businesses.length) return null;
-
-    const query = {
-      endUserId: endUser.id,
-      ...{
-        workflowDefinitionId: workflowRuntimeDefinitionId,
-        businessId: endUser.businesses.at(-1)!.id,
-      },
-      projectIds,
-    };
-
-    this.logger.log(`Getting last active workflow`, query);
-
-    const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query, projectIds);
-
-    this.logger.log('Last active workflow', { workflowId: workflowData ? workflowData.id : null });
+    this.logger.log('Active workflow', { workflowId: workflowData ? workflowData.id : null });
 
     return workflowData ? workflowData : null;
   }
