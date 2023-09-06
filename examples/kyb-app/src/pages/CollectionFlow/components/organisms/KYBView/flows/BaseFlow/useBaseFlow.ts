@@ -38,9 +38,7 @@ export const useBaseFlow = () => {
     (values: WorkflowFlowData) => {
       setUpdating(true);
 
-      updateFlow({
-        flowId: values.shared.workflowId,
-        flowType: import.meta.env.VITE_KYB_DEFINITION_ID,
+      void updateFlow({
         payload: {
           mainRepresentative: selectMainRepresentative(values, user),
           ubos: [],
@@ -63,11 +61,9 @@ export const useBaseFlow = () => {
         setLoading(true);
 
         await uploadFilesAndSaveToStorage(documentConfigurations, context);
-        const documents = await selectDocuments(context, flowData.documents, documentConfigurations);
+        const documents = selectDocuments(context, flowData.documents, documentConfigurations);
 
         const updatePayload: UpdateFlowDto = {
-          flowId: context.shared.workflowId,
-          flowType: import.meta.env.VITE_KYB_DEFINITION_ID,
           payload: {
             mainRepresentative: selectMainRepresentative(context, user),
             ubos: selectUbos(context, user),
@@ -81,10 +77,10 @@ export const useBaseFlow = () => {
 
         if (isUpdate) {
           await updateFlow(updatePayload);
-          await resubmitFlow(context.shared.workflowId);
+          await resubmitFlow();
         } else {
           await updateFlow(updatePayload);
-          await startFlow(context.shared.workflowId);
+          await startFlow();
         }
         setLoading(false);
         setTimeout(() => logoutSilent(), 50);

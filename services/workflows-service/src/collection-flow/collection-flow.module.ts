@@ -1,7 +1,7 @@
 import { PasswordService } from '@/auth/password/password.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
-import { ColectionFlowController } from '@/collection-flow/collection-flow.controller';
+import { ColectionFlowController } from '@/collection-flow/controllers/collection-flow.controller';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
@@ -30,10 +30,16 @@ import { CustomerModule } from '@/customer/customer.module';
 import { TokenAuthModule } from '@/common/guards/token-guard/token-auth.module';
 import { CustomerService } from '@/customer/customer.service';
 import { CustomerRepository } from '@/customer/customer.repository';
+import { CollectionFlowFilesController } from '@/collection-flow/controllers/collection-flow.files.controller';
+import { CollectionFlowBusinessController } from '@/collection-flow/controllers/collection-flow.business.controller';
 
 @Module({
   imports: [AppLoggerModule, HttpModule, ProjectModule, CustomerModule, TokenAuthModule],
-  controllers: [ColectionFlowController],
+  controllers: [
+    ColectionFlowController,
+    CollectionFlowFilesController,
+    CollectionFlowBusinessController,
+  ],
   providers: [
     CollectionFlowService,
     EndUserService,
@@ -60,6 +66,8 @@ import { CustomerRepository } from '@/customer/customer.repository';
     PasswordService,
     CustomerService,
     CustomerRepository,
+    StorageService,
+    FileRepository,
   ],
 })
 export class CollectionFlowModule {}

@@ -1,4 +1,4 @@
-import { authorizeUser } from '@app/domains/collection-flow';
+// import { authorizeUser } from '@app/domains/collection-flow';
 import { SigninCredentials } from '@app/hooks/useSignin/types';
 import { useCallback, useState } from 'react';
 
@@ -9,15 +9,13 @@ export const useSignin = () => {
 
   const signin = useCallback(async ({ email }: SigninCredentials) => {
     setSigningIn(true);
-    await authorizeUser({ email });
-
-    localStorage.setItem(TOKEN_KEY, email);
+    // await authorizeUser({ email });
 
     setSigningIn(false);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
+    // localStorage.removeItem(TOKEN_KEY);
     location.href = '/';
   }, []);
 
