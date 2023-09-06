@@ -4,7 +4,6 @@ import { ctw } from '../../../utils/ctw/ctw';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { TSelectedImageProps } from './interfaces';
 import { isPdf } from '../../../utils/is-pdf/is-pdf';
-import { SafeIFrame } from '../../atoms/SafeIframe/SafeIFrame';
 
 /**
  * @description To be used by {@link ImageViewer}. Uses {@link BallerineImage} to display the currently selected image with default styling.
@@ -32,7 +31,7 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
 
     if (isPdf(selectedImage)) {
       return (
-        <SafeIFrame
+        <iframe
           src={selectedImage?.imageUrl}
           ref={ref}
           className={ctw(className, `d-full mx-auto`, {
