@@ -144,8 +144,8 @@ export const LogOutSvg: FunctionComponent<SVGProps<SVGSVGElement>> = props => {
     >
       <path
         opacity="0.5"
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M8.56185 2.5C8.56185 2.36193 8.44992 2.25 8.31185 2.25L1.97852 2.25C1.84044 2.25 1.72852 2.36193 1.72852 2.5L1.72852 11.5C1.72852 11.6381 1.84044 11.75 1.97851 11.75H8.31185C8.44992 11.75 8.56185 11.6381 8.56185 11.5V10.5C8.56185 10.0858 8.89763 9.75 9.31185 9.75C9.72606 9.75 10.0618 10.0858 10.0618 10.5V11.5C10.0618 12.4665 9.27835 13.25 8.31185 13.25H1.97851C1.01202 13.25 0.228516 12.4665 0.228516 11.5V2.5C0.228516 1.5335 1.01202 0.75 1.97852 0.75H8.31185C9.27835 0.75 10.0618 1.5335 10.0618 2.5V3.5C10.0618 3.91421 9.72606 4.25 9.31185 4.25C8.89763 4.25 8.56185 3.91421 8.56185 3.5V2.5ZM8.06879 7C8.06879 6.60113 8.39214 6.27778 8.79102 6.27778H12.2042L11.4159 5.521C11.1281 5.24477 11.1188 4.78758 11.395 4.49984C11.6712 4.2121 12.1284 4.20277 12.4162 4.479L14.4995 6.479C14.6414 6.61519 14.7216 6.80334 14.7216 7C14.7216 7.19666 14.6414 7.38481 14.4995 7.521L12.4162 9.521C12.1284 9.79723 11.6712 9.7879 11.395 9.50016C11.1188 9.21242 11.1281 8.75523 11.4159 8.479L12.2042 7.72222H8.79102C8.39214 7.72222 8.06879 7.39887 8.06879 7Z"
         fill="black"
       />
@@ -468,23 +468,23 @@ export const CheckFolderSvg = (props: SVGProps<SVGSVGElement>) => (
     <path
       d="M9.25 1.5H4.75C4.33579 1.5 4 1.83579 4 2.25V3.75C4 4.16421 4.33579 4.5 4.75 4.5H9.25C9.66421 4.5 10 4.16421 10 3.75V2.25C10 1.83579 9.66421 1.5 9.25 1.5Z"
       stroke="black"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M10 3H11.5C11.8978 3 12.2794 3.15804 12.5607 3.43934C12.842 3.72064 13 4.10218 13 4.5V15C13 15.3978 12.842 15.7794 12.5607 16.0607C12.2794 16.342 11.8978 16.5 11.5 16.5H2.5C2.10218 16.5 1.72064 16.342 1.43934 16.0607C1.15804 15.7794 1 15.3978 1 15V4.5C1 4.10218 1.15804 3.72064 1.43934 3.43934C1.72064 3.15804 2.10218 3 2.5 3H4"
       stroke="black"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M4.75 10.5L6.25 12L9.25 9"
       stroke="black"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
@@ -531,6 +531,53 @@ export const NoCasesSvg = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 );
+
+export const NoTasksSvg = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    width="80"
+    height="92"
+    viewBox="0 0 80 92"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle cx="39" cy="53" r="39" fill="#D9D9D9" />
+    <path
+      d="M6 37C6 35.3431 7.34315 34 9 34H68C69.6569 34 71 35.3431 71 37V82C71 83.6569 69.6569 85 68 85H9C7.34315 85 6 83.6569 6 82V37Z"
+      fill="#D9D9D9"
+      stroke="black"
+      strokeWidth="2"
+    />
+    <path
+      d="M46 1L48.5 1.5L57 9L65 16.5L66 19H50C47.7909 19 46 17.2091 46 15V1Z"
+      fill="#B8B8B8"
+      fillOpacity="0.6"
+    />
+    <path
+      d="M11 5C11 2.79086 12.7909 1 15 1H46.4717C47.4559 1 48.4055 1.36281 49.1389 2.01903L57.5 9.5L64.7415 16.3155C65.5446 17.0714 66 18.1254 66 19.2283V61.5C66 63.7091 64.2091 65.5 62 65.5H15C12.7909 65.5 11 63.7091 11 61.5V5Z"
+      fill="white"
+      fillOpacity="0.6"
+      stroke="#9B9B9B"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeDasharray="4 8"
+    />
+    <path
+      d="M46 4.5V15C46 17.2091 47.7909 19 50 19H62.5"
+      stroke="#9B9B9B"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeDasharray="4 8"
+    />
+    <path
+      d="M14.9839 41.4088C15.2655 40.0079 16.4961 39 17.925 39H46.6364C47.2914 39 47.9284 39.2143 48.4501 39.6103L52.4461 42.643C53.3156 43.303 54.3772 43.6602 55.4688 43.6602H62.4561H75.1576C77.0417 43.6602 78.4594 45.3765 78.1036 47.2267L71.3085 82.5665C71.0369 83.979 69.8009 85 68.3625 85H9.88411C7.98977 85 6.56961 83.2659 6.94295 81.4088L14.9839 41.4088Z"
+      fill="white"
+      stroke="black"
+      strokeWidth="2"
+    />
+  </svg>
+);
+
 export const DoubleCaretSvg = (props: SVGProps<SVGSVGElement>) => (
   <svg
     width="6"
@@ -543,16 +590,16 @@ export const DoubleCaretSvg = (props: SVGProps<SVGSVGElement>) => (
     <path
       d="M5 7.00293L3 9.00293L1 7.00293"
       stroke="#A3A3A3"
-      stroke-width="1.44444"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.44444"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M1 3L3 1L5 3"
       stroke="#A3A3A3"
-      stroke-width="1.44444"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.44444"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
@@ -566,14 +613,14 @@ export const UnassignedAvatarSvg = (props: SVGProps<SVGSVGElement>) => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <circle cx="12" cy="12" r="10" stroke="#E4E4E7" stroke-width="2" />
+    <circle cx="12" cy="12" r="10" stroke="#E4E4E7" strokeWidth="2" />
     <path
       d="M16.8285 16.9763C17.5786 17.6014 18 18.4493 18 19.3333C13.6001 22.8 8.1667 20.7778 6 19.3333C6 18.4493 6.42143 17.6014 7.17158 16.9763C7.92173 16.3512 8.93915 16 10 16H14C15.0609 16 16.0783 16.3512 16.8285 16.9763Z"
       fill="#E4E4E7"
       stroke="#E4E4E7"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M12 13C14.2091 13 16 11.2091 16 9C16 6.79086 14.2091 5 12 5C9.79086 5 8 6.79086 8 9C8 11.2091 9.79086 13 12 13Z"

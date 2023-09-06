@@ -78,7 +78,7 @@ export const kybParentDynamicExample = {
                 countryOfIncorporation: entity.data.countryOfIncorporation,
                 companyNumber: entity.data.registrationNumber,
                 state: entity.data.additionalInfo.company.state
-                vendor: 'open-corporates'
+                vendor: 'veriff'
                 }`, // jmespath
             },
           ],
@@ -138,7 +138,7 @@ export const kybParentDynamicExample = {
       },
     ],
   },
-  isPublic: true
+  isPublic: true,
 };
 export const generateParentKybWithKycs = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
