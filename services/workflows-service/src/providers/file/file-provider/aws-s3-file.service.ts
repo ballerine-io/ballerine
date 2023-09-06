@@ -54,7 +54,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
   }
 
   async isRemoteExists(remoteFileConfig: TS3BucketConfig): Promise<boolean> {
-    const getObjectParams = this._fetchBucketPath(remoteFileConfig);
+    const getObjectParams = this.__fetchBucketPath(remoteFileConfig);
 
     try {
       const headObjectCommand = new HeadObjectCommand(getObjectParams);
@@ -87,7 +87,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
   }
 
   async fetchRemoteDownStream(remoteFileConfig: TRemoteFileConfig): Promise<Readable> {
-    const fetchBucketConfig = this._fetchBucketPath(remoteFileConfig as TS3BucketConfig);
+    const fetchBucketConfig = this.__fetchBucketPath(remoteFileConfig as TS3BucketConfig);
     const getObjectCommand = new GetObjectCommand(fetchBucketConfig);
     const response = await this.client.send(getObjectCommand);
 
