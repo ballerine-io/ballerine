@@ -531,3 +531,53 @@ export const NoCasesSvg = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 );
+export const DoubleCaretSvg = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    width="6"
+    height="10"
+    viewBox="0 0 6 10"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M5 7.00293L3 9.00293L1 7.00293"
+      stroke="#A3A3A3"
+      stroke-width="1.44444"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M1 3L3 1L5 3"
+      stroke="#A3A3A3"
+      stroke-width="1.44444"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+);
+
+export const UnassignedAvatarSvg = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle cx="12" cy="12" r="10" stroke="#E4E4E7" stroke-width="2" />
+    <path
+      d="M16.8285 16.9763C17.5786 17.6014 18 18.4493 18 19.3333C13.6001 22.8 8.1667 20.7778 6 19.3333C6 18.4493 6.42143 17.6014 7.17158 16.9763C7.92173 16.3512 8.93915 16 10 16H14C15.0609 16 16.0783 16.3512 16.8285 16.9763Z"
+      fill="#E4E4E7"
+      stroke="#E4E4E7"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M12 13C14.2091 13 16 11.2091 16 9C16 6.79086 14.2091 5 12 5C9.79086 5 8 6.79086 8 9C8 11.2091 9.79086 13 12 13Z"
+      fill="#E4E4E7"
+    />
+  </svg>
+);

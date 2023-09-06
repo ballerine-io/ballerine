@@ -8,9 +8,9 @@ import { IActionsProps } from './interfaces';
 import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import {
-  AssignButton,
+  AssignDropdown,
   Assignee,
-} from '../../../../common/components/atoms/AssignButton/AssignButton';
+} from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { Button } from '../../../../common/components/atoms/Button/Button';
 import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
@@ -38,57 +38,45 @@ import { tagToBadgeData } from './consts';
 export const Actions: FunctionComponent<IActionsProps> = ({
   id,
   fullName,
+  avatarUrl,
   showResolutionButtons,
 }) => {
   const {
-    onMutateApproveEntity,
-    onMutateRevisionCase,
-    onMutateRejectEntity,
-    onMutateAssignWorkflow,
-    debouncedIsLoadingApproveEntity,
-    debouncedIsLoadingRejectEntity,
-    debouncedIsLoadingRevisionCase,
+    tag,
+    assignedUser,
+    authenticatedUser,
     isLoading,
     isLoadingCase,
     canApprove,
     canReject,
     canRevision,
-    caseState,
-    tag,
-    authenticatedUser,
     assignees,
-    onTriggerAssignToMe,
-    hasDecision,
+    debouncedIsLoadingApproveEntity,
+    debouncedIsLoadingRejectEntity,
+    debouncedIsLoadingRevisionCase,
     documentsToReviseCount,
+    onMutateApproveEntity,
+    onMutateRevisionCase,
+    onMutateRejectEntity,
+    onMutateAssignWorkflow,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>
-      <div className={`flex flex-row space-x-3.5`}>
-        <AssignButton
+      <div className={`mb-8 flex flex-row space-x-3.5`}>
+        <AssignDropdown
+          assignedUser={assignedUser}
+          avatarUrl={avatarUrl}
           assignees={[
             {
               id: authenticatedUser?.id,
               fullName: authenticatedUser?.fullName,
             },
+            ...((assignees ?? []) as Assignee[]),
           ]}
-          authenticatedUser={authenticatedUser}
-          caseState={caseState}
           onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, onTriggerAssignToMe);
+            onMutateAssignWorkflow(id, id === authenticatedUser?.id);
           }}
-          buttonType={'Assign'}
-          hasDecision={hasDecision}
-        />
-        <AssignButton
-          assignees={assignees as Assignee[]}
-          authenticatedUser={authenticatedUser}
-          caseState={caseState}
-          onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, !onTriggerAssignToMe);
-          }}
-          buttonType={'Re-Assign'}
-          hasDecision={hasDecision}
         />
       </div>
       <div className={`flex h-20 justify-between`}>

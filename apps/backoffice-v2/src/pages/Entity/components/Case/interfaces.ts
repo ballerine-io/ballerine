@@ -11,8 +11,7 @@ export interface IItemProps {
   fullName: string;
   createdAt: string;
   avatarUrl: string;
-  assigneeId: string;
-  assigneeFullName: string;
+  assignee: { id: string; fullName: string };
   status: TState;
 }
 

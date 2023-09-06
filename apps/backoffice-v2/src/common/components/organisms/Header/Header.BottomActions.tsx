@@ -1,9 +1,9 @@
 import { LogOutSvg } from '../../atoms/icons';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useSignOutMutation } from '../../../../domains/auth/hooks/mutations/useSignOutMutation/useSignOutMutation';
 import { useAuthContext } from '../../../../domains/auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
-import { Avatar } from '../../atoms/Avatar';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { UserAvatar } from '../../atoms/UserAvatar/UserAvatar';
 
 export const BottomActions = () => {
   const { mutate: signOut } = useSignOutMutation();
@@ -24,18 +24,12 @@ export const BottomActions = () => {
 
   return (
     <div className={`mt-auto flex flex-col space-y-2 px-4`}>
-      <div>
-        <Avatar
-          src={''}
-          placeholder={'O'}
-          alt={`${fullName}'s profile`}
-          className={`mr-2 d-6`}
-          isLoading={false}
-        />
-        {fullName}
+      <div className="flex items-center">
+        <UserAvatar fullName={fullName} className={`mr-2 d-6`} />
+        <div className="text-sm">{fullName}</div>
       </div>
       <button
-        className={`btn btn-ghost btn-block ml-1 justify-start gap-x-2 px-0 text-sm font-medium normal-case hover:bg-transparent focus:outline-primary`}
+        className="btn btn-ghost btn-block ml-1 justify-start gap-x-2 px-0 text-sm font-medium normal-case hover:bg-transparent"
         onClick={onSignOut}
       >
         <LogOutSvg className="h-4 w-4" />
