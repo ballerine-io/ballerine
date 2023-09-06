@@ -228,7 +228,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               countryOfIncorporation: entity.data.countryOfIncorporation,
               companyNumber: entity.data.registrationNumber,
               state: entity.data.dynamicInfo.companyInformation.state
-              vendor: 'veriff'
+              vendor: 'open-corporates'
               }`, // jmespath
             },
           ],
@@ -328,6 +328,7 @@ export const parentKybWithSessionWorkflowDefinition = {
     type: 'json-schema',
     schema: defaultContextSchema,
   },
+  isPublic: true,
 };
 export const generateParentKybWithSessionKycs = async (
   prismaClient: PrismaClient,

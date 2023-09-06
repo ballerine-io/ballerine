@@ -2,16 +2,16 @@ import { Readable } from 'stream';
 import { TLocalFilePath, TRemoteFileConfig } from './files-types';
 
 export interface IFileProvider {
-  isRemoteExists(remoteFileConfig: TRemoteFileConfig): Promise<boolean>;
-  download(
+  isRemoteFileExists(remoteFileConfig: TRemoteFileConfig): Promise<boolean>;
+  downloadFile(
     remoteFileConfig: TRemoteFileConfig,
     localeFilePath: TLocalFilePath,
   ): Promise<TLocalFilePath>;
-  upload(
+  uploadFile(
     localFilePath: TLocalFilePath,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TRemoteFileConfig | TLocalFilePath | void>;
-  generateRemotePath({
+  generateRemoteFilePath({
     fileName,
     customerName,
     directory,
@@ -23,8 +23,8 @@ export interface IFileProvider {
 }
 
 export interface IStreamableFileProvider extends IFileProvider {
-  fetchRemoteDownStream(remoteFileConfig: TRemoteFileConfig): Promise<Readable>;
-  uploadStream(
+  fetchRemoteFileDownStream(remoteFileConfig: TRemoteFileConfig): Promise<Readable>;
+  uploadFileStream(
     fileStream: Readable,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TRemoteFileConfig>;

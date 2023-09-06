@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import { Send } from 'lucide-react';
 import { Badge } from '@ballerine/ui';
 import { StateTag } from '@ballerine/common';

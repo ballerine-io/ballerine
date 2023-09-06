@@ -3,7 +3,6 @@ import { forwardRef, useCallback, useEffect, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { TSelectedImageProps } from './interfaces';
-import { isPdf } from '../../../utils/is-pdf/is-pdf';
 
 /**
  * @description To be used by {@link ImageViewer}. Uses {@link BallerineImage} to display the currently selected image with default styling.
@@ -29,7 +28,7 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
       setIsError(false);
     }, [isLoading, selectedImage?.imageUrl]);
 
-    if (isPdf(selectedImage)) {
+    if (selectedImage?.fileType === 'pdf' || selectedImage?.imageUrl?.endsWith('.pdf')) {
       return (
         <iframe
           src={selectedImage?.imageUrl}
