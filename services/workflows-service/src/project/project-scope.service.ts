@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
+import { isUpdateOrCreateByAssociation } from '@/common/utils/prisma-helpers';
 
 export interface PrismaGeneralQueryArgs {
   select?: Record<string, unknown> | null;
@@ -73,74 +74,30 @@ export class ProjectScopeService {
 
   scopeCreate<T>(args: Prisma.SelectSubset<T, PrismaGeneralInsertArgs>, projectId?: TProjectId) {
     // @ts-expect-error - dynamically typed for all queries
-    if (this.__isUncheckedInput(args.data)) {
-      return {
+    if (isUpdateOrCreateByAssociation(args.data)) {
+      // @ts-expect-error - dynamically typed for all queries
+      args.data = {
         // @ts-expect-error - dynamically typed for all queries
-        ...args,
-        data: {
-          // @ts-expect-error - dynamically typed for all queries
-          ...args.data,
-          project: {
-            connect: {
-              id: projectId,
-            },
-          },
+        ...args.data,
+        project: {
+          connect: { id: projectId },
         },
       };
-    }
-
-    // @ts-expect-error - dynamically typed for all queries
-    if (!this.__isUncheckedInput(args.data)) {
-      return {
+    } else {
+      // @ts-expect-error - dynamically typed for all queries
+      args.data = {
         // @ts-expect-error - dynamically typed for all queries
-        ...args,
-        data: {
-          // @ts-expect-error - dynamically typed for all queries
-          ...args.data,
-          projectId,
-        },
+        ...args.data,
+        projectId,
       };
     }
+    return args;
   }
 
   scopeUpdate<T>(args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>, projectId: TProjectId) {
-    return this.scopeCreate(args);
-  }
+    args = this.scopeCreate(args, projectId);
 
-  /**
-   * Used to determine if `project` should be connected via `connect` or `projectId`.
-   * @param data
-   * @private
-   */
-  private __isUncheckedInput(data: unknown): boolean {
-    const uncheckedInputKeys = [
-      'connect',
-      'create',
-      'connectOrCreate',
-      'disconnect',
-      'set',
-      'update',
-      'delete',
-      'deleteMany',
-      'updateMany',
-      'upsert',
-    ];
-
-    if (Array.isArray(data)) {
-      return data.some(this.__isUncheckedInput.bind(this));
-    }
-
-    if (typeof data !== 'object' || data === null) {
-      return false;
-    }
-
-    return Object.entries(data).some(([key, value]) => {
-      if (uncheckedInputKeys.includes(key)) {
-        return true;
-      }
-
-      return this.__isUncheckedInput(value);
-    });
+    return args;
   }
 
   scopeUpsert<T>(

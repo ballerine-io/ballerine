@@ -34,17 +34,8 @@ import { BusinessRepository } from '@/business/business.repository';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import addKeywords from 'ajv-keywords';
-import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
-import { z } from 'zod';
-import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
-import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
-import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
 import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
-import * as process from 'process';
-import * as crypto from 'crypto';
-import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
-import { TFileServiceProvider } from '@/providers/file/types';
 import { updateDocuments } from '@/workflow/update-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
@@ -54,6 +45,7 @@ import {
   DefaultContextSchema,
   getDocumentId,
   getDocumentsByCountry,
+  isObject,
   safeEvery,
 } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -90,7 +82,10 @@ const ajv = new Ajv({
   strict: false,
   coerceTypes: true,
 });
-addFormats(ajv, { formats: ['email', 'uri', 'date'] });
+addFormats(ajv, {
+  formats: ['email', 'uri', 'date', 'date-time'],
+  keywords: true,
+});
 addKeywords(ajv);
 
 export const ResubmissionReason = {
@@ -271,9 +266,33 @@ export class WorkflowService {
               doc => getDocumentId(doc, false) === getDocumentId(document, false),
             );
 
+            const propertiesSchema = {
+              ...(documentByCountry?.propertiesSchema ?? {}),
+              properties: Object.fromEntries(
+                Object.entries(documentByCountry?.propertiesSchema?.properties ?? {}).map(
+                  ([key, value]) => {
+                    if (!(key in document.properties)) return [key, value];
+                    if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string')
+                      return [key, value];
+
+                    return [
+                      key,
+                      {
+                        ...value,
+                        dropdownOptions: value.enum.map(item => ({
+                          value: item,
+                          label: item,
+                        })),
+                      },
+                    ];
+                  },
+                ),
+              ),
+            };
+
             return {
               ...document,
-              propertiesSchema: documentByCountry?.propertiesSchema ?? {},
+              propertiesSchema,
             };
           },
         ),
@@ -875,10 +894,24 @@ export class WorkflowService {
         ),
       };
 
-      this.__validateWorkflowDefinitionContext(workflowDef, context);
+      this.__validateWorkflowDefinitionContext(workflowDef, {
+        ...context,
+        documents: context?.documents?.map(
+          (document: DefaultContextSchema['documents'][number]) => ({
+            ...document,
+            type:
+              document?.type === 'unknown' && document?.decision?.status === 'approved'
+                ? undefined
+                : document?.type,
+          }),
+        ),
+      });
 
       // @ts-ignore
       data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
+        if (document?.decision?.status === 'revision' || document?.decision?.status === 'rejected')
+          return;
+
         if (!Object.keys(propertiesSchema ?? {})?.length) return;
 
         const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {});
@@ -1343,7 +1376,10 @@ export class WorkflowService {
           data: {
             ...entityConnect,
             workflowDefinitionVersion: workflowDefinition.version,
-            context: contextToInsert as InputJsonValue,
+            context: {
+              ...contextToInsert,
+              documents: documentsWithPersistedImages,
+            } as InputJsonValue,
             config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
             status: 'active',
             workflowDefinition: {
@@ -1410,7 +1446,7 @@ export class WorkflowService {
   }
 
   private async __persistDocumentPagesFiles(
-    document: DefaultContextSchema['documents'][number],
+    document: TDocumentWithoutPageType,
     entityId: string,
     projectId: TProjectId,
     customerName: string,
@@ -1426,7 +1462,7 @@ export class WorkflowService {
         );
         const ballerineFileId = documentPage.ballerineFileId || persistedFile?.ballerineFileId;
 
-        return { ...documentPage, ballerineFileId };
+        return { ...documentPage, type: persistedFile?.mimeType, ballerineFileId };
       }),
     );
   }
@@ -1827,8 +1863,28 @@ export class WorkflowService {
 
     const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query, projectIds);
 
-    this.logger.log('Last active workflow', { workflowId: workflowData ? workflowData.id : null });
+    this.logger.log('Last active workflow: ', {
+      workflowId: workflowData ? workflowData.id : null,
+    });
 
     return workflowData ? workflowData : null;
+  }
+
+  async copyDocumentsPagesFilesAndCreate(
+    documents: TDocumentsWithoutPageType,
+    entityId: string,
+    projectId: TProjectId,
+    customerName: string,
+  ) {
+    if (!documents?.length) return documents;
+
+    const documentsWithPersistedImages = await Promise.all(
+      documents?.map(async document => ({
+        ...document,
+        pages: await this.__persistDocumentPagesFiles(document, entityId, projectId, customerName),
+      })),
+    );
+
+    return documentsWithPersistedImages;
   }
 }

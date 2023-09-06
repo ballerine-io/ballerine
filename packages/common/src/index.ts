@@ -24,8 +24,7 @@ export type { Serializable, AnyRecord } from './types';
 export type { DefaultContextSchema, TDefaultSchemaDocumentPage, TDocument } from './schemas';
 
 export {
-  ghanaDocuments,
-  certificateOfResidenceGH,
+  getGhanaDocuments,
   getDocumentsByCountry,
   getDocumentId,
   defaultContextSchema,

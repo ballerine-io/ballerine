@@ -117,7 +117,6 @@ export const cloudfrontPresignedUrl = ({ fileNameInBucket }: { fileNameInBucket:
   const cfPrivateKey =
     decodeFromBase64(process.env.AWS_S3_CF_PRIVATE_KEY_BASE64) ||
     (process.env.AWS_S3_CF_PRIVATE_KEY as string);
-  console.log('CloudFront Private Key: ' + cfPrivateKey);
 
   return getSignedUrlCF(`${process.env.AWS_S3_CF_URL as string}/${fileNameInBucket}`, {
     keypairId: process.env.AWS_S3_CF_KEYPAIR_ID as string,
