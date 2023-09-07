@@ -83,7 +83,7 @@ export const getUgandaDocuments = (): TDocument[] => {
         dateOfStatement: Type.String({ format: 'date-time' }),
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
-        mobileNumber: TypeUgandaMobileNumber,
+        msisdn: TypeUgandaMobileNumber,
         accountHolderName: TypeStringAtLeastOneWord,
       }),
     },
@@ -96,7 +96,7 @@ export const getUgandaDocuments = (): TDocument[] => {
       propertiesSchema: Type.Object({
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
-        mobileNumber: TypeUgandaMobileNumber,
+        msisdn: TypeUgandaMobileNumber,
         accountHolderName: TypeStringAtLeastOneWord,
       }),
     },
@@ -140,6 +140,68 @@ export const getUgandaDocuments = (): TDocument[] => {
         to: Type.String({ format: 'date' }),
         accountHolderName: TypeStringAtLeastOneWord,
         accountNumber: Type.Optional(Type.String()),
+      }),
+    },
+
+    // Proof of Address
+    {
+      category: 'proof_of_address',
+      type: 'water_bill',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        name: TypeStringAtLeastOneWord,
+        nationalIdNumber: Type.String(),
+        userAddress: Type.String(),
+        physicalAddress: Type.String(),
+        amountDue: Type.Number(),
+      }),
+    },
+    {
+      category: 'proof_of_address',
+      type: 'electricity_bill',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        name: TypeStringAtLeastOneWord,
+        nationalIdNumber: Type.Optional(Type.String()),
+        userAddress: Type.String(),
+        physicalAddress: Type.String(),
+        amountDue: Type.Number(),
+        issueDate: TypePastDate,
+      }),
+    },
+
+    // Proof of Employment
+    {
+      category: 'proof_of_employment',
+      type: 'payslip',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        salaryAmount: Type.Number({ minimum: 1 }),
+        employerName: TypeStringAtLeastOneWord,
+        employeeId: Type.String(),
+        position: Type.String(),
+        issueDate: TypePastDate,
+        nationalIdNumber: Type.String(),
+      }),
+    },
+    {
+      category: 'proof_of_employment',
+      type: 'appointment_letter',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        salaryAmount: Type.Optional(Type.Number({ minimum: 1 })),
+        employerName: TypeStringAtLeastOneWord,
+        nationalIdNumber: Type.String(),
+        position: Type.String(),
+        issueDate: TypePastDate,
       }),
     },
   ];
