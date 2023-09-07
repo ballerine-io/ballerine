@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent } from 'react';
 import { Send } from 'lucide-react';
 import { Badge } from '@ballerine/ui';
 import { StateTag } from '@ballerine/common';
@@ -8,9 +8,9 @@ import { IActionsProps } from './interfaces';
 import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import {
-  AssignButton,
+  AssignDropdown,
   Assignee,
-} from '../../../../common/components/atoms/AssignButton/AssignButton';
+} from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { Button } from '../../../../common/components/atoms/Button/Button';
 import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
@@ -38,63 +38,51 @@ import { tagToBadgeData } from './consts';
 export const Actions: FunctionComponent<IActionsProps> = ({
   id,
   fullName,
+  avatarUrl,
   showResolutionButtons,
 }) => {
   const {
-    onMutateApproveEntity,
-    onMutateRevisionCase,
-    onMutateRejectEntity,
-    onMutateAssignWorkflow,
-    debouncedIsLoadingApproveEntity,
-    debouncedIsLoadingRejectEntity,
-    debouncedIsLoadingRevisionCase,
+    tag,
+    assignedUser,
+    authenticatedUser,
     isLoading,
     isLoadingCase,
     canApprove,
     canReject,
     canRevision,
-    caseState,
-    tag,
-    authenticatedUser,
     assignees,
-    onTriggerAssignToMe,
-    hasDecision,
+    debouncedIsLoadingApproveEntity,
+    debouncedIsLoadingRejectEntity,
+    debouncedIsLoadingRevisionCase,
     documentsToReviseCount,
+    onMutateApproveEntity,
+    onMutateRevisionCase,
+    onMutateRejectEntity,
+    onMutateAssignWorkflow,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>
-      <div className={`flex flex-row space-x-3.5`}>
-        <AssignButton
+      <div className={`mb-8 flex flex-row space-x-3.5`}>
+        <AssignDropdown
+          assignedUser={assignedUser}
+          avatarUrl={avatarUrl}
           assignees={[
             {
               id: authenticatedUser?.id,
               fullName: authenticatedUser?.fullName,
             },
+            ...((assignees ?? []) as Assignee[]),
           ]}
-          authenticatedUser={authenticatedUser}
-          caseState={caseState}
           onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, onTriggerAssignToMe);
+            onMutateAssignWorkflow(id, id === authenticatedUser?.id);
           }}
-          buttonType={'Assign'}
-          hasDecision={hasDecision}
-        />
-        <AssignButton
-          assignees={assignees as Assignee[]}
-          authenticatedUser={authenticatedUser}
-          caseState={caseState}
-          onAssigneeSelect={id => {
-            onMutateAssignWorkflow(id, !onTriggerAssignToMe);
-          }}
-          buttonType={'Re-Assign'}
-          hasDecision={hasDecision}
         />
       </div>
       <div className={`flex h-20 justify-between`}>
-        <div className={`flex flex-col space-y-4`}>
+        <div className={`flex flex-col space-y-3`}>
           <h2
-            className={ctw(`text-2xl font-bold`, {
+            className={ctw(`text-4xl font-semibold leading-9`, {
               'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
                 isLoadingCase,
             })}
@@ -103,7 +91,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           </h2>
           {tag && (
             <div className={`flex items-center`}>
-              <span className={`mr-[8px] text-sm font-bold`}>Status</span>
+              <span className={`mr-[8px] text-sm leading-6`}>Status</span>
               <Badge
                 variant={tagToBadgeData[tag].variant}
                 className={ctw(`text-sm font-bold`, {
@@ -117,14 +105,14 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           )}
         </div>
         {showResolutionButtons && (
-          <div className={`flex items-center space-x-6 pe-[3.35rem]`}>
+          <div className={`flex items-center space-x-4 self-start pe-[3.35rem]`}>
             <Dialog>
               <DialogTrigger asChild>
                 <Button
-                  className={ctw('bg-orange-400 hover:!bg-orange-400/90', {
-                    loading: debouncedIsLoadingRejectEntity,
-                  })}
+                  size="md"
+                  variant="warning"
                   disabled={isLoading || !canRevision}
+                  className={ctw({ loading: debouncedIsLoadingRejectEntity })}
                 >
                   Ask for all re-uploads {canRevision && `(${documentsToReviseCount})`}
                 </Button>
@@ -161,22 +149,24 @@ export const Actions: FunctionComponent<IActionsProps> = ({
               </DialogContent>
             </Dialog>
             <Button
-              variant={`destructive`}
+              size="md"
+              variant="destructive"
+              onClick={onMutateRejectEntity}
+              disabled={isLoading || !canReject}
               className={ctw({
                 loading: debouncedIsLoadingRejectEntity,
               })}
-              disabled={isLoading || !canReject}
-              onClick={onMutateRejectEntity}
             >
               Reject
             </Button>
             <Button
+              size="md"
+              variant="success"
+              onClick={onMutateApproveEntity}
+              disabled={isLoading || !canApprove}
               className={ctw({
                 loading: debouncedIsLoadingApproveEntity,
               })}
-              variant={`success`}
-              disabled={isLoading || !canApprove}
-              onClick={onMutateApproveEntity}
             >
               Approve
             </Button>

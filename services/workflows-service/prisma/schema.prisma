@@ -217,6 +217,7 @@ model WorkflowRuntimeData {
 
 model File {
   id               String   @id @default(cuid())
+  mimeType         String?
   userId           String
   fileNameOnDisk   String
   uri              String
@@ -291,14 +292,15 @@ model Project {
 
   userToProjects UserToProject[]
 
-  filters                  Filter[]
-  endUsers                 EndUser[]
-  business                 Business[]
-  workflowRuntimeData      WorkflowRuntimeData[]
-  files                    File[]
-  SalesforceIntegration    SalesforceIntegration?
-  workflowDefinitions      WorkflowDefinition[]
+  filters               Filter[]
+  endUsers              EndUser[]
+  business              Business[]
+  workflowRuntimeData   WorkflowRuntimeData[]
+  files                 File[]
+  SalesforceIntegration SalesforceIntegration?
+  workflowDefinitions   WorkflowDefinition[]
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
+
 
   @@unique([name, customerId])
   @@index(name)
