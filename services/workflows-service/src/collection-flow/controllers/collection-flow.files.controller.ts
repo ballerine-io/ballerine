@@ -26,16 +26,17 @@ export class CollectionFlowFilesController {
     @UploadedFile() file: Partial<Express.MulterS3.File>,
     @TokenScope() tokenScope: ITokenScope,
   ) {
-    const id = await this.storageService.createFileLink({
+    const uploadedFile = await this.storageService.createFileLink({
       uri: file.location || String(file.path),
       fileNameOnDisk: String(file.path),
       fileNameInBucket: file.key,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
       projectId: tokenScope.projectId,
+      mimeType: file.mimetype,
     });
 
-    return { id };
+    return uploadedFile;
   }
 
   @Get('/:id')
@@ -45,11 +46,10 @@ export class CollectionFlowFilesController {
     @Res() res: Response,
   ) {
     // currently ignoring user id due to no user info
-    const persistedFile = await this.storageService.getFileNameById(
+    const persistedFile = await this.storageService.getFileById(
       {
         id,
       },
-      {},
       [tokenScope.projectId],
     );
 

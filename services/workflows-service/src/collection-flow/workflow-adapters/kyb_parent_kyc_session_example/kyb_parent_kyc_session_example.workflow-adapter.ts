@@ -88,10 +88,9 @@ export class KYBParentKYCSessionExampleAdapter
           // Validation is broken after schema updates so it doesnt accept following payload
           {
             ballerineFileId: document.fileId,
-            uri: document.uri || '',
-            provider: document.uri ? 'http' : 'gcs',
+            uri: document.uri || undefined,
+            provider: document.uri ? 'http' : undefined,
             // Should extract this from file name extension
-            type: 'png',
           },
         ],
         properties: document.properties,
