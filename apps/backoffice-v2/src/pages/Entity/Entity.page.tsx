@@ -31,7 +31,10 @@ export const Entity = () => {
             return (
               <Card
                 key={index}
-                className={`me-4 ${task.className} shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)]`}
+                className={ctw(
+                  'me-4 shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)]',
+                  task.className,
+                )}
               >
                 <CardContent
                   className={ctw('grid gap-2', {

@@ -1,4 +1,5 @@
 import { Heading } from '../../components/Heading/Heading';
+import { Subheading } from '../../components/Subheading/Subheading';
 import { Alert } from '../../components/Alert/Alert';
 import { Container } from '../../components/Container/Container';
 import { CallToAction } from '../../components/CallToAction/CallToAction';
@@ -12,6 +13,7 @@ import { BadgeCell } from '../../components/BadgeCell/BadgeCell';
 
 export const cells = {
   heading: Heading,
+  subheading: Subheading,
   alert: Alert,
   badge: BadgeCell,
   container: Container,

@@ -77,9 +77,18 @@ export const useTasks = ({
           ?.map((key, index, collection) => ({
             cells: [
               {
-                id: 'nested-details-heading',
-                type: 'heading',
-                value: 'Registry information',
+                type: 'container',
+                value: [
+                  {
+                    id: 'nested-details-heading',
+                    type: 'heading',
+                    value: 'Registry Information',
+                  },
+                  {
+                    type: 'subheading',
+                    value: 'Registry-provided data',
+                  },
+                ],
               },
               {
                 type: 'details',
@@ -308,8 +317,17 @@ export const useTasks = ({
       : {
           cells: [
             {
-              type: 'heading',
-              value: `${toStartCase(entity?.type)} Information`,
+              type: 'container',
+              value: [
+                {
+                  type: 'heading',
+                  value: `${toStartCase(entity?.type)} Information`,
+                },
+                {
+                  type: 'subheading',
+                  value: 'User-provided data',
+                },
+              ],
             },
             {
               id: 'entity-details',

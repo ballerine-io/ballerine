@@ -4,6 +4,7 @@ export interface IDetailsProps {
   value: {
     id: string;
     title: string;
+    subtitle: string;
     data: Array<{
       title: string;
       isEditable: boolean;
