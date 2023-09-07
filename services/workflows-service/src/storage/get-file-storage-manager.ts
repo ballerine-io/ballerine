@@ -80,7 +80,7 @@ export const createPresignedUrlWithClient = async ({
     service === 'cloudfront' &&
     process.env.AWS_S3_CF_URL &&
     process.env.AWS_S3_CF_KEYPAIR_ID &&
-    (process.env.AWS_S3_CF_PRIVATE_KEY || process.env.AWS_S3_CF_PRIVATE_KEY_BASE64)
+    (process.env.AWS_S3_CF_PRIVATE_KEY_BASE64 || process.env.AWS_S3_CF_PRIVATE_KEY)
   ) {
     return cloudfrontPresignedUrl({
       fileNameInBucket,
