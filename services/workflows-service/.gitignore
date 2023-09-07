@@ -8,4 +8,3 @@ dist
 *.tgz
 *.log
 scripts/seed_*.ts
-vite.config.ts.timestamp-*.mjs
