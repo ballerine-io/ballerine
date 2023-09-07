@@ -135,18 +135,19 @@ export const CogSvg: FunctionComponent<SVGProps<SVGSVGElement>> = props => {
 export const LogOutSvg: FunctionComponent<SVGProps<SVGSVGElement>> = props => {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
+      width="15"
+      height="14"
+      viewBox="0 0 15 14"
       fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className="h-6 w-6"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+        opacity="0.5"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8.56185 2.5C8.56185 2.36193 8.44992 2.25 8.31185 2.25L1.97852 2.25C1.84044 2.25 1.72852 2.36193 1.72852 2.5L1.72852 11.5C1.72852 11.6381 1.84044 11.75 1.97851 11.75H8.31185C8.44992 11.75 8.56185 11.6381 8.56185 11.5V10.5C8.56185 10.0858 8.89763 9.75 9.31185 9.75C9.72606 9.75 10.0618 10.0858 10.0618 10.5V11.5C10.0618 12.4665 9.27835 13.25 8.31185 13.25H1.97851C1.01202 13.25 0.228516 12.4665 0.228516 11.5V2.5C0.228516 1.5335 1.01202 0.75 1.97852 0.75H8.31185C9.27835 0.75 10.0618 1.5335 10.0618 2.5V3.5C10.0618 3.91421 9.72606 4.25 9.31185 4.25C8.89763 4.25 8.56185 3.91421 8.56185 3.5V2.5ZM8.06879 7C8.06879 6.60113 8.39214 6.27778 8.79102 6.27778H12.2042L11.4159 5.521C11.1281 5.24477 11.1188 4.78758 11.395 4.49984C11.6712 4.2121 12.1284 4.20277 12.4162 4.479L14.4995 6.479C14.6414 6.61519 14.7216 6.80334 14.7216 7C14.7216 7.19666 14.6414 7.38481 14.4995 7.521L12.4162 9.521C12.1284 9.79723 11.6712 9.7879 11.395 9.50016C11.1188 9.21242 11.1281 8.75523 11.4159 8.479L12.2042 7.72222H8.79102C8.39214 7.72222 8.06879 7.39887 8.06879 7Z"
+        fill="black"
       />
     </svg>
   );
@@ -540,6 +541,57 @@ export const NoTasksSvg = (props: SVGProps<SVGSVGElement>) => (
       fill="white"
       stroke="black"
       strokeWidth="2"
+    />
+  </svg>
+);
+
+export const DoubleCaretSvg = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    width="6"
+    height="10"
+    viewBox="0 0 6 10"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M5 7.00293L3 9.00293L1 7.00293"
+      stroke="#A3A3A3"
+      strokeWidth="1.44444"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M1 3L3 1L5 3"
+      stroke="#A3A3A3"
+      strokeWidth="1.44444"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const UnassignedAvatarSvg = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle cx="12" cy="12" r="10" stroke="#E4E4E7" strokeWidth="2" />
+    <path
+      d="M16.8285 16.9763C17.5786 17.6014 18 18.4493 18 19.3333C13.6001 22.8 8.1667 20.7778 6 19.3333C6 18.4493 6.42143 17.6014 7.17158 16.9763C7.92173 16.3512 8.93915 16 10 16H14C15.0609 16 16.0783 16.3512 16.8285 16.9763Z"
+      fill="#E4E4E7"
+      stroke="#E4E4E7"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M12 13C14.2091 13 16 11.2091 16 9C16 6.79086 14.2091 5 12 5C9.79086 5 8 6.79086 8 9C8 11.2091 9.79086 13 12 13Z"
+      fill="#E4E4E7"
     />
   </svg>
 );

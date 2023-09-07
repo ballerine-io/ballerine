@@ -12,7 +12,7 @@ export const List: FunctionComponent<PropsWithChildren> = ({ children }) => {
   const [parent] = useAutoAnimate<HTMLUListElement>();
 
   return (
-    <ul className={`menu`} ref={parent}>
+    <ul className={`menu gap-3`} ref={parent}>
       {children}
     </ul>
   );

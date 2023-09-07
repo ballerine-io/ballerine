@@ -29,7 +29,10 @@ export const Entity = () => {
             if (!Array.isArray(task.cells) || !task?.cells.length) return;
 
             return (
-              <Card key={index} className={`me-4 ${task.className}`}>
+              <Card
+                key={index}
+                className={`me-4 ${task.className} shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)]`}
+              >
                 <CardContent
                   className={ctw('grid gap-2', {
                     'grid-cols-2': task?.cells.some(field => field?.type === 'multiDocuments'),
