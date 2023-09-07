@@ -8,6 +8,7 @@ import * as tmp from 'tmp';
 import fs from 'fs';
 import { CustomerService } from '@/customer/customer.service';
 import { TProjectId, TProjectIds } from '@/types';
+import { TDocumentsWithoutPageType } from '@/common/types';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -69,14 +70,12 @@ export class HookCallbackHandlerService {
     const documentCategory = kycDocument.type as string;
     const documents = this.formatDocuments(documentCategory, pages, issuer, documentProperties);
     const customer = await this.customerService.getByProjectId(currentProjectId);
-    const persistedDocuments = (
-      await this.workflowService.copyFileAndCreate(
-        { documents: documents } as DefaultContextSchema,
-        context.entity.id,
-        currentProjectId,
-        customer.name,
-      )
-    ).documents;
+    const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
+      documents as TDocumentsWithoutPageType,
+      context.entity.id,
+      currentProjectId,
+      customer.name,
+    );
 
     const result = {
       entity: entity,
@@ -174,7 +173,7 @@ export class HookCallbackHandlerService {
       documentImages.push({
         uri: tmpFile,
         provider: 'base64',
-        type: 'png',
+        type: 'image/png',
         metadata: {
           side: image.context?.replace('document-', ''),
         },
