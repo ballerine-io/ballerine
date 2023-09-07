@@ -24,17 +24,19 @@ export class WorkflowRuntimeDataRepository {
     projectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     return await this.prisma.workflowRuntimeData.create<T>(
-      {
-        ...args,
-        data: {
-          ...args.data,
-          context: {
-            ...((args.data?.context ?? {}) as any),
-            documents: assignIdToDocuments((args.data?.context as any)?.documents),
+      this.scopeService.scopeCreate(
+        {
+          ...args,
+          data: {
+            ...args.data,
+            context: {
+              ...((args.data?.context ?? {}) as any),
+              documents: assignIdToDocuments((args.data?.context as any)?.documents),
+            },
           },
-          project: { connect: { id: projectId } },
-        },
-      } as any,
+        } as any,
+        projectId,
+      ),
     );
   }
 

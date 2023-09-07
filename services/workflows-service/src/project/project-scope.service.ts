@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
+import { isUpdateOrCreateByAssociation } from '@/common/utils/prisma-helpers';
 
 export interface PrismaGeneralQueryArgs {
   select?: Record<string, unknown> | null;
@@ -73,27 +74,28 @@ export class ProjectScopeService {
 
   scopeCreate<T>(args: Prisma.SelectSubset<T, PrismaGeneralInsertArgs>, projectId?: TProjectId) {
     // @ts-expect-error - dynamically typed for all queries
-    args.data = {
+    if (isUpdateOrCreateByAssociation(args.data)) {
       // @ts-expect-error - dynamically typed for all queries
-      ...args.data,
-      projectId,
-    };
-
+      args.data = {
+        // @ts-expect-error - dynamically typed for all queries
+        ...args.data,
+        project: {
+          connect: { id: projectId },
+        },
+      };
+    } else {
+      // @ts-expect-error - dynamically typed for all queries
+      args.data = {
+        // @ts-expect-error - dynamically typed for all queries
+        ...args.data,
+        projectId,
+      };
+    }
     return args;
   }
 
   scopeUpdate<T>(args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>, projectId: TProjectId) {
-    args = this.scopeCreate(args);
-    // @ts-expect-error - dynamically typed for all queries
-    args.data = {
-      // @ts-expect-error - dynamically typed for all queries
-      ...args.data,
-      project: {
-        connect: {
-          id: projectId,
-        },
-      },
-    };
+    args = this.scopeCreate(args, projectId);
 
     return args;
   }
