@@ -78,7 +78,7 @@ export const kybParentDynamicExample = {
                 countryOfIncorporation: entity.data.countryOfIncorporation,
                 companyNumber: entity.data.registrationNumber,
                 state: entity.data.additionalInfo.company.state
-                vendor: 'veriff'
+                vendor: 'open-corporates'
                 }`, // jmespath
             },
           ],
