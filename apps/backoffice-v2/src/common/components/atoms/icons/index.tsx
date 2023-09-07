@@ -456,39 +456,6 @@ export const PhotoSvg = (props: SVGProps<SVGSVGElement>) => {
   );
 };
 
-export const CheckFolderSvg = (props: SVGProps<SVGSVGElement>) => (
-  <svg
-    {...props}
-    width="14"
-    height="18"
-    viewBox="0 0 14 18"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M9.25 1.5H4.75C4.33579 1.5 4 1.83579 4 2.25V3.75C4 4.16421 4.33579 4.5 4.75 4.5H9.25C9.66421 4.5 10 4.16421 10 3.75V2.25C10 1.83579 9.66421 1.5 9.25 1.5Z"
-      stroke="black"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M10 3H11.5C11.8978 3 12.2794 3.15804 12.5607 3.43934C12.842 3.72064 13 4.10218 13 4.5V15C13 15.3978 12.842 15.7794 12.5607 16.0607C12.2794 16.342 11.8978 16.5 11.5 16.5H2.5C2.10218 16.5 1.72064 16.342 1.43934 16.0607C1.15804 15.7794 1 15.3978 1 15V4.5C1 4.10218 1.15804 3.72064 1.43934 3.43934C1.72064 3.15804 2.10218 3 2.5 3H4"
-      stroke="black"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M4.75 10.5L6.25 12L9.25 9"
-      stroke="black"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
 export const NoCasesSvg = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 81" fill="none" {...props}>
     <circle cx="45.8955" cy="42" r="39" fill="#D9D9D9" />

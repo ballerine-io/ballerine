@@ -1,17 +1,19 @@
+import { ComponentProps } from 'react';
+
 import { Actions } from './Case.Actions';
 import { Documents } from './Case.Documents';
 import { Info } from './Case.Info';
 import { Content } from './Case.Content';
 import { FaceMatch } from './Case.FaceMatch';
 import { TState } from '../../../../common/types';
-import { ComponentProps } from 'react';
+import { Assignee } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 
 export interface IItemProps {
   id: string;
   fullName: string;
   createdAt: string;
   avatarUrl: string;
-  assignee: { id: string; fullName: string };
+  assignee: Assignee;
   status: TState;
 }
 

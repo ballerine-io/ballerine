@@ -6,11 +6,9 @@ import { DropdownMenuItem } from '../../molecules/DropdownMenu/DropdownMenu.Item
 import { DropdownMenuTrigger } from '../../molecules/DropdownMenu/DropdownMenu.Trigger';
 import { DropdownMenuContent } from '../../molecules/DropdownMenu/DropdownMenu.Content';
 import { UserAvatar } from '../UserAvatar/UserAvatar';
+import { TAuthenticatedUser } from '../../../../domains/auth/types';
 
-export type Assignee = {
-  id: string;
-  fullName: string;
-};
+export type Assignee = Pick<TAuthenticatedUser, 'id' | 'fullName'>;
 
 interface IAssignDropdownProps {
   avatarUrl: string | null;

@@ -3,10 +3,9 @@ import { NavItem } from './Header.NavItem';
 import { useFiltersQuery } from '../../../../domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { ctw } from '../../../utils/ctw/ctw';
 import { TRoutes } from '../../../../Router/types';
-import { CheckSquare } from 'lucide-react';
+import { ClipboardCheck } from 'lucide-react';
 import { useSearchParamsByEntity } from '../../../hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
-import { CheckFolderSvg } from '../../atoms/icons';
 
 /**
  * @description A nav element which wraps {@link NavItem} components of the app's routes. Supports nested routes.
@@ -64,7 +63,7 @@ export const Navbar: FunctionComponent = () => {
             )}
           >
             <div className="flex items-center">
-              <CheckFolderSvg width={6} height={6} />
+              <ClipboardCheck size={15} />
             </div>
             <div>{name}</div>
           </NavItem>
