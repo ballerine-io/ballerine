@@ -78,13 +78,18 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   }, [workflow]);
 
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
-  const onTriggerAssignToMe = true;
   const documentsToReviseCount = workflow?.context?.documents?.filter(
     document => document?.decision?.status === 'revision',
   )?.length;
 
+  const assignedUser = workflow?.assignee
+    ? {
+        id: workflow?.assignee?.id,
+        fullName: `${workflow?.assignee?.firstName} ${workflow?.assignee?.lastName}`,
+      }
+    : undefined;
+
   return {
-    onTriggerAssignToMe,
     isActionButtonDisabled,
     onMutateApproveEntity,
     onMutateRevisionCase,
@@ -102,6 +107,7 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     caseState,
     authenticatedUser,
     assignees,
+    assignedUser,
     hasDecision,
     isLoadingCase,
     documentsToReviseCount,

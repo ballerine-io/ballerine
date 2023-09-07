@@ -30,7 +30,7 @@ export const AuthenticatedLayout: FunctionComponent = () => {
           <Outlet />
         </main>
       </div>
-      <div className={`drawer-side w-56`}>
+      <div className={`drawer-side w-[250px]`}>
         <label htmlFor="app-drawer" className="drawer-overlay"></label>
         <Header />
       </div>

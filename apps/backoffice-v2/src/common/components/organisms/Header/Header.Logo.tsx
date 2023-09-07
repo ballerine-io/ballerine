@@ -12,7 +12,7 @@ export const Logo: FunctionComponent = () => {
   const { data: customer } = useCustomerQuery();
 
   return (
-    <h1 className={`mb-16 flex`}>
+    <h1 className={`mb-11 flex`}>
       <Link
         to={`/en`}
         className={`btn btn-ghost flex gap-x-3 text-2xl  normal-case focus:outline-primary`}

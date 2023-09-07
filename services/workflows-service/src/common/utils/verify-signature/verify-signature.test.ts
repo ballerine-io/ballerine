@@ -1,4 +1,4 @@
-import { verifySignature } from '@/common/utils/verify-signature/verify-signature';
+import { verifySignature } from './verify-signature';
 
 const cases: {
   name: string;

@@ -51,6 +51,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
         <DialogTrigger asChild>
           <MotionButton
             {...motionProps}
+            size="wide"
             variant="warning"
             disabled={!caseState.actionButtonsEnabled || data?.disabled}
           >
@@ -60,7 +61,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
       </AnimatePresence>
       <DialogContent className={`mb-96`}>
         <DialogHeader>
-          <DialogTitle className={`text-2xl`}>Ask for all re-uploads</DialogTitle>
+          <DialogTitle className={`text-2xl`}>Mark document for re-upload</DialogTitle>
           <DialogDescription asChild>
             <p className="text-sm">
               {workflowLevelResolution ? (
@@ -153,6 +154,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     <AnimatePresence>
       <MotionButton
         {...motionProps}
+        size="wide"
         variant="success"
         className={ctw({ loading: isLoadingTaskDecisionById })}
         disabled={isLoadingTaskDecisionById || data?.disabled || !caseState.actionButtonsEnabled}

@@ -149,7 +149,16 @@ export const defaultContextSchema = {
                   format: 'uri',
                 },
                 type: {
-                  enum: ['pdf', 'png', 'jpg'],
+                  enum: [
+                    'application/pdf',
+                    'image/png',
+                    'image/jpg',
+                    'image/jpeg',
+                    // Backwards compatibility
+                    'pdf',
+                    'png',
+                    'jpg',
+                  ],
                 },
                 data: {
                   type: 'string',
@@ -167,7 +176,7 @@ export const defaultContextSchema = {
                   additionalProperties: false,
                 },
               },
-              required: ['provider', 'uri', 'type'],
+              required: ['provider', 'uri'],
               additionalProperties: false,
             },
           },

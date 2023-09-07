@@ -213,6 +213,7 @@ model WorkflowRuntimeData {
 
 model File {
   id               String   @id @default(cuid())
+  mimeType         String?
   userId           String
   fileNameOnDisk   String
   uri              String
@@ -287,12 +288,14 @@ model Project {
 
   userToProjects UserToProject[]
 
-  filters             Filter[]
-  endUsers            EndUser[]
-  business            Business[]
-  workflowRuntimeData WorkflowRuntimeData[]
-  files               File[]
-  workflowDefinitions WorkflowDefinition[]
+  filters               Filter[]
+  endUsers              EndUser[]
+  business              Business[]
+  workflowRuntimeData   WorkflowRuntimeData[]
+  files                 File[]
+  SalesforceIntegration SalesforceIntegration?
+  workflowDefinitions   WorkflowDefinition[]
+
 
   @@unique([name, customerId])
   @@index(name)
@@ -308,4 +311,19 @@ model UserToProject {
 
   @@id([projectId, userId])
   @@index([userId])
+}
+
+model SalesforceIntegration {
+  id                  String   @id @default(cuid()) @db.VarChar(500)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  projectId           String   @unique @db.VarChar(500)
+  project             Project  @relation(fields: [projectId], references: [id])
+  accessToken         String   @db.VarChar(500)
+  accessTokenIssuedAt DateTime
+  refreshToken        String   @db.VarChar(500)
+  instanceUrl         String   @db.VarChar(500)
+  userId              String   @db.VarChar(500)
+  organizationId      String   @db.VarChar(500)
+  idUrl               String   @db.VarChar(500)
 }

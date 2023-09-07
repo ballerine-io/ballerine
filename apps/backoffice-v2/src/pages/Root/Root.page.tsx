@@ -1,7 +1,7 @@
+import { FunctionComponent, lazy } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { Outlet } from 'react-router-dom';
 import { Providers } from '../../common/components/templates/Providers/Providers';
-import { Toaster } from 'react-hot-toast';
-import { FunctionComponent, lazy, Suspense } from 'react';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -22,9 +22,9 @@ export const Root: FunctionComponent = () => {
         }}
       />
       <Outlet />
-      <Suspense>
-        <ReactQueryDevtools />
-      </Suspense>
+      {/*<Suspense>*/}
+      {/*  <ReactQueryDevtools  />*/}
+      {/*</Suspense>*/}
     </Providers>
   );
 };

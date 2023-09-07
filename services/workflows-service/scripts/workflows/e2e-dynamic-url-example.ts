@@ -224,7 +224,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
       },
     ],
   },
-  isPublic: true
+  isPublic: true,
 } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
 export const generateDynamicDefinitionForE2eTest = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({

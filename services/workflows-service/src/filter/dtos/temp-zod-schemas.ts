@@ -196,7 +196,7 @@ export const WorkflowRuntimeDataWhereInputSchema = z.lazy(() =>
       assigneeId: zStringNullableFilterStringNullUnion.optional(),
       config: z.unknown().optional(),
       state: zStringNullableFilterStringNullUnion.optional(),
-      tags: z.any().optional(),
+      tags: z.any(),
       status: zStringFilterStringUnion.optional(),
       createdAt: zDateTimeFilterDateStringUnion.optional(),
       updatedAt: zDateTimeFilterDateStringUnion.optional(),

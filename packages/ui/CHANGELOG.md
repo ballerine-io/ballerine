@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.0
+
+### Minor Changes
+
+- Fixes
+
 ## 0.2.16
 
 ### Patch Changes

@@ -1,870 +1,857 @@
 import { TDocument } from '../types';
+import { Type } from '@sinclair/typebox';
 
 const ghNationalIdNumber = '^$|^GHA-\\d{9}-\\d{1}$';
 const alphaNumeric = '^[a-zA-Z0-9]*$';
 
-export const certificateOfResidenceGH: TDocument = {
-  category: 'proof_of_address',
-  type: 'water_bill',
-  issuer: {
-    type: 'local_authority',
-    city: 'Accra',
-    name: 'Accra Metropolitan Assembly',
-    country: 'GH',
-  },
-  issuingVersion: 1,
-  version: 1,
-  propertiesSchema: {
-    type: 'object',
-    properties: {
-      nationalIdNumber: {
-        type: 'string',
-        pattern: ghNationalIdNumber,
-      },
-      docNumber: {
-        type: 'string',
-        pattern: alphaNumeric,
-      },
-      userAddress: {
-        type: 'string',
-      },
-      physicalAddress: {
-        type: 'string',
-      },
-      amountDue: {
-        type: 'number',
-      },
-      issuingDate: {
-        type: 'string',
-        format: 'date',
-      },
-    },
-  },
-};
+export const getGhanaDocuments = (): TDocument[] => {
+  const TypeAlphanumericString = Type.String({ pattern: '^[a-zA-Z0-9]*$' });
+  const TypePastDate = Type.String({
+    format: 'date',
+    formatMaximum: new Date().toISOString().split('T')[0],
+  });
+  const TypeFutureDate = Type.String({
+    format: 'date',
+    formatMinimum: new Date().toISOString().split('T')[0],
+  });
+  const TypeNationalIdNumber = Type.String({ pattern: ghNationalIdNumber });
+  const TypeStringAtLeastOneWord = Type.String({ minLength: 1 });
+  const TypeStringEnum = <T extends string[]>(values: [...T]) =>
+    Type.Unsafe<T[number]>({
+      type: 'string',
+      enum: values,
+    });
 
-export const ghanaDocuments: TDocument[] = [
-  {
-    category: 'financial_information',
-    type: 'mtn_statement',
-    issuer: {
-      country: 'GH',
+  return [
+    // Financial Information
+    {
+      category: 'financial_information',
+      type: 'mtn_statement',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        msisdn: Type.String({ pattern: '^233[0-9]{9}$' }),
+        accountHolderName: TypeStringAtLeastOneWord,
+        from: Type.String({ format: 'date' }),
+        to: Type.String({ format: 'date' }),
+        timeRun: Type.String({ format: 'date-time' }),
+      }),
     },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        accountNameHolder: {
-          type: 'string',
-        },
-        msisdn: {
-          type: 'string',
-          pattern: '^233[0-9]{9}$',
-        },
-        from: {
-          type: 'string',
-          format: 'date',
-        },
-        to: {
-          type: 'string',
-          format: 'date',
-        },
-        timeRun: {
-          type: 'string',
-          format: 'date',
-        },
-        accountHolderName: {
-          type: 'string',
-        },
-        maxBalanceRecorded: {
-          type: 'number',
+    {
+      category: 'financial_information',
+      type: 'bank_statement',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        issuer: TypeStringEnum([
+          'Absa Bank Ghana Limited',
+          'Access Bank Ghana Plc',
+          'Agricultural Development Bank of Ghana',
+          'Bank of Africa Ghana Limited',
+          'CalBank Limited',
+          'Consolidated Bank Ghana Limited',
+          'Ecobank Ghana Limited',
+          'FBN Bank Ghana Limited',
+          'Fidelity Bank Ghana Limited',
+          'First Atlantic Bank Limited',
+          'First National Bank Ghana',
+          'GCB Bank Limited',
+          'Guaranty Trust Bank Ghana Limited',
+          'National Investment Bank Limited',
+          'OmniBSIC Bank Ghana Limited',
+          'Prudential Bank Limited',
+          'Republic Bank Ghana',
+          'Societe Generale Ghana Limited',
+          'Stanbic Bank Ghana Limited',
+          'Standard Chartered Bank Ghana Limited',
+          'United Bank for Africa Ghana Limited',
+          'Zenith Bank Ghana Limited',
+        ]),
+        printDate: Type.String({ format: 'date-time' }),
+        accountHolderName: TypeStringAtLeastOneWord,
+        from: Type.String({ format: 'date' }),
+        to: Type.String({ format: 'date' }),
+        accountNumber: Type.Optional(Type.String()),
+      }),
+    },
+
+    // Proof of Address
+    {
+      category: 'proof_of_address',
+      type: 'water_bill',
+      issuer: {
+        type: 'local_authority',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          userAddress: {
+            type: 'string',
+          },
+          physicalAddress: {
+            type: 'string',
+          },
+          amountDue: {
+            type: 'number',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'water_bill',
-    issuer: {
-      type: 'local_authority',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
-          type: 'string',
-        },
-        amountDue: {
-          type: 'number',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_address',
+      type: 'electricity_bill',
+      issuer: {
+        type: 'local_authority',
+        city: 'Accra',
+        name: 'Electricity Company of Ghana',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          userAddress: {
+            type: 'string',
+          },
+          physicalAddress: {
+            type: 'string',
+          },
+          amountDue: {
+            type: 'number',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'electricity_bill',
-    issuer: {
-      type: 'local_authority',
-      city: 'Accra',
-      name: 'Electricity Company of Ghana',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
-          type: 'string',
-        },
-        amountDue: {
-          type: 'number',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_address',
+      type: 'tenancy_agreement',
+      issuer: {
+        type: 'private',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          userAddress: {
+            type: 'string',
+          },
+          physicalAddress: {
+            type: 'string',
+          },
+          rentalAmount: {
+            type: 'number',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'tenancy_agreement',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
-          type: 'string',
-        },
-        rentalAmount: {
-          type: 'number',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_address',
+      type: 'bank_statement',
+      issuer: {
+        type: 'bank',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          userAddress: {
+            type: 'string',
+          },
+          physicalAddress: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_employment',
-    type: 'payslip',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        employeeName: {
-          type: 'string',
-        },
-        position: {
-          type: 'string',
-        },
-        salaryAmount: {
-          type: 'number',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_address',
+      type: 'mortgage_statement',
+      issuer: {
+        type: 'bank',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          userAddress: {
+            type: 'string',
+          },
+          physicalAddress: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_employment',
-    type: 'appointment_letter',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        employeeName: {
-          type: 'string',
-        },
-        position: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_address',
+      type: 'property_rate',
+      issuer: {
+        type: 'local_authority',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          userAddress: {
+            type: 'string',
+          },
+          physicalAddress: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'bank_statement',
-    issuer: {
-      type: 'bank',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_address',
+      type: 'form_a',
+      issuer: {
+        type: 'government',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          userAddress: {
+            type: 'string',
+          },
+          physicalAddress: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'mortgage_statement',
-    issuer: {
-      type: 'bank',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_address',
+      type: 'form_3',
+      issuer: {
+        type: 'government',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          userAddress: {
+            type: 'string',
+          },
+          physicalAddress: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'property_rate',
-    issuer: {
-      type: 'local_authority',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_address',
+      type: 'form_4',
+      issuer: {
+        type: 'government',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          userAddress: {
+            type: 'string',
+          },
+          physicalAddress: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'birth_certificate',
-    issuer: {
-      type: 'government',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        birthPlace: {
-          type: 'string',
-        },
-        dateOfBirth: {
-          type: 'string',
-          format: 'date',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+
+    // Proof of Employment
+    {
+      category: 'proof_of_employment',
+      type: 'payslip',
+      issuer: {
+        type: 'private',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          employeeName: {
+            type: 'string',
+          },
+          position: {
+            type: 'string',
+          },
+          salaryAmount: {
+            type: 'number',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_employment',
-    type: 'ssnit_pension_statement',
-    issuer: {
-      type: 'government',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        employeeName: {
-          type: 'string',
-        },
-        employerName: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_employment',
+      type: 'appointment_letter',
+      issuer: {
+        type: 'private',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          employeeName: {
+            type: 'string',
+          },
+          position: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
+          salaryAmount: {
+            type: 'number',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_employment',
-    type: 'introductory_letter',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        employeeName: {
-          type: 'string',
-        },
-        position: {
-          type: 'string',
-        },
-        employerName: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_employment',
+      type: 'ssnit_pension_statement',
+      issuer: {
+        type: 'government',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          employeeName: {
+            type: 'string',
+          },
+          employerName: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_employment',
-    type: 'form_a',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        employeeName: {
-          type: 'string',
-        },
-        position: {
-          type: 'string',
-        },
-        employerName: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_employment',
+      type: 'introductory_letter',
+      issuer: {
+        type: 'private',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          employeeName: {
+            type: 'string',
+          },
+          position: {
+            type: 'string',
+          },
+          employerName: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'form_a',
-    issuer: {
-      type: 'government',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_employment',
+      type: 'form_a',
+      issuer: {
+        type: 'private',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          employeeName: {
+            type: 'string',
+          },
+          position: {
+            type: 'string',
+          },
+          employerName: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_employment',
-    type: 'form_3',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        employeeName: {
-          type: 'string',
-        },
-        position: {
-          type: 'string',
-        },
-        employerName: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_employment',
+      type: 'form_3',
+      issuer: {
+        type: 'private',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          employeeName: {
+            type: 'string',
+          },
+          position: {
+            type: 'string',
+          },
+          employerName: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'form_3',
-    issuer: {
-      type: 'government',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_employment',
+      type: 'form_4',
+      issuer: {
+        type: 'private',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          nationalIdNumber: {
+            type: 'string',
+            pattern: ghNationalIdNumber,
+          },
+          docNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          employeeName: {
+            type: 'string',
+          },
+          position: {
+            type: 'string',
+          },
+          employerName: {
+            type: 'string',
+          },
+          issuingDate: {
+            type: 'string',
+            format: 'date',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_address',
-    type: 'form_4',
-    issuer: {
-      type: 'government',
-      country: 'GH',
+
+    // Proof of Registration
+    {
+      category: 'proof_of_registration',
+      type: 'certificate_of_registration',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        taxIdNumber: TypeAlphanumericString,
+        registrationNumber: TypeAlphanumericString,
+        issueDate: TypePastDate,
+      }),
     },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        userAddress: {
-          type: 'string',
-        },
-        physicalAddress: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_registration',
+      type: 'operating_permit',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        registrationNumber: Type.Optional(TypeAlphanumericString),
+        issueDate: TypePastDate,
+        expirationDate: TypeFutureDate,
+      }),
+    },
+    {
+      category: 'proof_of_registration',
+      type: 'district_assembly_certificate',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        certificateNumber: TypeAlphanumericString,
+        businessName: TypeAlphanumericString,
+        registrationNumber: Type.Optional(TypeAlphanumericString),
+        issueDate: TypePastDate,
+      }),
+    },
+    {
+      category: 'proof_of_registration',
+      type: 'form_a',
+      issuer: {
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        // required: ['registrationNumber', 'taxIdNumber'],
+        properties: {
+          registrationNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
+          taxIdNumber: {
+            type: 'string',
+            pattern: alphaNumeric,
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_employment',
-    type: 'form_4',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        nationalIdNumber: {
-          type: 'string',
-          pattern: ghNationalIdNumber,
-        },
-        docNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        employeeName: {
-          type: 'string',
-        },
-        position: {
-          type: 'string',
-        },
-        employerName: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'proof_of_registration',
+      type: 'shareholder_details',
+      issuer: {
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        // required: ['firstName', 'lastName'],
+        properties: {
+          firstName: {
+            type: 'string',
+          },
+          middleName: {
+            type: 'string',
+          },
+          lastName: {
+            type: 'string',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_registration',
-    type: 'certificate_of_registration',
-    issuer: {
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      // required: ['companyName', 'taxIdNumber', 'registrationNumber'],
-      properties: {
-        companyName: {
-          type: 'string',
-        },
-        taxIdNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        registrationNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'company_structure',
+      type: 'shareholders',
+      issuer: {
+        type: 'private',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          firstName: {
+            type: 'string',
+          },
+          middleName: {
+            type: 'string',
+          },
+          lastName: {
+            type: 'string',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_registration',
-    type: 'district_assembly_certificate',
-    issuer: {
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      // required: ['certificateNo', 'companyName'],
-      properties: {
-        certificateNo: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        registrationNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        companyName: {
-          type: 'string',
-        },
-        issuingDate: {
-          type: 'string',
-          format: 'date',
+    {
+      category: 'registration_document',
+      type: 'certificate_of_incorporation',
+      issuer: {
+        type: 'private',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          companyName: {
+            type: 'string',
+          },
+          country: {
+            type: 'string',
+          },
+          state: {
+            type: 'string',
+          },
+          vat: {
+            type: 'string',
+          },
+          companyType: {
+            type: 'string',
+          },
+          establishmentDate: {
+            type: 'string',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_registration',
-    type: 'form_a',
-    issuer: {
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      // required: ['registrationNumber', 'taxIdNumber'],
-      properties: {
-        registrationNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
-        },
-        taxIdNumber: {
-          type: 'string',
-          pattern: alphaNumeric,
+    {
+      category: 'proof_of_bank_account',
+      type: 'bank_statement',
+      issuer: {
+        type: 'private',
+        country: 'GH',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {
+        type: 'object',
+        properties: {
+          country: {
+            type: 'string',
+          },
+          name: {
+            type: 'string',
+          },
+          holderName: {
+            type: 'string',
+          },
+          accountNumber: {
+            type: 'string',
+          },
+          currency: {
+            type: 'string',
+          },
         },
       },
     },
-  },
-  {
-    category: 'proof_of_registration',
-    type: 'shareholder_details',
-    issuer: {
-      country: 'GH',
+    // Proof of Ownership
+    {
+      category: 'proof_of_ownership',
+      type: 'form_a',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        registrationNumber: TypeAlphanumericString,
+        taxIdNumber: TypeAlphanumericString,
+        issueDate: TypePastDate,
+        firstName: Type.String(),
+        middleName: Type.Optional(Type.String()),
+        lastName: Type.String(),
+        dateOfBirth: TypePastDate,
+        nationalIdNumber: TypeNationalIdNumber,
+      }),
     },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      // required: ['firstName', 'lastName'],
-      properties: {
-        firstName: {
-          type: 'string',
-        },
-        middleName: {
-          type: 'string',
-        },
-        lastName: {
-          type: 'string',
-        },
-      },
+    {
+      category: 'proof_of_ownership',
+      type: 'permit',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        issueDate: TypePastDate,
+      }),
     },
-  },
-  {
-    category: 'company_structure',
-    type: 'shareholders',
-    issuer: {
-      type: 'private',
-      country: 'GH',
+    {
+      category: 'proof_of_ownership',
+      type: 'property_rate',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        issueDate: TypePastDate,
+      }),
     },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        firstName: {
-          type: 'string',
-        },
-        middleName: {
-          type: 'string',
-        },
-        lastName: {
-          type: 'string',
-        },
-      },
-    },
-  },
-  {
-    category: 'registration_document',
-    type: 'certificate_of_incorporation',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        companyName: {
-          type: 'string',
-        },
-        country: {
-          type: 'string',
-        },
-        state: {
-          type: 'string',
-        },
-        vat: {
-          type: 'string',
-        },
-        companyType: {
-          type: 'string',
-        },
-        establishmentDate: {
-          type: 'string',
-        },
-      },
-    },
-  },
-  {
-    category: 'proof_of_bank_account',
-    type: 'bank_statement',
-    issuer: {
-      type: 'private',
-      country: 'GH',
-    },
-    issuingVersion: 1,
-    version: 1,
-    propertiesSchema: {
-      type: 'object',
-      properties: {
-        country: {
-          type: 'string',
-        },
-        name: {
-          type: 'string',
-        },
-        holderName: {
-          type: 'string',
-        },
-        accountNumber: {
-          type: 'string',
-        },
-        currency: {
-          type: 'string',
-        },
-      },
-    },
-  },
-];
+  ];
+};
