@@ -39,7 +39,7 @@ export class EndUserControllerExternal {
   @UseKeyAuthInDevGuard()
   async create(
     @common.Body() data: EndUserCreateDto,
-  ): Promise<Pick<EndUserModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>> {
+  ): Promise<Pick<EndUserModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'correlationId'>> {
     return this.service.create({
       data: {
         ...data,
@@ -51,6 +51,7 @@ export class EndUserControllerExternal {
       },
       select: {
         id: true,
+        correlationId: true,
         firstName: true,
         lastName: true,
         avatarUrl: true,

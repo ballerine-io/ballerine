@@ -9,6 +9,7 @@ export const IndividualByIdSchema = ObjectWithIdSchema.extend({
   middleName: z.string().nullable().default(''),
   lastName: z.string().default(''),
   fullName: z.string().default(''),
+  correlationId: z.string().default(''),
   endUserType: z.string().nullable().default('individual'),
   email: z.string().nullable().default(''),
   phone: z.string().nullable().default(''),

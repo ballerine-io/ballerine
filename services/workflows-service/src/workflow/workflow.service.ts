@@ -262,6 +262,7 @@ export class WorkflowService {
         approvalState: isIndividual
           ? workflow.endUser.approvalState
           : workflow.business.approvalState,
+        correlationId: isIndividual ? workflow.endUser.correlationId : null,
       },
       endUser: undefined,
       business: undefined,
@@ -406,6 +407,7 @@ export class WorkflowService {
           approvalState: isIndividual
             ? workflow?.endUser?.approvalState
             : workflow?.business?.approvalState,
+          correlationId: isIndividual ? workflow.endUser?.correlationId : null,
         },
         assignee: workflow?.assigneeId
           ? {
@@ -1039,6 +1041,7 @@ export class WorkflowService {
                 firstName: entity?.firstName,
                 lastName: entity?.lastName,
               }),
+          correlationId: entity?.correlationId,
         },
       },
       documents: [],

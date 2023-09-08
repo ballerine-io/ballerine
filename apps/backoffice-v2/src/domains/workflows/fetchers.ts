@@ -72,6 +72,7 @@ export const BaseWorkflowByIdSchema = z.object({
     name: z.string(),
     avatarUrl: z.string().nullable(),
     approvalState: z.enum(States),
+    correlationId: z.string(),
   }),
   assignee: ObjectWithIdSchema.extend({
     firstName: z.string(),
