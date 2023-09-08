@@ -7,6 +7,12 @@ export type WorkServiceEndpoints = {
 export class BallerineBackOfficeService {
   constructor(private readonly baseUrl: string = 'http://localhost:3000/api/v1/external') {}
 
+  // Helper function to get URL parameters
+  getUrlParam = (paramName: string): string | null => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(paramName);
+  };
+
   fetchEndUser = async (id: string) => fetchJson(`${this.baseUrl}/end-users/${id}`);
   fetchBusiness = async (id: string) => fetchJson(`${this.baseUrl}/businesses/${id}`);
 
@@ -65,6 +71,7 @@ export class BallerineBackOfficeService {
         body: {
           firstName,
           lastName,
+          correlationId: this.getUrlParam('accountId'),
         },
       },
     );
