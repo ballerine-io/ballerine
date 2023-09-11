@@ -30,6 +30,9 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectId, TProjectIds } from '@/types';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { EndUserService } from '@/end-user/end-user.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowWithToken } from '@/workflow/dtos/workflow-with-token';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -40,6 +43,8 @@ export class WorkflowControllerExternal {
     protected readonly normalizeService: HookCallbackHandlerService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    private readonly endUserService: EndUserService,
+    private readonly workflowTokenService: WorkflowTokenService,
   ) {}
 
   // GET /workflows
@@ -137,7 +142,7 @@ export class WorkflowControllerExternal {
     @common.Body() { intentName, entityId }: IntentDto,
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<IntentResponse> {
+  ) {
     // Rename to intent or getRunnableWorkflowDataByIntent?
     const entityType = intentName === 'kycSignup' ? 'endUser' : 'business';
     return await this.service.resolveIntent(
@@ -292,5 +297,60 @@ export class WorkflowControllerExternal {
     }
 
     return;
+  }
+
+  @common.Post('/with-token')
+  @swagger.ApiOkResponse()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseCustomerAuthGuard()
+  async createWorkflowRuntimeDataWithToken(
+    @common.Body() body: WorkflowWithToken,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const endUser = await this.endUserService.createWithBusiness(
+      {
+        firstName: '',
+        lastName: '',
+        email: body.email,
+        companyName: '',
+      },
+      currentProjectId,
+    );
+
+    const workflow = await this.service.createOrUpdateWorkflowRuntime({
+      workflowDefinitionId: body.workflowDefinitionId,
+      context: {
+        entity: {
+          ballerineEntityId: endUser.businesses.at(-1)?.id,
+          type: 'business',
+          data: {
+            additionalInformation: {
+              endUserId: endUser.id,
+            },
+          },
+        },
+        documents: [],
+      },
+      projectIds: [currentProjectId],
+      currentProjectId: currentProjectId,
+      ...('salesforceObjectName' in body &&
+        'salesforceRecordId' in body && {
+          salesforceObjectName: body.salesforceObjectName,
+          salesforceRecordId: body.salesforceRecordId,
+        }),
+    });
+
+    const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+    const workflowToken = await this.workflowTokenService.create(currentProjectId, {
+      workflowRuntimeDataId: workflow[0].workflowRuntimeData.id,
+      endUserId: endUser.id,
+      expiresAt: nowPlus30Days,
+    });
+
+    // @TODO: Send email with token
+
+    return { token: workflowToken.token };
   }
 }

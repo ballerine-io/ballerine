@@ -23,10 +23,10 @@ import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { isNullish, isObject } from '@ballerine/common';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
-import { JsonDialog } from '../../../../common/components/molecules/JsonDialog/JsonDialog';
 import { FileJson2 } from 'lucide-react';
 import { isValidDate } from '../../../../common/utils/is-valid-date';
 import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
+import { JsonDialog } from '@ballerine/ui';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
