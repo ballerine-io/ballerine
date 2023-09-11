@@ -84,7 +84,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
             </TransformComponent>
           </TransformWrapper>
           <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
-            {!isPdf(selectedImage) && (
+            {!isPdf(selectedImage) && !isLoading && (
               <>
                 <button
                   type={`button`}
@@ -120,7 +120,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
                       { loading: isLoadingOCR },
                     )}
                     onClick={onOcr}
-                    disabled={isLoading || isRotatedOrTransformed}
+                    disabled={isRotatedOrTransformed}
                   >
                     {isCropping && !isLoadingOCR && <CheckSvg className={`p-0.5`} />}
                     {!isCropping && !isLoadingOCR && <span className={`p-0.5`}>OCR</span>}
@@ -128,7 +128,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
                 </div>
               </>
             )}
-            <ImageViewer.ZoomButton disabled={isLoading} />
+            {!isLoading && <ImageViewer.ZoomButton />}
           </div>
         </div>
       </div>

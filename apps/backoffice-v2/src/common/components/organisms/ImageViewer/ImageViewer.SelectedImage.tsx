@@ -4,6 +4,7 @@ import { ctw } from '../../../utils/ctw/ctw';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { TSelectedImageProps } from './interfaces';
 import { isPdf } from '../../../utils/is-pdf/is-pdf';
+import { Skeleton } from '../../atoms/Skeleton/Skeleton';
 
 /**
  * @description To be used by {@link ImageViewer}. Uses {@link BallerineImage} to display the currently selected image with default styling.
@@ -42,7 +43,9 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
       );
     }
 
-    return (
+    return isPlaceholder ? (
+      <Skeleton className="h-[600px] w-[441px] bg-gray-200" />
+    ) : (
       <BallerineImage
         withPlaceholder
         src={selectedImage?.imageUrl}
