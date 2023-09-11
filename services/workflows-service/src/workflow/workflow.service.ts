@@ -1583,7 +1583,6 @@ export class WorkflowService {
       {},
       projectIds,
     );
-    console.log('runtime data', workflowRuntimeData);
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowRuntimeData.workflowDefinitionId,
       {} as any,
