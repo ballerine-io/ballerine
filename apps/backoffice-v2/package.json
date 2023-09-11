@@ -46,7 +46,8 @@
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@ballerine/common": "0.7.2",
