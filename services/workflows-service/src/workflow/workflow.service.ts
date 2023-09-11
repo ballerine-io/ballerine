@@ -1382,7 +1382,7 @@ export class WorkflowService {
             status: 'active',
             workflowDefinitionId: workflowDefinition.id,
             ...(parentWorkflowId && {
-              parentWorkflowRuntimeDataId: parentWorkflowId,
+              parentRuntimeDataId: parentWorkflowId,
             }),
           },
         },
@@ -1447,6 +1447,8 @@ export class WorkflowService {
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
+        if (documentPage.ballerineFileId && documentPage.uri) return documentPage;
+
         const persistedFile = await this.fileService.copyToDestinationAndCreate(
           document,
           entityId,
@@ -1578,6 +1580,7 @@ export class WorkflowService {
       {},
       projectIds,
     );
+    console.log('runtime data', workflowRuntimeData);
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowRuntimeData.workflowDefinitionId,
       {} as any,
@@ -1873,10 +1876,17 @@ export class WorkflowService {
     if (!documents?.length) return documents;
 
     const documentsWithPersistedImages = await Promise.all(
-      documents?.map(async document => ({
-        ...document,
-        pages: await this.__persistDocumentPagesFiles(document, entityId, projectId, customerName),
-      })),
+      documents?.map(async document => {
+        return {
+          ...document,
+          pages: await this.__persistDocumentPagesFiles(
+            document,
+            entityId,
+            projectId,
+            customerName,
+          ),
+        };
+      }),
     );
 
     return documentsWithPersistedImages;

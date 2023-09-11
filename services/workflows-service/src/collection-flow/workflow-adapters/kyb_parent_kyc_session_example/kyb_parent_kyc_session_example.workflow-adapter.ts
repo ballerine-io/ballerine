@@ -49,12 +49,12 @@ export class KYBParentKYCSessionExampleAdapter
             entity: {
               id: ubo.id,
               type: 'individual',
+
               data: {
                 firstName: ubo.firstName,
                 lastName: ubo.lastName,
                 email: ubo.email,
                 dateOfBirth: ubo.birthDate,
-
                 additionalInfo: {
                   normalizedCustomerCompany: customer.name,
                   companyName: payload.businessData.companyName || '',
@@ -63,6 +63,7 @@ export class KYBParentKYCSessionExampleAdapter
                 },
               },
             },
+            documents: [],
           })),
         },
 

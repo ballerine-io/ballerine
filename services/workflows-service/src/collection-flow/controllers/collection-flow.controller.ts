@@ -125,7 +125,7 @@ export class ColectionFlowController {
   async resubmitFlow(@TokenScope() tokenScope: ITokenScope) {
     return this.service.resubmitFlow(
       tokenScope.workflowRuntimeDataId,
-      [tokenScope.workflowRuntimeDataId],
+      [tokenScope.projectId],
       tokenScope.projectId,
     );
   }

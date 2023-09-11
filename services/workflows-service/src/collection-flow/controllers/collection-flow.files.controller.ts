@@ -30,8 +30,7 @@ export class CollectionFlowFilesController {
       uri: file.location || String(file.path),
       fileNameOnDisk: String(file.path),
       fileNameInBucket: file.key,
-      // Probably wrong. Would require adding a relationship (Prisma) and using connect.
-      userId: '',
+      userId: tokenScope.endUserId,
       projectId: tokenScope.projectId,
       mimeType: file.mimetype,
     });
