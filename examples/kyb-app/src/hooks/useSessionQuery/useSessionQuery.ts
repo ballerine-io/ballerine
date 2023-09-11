@@ -7,7 +7,6 @@ export const useSessionQuery = () => {
     staleTime: Infinity,
   });
 
-  console.log('user', user);
   return {
     user,
     isLoading: isFetching,

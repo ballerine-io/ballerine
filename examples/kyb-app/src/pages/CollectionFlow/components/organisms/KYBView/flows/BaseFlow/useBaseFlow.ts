@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
 import { useNavigate } from 'react-router-dom';
-import { useSignin } from '@app/hooks/useSignin';
 import { useFlowContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useWorkflowContext';
 import { useRevisionWarnings } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useRevisionWarnings';
 import { useWorkflowIssues } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useWorkflowIssues';
@@ -20,7 +19,6 @@ import { uploadFilesAndSaveToStorage } from '@app/pages/CollectionFlow/component
 import { assignFileIdsToFlowData } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/helpers/assignFileIdsToFlowData';
 
 export const useBaseFlow = () => {
-  const { logoutSilent } = useSignin();
   const { user } = useSessionQuery();
   const { customer } = useCustomer();
   const { documentConfigurations } = useCollectionFlowSchemaQuery();
@@ -83,7 +81,6 @@ export const useBaseFlow = () => {
           await startFlow();
         }
         setLoading(false);
-        setTimeout(() => logoutSilent(), 50);
         navigate('success');
       } catch (error) {
         console.log(
@@ -93,7 +90,7 @@ export const useBaseFlow = () => {
         setLoading(false);
       }
     },
-    [user, customer, views, logoutSilent, navigate],
+    [user, customer, views, navigate],
   );
 
   return {

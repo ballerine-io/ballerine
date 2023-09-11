@@ -1,4 +1,3 @@
-import { useSettings } from '@app/common/providers/SettingsProvider/hooks/useSettings';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
 import { useSignin } from '@app/hooks/useSignin';
@@ -7,11 +6,11 @@ import { ArrowLeft } from 'lucide-react';
 import { useMemo } from 'react';
 
 export const BackButton = () => {
-  const { state, isFinished, steps, activeView, prev } = useViewState();
+  const { isFinished, steps, activeView, prev } = useViewState();
   const { logout } = useSignin();
   const { customer } = useCustomer();
 
-  const isExit = useMemo(() => steps[0]?.dataAlias === activeView.key, [state]);
+  const isExit = useMemo(() => steps[0]?.dataAlias === activeView.key, [steps, activeView]);
 
   return (
     <div

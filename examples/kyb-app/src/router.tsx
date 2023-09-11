@@ -1,5 +1,4 @@
-import { AppErrorScreen } from '@app/common/components/molecules/AppErrorScreen';
-import { withTokenProtected } from '@app/hocs/withTokenProtected/withTokenProtected';
+import { withTokenProtected } from '@app/hocs/withTokenProtected';
 import { AccessRestricted } from '@app/pages/AccessRestricted';
 import { CollectionFlow } from '@app/pages/CollectionFlow';
 import { KYB } from '@app/pages/CollectionFlow/components/organisms/KYBView';

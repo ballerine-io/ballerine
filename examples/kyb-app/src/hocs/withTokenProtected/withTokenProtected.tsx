@@ -10,8 +10,6 @@ export function withTokenProtected<TComponentProps>(
 
     if (!accessToken) return <AppNavigate to="restricted" />;
 
-    console.log({ accessToken });
-
     return <Component {...props} />;
   }
 
