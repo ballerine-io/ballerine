@@ -85,12 +85,8 @@ export class KYBParentKYCSessionExampleAdapter
           ? document.decision
           : { status: '', revisionReason: '', rejectionReason: '' },
         pages: [
-          // Validation is broken after schema updates so it doesnt accept following payload
           {
             ballerineFileId: document.fileId,
-            uri: document.uri || undefined,
-            provider: document.uri ? 'http' : undefined,
-            // Should extract this from file name extension
           },
         ],
         properties: document.properties,
