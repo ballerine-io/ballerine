@@ -34,6 +34,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
   onSortBy,
   onSortDirToggle,
   search,
+  count,
   ...props
 }) => {
   const {
@@ -48,7 +49,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
   } = useCases();
 
   return (
-    <div id={`cases-list`} {...props}>
+    <div id={`cases-list`} className="flex flex-col justify-between pb-4" {...props}>
       <div className={`border-neutral/10 p-4 theme-dark:border-neutral/60`}>
         <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:shadow-[0_1px_1px_0_rgba(0,0,0,0.15)] theme-dark:border-neutral/60">
           <div className="input-group">
@@ -137,6 +138,9 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
               </select>
             </div>
           </div>
+        </div>
+        <div className="mt-4 text-sm font-semibold text-[#999999]">
+          {count} {count === 1 ? 'case' : 'cases'}
         </div>
       </div>
       {children}

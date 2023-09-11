@@ -15,7 +15,7 @@ import { motion } from 'framer-motion';
  */
 export const Content: FunctionComponent<PropsWithChildren> = ({ children }) => {
   return (
-    <MotionScrollArea className="h-[calc(100vh-146px)]">
+    <MotionScrollArea className="h-[calc(100vh-186px)]">
       <motion.div
         initial={{
           opacity: 0,
