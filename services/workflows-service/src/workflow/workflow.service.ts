@@ -75,6 +75,8 @@ import { GetLastActiveFlowParams } from '@/workflow/types/params';
 import { TDocumentsWithoutPageType, TDocumentWithoutPageType } from '@/common/types';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
+import { UserService } from '@/user/user.service';
+import { SalesforceService } from '@/salesforce/salesforce.service';
 
 type TEntityId = string;
 
@@ -132,6 +134,8 @@ export class WorkflowService {
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
     private readonly projectScopeService: ProjectScopeService,
+    private readonly userService: UserService,
+    private readonly salesforceService: SalesforceService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
@@ -1094,6 +1098,25 @@ export class WorkflowService {
       currentProjectId,
     );
 
+    if (
+      updatedWorkflowRuntimeData.salesforceObjectName &&
+      updatedWorkflowRuntimeData.salesforceRecordId
+    ) {
+      let agentName = '';
+
+      if (assigneeId) {
+        const user = await this.userService.getById(assigneeId, {}, projectIds);
+        agentName = `${user.firstName} ${user.lastName}`;
+      }
+
+      await this.updateSalesforceRecord({
+        workflowRuntimeData: updatedWorkflowRuntimeData,
+        data: {
+          KYB_Assigned_Agent__c: agentName,
+        },
+      });
+    }
+
     return updatedWorkflowRuntimeData;
   }
 
@@ -1883,5 +1906,24 @@ export class WorkflowService {
     );
 
     return documentsWithPersistedImages;
+  }
+
+  async updateSalesforceRecord({
+    workflowRuntimeData,
+    data,
+  }: {
+    workflowRuntimeData: WorkflowRuntimeData;
+    data: {
+      KYB_Started_At__c?: Date;
+      KYB_Status__c?: 'Not Started' | 'In Progress' | 'Approved' | 'Rejected';
+      KYB_Assigned_Agent__c?: string;
+    };
+  }) {
+    return await this.salesforceService.updateRecord({
+      projectId: workflowRuntimeData.projectId,
+      objectName: workflowRuntimeData.salesforceObjectName,
+      recordId: workflowRuntimeData.salesforceRecordId,
+      data,
+    });
   }
 }

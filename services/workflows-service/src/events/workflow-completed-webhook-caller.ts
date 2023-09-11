@@ -11,6 +11,9 @@ import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhookInfo } from '@/events/get-webhook-info';
 import { IWebhookPayload } from '@/events/types';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { WorkflowRuntimeData } from '@prisma/client';
+import { StateTag } from '@ballerine/common';
 
 @Injectable()
 export class WorkflowCompletedWebhookCaller {
@@ -21,6 +24,7 @@ export class WorkflowCompletedWebhookCaller {
     private workflowEventEmitter: WorkflowEventEmitterService,
     private configService: ConfigService,
     private readonly logger: AppLoggerService,
+    private readonly workflowService: WorkflowService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -31,6 +35,8 @@ export class WorkflowCompletedWebhookCaller {
         console.error(error);
         alertWebhookFailure(error);
       }
+
+      await this.updateSalesforceRecord(data.runtimeData);
     });
   }
 
@@ -117,6 +123,38 @@ export class WorkflowCompletedWebhookCaller {
     return this.#__axios.post(options.url, data, {
       headers: {
         'X-Authorization': options.authSecret,
+      },
+    });
+  }
+
+  private async updateSalesforceRecord(workflowRuntimeData: WorkflowRuntimeData) {
+    const { salesforceRecordId, salesforceRecordType } = workflowRuntimeData;
+
+    if (!salesforceRecordId || !salesforceRecordType) {
+      return;
+    }
+
+    const statusMap = {
+      [StateTag.APPROVED]: 'Approved',
+      [StateTag.REJECTED]: 'Rejected',
+    } as const;
+
+    let status: (typeof statusMap)[keyof typeof statusMap] | undefined;
+
+    (workflowRuntimeData.tags ?? []).forEach((tag: string) => {
+      if (tag in statusMap) {
+        status = statusMap[tag as keyof typeof statusMap];
+      }
+    });
+
+    if (!status) {
+      return;
+    }
+
+    await this.workflowService.updateSalesforceRecord({
+      workflowRuntimeData,
+      data: {
+        KYB_Status__c: status,
       },
     });
   }

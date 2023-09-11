@@ -20,6 +20,11 @@ import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { EndUserService } from '@/end-user/end-user.service';
 import { ProjectModule } from '@/project/project.module';
 import { CustomerModule } from '@/customer/customer.module';
+import { UserService } from '@/user/user.service';
+import { UserRepository } from '@/user/user.repository';
+import { PasswordService } from '@/auth/password/password.service';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 
 @Module({
   imports: [HttpModule, AppLoggerModule, ProjectModule, CustomerModule],
@@ -40,6 +45,11 @@ import { CustomerModule } from '@/customer/customer.module';
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
     WorkflowService,
+    UserService,
+    UserRepository,
+    PasswordService,
+    SalesforceService,
+    SalesforceIntegrationRepository,
   ],
 })
 export class BusinessModule {}
