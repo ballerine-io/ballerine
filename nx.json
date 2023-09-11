@@ -33,5 +33,5 @@
       "dependsOn": [{ "projects": "self", "target": "build" }]
     }
   },
-  "defaultBase": "main"
+  "defaultBase": "demo"
 }
