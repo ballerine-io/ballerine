@@ -14,6 +14,9 @@ export default defineConfig(configEnv => {
       // port: 443,
       // https: true,
     },
+    preview: {
+      port: 5137,
+    },
     plugins: [
       terminal({
         output: ['console', 'terminal'],
