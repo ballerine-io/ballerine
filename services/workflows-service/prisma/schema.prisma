@@ -160,6 +160,7 @@ model WorkflowDefinition {
   createdBy           String                @default("SYSTEM")
   project             Project?              @relation(fields: [projectId], references: [id])
   workflowRuntimeData WorkflowRuntimeData[]
+  uiDefinitions       UiDefinition[]
 
   @@unique([name, version, projectId, definitionType])
   @@index([projectId, name, definitionType])
@@ -295,6 +296,7 @@ model Project {
   files                 File[]
   SalesforceIntegration SalesforceIntegration?
   workflowDefinitions   WorkflowDefinition[]
+  uiDefinitions         UiDefinition[]
 
 
   @@unique([name, customerId])
@@ -326,4 +328,26 @@ model SalesforceIntegration {
   userId              String   @db.VarChar(500)
   organizationId      String   @db.VarChar(500)
   idUrl               String   @db.VarChar(500)
+}
+
+enum UiDefinitionContext {
+  back_office
+  collection_flow
+}
+
+model UiDefinition {
+  id                   String              @id @default(cuid())
+  workflowDefinitionId String
+  context              UiDefinitionContext
+
+  page  Int?
+  state String?
+
+  definition    Json
+  schemaOptions Json? // Document Schemas,
+  uiOptions     Json? // how the view will look, overall
+
+  projectId           String?
+  project             Project?           @relation(fields: [projectId], references: [id])
+  workflowDefintionId WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
 }
