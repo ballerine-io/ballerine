@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class WorkflowWithToken {
   @ApiProperty({
@@ -16,4 +16,20 @@ export class WorkflowWithToken {
   })
   @IsString()
   workflowDefinitionId!: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  salesforceObjectName?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  salesforceRecordId?: string;
 }
