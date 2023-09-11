@@ -94,7 +94,7 @@ export const useEntities = () => {
     onSortDirToggle,
     search,
     cases: searched,
-    caseCounter: data?.meta?.totalItems,
+    caseCount: data?.meta?.totalItems,
     isLoading,
     page,
     totalPages,

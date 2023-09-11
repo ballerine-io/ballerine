@@ -17,5 +17,5 @@ export interface ICasesProps extends DivComponent {
   onSortBy: ChangeEventHandler<HTMLSelectElement>;
   onSortDirToggle: () => void;
   search: string;
-  caseCounter: number;
+  count: number;
 }

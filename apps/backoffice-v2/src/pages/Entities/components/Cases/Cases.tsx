@@ -34,7 +34,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
   onSortBy,
   onSortDirToggle,
   search,
-  caseCounter,
+  count,
   ...props
 }) => {
   const {
@@ -140,7 +140,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
           </div>
         </div>
         <div className="mt-4 text-sm font-semibold text-[#999999]">
-          {caseCounter} {caseCounter === 1 ? 'case' : 'cases'}
+          {count} {count === 1 ? 'case' : 'cases'}
         </div>
       </div>
       {children}

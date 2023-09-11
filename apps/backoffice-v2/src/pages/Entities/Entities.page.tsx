@@ -19,7 +19,7 @@ export const Entities: FunctionComponent = () => {
     isLoading,
     page,
     totalPages,
-    caseCounter,
+    caseCount,
     skeletonEntities,
   } = useEntities();
 
@@ -31,7 +31,7 @@ export const Entities: FunctionComponent = () => {
         onSortBy={onSortBy}
         onSortDirToggle={onSortDirToggle}
         search={search}
-        caseCounter={caseCounter}
+        count={caseCount}
       >
         <MotionScrollArea className="h-[calc(100vh-240px)]">
           <Cases.List>
