@@ -19,6 +19,7 @@ export const Entities: FunctionComponent = () => {
     isLoading,
     page,
     totalPages,
+    caseCounter,
     skeletonEntities,
   } = useEntities();
 
@@ -30,8 +31,9 @@ export const Entities: FunctionComponent = () => {
         onSortBy={onSortBy}
         onSortDirToggle={onSortDirToggle}
         search={search}
+        caseCounter={caseCounter}
       >
-        <MotionScrollArea className={`h-[calc(100vh-210px)] py-2`}>
+        <MotionScrollArea className="h-[calc(100vh-240px)]">
           <Cases.List>
             {isLoading
               ? skeletonEntities.map(index => (
