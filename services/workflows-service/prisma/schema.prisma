@@ -298,7 +298,6 @@ model Project {
   workflowDefinitions   WorkflowDefinition[]
   uiDefinitions         UiDefinition[]
 
-
   @@unique([name, customerId])
   @@index(name)
   @@index(customerId)
@@ -343,11 +342,12 @@ model UiDefinition {
   page  Int?
   state String?
 
-  definition    Json
-  schemaOptions Json? // Document Schemas,
+  definition    Json? // Frontend UI xstate definition
+  uiSchema      Json // JSON schmea of how to render UI
+  schemaOptions Json? // Document Schemas, rejectionReasons: {}, documenTypes: {}, documenCateogries: {}
   uiOptions     Json? // how the view will look, overall
 
-  projectId           String?
-  project             Project?           @relation(fields: [projectId], references: [id])
-  workflowDefintionId WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
+  projectId          String?
+  project            Project?           @relation(fields: [projectId], references: [id])
+  workflowDefinition WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
 }
