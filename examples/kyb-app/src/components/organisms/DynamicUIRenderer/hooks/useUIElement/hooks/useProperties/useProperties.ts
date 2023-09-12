@@ -8,7 +8,9 @@ export const useProperties = <TContext>(definition: UIElement<AnyObject>, contex
   const isDisabled = useMemo(() => {
     const engineManager = new EngineManager(ruleEngines);
 
-    return !definition.activeOn.every(rule => {
+    if (!definition.activeOn) return false;
+
+    return !definition.activeOn?.every(rule => {
       const engine = engineManager.getEngine(rule.engine);
 
       return engine.isActive(context, rule);

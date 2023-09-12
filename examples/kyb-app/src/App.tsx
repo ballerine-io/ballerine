@@ -1,8 +1,12 @@
+import { AppLoadingContainer } from '@app/components/organisms/AppLoadingContainer';
 import { DynamicUIRenderer } from '@app/components/organisms/DynamicUIRenderer/DynamicUIRenderer';
 import { ApiActionHandler } from '@app/components/organisms/DynamicUIRenderer/action-handlers/api.action-handler';
 import { actions, definitions } from '@app/components/organisms/DynamicUIRenderer/temp';
 import { ButtonUIElement } from '@app/components/organisms/DynamicUIRenderer/ui-elements/ButtonUI';
 import { TextInputUIElement } from '@app/components/organisms/DynamicUIRenderer/ui-elements/TextInputUIElement';
+import { UISchema } from '@app/domains/collection-flow';
+import { useCollectionFlowSchemaQuery } from '@app/hooks/useCollectionFlowSchemaQuery';
+import { useUISchemasQuery } from '@app/hooks/useUISchemasQuery';
 import '@ballerine/ui/dist/style.css';
 // import { RouterProvider } from 'react-router-dom';
 // import { router } from '@app/router';
@@ -19,6 +23,9 @@ const elements = { button: ButtonUIElement, text: TextInputUIElement };
 
 export const App = () => {
   // const dependancyQueries = [useCollectionFlowSchemaQuery(), useCustomerQuery()];
+  const UISchemas = useUISchemasQuery();
+  const { data } = UISchemas;
+  const { uiSchema } = data || ({} as UISchema);
 
   // return (
   // <AppLoadingContainer dependencies={dependancyQueries}>
@@ -28,13 +35,17 @@ export const App = () => {
   // </AppLoadingContainer>
   // );
 
+  console.log('schema', uiSchema);
+
   return (
-    <DynamicUIRenderer
-      uiElements={definitions}
-      actions={actions}
-      context={initialCtx}
-      actionHandlers={actionHandlers}
-      elements={elements}
-    />
+    <AppLoadingContainer dependencies={[UISchemas]}>
+      <DynamicUIRenderer
+        uiElements={uiSchema?.uiElements}
+        actions={uiSchema?.actions}
+        context={initialCtx}
+        actionHandlers={actionHandlers}
+        elements={elements}
+      />
+    </AppLoadingContainer>
   );
 };

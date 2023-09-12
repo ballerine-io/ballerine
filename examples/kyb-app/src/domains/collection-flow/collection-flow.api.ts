@@ -8,6 +8,7 @@ import {
   TFlowConfiguration,
   TFlowStep,
   TUser,
+  UISchema,
   UpdateFlowDto,
 } from '@app/domains/collection-flow/types';
 
@@ -49,6 +50,18 @@ export const fetchCollectionFlowSchema = async (): Promise<{
     steps: result.steps,
     documentConfigurations: result.documentConfigurations,
   };
+};
+
+export const fetchUISchema = async (): Promise<UISchema> => {
+  const result = await request
+    .get('internal/ui-definition/workflow-runtime/test-workflow-risk-id-1', {
+      searchParams: {
+        context: 'collection_flow',
+      },
+    })
+    .json<UISchema>();
+
+  return result;
 };
 
 export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<FlowData> => {
