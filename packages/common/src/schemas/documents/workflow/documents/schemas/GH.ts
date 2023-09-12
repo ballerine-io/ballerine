@@ -31,7 +31,7 @@ export const getGhanaDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        msisdn: Type.String({ pattern: '^233[0-9]{9}$' }),
+        msisdn: Type.String({ title: 'Mobile phone number', pattern: '^233[0-9]{9}$' }),
         accountHolderName: TypeStringAtLeastOneWord,
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
