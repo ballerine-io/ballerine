@@ -10,6 +10,7 @@ import { WhereIdInput } from '@/common/where-id-input';
 import { UiDefinitionByRuntimeIdDto } from '@/ui-definition/dtos/ui-definition-by-runtime-id.dto';
 import { UiDefinitionByRuntimeIdDocumentSchemaDto } from '@/ui-definition/dtos/ui-definition-by-runtime-id-document-schema.dto';
 import { TDocument } from '@ballerine/common';
+import { UiDefinitionByWorkflowDefinitionIdDto } from '@/ui-definition/dtos/ui-definition-by-workflow-definition-id.dto';
 
 @swagger.ApiTags('internal/ui-definition')
 @common.Controller('internal/ui-definition')
@@ -28,6 +29,23 @@ export class UiDefinitionController {
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<UiDefinitionModel> {
     const uiDefinition = await this.service.getById(params.id, {}, projectIds);
+
+    return uiDefinition;
+  }
+
+  @common.Get('/workflow-definition/:workflowDefinitionId')
+  @swagger.ApiOkResponse({ type: [UiDefinitionModel] })
+  @swagger.ApiForbiddenResponse()
+  async getByDefinitionId(
+    @common.Param() params: UiDefinitionByWorkflowDefinitionIdDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<UiDefinitionModel> {
+    const uiDefinition = await this.service.getByWorkflowDefinitionId(
+      params.workflowDefinitionId,
+      params.context,
+      projectIds,
+      {},
+    );
 
     return uiDefinition;
   }
