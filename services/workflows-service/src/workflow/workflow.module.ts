@@ -28,6 +28,8 @@ import { ProjectModule } from '@/project/project.module';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { CustomerModule } from '@/customer/customer.module';
 import { CustomerService } from '@/customer/customer.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { CustomerService } from '@/customer/customer.service';
     FilterService,
     UserService,
     UserRepository,
+    WorkflowTokenRepository,
+    WorkflowTokenService,
   ],
   exports: [
     WorkflowService,
