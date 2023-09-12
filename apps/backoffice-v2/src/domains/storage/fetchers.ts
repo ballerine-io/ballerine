@@ -39,10 +39,12 @@ export const fetchFileInfoById = async (fileId: string) => {
 };
 export const fetchFileById = async (fileId: string) => {
   const fileInfo = await fetchFileInfoById(fileId);
+
   if (fileInfo.fileNameInBucket && env.VITE_FETCH_SIGNED_URL) {
     const res = await fetchFileSignedUrlById(fileInfo.id);
+
     return res.signedUrl;
   }
-  const fileContent = await fetchFileContentById(fileInfo.id);
-  return fileContent;
+
+  return await fetchFileContentById(fileInfo.id);
 };
