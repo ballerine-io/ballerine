@@ -97,13 +97,14 @@ export const generateBusiness = ({
     financialStatement: string;
   };
   workflow: {
+    runtimeId?: string;
     workflowDefinitionId: string;
     workflowDefinitionVersion: number;
     context: Prisma.InputJsonValue;
   };
   projectId: string;
 }): Prisma.BusinessCreateInput => {
-  const { workflowDefinitionId, workflowDefinitionVersion, context } = workflow;
+  const { runtimeId, workflowDefinitionId, workflowDefinitionVersion, context } = workflow;
 
   return {
     id,
@@ -127,6 +128,7 @@ export const generateBusiness = ({
     approvalState: 'PROCESSING',
     workflowRuntimeData: {
       create: {
+        id: runtimeId,
         workflowDefinitionVersion,
         context,
         workflowDefinitionId,

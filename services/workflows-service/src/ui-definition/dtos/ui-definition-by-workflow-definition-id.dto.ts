@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 import { UiDefinitionContext } from '@prisma/client';
+import { oneOf } from '@/common/decorators/one-of.decorator';
 
 export class UiDefinitionByWorkflowDefinitionIdDto {
   @ApiProperty({
@@ -14,6 +15,7 @@ export class UiDefinitionByWorkflowDefinitionIdDto {
     required: true,
     enum: ['back_office', 'collection_flow'],
   })
-  @IsEnum(['back_office', 'collection_flow'])
+  @oneOf(Object.values(UiDefinitionContext), { each: true })
+  @IsString()
   context!: typeof UiDefinitionContext;
 }
