@@ -24,6 +24,8 @@
     "dayjs": "^1.11.6",
     "form-data-encoder": "^3.0.0",
     "i18n-iso-countries": "^7.6.0",
+    "jmespath": "^0.16.0",
+    "json-logic-js": "^2.0.2",
     "ky": "^0.33.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.144.0",
@@ -36,6 +38,8 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@types/jmespath": "^0.15.0",
+    "@types/json-logic-js": "^2.0.1",
     "@types/lodash": "^4.14.191",
     "@types/qs": "^6.9.7",
     "@types/react": "^18.2.14",
