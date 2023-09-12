@@ -4,12 +4,12 @@ import { Action } from '@app/components/organisms/DynamicUIRenderer/temp';
 import { useMemo } from 'react';
 
 export interface ElementHandlers {
-  onClick: React.MouseEvent<any> | undefined;
-  onChange: React.ChangeEvent<any> | undefined;
+  onClick: React.MouseEventHandler<any> | undefined;
+  onChange: React.ChangeEventHandler<any> | undefined;
 }
 
 export const useHandlers = (elementName: string, actions: Action[]) => {
-  const { dispatchActions } = useDynamicUIContext();
+  const { dispatchActions, updateContext, getContext } = useDynamicUIContext();
   const scopedActions = useMemo(() => {
     const scopedActions = actions.filter(action => {
       return Boolean(
@@ -24,14 +24,13 @@ export const useHandlers = (elementName: string, actions: Action[]) => {
     return scopedActions;
   }, [elementName, actions]);
 
-  //@ts-expect-error
   const handlers: ElementHandlers = useMemo(() => {
     const onClickActions = scopedActions.filter(action =>
       action.invokeOn.find(rule => (isEventRule(rule) ? rule.value.event === 'onClick' : false)),
     );
-    // const onChangeActions = scopedActions.filter(action =>
-    //   action.invokeOn.find(rule => (isEventRule(rule) ? rule.value.event === 'onChange' : false)),
-    // );
+    const onChangeActions = scopedActions.filter(action =>
+      action.invokeOn.find(rule => (isEventRule(rule) ? rule.value.event === 'onChange' : false)),
+    );
 
     return {
       onClick: onClickActions
@@ -39,9 +38,16 @@ export const useHandlers = (elementName: string, actions: Action[]) => {
             dispatchActions(onClickActions);
           }
         : undefined,
-      onChange: undefined,
+      onChange: event => {
+        //@ts-ignore
+        updateContext({ ...getContext(), [event.target.name as string]: event.target.value });
+
+        setTimeout(() => {
+          dispatchActions(onChangeActions);
+        });
+      },
     };
-  }, [scopedActions, dispatchActions]);
+  }, [scopedActions, dispatchActions, getContext, updateContext]);
 
   return {
     handlers,

@@ -71,7 +71,7 @@ export const definitions: UIElement<any>[] = [
         engine: 'json-logic',
         value: `{
         "if": [
-          { "var": "context.payload.firstName" },
+          { "var": "firstName" },
           true,
           false
         ]
@@ -94,8 +94,8 @@ export const definitions: UIElement<any>[] = [
         engine: 'json-logic',
         value: `{
         "and": [
-          {"var": "context.payload.firstName"},
-          {"var": "context.payload.lastName"}
+          {"var": "firstName"},
+          {"var": "lastName"}
         ]
       }`,
       },
@@ -117,9 +117,9 @@ export const actions: Action[] = [
       method: 'post',
       type: 'json', // could be formData when Files present?
       map: {
-        toBody: `{qwerty: "123"}`,
-        fromResponse: `{}`,
-        toContext: '{}',
+        toBody: `{"firstName": "firstName", "lastName": "lastName"}`,
+        fromResponse: `{"result1": "resValue1", "result2": "resValue2"}`,
+        toContext: '{"some.value_1": "result1", "some.value_2": "result2"}',
       },
     },
   },
