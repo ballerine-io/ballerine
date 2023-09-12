@@ -4,7 +4,6 @@ import { ctw } from '../../../utils/ctw/ctw';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { TSelectedImageProps } from './interfaces';
 import { isPdf } from '../../../utils/is-pdf/is-pdf';
-import { Skeleton } from '../../atoms/Skeleton/Skeleton';
 
 /**
  * @description To be used by {@link ImageViewer}. Uses {@link BallerineImage} to display the currently selected image with default styling.
@@ -18,17 +17,19 @@ import { Skeleton } from '../../atoms/Skeleton/Skeleton';
 export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TSelectedImageProps>(
   ({ className, isLoading, initialImage, ...props }, ref) => {
     const { selectedImage } = useSelectedImage(initialImage);
+
     const [isError, setIsError] = useState(false);
     const onError = useCallback(() => {
       setIsError(true);
     }, []);
+
     const isPlaceholder = isLoading || !selectedImage?.imageUrl || isError;
 
     useEffect(() => {
       if (!isError || !selectedImage?.imageUrl) return;
 
       setIsError(false);
-    }, [isLoading, selectedImage?.imageUrl]);
+    }, [isError, selectedImage?.imageUrl]);
 
     if (isPdf(selectedImage)) {
       return (
@@ -43,9 +44,7 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
       );
     }
 
-    return isPlaceholder ? (
-      <Skeleton className="h-[600px] w-[441px] bg-gray-200" />
-    ) : (
+    return (
       <BallerineImage
         withPlaceholder
         src={selectedImage?.imageUrl}
