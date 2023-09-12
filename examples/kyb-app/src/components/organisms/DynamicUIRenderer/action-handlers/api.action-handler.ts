@@ -15,7 +15,7 @@ export interface ApiActionParams {
   headers?: Headers;
   map?: {
     toBody?: string;
-    fromRespose?: string;
+    fromResponse?: string;
     toContext?: string;
   };
 }
@@ -40,8 +40,9 @@ export class ApiActionHandler implements ActionHandler {
     });
 
     const json = await requestResult.json();
+    const updatedContext = this.updateContext(context, params, json);
 
-    return this.updateContext(context, params, json);
+    return updatedContext;
   }
 
   private getRequestPayload<TContext extends AnyObject>(
@@ -64,11 +65,14 @@ export class ApiActionHandler implements ActionHandler {
     requestResult: AnyObject = {},
   ): TContext {
     if (!params.map.toContext) return context;
+    const requestPayload = jmespath.search(requestResult, params.map.fromResponse) as AnyObject;
 
-    const requestPayload = jmespath.search(requestResult, params.map.fromRespose) as AnyObject;
+    const toContextMapSchema = params.map.toContext
+      ? (JSON.parse(params.map.toContext) as AnyObject)
+      : {};
 
-    for (const path in requestPayload) {
-      set(context, path, requestPayload[path]);
+    for (const path in toContextMapSchema) {
+      set(context, path, requestPayload[toContextMapSchema[path] as string]);
     }
 
     return { ...context };

@@ -36,11 +36,13 @@ export function DynamicUIRenderer<TContext>({
   const dynamicUIctx: DynamicUIRendererContext<any> = useMemo(() => {
     return {
       dispatchActions,
+      updateContext,
+      getContext,
       isProcessingActions,
       actions,
       context,
     };
-  }, [dispatchActions, isProcessingActions, actions, context]);
+  }, [dispatchActions, updateContext, getContext, isProcessingActions, actions, context]);
 
   return (
     <Provider value={dynamicUIctx}>

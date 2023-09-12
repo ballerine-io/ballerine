@@ -1,7 +1,8 @@
 import { DynamicUIRenderer } from '@app/components/organisms/DynamicUIRenderer/DynamicUIRenderer';
 import { ApiActionHandler } from '@app/components/organisms/DynamicUIRenderer/action-handlers/api.action-handler';
 import { actions, definitions } from '@app/components/organisms/DynamicUIRenderer/temp';
-import { ButtonUI } from '@app/components/organisms/DynamicUIRenderer/ui-elements/ButtonUI';
+import { ButtonUIElement } from '@app/components/organisms/DynamicUIRenderer/ui-elements/ButtonUI';
+import { TextInputUIElement } from '@app/components/organisms/DynamicUIRenderer/ui-elements/TextInputUIElement';
 import '@ballerine/ui/dist/style.css';
 // import { RouterProvider } from 'react-router-dom';
 // import { router } from '@app/router';
@@ -14,7 +15,7 @@ import '@ballerine/ui/dist/style.css';
 
 const initialCtx = {};
 const actionHandlers = [new ApiActionHandler()];
-const elements = { button: ButtonUI };
+const elements = { button: ButtonUIElement, text: TextInputUIElement };
 
 export const App = () => {
   // const dependancyQueries = [useCollectionFlowSchemaQuery(), useCustomerQuery()];

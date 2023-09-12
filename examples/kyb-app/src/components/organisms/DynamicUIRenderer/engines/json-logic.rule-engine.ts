@@ -7,9 +7,10 @@ export class JsonLogicRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'json-logic';
 
   isActive(context: unknown, rule: Rule): boolean {
-    const result = jsonLogic.apply(rule.value, context as AnyObject) as boolean;
-
-    if (typeof result !== 'boolean') return false;
+    const result = jsonLogic.apply(
+      JSON.parse(rule.value) as AnyObject,
+      context as AnyObject,
+    ) as boolean;
 
     return result;
   }

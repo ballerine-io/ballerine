@@ -14,7 +14,6 @@ export const UIElementsList = ({ elements, definitions }: Props) => {
     <div className="flex flex-col gap-2">
       {definitions.map(definition => {
         const Component = elements[definition.type];
-        console.log('def', definition);
 
         return Component ? (
           <Component key={definition.name} actions={actions} definition={definition} />
