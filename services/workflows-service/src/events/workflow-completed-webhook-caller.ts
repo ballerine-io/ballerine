@@ -128,9 +128,9 @@ export class WorkflowCompletedWebhookCaller {
   }
 
   private async updateSalesforceRecord(workflowRuntimeData: WorkflowRuntimeData) {
-    const { salesforceRecordId, salesforceRecordType } = workflowRuntimeData;
+    const { salesforceRecordId, salesforceObjectName } = workflowRuntimeData;
 
-    if (!salesforceRecordId || !salesforceRecordType) {
+    if (!salesforceRecordId || !salesforceObjectName) {
       return;
     }
 
