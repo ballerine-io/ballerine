@@ -5,7 +5,9 @@ import { getDocumentsByCountry } from '@ballerine/common';
 import { CountryCode } from '@/common/countries';
 import { TSchemaOption } from '@/ui-definition/type';
 import { Prisma, UiDefinitionContext } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class UiDefinitionService {
   constructor(
     protected readonly repository: UiDefinitionRepository,
@@ -24,6 +26,20 @@ export class UiDefinitionService {
     return await this.repository.findById(id, args, projectIds);
   }
 
+  async getByWorkflowDefinitionId(
+    workflowDefinitionId: string,
+    context: typeof UiDefinitionContext,
+    projectIds: TProjectIds,
+    args: Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
+  ) {
+    return await this.repository.findByWorkflowDefinitionId(
+      workflowDefinitionId,
+      context,
+      args,
+      projectIds,
+    );
+  }
+
   async getByRuntimeId(
     runtimeId: string,
     context: typeof UiDefinitionContext,
@@ -31,12 +47,8 @@ export class UiDefinitionService {
     args: Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
   ) {
     const runtime = await this.workflowRuntimeRepository.findById(runtimeId, {}, projectIds);
-    return await this.repository.findByWorkflowDefinitionId(
-      runtime.workflowDefinitionId,
-      context,
-      args,
-      projectIds,
-    );
+
+    return this.getByWorkflowDefinitionId(runtime.workflowDefinitionId, context, projectIds, args);
   }
   async getDocumentSchemaByRuntimeId(
     runtimeId: string,
