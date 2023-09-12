@@ -5,7 +5,9 @@ import { getDocumentsByCountry } from '@ballerine/common';
 import { CountryCode } from '@/common/countries';
 import { TSchemaOption } from '@/ui-definition/type';
 import { Prisma, UiDefinitionContext } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class UiDefinitionService {
   constructor(
     protected readonly repository: UiDefinitionRepository,
