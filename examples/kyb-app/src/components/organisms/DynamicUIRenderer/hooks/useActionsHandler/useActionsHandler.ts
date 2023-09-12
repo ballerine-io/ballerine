@@ -17,21 +17,26 @@ export const useActionsHandler = <TContext>(
 
   const processActions = useCallback(
     async (actions: Action[]) => {
-      setProcessingActions(true);
+      try {
+        setProcessingActions(true);
 
-      const actionHandlerManager = new ActionHandlerManager(actionHandlers);
-      let context = contextAccessor();
+        const actionHandlerManager = new ActionHandlerManager(actionHandlers);
+        let context = contextAccessor();
 
-      for (const action of actions) {
-        const actionHandler = actionHandlerManager.getActionHandler(action.type);
-        if (!actionHandler) throw new Error(`Action ${action.type} is not supported`);
+        for (const action of actions) {
+          const actionHandler = actionHandlerManager.getActionHandler(action.type);
+          if (!actionHandler) throw new Error(`Action ${action.type} is not supported`);
 
-        context = await actionHandler.run(context, action);
+          context = await actionHandler.run(context, action);
+        }
+
+        onDone(context);
+      } catch (error) {
+        console.log('Failed to perform action ', error.message);
+      } finally {
+        setPendingActions([]);
+        setProcessingActions(false);
       }
-
-      setPendingActions([]);
-      setProcessingActions(false);
-      onDone(context);
     },
     [actionHandlers, contextAccessor, onDone],
   );

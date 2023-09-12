@@ -12,7 +12,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         },
       },
       {
-        name: 'firstName',
+        name: 'email',
         type: 'text',
         activeOn: [],
         required: true,
@@ -21,11 +21,11 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         },
         inputParams: {
           placeholder: 'John',
-          title: 'First Name',
+          title: 'Email',
         },
       },
       {
-        name: 'lastName',
+        name: 'companyName',
         type: 'text',
         // where to take the information from and where to put it
         activeOn: [
@@ -33,7 +33,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
             engine: 'json-logic',
             value: `{
         "if": [
-          { "var": "firstName" },
+          { "var": "email" },
           true,
           false
         ]
@@ -41,8 +41,8 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
           },
         ],
         inputParams: {
-          placeholder: 'Doe',
-          title: 'Last Name',
+          placeholder: 'Ballerine',
+          title: 'Company Name',
         },
       },
       {
@@ -56,8 +56,8 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
             engine: 'json-logic',
             value: `{
         "and": [
-          {"var": "firstName"},
-          {"var": "lastName"}
+          {"var": "email"},
+          {"var": "companyName"}
         ]
       }`,
           },
@@ -78,8 +78,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
           method: 'post',
           type: 'json', // could be formData when Files present?
           map: {
-            toBody: `{"firstName": "firstName", "lastName": "lastName"}`,
-            persistToContext: `{result1: firstName, lastName: lastName}`,
+            toBody: `{data: {personalEmail: email, personalCompanyInfo: companyName}}`,
           },
           headers: {
             'Content-Type': 'application/json',
@@ -96,7 +95,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
           },
         ],
         params: {
-          url: 'http://localhost:3000/api/external/workflows/test-workflow-risk-id-1',
+          url: 'http://localhost:3000/api/v1/external/workflows/test-workflow-risk-id-1',
           method: 'get',
           type: 'json',
           headers: {
@@ -104,7 +103,9 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
             Authorization: 'bearer secret',
           },
           map: {
-            fromResponse: '@',
+            fromResponse:
+              '{email: workflowRuntimeData.context.entity.data.email, companyName: workflowRuntimeData.context.entity.data.companyName}',
+            toContext: `{"email": "email", "companyName": "companyName"}`,
           },
         },
       },

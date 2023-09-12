@@ -54,12 +54,13 @@ export class UiDefinitionController {
   @swagger.ApiOkResponse({ type: [UiDefinitionModel] })
   @swagger.ApiForbiddenResponse()
   async getByRuntimeId(
-    @common.Param() params: UiDefinitionByRuntimeIdDto,
+    @common.Param('workflowRuntimeId') workflowRuntimeId: string,
+    @common.Query() query: UiDefinitionByRuntimeIdDto,
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<UiDefinitionModel> {
     const uiDefinition = await this.service.getByRuntimeId(
-      params.workflowRuntimeId,
-      params.context,
+      workflowRuntimeId,
+      query.context,
       projectIds,
       {},
     );
@@ -71,11 +72,12 @@ export class UiDefinitionController {
   @swagger.ApiOkResponse({})
   @swagger.ApiForbiddenResponse()
   async getByRuntimeDocumentSchemaId(
-    @common.Param() params: UiDefinitionByRuntimeIdDocumentSchemaDto,
+    @common.Param('workflowRuntimeId') workflowRuntimeId: string,
+    @common.Query() params: UiDefinitionByRuntimeIdDocumentSchemaDto,
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<TDocument | undefined> {
     const uiDocumentSchema = await this.service.getDocumentSchemaByRuntimeId(
-      params.workflowRuntimeId,
+      workflowRuntimeId,
       params.context,
       projectIds,
       params.countryCode,

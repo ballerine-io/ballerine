@@ -1,3 +1,4 @@
+import { Action, UIElement } from '@app/components/organisms/DynamicUIRenderer/temp';
 import { Workflow } from '@app/domains/workflows/types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
@@ -29,6 +30,14 @@ export interface FlowData {
   flowData: AnyObject;
   documents: Document[];
   workflow?: Workflow;
+}
+
+export interface UISchema {
+  id: string;
+  uiSchema: {
+    actions: Action[];
+    uiElements: UIElement<AnyObject>[];
+  };
 }
 
 export interface TFlowStep {

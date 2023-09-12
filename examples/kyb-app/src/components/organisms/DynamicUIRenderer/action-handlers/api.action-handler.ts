@@ -35,7 +35,9 @@ export class ApiActionHandler implements ActionHandler {
     const { params } = action;
 
     const requestResult = await ky[params.method](params.url, {
-      [params.type === 'json' ? 'json' : 'body']: this.getRequestPayload(context, params),
+      ...(params.method === 'get'
+        ? {}
+        : { [params.type === 'json' ? 'json' : 'body']: this.getRequestPayload(context, params) }),
       headers: params.headers,
     });
 
