@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.3
+
+### Patch Changes
+
+- Add title to `msisdn` properties
+
 ## 0.7.2
 
 ### Patch Changes

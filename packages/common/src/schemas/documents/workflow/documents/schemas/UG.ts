@@ -13,7 +13,10 @@ export const getUgandaDocuments = (): TDocument[] => {
       enum: values,
     });
   const TypeStringAtLeastOneWord = Type.String({ minLength: 1 });
-  const TypeUgandaMobileNumber = Type.String({ pattern: '^256[0-9]{9}$' });
+  const TypeUgandaMobileNumber = Type.String({
+    title: 'Mobile phone number',
+    pattern: '^256[0-9]{9}$',
+  });
 
   return [
     // Proof of Registration
