@@ -65,11 +65,13 @@ export class SalesforceService {
     objectName,
     recordId,
     data,
+    refreshAccessToken = true,
   }: {
     projectId: string;
     objectName: string;
     recordId: string;
     data: Record<string, unknown>;
+    refreshAccessToken?: boolean;
   }): Promise<void> {
     const salesforceIntegration = await this.findByProjectId(projectId);
 
@@ -87,7 +89,7 @@ export class SalesforceService {
         },
       });
     } catch (error) {
-      if (isAxiosError(error) && error.response?.status === 401) {
+      if (isAxiosError(error) && error.response?.status === 401 && refreshAccessToken) {
         const { accessToken, issuedAt } = await this.refreshAccessToken(
           salesforceIntegration.refreshToken,
         );
@@ -97,7 +99,13 @@ export class SalesforceService {
           accessTokenIssuedAt: new Date(issuedAt),
         });
 
-        return this.updateRecord({ projectId, objectName, recordId, data });
+        return this.updateRecord({
+          projectId,
+          objectName,
+          recordId,
+          data,
+          refreshAccessToken: false, // prevent infinite loop
+        });
       }
 
       throw new Error(`Failed to update record in Salesforce`, { cause: error });
