@@ -3,7 +3,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 export const kybWithDynamicExternalRequestWorkflowExample = {
   context: 'collection_flow',
   uiSchema: {
-    uiElements: [
+    elements: [
       {
         name: 'fetchDataButton',
         type: 'button',
@@ -78,7 +78,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
           method: 'post',
           type: 'json', // could be formData when Files present?
           map: {
-            toBody: `{data: {personalEmail: email, personalCompanyInfo: companyName}}`,
+            toBody: `{data: {personalEmail: context.data.entity.email, personalCompanyInfo: companyName}}`,
           },
           headers: {
             'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
           },
         ],
         params: {
-          url: 'http://localhost:3000/api/v1/external/workflows/test-workflow-risk-id-1',
+          url: 'http://localhost:3000/api/v1/external/workflows/test-workflow-risk-id-1?resultDestination={context.data.entity}',
           method: 'get',
           type: 'json',
           headers: {
@@ -103,15 +103,14 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
             Authorization: 'bearer secret',
           },
           map: {
-            fromResponse:
-              '{email: workflowRuntimeData.context.entity.data.email, companyName: workflowRuntimeData.context.entity.data.companyName}',
+            fromResponse: 'merge(@, {context.entity.data.companyName: response.data.companyName})',
             toContext: `{"email": "email", "companyName": "companyName"}`,
           },
         },
       },
     ],
   },
-  workflowDefinitionId: 'risk-score-improvement-dev',
+  workflowDefinitionId: 'risk-score-improvement-dev', // how the context looks
   projectId: 'project-1',
 } as const satisfies Prisma.UiDefinitionUncheckedCreateInput;
 export const generateDynamicUiTest = async (prismaClient: PrismaClient) => {
