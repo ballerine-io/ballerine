@@ -3,6 +3,7 @@ import { TDropdownOption } from './types';
 export interface IEditableDetails {
   data: Array<{
     title: string;
+    key: string;
     value: unknown;
     valueAlias?: unknown;
     isEditable: boolean;

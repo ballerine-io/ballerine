@@ -1,8 +1,6 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Form } from '../../../../common/components/organisms/Form/Form';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
-import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Button, buttonVariants } from '../../../../common/components/atoms/Button/Button';
 import React, { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
@@ -62,7 +60,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     return isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
   const defaultValues = formData?.reduce((acc, curr) => {
-    acc[curr.title] = curr.value;
+    acc[curr.key] = curr.value;
 
     return acc;
   }, {});
@@ -173,6 +171,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
           {formData?.map(
             ({
               title,
+              key,
               isEditable,
               type,
               format,
@@ -183,7 +182,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
               valueAlias,
               dropdownOptions,
             }) => {
-              const originalValue = form.watch(title);
+              const originalValue = form.watch(key);
 
               const displayValue = (value: unknown) => {
                 if (isEditable) return originalValue;
@@ -194,14 +193,14 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
               const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
                 const inputValue = event.target.value;
 
-                form.setValue(title, inputValue === 'Unavailable' ? '' : inputValue);
+                form.setValue(key, inputValue === 'Unavailable' ? '' : inputValue);
               };
 
               return (
                 <FormField
-                  key={keyFactory(valueId, title, `form-field`)}
+                  key={keyFactory(valueId, key, `form-field`)}
                   control={form.control}
-                  name={title}
+                  name={key}
                   render={({ field }) => {
                     if (isDecisionComponent && !value) return null;
 
@@ -219,11 +218,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
                     return (
                       <FormItem>
-                        <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
+                        <FormLabel>{title}</FormLabel>
                         {(isObject(value) || Array.isArray(value)) && (
                           <div
                             className={`flex items-end justify-start`}
-                            key={keyFactory(valueId, title, `form-field`)}
+                            key={keyFactory(valueId, key, `form-field`)}
                           >
                             <JsonDialog
                               buttonProps={{
@@ -238,7 +237,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                         )}
                         {isValidUrl(value) && !isEditable && (
                           <a
-                            key={keyFactory(valueId, title, `form-field`)}
+                            key={keyFactory(valueId, key, `form-field`)}
                             className={buttonVariants({
                               variant: 'link',
                               className: '!block cursor-pointer !p-0 !text-blue-500',
