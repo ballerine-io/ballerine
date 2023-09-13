@@ -722,6 +722,10 @@ export class WorkflowService {
       documents: workflow?.context?.documents?.map(
         (document: DefaultContextSchema['documents'][number]) => ({
           ...document,
+          decision: {
+            ...document?.decision,
+            status: document?.decision?.status === null ? undefined : document?.decision?.status,
+          },
           type:
             document?.type === 'unknown' && document?.decision?.status === 'approved'
               ? undefined
