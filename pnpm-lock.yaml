@@ -642,6 +642,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^4.29.25
         version: 4.29.25(react-dom@18.2.0)(react@18.2.0)
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
       class-variance-authority:
         specifier: ^0.6.0
         version: 0.6.0(typescript@5.1.6)
@@ -32290,13 +32293,6 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
 
-  /rollup@3.20.2:
-    resolution: {integrity: sha512-3zwkBQl7Ai7MFYQE0y1MeQ15+9jsi7XxfrqwTb/9EK8D9C9+//EBR4M+CuA1KODRaNbFez/lWxA5vhEGZp4MUg==}
-    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
-    hasBin: true
-    optionalDependencies:
-      fsevents: 2.3.2
-
   /rollup@3.25.1:
     resolution: {integrity: sha512-tywOR+rwIt5m2ZAWSe5AIJcTat8vGlnPFAv15ycCrw33t6iFsXZ6mzHVFh2psSjxQPmI+xgzMZZizUAukBI4aQ==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
@@ -35633,7 +35629,7 @@ packages:
       esbuild: 0.17.14
       postcss: 8.4.24
       resolve: 1.22.1
-      rollup: 3.20.2
+      rollup: 3.27.2
     optionalDependencies:
       fsevents: 2.3.2
 
