@@ -1655,6 +1655,7 @@ export class WorkflowService {
         workflowDefinition,
         isFinal,
         projectIds,
+        currentProjectId,
         currentState,
       );
     }
