@@ -20,6 +20,7 @@ import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
+import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -94,8 +95,10 @@ export const useTasks = ({
                 type: 'details',
                 hideSeparator: index === collection.length - 1,
                 value: {
-                  data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
-                    title,
+                  data: Object.entries(pluginsOutput[key] ?? {})?.map(([key, value]) => ({
+                    // title: toStartCase(camelCaseToSpace(key)),
+                    title: key,
+                    key,
                     value,
                   })),
                 },
@@ -237,8 +240,9 @@ export const useTasks = ({
                   } ?? {},
                 )?.map(
                   ([
-                    title,
+                    key,
                     {
+                      title,
                       type,
                       format,
                       pattern,
@@ -249,11 +253,12 @@ export const useTasks = ({
                       formatMaximum,
                     },
                   ]) => {
-                    const fieldValue = value || (properties?.[title] ?? '');
+                    const fieldValue = value || (properties?.[key] ?? '');
                     const isEditableDecision = isDoneWithRevision || !decision?.status;
 
                     return {
                       title,
+                      key,
                       value: fieldValue,
                       type,
                       format,
@@ -261,7 +266,7 @@ export const useTasks = ({
                       isEditable:
                         isEditableDecision &&
                         caseState.writeEnabled &&
-                        getIsEditable(isEditable, title),
+                        getIsEditable(isEditable, key),
                       dropdownOptions,
                       minimum: formatMinimum,
                       maximum: formatMaximum,
@@ -386,8 +391,9 @@ export const useTasks = ({
                                 isEditable: false,
                               },
                             ]
-                          : Object.entries(address ?? {})?.map(([title, value]) => ({
-                              title,
+                          : Object.entries(address ?? {})?.map(([key, value]) => ({
+                              title: toStartCase(camelCaseToSpace(key)),
+                              key,
                               value,
                               isEditable: false,
                             })),

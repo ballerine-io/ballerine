@@ -7,6 +7,7 @@ export interface IDetailsProps {
     subtitle: string;
     data: Array<{
       title: string;
+      key: string;
       isEditable: boolean;
       type: string;
       format?: string;

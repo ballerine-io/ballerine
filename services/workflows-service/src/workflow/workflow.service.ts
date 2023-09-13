@@ -75,6 +75,7 @@ import { GetLastActiveFlowParams } from '@/workflow/types/params';
 import { TDocumentsWithoutPageType, TDocumentWithoutPageType } from '@/common/types';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
+import { JSONSchema7 } from 'json-schema';
 
 type TEntityId = string;
 
@@ -266,12 +267,31 @@ export class WorkflowService {
               doc => getDocumentId(doc, false) === getDocumentId(document, false),
             );
 
-            const propertiesSchema = {
+            const camelCaseToLabel = (s: string) => {
+              // Insert space before uppercase letters and then split by space.
+              const words = s.replace(/([A-Z])/g, ' $1').split(' ');
+
+              // Capitalize the first word and join the words with space.
+              const result = words
+                .map((word, index) =>
+                  index === 0 ? word.charAt(0).toUpperCase() + word.slice(1) : word.toLowerCase(),
+                )
+                .join(' ');
+
+              return result;
+            };
+
+            const propertiesSchema: JSONSchema7 = {
               ...(documentByCountry?.propertiesSchema ?? {}),
               properties: Object.fromEntries(
                 Object.entries(documentByCountry?.propertiesSchema?.properties ?? {}).map(
                   ([key, value]) => {
+                    if (!isObject(value)) return [key, value];
+
+                    value = { ...value, title: value.title ?? camelCaseToLabel(key) };
+
                     if (!(key in document.properties)) return [key, value];
+
                     if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string')
                       return [key, value];
 
@@ -279,6 +299,7 @@ export class WorkflowService {
                       key,
                       {
                         ...value,
+                        title: 'todo',
                         dropdownOptions: value.enum.map(item => ({
                           value: item,
                           label: item,

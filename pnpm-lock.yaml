@@ -2153,6 +2153,9 @@ importers:
       '@types/jest':
         specifier: ^26.0.19
         version: 26.0.24
+      '@types/json-schema':
+        specifier: ^7.0.12
+        version: 7.0.12
       '@types/lodash':
         specifier: ^4.14.191
         version: 4.14.191
@@ -14355,7 +14358,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-inspector: 6.0.1(react@18.2.0)
-      telejson: 7.1.0
+      telejson: 7.2.0
       ts-dedent: 2.2.0
       uuid: 9.0.0
     dev: true
@@ -15361,7 +15364,7 @@ packages:
       '@storybook/core-events': 7.1.0
       '@storybook/global': 5.0.0
       qs: 6.11.2
-      telejson: 7.1.0
+      telejson: 7.2.0
       tiny-invariant: 1.3.1
     dev: true
 
@@ -16151,7 +16154,7 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
       semver: 7.5.4
       store2: 2.14.2
-      telejson: 7.1.0
+      telejson: 7.2.0
       ts-dedent: 2.2.0
     dev: true
 

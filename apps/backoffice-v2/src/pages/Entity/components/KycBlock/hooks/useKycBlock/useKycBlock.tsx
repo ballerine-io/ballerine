@@ -47,6 +47,8 @@ export const useKycBlock = ({
     ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.flatMap(key => [
         {
           title: 'Verified With',
+          key: 'Verified With',
+          // key: 'verifiedWith',
           value: capitalize(childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor),
           pattern: '',
           isEditable: false,
@@ -54,6 +56,8 @@ export const useKycBlock = ({
         },
         {
           title: 'Result',
+          key: 'Result',
+          // key: 'result',
           value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.status,
           pattern: '',
           isEditable: false,
@@ -61,6 +65,8 @@ export const useKycBlock = ({
         },
         {
           title: 'Issues',
+          key: 'Issues',
+          // key: 'issues',
           value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.riskLabels
             ?.length
             ? childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.riskLabels?.join(
@@ -75,6 +81,8 @@ export const useKycBlock = ({
           ? [
               {
                 title: 'Full report',
+                key: 'Full report',
+                // key: 'fullReport',
                 value: childWorkflow?.context?.pluginsOutput?.kyc_session[key],
                 pattern: '',
                 isEditable: false,
@@ -106,8 +114,10 @@ export const useKycBlock = ({
               issuer:
                 childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
                   ?.issuer?.country,
-            })?.map(([title, value]) => ({
-              title,
+            })?.map(([key, value]) => ({
+              // title: toStartCase(camelCaseToSpace(key)),
+              title: key,
+              key,
               value,
               pattern: '',
               isEditable: false,
@@ -118,8 +128,10 @@ export const useKycBlock = ({
       ) ?? []
     : [];
 
-  const details = Object.entries(childWorkflow?.context?.entity?.data).map(([title, value]) => ({
-    title,
+  const details = Object.entries(childWorkflow?.context?.entity?.data).map(([key, value]) => ({
+    // title: toStartCase(camelCaseToSpace(key)),
+    title: key,
+    key,
     value,
     pattern: '',
     isEditable: true,
