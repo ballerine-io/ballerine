@@ -1,77 +1,43 @@
-import { generateTitleCell } from './title-cell-generator';
-
-export const personalInformationCell = () => {
+export const personalInformationCell = (index: number) => {
   return {
     elements: [
       {
         type: 'cell',
-        elements: generateTitleCell({
-          title: 'Individual Information',
-          subtitle: 'User-provided data',
-          context: 'personal_information',
-        }),
-        uiElements: {
-          style: 'padding-left: 10px',
-        },
-      },
-      {
-        type: 'cell',
-        layout: 'form',
-        options: { columns: 3 },
+        options: { layout: 'grid', columns: 2 },
         elements: [
           {
-            title: 'Email',
-            type: 'input',
-            options: { editable: false },
-            valueDestination: 'context.entity.data.email',
-          },
-          {
-            title: 'First name',
-            type: 'input',
-            options: { editable: false },
-            valueDestination: 'context.entity.data.firstName',
-          },
-          {
-            title: 'Last name',
-            type: 'input',
-            options: { editable: false },
-            valueDestination: 'context.entity.data.lastName',
-          },
-          {
-            title: 'Date of birth',
-            type: 'date',
-            options: { editable: false },
-            valueDestination: 'context.entity.data.dateOfBirth',
-          },
-          {
-            title: 'Phone',
-            type: 'input',
-            options: { editable: false },
-            valueDestination: 'context.entity.data.phone',
-          },
-          {
-            title: 'State reason',
-            type: 'input',
-            options: { editable: false },
-            valueDestination: 'context.entity.data.stateReason',
-          },
-          {
-            title: 'Approval state',
-            type: 'input',
-            options: { editable: false },
-            valueDestination: 'context.entity.data.approvalState',
+            type: 'cell',
+            elements: [
+              {
+                title: 'Category',
+                type: 'dropdown',
+                options: { editable: false },
+                valueDestination: `context.documents[${index}].category`,
+              },
+              {
+                title: 'Type',
+                type: 'dropdown',
+                options: { editable: false },
+                valueDestination: `context.documents[${index}].type`,
+              },
+            ],
           },
           {
             type: 'cell',
             options: {
               functionality: 'iterative-over-record',
+              elementType: {
+                title: true,
+                type: 'input',
+                options: { editable: false },
+              },
             },
-            elementType: {
-              title: true,
-              type: 'input',
-              options: { editable: false },
-            },
-            valueDestination: 'context.entity.data.additionalInfo',
+            valueDestination: `context.documents[${index}].properties`,
+          },
+          {
+            type: 'input-decision',
+            options: { editable: false },
+            valueDestination: `context.documents[${index}].decision.status`,
           },
         ],
       },
