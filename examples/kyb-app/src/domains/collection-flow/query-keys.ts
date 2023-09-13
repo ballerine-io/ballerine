@@ -1,7 +1,7 @@
 import {
-  authorizeUser,
   fetchActiveWorkflow,
   fetchCollectionFlowSchema,
+  fetchUISchema,
   getFlowSession,
 } from '@app/domains/collection-flow/collection-flow.api';
 import { GetActiveWorkflowDto, GetSessionDto } from '@app/domains/collection-flow/types';
@@ -19,5 +19,9 @@ export const collectionFlowQuerykeys = createQueryKeys('collectionFlow', {
   getFlowData: (query: GetActiveWorkflowDto) => ({
     queryKey: [{ query }],
     queryFn: () => fetchActiveWorkflow(query),
+  }),
+  getUISchema: () => ({
+    queryKey: [{}],
+    queryFn: () => fetchUISchema(),
   }),
 });
