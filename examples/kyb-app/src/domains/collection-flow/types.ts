@@ -1,4 +1,4 @@
-import { Action, UIElement } from '@app/components/organisms/DynamicUIRenderer/temp';
+import { Action, UIElement } from '@app/components/organisms/DynamicElements/types';
 import { Workflow } from '@app/domains/workflows/types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
@@ -131,4 +131,12 @@ export interface UpdateFlowDto {
     dynamicData: object;
     businessData: BusinessData;
   };
+}
+
+export interface Cell {
+  name: string;
+  title: string;
+  subtitle: string;
+  uiElements: UIElement<any>[];
+  styles?: string;
 }

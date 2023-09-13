@@ -1,12 +1,12 @@
 import { AppLoadingContainer } from '@app/components/organisms/AppLoadingContainer';
-import { DynamicUIRenderer } from '@app/components/organisms/DynamicUIRenderer/DynamicUIRenderer';
-import { ApiActionHandler } from '@app/components/organisms/DynamicUIRenderer/action-handlers/api.action-handler';
-import { actions, definitions } from '@app/components/organisms/DynamicUIRenderer/temp';
-import { ButtonUIElement } from '@app/components/organisms/DynamicUIRenderer/ui-elements/ButtonUI';
-import { TextInputUIElement } from '@app/components/organisms/DynamicUIRenderer/ui-elements/TextInputUIElement';
+import { ContextManager } from '@app/components/organisms/ContextManager';
+import { DynamicElements } from '@app/components/organisms/DynamicElements/DynamicElements';
+import { ApiActionHandler } from '@app/components/organisms/DynamicElements/action-handlers/api.action-handler';
+import { ButtonUIElement } from '@app/components/organisms/DynamicElements/ui-elements/ButtonUI';
+import { TextInputUIElement } from '@app/components/organisms/DynamicElements/ui-elements/TextInputUIElement';
 import { UISchema } from '@app/domains/collection-flow';
-import { useCollectionFlowSchemaQuery } from '@app/hooks/useCollectionFlowSchemaQuery';
 import { useUISchemasQuery } from '@app/hooks/useUISchemasQuery';
+import { additionalPersonalInfo, controls, personalInformation } from '@app/schemas';
 import '@ballerine/ui/dist/style.css';
 // import { RouterProvider } from 'react-router-dom';
 // import { router } from '@app/router';
@@ -35,16 +35,11 @@ export const App = () => {
   // </AppLoadingContainer>
   // );
 
-  console.log('schema', uiSchema);
-
   return (
     <AppLoadingContainer dependencies={[UISchemas]}>
-      <DynamicUIRenderer
-        uiElements={uiSchema?.uiElements}
-        actions={uiSchema?.actions}
+      <ContextManager
         context={initialCtx}
-        actionHandlers={actionHandlers}
-        elements={elements}
+        uiSchemas={[controls, personalInformation, additionalPersonalInfo]}
       />
     </AppLoadingContainer>
   );
