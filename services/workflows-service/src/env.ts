@@ -1,6 +1,9 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
+
+config({ path: '.env' });
+// config({ path: '.env.sandbox' });
 
 export const env = createEnv({
   /*
@@ -11,7 +14,6 @@ export const env = createEnv({
     NODE_ENV: z.enum(['development', 'production', 'test', 'local']),
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
-    COMPOSE_PROJECT_NAME: z.string(),
     JWT_SECRET_KEY: z.string(),
     JWT_EXPIRATION: z.string(),
     PORT: z.coerce.number(),
