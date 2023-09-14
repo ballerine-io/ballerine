@@ -28,13 +28,15 @@ class FakePasswordService {
 }
 
 describe('UserSessionAuditMiddleware', () => {
-  const testUserPayload = {
-    firstName: 'Test',
-    lastName: 'User',
-    password: '',
-    email: 'example@mail.com',
-    roles: [],
-  } as unknown as User;
+  const testUserPayload =  (index: number) => {
+    return {
+      firstName: 'Test',
+      lastName: 'User',
+      password: '',
+      email: `example${index}@mail.com`,
+      roles: [],
+    } as unknown as User;
+  }
   let app: TestingModule;
   let testUser: User;
   let middleware: UserSessionAuditMiddleware;
@@ -61,7 +63,7 @@ describe('UserSessionAuditMiddleware', () => {
     userService = app.get(UserService);
     const prismaService = app.get(PrismaService);
     const customer = await createCustomer(prismaService, String(Date.now()), 'secret', '');
-    project = await createProject(prismaService, customer, '1');
+    project = await createProject(prismaService, customer, '3');
 
     callback = jest.fn(() => null);
   });
@@ -79,11 +81,11 @@ describe('UserSessionAuditMiddleware', () => {
   describe('when session and user in request', () => {
     describe('when lastActiveAt unset', () => {
       beforeEach(async () => {
-        testUser = await app.get(UserService).create({ data: testUserPayload as any }, project.id);
+        testUser = await app.get(UserService).create({ data: testUserPayload(1) as any }, project.id);
       });
 
       afterEach(async () => {
-        await app.get(UserService).deleteById(testUser.id, {});
+        await app.get(UserService).deleteById(testUser.id, {}, [project.id]);
       });
 
       it('will be set on middleware call', async () => {
@@ -102,11 +104,11 @@ describe('UserSessionAuditMiddleware', () => {
 
     describe('when lastActiveAt is set', () => {
       beforeEach(async () => {
-        testUser = await app.get(UserService).create({ data: testUserPayload as any }, project.id);
+        testUser = await app.get(UserService).create({ data: testUserPayload(2) as any }, project.id);
       });
 
       afterEach(async () => {
-        await app.get(UserService).deleteById(testUser.id, {});
+        await app.get(UserService).deleteById(testUser.id, {}, [project.id]);
       });
 
       it('will not be changed when lastActiveAt not expired', async () => {

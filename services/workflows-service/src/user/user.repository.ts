@@ -111,14 +111,15 @@ export class UserRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.UserDeleteArgs, 'where'>>,
     projectIds?: TProjectIds,
   ): Promise<User> {
+    await this.prisma.userToProject.deleteMany({
+      where: { userId: id, projectId: { in: projectIds || [] } },
+    });
+
     return this.prisma.user.delete(
-      this.scopeService.scopeDelete(
-        {
-          where: { id },
-          ...args,
-        },
-        projectIds,
-      ),
+      {
+        where: {id},
+        ...args,
+      },
     );
   }
 
