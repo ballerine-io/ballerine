@@ -115,12 +115,10 @@ export class UserRepository {
       where: { userId: id, projectId: { in: projectIds || [] } },
     });
 
-    return this.prisma.user.delete(
-      {
-        where: {id},
-        ...args,
-      },
-    );
+    return this.prisma.user.delete({
+      where: { id },
+      ...args,
+    });
   }
 
   async queryRawUnscoped<TValue>(query: string, values: any[] = []): Promise<TValue> {

@@ -28,7 +28,7 @@ class FakePasswordService {
 }
 
 describe('UserSessionAuditMiddleware', () => {
-  const testUserPayload =  (index: number) => {
+  const testUserPayload = (index: number) => {
     return {
       firstName: 'Test',
       lastName: 'User',
@@ -36,7 +36,7 @@ describe('UserSessionAuditMiddleware', () => {
       email: `example${index}@mail.com`,
       roles: [],
     } as unknown as User;
-  }
+  };
   let app: TestingModule;
   let testUser: User;
   let middleware: UserSessionAuditMiddleware;
@@ -81,7 +81,9 @@ describe('UserSessionAuditMiddleware', () => {
   describe('when session and user in request', () => {
     describe('when lastActiveAt unset', () => {
       beforeEach(async () => {
-        testUser = await app.get(UserService).create({ data: testUserPayload(1) as any }, project.id);
+        testUser = await app
+          .get(UserService)
+          .create({ data: testUserPayload(1) as any }, project.id);
       });
 
       afterEach(async () => {
@@ -104,7 +106,9 @@ describe('UserSessionAuditMiddleware', () => {
 
     describe('when lastActiveAt is set', () => {
       beforeEach(async () => {
-        testUser = await app.get(UserService).create({ data: testUserPayload(2) as any }, project.id);
+        testUser = await app
+          .get(UserService)
+          .create({ data: testUserPayload(2) as any }, project.id);
       });
 
       afterEach(async () => {
