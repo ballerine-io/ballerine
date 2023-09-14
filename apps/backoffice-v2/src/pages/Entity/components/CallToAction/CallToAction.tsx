@@ -77,7 +77,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
               <SelectContent>
                 {actions?.map(({ label, value }) => {
                   return (
-                    <SelectItem key={action} value={value}>
+                    <SelectItem key={value} value={value}>
                       {label}
                     </SelectItem>
                   );
