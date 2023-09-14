@@ -622,7 +622,7 @@ importers:
   examples/kyb-app:
     dependencies:
       '@ballerine/ui':
-        specifier: 0.3.0
+        specifier: ^0.3.0
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -1159,6 +1159,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@ballerine/blocks':
+        specifier: link:../blocks
+        version: link:../blocks
       '@emotion/react':
         specifier: ^11.11.1
         version: 11.11.1(@types/react@18.2.14)(react@18.2.0)
