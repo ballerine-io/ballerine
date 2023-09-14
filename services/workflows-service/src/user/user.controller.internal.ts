@@ -45,23 +45,9 @@ export class UserControllerInternal {
   ) {
     const { projectIds, ...userInfo } = userCreatInfo;
 
-    if (projectIds && projectIds.length > 0) {
-      (userCreatInfo as Prisma.UserCreateInput).userToProjects = {
-        createMany: {
-          data: projectIds.map(projectId => {
-            return { projectId };
-          }),
-          skipDuplicates: true,
-        },
-      };
-    }
-
-    // @ts-ignore
-    delete userCreatInfo.projectIds;
-
     return this.service.create(
       {
-        data: userCreatInfo,
+        data: userInfo,
         select: {
           id: true,
           firstName: true,
@@ -72,7 +58,7 @@ export class UserControllerInternal {
           workflowRuntimeData: true,
         },
       },
-      currentProjectId,
+      projectIds?.[0] || currentProjectId,
     );
   }
 }
