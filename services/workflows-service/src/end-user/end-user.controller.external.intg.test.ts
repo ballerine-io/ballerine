@@ -71,7 +71,7 @@ describe('#EndUserControllerExternal', () => {
     const customer = await createCustomer(
       await app.get(PrismaService),
       String(Date.now()),
-      'secret',
+      'secret2',
       '',
     );
     project = await createProject(await app.get(PrismaService), customer, '1');
@@ -90,7 +90,7 @@ describe('#EndUserControllerExternal', () => {
           firstName: 'test',
           lastName: 'lastName',
         })
-        .set('authorization', 'Bearer secret');
+        .set('authorization', 'Bearer secret2');
 
       expect(response.status).toBe(201);
 
