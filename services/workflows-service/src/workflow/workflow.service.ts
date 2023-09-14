@@ -720,9 +720,9 @@ export class WorkflowService {
     this.__validateWorkflowDefinitionContext(workflowDefinition, {
       ...workflow?.context,
       documents: workflow?.context?.documents?.map(
-        // @ts-ignore
-        // Validating the context should be done without the propertiesSchema
         ({
+          // @ts-ignore
+          // Validating the context should be done without the propertiesSchema
           propertiesSchema: _propertiesSchema,
           ...document
         }: DefaultContextSchema['documents'][number]) => ({
