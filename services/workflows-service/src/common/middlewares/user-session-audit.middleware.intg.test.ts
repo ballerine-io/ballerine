@@ -79,7 +79,7 @@ describe('UserSessionAuditMiddleware', () => {
   describe('when session and user in request', () => {
     describe('when lastActiveAt unset', () => {
       beforeEach(async () => {
-        testUser = await app.get(UserService).create({ data: testUserPayload as any });
+        testUser = await app.get(UserService).create({ data: testUserPayload as any }, project.id);
       });
 
       afterEach(async () => {
@@ -102,7 +102,7 @@ describe('UserSessionAuditMiddleware', () => {
 
     describe('when lastActiveAt is set', () => {
       beforeEach(async () => {
-        testUser = await app.get(UserService).create({ data: testUserPayload as any });
+        testUser = await app.get(UserService).create({ data: testUserPayload as any }, project.id);
       });
 
       afterEach(async () => {
