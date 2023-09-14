@@ -773,6 +773,7 @@ async function seed(bcryptSalt: string | number) {
             contextSchema: true,
             config: true,
             definition: true,
+            version: true,
           },
         },
         business: {
@@ -834,6 +835,7 @@ async function seed(bcryptSalt: string | number) {
             contextSchema: true,
             config: true,
             definition: true,
+            version: true,
           },
         },
         endUser: {
@@ -1003,6 +1005,7 @@ async function seed(bcryptSalt: string | number) {
             contextSchema: true,
             config: true,
             definition: true,
+            version: true,
           },
         },
         endUser: {
@@ -1058,6 +1061,7 @@ async function seed(bcryptSalt: string | number) {
             contextSchema: true,
             config: true,
             definition: true,
+            version: true,
           },
         },
         business: {
@@ -1119,6 +1123,7 @@ async function seed(bcryptSalt: string | number) {
             contextSchema: true,
             config: true,
             definition: true,
+            version: true,
           },
         },
         business: {

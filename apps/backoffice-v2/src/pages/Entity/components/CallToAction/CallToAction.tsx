@@ -36,6 +36,8 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     isLoadingTaskDecisionById,
     caseState,
     action,
+    actions,
+    onActionChange,
     reasons,
     reason,
     onReasonChange,
@@ -45,112 +47,224 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     workflowLevelResolution,
   } = useCallToActionLogic();
 
-  return value === 'Re-upload needed' ? (
-    <Dialog>
-      <AnimatePresence>
-        <DialogTrigger asChild>
-          <MotionButton
-            {...motionProps}
-            size="wide"
-            variant="warning"
-            disabled={!caseState.actionButtonsEnabled || data?.disabled}
-          >
-            {value}
-          </MotionButton>
-        </DialogTrigger>
-      </AnimatePresence>
-      <DialogContent className={`mb-96`}>
-        <DialogHeader>
-          <DialogTitle className={`text-2xl`}>Mark document for re-upload</DialogTitle>
-          <DialogDescription asChild>
-            <p className="text-sm">
-              {workflowLevelResolution ? (
-                `Once marked, you can use the “Ask for all re-uploads” button at the top of the
-                  screen to initiate a request for the customer to re-upload all of the documents
-                  you have marked for re-upload.`
-              ) : (
-                <>
-                  <span className="mb-[10px] block">
-                    By clicking the button below, an email with a link will be sent to the customer,
-                    directing them to re-upload the documents you have marked as “re-upload needed”.
-                  </span>
-                  <span>
-                    The case’s status will then change to “Revisions” until the customer will
-                    provide the needed documents and fixes.
-                  </span>
-                </>
-              )}
-            </p>
-          </DialogDescription>
-        </DialogHeader>
-        {!noReasons && (
+  if (value === 'Reject') {
+    return (
+      <Dialog>
+        <AnimatePresence>
+          <DialogTrigger asChild>
+            <MotionButton
+              {...motionProps}
+              size="wide"
+              variant="destructive"
+              className={ctw({ loading: isLoadingTaskDecisionById })}
+              disabled={
+                isLoadingTaskDecisionById || data?.disabled || !caseState.actionButtonsEnabled
+              }
+            >
+              {value}
+            </MotionButton>
+          </DialogTrigger>
+        </AnimatePresence>
+        <DialogContent>
           <div>
-            <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
-              Reason
+            <label className={`mb-2 block font-bold`} htmlFor={`action`}>
+              Action
             </label>
-            <Select onValueChange={onReasonChange} value={reason} id={`reason`}>
+            <Select onValueChange={onActionChange} value={action} id={`action`}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {reasons?.map(reason => {
-                  const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
-                  const capitalizedReason = capitalize(reasonWithSpace);
-
+                {actions?.map(({ label, value }) => {
                   return (
-                    <SelectItem key={reason} value={reason} className={`capitalize`}>
-                      {capitalizedReason}
+                    <SelectItem key={action} value={value}>
+                      {label}
                     </SelectItem>
                   );
                 })}
               </SelectContent>
             </Select>
           </div>
-        )}
-        <div>
-          <label className={`mb-2 block font-bold`} htmlFor={`comment`}>
-            {noReasons ? 'Reason' : 'Comment'}
-          </label>
-          <Input
-            onChange={event => {
-              if (noReasons) {
-                onReasonChange(event.target.value);
+          {!noReasons && (
+            <div>
+              <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
+                Reason
+              </label>
+              <Select onValueChange={onReasonChange} value={reason} id={`reason`}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {reasons?.map(reason => {
+                    const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
+                    const capitalizedReason =
+                      reasonWithSpace.charAt(0).toUpperCase() + reasonWithSpace.slice(1);
 
-                return;
-              }
+                    return (
+                      <SelectItem
+                        key={`${action}${reason}`}
+                        value={reason}
+                        className={`capitalize`}
+                      >
+                        {capitalizedReason}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          <div>
+            <label className={`mb-2 block font-bold`} htmlFor={`comment`}>
+              {noReasons ? 'Reason' : 'Comment'}
+            </label>
+            <Input
+              onChange={event => {
+                if (noReasons) {
+                  onReasonChange(event.target.value);
 
-              onCommentChange(event.target.value);
-            }}
-            value={noReasons ? reason : comment}
-            id={noReasons ? `reason` : `comment`}
-          />
-        </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button
-              className={ctw(`gap-x-2`, {
-                loading: isLoadingTaskDecisionById,
-              })}
-              onClick={onMutateTaskDecisionById({
-                id: data?.id,
-                decision: action,
-                reason: comment ? `${reason} - ${comment}` : reason,
-              })}
+                  return;
+                }
+
+                onCommentChange(event.target.value);
+              }}
+              value={noReasons ? reason : comment}
+              id={noReasons ? `reason` : `comment`}
+            />
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button
+                variant={`destructive`}
+                className={ctw(`gap-x-2`, {
+                  loading: isLoadingTaskDecisionById,
+                })}
+                onClick={onMutateTaskDecisionById({
+                  id: data?.id,
+                  decision: action,
+                  reason: comment ? `${reason} - ${comment}` : reason,
+                })}
+              >
+                Confirm
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  if (value === 'Re-upload needed') {
+    return (
+      <Dialog>
+        <AnimatePresence>
+          <DialogTrigger asChild>
+            <MotionButton
+              {...motionProps}
+              size="wide"
+              variant="warning"
+              disabled={!caseState.actionButtonsEnabled || data?.disabled}
             >
-              {workflowLevelResolution ? (
-                'Approve'
-              ) : (
-                <>
-                  <Send size={18} />
-                  Send email
-                </>
-              )}
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  ) : (
+              {value}
+            </MotionButton>
+          </DialogTrigger>
+        </AnimatePresence>
+        <DialogContent className={`mb-96`}>
+          <DialogHeader>
+            <DialogTitle className={`text-2xl`}>Mark document for re-upload</DialogTitle>
+            <DialogDescription asChild>
+              <p className="text-sm">
+                {workflowLevelResolution ? (
+                  `Once marked, you can use the “Ask for all re-uploads” button at the top of the
+                  screen to initiate a request for the customer to re-upload all of the documents
+                  you have marked for re-upload.`
+                ) : (
+                  <>
+                    <span className="mb-[10px] block">
+                      By clicking the button below, an email with a link will be sent to the
+                      customer, directing them to re-upload the documents you have marked as
+                      “re-upload needed”.
+                    </span>
+                    <span>
+                      The case’s status will then change to “Revisions” until the customer will
+                      provide the needed documents and fixes.
+                    </span>
+                  </>
+                )}
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          {!noReasons && (
+            <div>
+              <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
+                Reason
+              </label>
+              <Select onValueChange={onReasonChange} value={reason} id={`reason`}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {reasons?.map(reason => {
+                    const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
+                    const capitalizedReason = capitalize(reasonWithSpace);
+
+                    return (
+                      <SelectItem key={reason} value={reason} className={`capitalize`}>
+                        {capitalizedReason}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          <div>
+            <label className={`mb-2 block font-bold`} htmlFor={`comment`}>
+              {noReasons ? 'Reason' : 'Comment'}
+            </label>
+            <Input
+              onChange={event => {
+                if (noReasons) {
+                  onReasonChange(event.target.value);
+
+                  return;
+                }
+
+                onCommentChange(event.target.value);
+              }}
+              value={noReasons ? reason : comment}
+              id={noReasons ? `reason` : `comment`}
+            />
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button
+                className={ctw(`gap-x-2`, {
+                  loading: isLoadingTaskDecisionById,
+                })}
+                onClick={onMutateTaskDecisionById({
+                  id: data?.id,
+                  decision: action,
+                  reason: comment ? `${reason} - ${comment}` : reason,
+                })}
+              >
+                {workflowLevelResolution ? (
+                  'Approve'
+                ) : (
+                  <>
+                    <Send size={18} />
+                    Send email
+                  </>
+                )}
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return (
     <AnimatePresence>
       <MotionButton
         {...motionProps}

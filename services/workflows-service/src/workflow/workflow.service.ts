@@ -720,7 +720,12 @@ export class WorkflowService {
     this.__validateWorkflowDefinitionContext(workflowDefinition, {
       ...workflow?.context,
       documents: workflow?.context?.documents?.map(
-        (document: DefaultContextSchema['documents'][number]) => ({
+        // @ts-ignore
+        // Validating the context should be done without the propertiesSchema
+        ({
+          propertiesSchema: _propertiesSchema,
+          ...document
+        }: DefaultContextSchema['documents'][number]) => ({
           ...document,
           decision: {
             ...document?.decision,
@@ -903,6 +908,10 @@ export class WorkflowService {
         documents: context?.documents?.map(
           (document: DefaultContextSchema['documents'][number]) => ({
             ...document,
+            decision: {
+              ...document?.decision,
+              status: document?.decision?.status === null ? undefined : document?.decision?.status,
+            },
             type:
               document?.type === 'unknown' && document?.decision?.status === 'approved'
                 ? undefined
