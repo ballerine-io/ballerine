@@ -221,6 +221,20 @@ export const useTasks = ({
           ],
         };
 
+        const decisionCell = {
+          type: 'details',
+          value: {
+            id,
+            title: 'Decision',
+            hideSeparator: true,
+            data: decision?.status
+              ? Object.entries(decision ?? {}).map(([title, value]) => ({
+                  title,
+                  value,
+                }))
+              : [],
+          },
+        };
         const detailsCell = {
           type: 'container',
           value: [
@@ -270,18 +284,7 @@ export const useTasks = ({
                 ),
               },
             },
-            {
-              type: 'details',
-              value: {
-                id,
-                title: 'Decision',
-                hideSeparator: true,
-                data: Object.entries(decision ?? {}).map(([title, value]) => ({
-                  title,
-                  value,
-                })),
-              },
-            },
+            decisionCell,
           ],
         };
 
