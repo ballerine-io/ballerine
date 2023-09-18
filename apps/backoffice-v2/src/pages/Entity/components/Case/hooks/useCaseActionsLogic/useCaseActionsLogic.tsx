@@ -70,7 +70,7 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   );
 
   const tag = useMemo(() => {
-    if (!workflow?.context?.entity?.data?.__isFinished) {
+    if (workflow?.context?.entity?.data?.__isFinished == false) {
       return StateTag.COLLECTION_FLOW;
     }
 
