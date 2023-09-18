@@ -132,6 +132,7 @@ export const generateBusiness = ({
         workflowDefinitionId,
         createdAt: faker.date.recent(2),
         projectId: projectId,
+        tags: ['manual_review'],
       },
     },
   };
@@ -188,6 +189,7 @@ export const generateEndUser = ({
           createdAt: faker.date.recent(2),
           projectId: projectId,
           parentRuntimeDataId: workflow.parentRuntimeId,
+          tags: ['manual_review'],
         },
       },
     };

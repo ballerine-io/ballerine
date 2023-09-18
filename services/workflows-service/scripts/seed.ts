@@ -361,7 +361,6 @@ async function seed(bcryptSalt: string | number) {
             additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
-
           version: 1,
           pages: [
             {
