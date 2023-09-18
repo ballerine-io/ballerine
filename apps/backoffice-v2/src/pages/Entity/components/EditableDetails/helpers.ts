@@ -1,7 +1,8 @@
+import { isNullish } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 
 export const isNullishDateValue = <T = unknown>(value: T, jsonSchema: AnyObject): boolean => {
-  if (!value && jsonSchema?.format === 'date') return true;
+  if (isNullish(value) && jsonSchema?.format === 'date') return true;
 
   return false;
 };
@@ -9,7 +10,7 @@ export const isNullishDateValue = <T = unknown>(value: T, jsonSchema: AnyObject)
 export const isValueEligibleToBePersisted = <T = unknown>(value: T, jsonSchema: AnyObject = {}) => {
   if (!isNullishDateValue(value, jsonSchema)) return true;
 
-  if (value === null || value === undefined) return false;
+  if (isNullish(value)) return false;
 
   return true;
 };
