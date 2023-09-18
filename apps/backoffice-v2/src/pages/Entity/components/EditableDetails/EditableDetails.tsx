@@ -93,7 +93,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
           (acc, curr) => {
             const schema = (document?.propertiesSchema?.properties[curr] || {}) as AnyObject;
 
-            if (!isValueEligibleToBePersisted(formData?.[curr], schema)) return acc;
+            if (isNullish(formData?.[curr])) return acc;
+
             acc[curr] = serializeValue(formData?.[curr], schema);
 
             return acc;
