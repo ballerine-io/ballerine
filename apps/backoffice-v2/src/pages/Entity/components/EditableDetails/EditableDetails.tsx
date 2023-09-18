@@ -26,7 +26,8 @@ import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { FileJson2 } from 'lucide-react';
 import { isValidDate } from '../../../../common/utils/is-valid-date';
 import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
-import { JsonDialog } from '@ballerine/ui';
+import { AnyObject, JsonDialog } from '@ballerine/ui';
+import { isValueEligibleToBePersisted, serializeValue } from './helpers';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -90,8 +91,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
         const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
           (acc, curr) => {
-            if (!formData?.[curr]) return acc;
-            acc[curr] = formData?.[curr];
+            const schema = (document?.propertiesSchema?.properties[curr] || {}) as AnyObject;
+
+            if (!isValueEligibleToBePersisted(formData?.[curr], schema)) return acc;
+            acc[curr] = serializeValue(formData?.[curr], schema);
 
             return acc;
           },
