@@ -1,29 +1,34 @@
+import { AnyRecord } from '@ballerine/common';
+
 export const generateTitleCell = ({
   title,
   context,
   subtitle,
+  titleUiElements,
+  subTitleUiElements,
 }: {
   title?: string;
+  titleUiElements?: AnyRecord;
   subtitle?: string;
+  subTitleUiElements?: AnyRecord;
   context: string;
 }) => {
-  let titleUiElements = []; // TODO: add type ui element
+  const titleElements = []; // TODO: add type ui element
 
   if (title) {
-    titleUiElements.push({
+    titleElements.push({
       name: `${context.toLowerCase().replace(' ', '')}_title`,
-      type: 'title',
-      value: title,
     });
   }
 
   if (subtitle) {
-    titleUiElements.push({
+    titleElements.push({
       name: `${context.toLowerCase().replace(' ', '')}_subtitle`,
       type: 'subtitle',
       value: subtitle,
+      uiElements: subTitleUiElements,
     });
   }
 
-  return titleUiElements;
+  return titleElements;
 };

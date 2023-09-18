@@ -6,6 +6,7 @@ import { CountryCode } from '@/common/countries';
 import { TSchemaOption } from '@/ui-definition/type';
 import { Prisma, UiDefinitionContext } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
+import { generateEndUserDocumentTask } from '@/ui-definition/utils/generate-end-user-document-task';
 
 @Injectable()
 export class UiDefinitionService {
@@ -60,8 +61,10 @@ export class UiDefinitionService {
   ) {
     // TODO: Replace the logic from current schemas in Common package to the database
     const uiDefinition = await this.getByRuntimeId(runtimeId, context, projectIds, {});
+    const runtimeData = await this.workflowRuntimeRepository.findById(runtimeId, {}, projectIds);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const documents = (uiDefinition.schemaOptions as TSchemaOption)['document'];
+    generateEndUserDocumentTask();
 
     const documentsByCountry = getDocumentsByCountry(countryCode);
     return documentsByCountry.find(document => {
