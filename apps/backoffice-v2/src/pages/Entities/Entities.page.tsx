@@ -44,11 +44,12 @@ export const Entities: FunctionComponent = () => {
                     key={case_.id}
                     id={case_.id}
                     fullName={case_.entity.name}
-                    avatarUrl={case_.entity.avatarUrl}
+                    avatarUrl={case_.assignee?.avatarUrl}
                     createdAt={case_.createdAt}
                     assignee={{
                       id: case_.assignee?.id,
                       fullName: `${case_.assignee?.firstName} ${case_.assignee?.lastName}`,
+                      avatarUrl: case_.assignee?.avatarUrl,
                     }}
                     status={case_.entity.approvalState}
                   />

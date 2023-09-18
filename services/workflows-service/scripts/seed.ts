@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Business, Customer, EndUser, Prisma, PrismaClient } from '@prisma/client';
+import { Business, Customer, EndUser, Prisma, PrismaClient, User } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -108,6 +108,7 @@ async function seed(bcryptSalt: string | number) {
       lastName: faker.name.lastName(),
       password: await hash('admin', bcryptSalt),
       roles: ['user'],
+      avatarUrl: faker.image.people(200, 200, true),
       userToProjects: {
         create: { projectId: project1.id },
       },
@@ -118,6 +119,7 @@ async function seed(bcryptSalt: string | number) {
       lastName: faker.name.lastName(),
       password: await hash('agent1', bcryptSalt),
       roles: ['user'],
+      avatarUrl: faker.image.people(200, 200, true),
       userToProjects: {
         create: { projectId: project2.id },
       },
@@ -128,6 +130,7 @@ async function seed(bcryptSalt: string | number) {
       lastName: faker.name.lastName(),
       password: await hash('agent2', bcryptSalt),
       roles: ['user'],
+      avatarUrl: faker.image.people(200, 200, true),
       userToProjects: {
         create: { projectId: project2.id },
       },
@@ -138,6 +141,7 @@ async function seed(bcryptSalt: string | number) {
       lastName: faker.name.lastName(),
       password: await hash('agent3', bcryptSalt),
       roles: ['user'],
+      avatarUrl: faker.image.people(200, 200, true),
       userToProjects: {
         create: { projectId: project1.id },
       },
