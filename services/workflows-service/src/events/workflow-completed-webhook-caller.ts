@@ -141,9 +141,11 @@ export class WorkflowCompletedWebhookCaller {
 
     let status: (typeof statusMap)[keyof typeof statusMap] | undefined;
 
-    (workflowRuntimeData.tags ?? []).forEach((tag: string) => {
+    workflowRuntimeData.tags?.some((tag: string) => {
       if (tag in statusMap) {
         status = statusMap[tag as keyof typeof statusMap];
+
+        return true;
       }
     });
 
