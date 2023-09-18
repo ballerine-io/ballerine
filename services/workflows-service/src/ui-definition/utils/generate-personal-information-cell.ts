@@ -1,7 +1,8 @@
-import { generateTitleCell } from './title-cell-generator';
+import { generateTitleCell } from './generate-title-cell';
 
-export const personalInformationCell = () => {
+export const generatePersonalInformationCell = () => {
   return {
+    type: 'task',
     elements: [
       {
         type: 'cell',

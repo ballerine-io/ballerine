@@ -1,4 +1,4 @@
-export const personalInformationCell = (index: number) => {
+export const documentPersonalInformationCell = () => {
   return {
     elements: [
       {
@@ -12,13 +12,13 @@ export const personalInformationCell = (index: number) => {
                 title: 'Category',
                 type: 'dropdown',
                 options: { editable: false },
-                valueDestination: `context.documents[${index}].category`,
+                valueDestination: `context.documents[{{index}}].category`,
               },
               {
                 title: 'Type',
                 type: 'dropdown',
                 options: { editable: false },
-                valueDestination: `context.documents[${index}].type`,
+                valueDestination: `context.documents[{{index}}].type`,
               },
             ],
           },
@@ -32,12 +32,12 @@ export const personalInformationCell = (index: number) => {
                 options: { editable: false },
               },
             },
-            valueDestination: `context.documents[${index}].properties`,
+            valueDestination: `context.documents[{{index}}].properties`,
           },
           {
             type: 'input-decision',
             options: { editable: false },
-            valueDestination: `context.documents[${index}].decision.status`,
+            valueDestination: `context.documents[{{index}}].decision.status`,
           },
         ],
       },
