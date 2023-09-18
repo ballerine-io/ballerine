@@ -54,8 +54,8 @@ export const BallerineImage = forwardRef<HTMLImageElement, IBallerineImageProps>
           {isLoading
             ? null
             : placeholder || (
-                <div className={`d-full grid place-content-center`}>
-                  <PhotoSvg className={`d-8`} />
+                <div className={`d-full flex items-center justify-center`}>
+                  <PhotoSvg className={`w-[80%]`} />
                 </div>
               )}
         </div>
