@@ -151,7 +151,7 @@ export const parentKybWithSessionWorkflowDefinition = {
         },
       },
       pending_kyc_response_to_finish: {
-        tags: [StateTag.COLLECTION_FLOW],
+        tags: [StateTag.PENDING_PROCESS],
         on: {
           KYC_RESPONDED: [
             {
