@@ -14,7 +14,6 @@ import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilte
 import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { tagToBadgeData } from '../../consts';
-import { StateTag } from '@ballerine/common';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -70,10 +69,6 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   );
 
   const tag = useMemo(() => {
-    if (workflow?.context?.entity?.data?.__isFinished === false) {
-      return StateTag.COLLECTION_FLOW;
-    }
-
     return workflow?.tags?.find(t => tagToBadgeData[t]);
   }, [workflow]);
 
