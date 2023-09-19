@@ -190,7 +190,7 @@ export const generateEndUser = ({
           createdAt: faker.date.recent(2),
           projectId: projectId,
           parentRuntimeDataId: workflow.parentRuntimeId,
-          tags: StateTag.MANUAL_REVIEW,
+          tags: [StateTag.MANUAL_REVIEW],
         },
       },
     };
