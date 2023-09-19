@@ -21,33 +21,19 @@ export const useEntities = () => {
 
   const {
     meta: { totalPages },
-    data: _cases,
+    data: workflows,
   } = data || { meta: { totalPages: 0 }, data: [] };
   const entity = useEntityType();
   const individualsSearchOptions = ['entity.name', 'entity.email'];
   const businessesSearchOptions = ['entity.name'];
-  const { searched, onSearch, search } = useSearch({
-    data: _cases,
+  const {
+    searched: cases,
+    onSearch,
+    search,
+  } = useSearch({
+    data: workflows,
     searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
   });
-  const { data: users } = useUsersQuery();
-  const cases = useMemo(() => {
-    const usersMapById = users?.reduce((map, user) => {
-      map[user.id] = user;
-      return map;
-    }, {});
-
-    const cases = searched.map(searchedItem => {
-      return {
-        ...searchedItem,
-        assignee: searchedItem.assignee
-          ? { ...searchedItem.assignee, ...usersMapById[searchedItem.assignee.id] }
-          : null,
-      };
-    });
-
-    return cases;
-  }, [users, searched]);
 
   const onSortDirToggle = useCallback(() => {
     setSearchParams({

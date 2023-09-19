@@ -46,7 +46,7 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     data: { user: authenticatedUser },
   } = useAuthenticatedUserQuery();
   const caseState = useCaseState(authenticatedUser, workflow);
-  const { data: users } = useUsersQuery();
+  const { data: assignees } = useUsersQuery();
   const { hasDecision, canApprove, canReject, canRevision } = useCaseDecision();
 
   // Only display the button spinners if the request is longer than 300ms
@@ -105,7 +105,7 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     canRevision,
     caseState,
     authenticatedUser,
-    assignees: users,
+    assignees,
     assignedUser,
     hasDecision,
     isLoadingCase,

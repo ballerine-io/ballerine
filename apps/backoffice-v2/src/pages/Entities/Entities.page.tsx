@@ -6,6 +6,7 @@ import { Case } from '../Entity/components/Case/Case';
 import { MotionScrollArea } from '../../common/components/molecules/MotionScrollArea/MotionScrollArea';
 import { FunctionComponent } from 'react';
 import { NoCasesSvg } from '../../common/components/atoms/icons';
+import { Assignee } from '../../common/components/atoms/AssignDropdown/AssignDropdown';
 
 export const Entities: FunctionComponent = () => {
   const {
@@ -44,14 +45,18 @@ export const Entities: FunctionComponent = () => {
                     key={case_.id}
                     id={case_.id}
                     fullName={case_.entity.name}
-                    avatarUrl={case_.assignee?.avatarUrl}
                     createdAt={case_.createdAt}
-                    assignee={{
-                      id: case_.assignee?.id,
-                      fullName: `${case_.assignee?.firstName} ${case_.assignee?.lastName}`,
-                      avatarUrl: case_.assignee?.avatarUrl,
-                    }}
+                    assignee={
+                      case_.assignee
+                        ? ({
+                            id: case_.assignee?.id,
+                            fullName: `${case_.assignee?.firstName} ${case_.assignee?.lastName}`,
+                            avatarUrl: case_.assignee?.avatarUrl,
+                          } as Assignee)
+                        : null
+                    }
                     status={case_.entity.approvalState}
+                    entityAvatarUrl={case_.entity?.avatarUrl}
                   />
                 ))}
           </Cases.List>

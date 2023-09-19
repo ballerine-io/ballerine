@@ -478,6 +478,7 @@ export class WorkflowService {
               id: workflow?.assigneeId,
               firstName: workflow?.assignee?.firstName,
               lastName: workflow?.assignee?.lastName,
+              avatarUrl: workflow?.assignee?.avatarUrl,
             }
           : null,
       };
