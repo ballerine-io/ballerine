@@ -16,7 +16,6 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import {
   ListRuntimeDataResult,
   ListWorkflowsRuntimeParams,
-  RunnableWorkflowData,
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
 } from './types';
@@ -1386,6 +1385,8 @@ export class WorkflowService {
             } as InputJsonValue,
             config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
             status: 'active',
+            state: workflowDefinition.definition.initial,
+            tags: workflowDefinition.definition.states[workflowDefinition.definition.initial]?.tags,
             workflowDefinitionId: workflowDefinition.id,
             ...(parentWorkflowId && {
               parentWorkflowRuntimeDataId: parentWorkflowId,
