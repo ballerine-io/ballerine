@@ -61,7 +61,7 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.6.7-hotfix.1
+        specifier: 0.6.7-hotfix.2
         version: link:../../packages/common
       '@ballerine/ui':
         specifier: 0.2.10
@@ -1976,7 +1976,7 @@ importers:
         specifier: 3.325.0
         version: 3.325.0
       '@ballerine/common':
-        specifier: 0.6.7-hotfix.1
+        specifier: 0.6.7-hotfix.2
         version: link:../../packages/common
       '@ballerine/workflow-core':
         specifier: 0.4.30
@@ -8009,7 +8009,7 @@ packages:
       '@babel/helper-hoist-variables': 7.22.5
       '@babel/helper-split-export-declaration': 7.22.6
       '@babel/parser': 7.22.5
-      '@babel/types': 7.22.5
+      '@babel/types': 7.22.11
       debug: 4.3.4(supports-color@8.1.1)
       globals: 11.12.0
     transitivePeerDependencies:
