@@ -76,7 +76,7 @@ export const Item: FunctionComponent<IItemProps> = ({
             src={entityAvatarUrl}
             className="pt-1 text-base d-8"
             alt={`${fullName}'s avatar`}
-            placeholder={!assignee?.avatarUrl ? entityInitials : undefined}
+            placeholder={entityInitials}
             style={{
               color: `rgb(${rgb})`,
               backgroundColor: `rgba(${rgb}, 0.2)`,
@@ -94,7 +94,7 @@ export const Item: FunctionComponent<IItemProps> = ({
         <div className={`ml-auto mr-1 flex -space-x-2 overflow-hidden`}>
           {assignee ? (
             assignee.avatarUrl ? (
-              <UserAvatar fullName={assignee.fullName} avatarUrl={entityAvatarUrl} />
+              <UserAvatar fullName={assignee.fullName} avatarUrl={assignee.avatarUrl} />
             ) : (
               <Avatar
                 placeholder={createInitials(assignee.fullName)}
