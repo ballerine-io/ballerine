@@ -318,7 +318,8 @@ export class WorkflowControllerExternal {
       currentProjectId,
     );
 
-    const hasSalesforceRecord = 'salesforceObjectName' in body && 'salesforceRecordId' in body;
+    const hasSalesforceRecord =
+      Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
 
     const workflow = await this.service.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: body.workflowDefinitionId,
