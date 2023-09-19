@@ -141,7 +141,7 @@ async function seed(bcryptSalt: string | number) {
       lastName: faker.name.lastName(),
       password: await hash('agent3', bcryptSalt),
       roles: ['user'],
-      avatarUrl: faker.image.people(200, 200, true),
+      avatarUrl: null,
       userToProjects: {
         create: { projectId: project1.id },
       },

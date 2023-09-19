@@ -35,7 +35,6 @@ export const Item: FunctionComponent<IItemProps> = ({
   fullName,
   createdAt,
   assignee,
-  avatarUrl,
   status,
 }) => {
   const entityInitials = createInitials(fullName);
@@ -73,10 +72,10 @@ export const Item: FunctionComponent<IItemProps> = ({
             {status === 'APPROVED' && <ApprovedSvg />}
           </motion.div>
           <Avatar
-            src={avatarUrl}
+            src={assignee?.avatarUrl}
             className="pt-1 text-base d-8"
             alt={`${fullName}'s avatar`}
-            placeholder={!avatarUrl ? entityInitials : undefined}
+            placeholder={!assignee?.avatarUrl ? entityInitials : undefined}
             style={{
               color: `rgb(${rgb})`,
               backgroundColor: `rgba(${rgb}, 0.2)`,

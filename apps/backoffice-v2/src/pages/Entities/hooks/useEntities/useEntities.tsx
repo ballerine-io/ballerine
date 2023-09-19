@@ -38,7 +38,6 @@ export const useEntities = () => {
     }, {});
 
     const cases = searched.map(searchedItem => {
-      //@ts-ignore
       return {
         ...searchedItem,
         assignee: searchedItem.assignee
