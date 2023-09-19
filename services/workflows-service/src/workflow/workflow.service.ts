@@ -16,7 +16,6 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import {
   ListRuntimeDataResult,
   ListWorkflowsRuntimeParams,
-  RunnableWorkflowData,
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
 } from './types';
@@ -726,6 +725,10 @@ export class WorkflowService {
       documents: workflow?.context?.documents?.map(
         (document: DefaultContextSchema['documents'][number]) => ({
           ...document,
+          decision: {
+            ...document?.decision,
+            status: document?.decision?.status === null ? undefined : document?.decision?.status,
+          },
           type:
             document?.type === 'unknown' && document?.decision?.status === 'approved'
               ? undefined
@@ -1405,6 +1408,8 @@ export class WorkflowService {
             } as InputJsonValue,
             config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
             status: 'active',
+            state: workflowDefinition.definition.initial,
+            tags: workflowDefinition.definition.states[workflowDefinition.definition.initial]?.tags,
             workflowDefinitionId: workflowDefinition.id,
             ...(parentWorkflowId && {
               parentWorkflowRuntimeDataId: parentWorkflowId,
@@ -1674,6 +1679,7 @@ export class WorkflowService {
         workflowDefinition,
         isFinal,
         projectIds,
+        currentProjectId,
         currentState,
       );
     }
