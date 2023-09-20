@@ -1,9 +1,11 @@
 import { z } from 'zod';
 
-const SubscriptionSchema = z
+export const SubscriptionSchema = z
   .object({
     type: z.enum(['webhook', 'slack']),
     url: z.string().url().optional(),
+    authorizationKey: z.string().optional(),
+    authorizationType: z.enum(['basic-auth', 'signature']).optional(),
     events: z.array(z.string()),
   })
   .strict();
