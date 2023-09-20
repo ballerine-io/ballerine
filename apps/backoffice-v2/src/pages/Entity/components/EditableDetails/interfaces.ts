@@ -4,10 +4,13 @@ export interface IEditableDetails {
   data: Array<{
     title: string;
     value: unknown;
+    valueAlias?: unknown;
     isEditable: boolean;
     type: string;
     format?: string;
     pattern?: string;
+    maximum?: string;
+    minimum?: string;
     dropdownOptions?: Array<TDropdownOption>;
   }>;
   valueId: string;

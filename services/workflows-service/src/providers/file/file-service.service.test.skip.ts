@@ -37,7 +37,7 @@
 //
 //     describe("when only one supports full stream", () => {
 //
-//       describe("when fromServiceProvider supports download and toServiceProvider supports full ", () => {
+//       describe("when sourceServiceProvider supports download and targetServiceProvider supports full ", () => {
 //         it('requests upload file via stream', () => {
 //           expect(fileService.copyThruStream).toBeCalledWith(fileService, fullyStreamSupportedService)
 //           // fileService.copyThruStream.wasCalled
@@ -45,7 +45,7 @@
 //           // fileService.copyFileFromSourceToSource(fullyStreamSupportedService, fullyStreamSupportedService)
 //         });
 //       })
-//       describe("when fromServiceProvider supports full toServiceProvider only download", () => {
+//       describe("when sourceServiceProvider supports full targetServiceProvider only download", () => {
 //         it('requests upload file via stream', () => {
 //           expect(fileService.copyThruStream).toBeCalledWith(fileService, fullyStreamSupportedService)
 //           // fileService.copyThruStream.wasCalled

@@ -16,24 +16,66 @@ import { HttpModule } from '@nestjs/axios';
 import { FilterRepository } from '@/filter/filter.repository';
 import { FilterService } from '@/filter/filter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { UserService } from '@/user/user.service';
+import { UserRepository } from '@/user/user.repository';
+import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-changed-webhook-caller';
+import { EntityRepository } from '@/common/entity/entity.repository';
+import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
+import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webhook-caller';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { EndUserService } from '@/end-user/end-user.service';
+import { ProjectModule } from '@/project/project.module';
+import { PrismaModule } from '@/prisma/prisma.module';
+import { CustomerModule } from '@/customer/customer.module';
+import { CustomerService } from '@/customer/customer.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    HttpModule,
+    ProjectModule,
+    PrismaModule,
+    CustomerModule,
+  ],
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
   providers: [
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
+    ProjectScopeService,
     EndUserRepository,
+    EndUserService,
     BusinessRepository,
+    EntityRepository,
     StorageService,
     FileRepository,
     WorkflowService,
+    HookCallbackHandlerService,
     FileService,
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
+    WorkflowCompletedWebhookCaller,
+    WorkflowStateChangedWebhookCaller,
     FilterRepository,
     FilterService,
+    UserService,
+    UserRepository,
+    WorkflowTokenRepository,
+    WorkflowTokenService,
+    SalesforceService,
+    SalesforceIntegrationRepository,
   ],
-  exports: [WorkflowService, ACLModule, AuthModule, StorageService, FileRepository],
+  exports: [
+    WorkflowService,
+    HookCallbackHandlerService,
+    ACLModule,
+    AuthModule,
+    StorageService,
+    FileRepository,
+  ],
 })
 export class WorkflowModule {}

@@ -9,7 +9,7 @@ import { validator } from '@felte/validator-zod';
 import { createForm } from 'felte';
 import { getContext, setContext } from 'svelte';
 import type { z, ZodSchema } from 'zod';
-import type { FetchInitWithJson, Serializable } from './types';
+import type { FetchInitWithJson } from './types';
 import { Category } from '@/constants';
 
 export const setWorkflowContext = (service: InstanceType<typeof WorkflowBrowserSDK>) => {
@@ -36,10 +36,6 @@ export const createZodForm = <TSchema extends ZodSchema, TExt extends Obj = Obj>
     ...config,
   });
 };
-
-export const log = (condition: boolean, ...args: any[]) => condition && console.log(...args);
-
-export const dump = (value: Serializable) => JSON.stringify(value, null, 2);
 
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

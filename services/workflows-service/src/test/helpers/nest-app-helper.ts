@@ -4,18 +4,19 @@ import { ACGuard } from 'nest-access-control';
 import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
 import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
 import { CallHandler, ExecutionContext, INestApplication, Provider, Type } from '@nestjs/common';
-import { EndUserModule } from '@/end-user/end-user.module';
-import { EndUserService } from '@/end-user/end-user.service';
-import { InstanceLink } from '@nestjs/core/injector/instance-links-host';
 import console from 'console';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsModule } from 'nestjs-cls';
+import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
+import { CustomerModule } from '@/customer/customer.module';
+import { CustomerService } from '@/customer/customer.service';
 
 export const commonTestingModules = [
   ClsModule.forRoot({
     global: true,
   }),
   AppLoggerModule,
+  CustomerModule,
 ];
 
 const acGuard = {
@@ -55,7 +56,6 @@ export const initiateNestApp = async (
   controllers: Array<Type>,
   modules: Array<Type>,
 ) => {
-  console.log(JSON.stringify(modules));
   const moduleRef = await Test.createTestingModule({
     providers: providers,
     controllers: controllers,
@@ -70,6 +70,9 @@ export const initiateNestApp = async (
     .compile();
 
   app = moduleRef.createNestApplication();
+  const middlewareInstnace = new AuthKeyMiddleware(app.get(CustomerService));
+
+  app.use(middlewareInstnace.use.bind(middlewareInstnace));
   await app.init();
 
   return app;

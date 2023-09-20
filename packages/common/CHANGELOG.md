@@ -1,5 +1,151 @@
 # @ballerine/common
 
+## 0.7.2
+
+### Patch Changes
+
+- Fix
+
+## 0.7.1
+
+### Patch Changes
+
+- Merge
+
+## 0.7.0
+
+### Minor Changes
+
+- Fixes
+
+## 0.6.0
+
+### Minor Changes
+
+- Fixes
+
+## 0.5.25
+
+### Patch Changes
+
+- c2a13806: Added StateTags
+
+## 0.5.23
+
+### Patch Changes
+
+- Removed verifiySignature util
+
+## 0.5.22
+
+### Patch Changes
+
+- Added `verifySignature` function
+
+## 0.5.20
+
+### Patch Changes
+
+- GH schemas update
+
+## 0.5.19
+
+### Patch Changes
+
+- cce4a663: Fixed type in GH schema
+
+## 0.5.18
+
+### Patch Changes
+
+- updated GH schemas
+
+## 0.5.17
+
+### Patch Changes
+
+- Package update
+
+## 0.5.16
+
+### Patch Changes
+
+- Update packages
+
+## 0.5.15
+
+### Patch Changes
+
+- fixed GH document schema
+
+## 0.5.14
+
+### Patch Changes
+
+- Added company structure GH document schema
+- - Remove required fields from document schemas
+
+## 0.5.13
+
+### Patch Changes
+
+- added Autocomplete,DropdownInput,Multiselect,DatePicker,Checkbox,PhoneNumber components
+- Upgrade packages
+
+## 0.5.12
+
+### Patch Changes
+
+- Update versions
+
+## 0.5.11
+
+### Patch Changes
+
+- Packages update
+
+## 0.5.10
+
+### Patch Changes
+
+- Update packages
+
+## 0.5.9
+
+### Patch Changes
+
+- New UI package
+
+## 0.5.8
+
+### Patch Changes
+
+- Package update
+
+## 0.5.7
+
+### Patch Changes
+
+- Update packages
+
+## 0.5.6
+
+### Patch Changes
+
+- change default context schema to ts
+
+## 0.5.5
+
+### Patch Changes
+
+- Add doc types
+
+## 0.5.4
+
+### Patch Changes
+
+- Schema Changes (Docs)
+
 ## 0.5.3
 
 ### Patch Changes

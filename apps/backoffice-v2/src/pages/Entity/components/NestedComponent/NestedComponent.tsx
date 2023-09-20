@@ -1,9 +1,13 @@
-import { FunctionComponentWithChildren } from '../../../../common/types';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { convertSnakeCaseToTitleCase } from '../../hooks/useEntity/utils';
 import { isObject } from '@ballerine/common';
 import { FunctionComponent } from 'react';
 import { INestedComponentProps } from './interfaces';
+import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
+import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
+import { NestedContainer } from './NestedContainer';
+import { handleNestedValue } from './handle-nested-value';
+import { isValidUrl } from '../../../../common/utils/is-valid-url';
+import { buttonVariants } from '../../../../common/components/atoms/Button/Button';
 
 export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
   id,
@@ -12,24 +16,23 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
 }) => {
   if (!value?.data?.length) return;
 
-  const Container: FunctionComponentWithChildren = ({ children }) => {
-    if (!isNested) return <>{children}</>;
-
-    return <div className={`mb-4 grid grid-cols-2 gap-4`}>{children}</div>;
-  };
-
   return (
-    <Container>
-      {value?.data?.map(({ title, value }) => {
+    <NestedContainer isNested={isNested}>
+      {value?.data?.map(({ title, value, showNull, showUndefined, anchorUrls }) => {
+        const Component = anchorUrls && isValidUrl(value) ? 'a' : 'p';
+
         return (
           <div key={title}>
             <h4
-              className={ctw(`mb-1 text-lg font-bold`, {
-                'text-2xl': !isNested,
-                'text-slate-400': isNested,
-              })}
+              className={ctw(
+                `text-lg font-medium capitalize leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70`,
+                {
+                  'text-xl': !isNested,
+                  'mb-4 text-2xl': isObject(value) || Array.isArray(value),
+                },
+              )}
             >
-              {convertSnakeCaseToTitleCase(title)}
+              {camelCaseToSpace(title)}
             </h4>
             {isObject(value) && (
               <NestedComponent
@@ -39,15 +42,83 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
                   data: Object.entries(value)?.map(([title, value]) => ({
                     title,
                     value,
+                    showUndefined,
+                    showNull,
+                    anchorUrls,
                   })),
                 }}
               />
             )}
-            {Array.isArray(value) && <p>{value.join(', ')}</p>}
-            {!isObject(value) && !Array.isArray(value) && <p>{value}</p>}
+            {Array.isArray(value) &&
+              value?.map((item, index) => {
+                if (isObject(item)) {
+                  return (
+                    <NestedComponent
+                      key={keyFactory(index?.toString(), id, title, `nested-component`)}
+                      isNested
+                      id={id}
+                      value={{
+                        data: Object.entries(item)?.map(([title, value]) => ({
+                          title,
+                          value,
+                          showUndefined,
+                          showNull,
+                          anchorUrls,
+                        })),
+                      }}
+                    />
+                  );
+                }
+
+                if (Array.isArray(item)) {
+                  return (
+                    <NestedComponent
+                      key={keyFactory(index?.toString(), id, title, `nested-component`)}
+                      isNested
+                      id={id}
+                      value={{
+                        data: item?.map(item => ({
+                          title: 'Custom Property',
+                          value: item,
+                          showUndefined,
+                          showNull,
+                          anchorUrls,
+                        })),
+                      }}
+                    />
+                  );
+                }
+
+                if (!isObject(item) && !Array.isArray(item)) {
+                  return (
+                    <Component
+                      className={`leading-7 [&:not(:first-child)]:mt-2`}
+                      key={keyFactory(index?.toString(), id, title, `nested-component`)}
+                    >
+                      {handleNestedValue({ value, showUndefined, showNull })}
+                    </Component>
+                  );
+                }
+              })}
+            {!isObject(value) && !Array.isArray(value) && (
+              <Component
+                className={`leading-7 [&:not(:first-child)]:mt-2`}
+                {...(Component === 'a'
+                  ? {
+                      // Component === 'a' only if `value` is a string.
+                      href: value as string,
+                      target: '_blank',
+                      rel: 'noopener noreferrer',
+                      className: buttonVariants({ variant: 'link', className: '!p-0' }),
+                    }
+                  : {})}
+              >
+                {handleNestedValue({ value, showUndefined, showNull })}
+              </Component>
+            )}
           </div>
         );
       })}
-    </Container>
+    </NestedContainer>
   );
 };

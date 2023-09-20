@@ -1,0 +1,17 @@
+{{- $name := .Release.Name }}
+{{- $namespace:= .Release.Namespace }}
+{{- if .Values.backoffice.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ .Values.backoffice.nameOverride }}
+    namespace: {{ .Release.Namespace | quote }}
+    labels:
+      app: {{ .Values.backoffice.nameOverride }}
+data:
+  {{- range $key, $value := .Values.backoffice.applicationConfig }}
+  {{- if $value }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}

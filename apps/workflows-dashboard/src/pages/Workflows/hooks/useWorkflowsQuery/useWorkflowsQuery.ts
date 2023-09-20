@@ -1,9 +1,9 @@
 import { SortingParams } from '@app/common/types/sorting-params.types';
 import { workflowKeys } from '@app/domains/workflows';
-import { WorkflowsFilterValues } from '@app/pages/Workflows/hooks/useWorkflowsFilters/types';
+import { WorkflowFilterValues } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/workflows-filters.types';
 import { useQuery } from '@tanstack/react-query';
 
-export function useWorkflowsQuery(query: WorkflowsFilterValues, sortingParams?: SortingParams) {
+export function useWorkflowsQuery(query: WorkflowFilterValues, sortingParams?: SortingParams) {
   const {
     isFetching,
     isLoading,

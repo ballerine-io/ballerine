@@ -109,11 +109,19 @@
                   {
                     "type": "string",
                     "enum": [
-                      "Blurry image",
+                      "Wrong document",
+                      "Fake document",
+                      "Spam",
+                      "Ownership mismatch - Name",
+                      "Ownership mismatch - National ID",
+                      "Unknown document type",
+                      "Bad image quality",
                       "Missing page",
                       "Invalid document",
                       "Expired document",
-                      "Unreadable document"
+                      "Unreadable document",
+                      "Blurry image",
+                      "Other"
                     ]
                   }
                 ]

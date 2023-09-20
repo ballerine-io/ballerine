@@ -2,44 +2,44 @@ import { Injectable } from '@nestjs/common';
 import { File, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { IFileIds } from './types';
+import { TProjectId, TProjectIds } from '@/types';
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
 export class FileRepository {
-  constructor(protected readonly prisma: PrismaService) {}
+  constructor(
+    protected readonly prisma: PrismaService,
+    protected readonly scopeService: ProjectScopeService,
+  ) {}
 
   async create<T extends Prisma.FileCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.FileCreateArgs>,
+    projectId: TProjectId,
   ): Promise<File> {
-    return await this.prisma.file.create<T>(args);
+    return await this.prisma.file.create<T>(this.scopeService.scopeCreate(args, projectId));
   }
 
   async findMany<T extends Prisma.FileFindManyArgs>(
-    args?: Prisma.SelectSubset<T, Prisma.FileFindManyArgs>,
+    args: Prisma.SelectSubset<T, Prisma.FileFindManyArgs>,
+    projectIds: TProjectIds,
   ): Promise<File[]> {
-    return await this.prisma.file.findMany(args);
+    return await this.prisma.file.findMany(this.scopeService.scopeFindMany(args, projectIds));
   }
 
-  async findById<T extends Omit<Prisma.FileFindFirstArgs, 'where'>>(
+  async findById<T extends Prisma.FileFindFirstArgs>(
     { id }: IFileIds,
-    args?: Prisma.SelectSubset<T, Omit<Prisma.FileFindFirstArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Prisma.FileFindFirstArgs>,
+    projectIds: TProjectIds,
   ): Promise<File | null> {
-    return await this.prisma.file.findFirst({
-      where: { id },
-      ...args,
-    });
-  }
-
-  async findNameById({ id }: IFileIds) {
-    return await this.findById(
-      { id },
-      {
-        select: {
-          fileNameOnDisk: true,
-          uri: true,
-          fileNameInBucket: true,
-          id: true,
+    const { where, ...restArgs } = args;
+    return await this.prisma.file.findFirst(
+      this.scopeService.scopeFindFirst(
+        {
+          ...restArgs,
+          where: { ...(where || {}), id },
         },
-      },
+        projectIds,
+      ),
     );
   }
 }

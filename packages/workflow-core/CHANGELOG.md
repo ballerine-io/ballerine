@@ -1,5 +1,159 @@
 # @ballerine/workflow-core
 
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.2
+
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.1
+
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.0
+
+## 0.5.0
+
+### Minor Changes
+
+- Fixes
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.6.0
+
+## 0.4.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.5.20
+
+## 0.4.29
+
+### Patch Changes
+
+- Updated dependencies [cce4a663]
+  - @ballerine/common@0.5.19
+
+## 0.4.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.5.18
+
+## 0.4.27
+
+### Patch Changes
+
+- 39db2ab0: Added country state support to KYB plugin
+- Package update
+- Updated dependencies
+  - @ballerine/common@0.5.17
+
+## 0.4.26
+
+### Patch Changes
+
+- Update packages
+- Updated dependencies
+  - @ballerine/common@0.5.16
+
+## 0.4.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.5.14
+
+## 0.4.23
+
+### Patch Changes
+
+- Upgrade packages
+- Updated dependencies
+  - @ballerine/common@0.5.13
+
+## 0.4.22
+
+### Patch Changes
+
+- Update versions
+- Updated dependencies
+  - @ballerine/common@0.5.12
+
+## 0.4.21
+
+### Patch Changes
+
+- Packages update
+- Updated dependencies
+  - @ballerine/common@0.5.11
+
+## 0.4.20
+
+### Patch Changes
+
+- Update packages
+- Updated dependencies
+  - @ballerine/common@0.5.10
+
+## 0.4.19
+
+### Patch Changes
+
+- New UI package
+- Updated dependencies
+  - @ballerine/common@0.5.9
+
+## 0.4.18
+
+### Patch Changes
+
+- Package update
+- Updated dependencies
+  - @ballerine/common@0.5.8
+
+## 0.4.17
+
+### Patch Changes
+
+- Update packages
+- Updated dependencies
+  - @ballerine/common@0.5.7
+
+## 0.4.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.5.6
+
+## 0.4.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.5.5
+
+## 0.4.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.5.4
+
 ## 0.4.13
 
 ### Patch Changes

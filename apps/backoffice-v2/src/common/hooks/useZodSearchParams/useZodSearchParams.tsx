@@ -19,6 +19,7 @@ export const useZodSearchParams = <TSchema extends AnyZodObject>(
     [schema, searchParamsAsObject],
   );
   const navigate = useNavigate();
+  const { state } = useLocation();
   const onSetSearchParams = useCallback(
     (searchParams: Record<string, unknown>) => {
       navigate(
@@ -26,6 +27,11 @@ export const useZodSearchParams = <TSchema extends AnyZodObject>(
           ...parsedSearchParams,
           ...searchParams,
         })}`,
+        {
+          state: {
+            from: state?.from,
+          },
+        },
       );
     },
     [pathname, parsedSearchParams, setSearchParams],

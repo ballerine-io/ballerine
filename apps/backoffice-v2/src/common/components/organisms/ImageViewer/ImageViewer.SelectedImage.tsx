@@ -1,9 +1,9 @@
 import { BallerineImage } from '../../atoms/BallerineImage';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
-import { useImageViewerContext } from './hooks/useImageViewerContext/useImageViewerContext';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { TSelectedImageProps } from './interfaces';
+import { isPdf } from '../../../utils/is-pdf/is-pdf';
 
 /**
  * @description To be used by {@link ImageViewer}. Uses {@link BallerineImage} to display the currently selected image with default styling.
@@ -17,19 +17,21 @@ import { TSelectedImageProps } from './interfaces';
 export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TSelectedImageProps>(
   ({ className, isLoading, initialImage, ...props }, ref) => {
     const { selectedImage } = useSelectedImage(initialImage);
+
     const [isError, setIsError] = useState(false);
     const onError = useCallback(() => {
       setIsError(true);
     }, []);
+
     const isPlaceholder = isLoading || !selectedImage?.imageUrl || isError;
 
     useEffect(() => {
       if (!isError || !selectedImage?.imageUrl) return;
 
       setIsError(false);
-    }, [isLoading, selectedImage?.imageUrl]);
+    }, [isError, selectedImage?.imageUrl]);
 
-    if (selectedImage?.fileType === 'pdf') {
+    if (isPdf(selectedImage)) {
       return (
         <iframe
           src={selectedImage?.imageUrl}

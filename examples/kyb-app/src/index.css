@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .ring-ballerine {
+    @apply ring-primary outline-none ring-2;
+  }
+
+  .d-full {
+    @apply h-full w-full;
+  }
+  .d-screen {
+    @apply h-screen w-screen;
+  }
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  .tooltip::before {
+    @apply bg-base-100 text-base-content shadow !important;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+}

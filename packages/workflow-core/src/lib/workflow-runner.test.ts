@@ -1,8 +1,9 @@
 /* eslint-disable */
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { WorkflowRunner } from './workflow-runner';
-import { sleep } from '@ballerine/common';
+import { IErrorWithMessage, sleep } from '@ballerine/common';
+import { WorkflowEvent } from './types';
 
 const DEFAULT_PAYLOAD = { payload: { some: 'payload' } };
 
@@ -27,12 +28,15 @@ const TWO_STATES_MACHINE_DEFINITION = {
   },
 };
 
-function createEventCollectingWorkflow(args) {
+function createEventCollectingWorkflow(args: ConstructorParameters<typeof WorkflowRunner>[0]) {
   const workflow = new WorkflowRunner(args);
   workflow.events = [];
-  workflow.subscribe(e => {
-    e.error && (e.error = e.error.message);
-    workflow.events.push(e);
+  workflow.subscribe(event => {
+    if (event.error) {
+      event.error = (event.error as IErrorWithMessage).message;
+    }
+
+    workflow.events.push(event);
   });
   return workflow;
 }
@@ -48,7 +52,7 @@ describe('workflow-runner', () => {
     expect(workflow.events).toStrictEqual([]);
   });
 
-  it('it does not invoke subscribe callback when staying at the same state', async () => {
+  it('does not invoke subscribe callback when staying at the same state', async () => {
     const workflow = createEventCollectingWorkflow({
       definition: SINGLE_STATE_MACHINE_DEFINITION,
     });
@@ -120,7 +124,7 @@ describe('workflow-runner', () => {
       definition: TWO_STATES_MACHINE_DEFINITION,
     });
 
-    const events = [];
+    const events: Array<WorkflowEvent> = [];
     workflow.subscribe(event => events.push(event));
     workflow.subscribe(event => {});
     await workflow.sendEvent({ type: 'EVENT', ...DEFAULT_PAYLOAD });
@@ -139,12 +143,16 @@ describe('workflow-runner', () => {
                 name: 'SuccessfulPlugin',
                 when: 'pre',
                 stateNames: ['initial'],
-                action: () => {},
+                async action() {
+                  return;
+                },
+                isBlocking: false,
               },
               {
                 name: 'FailingPlugin',
                 when: 'pre',
                 stateNames: ['initial'],
+                isBlocking: false,
                 action: () => {
                   throw new Error('some error');
                 },
@@ -169,6 +177,7 @@ describe('workflow-runner', () => {
                 name: 'FailingPrePlugin',
                 when: 'pre',
                 stateNames: ['initial'],
+                isBlocking: false,
                 action: () => {
                   throw new Error();
                 },
@@ -194,6 +203,10 @@ describe('workflow-runner', () => {
                   name: 'PostInitial',
                   when: 'pre',
                   stateNames: ['initial', 'middle', 'final'],
+                  isBlocking: false,
+                  async action() {
+                    return;
+                  },
                 },
               ],
             },
@@ -267,14 +280,18 @@ describe('workflow-runner', () => {
                 isBlocking: true,
                 when: 'pre',
                 stateNames: ['initial'],
-                action: () => sleep(3),
+                async action() {
+                  await sleep(3);
+                },
               },
               {
                 name: 'PreFinal',
                 isBlocking: true,
                 when: 'pre',
                 stateNames: ['initial'],
-                action: () => sleep(1),
+                async action() {
+                  await sleep(1);
+                },
               },
             ],
           },
@@ -337,46 +354,47 @@ describe('workflow-runner', () => {
 });
 
 describe('Workflows with conditions', () => {
-  const createCondMachine = score => ({
-    workflowContext: {
-      machineContext: {
-        external_request_example: {
-          data: {
-            name_fuzziness_score: 0.85, // or whatever value you want to assign
+  const createCondMachine = (score: number) =>
+    ({
+      workflowContext: {
+        machineContext: {
+          external_request_example: {
+            data: {
+              name_fuzziness_score: 0.85, // or whatever value you want to assign
+            },
           },
         },
       },
-    },
-    definition: {
-      initial: 'initial',
-      states: {
-        initial: {
-          on: {
-            EVENT: [
-              {
-                target: 'final',
-                cond: {
-                  type: 'json-logic',
-                  options: {
-                    rule: {
-                      '>': [{ var: 'external_request_example.data.name_fuzziness_score' }, score],
+      definition: {
+        initial: 'initial',
+        states: {
+          initial: {
+            on: {
+              EVENT: [
+                {
+                  target: 'final',
+                  cond: {
+                    type: 'json-logic',
+                    options: {
+                      rule: {
+                        '>': [{ var: 'external_request_example.data.name_fuzziness_score' }, score],
+                      },
+                      assignOnFailure: { manualReviewReason: 'name not matching ... ' },
                     },
-                    assignOnFailure: { manualReviewReason: 'name not matching ... ' },
                   },
                 },
-              },
-            ],
+              ],
+            },
+          },
+          middle: {
+            on: { EVENT2: { target: 'final', cond: 'isTrue' } },
+          },
+          final: {
+            type: 'final',
           },
         },
-        middle: {
-          on: { EVENT2: { target: 'final', cond: 'isTrue' } },
-        },
-        final: {
-          type: 'final',
-        },
       },
-    },
-  });
+    } satisfies ConstructorParameters<typeof WorkflowRunner>[0]);
   it('should not proceed with transition if json logic condition falsy', async () => {
     const workflow = createEventCollectingWorkflow(createCondMachine(0.9));
     await workflow.sendEvent({ type: 'EVENT' });
@@ -385,8 +403,6 @@ describe('Workflows with conditions', () => {
   });
   it('should proceed with transition if json logic condition truthy', async () => {
     const workflowArgs = createCondMachine(0.5);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     const workflow = createEventCollectingWorkflow(workflowArgs);
     await workflow.sendEvent({ type: 'EVENT' });
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

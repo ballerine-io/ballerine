@@ -30,6 +30,11 @@ export class WorkflowRuntimeListItemModel {
   @Expose()
   @ApiProperty()
   @IsString()
+  workflowDefinitionId!: string;
+
+  @Expose()
+  @ApiProperty()
+  @IsString()
   status!: WorkflowRuntimeDataStatus;
 
   @Expose()

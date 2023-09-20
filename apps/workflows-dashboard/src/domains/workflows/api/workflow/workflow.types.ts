@@ -7,6 +7,7 @@ export interface IWorkflowAssignee {
 export interface IWorkflow {
   id: string;
   workflowDefinitionName: string;
+  workflowDefinitionId: string;
   status: IWorkflowStatus;
   state: string | null;
   assignee: IWorkflowAssignee | null;
@@ -30,4 +31,13 @@ export interface GetWorkflowsDto {
   limit?: number;
   orderBy?: string;
   orderDirection?: 'asc' | 'desc';
+}
+
+export type IWorkflowDefinition = object;
+
+export interface GetWorkflowDefinitionResponse {
+  definition: IWorkflowDefinition;
+}
+export interface GetWorkflowDefinitionDto {
+  workflowId: string;
 }

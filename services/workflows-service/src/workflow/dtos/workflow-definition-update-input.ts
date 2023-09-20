@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsObject } from 'class-validator';
+import { IsString, IsOptional, IsObject, IsArray } from 'class-validator';
 import { WorkflowRuntimeDataStatus } from '@prisma/client';
+import { TStateTags } from '@ballerine/common';
 
 export class WorkflowDefinitionUpdateInput {
   @ApiProperty({
@@ -26,6 +27,18 @@ export class WorkflowDefinitionUpdateInput {
   @IsString()
   @IsOptional()
   status?: WorkflowRuntimeDataStatus;
+
+  @ApiProperty({
+    required: false,
+    type: 'array',
+    items: {
+      type: 'string',
+    },
+  })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  tags?: TStateTags;
 
   @ApiProperty({
     required: false,

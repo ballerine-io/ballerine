@@ -1,13 +1,21 @@
 import { IWorkflowStatus } from '@app/domains/workflows/api/workflow/workflow.types';
 
-export type IWorkflowStatusMetric = Record<IWorkflowStatus, number>;
-
-export interface IWorkflowApprovedMetric {
-  workflowId: string;
-  approvedDate: Date;
+export type WorkflowStatsPerStatus = Record<IWorkflowStatus, number>;
+export interface IWorkflowDefinitionStats extends WorkflowStatsPerStatus {
+  id: string;
+  name: string;
 }
 
-export interface GetWorkflowMetricsResponse {
-  status: IWorkflowStatusMetric;
-  approvedWorkflows: IWorkflowApprovedMetric[];
+export interface IAgentCasesStats {
+  id: string;
+  firstName: string;
+  lastName: string;
+  casesCount: number;
+}
+
+export type ICasesPerStatusStats = Record<IWorkflowStatus, number>;
+
+export interface GetCasesPerStatusDto {
+  // UNIX timestamp
+  fromDate?: number;
 }
