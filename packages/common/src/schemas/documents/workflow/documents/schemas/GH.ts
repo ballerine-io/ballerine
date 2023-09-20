@@ -32,6 +32,21 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         msisdn: Type.String({ pattern: '^233[0-9]{9}$' }),
+        accountHolderName: Type.String(),
+        from: Type.Optional(Type.String({ format: 'date' })),
+        to: Type.Optional(Type.String({ format: 'date' })),
+        timeRun: Type.Optional(Type.String()),
+        maxBalanceRecorded: Type.Optional(Type.Number()),
+      }),
+    },
+    {
+      category: 'financial_information',
+      type: 'mtn_statement_businesses',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        msisdn: Type.String({ pattern: '^233[0-9]{9}$' }),
         accountHolderName: TypeStringAtLeastOneWord,
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
@@ -747,7 +762,7 @@ export const getGhanaDocuments = (): TDocument[] => {
     },
     {
       category: 'proof_of_ownership',
-      type: 'permit',
+      type: 'receipt_for_permit',
       issuer: { country: 'GH' },
       issuingVersion: 1,
       version: 1,
@@ -764,6 +779,7 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         businessName: Type.String(),
+        payerName: Type.String(),
         issueDate: TypePastDate,
       }),
     },
