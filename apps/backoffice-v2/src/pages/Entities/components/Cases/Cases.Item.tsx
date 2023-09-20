@@ -25,7 +25,7 @@ import dayjs from 'dayjs';
  * @param props.fullName - The full name of the entity.
  * @param props.createdAt - Expects an ISO date string to calculate the waiting time using {@link getTimePastFromNow}.
  * @param props.assignee - Which operator is now on the entity's case.
- * @param props.avatarUrl - The entity's image url to pass into {@link Avatar} and ${@Link UserAvatar}.
+ * @param props.entityAvatarUrl - The entity's image url to pass into {@link Avatar} and ${@Link UserAvatar}.
  * @param props.status - Whether the entity is approved or rejected.
  *
  * @constructor
@@ -35,8 +35,8 @@ export const Item: FunctionComponent<IItemProps> = ({
   fullName,
   createdAt,
   assignee,
-  avatarUrl,
   status,
+  entityAvatarUrl,
 }) => {
   const entityInitials = createInitials(fullName);
   const { ref, styles } = useEllipsesWithTitle<HTMLDivElement>();
@@ -73,10 +73,10 @@ export const Item: FunctionComponent<IItemProps> = ({
             {status === 'APPROVED' && <ApprovedSvg />}
           </motion.div>
           <Avatar
-            src={avatarUrl}
+            src={entityAvatarUrl}
             className="text-sm d-8"
             alt={`${fullName}'s avatar`}
-            placeholder={!avatarUrl ? entityInitials : undefined}
+            placeholder={entityInitials}
             style={{
               color: `rgb(${rgb})`,
               backgroundColor: `rgba(${rgb}, 0.2)`,
@@ -92,7 +92,17 @@ export const Item: FunctionComponent<IItemProps> = ({
           </div>
         </div>
         <div className={`ml-auto mr-1 flex -space-x-2 overflow-hidden`}>
-          {!!assignee.id && <UserAvatar fullName={assignee.fullName} avatarUrl={avatarUrl} />}
+          {assignee ? (
+            assignee.avatarUrl ? (
+              <UserAvatar fullName={assignee.fullName} avatarUrl={assignee.avatarUrl} />
+            ) : (
+              <Avatar
+                placeholder={createInitials(assignee.fullName)}
+                src=""
+                alt={assignee.fullName}
+              />
+            )
+          ) : null}
         </div>
       </NavLink>
     </li>

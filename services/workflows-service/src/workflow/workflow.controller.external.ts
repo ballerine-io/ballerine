@@ -318,6 +318,9 @@ export class WorkflowControllerExternal {
       currentProjectId,
     );
 
+    const hasSalesforceRecord =
+      Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
+
     const workflow = await this.service.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: body.workflowDefinitionId,
       context: {
@@ -334,11 +337,10 @@ export class WorkflowControllerExternal {
       },
       projectIds: [currentProjectId],
       currentProjectId: currentProjectId,
-      ...('salesforceObjectName' in body &&
-        'salesforceRecordId' in body && {
-          salesforceObjectName: body.salesforceObjectName,
-          salesforceRecordId: body.salesforceRecordId,
-        }),
+      ...(hasSalesforceRecord && {
+        salesforceObjectName: body.salesforceObjectName,
+        salesforceRecordId: body.salesforceRecordId,
+      }),
     });
 
     const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -350,6 +352,18 @@ export class WorkflowControllerExternal {
     });
 
     // @TODO: Send email with token
+
+    if (hasSalesforceRecord) {
+      await this.service.updateSalesforceRecord({
+        workflowRuntimeData: workflow[0].workflowRuntimeData,
+
+        data: {
+          KYB_Started_At__c: workflow[0].workflowRuntimeData.createdAt,
+          KYB_Status__c: 'In Progress',
+          KYB_Assigned_Agent__c: '',
+        },
+      });
+    }
 
     return { token: workflowToken.token };
   }
