@@ -4,4 +4,6 @@ export interface IUser {
   firstName: string;
   lastName: string;
   roles: string[];
+  lastActiveAt: Date | null;
+  projectIds?: Array<string>;
 }

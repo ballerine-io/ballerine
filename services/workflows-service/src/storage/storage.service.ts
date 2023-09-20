@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FileRepository } from './storage.repository';
 import { IFileIds } from './types';
 import { Prisma } from '@prisma/client';
+import { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class StorageService {
@@ -12,23 +13,35 @@ export class StorageService {
     fileNameOnDisk,
     userId,
     fileNameInBucket,
-  }: Pick<Prisma.FileCreateInput, 'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket'>) {
-    const file = await this.fileRepository.create({
-      data: {
-        uri,
-        fileNameOnDisk,
-        userId,
-        fileNameInBucket,
+    projectId,
+    mimeType,
+  }: Pick<
+    Prisma.FileCreateInput,
+    'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket' | 'mimeType'
+  > & {
+    projectId: TProjectId;
+  }) {
+    const file = await this.fileRepository.create(
+      {
+        data: {
+          uri,
+          fileNameOnDisk,
+          userId,
+          fileNameInBucket,
+          mimeType,
+        },
+        select: {
+          id: true,
+          mimeType: true,
+        },
       },
-      select: {
-        id: true,
-      },
-    });
+      projectId,
+    );
 
-    return file.id;
+    return file;
   }
 
-  async getFileNameById({ id }: IFileIds) {
-    return await this.fileRepository.findById({ id });
+  async getFileById({ id }: IFileIds, projectIds: TProjectIds, args?: Prisma.FileFindFirstArgs) {
+    return await this.fileRepository.findById({ id }, args || {}, projectIds);
   }
 }

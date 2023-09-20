@@ -14,6 +14,8 @@ import { DocumentChangedWebhookCaller } from '../events/document-changed-webhook
 import { Test, TestingModule } from '@nestjs/testing';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import packageJson from '../../package.json';
+import { ConfigService } from '@nestjs/config';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -34,6 +36,12 @@ class FakeBusinessRepo extends BaseFakeRepository {
 }
 
 class FakeEndUserRepo extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
+class FakeEntityRepo extends BaseFakeRepository {
   constructor() {
     super(Object);
   }
@@ -79,11 +87,25 @@ function buildDocument(category, status) {
 describe('WorkflowService', () => {
   let service;
   let workflowRuntimeDataRepo;
+  let projectScopeService;
   let businessRepo;
+  let customerService;
   let endUserRepo;
+  let entityRepo;
+  let userService;
+  let salesforceService;
   const numbUserInfo = Symbol();
   let fakeHttpService;
   let testingModule: TestingModule;
+  const configService = {
+    WEBHOOK_URL: 'https://example.com',
+    WEBHOOK_SECRET: 'webhook_secret',
+    NODE_ENV: 'test',
+
+    get(key: Exclude<keyof typeof this, 'get'>) {
+      return this[key];
+    },
+  };
 
   beforeAll(async () => {
     testingModule = await Test.createTestingModule({
@@ -96,6 +118,10 @@ describe('WorkflowService', () => {
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
     businessRepo = new FakeBusinessRepo();
     endUserRepo = new FakeEndUserRepo();
+    entityRepo = new FakeEntityRepo();
+    customerService = new FakeEntityRepo();
+    userService = new FakeEntityRepo();
+    salesforceService = new FakeEntityRepo();
 
     fakeHttpService = {
       requests: [],
@@ -120,20 +146,10 @@ describe('WorkflowService', () => {
       },
     };
 
-    const env = {
-      WEBHOOK_URL: 'https://example.com',
-      WEBHOOK_SECRET: 'some-secret',
-      NODE_ENV: 'some-node-env',
-
-      get<T>(name) {
-        return this[name];
-      },
-    };
-
     const documentChangedWebhookCaller = new DocumentChangedWebhookCaller(
       fakeHttpService,
+      configService as unknown as ConfigService,
       eventEmitter as any,
-      env as any,
       testingModule.get(AppLoggerService),
     );
 
@@ -141,11 +157,17 @@ describe('WorkflowService', () => {
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
       endUserRepo,
+      {} as any,
       businessRepo,
+      entityRepo,
+      customerService,
       {} as any,
       {} as any,
       eventEmitter as any,
       testingModule.get(AppLoggerService),
+      projectScopeService,
+      userService,
+      salesforceService,
     );
   });
 
@@ -225,7 +247,7 @@ describe('WorkflowService', () => {
 
       expect(fakeHttpService.requests).toEqual([
         {
-          url: 'https://example.com',
+          url: configService.get('WEBHOOK_URL'),
           data: {
             id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
             eventName: 'workflow.context.document.changed',
@@ -234,17 +256,17 @@ describe('WorkflowService', () => {
             workflowResolvedAt: null,
             ballerineEntityId: undefined,
             correlationId: '',
-            apiVersion: 1,
+            apiVersion: packageJson.version,
             timestamp: expect.stringMatching(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/),
             workflowRuntimeId: '2',
-            environment: 'some-node-env',
+            environment: 'test',
             data: {
               ...newContext,
             },
           },
           config: {
             headers: {
-              'X-Authorization': 'some-secret',
+              'X-Authorization': configService.get('WEBHOOK_SECRET'),
             },
           },
         },
@@ -272,7 +294,7 @@ describe('WorkflowService', () => {
 
       expect(fakeHttpService.requests).toEqual([
         {
-          url: 'https://example.com',
+          url: configService.get('WEBHOOK_URL'),
           data: {
             id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
             eventName: 'workflow.context.document.changed',
@@ -280,18 +302,18 @@ describe('WorkflowService', () => {
             workflowResolvedAt: null,
             workflowCreatedAt: undefined,
             correlationId: '',
-            apiVersion: 1,
+            apiVersion: packageJson.version,
             timestamp: expect.stringMatching(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/),
             workflowRuntimeId: '2',
             workflowDefinitionId: '2',
-            environment: 'some-node-env',
+            environment: 'test',
             data: {
               ...newContext,
             },
           },
           config: {
             headers: {
-              'X-Authorization': 'some-secret',
+              'X-Authorization': configService.get('WEBHOOK_SECRET'),
             },
           },
         },

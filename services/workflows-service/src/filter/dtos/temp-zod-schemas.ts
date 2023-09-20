@@ -196,6 +196,7 @@ export const WorkflowRuntimeDataWhereInputSchema = z.lazy(() =>
       assigneeId: zStringNullableFilterStringNullUnion.optional(),
       config: z.unknown().optional(),
       state: zStringNullableFilterStringNullUnion.optional(),
+      tags: z.any(),
       status: zStringFilterStringUnion.optional(),
       createdAt: zDateTimeFilterDateStringUnion.optional(),
       updatedAt: zDateTimeFilterDateStringUnion.optional(),
@@ -368,11 +369,13 @@ export const WorkflowRuntimeDataSelectSchema = z.object({
   workflowDefinitionVersion: z.boolean().optional(),
   context: z.boolean().optional(),
   state: z.boolean().optional(),
+  tags: z.boolean().optional(),
   status: z.boolean().optional(),
   createdAt: z.boolean().optional(),
   updatedAt: z.boolean().optional(),
   createdBy: z.boolean().optional(),
   resolvedAt: z.boolean().optional(),
+  childWorkflowsRuntimeData: z.boolean().optional(),
   endUser: z
     .union([
       z.boolean(),

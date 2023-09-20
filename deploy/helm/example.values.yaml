@@ -1,5 +1,8 @@
 ## Postgres params
 postgresql:
+  image:
+    repository: sibedge/postgres-plv8
+    tag: 15.3-3.1.7
   enabled: true
   auth:
     username: admin
@@ -11,6 +14,86 @@ postgresql:
     existingClaim: postgresql-pv-claim
   volumePermissions:
     enabled: true
+
+backoffice:
+  enabled: true
+  replicas: 1
+  strategyType: RollingUpdate
+  updateStrategy:
+    maxSurge: 1
+    maxUnavailable: "0"
+  nameOverride: backoffice
+  service:
+    port: 80
+    type: ClusterIP
+    protocol: TCP
+  image:
+    registry: ghcr.io
+    repository: "ballerine-io/backoffice"
+    pullPolicy: Always
+    pullSecrets: ""
+    tag: "dev"
+
+headlessexample:
+  enabled: true
+  replicas: 1
+  strategyType: RollingUpdate
+  updateStrategy:
+    maxSurge: 1
+    maxUnavailable: "0"
+  nameOverride: headlessexample
+  service:
+    port: 80
+    type: ClusterIP
+    protocol: TCP
+  image:
+    registry: ghcr.io
+    repository: "ballerine-io/headless-example"
+    pullPolicy: Always
+    pullSecrets: ""
+    tag: "dev"
+
+workflowsdashboard:
+  enabled: true
+  replicas: 1
+  strategyType: RollingUpdate
+  updateStrategy:
+    maxSurge: 1
+    maxUnavailable: "0"
+  nameOverride: workflowsdashboard
+  service:
+    port: 80
+    type: ClusterIP
+    protocol: TCP
+  image:
+    registry: ghcr.io
+    repository: "ballerine-io/workflows-dashboard"
+    pullPolicy: Always
+    pullSecrets: ""
+    tag: "dev"
+
+websocketService:
+  enabled: true
+  replicas: 1
+  strategyType: RollingUpdate
+  updateStrategy:
+    maxSurge: 1
+    maxUnavailable: "0"
+  nameOverride: websocketservice
+  migration: true
+  service:
+    port: 3500
+    type: ClusterIP
+    protocol: TCP
+  image:
+    registry: ghcr.io
+    repository: "ballerine-io/websocket-service"
+    pullPolicy: Always
+    tag: "dev"
+  applicationConfig:
+    PORT: 3500
+    NODE_ENV: development
+    COMPOSE_PROJECT_NAME: ballerine-x
 
 workflowService:
   enabled: true
@@ -26,10 +109,11 @@ workflowService:
     type: ClusterIP
     protocol: TCP
   image:
-    registry: index.docker.io
-    repository: ""
+    registry: ghcr.io
+    repository: "ballerine-io/workflows-service"
     pullPolicy: Always
-    tag: "latest"
+    pullSecrets: ""
+    tag: "dev"
   applicationConfig:
     BCRYPT_SALT: "10"
     JWT_SECRET_KEY: "secret"
@@ -48,3 +132,5 @@ workflowService:
     SENTRY_DSN: ""
     WEBHOOK_URL: ""
     WEBHOOK_SECRET: "webhook_secret"
+    WORKFLOW_DASHBOARD_CORS_ORIGIN: "http://localhost:5200"
+    KYB_EXAMPLE_CORS_ORIGIN: "http://localhost:5201"

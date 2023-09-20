@@ -39,6 +39,12 @@ class FakeEndUserRepo extends BaseFakeRepository {
   }
 }
 
+class FakeEntityRepo extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
 function buildWorkflowDeifintion(sequenceNum) {
   return {
     id: sequenceNum.toString(),
@@ -72,7 +78,12 @@ describe('WorkflowControllerInternal', () => {
   let workflowRuntimeDataRepo;
   let businessRepo;
   let endUserRepo;
+  let entityRepo;
   let eventEmitterSpy;
+  let customerService;
+  let scopeService;
+  let userService;
+  let salesforceService;
   const numbUserInfo = Symbol();
   let testingModule: TestingModule;
 
@@ -87,6 +98,11 @@ describe('WorkflowControllerInternal', () => {
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
     businessRepo = new FakeBusinessRepo();
     endUserRepo = new FakeEndUserRepo();
+    entityRepo = new FakeEntityRepo();
+    scopeService = new FakeEntityRepo();
+    customerService = new FakeEntityRepo();
+    userService = new FakeEntityRepo();
+    salesforceService = new FakeEntityRepo();
 
     eventEmitterSpy = {
       emitted: [],
@@ -99,16 +115,22 @@ describe('WorkflowControllerInternal', () => {
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
       endUserRepo,
+      {} as any,
       businessRepo,
+      entityRepo,
+      customerService,
       {} as any,
       {} as any,
       eventEmitterSpy,
       testingModule.get(AppLoggerService),
+      scopeService,
+      userService,
+      salesforceService,
     );
     const filterService = {} as any;
     const rolesBuilder = {} as any;
 
-    controller = new WorkflowControllerInternal(service, filterService, rolesBuilder);
+    controller = new WorkflowControllerInternal(service, filterService, rolesBuilder, scopeService);
   });
 
   describe('.event', () => {
@@ -125,7 +147,7 @@ describe('WorkflowControllerInternal', () => {
           data: initialRuntimeData,
         });
 
-        await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(2));
+        await controller.createWorkflowDefinition(buildWorkflowDeifintion(2));
         await controller.event({ id: '2' }, { name: 'COMPLETE' });
 
         const runtimeData = await workflowRuntimeDataRepo.findById('2');

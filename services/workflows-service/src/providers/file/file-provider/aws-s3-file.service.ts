@@ -23,11 +23,11 @@ export class AwsS3FileService implements IStreamableFileProvider {
     this.client = new S3Client(s3ClientConfig);
   }
 
-  async downloadFile(
+  async download(
     remoteFileConfig: TRemoteFileConfig,
     localeFilePath: TLocalFilePath,
   ): Promise<TLocalFilePath> {
-    const getObjectParams = this._fetchBucketPath(remoteFileConfig as TS3BucketConfig);
+    const getObjectParams = this.__fetchBucketPath(remoteFileConfig as TS3BucketConfig);
 
     try {
       const getObjectCommand = new GetObjectCommand(getObjectParams);
@@ -53,8 +53,8 @@ export class AwsS3FileService implements IStreamableFileProvider {
     }
   }
 
-  async isRemoteFileExists(remoteFileConfig: TS3BucketConfig): Promise<boolean> {
-    const getObjectParams = this._fetchBucketPath(remoteFileConfig);
+  async isRemoteExists(remoteFileConfig: TS3BucketConfig): Promise<boolean> {
+    const getObjectParams = this.__fetchBucketPath(remoteFileConfig);
 
     try {
       const headObjectCommand = new HeadObjectCommand(getObjectParams);
@@ -72,7 +72,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     }
   }
 
-  async uploadFile(
+  async upload(
     localFilePath: TLocalFilePath,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TS3BucketConfig> {
@@ -86,8 +86,8 @@ export class AwsS3FileService implements IStreamableFileProvider {
     return await this._uploadFileViaClient(putObjectCommand, isPrivate, remoteFileName);
   }
 
-  async fetchRemoteFileDownStream(remoteFileConfig: TRemoteFileConfig): Promise<Readable> {
-    const fetchBucketConfig = this._fetchBucketPath(remoteFileConfig as TS3BucketConfig);
+  async fetchRemoteDownStream(remoteFileConfig: TRemoteFileConfig): Promise<Readable> {
+    const fetchBucketConfig = this.__fetchBucketPath(remoteFileConfig as TS3BucketConfig);
     const getObjectCommand = new GetObjectCommand(fetchBucketConfig);
     const response = await this.client.send(getObjectCommand);
 
@@ -95,7 +95,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     return (await response.Body) as Readable;
   }
 
-  async uploadFileStream(
+  async uploadStream(
     fileStream: Readable,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TRemoteFileConfig> {
@@ -124,7 +124,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
 
       await upload.done();
       const fileUri = isPrivate
-        ? this._generateAwsBucketUri(bucketName, remoteFileName)
+        ? this.__generateAwsBucketUri(bucketName, remoteFileName)
         : undefined;
 
       return {
@@ -145,7 +145,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     readableStream: Readable,
   ) {
     const s3FileConfig = remoteFileConfig;
-    const getObjectCommandInput = this._fetchBucketPath(s3FileConfig);
+    const getObjectCommandInput = this.__fetchBucketPath(s3FileConfig);
     const isPrivate = s3FileConfig.private;
 
     const putObjectParams = {
@@ -159,15 +159,23 @@ export class AwsS3FileService implements IStreamableFileProvider {
     return { remoteFileName: fileName, isPrivate, putObjectCommand };
   }
 
-  private _fetchBucketPath(remoteFileConfig: TS3BucketConfig) {
+  private __fetchBucketPath(remoteFileConfig: TS3BucketConfig) {
     return { Bucket: remoteFileConfig.bucketName, Key: remoteFileConfig.fileNameInBucket };
   }
 
-  private _generateAwsBucketUri(bucketName: string, fileName: string) {
+  private __generateAwsBucketUri(bucketName: string, fileName: string) {
     return `https://${bucketName}.s3.amazonaws.com/${fileName}`;
   }
 
-  generateRemoteFilePath(fileName: string, directory?: string): string {
-    return `${directory !== undefined ? `${directory}/` : ''}${fileName}`;
+  generateRemotePath({
+    customerName,
+    fileName,
+    directory,
+  }: {
+    fileName: string;
+    customerName: string;
+    directory?: string;
+  }): string {
+    return [customerName, directory, fileName].filter(pathPart => !!pathPart).join('/');
   }
 }

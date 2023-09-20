@@ -3,7 +3,7 @@ import { NavItem } from './Header.NavItem';
 import { useFiltersQuery } from '../../../../domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { ctw } from '../../../utils/ctw/ctw';
 import { TRoutes } from '../../../../Router/types';
-import { CheckSquare } from 'lucide-react';
+import { ClipboardCheck } from 'lucide-react';
 import { useSearchParamsByEntity } from '../../../hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
 
@@ -53,16 +53,19 @@ export const Navbar: FunctionComponent = () => {
       <ul className={`menu menu-compact w-full space-y-2`}>
         {filters?.map(({ id, name }) => (
           <NavItem
-            href={`/en/case-management/entities?filterId=${id}`}
             key={id}
-            className={ctw(`capitalize`, {
-              'bg-muted font-bold': id === searchParams?.filterId,
-            })}
+            href={`/en/case-management/entities?filterId=${id}`}
+            className={ctw(
+              `gap-x-[10px] px-2 capitalize active:bg-muted-foreground/30 active:text-foreground`,
+              {
+                'rounded-lg bg-[#EEEEEE] font-bold': id === searchParams?.filterId,
+              },
+            )}
           >
-            <span>
-              <CheckSquare className={`d-4`} />
-            </span>{' '}
-            {name}
+            <div className="flex items-center">
+              <ClipboardCheck size={15} />
+            </div>
+            <div>{name}</div>
           </NavItem>
         ))}
       </ul>

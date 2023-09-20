@@ -1,6 +1,7 @@
 import { TDropdownOption } from '../../components/EditableDetails/types';
 import { AnyArray } from '../../../../common/types';
 import { TDocument } from '@ballerine/common';
+import { TWorkflowById } from '../../../../domains/workflows/fetchers';
 
 export const convertSnakeCaseToTitleCase = (input: string): string =>
   input
@@ -39,12 +40,11 @@ export const composePickableCategoryType = (
 ) => {
   const documentCategoryDropdownOptions: Array<TDropdownOption> = [];
   const documentTypesDropdownOptions: Array<TDropdownOption> = [];
-
   documentsSchemas.forEach(document => {
     const category = document.category;
     if (category) {
       documentCategoryDropdownOptions.push({
-        value: category as string,
+        value: category,
         label: convertSnakeCaseToTitleCase(category),
       });
     }
@@ -52,26 +52,26 @@ export const composePickableCategoryType = (
     if (type) {
       documentTypesDropdownOptions.push({
         dependantOn: 'category',
-        dependantValue: category as string,
-        value: type as string,
+        dependantValue: category,
+        value: type,
         label: convertSnakeCaseToTitleCase(type),
       });
     }
   });
 
   const categoryDropdownOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
-  const typeDropdownOptions = uniqueArrayByKey(documentTypesDropdownOptions, 'value');
+  const typeDropdownOptions = documentTypesDropdownOptions;
 
   return {
     ...composeDataFormCell('category', categoryDropdownOptions, categoryValue),
     ...composeDataFormCell('type', typeDropdownOptions, typeValue),
   };
 };
-export const isExistingSchemaForDocument = documentsSchemas => {
-  return documentsSchemas && documentsSchemas.length > 0;
+export const isExistingSchemaForDocument = (documentsSchemas: Array<TDocument>) => {
+  return documentsSchemas?.length > 0;
 };
 
-export const extractCountryCodeFromWorkflow = workflow => {
+export const extractCountryCodeFromWorkflow = (workflow: TWorkflowById) => {
   return workflow?.context?.documents?.find(document => {
     return !!document?.issuer?.country;
   })?.issuer?.country;

@@ -18,7 +18,7 @@
 
 Give your operating team a case management back office so they can approve or reject users, initiate requests for document re-upload or escalate cases to others in the company.
 
-What can be done with the case managament back office?
+What can be done with the case management back office?
 
 **General use**
 * Approve or reject customers, businesses, and documents manually.
@@ -30,7 +30,7 @@ What can be done with the case managament back office?
 **KYB**
 * Show a holistic view of a business, including multiple UBOs, documents, information collected and more.
 * Present data from various vendors, data repositories,
-* Manage back-and-forth communicaion with your customers regarding their application.
+* Manage back-and-forth communication with your customers regarding their application.
 
 **KYC**
 
@@ -39,7 +39,7 @@ What can be done with the case managament back office?
 **Document approval**
 
 * Use the case management to create review processes for when customers want to improve their status
-* (e.g. credit score, better loans, higher limits, less ristrictions)
+* (e.g. credit score, better loans, higher limits, less restrictions)
 
 
 
@@ -73,7 +73,7 @@ Open cases in the backoffice by sending API requests to the workflow service.
    ```sh
    git clone https://github.com/ballerine-io/ballerine.git && cd ballerine
    ```
-   2. Install npm depenencies:
+   2. Install npm dependencies:
    ```sh
    git checkout dev
    ```
@@ -85,7 +85,7 @@ Open cases in the backoffice by sending API requests to the workflow service.
    ```sh
    pnpm run monorepo:init
    ```
-   6. Initilazie monorepo:
+   6. Initialize monorepo:
    ```sh
    pnpm run api-flow-example
    ```
@@ -94,7 +94,7 @@ Open cases in the backoffice by sending API requests to the workflow service.
  Default user name and password for the backoffice:
     Username: `admin@admin.com`
     Password: `admin`
-  
+
 7. Send manual review cases into the back office.
 
 Use the following Postman collection or CURL command to insert a case into the backoffice:
@@ -190,7 +190,7 @@ curl --location 'http://localhost:3000/api/v1/external/workflows/run' \
                     "country": "TH"
                 },
                 "version": 1,
-                "category": "regestration",
+                "category": "registration",
                 "properties": {
                     "website": "https://ballerine.com",
                     "docNumber": "1234",
@@ -205,7 +205,7 @@ curl --location 'http://localhost:3000/api/v1/external/workflows/run' \
 
 </details>
 <details>
-<summary>Click to see Postaman collection</summary>
+<summary>Click to see Postman collection</summary>
 
 ```sh
 {
@@ -232,7 +232,7 @@ curl --location 'http://localhost:3000/api/v1/external/workflows/run' \
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"workflowId\": \"risk-score-improvement-dev\",\n    \"context\": {\n        \"entity\": {\n            \"id\": \"fido-user-id1111\",\n            \"data\": {\n                \"companyName\": \"McClure Inc\",\n                \"registrationNumber\": \"2d92b229-626b-4f99-9a9b-2191e974e2b9\",\n                \"legalForm\": \"and Sons\",\n                \"countryOfIncorporation\": \"Heard Island and McDonald Islands\",\n                \"dateOfIncorporation\": \"2016-04-09T03:16:42.496Z\",\n                \"address\": \"7533 Lilyan Springs\",\n                \"phoneNumber\": \"+7169584993\",\n                \"email\": \"Macie18@yahoo.com\",\n                \"website\": \"https:\\/\\/oily-testing.biz\",\n                \"industry\": \"embrace bleeding-edge partnerships\",\n                \"taxIdentificationNumber\": \"1731576041\",\n                \"vatNumber\": \"VAT87025707\",\n                \"numberOfEmployees\": 453,\n                \"businessPurpose\": \"Networked transitional approach\"\n            },\n            \"type\": \"business\"\n        },\n        \"documents\": [\n            {\n                \"type\": \"drivers_license\",\n                \"pages\": [\n                    {\n                        \"uri\": \"https://backoffice-demo.ballerine.app/images/mock-documents/set_1_doc_front.png\",\n                        \"data\": \"\",\n                        \"type\": \"jpg\",\n                        \"metadata\": {\n                            \"side\": \"front\",\n                            \"pageNumber\": \"1\"\n                        },\n                        \"provider\": \"http\",\n                        \"ballerineFileId\": \"clhz0lhy60004ru5ajduq32s2\"\n                    },\n                    {\n                        \"uri\": \"https://backoffice-demo.ballerine.app/images/mock-documents/set_1_doc_back.png\",\n                        \"data\": \"\",\n                        \"type\": \"jpg\",\n                        \"metadata\": {\n                            \"side\": \"back\",\n                            \"pageNumber\": \"2\"\n                        },\n                        \"provider\": \"http\",\n                        \"ballerineFileId\": \"clhz0lhxy0002ru5a53674d7b\"\n                    }\n                ],\n                \"issuer\": {\n                    \"city\": \"Brockside\",\n                    \"name\": \"Government\",\n                    \"type\": \"government\",\n                    \"country\": \"CA\",\n                    \"additionalDetails\": {}\n                },\n                \"version\": 1,\n                \"category\": \"identification\",\n                \"properties\": {\n                    \"docNumber\": \"1234\",\n                    \"userAddress\": \"Turkey, buhgdawe\"\n                },\n                \"issuingVersion\": 1\n            },\n            {\n                \"type\": \"certificate_of_incorporation\",\n                \"pages\": [\n                    {\n                        \"uri\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Certificate_of_incorporation.png/388px-Certificate_of_incorporation.png?20110630185120\",\n                        \"data\": \"\",\n                        \"type\": \"jpg\",\n                        \"metadata\": {\n                            \"side\": \"front\",\n                            \"pageNumber\": \"1\"\n                        },\n                        \"provider\": \"http\",\n                        \"ballerineFileId\": \"clhz0lhzd0006ru5ab3p0uf67\"\n                    }\n                ],\n                \"issuer\": {\n                    \"city\": \"Brockside\",\n                    \"name\": \"Government\",\n                    \"type\": \"government\",\n                    \"country\": \"TH\",\n                    \"additionalDetails\": {}\n                },\n                \"version\": 1,\n                \"category\": \"regestration\",\n                \"properties\": {\n                    \"website\": \"https://ballerine.com\",\n                    \"docNumber\": \"1234\",\n                    \"userAddress\": \"Turkey, buhgdawe\"\n                },\n                \"issuingVersion\": 1\n            }\n        ]\n    }\n}",
+					"raw": "{\n    \"workflowId\": \"risk-score-improvement-dev\",\n    \"context\": {\n        \"entity\": {\n            \"id\": \"fido-user-id1111\",\n            \"data\": {\n                \"companyName\": \"McClure Inc\",\n                \"registrationNumber\": \"2d92b229-626b-4f99-9a9b-2191e974e2b9\",\n                \"legalForm\": \"and Sons\",\n                \"countryOfIncorporation\": \"Heard Island and McDonald Islands\",\n                \"dateOfIncorporation\": \"2016-04-09T03:16:42.496Z\",\n                \"address\": \"7533 Lilyan Springs\",\n                \"phoneNumber\": \"+7169584993\",\n                \"email\": \"Macie18@yahoo.com\",\n                \"website\": \"https:\\/\\/oily-testing.biz\",\n                \"industry\": \"embrace bleeding-edge partnerships\",\n                \"taxIdentificationNumber\": \"1731576041\",\n                \"vatNumber\": \"VAT87025707\",\n                \"numberOfEmployees\": 453,\n                \"businessPurpose\": \"Networked transitional approach\"\n            },\n            \"type\": \"business\"\n        },\n        \"documents\": [\n            {\n                \"type\": \"drivers_license\",\n                \"pages\": [\n                    {\n                        \"uri\": \"https://backoffice-demo.ballerine.app/images/mock-documents/set_1_doc_front.png\",\n                        \"data\": \"\",\n                        \"type\": \"jpg\",\n                        \"metadata\": {\n                            \"side\": \"front\",\n                            \"pageNumber\": \"1\"\n                        },\n                        \"provider\": \"http\",\n                        \"ballerineFileId\": \"clhz0lhy60004ru5ajduq32s2\"\n                    },\n                    {\n                        \"uri\": \"https://backoffice-demo.ballerine.app/images/mock-documents/set_1_doc_back.png\",\n                        \"data\": \"\",\n                        \"type\": \"jpg\",\n                        \"metadata\": {\n                            \"side\": \"back\",\n                            \"pageNumber\": \"2\"\n                        },\n                        \"provider\": \"http\",\n                        \"ballerineFileId\": \"clhz0lhxy0002ru5a53674d7b\"\n                    }\n                ],\n                \"issuer\": {\n                    \"city\": \"Brockside\",\n                    \"name\": \"Government\",\n                    \"type\": \"government\",\n                    \"country\": \"CA\",\n                    \"additionalDetails\": {}\n                },\n                \"version\": 1,\n                \"category\": \"identification\",\n                \"properties\": {\n                    \"docNumber\": \"1234\",\n                    \"userAddress\": \"Turkey, buhgdawe\"\n                },\n                \"issuingVersion\": 1\n            },\n            {\n                \"type\": \"certificate_of_incorporation\",\n                \"pages\": [\n                    {\n                        \"uri\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Certificate_of_incorporation.png/388px-Certificate_of_incorporation.png?20110630185120\",\n                        \"data\": \"\",\n                        \"type\": \"jpg\",\n                        \"metadata\": {\n                            \"side\": \"front\",\n                            \"pageNumber\": \"1\"\n                        },\n                        \"provider\": \"http\",\n                        \"ballerineFileId\": \"clhz0lhzd0006ru5ab3p0uf67\"\n                    }\n                ],\n                \"issuer\": {\n                    \"city\": \"Brockside\",\n                    \"name\": \"Government\",\n                    \"type\": \"government\",\n                    \"country\": \"TH\",\n                    \"additionalDetails\": {}\n                },\n                \"version\": 1,\n                \"category\": \"registration\",\n                \"properties\": {\n                    \"website\": \"https://ballerine.com\",\n                    \"docNumber\": \"1234\",\n                    \"userAddress\": \"Turkey, buhgdawe\"\n                },\n                \"issuingVersion\": 1\n            }\n        ]\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -271,12 +271,12 @@ checkout the  **environment variables** (workflows-service/.env) to setup the we
 
 ## Back Office High Level Roadmap
 
-- [x] ~~View, approve, rejece pr ask for re-submittion~~
+- [x] ~~View, approve, reject pr ask for re-submission~~
 	- [x] ~~individuals~~
 	- [x] ~~businesses (multiple documents and individuals)~~
 	- [x] ~~Custom documents/information~~
 	- [ ] Transactions
-- [x] ~~Process managment~~
+- [x] ~~Process management~~
 	- [x] ~~Collect audit logs~~
 	- [x] ~~Assign/re-assign agents~~
 	- [x] ~~Decision results and reasons webhooks~~

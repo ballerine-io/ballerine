@@ -17,6 +17,7 @@ export const useEntities = () => {
     page,
     pageSize,
   });
+
   const {
     meta: { totalPages },
     data: cases,
@@ -93,6 +94,7 @@ export const useEntities = () => {
     onSortDirToggle,
     search,
     cases: searched,
+    caseCount: data?.meta?.totalItems,
     isLoading,
     page,
     totalPages,

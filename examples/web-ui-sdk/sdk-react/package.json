@@ -4,6 +4,7 @@
   "version": "0.4.1",
   "type": "module",
   "scripts": {
+    "spellcheck": "cspell \"*\"",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"

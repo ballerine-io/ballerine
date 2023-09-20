@@ -11,48 +11,29 @@ export const useRejectEntityMutation = ({
   onSelectNextEntity,
 }: {
   workflowId: string;
-  onSelectNextEntity: VoidFunction;
+  onSelectNextEntity?: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (
-      payload:
-        | {
-            action: typeof Action.REJECT;
-          }
-        | {
-            action: typeof Action.RESUBMIT;
-            documentToResubmit: string;
-            resubmissionReason: string;
-          },
-    ) =>
+    mutationFn: () =>
       fetchWorkflowEvent({
         workflowId,
         body: {
-          name: payload?.action?.toLowerCase(),
-          ...(payload?.action === Action.RESUBMIT
-            ? {
-                document: payload?.documentToResubmit,
-                resubmissionReason: payload?.resubmissionReason,
-              }
-            : {}),
+          name: Action.REJECT,
         },
       }),
-    onSuccess: (data, payload) => {
+    onSuccess: () => {
       // workflowsQueryKeys._def is the base key for all workflows queries
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
-      const action = payload.action === Action.REJECT ? 'reject_case' : 'ask_resubmit_case';
+      toast.success(t(`toast:reject_case.success`));
 
-      toast.success(t(`toast:${action}.success`));
-
-      onSelectNextEntity();
+      // TODO: Re-implement
+      // onSelectNextEntity();
     },
-    onError: (error, payload) => {
-      const action = payload.action === Action.REJECT ? 'reject_case' : 'ask_resubmit_case';
-
-      toast.error(t(`toast:${action}.error`));
+    onError: () => {
+      toast.error(t(`toast:reject_case.error`));
     },
   });
 };

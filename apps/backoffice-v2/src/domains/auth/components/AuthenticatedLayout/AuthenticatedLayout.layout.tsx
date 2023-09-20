@@ -1,28 +1,42 @@
 import { Header } from '../../../../common/components/organisms/Header';
-import { FunctionComponentWithChildren } from '../../../../common/types';
-import { useSelectEntityFilterOnMount } from '../../../entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
+import { useAuthenticatedLayoutLogic } from './hooks/useAuthenticatedLayoutLogic/useAuthenticatedLayoutLogic';
+import { Navigate, Outlet } from 'react-router-dom';
+import { FunctionComponent } from 'react';
+import { FullScreenLoader } from '../../../../common/components/molecules/FullScreenLoader/FullScreenLoader';
 
-export const AuthenticatedLayout: FunctionComponentWithChildren = ({ children }) => {
-  // Should only be uncommented once `useAuthRedirects` is no longer in use in `AuthProvider`
-  // useAuthenticatedLayout();
-  useSelectEntityFilterOnMount();
+export const AuthenticatedLayout: FunctionComponent = () => {
+  const { shouldRedirect, isLoading, redirectUnauthenticatedTo, location } =
+    useAuthenticatedLayoutLogic();
+
+  if (isLoading) return <FullScreenLoader />;
+
+  if (shouldRedirect) {
+    return (
+      <Navigate
+        to={redirectUnauthenticatedTo}
+        replace
+        state={{
+          from: location,
+        }}
+      />
+    );
+  }
 
   return (
-    <div className="drawer-mobile drawer">
+    <div className="drawer drawer-mobile">
       <input id="app-drawer" type="checkbox" className="drawer-toggle" />
       <div className={`drawer-content`}>
         <main className={`grid h-full grid-cols-[285px_1fr]`}>
-          {/*<Outlet />*/}
-          {children}
+          <Outlet />
         </main>
       </div>
-      <div className={`drawer-side w-56`}>
+      <div className={`drawer-side w-[250px]`}>
         <label htmlFor="app-drawer" className="drawer-overlay"></label>
         <Header />
       </div>
       <label
         htmlFor="app-drawer"
-        className="drawer-button btn-square btn fixed z-50 bottom-right-6 lg:hidden"
+        className="btn btn-square drawer-button fixed z-50 bottom-right-6 lg:hidden"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
