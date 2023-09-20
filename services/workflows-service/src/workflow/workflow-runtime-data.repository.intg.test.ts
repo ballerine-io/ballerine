@@ -23,6 +23,11 @@ import { EndUserService } from '@/end-user/end-user.service';
 import { Project } from '@prisma/client';
 import { createCustomer } from '@/test/helpers/create-customer';
 import { createProject } from '@/test/helpers/create-project';
+import { UserService } from '@/user/user.service';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
+import { UserRepository } from '@/user/user.repository';
+import { PasswordService } from '@/auth/password/password.service';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -51,6 +56,11 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       EventEmitter2,
       PrismaService,
       EntityRepository,
+      UserService,
+      UserRepository,
+      SalesforceService,
+      SalesforceIntegrationRepository,
+      PasswordService,
     ];
 
     workflowRuntimeRepository = (await fetchServiceFromModule(
