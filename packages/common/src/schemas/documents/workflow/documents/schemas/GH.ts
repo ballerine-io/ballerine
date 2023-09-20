@@ -783,5 +783,17 @@ export const getGhanaDocuments = (): TDocument[] => {
         issueDate: TypePastDate,
       }),
     },
+    {
+      category: 'proof_of_ownership',
+      type: 'business_utility_bill',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        payerName: Type.String(),
+        issueDate: TypePastDate,
+      }),
+    },
   ];
 };
