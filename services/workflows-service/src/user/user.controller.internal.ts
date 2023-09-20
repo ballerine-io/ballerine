@@ -27,6 +27,7 @@ export class UserControllerInternal {
           lastName: true,
           email: true,
           phone: true,
+          avatarUrl: true,
           updatedAt: true,
           createdAt: true,
         },

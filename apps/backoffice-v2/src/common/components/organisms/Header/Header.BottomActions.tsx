@@ -25,7 +25,11 @@ export const BottomActions = () => {
   return (
     <div className={`mt-auto flex flex-col space-y-2 px-4`}>
       <div className="flex items-center">
-        <UserAvatar fullName={fullName} className={`mr-2 d-6`} />
+        <UserAvatar
+          fullName={fullName}
+          className={`mr-2 d-6`}
+          avatarUrl={session.user?.avatarUrl}
+        />
         <div className="text-sm">{fullName}</div>
       </div>
       <button

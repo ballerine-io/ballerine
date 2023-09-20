@@ -35,6 +35,7 @@ export const fetchWorkflows = async (params: {
           assignee: ObjectWithIdSchema.extend({
             firstName: z.string(),
             lastName: z.string(),
+            avatarUrl: z.string().nullable(),
           }).nullable(),
         }),
       ),
