@@ -40,11 +40,18 @@
   - @ballerine/workflow-node-sdk@0.5.0
   - @ballerine/common@0.6.0
 
+## 0.4.32
+
+### Patch Changes
+
+- Updated dependencies [204b5479]
+  - @ballerine/common@0.5.24
+
 ## 0.4.31
 
 ### Patch Changes
 
-- Updated dependencies
+- Updated dependencies [9d0c7f92]
   - @ballerine/common@0.5.23
 
 ## 0.4.30
