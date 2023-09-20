@@ -1,5 +1,8 @@
 ## Postgres params
 postgresql:
+  image:
+    repository: sibedge/postgres-plv8
+    tag: 15.3-3.1.7
   enabled: true
   auth:
     username: admin
@@ -130,3 +133,4 @@ workflowService:
     WEBHOOK_URL: ""
     WEBHOOK_SECRET: "webhook_secret"
     WORKFLOW_DASHBOARD_CORS_ORIGIN: "http://localhost:5200"
+    KYB_EXAMPLE_CORS_ORIGIN: "http://localhost:5201"
