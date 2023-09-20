@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.4
+
+### Patch Changes
+
+- Add business_utility_bill document
+
 ## 0.7.3
 
 ### Patch Changes
