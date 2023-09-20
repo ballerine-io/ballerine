@@ -158,7 +158,8 @@ curl --location 'http://localhost:3000/api/v1/external/workflows/run' \
                     "city": "Brockside",
                     "name": "Government",
                     "type": "government",
-                    "country": "CA"
+                    "country": "CA",
+                    "additionalDetails": {}
                 },
                 "version": 1,
                 "category": "identification",
@@ -187,7 +188,8 @@ curl --location 'http://localhost:3000/api/v1/external/workflows/run' \
                     "city": "Brockside",
                     "name": "Government",
                     "type": "government",
-                    "country": "TH"
+                    "country": "TH",
+                    "additionalDetails": {}
                 },
                 "version": 1,
                 "category": "registration",
@@ -201,6 +203,7 @@ curl --location 'http://localhost:3000/api/v1/external/workflows/run' \
         ]
     }
 }'
+
 ```
 
 </details>
