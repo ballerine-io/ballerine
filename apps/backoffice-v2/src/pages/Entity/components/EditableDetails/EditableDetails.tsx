@@ -246,6 +246,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                           <FormControl>
                             <Input
                               type={inputType}
+                              {...field}
                               {...(inputType === 'datetime-local' && { step: '1' })}
                               {...(minimum && { min: minimum })}
                               {...(maximum && { max: maximum })}
@@ -266,7 +267,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                               )}
                               pattern={pattern}
                               autoComplete={'off'}
-                              {...field}
                               value={displayValue(originalValue)}
                               onChange={handleInputChange}
                             />
