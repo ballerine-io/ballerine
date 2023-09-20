@@ -74,7 +74,7 @@ export const Item: FunctionComponent<IItemProps> = ({
           </motion.div>
           <Avatar
             src={entityAvatarUrl}
-            className="pt-1 text-base d-8"
+            className="text-sm d-8"
             alt={`${fullName}'s avatar`}
             placeholder={entityInitials}
             style={{
