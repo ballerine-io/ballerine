@@ -61,6 +61,7 @@ export const BaseWorkflowByIdSchema = z.object({
     name: z.string(),
     contextSchema: z.record(z.any(), z.any()).nullable(),
     config: z.record(z.any(), z.any()).nullable(),
+    version: z.number(),
   }),
   createdAt: z.string().datetime(),
   context: z.object({
@@ -179,7 +180,9 @@ export const fetchWorkflowDecision = async ({
     endpoint: `workflows/${workflowId}/decision/${documentId}`,
     method: Method.PATCH,
     body,
-    schema: WorkflowByIdSchema,
+    schema: WorkflowByIdSchema.pick({
+      context: true,
+    }),
   });
 
   return handleZodError(error, workflow);
