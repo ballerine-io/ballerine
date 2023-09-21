@@ -115,7 +115,7 @@ export const useTasks = ({
         const isDocumentRevision =
           decision?.status === 'revision' && (!isDoneWithRevision || noAction);
 
-        const isLegacyReject = workflow?.workflowDefinition?.version === 1;
+        const isLegacyReject = workflow?.workflowDefinition?.config?.isLegacyReject;
         const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
           const badgeClassNames = 'text-sm font-bold';
 
