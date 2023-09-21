@@ -32,6 +32,8 @@ import { CustomerService } from '@/customer/customer.service';
 import { CustomerRepository } from '@/customer/customer.repository';
 import { CollectionFlowFilesController } from '@/collection-flow/controllers/collection-flow.files.controller';
 import { CollectionFlowBusinessController } from '@/collection-flow/controllers/collection-flow.business.controller';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 
 @Module({
   imports: [AppLoggerModule, HttpModule, ProjectModule, CustomerModule, TokenAuthModule],
@@ -68,6 +70,8 @@ import { CollectionFlowBusinessController } from '@/collection-flow/controllers/
     CustomerRepository,
     StorageService,
     FileRepository,
+    SalesforceService,
+    SalesforceIntegrationRepository,
   ],
 })
 export class CollectionFlowModule {}

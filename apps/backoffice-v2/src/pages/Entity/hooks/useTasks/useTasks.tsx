@@ -112,10 +112,10 @@ export const useTasks = ({
 
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
-
         const isDocumentRevision =
           decision?.status === 'revision' && (!isDoneWithRevision || noAction);
 
+        const isLegacyReject = workflow?.workflowDefinition?.config?.isLegacyReject;
         const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
           const badgeClassNames = 'text-sm font-bold';
 
@@ -184,7 +184,8 @@ export const useTasks = ({
           return [
             {
               type: 'callToAction',
-              value: 'Re-upload needed',
+              // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
+              value: isLegacyReject ? 'Reject' : 'Re-upload needed',
               data: {
                 id,
                 disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
@@ -221,6 +222,20 @@ export const useTasks = ({
           ],
         };
 
+        const decisionCell = {
+          type: 'details',
+          value: {
+            id,
+            title: 'Decision',
+            hideSeparator: true,
+            data: decision?.status
+              ? Object.entries(decision ?? {}).map(([title, value]) => ({
+                  title,
+                  value,
+                }))
+              : [],
+          },
+        };
         const detailsCell = {
           type: 'container',
           value: [
@@ -270,18 +285,7 @@ export const useTasks = ({
                 ),
               },
             },
-            {
-              type: 'details',
-              value: {
-                id,
-                title: 'Decision',
-                hideSeparator: true,
-                data: Object.entries(decision ?? {}).map(([title, value]) => ({
-                  title,
-                  value,
-                })),
-              },
-            },
+            decisionCell,
           ],
         };
 

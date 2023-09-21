@@ -67,13 +67,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         <AssignDropdown
           assignedUser={assignedUser}
           avatarUrl={avatarUrl}
-          assignees={[
-            {
-              id: authenticatedUser?.id,
-              fullName: authenticatedUser?.fullName,
-            },
-            ...((assignees ?? []) as Assignee[]),
-          ]}
+          assignees={assignees}
           onAssigneeSelect={id => {
             onMutateAssignWorkflow(id, id === authenticatedUser?.id);
           }}
