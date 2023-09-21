@@ -36,7 +36,6 @@ export const getGhanaDocuments = (): TDocument[] => {
         from: Type.Optional(Type.String({ format: 'date' })),
         to: Type.Optional(Type.String({ format: 'date' })),
         timeRun: Type.Optional(Type.String()),
-        maxBalanceRecorded: Type.Optional(Type.Number()),
       }),
     },
     {
