@@ -80,7 +80,7 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     ? {
         id: workflow?.assignee?.id,
         fullName: `${workflow?.assignee?.firstName} ${workflow?.assignee?.lastName}`,
-        avatarUrl: workflow?.assignee?.avatarUrl as string | null,
+        avatarUrl: workflow?.assignee?.avatarUrl ?? '',
       }
     : undefined;
 
