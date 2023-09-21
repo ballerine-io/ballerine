@@ -1889,4 +1889,24 @@ export class WorkflowService {
 
     return documentsWithPersistedImages;
   }
+
+  async updateDocumentProperties(
+    workflowId: string,
+    targetDocumentId: string,
+    properties: object,
+    projectIds: TProjectIds,
+  ) {
+    const workflow = await this.workflowRuntimeDataRepository.findById(workflowId, {}, projectIds);
+
+    workflow.context.documents?.map((document: any) => {
+      if (document.id !== targetDocumentId) return document;
+
+      return {
+        ...document,
+        properties: properties,
+      };
+    });
+
+    return this.updateContextById(workflowId, workflow.context, projectIds);
+  }
 }
