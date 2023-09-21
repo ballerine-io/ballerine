@@ -29,7 +29,7 @@ export const AssignDropdown: React.FC<IAssignDropdownProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             {assignedUser?.fullName ? (
-              <UserAvatar avatarUrl={avatarUrl} fullName={assignedUser?.fullName} />
+              <UserAvatar avatarUrl={assignedUser?.avatarUrl} fullName={assignedUser?.fullName} />
             ) : (
               <UnassignedAvatarSvg className="d-[22px]" />
             )}
