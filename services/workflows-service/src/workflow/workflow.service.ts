@@ -899,6 +899,8 @@ export class WorkflowService {
 
       const recievedDocumentsMap = keyBy(data.context?.documents ?? [], 'id');
 
+      // This is hack to re-assign properties to documents after merge as temp solution
+      // TO DO: Remove it and update backoffice to work with new endpoint Refactor and use :id/properties/:documentId endpoint instead
       mergedContext.documents =
         mergedContext.documents.map((document: any) => {
           const updatedDocumentProperties = recievedDocumentsMap[document.id];
