@@ -207,9 +207,7 @@ export class CollectionFlowService {
     const updatedDocuments = documents.map(document => {
       return {
         ...document,
-        decision: {
-          status: 'revision',
-        },
+        decision: {},
         pages: document.pages.map(
           (page: { ballerineFileId: string; uri: string; provider: string; type: string }) => {
             const file: File | null = filesById[page.ballerineFileId];
