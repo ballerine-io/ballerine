@@ -39,6 +39,8 @@ import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-u
 import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { DocumentPropertiesParamsInput } from '@/workflow/dtos/document-properties-params.input';
+import { DocumentPropertiesUpdateInput } from '@/workflow/dtos/document-properties-update-input';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -195,6 +197,21 @@ export class WorkflowControllerInternal {
       }
       throw error;
     }
+  }
+
+  @common.Put(':id/properties/:documentId')
+  @UseGuards(WorkflowAssigneeGuard)
+  async updateDocumentPropertiesById(
+    @common.Param() params: DocumentPropertiesParamsInput,
+    @common.Body() data: DocumentPropertiesUpdateInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return this.service.updateDocumentProperties(
+      params.id,
+      params.documentId,
+      data.properties,
+      projectIds,
+    );
   }
 
   // PATCH /workflows/:workflowId/decision/:documentId
