@@ -12,23 +12,8 @@ export class UserService {
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
-  async create(args: Parameters<UserRepository['create']>[0], projectId?: TProjectId) {
-    return await this.repository.create(
-      {
-        ...args,
-        data: {
-          ...args?.data,
-          userToProjects: !args?.data?.userToProjects
-            ? {
-                createMany: {
-                  data: projectId ? [{ projectId }] : [],
-                },
-              }
-            : args.data.userToProjects,
-        },
-      },
-      projectId,
-    );
+  async create(args: Parameters<UserRepository['create']>[0], projectId: TProjectId) {
+    return await this.repository.create(args, projectId);
   }
 
   async list(args: Parameters<UserRepository['findMany']>[0], projectIds: TProjectIds) {

@@ -62,7 +62,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
     return isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
-  const defaultValues = formData?.reduce((acc, curr) => {
+  const defaultValues = data?.reduce((acc, curr) => {
     acc[curr.title] = curr.value;
 
     return acc;
