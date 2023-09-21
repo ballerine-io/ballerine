@@ -16,6 +16,11 @@ import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.s
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { ProjectModule } from '@/project/project.module';
 import { CustomerModule } from '@/customer/customer.module';
+import { UserService } from '@/user/user.service';
+import { UserRepository } from '@/user/user.repository';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { PasswordService } from '@/auth/password/password.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 
 @Module({
   imports: [ProjectModule, CustomerModule],
@@ -34,6 +39,11 @@ import { CustomerModule } from '@/customer/customer.module';
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
     WorkflowService,
+    UserService,
+    UserRepository,
+    PasswordService,
+    SalesforceService,
+    SalesforceIntegrationRepository,
   ],
 })
 export class EndUserModule {}
