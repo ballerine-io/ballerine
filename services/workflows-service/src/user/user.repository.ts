@@ -16,21 +16,22 @@ export class UserRepository {
 
   async create<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>,
-    projectId?: TProjectId,
+    projectId: TProjectId,
   ): Promise<User> {
-    return this.prisma.user.create<T>(
-      this.scopeService.scopeCreate(
-        {
-          ...args,
-          data: {
-            ...args.data,
-            // Use Prisma middleware
-            password: await this.passwordService.hash(args.data.password),
-          },
-        } as any,
-        projectId,
-      ),
-    );
+    args.data.userToProjects ||= {
+      createMany: {
+        data: projectId ? [{ projectId }] : [],
+      },
+    };
+
+    return this.prisma.user.create<T>({
+      ...args,
+      data: {
+        ...args.data,
+        // Use Prisma middleware
+        password: await this.passwordService.hash(args.data.password),
+      },
+    } as any);
   }
 
   async findMany<T extends Prisma.UserFindManyArgs>(
@@ -110,15 +111,14 @@ export class UserRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.UserDeleteArgs, 'where'>>,
     projectIds?: TProjectIds,
   ): Promise<User> {
-    return this.prisma.user.delete(
-      this.scopeService.scopeDelete(
-        {
-          where: { id },
-          ...args,
-        },
-        projectIds,
-      ),
-    );
+    await this.prisma.userToProject.deleteMany({
+      where: { userId: id, projectId: { in: projectIds || [] } },
+    });
+
+    return this.prisma.user.delete({
+      where: { id },
+      ...args,
+    });
   }
 
   async queryRawUnscoped<TValue>(query: string, values: any[] = []): Promise<TValue> {

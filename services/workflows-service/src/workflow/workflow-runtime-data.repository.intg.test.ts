@@ -80,7 +80,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     ])) as unknown as PrismaService;
 
     const customer = await createCustomer(prismaService, '1', 'secret', '');
-    project = await createProject(prismaService, customer, '1');
+    project = await createProject(prismaService, customer, '5');
   });
 
   afterAll(async () => {
