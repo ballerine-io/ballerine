@@ -20,7 +20,7 @@ import {
   WorkflowRuntimeListQueryResult,
 } from './types';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { isEqual, merge } from 'lodash';
+import { isEqual, merge, keyBy } from 'lodash';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
@@ -896,6 +896,20 @@ export class WorkflowService {
       data.context.documents = assignIdToDocuments(data.context.documents);
       contextHasChanged = !isEqual(data.context, runtimeData.context);
       mergedContext = merge({}, runtimeData.context, data.context);
+
+      const recievedDocumentsMap = keyBy(data.context?.documents ?? [], 'id');
+
+      mergedContext.documents =
+        mergedContext.documents.map((document: any) => {
+          const updatedDocumentProperties = recievedDocumentsMap[document.id];
+
+          return {
+            ...document,
+            properties:
+              (updatedDocumentProperties && updatedDocumentProperties.properties) ??
+              document.properties,
+          };
+        }) ?? [];
 
       const context = {
         ...mergedContext,
