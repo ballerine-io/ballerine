@@ -61,7 +61,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
     return isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
-  const defaultValues = formData?.reduce((acc, curr) => {
+  const defaultValues = data?.reduce((acc, curr) => {
     acc[curr.title] = curr.value;
 
     return acc;
@@ -284,6 +284,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                         {isInput && !isSelect && (
                           <FormControl>
                             <Input
+                              {...field}
                               type={inputType}
                               {...(inputType === 'datetime-local' && { step: '1' })}
                               {...(minimum && { min: minimum })}
@@ -305,7 +306,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                               )}
                               {...(pattern && { pattern })}
                               autoComplete={'off'}
-                              {...field}
                               value={displayValue(originalValue)}
                               onChange={handleInputChange}
                             />
