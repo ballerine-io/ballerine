@@ -27,6 +27,8 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CustomerModule } from '@/customer/customer.module';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 
 @Module({
   imports: [AppLoggerModule, HttpModule, ProjectModule, CustomerModule],
@@ -55,6 +57,8 @@ import { CustomerModule } from '@/customer/customer.module';
     UserService,
     UserRepository,
     PasswordService,
+    SalesforceService,
+    SalesforceIntegrationRepository,
   ],
 })
 export class CollectionFlowModule {}

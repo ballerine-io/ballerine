@@ -112,10 +112,10 @@ export const useTasks = ({
 
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
-
         const isDocumentRevision =
           decision?.status === 'revision' && (!isDoneWithRevision || noAction);
 
+        const isLegacyReject = workflow?.workflowDefinition?.config?.isLegacyReject;
         const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
           const badgeClassNames = 'text-sm font-bold';
 
@@ -184,7 +184,8 @@ export const useTasks = ({
           return [
             {
               type: 'callToAction',
-              value: 'Re-upload needed',
+              // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
+              value: isLegacyReject ? 'Reject' : 'Re-upload needed',
               data: {
                 id,
                 disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
