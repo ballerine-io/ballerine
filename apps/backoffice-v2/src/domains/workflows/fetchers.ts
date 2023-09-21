@@ -61,7 +61,6 @@ export const BaseWorkflowByIdSchema = z.object({
     name: z.string(),
     contextSchema: z.record(z.any(), z.any()).nullable(),
     config: z.record(z.any(), z.any()).nullable(),
-    version: z.number(),
   }),
   createdAt: z.string().datetime(),
   context: z.object({
