@@ -1,4 +1,64 @@
-const personalInfoPage = {
+const availableOnButtonRule = {
+  and: [
+    {
+      var: 'entity.data.additionalInfo.mainRepresentative.phone',
+    },
+    {
+      match: [
+        {
+          var: 'entity.data.additionalInfo.mainRepresentative.phone',
+        },
+        '^[+]?[0-9]{10,15}$',
+      ],
+    },
+    {
+      match: [
+        {
+          var: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
+        },
+        '^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\\d{4})$',
+      ],
+    },
+    {
+      '>': [
+        {
+          length: [
+            {
+              var: 'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle',
+            },
+          ],
+        },
+        2,
+      ],
+    },
+    {
+      '>': [
+        {
+          length: [
+            {
+              var: 'entity.data.additionalInfo.mainRepresentative.firstName',
+            },
+          ],
+        },
+        1,
+      ],
+    },
+    {
+      '>': [
+        {
+          length: [
+            {
+              var: 'entity.data.additionalInfo.mainRepresentative.lastName',
+            },
+          ],
+        },
+        1,
+      ],
+    },
+  ],
+};
+
+export const personalInfoPage = {
   type: 'page',
   number: 1,
   stateName: 'personal_details',
@@ -78,7 +138,7 @@ const personalInfoPage = {
               },
             },
             {
-              id: 'nextButton-page-1',
+              id: 'next-page-button',
               type: 'button',
               uiDefinition: {
                 classNames: ['align-right', 'padding-top-10'],
@@ -86,7 +146,7 @@ const personalInfoPage = {
               availableOn: [
                 {
                   type: 'json-logic',
-                  value: ['entity.data.additionalInfo.mainRepresentative.phone'],
+                  value: availableOnButtonRule,
                 },
               ],
               option: {
@@ -96,91 +156,34 @@ const personalInfoPage = {
           ],
         },
       ],
-      actions: [
-        {
-          dispatchOn: { type: { event: 'onClick', uiElementName: 'nextButton-page-1' } },
-          type: 'definitionPlugin',
-          pluginName: 'update_end_user',
-        },
-        {
-          dispatchOn: { type: { event: 'onClick', uiElementName: 'nextButton-page-1' } },
-          type: 'definitionEvent',
-          event: 'next',
-        },
-      ],
     },
   ],
-};
-
-const processDefintion = {
-  id: 'clickspay_collection_flow',
-  predictableActionArguments: true,
-  initial: 'personal_details',
-  context: {},
-  states: {
-    personal_details: {
-      on: {
-        next: 'company_information',
+  actions: [
+    {
+      type: 'definitionPlugin',
+      pluginName: 'update_end_user',
+      dispatchOn: {
+        uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
+        rules: [
+          {
+            type: 'json-logic',
+            value: availableOnButtonRule,
+          },
+        ],
       },
     },
-    company_information: {
-      on: {
-        next: 'address_information',
-        previous: 'personal_details',
+    {
+      type: 'definitionEvent',
+      event: 'next',
+      dispatchOn: {
+        uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
+        rules: [
+          {
+            type: 'json-logic',
+            value: availableOnButtonRule,
+          },
+        ],
       },
     },
-    address_information: {
-      on: {
-        next: 'placeholder_1',
-        previous: 'company_information',
-      },
-    },
-  },
-  extensions: {
-    apiPlugins: [
-      {
-        name: 'update_end_user',
-        pluginKind: 'api',
-        url: `{VITE_API_URL}/api/v1/collection-flow/end-user`,
-        method: 'POST',
-        headers: { Authorization: 'Bearer {tokenId}' },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-              firstName: entity.data.additionalInfo.mainRepresentative.countryOfIncorporation,
-              lastName: entity.data.additionalInfo.mainRepresentative.registrationNumber,
-              additionalInfo: {title: entity.data.additionalInfo.mainRepresentative.additionalInfo.title},
-              phone: entity.data.additionalInfo.mainRepresentative.phone,
-              dateOfBirth: entity.data.additionalInfo.mainRepresentative.dateOfBirth
-              }`,
-            },
-          ],
-        },
-      },
-      {
-        name: 'update_runtime_data',
-        pluginKind: 'api',
-        url: `{VITE_API_URL}/api/v1/collection-flow/{tokenId}`,
-        method: 'PUT',
-        stateNames: ['company_information', 'address_information'],
-        headers: { Authorization: 'Bearer {tokenId}' },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-              flowId: {tokenId},
-              mainRepresentative: entity.data.additionalInfo.mainRepresentative,
-              documents: documents,
-              ubos: entity.data.additionalInfo.ubos,
-              businessData: entity.data,
-              }`,
-            },
-          ],
-        },
-      },
-    ],
-  },
+  ],
 };

@@ -1,4 +1,136 @@
-const companyInfoPage = {
+const availableOnButtonRule = {
+  and: [
+    {
+      '===': [
+        {
+          typeof: {
+            var: 'context.entity.data.additionalInfo.registeredCapitalInYuan',
+          },
+        },
+        'number',
+      ],
+    },
+    {
+      '>': [
+        {
+          length: {
+            var: 'context.entity.data.businessType',
+          },
+        },
+        3,
+      ],
+    },
+    {
+      '===': [
+        {
+          typeof: {
+            var: 'context.entity.data.numberOfEmployees',
+          },
+        },
+        'number',
+      ],
+    },
+    {
+      '>': [
+        {
+          length: {
+            var: 'context.entity.data.taxIdentificationNumber',
+          },
+        },
+        3,
+      ],
+    },
+    {
+      '>': [
+        {
+          length: {
+            var: 'context.entity.data.companyName',
+          },
+        },
+        3,
+      ],
+    },
+    {
+      and: [
+        {
+          '==': [
+            {
+              length: {
+                var: 'context.entity.data.country',
+              },
+            },
+            2,
+          ],
+        },
+        {
+          '==': [
+            {
+              var: 'context.entity.data.country',
+            },
+            {
+              toUpperCase: {
+                var: 'context.entity.data.country',
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      '>': [
+        {
+          length: {
+            var: 'context.entity.data.registrationNumber',
+          },
+        },
+        3,
+      ],
+    },
+  ],
+};
+
+const dispatchOpenCorporateRule = {
+  and: [
+    {
+      '>': [
+        {
+          length: {
+            var: 'context.entity.data.registrationNumber',
+          },
+        },
+        4,
+      ],
+    },
+    {
+      and: [
+        {
+          '==': [
+            {
+              length: {
+                var: 'context.entity.data.country',
+              },
+            },
+            2,
+          ],
+        },
+        {
+          '==': [
+            {
+              var: 'context.entity.data.country',
+            },
+            {
+              toUpperCase: {
+                var: 'context.entity.data.country',
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const companyInfoPage = {
   type: 'page',
   number: 2,
   stateName: 'company_information',
@@ -39,6 +171,7 @@ const companyInfoPage = {
           type: 'cell',
           elements: [
             {
+              id: 'registration-number-input',
               type: 'input-text',
               valueDestination: 'context.entity.data.registrationNumber',
               option: {
@@ -47,6 +180,7 @@ const companyInfoPage = {
               },
             },
             {
+              id: 'country-picker-input',
               type: 'country-picker',
               valueDestination: 'context.entity.data.country',
               option: {
@@ -95,11 +229,17 @@ const companyInfoPage = {
               },
             },
             {
-              id: 'nextButton-page-2',
+              id: 'next-page-button',
               type: 'button',
               uiDefinition: {
                 classNames: ['align-right', 'padding-top-10'],
               },
+              availableOn: [
+                {
+                  type: 'json-logic',
+                  value: availableOnButtonRule,
+                },
+              ],
               option: {
                 text: 'Continue',
               },
@@ -107,6 +247,37 @@ const companyInfoPage = {
           ],
         },
       ],
+    },
+  ],
+  actions: [
+    {
+      type: 'definitionPlugin',
+      pluginName: 'open_corporate',
+      dispatchOn: {
+        uiEvents: [
+          { event: 'onChanged', uiElementName: 'registration-number-input' },
+          { event: 'onChanged', uiElementName: 'country-picker-input' },
+        ],
+        rules: [
+          {
+            type: 'json-logic',
+            value: dispatchOpenCorporateRule,
+          },
+        ],
+      },
+    },
+    {
+      type: 'definitionEvent',
+      event: 'next',
+      dispatchOn: {
+        uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
+        rules: [
+          {
+            type: 'json-logic',
+            value: availableOnButtonRule,
+          },
+        ],
+      },
     },
   ],
 };
