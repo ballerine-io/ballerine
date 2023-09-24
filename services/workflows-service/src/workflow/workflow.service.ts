@@ -1836,7 +1836,10 @@ export class WorkflowService {
       let childContextToPersist = childWorkflow.context;
 
       for (const transformer of transformerInstance || []) {
-        childContextToPersist = await transformer.transform(childContextToPersist);
+        childContextToPersist = await transformer.transform({
+          ...childContextToPersist,
+          projectId: parentWorkflowRuntime.projectId,
+        });
       }
       contextToPersist[childWorkflow.id] = {
         entityId: childWorkflow.context.entity.id,
