@@ -83,6 +83,13 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
         const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
           (acc, curr) => {
             if (!formData?.[curr]) return acc;
+
+            if (document?.propertiesSchema?.properties?.[curr]?.format === 'date-time') {
+              if (formData?.[curr]?.length === 16) {
+                formData[curr] = `${formData[curr]}:00`;
+              }
+            }
+
             acc[curr] = formData?.[curr];
 
             return acc;
@@ -182,6 +189,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                           <FormControl>
                             <Input
                               type={inputType}
+                              {...field}
                               {...(inputType === 'datetime-local' && { step: '1' })}
                               {...(minimum && { min: minimum })}
                               {...(maximum && { max: maximum })}
@@ -201,7 +209,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                               )}
                               pattern={pattern}
                               autoComplete={'off'}
-                              {...field}
                             />
                           </FormControl>
                         )}
