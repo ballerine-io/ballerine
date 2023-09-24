@@ -1422,7 +1422,7 @@ export class WorkflowService {
             tags: workflowDefinition.definition.states[workflowDefinition.definition.initial]?.tags,
             workflowDefinitionId: workflowDefinition.id,
             ...(parentWorkflowId && {
-              parentWorkflowRuntimeDataId: parentWorkflowId,
+              parentRuntimeDataId: parentWorkflowId,
             }),
             ...('salesforceObjectName' in salesforceData && salesforceData),
           },
@@ -1488,6 +1488,8 @@ export class WorkflowService {
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
+        if (documentPage.ballerineFileId && documentPage.uri) return documentPage;
+
         const persistedFile = await this.fileService.copyToDestinationAndCreate(
           document,
           entityId,

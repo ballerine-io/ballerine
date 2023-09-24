@@ -9,12 +9,13 @@ import { KYBParentKYCSessionExampleFlowData } from '@/collection-flow/workflow-a
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
+import { StorageService } from '@/storage/storage.service';
 import { TProjectId, TProjectIds } from '@/types';
 import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { Injectable } from '@nestjs/common';
-import { Business, Customer, EndUser } from '@prisma/client';
+import { Business, Customer, EndUser, File } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import keyBy from 'lodash/keyBy';
 
@@ -27,6 +28,7 @@ export class CollectionFlowService {
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowService: WorkflowService,
     protected readonly businessService: BusinessService,
+    protected readonly storageService: StorageService,
   ) {}
 
   async authorize(credentials: SigninCredentials, projectId: TProjectId): Promise<EndUser> {
@@ -40,10 +42,13 @@ export class CollectionFlowService {
         workflowDefinitionId: credentials.flowType,
         context: {
           entity: {
-            endUserId: newUser.id,
             ballerineEntityId: newUser.businesses.at(-1)?.id,
             type: 'business',
-            data: {},
+            data: {
+              additionalInformation: {
+                endUserId: newUser.id,
+              },
+            },
           },
           documents: [],
         },
@@ -211,6 +216,11 @@ export class CollectionFlowService {
 
     const workflowData = adapter.deserialize(flowData as any, workflow, customer);
 
+    workflowData.context.documents = await this._persistFileUrlsToDocuments(
+      workflowData.context.documents,
+      [projectId],
+    );
+
     await this.businessService.updateById(
       workflow.businessId,
       {
@@ -227,6 +237,46 @@ export class CollectionFlowService {
     });
 
     return flowData;
+  }
+
+  private async _persistFileUrlsToDocuments(
+    documents: any[] = [],
+    projectIds: TProjectIds,
+  ): Promise<any> {
+    const fileEntities = await Promise.all(
+      await documents.reduce((filesList, document) => {
+        document.pages.forEach((page: { ballerineFileId: string }) => {
+          filesList.push(this.storageService.getFileById({ id: page.ballerineFileId }, projectIds));
+        });
+
+        return filesList;
+      }, []),
+    );
+
+    const filesById = keyBy(fileEntities, 'id');
+
+    const updatedDocuments = documents.map(document => {
+      return {
+        ...document,
+        decision: {},
+        pages: document.pages.map(
+          (page: { ballerineFileId: string; uri: string; provider: string; type: string }) => {
+            const file: File | null = filesById[page.ballerineFileId];
+
+            if (!file) return page;
+
+            return {
+              ballerineFileId: page.ballerineFileId,
+              uri: file.uri,
+              type: file.mimeType,
+              provider: 'http',
+            };
+          },
+        ),
+      };
+    });
+
+    return updatedDocuments;
   }
 
   async finishFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
