@@ -106,7 +106,7 @@ describe('blocks #integration', () => {
       const cellsCount = blocks.cellsCount(0);
 
       // Assert
-      expect(firstBlock).toEqual([]);
+      expect(firstBlock).toEqual({ cells: [] });
       expect(cellsCount).toBe(0);
     });
   });
@@ -121,7 +121,11 @@ describe('blocks #integration', () => {
       const blocks = blocksBuilder.addBlock().addCell({ type: 'heading', value: cellOne }).build();
 
       // Assert
-      expect(blocks).toEqual([[{ type: 'heading', value: cellOne }]]);
+      expect(blocks).toEqual([
+        {
+          cells: [{ type: 'heading', value: cellOne }],
+        },
+      ]);
     });
 
     it('should return a single block with multiple cells when calling `build`', () => {
@@ -139,10 +143,12 @@ describe('blocks #integration', () => {
 
       // Assert
       expect(blocks).toEqual([
-        [
-          { type: 'heading', value: cellOne },
-          { type: 'headings', value: cellTwo },
-        ],
+        {
+          cells: [
+            { type: 'heading', value: cellOne },
+            { type: 'headings', value: cellTwo },
+          ],
+        },
       ]);
     });
   });
@@ -164,8 +170,12 @@ describe('blocks #integration', () => {
 
       // Assert
       expect(blocks).toEqual([
-        [{ type: 'heading', value: blockOneCellOne }],
-        [{ type: 'headings', value: blockTwoCellOne }],
+        {
+          cells: [{ type: 'heading', value: blockOneCellOne }],
+        },
+        {
+          cells: [{ type: 'headings', value: blockTwoCellOne }],
+        },
       ]);
     });
 
@@ -195,14 +205,18 @@ describe('blocks #integration', () => {
       const lastBlock = blocks[blocks.length - 1];
 
       // Assert
-      expect(firstBlock).toEqual([
-        { type: 'heading', value: blockOneCellOne },
-        { type: 'headings', value: blockOneCellTwo },
-      ]);
-      expect(lastBlock).toEqual([
-        { type: 'heading', value: blockThreeCellOne },
-        { type: 'headings', value: blockThreeCellTwo },
-      ]);
+      expect(firstBlock).toEqual({
+        cells: [
+          { type: 'heading', value: blockOneCellOne },
+          { type: 'headings', value: blockOneCellTwo },
+        ],
+      });
+      expect(lastBlock).toEqual({
+        cells: [
+          { type: 'heading', value: blockThreeCellOne },
+          { type: 'headings', value: blockThreeCellTwo },
+        ],
+      });
     });
   });
 
@@ -310,8 +324,12 @@ describe('blocks #integration', () => {
       const secondBlock = blocksBuilder.blockAt(1);
 
       // Assert
-      expect(firstBlock).toEqual([{ type: 'heading', value: blockOneCellOne }]);
-      expect(secondBlock).toEqual([{ type: 'headings', value: blockTwoCellOne }]);
+      expect(firstBlock).toEqual({
+        cells: [{ type: 'heading', value: blockOneCellOne }],
+      });
+      expect(secondBlock).toEqual({
+        cells: [{ type: 'headings', value: blockTwoCellOne }],
+      });
     });
   });
 

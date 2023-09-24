@@ -37,7 +37,7 @@ describe('blocks #types', () => {
       const blocks = createTestBlocks().addBlock();
 
       // Assert
-      expectTypeOf<typeof blocks>().toEqualTypeOf<BlocksBuilder<TCell, []>>();
+      expectTypeOf<typeof blocks>().toEqualTypeOf<BlocksBuilder<TCell, { cells: [] }>>();
     });
   });
 
@@ -60,12 +60,20 @@ describe('blocks #types', () => {
       expectTypeOf<typeof blocks>().toEqualTypeOf<
         BlocksBuilder<
           TCell,
-          [{ type: 'heading'; value: typeof blockOneCellOne }],
-          [[{ type: 'heading'; value: typeof blockOneCellOne }]]
+          { cells: [{ type: 'heading'; value: typeof blockOneCellOne }] },
+          [
+            {
+              cells: [{ type: 'heading'; value: typeof blockOneCellOne }];
+            },
+          ]
         >
       >();
       expectTypeOf<typeof builtBlocks>().toEqualTypeOf<
-        [[{ type: 'heading'; value: typeof blockOneCellOne }]]
+        [
+          {
+            cells: [{ type: 'heading'; value: typeof blockOneCellOne }];
+          },
+        ]
       >();
     });
   });
@@ -96,17 +104,27 @@ describe('blocks #types', () => {
       expectTypeOf<typeof blocks>().toEqualTypeOf<
         BlocksBuilder<
           TCell,
-          [{ type: 'heading'; value: typeof blockOneCellOne }],
+          {
+            cells: [{ type: 'heading'; value: typeof blockOneCellOne }];
+          },
           [
-            [{ type: 'heading'; value: typeof blockOneCellOne }],
-            [{ type: 'headings'; value: typeof blockTwoCellOne }],
+            {
+              cells: [{ type: 'heading'; value: typeof blockOneCellOne }];
+            },
+            {
+              cells: [{ type: 'headings'; value: typeof blockTwoCellOne }];
+            },
           ]
         >
       >();
       expectTypeOf<typeof builtBlocks>().toEqualTypeOf<
         [
-          [{ type: 'heading'; value: typeof blockOneCellOne }],
-          [{ type: 'headings'; value: typeof blockTwoCellOne }],
+          {
+            cells: [{ type: 'heading'; value: typeof blockOneCellOne }];
+          },
+          {
+            cells: [{ type: 'headings'; value: typeof blockTwoCellOne }];
+          },
         ]
       >();
     });
@@ -137,24 +155,30 @@ describe('blocks #types', () => {
       expectTypeOf<typeof blocks>().toEqualTypeOf<
         BlocksBuilder<
           TCell,
-          [
-            { type: 'heading'; value: typeof blockOneCellOne },
-            { type: 'headings'; value: typeof blockOneCellTwo },
-          ],
-          [
-            [
+          {
+            cells: [
               { type: 'heading'; value: typeof blockOneCellOne },
               { type: 'headings'; value: typeof blockOneCellTwo },
-            ],
+            ];
+          },
+          [
+            {
+              cells: [
+                { type: 'heading'; value: typeof blockOneCellOne },
+                { type: 'headings'; value: typeof blockOneCellTwo },
+              ];
+            },
           ]
         >
       >();
       expectTypeOf<typeof builtBlocks>().toEqualTypeOf<
         [
-          [
-            { type: 'heading'; value: typeof blockOneCellOne },
-            { type: 'headings'; value: typeof blockOneCellTwo },
-          ],
+          {
+            cells: [
+              { type: 'heading'; value: typeof blockOneCellOne },
+              { type: 'headings'; value: typeof blockOneCellTwo },
+            ];
+          },
         ]
       >();
     });
@@ -198,32 +222,42 @@ describe('blocks #types', () => {
       expectTypeOf<typeof blocks>().toEqualTypeOf<
         BlocksBuilder<
           TCell,
-          [
-            { type: 'heading'; value: typeof blockOneCellOne },
-            { type: 'headings'; value: typeof blockOneCellTwo },
-          ],
-          [
-            [
+          {
+            cells: [
               { type: 'heading'; value: typeof blockOneCellOne },
               { type: 'headings'; value: typeof blockOneCellTwo },
-            ],
-            [
-              { type: 'headings'; value: typeof blockTwoCellOne },
-              { type: 'heading'; value: typeof blockTwoCellTwo },
-            ],
+            ];
+          },
+          [
+            {
+              cells: [
+                { type: 'heading'; value: typeof blockOneCellOne },
+                { type: 'headings'; value: typeof blockOneCellTwo },
+              ];
+            },
+            {
+              cells: [
+                { type: 'headings'; value: typeof blockTwoCellOne },
+                { type: 'heading'; value: typeof blockTwoCellTwo },
+              ];
+            },
           ]
         >
       >();
       expectTypeOf<typeof builtBlocks>().toEqualTypeOf<
         [
-          [
-            { type: 'heading'; value: typeof blockOneCellOne },
-            { type: 'headings'; value: typeof blockOneCellTwo },
-          ],
-          [
-            { type: 'headings'; value: typeof blockTwoCellOne },
-            { type: 'heading'; value: typeof blockTwoCellTwo },
-          ],
+          {
+            cells: [
+              { type: 'heading'; value: typeof blockOneCellOne },
+              { type: 'headings'; value: typeof blockOneCellTwo },
+            ];
+          },
+          {
+            cells: [
+              { type: 'headings'; value: typeof blockTwoCellOne },
+              { type: 'heading'; value: typeof blockTwoCellTwo },
+            ];
+          },
         ]
       >();
     });
@@ -264,12 +298,12 @@ describe('blocks #types', () => {
       const block = blocks.blockAt(0);
 
       // Assert
-      expectTypeOf<typeof block>().toEqualTypeOf<
-        [
+      expectTypeOf<typeof block>().toEqualTypeOf<{
+        cells: [
           { type: 'heading'; value: typeof blockOneCellOne },
           { type: 'headings'; value: typeof blockOneCellTwo },
-        ]
-      >();
+        ];
+      }>();
     });
   });
 

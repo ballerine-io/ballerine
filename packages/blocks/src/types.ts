@@ -8,7 +8,9 @@ export type Cell = { type: string } & {
   [key: string]: unknown;
 };
 
-export type Block = Array<Cell>;
+export type Block = { cells: Array<Cell> } & {
+  [key: string]: unknown;
+};
 
 export type Blocks = Array<Block>;
 
@@ -92,10 +94,16 @@ export interface BlocksProps<TCell extends Cells> {
    * @description Output of `createBlocks.build()`
    * @see {@link BlockBuilder.build}
    */
-  blocks: Array<Array<TCell>>;
+  blocks: Array<
+    { cells: Array<TCell> } & {
+      [key: string]: unknown;
+    }
+  >;
   Block?: FunctionComponent<{
     children: ReactNode | Array<ReactNode>;
-    block: Array<TCell>;
+    block: { cells: Array<TCell> } & {
+      [key: string]: unknown;
+    };
   }>;
   /**
    * @description children as a function - provides access to the current block and cell
@@ -106,7 +114,9 @@ export interface BlocksProps<TCell extends Cells> {
   children: (
     Cell: CellsMap[keyof CellsMap],
     cell: ComponentProps<CellsMap[keyof CellsMap]>,
-    block: Array<TCell>,
+    block: { cells: Array<TCell> } & {
+      [key: string]: unknown;
+    },
   ) => ReactNode | Array<ReactNode>;
 }
 

@@ -17,7 +17,7 @@ export const createBlocks = <TCell extends Cell | InvalidCellMessage = InvalidCe
 
 export class BlocksBuilder<
   TCell extends Cell,
-  TLastBlock extends Block = [],
+  TLastBlock extends Block = { cells: [] },
   TBlocks extends Blocks = [],
 > {
   #__options: BlocksOptions;
@@ -36,7 +36,7 @@ export class BlocksBuilder<
   }
 
   get #__lastCell(): Cell | undefined {
-    return this.#__lastBlock?.[this.#__lastBlock.length - 1];
+    return this.#__lastBlock?.cells?.[this.#__lastBlock?.cells?.length - 1];
   }
 
   get blocksCount() {
@@ -44,7 +44,7 @@ export class BlocksBuilder<
   }
 
   cellsCount(blockIndex: number) {
-    return this.#__blocks[blockIndex]?.length ?? 0;
+    return this.#__blocks[blockIndex]?.cells?.length ?? 0;
   }
 
   blockAt<TIndex extends number>(index: TIndex) {
@@ -55,7 +55,9 @@ export class BlocksBuilder<
     blockIndex: TBlockIndex,
     cellIndex: TCellIndex,
   ) {
-    return this.#__blocks[blockIndex]?.[cellIndex] as TBlocks[TBlockIndex][TCellIndex];
+    return this.#__blocks[blockIndex]?.cells?.[
+      cellIndex
+    ] as TBlocks[TBlockIndex]['cells'][TCellIndex];
   }
 
   constructor(blocks: TBlocks, options: BlocksOptions) {
@@ -69,16 +71,20 @@ export class BlocksBuilder<
     this.addBlock = this.addBlock.bind(this);
   }
 
-  addBlock() {
+  addBlock<
+    TProps extends {
+      [key: string]: unknown;
+    },
+  >(props?: TProps) {
     if (this.#__lastBlock && !this.#__lastCell) {
       return raise('Attempted to call `addBlock` before calling `addCell`.');
     }
 
-    this.#__blocks.push([] as any);
+    this.#__blocks.push({ ...props, cells: [] } as any);
 
     this.#__logger('`BlocksBuilder`: Added a block');
 
-    return this as BlocksBuilder<TCell, [], TBlocks>;
+    return this as BlocksBuilder<TCell, TProps & { cells: [] }, TBlocks>;
   }
 
   addCell<TCellType extends TCell>(cell: TCellType) {
@@ -86,26 +92,32 @@ export class BlocksBuilder<
       return raise('Attempted to call `addCell` before calling `addBlock`.');
     }
 
-    this.#__lastBlock.push(cell);
+    this.#__lastBlock?.cells?.push(cell);
 
     this.#__logger('`BlocksBuilder`: Added a cell a block');
 
     return this as unknown as BlocksBuilder<
       TCell,
-      [...TLastBlock, TCellType],
-      TLastBlock extends []
-        ? [...TBlocks, [TCellType]]
+      {
+        cells: [...TLastBlock['cells'], TCellType];
+      },
+      TLastBlock['cells'] extends []
+        ? [...TBlocks, { cells: [TCellType] }]
         : [
             // Spread the previous blocks.
             ...InferAllButLastArrayElements<TBlocks>,
-            [
-              // Spread the previous cells to a single block.
-              // Avoids a block with a single cell.
-              ...InferAllButLastArrayElements<TLastBlock>,
-              InferLastArrayElement<TLastBlock>,
-              // Add the new cell.
-              TCellType,
-            ],
+            {
+              cells: [
+                // Spread the previous cells to a single block.
+                // Avoids a block with a single cell.
+                ...InferAllButLastArrayElements<TLastBlock['cells']>,
+                InferLastArrayElement<TLastBlock['cells']> extends Cell
+                  ? InferLastArrayElement<TLastBlock['cells']>
+                  : never,
+                // Add the new cell.
+                TCellType,
+              ];
+            },
           ]
     >;
   }
