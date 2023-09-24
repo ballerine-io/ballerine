@@ -7,6 +7,7 @@ import {
   ApprovalState,
   Business,
   EndUser,
+  File,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -76,6 +77,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
+import keyBy from 'lodash/keyBy';
 
 type TEntityId = string;
 
@@ -195,6 +197,10 @@ export class WorkflowService {
     projectIds: TProjectIds,
   ) {
     return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
+  }
+
+  async getWorkflowRuntimeDataByIdUnscoped(workflowRuntimeDataId: string) {
+    return await this.workflowRuntimeDataRepository.findByIdUnscoped(workflowRuntimeDataId);
   }
 
   async getWorkflowRuntimeWithChildrenDataById(
@@ -1953,5 +1959,42 @@ export class WorkflowService {
       recordId: workflowRuntimeData.salesforceRecordId,
       data,
     });
+  }
+
+  async persistFileUrlsToDocuments(documents: any[] = [], projectIds: TProjectIds): Promise<any> {
+    const fileEntities = await Promise.all(
+      await documents.reduce((filesList, document) => {
+        document.pages.forEach((page: { ballerineFileId: string }) => {
+          filesList.push(this.storageService.getFileById({ id: page.ballerineFileId }, projectIds));
+        });
+
+        return filesList;
+      }, []),
+    );
+
+    const filesById = keyBy(fileEntities, 'id');
+
+    const updatedDocuments = documents.map(document => {
+      return {
+        ...document,
+        decision: {},
+        pages: document.pages.map(
+          (page: { ballerineFileId: string; uri: string; provider: string; type: string }) => {
+            const file: File | null = filesById[page.ballerineFileId];
+
+            if (!file) return page;
+
+            return {
+              ballerineFileId: page.ballerineFileId,
+              uri: file.uri,
+              type: file.mimeType,
+              provider: 'http',
+            };
+          },
+        ),
+      };
+    });
+
+    return updatedDocuments;
   }
 }

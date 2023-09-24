@@ -16,11 +16,4 @@ export class WorkflowHookQuery {
   })
   @IsString()
   processName?: UnifiedCallbackNames;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  projectId!: string;
 }
