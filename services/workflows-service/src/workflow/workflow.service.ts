@@ -183,7 +183,6 @@ export class WorkflowService {
             const propertiesSchema = documentByCountry?.propertiesSchema ?? {};
 
             Object.entries(propertiesSchema?.properties ?? {}).forEach(([key, value]) => {
-              if (!(key in document.properties)) return;
               if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string') return;
 
               value.dropdownOptions = value.enum.map(item => ({
