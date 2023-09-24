@@ -14,14 +14,15 @@ export const BlocksComponent = forwardRef(
           blocks?.map((block, index) => {
             return (
               <Block
-                key={`block:${index}`}
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                key={`block:${block?.[block?.keyProp as keyof typeof block] ?? index}`}
                 block={block}
                 // @ts-expect-error - `Fragment` does not have a `ref` prop.
                 ref={ref}
               >
                 {Array.isArray(block) &&
-                  !!block?.length &&
-                  block?.map(({ type, ...cell }) => {
+                  !!block?.cells?.length &&
+                  block?.cells?.map(({ type, ...cell }) => {
                     const Cell = cells[type];
 
                     return (
