@@ -297,7 +297,7 @@ export const createKycRuntime = ({
           metadata: {
             side: 'face',
           },
-          provider: 'base64',
+          provider: 'local',
           ballerineFileId: faker.random.alphaNumeric(20),
         },
         {
@@ -306,7 +306,7 @@ export const createKycRuntime = ({
           metadata: {
             side: 'front',
           },
-          provider: 'base64',
+          provider: 'local',
           ballerineFileId: faker.random.alphaNumeric(20),
         },
         ...(ubo.passport.back
@@ -328,7 +328,7 @@ export const createKycRuntime = ({
         name: null,
         country: ubo.passport.issuerCountryCode,
         issuingVersion: null,
-        additionalDetails: {
+        additionalInfo: {
           validFrom: faker.date.past().toISOString(),
           validUntil: faker.date.future().toISOString(),
           firstIssue: null,

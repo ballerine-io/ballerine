@@ -9,6 +9,7 @@ import fs from 'fs';
 import { CustomerService } from '@/customer/customer.service';
 import { TProjectId, TProjectIds } from '@/types';
 import { TDocumentsWithoutPageType } from '@/common/types';
+import {fromBuffer} from "file-type";
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -65,7 +66,7 @@ export class HookCallbackHandlerService {
     const entity = this.formatEntityData(data);
     const issuer = this.formatIssuerData(kycDocument);
     const documentProperties = this.formatDocumentProperties(data, kycDocument);
-    const pages = this.formatPages(data);
+    const pages = await this.formatPages(data);
     const decision = this.formatDecision(data);
     const documentCategory = kycDocument.type as string;
     const documents = this.formatDocuments(documentCategory, pages, issuer, documentProperties);
@@ -153,7 +154,7 @@ export class HookCallbackHandlerService {
       firstIssue: kycDocument['firstIssue'],
     };
     const issuer = {
-      additionalDetails: additionalIssuerInfor,
+      additionalInfo: additionalIssuerInfor,
       country: kycDocument['country'],
       name: kycDocument['issuedBy'],
       issuingVersion: kycDocument['issueNumber'],
@@ -162,18 +163,21 @@ export class HookCallbackHandlerService {
     return issuer;
   }
 
-  formatPages(data: AnyRecord) {
+   async formatPages(data: AnyRecord) {
     const documentImages: AnyRecord[] = [];
     for (const image of data.images as { context?: string; content: string }[]) {
       const tmpFile = tmp.fileSync().name;
       const base64ImageContent = image.content.split(',')[1];
-      const data = Buffer.from(base64ImageContent as string, 'base64');
-      fs.writeFileSync(tmpFile, data);
+      const buffer = Buffer.from(base64ImageContent as string, 'base64');
+      const fileType = await fromBuffer(buffer);
+      const fileExtension = fileType?.ext ? `.${fileType?.ext }` : '';
+      const fileWithExtension = `${tmpFile}${fileExtension}`;
+      fs.writeFileSync(fileWithExtension, buffer);
 
       documentImages.push({
-        uri: tmpFile,
-        provider: 'base64',
-        type: 'image/png',
+        uri: `file://${fileWithExtension}`,
+        provider: 'local',
+        type: fileType?.mime,
         metadata: {
           side: image.context?.replace('document-', ''),
         },
