@@ -153,7 +153,7 @@ export class HookCallbackHandlerService {
       firstIssue: kycDocument['firstIssue'],
     };
     const issuer = {
-      additionalDetails: additionalIssuerInfor,
+      additionalInfo: additionalIssuerInfor,
       country: kycDocument['country'],
       name: kycDocument['issuedBy'],
       issuingVersion: kycDocument['issueNumber'],

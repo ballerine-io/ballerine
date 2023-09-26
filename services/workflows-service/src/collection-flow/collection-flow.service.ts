@@ -14,6 +14,7 @@ import { TProjectId, TProjectIds } from '@/types';
 import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
+import { TDocument } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Business, Customer, EndUser, File } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
@@ -45,9 +46,7 @@ export class CollectionFlowService {
             ballerineEntityId: newUser.businesses.at(-1)?.id,
             type: 'business',
             data: {
-              additionalInformation: {
-                endUserId: newUser.id,
-              },
+              additionalInformation: {},
             },
           },
           documents: [],
@@ -216,7 +215,7 @@ export class CollectionFlowService {
 
     const workflowData = adapter.deserialize(flowData as any, workflow, customer);
 
-    workflowData.context.documents = await this._persistFileUrlsToDocuments(
+    workflowData.context.documents = await this.__persistFileUrlsToDocuments(
       workflowData.context.documents,
       [projectId],
     );
@@ -239,18 +238,18 @@ export class CollectionFlowService {
     return flowData;
   }
 
-  private async _persistFileUrlsToDocuments(
-    documents: any[] = [],
+  private async __persistFileUrlsToDocuments(
+    documents: TDocument[] = [],
     projectIds: TProjectIds,
-  ): Promise<any> {
+  ): Promise<TDocument[]> {
     const fileEntities = await Promise.all(
-      await documents.reduce((filesList, document) => {
+      documents.reduce((filesList, document) => {
         document.pages.forEach((page: { ballerineFileId: string }) => {
           filesList.push(this.storageService.getFileById({ id: page.ballerineFileId }, projectIds));
         });
 
         return filesList;
-      }, []),
+      }, [] as Promise<File | null>[]),
     );
 
     const filesById = keyBy(fileEntities, 'id');
@@ -258,10 +257,9 @@ export class CollectionFlowService {
     const updatedDocuments = documents.map(document => {
       return {
         ...document,
-        decision: {},
         pages: document.pages.map(
           (page: { ballerineFileId: string; uri: string; provider: string; type: string }) => {
-            const file: File | null = filesById[page.ballerineFileId];
+            const file: File | null = filesById[page.ballerineFileId] ?? null;
 
             if (!file) return page;
 

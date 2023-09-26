@@ -197,6 +197,10 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
   }
 
+  async getWorkflowRuntimeDataByIdUnscoped(workflowRuntimeDataId: string) {
+    return await this.workflowRuntimeDataRepository.findByIdUnscoped(workflowRuntimeDataId);
+  }
+
   async getWorkflowRuntimeWithChildrenDataById(
     id: string,
     args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
@@ -907,22 +911,28 @@ export class WorkflowService {
         ),
       };
 
-      this.__validateWorkflowDefinitionContext(workflowDef, {
-        ...context,
-        documents: context?.documents?.map(
-          (document: DefaultContextSchema['documents'][number]) => ({
-            ...document,
-            decision: {
-              ...document?.decision,
-              status: document?.decision?.status === null ? undefined : document?.decision?.status,
-            },
-            type:
-              document?.type === 'unknown' && document?.decision?.status === 'approved'
-                ? undefined
-                : document?.type,
-          }),
-        ),
-      });
+      try {
+        this.__validateWorkflowDefinitionContext(workflowDef, {
+          ...context,
+          documents: context?.documents?.map(
+            (document: DefaultContextSchema['documents'][number]) => ({
+              ...document,
+              decision: {
+                ...document?.decision,
+                status:
+                  document?.decision?.status === null ? undefined : document?.decision?.status,
+              },
+              type:
+                document?.type === 'unknown' && document?.decision?.status === 'approved'
+                  ? undefined
+                  : document?.type,
+            }),
+          ),
+        });
+      } catch (error) {
+        console.log('VALIDATION ERRORTS', JSON.stringify(error));
+        throw error;
+      }
 
       // @ts-ignore
       data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
