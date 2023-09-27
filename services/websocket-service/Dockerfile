@@ -1,4 +1,4 @@
-FROM node:18.17.1-bullseye-slim as dev
+FROM node:18.18-bullseye-slim as dev
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ ENV COMPOSE_PROJECT_NAME=ballerine-x
 
 CMD [ "npm", "run", "dev", "--host"]
 
-FROM node:18.17.1-bullseye-slim as prod
+FROM node:18.18-bullseye-slim as prod
 
 WORKDIR /app
 COPY --from=dev /app/dist ./dist
