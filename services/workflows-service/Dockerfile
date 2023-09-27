@@ -1,4 +1,4 @@
-FROM node:18.18 AS base
+FROM node:18.18-bullseye-slim AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends dumb-init
 
@@ -16,7 +16,7 @@ COPY . .
 
 RUN npm run build
 
-FROM node:18.18 AS prod
+FROM node:18.18-bullseye-slim AS prod
 
 WORKDIR /app
 
