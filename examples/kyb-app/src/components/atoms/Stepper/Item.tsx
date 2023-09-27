@@ -3,6 +3,7 @@ import { useStepperContext } from '@app/components/atoms/Stepper/hooks/useSteppe
 import { Current } from '@app/components/atoms/Stepper/components/atoms/indicators/Current';
 import { BaseLabel } from '@app/components/atoms/Stepper/components/atoms/BaseLabel/BaseLabel';
 import clsx from 'clsx';
+import { BreadcrumbsItem } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb';
 
 interface Props {
   status: StepStatus;
@@ -12,8 +13,7 @@ interface Props {
 }
 
 export const Item = ({ status = 'idle', label, active, onClick }: Props) => {
-  const { indicatorsMap, labelsMap } = useStepperContext();
-  const IndicatorComponent = indicatorsMap[status] || null;
+  const { labelsMap } = useStepperContext();
   const LabelComponent = labelsMap[status] || null;
 
   return (
@@ -21,11 +21,7 @@ export const Item = ({ status = 'idle', label, active, onClick }: Props) => {
       className={clsx('last:bg- flex flex-row items-center gap-4 first:bg-white')}
       onClick={onClick}
     >
-      {active && status === 'idle' ? (
-        <Current />
-      ) : IndicatorComponent ? (
-        <IndicatorComponent />
-      ) : null}
+      <BreadcrumbsItem active={active} state={status} />
       {active && status === 'idle' ? (
         <BaseLabel variant="current" text={label} />
       ) : LabelComponent ? (
