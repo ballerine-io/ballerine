@@ -911,28 +911,22 @@ export class WorkflowService {
         ),
       };
 
-      try {
-        this.__validateWorkflowDefinitionContext(workflowDef, {
-          ...context,
-          documents: context?.documents?.map(
-            (document: DefaultContextSchema['documents'][number]) => ({
-              ...document,
-              decision: {
-                ...document?.decision,
-                status:
-                  document?.decision?.status === null ? undefined : document?.decision?.status,
-              },
-              type:
-                document?.type === 'unknown' && document?.decision?.status === 'approved'
-                  ? undefined
-                  : document?.type,
-            }),
-          ),
-        });
-      } catch (error) {
-        console.log('VALIDATION ERRORTS', JSON.stringify(error));
-        throw error;
-      }
+      this.__validateWorkflowDefinitionContext(workflowDef, {
+        ...context,
+        documents: context?.documents?.map(
+          (document: DefaultContextSchema['documents'][number]) => ({
+            ...document,
+            decision: {
+              ...document?.decision,
+              status: document?.decision?.status === null ? undefined : document?.decision?.status,
+            },
+            type:
+              document?.type === 'unknown' && document?.decision?.status === 'approved'
+                ? undefined
+                : document?.type,
+          }),
+        ),
+      });
 
       // @ts-ignore
       data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {

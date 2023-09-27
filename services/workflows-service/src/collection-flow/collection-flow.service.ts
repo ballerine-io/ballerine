@@ -45,9 +45,6 @@ export class CollectionFlowService {
           entity: {
             ballerineEntityId: newUser.businesses.at(-1)?.id,
             type: 'business',
-            data: {
-              additionalInformation: {},
-            },
           },
           documents: [],
         },
@@ -242,15 +239,21 @@ export class CollectionFlowService {
     documents: TDocument[] = [],
     projectIds: TProjectIds,
   ): Promise<TDocument[]> {
-    const fileEntities = await Promise.all(
-      documents.reduce((filesList, document) => {
-        document.pages.forEach((page: { ballerineFileId: string }) => {
-          filesList.push(this.storageService.getFileById({ id: page.ballerineFileId }, projectIds));
-        });
+    const fileEntities = (
+      await Promise.all(
+        documents.reduce((filesList, document) => {
+          document.pages.forEach((page: { ballerineFileId: string }) => {
+            if (!page.ballerineFileId) return;
 
-        return filesList;
-      }, [] as Promise<File | null>[]),
-    );
+            filesList.push(
+              this.storageService.getFileById({ id: page.ballerineFileId }, projectIds),
+            );
+          });
+
+          return filesList;
+        }, [] as Promise<File | null>[]),
+      )
+    ).filter(Boolean);
 
     const filesById = keyBy(fileEntities, 'id');
 
@@ -259,7 +262,7 @@ export class CollectionFlowService {
         ...document,
         pages: document.pages.map(
           (page: { ballerineFileId: string; uri: string; provider: string; type: string }) => {
-            const file: File | null = filesById[page.ballerineFileId] ?? null;
+            const file = filesById[page.ballerineFileId] as File;
 
             if (!file) return page;
 
