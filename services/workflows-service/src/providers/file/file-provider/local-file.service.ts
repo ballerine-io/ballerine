@@ -25,7 +25,10 @@ export class LocalFileService implements IFileProvider {
 
   async copy(fromFilePath: TLocalFilePath, toFilePath: TLocalFilePath): Promise<TLocalFilePath> {
     // eslint-disable-next-line @typescript-eslint/await-thenable
-    await this.client.copyFileSync(this.__removeFilePrefix(fromFilePath), this.__removeFilePrefix(toFilePath));
+    await this.client.copyFileSync(
+      this.__removeFilePrefix(fromFilePath),
+      this.__removeFilePrefix(toFilePath),
+    );
 
     return toFilePath;
   }
@@ -55,6 +58,6 @@ export class LocalFileService implements IFileProvider {
   }
 
   private __removeFilePrefix(fileName: string): string {
-    return fileName.replace('file://', '')
+    return fileName.replace('file://', '');
   }
 }
