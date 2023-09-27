@@ -45,7 +45,6 @@ import {
   getDocumentId,
   getDocumentsByCountry,
   isObject,
-  safeEvery,
 } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
@@ -705,10 +704,10 @@ export class WorkflowService {
 
   async updateDocumentDecisionById(
     {
-      workflowId,
+      workflowRuntimeId,
       documentId,
     }: {
-      workflowId: string;
+      workflowRuntimeId: string;
       documentId: string;
     },
     decision: {
@@ -717,8 +716,13 @@ export class WorkflowService {
     },
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
+    deliverEvent?: string,
   ) {
-    const workflow = await this.workflowRuntimeDataRepository.findById(workflowId, {}, projectIds);
+    const workflow = await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+      {},
+      projectIds,
+    );
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflow?.workflowDefinitionId,
       {},
@@ -795,12 +799,13 @@ export class WorkflowService {
     );
 
     const updatedWorkflow = await this.updateContextById(
-      workflowId,
+      workflowRuntimeId,
       {
         documents: documentsWithDecision,
       },
       projectIds,
     );
+
     const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, projectIds);
     const entityId = updatedWorkflow.businessId || updatedWorkflow.endUserId;
 
@@ -812,59 +817,15 @@ export class WorkflowService {
       correlationId: correlationId,
     });
 
-    // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
-    const resolvedStates = ['approved', 'rejected'];
-    const shouldResolve =
-      workflowDefinition?.config?.completedWhenTasksResolved && workflow?.status === 'active';
-    const allDocumentsResolved =
-      shouldResolve &&
-      safeEvery(
-        updatedWorkflow?.context?.documents,
-        (document: DefaultContextSchema['documents'][number]) => {
-          if (!document?.decision?.status) return false;
-
-          return resolvedStates.includes(document?.decision?.status);
-        },
+    if (deliverEvent) {
+      return await this.event(
+        { id: workflowRuntimeId, name: deliverEvent },
+        projectIds,
+        currentProjectId,
       );
-
-    const workflowService = createWorkflow({
-      runtimeId: workflow?.id,
-      definition: workflowDefinition?.definition,
-      definitionType: workflowDefinition?.definitionType,
-      workflowContext: {
-        machineContext: workflow?.context,
-        state: workflow?.state ?? workflowDefinition?.definition?.initial,
-      },
-    });
-
-    const snapshot = workflowService.getSnapshot();
-    const isFinal = workflowDefinition?.definition?.states?.[snapshot?.value]?.type === 'final';
-    const isResolved =
-      isFinal || allDocumentsResolved || workflow?.status === WorkflowRuntimeDataStatus.completed;
-
-    const updatedWorkflowWithResolve = await this.workflowRuntimeDataRepository.updateById(
-      workflow?.id,
-      {
-        data: {
-          status: allDocumentsResolved ? 'completed' : workflow?.status,
-          resolvedAt: isResolved ? new Date().toISOString() : null,
-        },
-      },
-      currentProjectId,
-    );
-
-    if (isResolved) {
-      this.logger.log('Workflow resolved', { id: updatedWorkflowWithResolve?.id });
-
-      this.workflowEventEmitter.emit('workflow.completed', {
-        runtimeData: updatedWorkflowWithResolve,
-        state: snapshot?.value ?? updatedWorkflowWithResolve?.state,
-        entityId: updatedWorkflowWithResolve?.businessId || updatedWorkflowWithResolve?.endUserId,
-        correlationId: updatedWorkflowWithResolve?.correlationId,
-      });
     }
 
-    return updatedWorkflowWithResolve;
+    return updatedWorkflow;
   }
 
   async updateContextById(
@@ -879,7 +840,7 @@ export class WorkflowService {
     workflowRuntimeId: string,
     data: WorkflowDefinitionUpdateInput,
     projectId: TProjectId,
-  ) {
+  ): Promise<WorkflowRuntimeData> {
     const projectIds: TProjectIds = projectId ? [projectId] : null;
 
     const runtimeData = await this.workflowRuntimeDataRepository.findById(
@@ -1069,9 +1030,9 @@ export class WorkflowService {
       await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
     }
 
-    if (data.dispatchEvent) {
+    if (data.deliverEvent) {
       return await this.event(
-        { name: data.dispatchEvent, id: workflowRuntimeId },
+        { name: data.deliverEvent, id: workflowRuntimeId },
         projectIds,
         projectId,
       );
@@ -1706,7 +1667,7 @@ export class WorkflowService {
     });
 
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
-      return;
+      return updatedRuntimeData;
     }
 
     const approvalState = ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState];

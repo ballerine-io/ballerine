@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Business, Customer, EndUser, Prisma, PrismaClient, User } from '@prisma/client';
+import { Business, Customer, EndUser, Prisma, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -83,6 +83,7 @@ async function createProject(client: PrismaClient, customer: Customer, id: strin
   });
 }
 
+const DEFAULT_INITIAL_STATE = 'manual_review';
 async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
   const client = new PrismaClient();
@@ -463,6 +464,72 @@ async function seed(bcryptSalt: string | number) {
     });
   }
 
+  function generateBaseStates() {
+    return {
+      manual_review: {
+        tags: [StateTag.MANUAL_REVIEW],
+        on: {
+          DOCUMENT_REVIEWED: [
+            {
+              target: 'approved',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  rule: 'length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == "approved"]) == length(documents)',
+                },
+              },
+            },
+            {
+              target: 'rejected',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  rule: 'length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == "rejected"]) == length(documents)',
+                },
+              },
+            },
+            {
+              target: 'resolved',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  rule: 'length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == "revision"]) == `0` && length(documents[?decision.status == "approved"]) > `0` && length(documents[?decision.status == "rejected"]) > `0`',
+                },
+              },
+            },
+            {
+              target: 'revision',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  rule: 'length(documents[?decision.status]) == length(documents) && length(documents) > `1` && documents[?decision.status == "revision"] | length(@) > `0`',
+                },
+              },
+            },
+          ],
+        },
+      },
+      rejected: {
+        tags: [StateTag.REJECTED],
+        type: 'final',
+      },
+      approved: {
+        tags: [StateTag.APPROVED],
+        type: 'final',
+      },
+      resolved: {
+        tags: [StateTag.RESOLVED],
+        type: 'final',
+      },
+      revision: {
+        tags: [StateTag.REVISION],
+        on: {
+          resubmit: DEFAULT_INITIAL_STATE,
+        },
+      },
+    };
+  }
+
   // Risk score improvement
   await client.workflowDefinition.create({
     data: {
@@ -472,7 +539,7 @@ async function seed(bcryptSalt: string | number) {
       definitionType: 'statechart-json',
       config: {
         completedWhenTasksResolved: true,
-        workflowLevelResolution: false,
+        workflowLevelResolution: true,
         allowMultipleActiveWorkflows: true,
       },
       contextSchema: {
@@ -481,79 +548,24 @@ async function seed(bcryptSalt: string | number) {
       },
       definition: {
         id: 'risk-score-improvement',
-        initial: 'idle',
-        states: {
-          review: {
-            tags: [StateTag.MANUAL_REVIEW],
-            on: {
-              idle: {
-                target: 'review',
-              },
-              review: {
-                target: ['rejected', 'approved', 'revision'],
-              },
-              revision: {
-                target: ['rejected', 'approved', 'review'],
-              },
-            },
-          },
-          idle: {},
-          approved: {
-            tags: [StateTag.APPROVED],
-            type: 'final',
-          },
-          rejected: {
-            tags: [StateTag.REJECTED],
-            type: 'final',
-          },
-          revision: {
-            tags: [StateTag.REVISION],
-          },
-        },
+        initial: DEFAULT_INITIAL_STATE,
+        states: generateBaseStates(),
       },
       projectId: project1.id,
     },
   });
 
   const baseManualReviewDefinition = {
-    name: 'manual_review',
+    name: DEFAULT_INITIAL_STATE,
     version: manualMachineVersion,
     definitionType: 'statechart-json',
+    config: {
+      workflowLevelResolution: true,
+    },
     definition: {
       id: 'Manual Review',
-      initial: 'review',
-      states: {
-        review: {
-          tags: [StateTag.MANUAL_REVIEW],
-          on: {
-            approve: {
-              target: 'approved',
-            },
-            reject: {
-              target: 'rejected',
-            },
-            revision: {
-              target: 'revision',
-            },
-          },
-        },
-        approved: {
-          tags: [StateTag.APPROVED],
-          type: 'final',
-        },
-        rejected: {
-          tags: [StateTag.REJECTED],
-          type: 'final',
-        },
-        revision: {
-          tags: [StateTag.REVISION],
-          on: {
-            review: {
-              target: 'review',
-            },
-          },
-        },
-      },
+      initial: DEFAULT_INITIAL_STATE,
+      states: generateBaseStates(),
     },
     persistStates: [],
     submitStates: [],
@@ -565,7 +577,7 @@ async function seed(bcryptSalt: string | number) {
       ...baseManualReviewDefinition,
       id: kycManualMachineId,
       config: {
-        workflowLevelResolution: false,
+        workflowLevelResolution: true,
       },
       version: 2,
       projectId: project1.id,
@@ -891,44 +903,11 @@ async function seed(bcryptSalt: string | number) {
       definition: {
         id: 'kyb_onboarding',
         predictableActionArguments: true,
-        initial: 'review',
-
+        initial: DEFAULT_INITIAL_STATE,
         context: {
           documents: [],
         },
-
-        states: {
-          review: {
-            tags: [StateTag.MANUAL_REVIEW],
-            on: {
-              approve: {
-                target: 'approved',
-              },
-              reject: {
-                target: 'rejected',
-              },
-              revision: {
-                target: 'revision',
-              },
-            },
-          },
-          approved: {
-            tags: [StateTag.APPROVED],
-            type: 'final',
-          },
-          rejected: {
-            tags: [StateTag.REJECTED],
-            type: 'final',
-          },
-          revision: {
-            tags: [StateTag.REVISION],
-            on: {
-              review: {
-                target: 'review',
-              },
-            },
-          },
-        },
+        states: generateBaseStates(),
       },
     },
   });
@@ -948,44 +927,11 @@ async function seed(bcryptSalt: string | number) {
       definition: {
         id: 'kyb_risk_score',
         predictableActionArguments: true,
-        initial: 'review',
-
+        initial: DEFAULT_INITIAL_STATE,
         context: {
           documents: [],
         },
-
-        states: {
-          review: {
-            tags: [StateTag.MANUAL_REVIEW],
-            on: {
-              approve: {
-                target: 'approved',
-              },
-              reject: {
-                target: 'rejected',
-              },
-              revision: {
-                target: 'revision',
-              },
-            },
-          },
-          approved: {
-            tags: [StateTag.APPROVED],
-            type: 'final',
-          },
-          rejected: {
-            tags: [StateTag.REJECTED],
-            type: 'final',
-          },
-          revision: {
-            tags: [StateTag.REVISION],
-            on: {
-              review: {
-                target: 'review',
-              },
-            },
-          },
-        },
+        states: generateBaseStates(),
       },
     },
   });
@@ -1181,6 +1127,7 @@ async function seed(bcryptSalt: string | number) {
             workflowDefinitionId: kycManualMachineId,
             workflowDefinitionVersion: manualMachineVersion,
             context: await createMockEndUserContextData(id, index + 1),
+            state: DEFAULT_INITIAL_STATE,
           },
           projectId: project1.id,
         }),
@@ -1195,6 +1142,7 @@ async function seed(bcryptSalt: string | number) {
         workflowDefinitionVersion: 1,
         context: await createMockBusinessContextData(id, index + 1),
         createdAt: faker.date.recent(2),
+        state: DEFAULT_INITIAL_STATE,
         projectId: project1.id,
       });
 
@@ -1213,6 +1161,7 @@ async function seed(bcryptSalt: string | number) {
         workflowDefinitionVersion: manualMachineVersion,
         // Would not display data in the backoffice UI
         context: {},
+        state: DEFAULT_INITIAL_STATE,
         createdAt: faker.date.recent(2),
       };
 

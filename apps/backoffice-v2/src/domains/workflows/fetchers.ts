@@ -164,7 +164,7 @@ export const fetchWorkflowEvent = async ({
   return handleZodError(error, workflow);
 };
 
-export const fetchWorkflowDecision = async ({
+export const updateWorkflowDecision = async ({
   workflowId,
   documentId,
   body,
@@ -173,6 +173,7 @@ export const fetchWorkflowDecision = async ({
   body: {
     decision: string | null;
     reason?: string;
+    deliverEvent?: string;
   };
 }) => {
   const [workflow, error] = await apiClient({

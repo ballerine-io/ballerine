@@ -28,6 +28,12 @@ const motionProps: ComponentProps<typeof MotionBadge> = {
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
 };
 
+function getDeliverableEvent(workflow: TWorkflowById): string | undefined {
+  if (workflow?.workflowDefinition?.config?.workflowLevelResolution) {
+    return 'DOCUMENT_REVIEWED';
+  }
+}
+
 export const useTasks = ({
   workflow,
   entity,
@@ -43,13 +49,18 @@ export const useTasks = ({
 }) => {
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
+  const deliverEvent = getDeliverableEvent(workflow);
+  // const deliverEvent = workflow?.workflowDefinition?.config?.deliverEvent;
   const docsData = useStorageFilesQuery(
     workflow?.context?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
   const { noAction } = useCaseDecision();
-  const { mutate: mutateRevisionTaskById } = useRevisionTaskByIdMutation(workflow?.id);
+  const { mutate: mutateRevisionTaskById } = useRevisionTaskByIdMutation(
+    workflow?.id,
+    deliverEvent,
+  );
 
   const results: Array<Array<string>> = [];
   workflow?.context?.documents?.forEach((document, docIndex) => {

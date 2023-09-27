@@ -1,6 +1,7 @@
 export const StateTag = {
   APPROVED: 'approved',
   REJECTED: 'rejected',
+  RESOLVED: 'resolved',
   REVISION: 'revision',
   MANUAL_REVIEW: 'manual_review',
   PENDING_PROCESS: 'pending_process',
@@ -14,6 +15,7 @@ export const StateTags = [
   StateTag.MANUAL_REVIEW,
   StateTag.PENDING_PROCESS,
   StateTag.COLLECTION_FLOW,
+  StateTag.RESOLVED,
 ] as const;
 
 export type TStateTag = (typeof StateTags)[number];

@@ -16,7 +16,7 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
-import { IntentResponse, WorkflowService } from './workflow.service';
+import { WorkflowService } from './workflow.service';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { plainToClass } from 'class-transformer';
@@ -198,7 +198,7 @@ export class WorkflowControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<void> {
-    return await this.service.event(
+    await this.service.event(
       {
         ...data,
         id,
@@ -221,7 +221,7 @@ export class WorkflowControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<void> {
-    return await this.service.event(
+    await this.service.event(
       {
         ...data,
         id,
@@ -275,7 +275,7 @@ export class WorkflowControllerExternal {
         currentProjectId: workflowRuntime.projectId,
       });
 
-      return await this.service.event(
+      await this.service.event(
         {
           id: params.id,
           name: params.event,
