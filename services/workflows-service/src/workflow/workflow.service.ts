@@ -1421,9 +1421,13 @@ export class WorkflowService {
             state: workflowDefinition.definition.initial,
             tags: workflowDefinition.definition.states[workflowDefinition.definition.initial]?.tags,
             workflowDefinitionId: workflowDefinition.id,
-            ...(parentWorkflowId && {
-              parentWorkflowRuntimeDataId: parentWorkflowId,
-            }),
+            ...(parentWorkflowId &&
+              ({
+                parentRuntimeDataId: parentWorkflowId,
+              } satisfies Omit<
+                Prisma.WorkflowRuntimeDataCreateArgs['data'],
+                'context' | 'workflowDefinitionVersion'
+              >)),
             ...('salesforceObjectName' in salesforceData && salesforceData),
           },
         },
