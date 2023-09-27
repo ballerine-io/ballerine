@@ -965,20 +965,6 @@ export class WorkflowService {
     // @ts-ignore
     // TODO: Use snapshot.done instead
     const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
-    if (
-      ['active'].includes(data.status! || runtimeData.status) &&
-      workflowDef.config?.completedWhenTasksResolved
-    ) {
-      // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
-      const allDocumentsResolved =
-        data.context?.documents?.length &&
-        data.context?.documents?.every((document: DefaultContextSchema['documents'][number]) => {
-          return ['approved', 'rejected'].includes(document?.decision?.status as string);
-        });
-
-      data.status = allDocumentsResolved ? 'completed' : data.status! || runtimeData.status;
-    }
-
     const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
 
     if (isResolved) {
@@ -1081,6 +1067,14 @@ export class WorkflowService {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
+    }
+
+    if (data.dispatchEvent) {
+      return await this.event(
+        { name: data.dispatchEvent, id: workflowRuntimeId },
+        projectIds,
+        projectId,
+      );
     }
 
     return updatedResult;
@@ -1748,6 +1742,7 @@ export class WorkflowService {
         currentProjectId,
       );
     }
+    return updatedRuntimeData;
   }
 
   async persistChildWorkflowToParent(
