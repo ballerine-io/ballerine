@@ -92,17 +92,7 @@ export const Item: FunctionComponent<IItemProps> = ({
           </div>
         </div>
         <div className={`ml-auto mr-1 flex -space-x-2 overflow-hidden`}>
-          {assignee ? (
-            assignee.avatarUrl ? (
-              <UserAvatar fullName={assignee.fullName} avatarUrl={assignee.avatarUrl} />
-            ) : (
-              <Avatar
-                placeholder={createInitials(assignee.fullName)}
-                src=""
-                alt={assignee.fullName}
-              />
-            )
-          ) : null}
+          {assignee && <UserAvatar fullName={assignee.fullName} avatarUrl={assignee.avatarUrl} />}
         </div>
       </NavLink>
     </li>
