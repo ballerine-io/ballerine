@@ -1,4 +1,4 @@
-FROM node:18.17.1-bullseye-slim as dev
+FROM node:18.18-bullseye-slim as dev
 
 WORKDIR /app
 COPY . .
