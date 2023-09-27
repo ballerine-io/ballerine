@@ -63,6 +63,7 @@ export class KYBParentKYCSessionExampleAdapter
                 },
               },
             },
+            documents: [],
           })),
         },
 
