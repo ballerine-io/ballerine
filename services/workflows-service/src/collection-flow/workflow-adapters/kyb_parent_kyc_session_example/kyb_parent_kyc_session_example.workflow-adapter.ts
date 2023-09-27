@@ -43,7 +43,7 @@ export class KYBParentKYCSessionExampleAdapter
         ...baseWorkflowRuntimeData.context.entity.data,
         ...payload.businessData,
         additionalInfo: {
-          ...baseWorkflowRuntimeData.context.entity.data.additionalInfo,
+          ...baseWorkflowRuntimeData.context.entity?.data?.additionalInfo,
           mainRepresentative,
           ubos: ubos.map(ubo => ({
             entity: {
@@ -63,6 +63,7 @@ export class KYBParentKYCSessionExampleAdapter
                 },
               },
             },
+            documents: [],
           })),
         },
 
@@ -81,9 +82,7 @@ export class KYBParentKYCSessionExampleAdapter
         issuer: {
           country: 'GH',
         },
-        decision: document.decision
-          ? document.decision
-          : { status: '', revisionReason: '', rejectionReason: '' },
+        decision: document.decision ? document.decision : {},
         pages: [
           {
             ballerineFileId: document.fileId,
