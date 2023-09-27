@@ -91,6 +91,13 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
         const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
           (acc, curr) => {
             if (!formData?.[curr]) return acc;
+
+            if (document?.propertiesSchema?.properties?.[curr]?.format === 'date-time') {
+              if (formData?.[curr]?.length === 16) {
+                formData[curr] = `${formData[curr]}:00`;
+              }
+            }
+
             acc[curr] = formData?.[curr];
 
             return acc;
