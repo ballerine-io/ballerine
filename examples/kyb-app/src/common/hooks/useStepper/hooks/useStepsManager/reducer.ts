@@ -46,22 +46,6 @@ export function stepsRepisotoryReducer(
     };
   }
 
-  if (action.type === 'INVALIDATE') {
-    const { reason, stepIndex } = action;
-
-    return {
-      ...state,
-      meta: {
-        ...state.meta,
-        [stepIndex]: {
-          ...state.meta[stepIndex],
-          status: 'error',
-          errorReason: reason,
-        },
-      },
-    };
-  }
-
   if (action.type === 'WARNING') {
     const { reason, stepIndex } = action;
 
