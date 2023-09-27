@@ -9,7 +9,7 @@ import fs from 'fs';
 import { CustomerService } from '@/customer/customer.service';
 import { TProjectId, TProjectIds } from '@/types';
 import { TDocumentsWithoutPageType } from '@/common/types';
-import {fromBuffer} from "file-type";
+import { fromBuffer } from 'file-type';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -163,20 +163,20 @@ export class HookCallbackHandlerService {
     return issuer;
   }
 
-   async formatPages(data: AnyRecord) {
+  async formatPages(data: AnyRecord) {
     const documentImages: AnyRecord[] = [];
     for (const image of data.images as { context?: string; content: string }[]) {
       const tmpFile = tmp.fileSync().name;
       const base64ImageContent = image.content.split(',')[1];
       const buffer = Buffer.from(base64ImageContent as string, 'base64');
       const fileType = await fromBuffer(buffer);
-      const fileExtension = fileType?.ext ? `.${fileType?.ext }` : '';
+      const fileExtension = fileType?.ext ? `.${fileType?.ext}` : '';
       const fileWithExtension = `${tmpFile}${fileExtension}`;
       fs.writeFileSync(fileWithExtension, buffer);
 
       documentImages.push({
         uri: `file://${fileWithExtension}`,
-        provider: 'local',
+        provider: 'file-system',
         type: fileType?.mime,
         metadata: {
           side: image.context?.replace('document-', ''),

@@ -297,7 +297,7 @@ export const createKycRuntime = ({
           metadata: {
             side: 'face',
           },
-          provider: 'local',
+          provider: 'file-system',
           ballerineFileId: faker.random.alphaNumeric(20),
         },
         {
@@ -306,7 +306,7 @@ export const createKycRuntime = ({
           metadata: {
             side: 'front',
           },
-          provider: 'local',
+          provider: 'file-system',
           ballerineFileId: faker.random.alphaNumeric(20),
         },
         ...(ubo.passport.back
