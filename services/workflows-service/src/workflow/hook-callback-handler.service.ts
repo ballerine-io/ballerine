@@ -69,7 +69,13 @@ export class HookCallbackHandlerService {
     const pages = await this.formatPages(data);
     const decision = this.formatDecision(data);
     const documentCategory = kycDocument.type as string;
-    const documents = this.formatDocuments(documentCategory, pages, issuer, documentProperties);
+    const documents = this.formatDocuments(
+      documentCategory,
+      pages,
+      issuer,
+      documentProperties,
+      kycDocument,
+    );
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
@@ -98,6 +104,7 @@ export class HookCallbackHandlerService {
     pages: any[],
     issuer: AnyRecord,
     documentProperties: AnyRecord,
+    kycDocument: AnyRecord,
   ) {
     const documents = [
       {
@@ -106,6 +113,7 @@ export class HookCallbackHandlerService {
         pages: pages,
         issuer: issuer,
         properties: documentProperties,
+        issuingVersion: kycDocument['issueNumber'],
       },
     ];
 
@@ -157,7 +165,6 @@ export class HookCallbackHandlerService {
       additionalInfo: additionalIssuerInfor,
       country: kycDocument['country'],
       name: kycDocument['issuedBy'],
-      issuingVersion: kycDocument['issueNumber'],
       city: kycDocument['placeOfIssue'],
     };
     return issuer;
