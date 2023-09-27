@@ -33,6 +33,21 @@ backoffice:
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    pathtype: ImplementationSpecific
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: backoffice-example.local
+        paths:
+          - path: /
+    #tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
 
 headlessexample:
   enabled: true
@@ -52,6 +67,55 @@ headlessexample:
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    pathtype: ImplementationSpecific
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: headlessexample-example.local
+        paths:
+          - path: /
+    #tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+kybapp:
+  enabled: true
+  replicas: 1
+  strategyType: RollingUpdate
+  updateStrategy:
+    maxSurge: 1
+    maxUnavailable: "0"
+  nameOverride: kybapp
+  service:
+    port: 80
+    type: ClusterIP
+    protocol: TCP
+  image:
+    registry: ghcr.io
+    repository: "ballerine-io/kyb-app"
+    pullPolicy: Always
+    pullSecrets: ""
+    tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    pathtype: ImplementationSpecific
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: kyb-app-example.local
+        paths:
+          - path: /
+    #tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
 
 workflowsdashboard:
   enabled: true
@@ -71,6 +135,21 @@ workflowsdashboard:
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    pathtype: ImplementationSpecific
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: workflowdashboard-example.local
+        paths:
+          - path: /
+    #tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
 
 websocketService:
   enabled: true
@@ -80,7 +159,6 @@ websocketService:
     maxSurge: 1
     maxUnavailable: "0"
   nameOverride: websocketservice
-  migration: true
   service:
     port: 3500
     type: ClusterIP
@@ -114,6 +192,21 @@ workflowService:
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    pathtype: ImplementationSpecific
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: workflowsvc-example.local
+        paths:
+          - path: /
+    #tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
   applicationConfig:
     BCRYPT_SALT: "10"
     JWT_SECRET_KEY: "secret"
