@@ -716,7 +716,7 @@ export class WorkflowService {
     },
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
-    deliverEvent?: string,
+    postUpdateEventName?: string,
   ) {
     const workflow = await this.workflowRuntimeDataRepository.findById(
       workflowRuntimeId,
@@ -817,9 +817,9 @@ export class WorkflowService {
       correlationId: correlationId,
     });
 
-    if (deliverEvent) {
+    if (postUpdateEventName) {
       return await this.event(
-        { id: workflowRuntimeId, name: deliverEvent },
+        { id: workflowRuntimeId, name: postUpdateEventName },
         projectIds,
         currentProjectId,
       );
@@ -1030,9 +1030,9 @@ export class WorkflowService {
       await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
     }
 
-    if (data.deliverEvent) {
+    if (data.postUpdateEventName) {
       return await this.event(
-        { name: data.deliverEvent, id: workflowRuntimeId },
+        { name: data.postUpdateEventName, id: workflowRuntimeId },
         projectIds,
         projectId,
       );

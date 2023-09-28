@@ -9,10 +9,11 @@ import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/h
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRevisionTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { CommonWorkflowEvent } from '@ballerine/common';
 
-const getDeliverableEvent = (workflow: TWorkflowById) => {
+const getPostUpdateEventNameEvent = (workflow: TWorkflowById) => {
   if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
-    return 'DOCUMENT_REVIEWED';
+    return CommonWorkflowEvent.TASK_REVIEWED;
   }
 };
 export const useCallToActionLogic = () => {
@@ -21,14 +22,14 @@ export const useCallToActionLogic = () => {
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
-  const deliverEvent = getDeliverableEvent(workflow);
+  const postUpdateEventName = getPostUpdateEventNameEvent(workflow);
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
-    useApproveTaskByIdMutation(workflow?.id, deliverEvent);
+    useApproveTaskByIdMutation(workflow?.id, postUpdateEventName);
   const { mutate: mutateRejectTaskById, isLoading: isLoadingRejectTaskById } =
-    useRejectTaskByIdMutation(workflow?.id, deliverEvent);
+    useRejectTaskByIdMutation(workflow?.id, postUpdateEventName);
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingRevisionTaskById } =
-    useRevisionTaskByIdMutation(workflow?.id, deliverEvent);
+    useRevisionTaskByIdMutation(workflow?.id, postUpdateEventName);
 
   const revisionReasons =
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(

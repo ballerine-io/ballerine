@@ -21,5 +21,5 @@ export class DocumentDecisionUpdateInput {
 
   @IsOptional()
   @IsString()
-  deliverEvent?: string;
+  postUpdateEventName?: string;
 }

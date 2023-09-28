@@ -469,7 +469,7 @@ async function seed(bcryptSalt: string | number) {
       manual_review: {
         tags: [StateTag.MANUAL_REVIEW],
         on: {
-          DOCUMENT_REVIEWED: [
+          TASK_REVIEWED: [
             {
               target: 'approved',
               cond: {
@@ -524,7 +524,7 @@ async function seed(bcryptSalt: string | number) {
       revision: {
         tags: [StateTag.REVISION],
         on: {
-          resubmit: DEFAULT_INITIAL_STATE,
+          RESBUMIT: DEFAULT_INITIAL_STATE,
         },
       },
     };

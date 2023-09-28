@@ -19,7 +19,7 @@ export const StateTags = [
 ] as const;
 
 export const CommonWorkflowEvent = {
-  DOCUMENT_REVIEWED: 'DOCUMENT_REVIEWED',
+  TASK_REVIEWED: 'TASK_REVIEWED',
   CASE_REVIEWED: 'CASE_REVIEWED',
   RETURN_TO_REVIEW: 'RETURN_TO_REVIEW',
   RESUBMITTED: 'RESUBMITTED',

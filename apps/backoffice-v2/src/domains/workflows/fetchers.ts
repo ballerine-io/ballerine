@@ -173,7 +173,7 @@ export const updateWorkflowDecision = async ({
   body: {
     decision: string | null;
     reason?: string;
-    deliverEvent?: string;
+    postUpdateEventName?: string;
   };
 }) => {
   const [workflow, error] = await apiClient({

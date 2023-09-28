@@ -29,7 +29,7 @@ export const Action = {
   REJECT: 'reject',
   APPROVE: 'approve',
   REVISION: 'revision',
-  DOCUMENT_REVIEWED: 'DOCUMENT_REVIEWED',
+  TASK_REVIEWED: 'TASK_REVIEWED',
   CASE_REVIEWED: 'CASE_REVIEWED',
 } as const;
 export const Resource = {

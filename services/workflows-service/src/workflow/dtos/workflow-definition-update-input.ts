@@ -54,5 +54,5 @@ export class WorkflowDefinitionUpdateInput {
 
   @IsString()
   @IsOptional()
-  deliverEvent?: string;
+  postUpdateEventName?: string;
 }

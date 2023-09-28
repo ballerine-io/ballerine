@@ -10,7 +10,12 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import { CommonWorkflowEvent, getDocumentsByCountry, StateTag } from '@ballerine/common';
+import {
+  CommonWorkflowEvent,
+  CommonWorkflowStates,
+  getDocumentsByCountry,
+  StateTag,
+} from '@ballerine/common';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
@@ -28,7 +33,7 @@ const motionProps: ComponentProps<typeof MotionBadge> = {
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
 };
 
-function getDeliverableEvent(workflow: TWorkflowById): string | undefined {
+function getPostUpdateEventName(workflow: TWorkflowById): string | undefined {
   if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
     return CommonWorkflowEvent.RETURN_TO_REVIEW;
   }
@@ -49,7 +54,7 @@ export const useTasks = ({
 }) => {
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
-  const deliverEvent = getDeliverableEvent(workflow);
+  const postUpdateEventName = getPostUpdateEventName(workflow);
   // const deliverEvent = workflow?.workflowDefinition?.config?.deliverEvent;
   const docsData = useStorageFilesQuery(
     workflow?.context?.documents?.flatMap(({ pages }) =>
@@ -59,7 +64,7 @@ export const useTasks = ({
   const { noAction } = useCaseDecision();
   const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
     workflow?.id,
-    deliverEvent,
+    postUpdateEventName,
   );
 
   const results: Array<Array<string>> = [];
@@ -124,7 +129,7 @@ export const useTasks = ({
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
         const isDocumentRevision =
-          decision?.status === 'revision' && (!isDoneWithRevision || noAction);
+          decision?.status === CommonWorkflowStates.REVISION && (!isDoneWithRevision || noAction);
 
         const isLegacyReject = workflow?.workflowDefinition?.config?.isLegacyReject;
         const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {

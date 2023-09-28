@@ -6,7 +6,7 @@ import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { Action } from '../../../../../common/enums';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 
-export const useRejectTaskByIdMutation = (workflowId: string, deliverEvent?: string) => {
+export const useRejectTaskByIdMutation = (workflowId: string, postUpdateEventName?: string) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
@@ -19,7 +19,7 @@ export const useRejectTaskByIdMutation = (workflowId: string, deliverEvent?: str
         body: {
           decision: Action.REJECT,
           reason,
-          deliverEvent,
+          postUpdateEventName,
         },
       }),
     onMutate: async ({ documentId, reason }) => {

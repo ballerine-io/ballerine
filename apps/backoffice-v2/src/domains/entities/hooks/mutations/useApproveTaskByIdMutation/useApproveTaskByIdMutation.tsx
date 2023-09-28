@@ -6,7 +6,7 @@ import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { Action } from '../../../../../common/enums';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 
-export const useApproveTaskByIdMutation = (workflowId: string, deliverEvent?: string) => {
+export const useApproveTaskByIdMutation = (workflowId: string, postUpdateEventName?: string) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
@@ -18,7 +18,7 @@ export const useApproveTaskByIdMutation = (workflowId: string, deliverEvent?: st
         documentId,
         body: {
           decision: Action.APPROVE,
-          deliverEvent,
+          postUpdateEventName,
         },
       }),
     onMutate: async ({ documentId }) => {
