@@ -268,11 +268,6 @@ export class WorkflowControllerExternal {
   ): Promise<void> {
     try {
       const workflowRuntime = await this.service.getWorkflowRuntimeDataByIdUnscoped(params.id);
-      workflowRuntime.context.documents = await this.service.persistFileUrlsToDocuments(
-        workflowRuntime.context.documents,
-        workflowRuntime.projectId,
-      );
-
       await this.normalizeService.handleHookResponse({
         workflowRuntime: workflowRuntime,
         data: hookResponse,

@@ -1427,9 +1427,13 @@ export class WorkflowService {
             state: workflowDefinition.definition.initial,
             tags: workflowDefinition.definition.states[workflowDefinition.definition.initial]?.tags,
             workflowDefinitionId: workflowDefinition.id,
-            ...(parentWorkflowId && {
-              parentRuntimeDataId: parentWorkflowId,
-            }),
+            ...(parentWorkflowId &&
+              ({
+                parentRuntimeDataId: parentWorkflowId,
+              } satisfies Omit<
+                Prisma.WorkflowRuntimeDataCreateArgs['data'],
+                'context' | 'workflowDefinitionVersion'
+              >)),
             ...('salesforceObjectName' in salesforceData && salesforceData),
           },
         },
@@ -1959,42 +1963,5 @@ export class WorkflowService {
       recordId: workflowRuntimeData.salesforceRecordId,
       data,
     });
-  }
-
-  async persistFileUrlsToDocuments(documents: any[] = [], projectIds: TProjectIds): Promise<any> {
-    const fileEntities = await Promise.all(
-      await documents.reduce((filesList, document) => {
-        document.pages.forEach((page: { ballerineFileId: string }) => {
-          filesList.push(this.storageService.getFileById({ id: page.ballerineFileId }, projectIds));
-        });
-
-        return filesList;
-      }, []),
-    );
-
-    const filesById = keyBy(fileEntities, 'id');
-
-    const updatedDocuments = documents.map(document => {
-      return {
-        ...document,
-        decision: {},
-        pages: document.pages.map(
-          (page: { ballerineFileId: string; uri: string; provider: string; type: string }) => {
-            const file: File | null = filesById[page.ballerineFileId];
-
-            if (!file) return page;
-
-            return {
-              ballerineFileId: page.ballerineFileId,
-              uri: file.uri,
-              type: file.mimeType,
-              provider: 'http',
-            };
-          },
-        ),
-      };
-    });
-
-    return updatedDocuments;
   }
 }
