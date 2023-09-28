@@ -1,10 +1,10 @@
-import { useBreadcrumb } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/hooks/useBreadcrumb';
+import { useBreadcrumbContext } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/hooks/useBreadcrumb';
 import { BreadcrumbElements } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/types';
 
-export const useBreadcrumbElement = <TProps>(
+export const useBreadcrumbElementLogic = <TProps>(
   elementType: BreadcrumbElements,
 ): { isActive: boolean; props: TProps } => {
-  const { isActive, elementsProps } = useBreadcrumb();
+  const { isActive, elementsProps } = useBreadcrumbContext();
 
   return {
     isActive,
