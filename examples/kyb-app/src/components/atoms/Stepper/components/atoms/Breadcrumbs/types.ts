@@ -60,3 +60,36 @@ export interface BreadcrumbProps {
   theme?: BreadcrumbTheme;
   children?: React.ReactNode | BreadcrumbChildrenCallback;
 }
+
+export interface BreadcrumbActive {
+  id: string;
+  state: BreadcrumbState;
+}
+
+export interface BreadcrumbItemInput {
+  id: string;
+  label: string;
+  state: BreadcrumbState;
+}
+
+export interface BreadcrumbItemRender extends BreadcrumbItemInput {
+  active: boolean;
+}
+
+export type BreadcrumbsRendererCallback = (
+  items: BreadcrumbItemRender[],
+  theme: BreadcrumbTheme,
+) => React.ReactNode;
+
+export interface BreadcrumbsLabelProps {
+  active: boolean;
+  state: BreadcrumbState;
+  text: string;
+}
+
+export interface BreadcrumbsProps {
+  items: BreadcrumbItemInput[];
+  active?: BreadcrumbActive | null;
+  theme?: BreadcrumbTheme;
+  children?: BreadcrumbsRendererCallback;
+}

@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { Provider } from './stepper.context';
 import { BaseLabel } from '@app/components/atoms/Stepper/components/atoms/BaseLabel/BaseLabel';
 
-const baseLabelsMap: StepperLabelsMap = {
+export const baseLabelsMap: StepperLabelsMap = {
   idle: ({ text }) => <BaseLabel variant="idle" text={text} />,
   warning: ({ text }) => <BaseLabel variant="warning" text={text} />,
   completed: ({ text }) => <BaseLabel variant="completed" text={text} />,

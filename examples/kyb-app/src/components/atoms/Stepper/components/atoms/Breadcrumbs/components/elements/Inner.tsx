@@ -1,5 +1,5 @@
-import { useBreadcrumbElement } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/hooks/useBreadcrumbElement';
-import { BreadcrumbsInnerProps } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/types';
+import { useBreadcrumbElement } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/hooks/useBreadcrumbElement';
+import { BreadcrumbsInnerProps } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/types';
 import clsx from 'clsx';
 
 export const Inner = ({ className, icon }: BreadcrumbsInnerProps) => {
