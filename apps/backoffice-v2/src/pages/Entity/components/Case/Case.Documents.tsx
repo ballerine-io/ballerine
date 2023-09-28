@@ -95,37 +95,37 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
                 >
                   <FileText className={`rotate-90 p-0.5`} />
                 </button>
-                <button
-                  className={ctw(
-                    'btn btn-circle btn-ghost btn-sm bg-base-300/70 focus:outline-primary',
-                    {
-                      hidden: !isCropping,
-                    },
-                  )}
-                  onClick={onCancelCrop}
-                >
-                  <XMarkSvg className={`p-0.5`} />
-                </button>
-                <div
-                  title={
-                    isRotatedOrTransformed
-                      ? `Cannot OCR rotated, zoomed, panned, or pinched documents`
-                      : undefined
-                  }
-                >
-                  <button
-                    type={`button`}
-                    className={ctw(
-                      `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
-                      { loading: isLoadingOCR },
-                    )}
-                    onClick={onOcr}
-                    disabled={isRotatedOrTransformed}
-                  >
-                    {isCropping && !isLoadingOCR && <CheckSvg className={`p-0.5`} />}
-                    {!isCropping && !isLoadingOCR && <span className={`p-0.5`}>OCR</span>}
-                  </button>
-                </div>
+                {/*<button*/}
+                {/*  className={ctw(*/}
+                {/*    'btn btn-circle btn-ghost btn-sm bg-base-300/70 focus:outline-primary',*/}
+                {/*    {*/}
+                {/*      hidden: !isCropping,*/}
+                {/*    },*/}
+                {/*  )}*/}
+                {/*  onClick={onCancelCrop}*/}
+                {/*>*/}
+                {/*  <XMarkSvg className={`p-0.5`} />*/}
+                {/*</button>*/}
+                {/*<div*/}
+                {/*  title={*/}
+                {/*    isRotatedOrTransformed*/}
+                {/*      ? `Cannot OCR rotated, zoomed, panned, or pinched documents`*/}
+                {/*      : undefined*/}
+                {/*  }*/}
+                {/*>*/}
+                {/*  <button*/}
+                {/*    type={`button`}*/}
+                {/*    className={ctw(*/}
+                {/*      `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,*/}
+                {/*      { loading: isLoadingOCR },*/}
+                {/*    )}*/}
+                {/*    onClick={onOcr}*/}
+                {/*    disabled={isRotatedOrTransformed}*/}
+                {/*  >*/}
+                {/*    {isCropping && !isLoadingOCR && <CheckSvg className={`p-0.5`} />}*/}
+                {/*    {!isCropping && !isLoadingOCR && <span className={`p-0.5`}>OCR</span>}*/}
+                {/*  </button>*/}
+                {/*</div>*/}
               </>
             )}
             {!isLoading && <ImageViewer.ZoomButton />}

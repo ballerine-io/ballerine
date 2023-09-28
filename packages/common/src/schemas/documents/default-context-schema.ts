@@ -142,7 +142,7 @@ export const defaultContextSchema = {
                 },
                 provider: {
                   type: 'string',
-                  enum: ['gcs', 'http', 'stream', 'base64', 'ftp'],
+                  enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'],
                 },
                 uri: {
                   type: 'string',

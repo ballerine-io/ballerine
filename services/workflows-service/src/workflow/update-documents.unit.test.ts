@@ -34,7 +34,7 @@ describe('updateDocuments', () => {
             city: 'Rowland Heights',
             type: 'government',
             name: 'Government',
-            additionalDetails: {},
+            additionalInfo: {},
             country: 'Israel',
           },
           properties: {
@@ -81,7 +81,7 @@ describe('updateDocuments', () => {
             city: 'Rowland Heights',
             type: 'government',
             name: 'Government',
-            additionalDetails: {},
+            additionalInfo: {},
             country: 'Grenada',
           },
           properties: {
@@ -159,7 +159,7 @@ function getMockDocuments(): Documents {
         city: 'Rowland Heights',
         type: 'government',
         name: 'Government',
-        additionalDetails: {},
+        additionalInfo: {},
         country: 'Grenada',
       },
       properties: {
@@ -207,7 +207,7 @@ function getMockDocuments(): Documents {
         city: 'Rowland Heights',
         type: 'government',
         name: 'Government',
-        additionalDetails: {},
+        additionalInfo: {},
         country: 'Grenada',
       },
       properties: {
@@ -255,7 +255,7 @@ function getMockDocuments(): Documents {
         city: 'Rowland Heights',
         type: 'government',
         name: 'Government',
-        additionalDetails: {},
+        additionalInfo: {},
         country: 'Grenada',
       },
       properties: {
