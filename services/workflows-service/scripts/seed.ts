@@ -475,7 +475,7 @@ async function seed(bcryptSalt: string | number) {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: 'length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == "approved"]) == length(documents)',
+                  rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'approved']) == length(documents)",
                 },
               },
             },
@@ -484,7 +484,7 @@ async function seed(bcryptSalt: string | number) {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: 'length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == "rejected"]) == length(documents)',
+                  rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'rejected']) == length(documents)",
                 },
               },
             },
@@ -493,7 +493,7 @@ async function seed(bcryptSalt: string | number) {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: 'length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == "revision"]) == `0` && length(documents[?decision.status == "approved"]) > `0` && length(documents[?decision.status == "rejected"]) > `0`',
+                  rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'revision']) == `0` && length(documents[?decision.status == 'approved']) > `0` && length(documents[?decision.status == 'rejected']) > `0`",
                 },
               },
             },
@@ -502,7 +502,7 @@ async function seed(bcryptSalt: string | number) {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: 'length(documents[?decision.status]) == length(documents) && length(documents) > `1` && documents[?decision.status == "revision"] | length(@) > `0`',
+                  rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'revision']) > `0`",
                 },
               },
             },
@@ -539,7 +539,7 @@ async function seed(bcryptSalt: string | number) {
       definitionType: 'statechart-json',
       config: {
         completedWhenTasksResolved: true,
-        workflowLevelResolution: true,
+        workflowLevelResolution: false,
         allowMultipleActiveWorkflows: true,
       },
       contextSchema: {
@@ -577,7 +577,7 @@ async function seed(bcryptSalt: string | number) {
       ...baseManualReviewDefinition,
       id: kycManualMachineId,
       config: {
-        workflowLevelResolution: true,
+        workflowLevelResolution: false,
       },
       version: 2,
       projectId: project1.id,
@@ -590,7 +590,7 @@ async function seed(bcryptSalt: string | number) {
       ...baseManualReviewDefinition,
       id: kybManualMachineId,
       config: {
-        workflowLevelResolution: true,
+        workflowLevelResolution: false,
       },
       projectId: project1.id,
     },
@@ -896,8 +896,8 @@ async function seed(bcryptSalt: string | number) {
       version: 1,
       definitionType: 'statechart-json',
       config: {
-        workflowLevelResolution: true,
-        completedWhenTasksResolved: false,
+        workflowLevelResolution: false,
+        completedWhenTasksResolved: true,
         allowMultipleActiveWorkflows: false,
       },
       definition: {

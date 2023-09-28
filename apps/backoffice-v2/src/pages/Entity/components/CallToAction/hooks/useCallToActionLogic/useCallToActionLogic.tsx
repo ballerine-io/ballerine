@@ -11,7 +11,7 @@ import { useRevisionTaskByIdMutation } from '../../../../../../domains/entities/
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 
 const getDeliverableEvent = (workflow: TWorkflowById) => {
-  if (workflow?.workflowDefinition?.config?.workflowLevelResolution) {
+  if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
     return 'DOCUMENT_REVIEWED';
   }
 };

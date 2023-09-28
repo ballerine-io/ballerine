@@ -24,12 +24,12 @@ export const useCaseDecision = () => {
   const canReject = caseState.actionButtonsEnabled && workflow?.nextEvents?.includes(Action.REJECT);
   const canRevision =
     caseState.actionButtonsEnabled &&
-    workflow?.nextEvents?.includes(Action.REVISION) &&
+    workflow?.nextEvents?.includes(Action.REVISION || Action.CASE_REVIEWED) &&
     someDocumentDecisionStatus(workflow?.context?.documents, 'revision');
   const canApprove =
     !canRevision &&
     caseState.actionButtonsEnabled &&
-    workflow?.nextEvents?.includes(Action.APPROVE);
+    workflow?.nextEvents?.includes(Action.APPROVE || Action.CASE_REVIEWED);
   const noAction =
     workflow?.workflowDefinition?.config?.workflowLevelResolution &&
     !canApprove &&

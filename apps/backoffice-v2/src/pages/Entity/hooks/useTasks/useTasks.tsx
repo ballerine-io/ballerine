@@ -10,16 +10,16 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import { getDocumentsByCountry, StateTag } from '@ballerine/common';
+import { CommonWorkflowEvent, getDocumentsByCountry, StateTag } from '@ballerine/common';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 import { X } from 'lucide-react';
-import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
+import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -29,8 +29,8 @@ const motionProps: ComponentProps<typeof MotionBadge> = {
 };
 
 function getDeliverableEvent(workflow: TWorkflowById): string | undefined {
-  if (workflow?.workflowDefinition?.config?.workflowLevelResolution) {
-    return 'DOCUMENT_REVIEWED';
+  if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
+    return CommonWorkflowEvent.RETURN_TO_REVIEW;
   }
 }
 
@@ -57,7 +57,7 @@ export const useTasks = ({
     ),
   );
   const { noAction } = useCaseDecision();
-  const { mutate: mutateRevisionTaskById } = useRevisionTaskByIdMutation(
+  const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
     workflow?.id,
     deliverEvent,
   );
@@ -151,7 +151,7 @@ export const useTasks = ({
                         Re-upload needed
                         <X
                           className="h-4 w-4 cursor-pointer"
-                          onClick={() => mutateRevisionTaskById({ documentId: id, decision: null })}
+                          onClick={() => removeDecisionById({ documentId: id })}
                         />
                       </React.Fragment>
                     ),
@@ -433,6 +433,6 @@ export const useTasks = ({
     pluginsOutputKeys,
     results,
     noAction,
-    mutateRevisionTaskById,
+    removeDecisionById,
   ]);
 };

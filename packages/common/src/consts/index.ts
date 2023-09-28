@@ -18,6 +18,20 @@ export const StateTags = [
   StateTag.RESOLVED,
 ] as const;
 
+export const CommonWorkflowEvent = {
+  DOCUMENT_REVIEWED: 'DOCUMENT_REVIEWED',
+  CASE_REVIEWED: 'CASE_REVIEWED',
+  RETURN_TO_REVIEW: 'RETURN_TO_REVIEW',
+  RESUBMITTED: 'RESUBMITTED',
+} as const;
+
+export const CommonWorkflowStates = {
+  MANUAL_REVIEW: 'manual_review',
+  REJECTED: 'rejected',
+  APPROVED: 'approved',
+  RESOLVED: 'resolved',
+  REVISION: 'revision',
+} as const;
 export type TStateTag = (typeof StateTags)[number];
 
 export type TStateTags = typeof StateTags;
