@@ -87,7 +87,7 @@ export const kycEmailSessionDefinition = {
               firstName: entity.data.firstName,
               lastName: entity.data.lastName,
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
-              vendor: 'test'
+              vendor: 'veriff'
               }`, // jmespath
             },
           ],
@@ -96,7 +96,7 @@ export const kycEmailSessionDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: "{kyc_session_1: {vendor: 'test', type: 'kyc', result: {metadata: @}}}", // jmespath
+              mapping: "{kyc_session_1: {vendor: 'veriff', type: 'kyc', result: {metadata: @}}}", // jmespath
             },
           ],
         },
