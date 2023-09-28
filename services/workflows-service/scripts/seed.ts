@@ -9,7 +9,7 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import { defaultContextSchema } from '@ballerine/common';
+import { CommonWorkflowStates, defaultContextSchema } from '@ballerine/common';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
@@ -19,6 +19,8 @@ import { generateKycSessionDefinition } from './workflows/kyc-email-process-exam
 import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
 import { env } from '../src/env';
 import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
+import { generateBaseCaseLevelStates } from './workflows/generate-base-case-level-states';
+import { InputJsonValue } from '../src/types';
 
 seed(10).catch(error => {
   console.error(error);
@@ -84,7 +86,7 @@ async function createProject(client: PrismaClient, customer: Customer, id: strin
   });
 }
 
-const DEFAULT_INITIAL_STATE = 'manual_review';
+const DEFAULT_INITIAL_STATE = CommonWorkflowStates.MANUAL_REVIEW;
 async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
   const client = new PrismaClient();
@@ -490,26 +492,28 @@ async function seed(bcryptSalt: string | number) {
     },
   });
 
-  const baseManualReviewDefinition = {
-    name: DEFAULT_INITIAL_STATE,
-    version: manualMachineVersion,
-    definitionType: 'statechart-json',
-    config: {
-      workflowLevelResolution: true,
-    },
-    definition: {
-      id: 'Manual Review',
-      initial: DEFAULT_INITIAL_STATE,
-      states: generateBaseTaskLevelStates(),
-    },
-    persistStates: [],
-    submitStates: [],
-  } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
+  const baseReviewDefinition = (stateDefinition: InputJsonValue) =>
+    ({
+      name: DEFAULT_INITIAL_STATE,
+      version: manualMachineVersion,
+      definitionType: 'statechart-json',
+      config: {
+        isLegacyReject: true,
+        workflowLevelResolution: true,
+      },
+      definition: {
+        id: 'Manual Review',
+        initial: DEFAULT_INITIAL_STATE,
+        states: stateDefinition,
+      },
+      persistStates: [],
+      submitStates: [],
+    } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput);
 
   // KYC Manual Review (workflowLevelResolution false)
   await client.workflowDefinition.create({
     data: {
-      ...baseManualReviewDefinition,
+      ...baseReviewDefinition(generateBaseTaskLevelStates()),
       id: kycManualMachineId,
       config: {
         workflowLevelResolution: false,
@@ -522,7 +526,7 @@ async function seed(bcryptSalt: string | number) {
   // KYB Manual Review (workflowLevelResolution true)
   await client.workflowDefinition.create({
     data: {
-      ...baseManualReviewDefinition,
+      ...baseReviewDefinition(generateBaseCaseLevelStates()),
       id: kybManualMachineId,
       config: {
         workflowLevelResolution: true,
@@ -831,8 +835,8 @@ async function seed(bcryptSalt: string | number) {
       version: 1,
       definitionType: 'statechart-json',
       config: {
-        workflowLevelResolution: false,
-        completedWhenTasksResolved: true,
+        workflowLevelResolution: true,
+        completedWhenTasksResolved: false,
         allowMultipleActiveWorkflows: false,
       },
       definition: {
@@ -842,7 +846,7 @@ async function seed(bcryptSalt: string | number) {
         context: {
           documents: [],
         },
-        states: generateBaseTaskLevelStates(),
+        states: generateBaseCaseLevelStates(),
       },
     },
   });

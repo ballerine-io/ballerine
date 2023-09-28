@@ -7,9 +7,9 @@ export const generateBaseCaseLevelStates = (
   [defaultState]: {
     tags: [StateTag.MANUAL_REVIEW],
     on: {
-      [CommonWorkflowStates.REJECTED]: CommonWorkflowStates.REJECTED,
-      [CommonWorkflowStates.APPROVED]: CommonWorkflowStates.APPROVED,
-      [CommonWorkflowStates.REVISION]: CommonWorkflowStates.REVISION,
+      [CommonWorkflowStates.REJECTED]: { target: CommonWorkflowStates.REJECTED },
+      [CommonWorkflowStates.APPROVED]: { target: CommonWorkflowStates.APPROVED },
+      [CommonWorkflowStates.REVISION]: { target: CommonWorkflowStates.REVISION },
     },
   },
   rejected: {

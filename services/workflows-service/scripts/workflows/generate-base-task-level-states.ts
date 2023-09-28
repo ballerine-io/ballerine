@@ -1,6 +1,9 @@
-import {CommonWorkflowEvent, CommonWorkflowStates, StateTag} from "@ballerine/common";
+import { CommonWorkflowEvent, CommonWorkflowStates, StateTag } from '@ballerine/common';
 
-export const generateBaseTaskLevelStates = ( defaultState: string = CommonWorkflowStates.MANUAL_REVIEW, defaultResubmitEvent: string = CommonWorkflowEvent.RETURN_TO_REVIEW) => ({
+export const generateBaseTaskLevelStates = (
+  defaultState: string = CommonWorkflowStates.MANUAL_REVIEW,
+  defaultResubmitEvent: string = CommonWorkflowEvent.RETURN_TO_REVIEW,
+) => ({
   [defaultState]: {
     tags: [StateTag.MANUAL_REVIEW],
     on: {
@@ -19,16 +22,7 @@ export const generateBaseTaskLevelStates = ( defaultState: string = CommonWorkfl
           cond: {
             type: 'jmespath',
             options: {
-              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'rejected']) == length(documents)",
-            },
-          },
-        },
-        {
-          target: CommonWorkflowStates.RESOLVED,
-          cond: {
-            type: 'jmespath',
-            options: {
-              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'revision']) == `0` && length(documents[?decision.status == 'approved']) > `0` && length(documents[?decision.status == 'rejected']) > `0`",
+              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'rejected']) > `0`",
             },
           },
         },
