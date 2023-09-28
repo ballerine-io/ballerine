@@ -729,7 +729,7 @@ export class WorkflowService {
       projectIds,
     );
 
-    this.__validateWorkflowDefinitionContext(workflowDefinition, {
+    const context = {
       ...workflow?.context,
       documents: workflow?.context?.documents?.map(
         ({
@@ -744,12 +744,13 @@ export class WorkflowService {
             status: document?.decision?.status === null ? undefined : document?.decision?.status,
           },
           type:
-            document?.type === 'unknown' && document?.decision?.status === 'approved'
+            document?.type === 'unknown' && decision.status === 'approve'
               ? undefined
               : document?.type,
         }),
       ),
-    });
+    };
+    this.__validateWorkflowDefinitionContext(workflowDefinition, context);
 
     // `name` is always `approve` and not `approved` etc.
     const Status = {
@@ -806,6 +807,7 @@ export class WorkflowService {
       projectIds,
     );
 
+    this.__validateWorkflowDefinitionContext(workflowDefinition, updatedWorkflow.context);
     const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, projectIds);
     const entityId = updatedWorkflow.businessId || updatedWorkflow.endUserId;
 
@@ -1557,11 +1559,12 @@ export class WorkflowService {
     workflowDefinition: WorkflowDefinition,
     context: DefaultContextSchema,
   ) {
+    console.log('running validate');
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
-
+    console.log('passed schema');
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate(context);
-
+    console.log(JSON.stringify(context));
     if (isValid) return;
 
     throw new BadRequestException(
