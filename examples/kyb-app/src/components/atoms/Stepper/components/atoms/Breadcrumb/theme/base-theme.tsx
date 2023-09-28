@@ -1,7 +1,11 @@
 import { CompletedIcon } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/components/CompletedIcon';
 import { ExclamationMarkIcon } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/components/ExclamationMarkIcon';
+import {
+  outerCommonClassName,
+  wrapperCommonClassName,
+} from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/theme/common';
 import { BreadcrumbTheme } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/types';
-import { twMerge } from 'tailwind-merge';
+import { ctw } from '@ballerine/ui';
 
 export const baseBreadcrumbTheme: BreadcrumbTheme = {
   idle: {
@@ -9,39 +13,39 @@ export const baseBreadcrumbTheme: BreadcrumbTheme = {
       className: '',
     },
     outer: {
-      className: twMerge('rounded-full', 'border-[2px] border-transparent'),
-      activeClassName: twMerge('border-[#007AFF33]'),
+      className: outerCommonClassName,
+      activeClassName: ctw('border-[#007AFF33]'),
     },
     wrapper: {
-      className: twMerge('box-border', 'w-[12px]', 'h-[12px]', 'rounded-full', 'border'),
-      activeClassName: twMerge('border-[#007AFF]'),
+      className: ctw(wrapperCommonClassName, 'border'),
+      activeClassName: ctw('border-[#007AFF]'),
     },
   },
   warning: {
     inner: {
-      className: twMerge('w-full', 'h-full bg-[#FFB35A]'),
+      className: ctw('w-full', 'h-full bg-[#FFB35A]'),
       icon: <ExclamationMarkIcon />,
     },
     outer: {
-      className: twMerge('rounded-full', 'border-[2px] border-transparent'),
+      className: outerCommonClassName,
       activeClassName: 'border-[#FF8A0055]',
     },
     wrapper: {
-      className: twMerge('box-border', 'w-[12px]', 'h-[12px]', 'rounded-full'),
+      className: wrapperCommonClassName,
     },
   },
   completed: {
     inner: {
-      className: twMerge('w-full', 'h-full bg-[#00BD59]'),
+      className: ctw('w-full', 'h-full bg-[#00BD59]'),
       icon: <CompletedIcon />,
     },
     outer: {
-      className: twMerge('rounded-full', 'border-[2px] border-transparent'),
+      className: outerCommonClassName,
       activeClassName: 'border-[#00BD5933]',
     },
     wrapper: {
-      className: twMerge('box-border', 'w-[12px]', 'h-[12px]', 'rounded-full'),
-      activeClassName: twMerge('border-[1px] border-[#20B064]'),
+      className: wrapperCommonClassName,
+      activeClassName: ctw('border-[1px] border-[#20B064]'),
     },
   },
 };

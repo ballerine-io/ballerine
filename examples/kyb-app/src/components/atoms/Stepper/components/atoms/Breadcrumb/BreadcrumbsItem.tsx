@@ -3,7 +3,6 @@ import {
   BreadcrumbProps,
 } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/types';
 import { breadcrumbContext } from './breadcrumb.context';
-import { baseBreadcrumbTheme } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/base-theme';
 import { useMemo } from 'react';
 import { pickOuterProps } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/helpers/pick-outer-props';
 import { pickInnerProps } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/helpers/pick-inner-props';
@@ -11,6 +10,7 @@ import { pickWrapperProps } from '@app/components/atoms/Stepper/components/atoms
 import { Outer } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/components/elements/Outer';
 import { Wrapper } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/components/elements/Wrapper';
 import { Inner } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/components/elements/Inner';
+import { baseBreadcrumbTheme } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/theme/base-theme';
 
 const { Provider } = breadcrumbContext;
 

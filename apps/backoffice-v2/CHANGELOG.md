@@ -1,5 +1,12 @@
 # @ballerine/backoffice-v2
 
+## 0.5.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.1
+
 ## 0.5.5
 
 ### Patch Changes
