@@ -94,10 +94,12 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
             if (!propertyValue) return acc;
 
-            if (document?.propertiesSchema?.properties?.[curr]?.format === 'date-time') {
-              if (typeof propertyValue === 'string' && propertyValue?.length === 16) {
-                propertyValue = `${propertyValue}:00`;
-              }
+            if (
+              document?.propertiesSchema?.properties?.[curr]?.format === 'date-time' &&
+              typeof propertyValue === 'string' &&
+              propertyValue?.length === 16
+            ) {
+              propertyValue = `${propertyValue}:00`;
             }
 
             acc[curr] = propertyValue;
