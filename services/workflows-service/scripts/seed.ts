@@ -9,7 +9,7 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import { defaultContextSchema, StateTag } from '@ballerine/common';
+import { defaultContextSchema } from '@ballerine/common';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
@@ -18,6 +18,7 @@ import { generateKybDefintion } from './workflows';
 import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
 import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
 import { env } from '../src/env';
+import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
 
 seed(10).catch(error => {
   console.error(error);
@@ -464,72 +465,6 @@ async function seed(bcryptSalt: string | number) {
     });
   }
 
-  function generateBaseStates() {
-    return {
-      manual_review: {
-        tags: [StateTag.MANUAL_REVIEW],
-        on: {
-          TASK_REVIEWED: [
-            {
-              target: 'approved',
-              cond: {
-                type: 'jmespath',
-                options: {
-                  rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'approved']) == length(documents)",
-                },
-              },
-            },
-            {
-              target: 'rejected',
-              cond: {
-                type: 'jmespath',
-                options: {
-                  rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'rejected']) == length(documents)",
-                },
-              },
-            },
-            {
-              target: 'resolved',
-              cond: {
-                type: 'jmespath',
-                options: {
-                  rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'revision']) == `0` && length(documents[?decision.status == 'approved']) > `0` && length(documents[?decision.status == 'rejected']) > `0`",
-                },
-              },
-            },
-            {
-              target: 'revision',
-              cond: {
-                type: 'jmespath',
-                options: {
-                  rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'revision']) > `0`",
-                },
-              },
-            },
-          ],
-        },
-      },
-      rejected: {
-        tags: [StateTag.REJECTED],
-        type: 'final',
-      },
-      approved: {
-        tags: [StateTag.APPROVED],
-        type: 'final',
-      },
-      resolved: {
-        tags: [StateTag.RESOLVED],
-        type: 'final',
-      },
-      revision: {
-        tags: [StateTag.REVISION],
-        on: {
-          RESBUMIT: DEFAULT_INITIAL_STATE,
-        },
-      },
-    };
-  }
-
   // Risk score improvement
   await client.workflowDefinition.create({
     data: {
@@ -549,7 +484,7 @@ async function seed(bcryptSalt: string | number) {
       definition: {
         id: 'risk-score-improvement',
         initial: DEFAULT_INITIAL_STATE,
-        states: generateBaseStates(),
+        states: generateBaseTaskLevelStates(),
       },
       projectId: project1.id,
     },
@@ -565,7 +500,7 @@ async function seed(bcryptSalt: string | number) {
     definition: {
       id: 'Manual Review',
       initial: DEFAULT_INITIAL_STATE,
-      states: generateBaseStates(),
+      states: generateBaseTaskLevelStates(),
     },
     persistStates: [],
     submitStates: [],
@@ -590,7 +525,7 @@ async function seed(bcryptSalt: string | number) {
       ...baseManualReviewDefinition,
       id: kybManualMachineId,
       config: {
-        workflowLevelResolution: false,
+        workflowLevelResolution: true,
       },
       projectId: project1.id,
     },
@@ -907,7 +842,7 @@ async function seed(bcryptSalt: string | number) {
         context: {
           documents: [],
         },
-        states: generateBaseStates(),
+        states: generateBaseTaskLevelStates(),
       },
     },
   });
@@ -931,7 +866,7 @@ async function seed(bcryptSalt: string | number) {
         context: {
           documents: [],
         },
-        states: generateBaseStates(),
+        states: generateBaseTaskLevelStates(),
       },
     },
   });
