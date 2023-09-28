@@ -1,7 +1,7 @@
 import {
   BreadcrumbState,
   BreadcrumbTheme,
-} from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/types';
+} from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/types';
 
 export type ElementPropsPicker<TElementProps> = (
   state: BreadcrumbState,

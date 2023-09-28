@@ -1,5 +1,5 @@
-import { useBreadcrumb } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/hooks/useBreadcrumb';
-import { BreadcrumbElements } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/types';
+import { useBreadcrumb } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/hooks/useBreadcrumb';
+import { BreadcrumbElements } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/types';
 
 export const useBreadcrumbElement = <TProps>(
   elementType: BreadcrumbElements,

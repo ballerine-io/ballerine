@@ -1,5 +1,5 @@
-import { ElementPropsPicker } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/helpers/types';
-import { BreadcrumbsOuterProps } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/types';
+import { ElementPropsPicker } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/helpers/types';
+import { BreadcrumbsOuterProps } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/types';
 import { ctw } from '@ballerine/ui';
 
 export const pickOuterProps: ElementPropsPicker<BreadcrumbsOuterProps> = (

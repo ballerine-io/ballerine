@@ -1,11 +1,16 @@
 import { useSettings } from '@app/common/providers/SettingsProvider/hooks/useSettings';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { Stepper } from '@app/components/atoms/Stepper';
-import { Item } from '@app/components/atoms/Stepper/Item';
+import {
+  BreadcrumbActive,
+  BreadcrumbItemInput,
+} from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs';
+import { Breadcrumbs } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/Breadcrumbs';
 import { VerticalLayout } from '@app/components/atoms/Stepper/layouts/Vertical';
 import { FormContainer } from '@app/components/layouts/AppShell/FormContainer';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
-import { AnyChildren } from '@ballerine/ui';
+import { AnyChildren, ctw } from '@ballerine/ui';
+import { useMemo } from 'react';
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];
@@ -18,6 +23,26 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
   const settings = useSettings();
   const { steps, state } = useViewState();
   const { customer } = useCustomer();
+
+  const breadcrumbItems: BreadcrumbItemInput[] = useMemo(
+    (): BreadcrumbItemInput[] =>
+      steps.map(step => ({
+        id: step.dataAlias,
+        label: step.label,
+        state: step?.meta?.status || 'idle',
+      })),
+    [steps],
+  );
+
+  const activeBreadcrumb: BreadcrumbActive | null = useMemo(() => {
+    const activeItem = breadcrumbItems.find(item => item.id === state);
+    if (!activeItem) return null;
+
+    return {
+      id: activeItem.id,
+      state: activeItem.state,
+    };
+  }, [breadcrumbItems, state]);
 
   return (
     <div className="w-ful flex h-screen flex-nowrap">
@@ -35,18 +60,35 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
             <div className="h-full max-h-[440px]">
               {isLoading ? null : (
                 <Stepper>
-                  <VerticalLayout>
-                    {steps.map(step => {
-                      return step.hidden ? null : (
-                        <Item
-                          key={`step-${step.index}`}
-                          active={state === step.dataAlias}
-                          label={step.label}
-                          status={step.meta?.status}
-                        />
+                  <Breadcrumbs items={breadcrumbItems} active={activeBreadcrumb}>
+                    {(items, theme) => {
+                      return (
+                        <VerticalLayout>
+                          {items.map(itemProps => {
+                            return (
+                              <div
+                                className={ctw(
+                                  'last:bg- flex flex-row items-center gap-4 first:bg-white',
+                                )}
+                                key={itemProps.id}
+                              >
+                                <Breadcrumbs.Item
+                                  active={itemProps.active}
+                                  state={itemProps.state}
+                                  theme={theme}
+                                />
+                                <Breadcrumbs.Label
+                                  active={itemProps.active}
+                                  text={itemProps.label}
+                                  state={itemProps.state}
+                                />
+                              </div>
+                            );
+                          })}
+                        </VerticalLayout>
                       );
-                    })}
-                  </VerticalLayout>
+                    }}
+                  </Breadcrumbs>
                 </Stepper>
               )}
             </div>

@@ -1,10 +1,10 @@
-import { CompletedIcon } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/components/CompletedIcon';
-import { ExclamationMarkIcon } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/components/ExclamationMarkIcon';
+import { CompletedIcon } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/components/CompletedIcon';
+import { ExclamationMarkIcon } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/components/ExclamationMarkIcon';
 import {
   outerCommonClassName,
   wrapperCommonClassName,
-} from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/theme/common';
-import { BreadcrumbTheme } from '@app/components/atoms/Stepper/components/atoms/Breadcrumb/types';
+} from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/theme/common';
+import { BreadcrumbTheme } from '@app/components/atoms/Stepper/components/atoms/Breadcrumbs/types';
 import { ctw } from '@ballerine/ui';
 
 export const baseBreadcrumbTheme: BreadcrumbTheme = {
