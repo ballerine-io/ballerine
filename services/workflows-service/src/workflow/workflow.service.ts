@@ -272,16 +272,29 @@ export class WorkflowService {
               doc => getDocumentId(doc, false) === getDocumentId(document, false),
             );
 
-            const propertiesSchema = documentByCountry?.propertiesSchema ?? {};
+            const propertiesSchema = {
+              ...(documentByCountry?.propertiesSchema ?? {}),
+              properties: Object.fromEntries(
+                Object.entries(documentByCountry?.propertiesSchema?.properties ?? {}).map(
+                  ([key, value]) => {
+                    if (!(key in document.properties)) return [key, value];
+                    if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string')
+                      return [key, value];
 
-            Object.entries(propertiesSchema?.properties ?? {}).forEach(([key, value]) => {
-              if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string') return;
-
-              value.dropdownOptions = value.enum.map(item => ({
-                value: item,
-                label: item,
-              }));
-            });
+                    return [
+                      key,
+                      {
+                        ...value,
+                        dropdownOptions: value.enum.map(item => ({
+                          value: item,
+                          label: item,
+                        })),
+                      },
+                    ];
+                  },
+                ),
+              ),
+            };
 
             return {
               ...document,
