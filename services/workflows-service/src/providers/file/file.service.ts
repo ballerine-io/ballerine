@@ -231,7 +231,7 @@ export class FileService {
     }
 
     const localFileService = new LocalFileService();
-    const toFileStoragePath = localFileService.generateRemotePath({ customerName, fileName });
+    const toFileStoragePath = localFileService.generateRemotePath({ fileName });
 
     return {
       targetServiceProvider: localFileService,

@@ -2,6 +2,7 @@ import { TLocalFilePath, TRemoteFileConfig, TRemoteUri } from '@/providers/file/
 import fs from 'fs';
 import { IFileProvider } from '../types/interfaces';
 import * as os from 'os';
+import * as path from 'path';
 
 export class LocalFileService implements IFileProvider {
   protected client;
@@ -45,16 +46,8 @@ export class LocalFileService implements IFileProvider {
     return Promise.resolve(toLocalFilePath);
   }
 
-  generateRemotePath({
-    fileName,
-    customerName,
-    directory,
-  }: {
-    fileName: string;
-    customerName: string;
-    directory?: string;
-  }): string {
-    return `${os.tmpdir()}/${this.__removeFilePrefix(fileName)}`;
+  generateRemotePath({ fileName }: { fileName: string }): string {
+    return path.join(os.tmpdir(), this.__removeFilePrefix(fileName));
   }
 
   private __removeFilePrefix(fileName: string): string {
