@@ -13,7 +13,7 @@ export const generateBaseTaskLevelStates = (
           cond: {
             type: 'jmespath',
             options: {
-              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'approved']) == length(documents)",
+              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `0` && length(documents[?decision.status == 'approved']) == length(documents)",
             },
           },
         },
@@ -22,7 +22,7 @@ export const generateBaseTaskLevelStates = (
           cond: {
             type: 'jmespath',
             options: {
-              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'rejected']) > `0`",
+              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `0` && length(documents[?decision.status == 'rejected']) > `0`",
             },
           },
         },
@@ -31,7 +31,7 @@ export const generateBaseTaskLevelStates = (
           cond: {
             type: 'jmespath',
             options: {
-              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `1` && length(documents[?decision.status == 'revision']) > `0`",
+              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `0` && length(documents[?decision.status == 'revision']) > `0`",
             },
           },
         },
