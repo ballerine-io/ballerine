@@ -55,7 +55,7 @@ export const BallerineImage = forwardRef<HTMLImageElement, IBallerineImageProps>
             <div className="d-full flex items-center justify-center">{placeholder}</div>
           ) : (
             <div className={`d-full flex items-center justify-center`}>
-              <PhotoSvg className={`w-[80%]`} />
+              <PhotoSvg className={`w-[70%]`} />
             </div>
           )}
         </div>

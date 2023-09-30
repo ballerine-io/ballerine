@@ -1,4 +1,3 @@
-import { useSettings } from '@app/common/providers/SettingsProvider/hooks/useSettings';
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
 import { useSignin } from '@app/hooks/useSignin';
@@ -12,10 +11,15 @@ export const BackButton = () => {
   const { customer } = useCustomer();
 
   const isExit = useMemo(() => steps[0]?.dataAlias === activeView.key, [state]);
+  const isDisabled = useMemo(() => {
+    return activeView.stepMetadata?.status === 'warning';
+  }, [activeView]);
 
   return (
     <div
-      className={clsx('select-none', { 'pointer-events-none opacity-50': isFinished })}
+      className={clsx('select-none', {
+        'pointer-events-none opacity-50': isFinished || isDisabled,
+      })}
       onClick={!isExit ? prev : () => logout()}
     >
       <ArrowLeft className="inline" />

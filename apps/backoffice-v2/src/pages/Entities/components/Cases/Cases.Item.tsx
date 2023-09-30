@@ -6,7 +6,6 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { IItemProps } from '../../../Entity/components/Case/interfaces';
 import { stringToRGB } from '../../../../common/utils/string-to-rgb/string-to-rgb';
-import { getTimePastFromNow } from '../../../../common/utils/get-time-past-from-now';
 import { ApprovedSvg, RejectedSvg } from '../../../../common/components/atoms/icons';
 import { UserAvatar } from '../../../../common/components/atoms/UserAvatar/UserAvatar';
 import { createInitials } from '../../../../common/utils/create-initials/create-initials';
@@ -85,24 +84,14 @@ export const Item: FunctionComponent<IItemProps> = ({
         </div>
         <div className={`max-w-[115px]`}>
           <div ref={ref} className={`mb-[2px] text-sm font-bold`} style={styles}>
-            {fullName}
+            {fullName || 'N/A'}
           </div>
           <div className={`text-xs opacity-60`}>
             {dayjs(new Date(createdAt)).format('D MMM YYYY HH:mm')}
           </div>
         </div>
         <div className={`ml-auto mr-1 flex -space-x-2 overflow-hidden`}>
-          {assignee ? (
-            assignee.avatarUrl ? (
-              <UserAvatar fullName={assignee.fullName} avatarUrl={assignee.avatarUrl} />
-            ) : (
-              <Avatar
-                placeholder={createInitials(assignee.fullName)}
-                src=""
-                alt={assignee.fullName}
-              />
-            )
-          ) : null}
+          {assignee && <UserAvatar fullName={assignee.fullName} avatarUrl={assignee.avatarUrl} />}
         </div>
       </NavLink>
     </li>
