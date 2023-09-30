@@ -199,7 +199,7 @@ export class WorkflowControllerInternal {
     }
   }
 
-  @common.Put(':id/properties/:documentId')
+  @common.Put(':id/documents/:documentId')
   @UseGuards(WorkflowAssigneeGuard)
   async updateDocumentPropertiesById(
     @common.Param() params: DocumentPropertiesParamsInput,
