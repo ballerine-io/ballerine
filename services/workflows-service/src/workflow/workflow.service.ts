@@ -197,6 +197,10 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
   }
 
+  async getWorkflowRuntimeDataByIdUnscoped(workflowRuntimeDataId: string) {
+    return await this.workflowRuntimeDataRepository.findByIdUnscoped(workflowRuntimeDataId);
+  }
+
   async getWorkflowRuntimeWithChildrenDataById(
     id: string,
     args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
@@ -269,29 +273,16 @@ export class WorkflowService {
               doc => getDocumentId(doc, false) === getDocumentId(document, false),
             );
 
-            const propertiesSchema = {
-              ...(documentByCountry?.propertiesSchema ?? {}),
-              properties: Object.fromEntries(
-                Object.entries(documentByCountry?.propertiesSchema?.properties ?? {}).map(
-                  ([key, value]) => {
-                    if (!(key in document.properties)) return [key, value];
-                    if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string')
-                      return [key, value];
+            const propertiesSchema = documentByCountry?.propertiesSchema ?? {};
 
-                    return [
-                      key,
-                      {
-                        ...value,
-                        dropdownOptions: value.enum.map(item => ({
-                          value: item,
-                          label: item,
-                        })),
-                      },
-                    ];
-                  },
-                ),
-              ),
-            };
+            Object.entries(propertiesSchema?.properties ?? {}).forEach(([key, value]) => {
+              if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string') return;
+
+              value.dropdownOptions = value.enum.map(item => ({
+                value: item,
+                label: item,
+              }));
+            });
 
             return {
               ...document,
@@ -1421,9 +1412,13 @@ export class WorkflowService {
             state: workflowDefinition.definition.initial,
             tags: workflowDefinition.definition.states[workflowDefinition.definition.initial]?.tags,
             workflowDefinitionId: workflowDefinition.id,
-            ...(parentWorkflowId && {
-              parentWorkflowRuntimeDataId: parentWorkflowId,
-            }),
+            ...(parentWorkflowId &&
+              ({
+                parentRuntimeDataId: parentWorkflowId,
+              } satisfies Omit<
+                Prisma.WorkflowRuntimeDataCreateArgs['data'],
+                'context' | 'workflowDefinitionVersion'
+              >)),
             ...('salesforceObjectName' in salesforceData && salesforceData),
           },
         },
@@ -1488,6 +1483,8 @@ export class WorkflowService {
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
+        if (documentPage.ballerineFileId && documentPage.uri) return documentPage;
+
         const persistedFile = await this.fileService.copyToDestinationAndCreate(
           document,
           entityId,

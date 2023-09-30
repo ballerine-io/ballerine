@@ -263,22 +263,16 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowIdWithEventInput,
     @common.Query() query: WorkflowHookQuery,
     @common.Body() hookResponse: any,
-    @ProjectIds() projectIds: TProjectIds,
-    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<void> {
     try {
-      const workflowRuntime = await this.service.getWorkflowRuntimeDataById(
-        params.id,
-        {},
-        projectIds,
-      );
+      const workflowRuntime = await this.service.getWorkflowRuntimeDataByIdUnscoped(params.id);
       await this.normalizeService.handleHookResponse({
         workflowRuntime: workflowRuntime,
         data: hookResponse,
         resultDestinationPath: query.resultDestination || 'hookResponse',
         processName: query.processName,
-        projectIds,
-        currentProjectId,
+        projectIds: [workflowRuntime.projectId],
+        currentProjectId: workflowRuntime.projectId,
       });
 
       return await this.service.event(
@@ -286,8 +280,8 @@ export class WorkflowControllerExternal {
           id: params.id,
           name: params.event,
         },
-        projectIds,
-        currentProjectId,
+        [workflowRuntime.projectId],
+        workflowRuntime.projectId,
       );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
