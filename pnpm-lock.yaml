@@ -22,8 +22,8 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4
       '@branchlint/default-config':
-        specifier: ^1.0.2
-        version: 1.0.2
+        specifier: ^1.0.3
+        version: 1.0.3
       '@changesets/changelog-git':
         specifier: ^0.1.14
         version: 0.1.14
@@ -7977,6 +7977,15 @@ packages:
 
   /@branchlint/default-config@1.0.2:
     resolution: {integrity: sha512-DHAD3FPTNjSn7MVT7CQfVueru1kHTkFZdxyGwfQZyC3O0xmu32sX8jbkdxy0VcG+tk/a2hEjlwBkmUcvdcvWJQ==}
+    dependencies:
+      '@branchlint/common': 0.0.1
+      lodash: 4.17.21
+      yargs: 17.7.1
+      zod: 3.21.4
+    dev: true
+
+  /@branchlint/default-config@1.0.3:
+    resolution: {integrity: sha512-+GPfC+AX0USbhWIIg5RYYQnndl9kGwDyReYdtsAHIi6E1M6D3+fTBLL3rEq6Y/lUX88D5aeAeVyRKo/5jw2JOg==}
     dependencies:
       '@branchlint/common': 0.0.1
       lodash: 4.17.21
