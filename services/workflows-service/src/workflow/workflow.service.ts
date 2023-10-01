@@ -50,13 +50,7 @@ import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
-import {
-  DefaultContextSchema,
-  getDocumentId,
-  getDocumentsByCountry,
-  isObject,
-  TDefaultSchemaDocumentPage,
-} from '@ballerine/common';
+import { DefaultContextSchema, TDefaultSchemaDocumentPage } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import {
@@ -80,6 +74,7 @@ import {
 } from '@ballerine/workflow-core';
 import { FindLastActiveFlowParams, GetLastActiveFlowParams } from '@/workflow/types/params';
 import { EndUserService } from '@/end-user/end-user.service';
+import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
 
 type TEntityId = string;
 
@@ -217,39 +212,7 @@ export class WorkflowService {
         ...workflow.context,
         documents: workflow.context?.documents?.map(
           (document: DefaultContextSchema['documents'][number]) => {
-            const documentsByCountry = getDocumentsByCountry(document?.issuer?.country);
-            const documentByCountry = documentsByCountry?.find(
-              doc => getDocumentId(doc, false) === getDocumentId(document, false),
-            );
-
-            const propertiesSchema = {
-              ...(documentByCountry?.propertiesSchema ?? {}),
-              properties: Object.fromEntries(
-                Object.entries(documentByCountry?.propertiesSchema?.properties ?? {}).map(
-                  ([key, value]) => {
-                    if (!(key in document.properties)) return [key, value];
-                    if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string')
-                      return [key, value];
-
-                    return [
-                      key,
-                      {
-                        ...value,
-                        dropdownOptions: value.enum.map(item => ({
-                          value: item,
-                          label: item,
-                        })),
-                      },
-                    ];
-                  },
-                ),
-              ),
-            };
-
-            return {
-              ...document,
-              propertiesSchema,
-            };
+            return addPropertiesSchemaToDocument(document);
           },
         ),
       },
@@ -677,7 +640,71 @@ export class WorkflowService {
 
     return updatedWorkflow;
   }
+  async updateDocumentById(
+    {
+      workflowId,
+      documentId,
+    }: {
+      workflowId: string;
+      documentId: string;
+    },
+    data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
+  ) {
+    const workflowDef = await this.workflowDefinitionRepository.findById(workflowId);
+    const document = {
+      ...data,
+      id: documentId,
+    };
 
+    const newDocument = addPropertiesSchemaToDocument(document);
+    const propertiesSchema = newDocument?.propertiesSchema ?? {};
+    if (Object.keys(propertiesSchema)?.length) {
+      const { required: _required, ...propertiesSchemaWithoutRequired } = propertiesSchema;
+      const validatePropertiesSchema = ajv.compile(propertiesSchemaWithoutRequired); // we shouldn't rely on schema from the client, add to tech debt
+
+      const isValidPropertiesSchema = validatePropertiesSchema(newDocument?.properties);
+
+      if (!isValidPropertiesSchema) {
+        throw new BadRequestException(
+          validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
+            ...rest,
+            message: `${instancePath} ${message}`,
+            instancePath,
+          })),
+        );
+      }
+    }
+
+    const updatedWorkflow = await this.updateContextById(workflowId, {
+      documents: [newDocument],
+    });
+
+    if (
+      ['active'].includes(updatedWorkflow.status) &&
+      workflowDef.config?.completedWhenTasksResolved
+    ) {
+      // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
+      const allDocumentsResolved =
+        updatedWorkflow.context?.documents?.length &&
+        updatedWorkflow.context?.documents?.every(
+          (document: DefaultContextSchema['documents'][number]) => {
+            return ['approved', 'rejected', 'revision'].includes(
+              document?.decision?.status as string,
+            );
+          },
+        );
+
+      updatedWorkflow.status = allDocumentsResolved ? 'completed' : updatedWorkflow.status;
+      await this.workflowRuntimeDataRepository.updateById(workflowId, {
+        data: {
+          ...data,
+          resolvedAt: new Date().toISOString(),
+        },
+      });
+    }
+
+    return updatedWorkflow;
+  }
   async updateContextById(id: string, context: WorkflowRuntimeData['context']) {
     return this.workflowRuntimeDataRepository.updateContextById(id, context);
   }
@@ -726,7 +753,7 @@ export class WorkflowService {
 
         if (!Object.keys(propertiesSchema ?? {})?.length) return;
 
-        const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {});
+        const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {}); // we shouldn't rely on schema from the client, add to tech debt
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
         if (!isValidPropertiesSchema) {

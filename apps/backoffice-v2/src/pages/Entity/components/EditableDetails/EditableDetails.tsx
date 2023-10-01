@@ -8,7 +8,6 @@ import { Button, buttonVariants } from '../../../../common/components/atoms/Butt
 import React, { ChangeEvent, FunctionComponent, useEffect, useState } from 'react';
 import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
-import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { FormField } from '../../../../common/components/organisms/Form/Form.Field';
 import { FormItem } from '../../../../common/components/organisms/Form/Form.Item';
 import { FormLabel } from '../../../../common/components/organisms/Form/Form.Label';
@@ -25,6 +24,7 @@ import { isNullish, isObject } from '@ballerine/common';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { JsonDialog } from '../../../../common/components/molecules/JsonDialog/JsonDialog';
 import { FileJson2 } from 'lucide-react';
+import { useUpdateDocumentByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateDocumentByIdMutation/useUpdateDocumentByIdMutation';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -59,46 +59,43 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const form = useForm({
     defaultValues,
   });
-  const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
+  const { mutate: mutateUpdateWorkflowById } = useUpdateDocumentByIdMutation({
     workflowId,
+    documentId: valueId,
   });
   const onMutateTaskDecisionById = ({
-    context,
+    // Ask Omri about this
+    document,
     action,
   }: {
-    context: AnyRecord;
+    document: AnyRecord;
     action: Parameters<typeof mutateUpdateWorkflowById>[0]['action'];
   }) =>
     mutateUpdateWorkflowById({
-      context,
+      document,
       action,
     });
   const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
-    const context = {
-      documents: documents?.map(document => {
-        if (document?.id !== valueId) return document;
+    const document = documents?.find(document => document?.id === valueId);
+    const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
+      (acc, curr) => {
+        if (!formData?.[curr]) return acc;
+        acc[curr] = formData?.[curr];
 
-        const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
-          (acc, curr) => {
-            if (!formData?.[curr]) return acc;
-            acc[curr] = formData?.[curr];
+        return acc;
+      },
+      {},
+    );
 
-            return acc;
-          },
-          {},
-        );
-
-        return {
-          ...document,
-          type: formData.type,
-          category: formData.category,
-          properties: properties,
-        };
-      }),
+    const newDocument = {
+      ...document,
+      type: formData.type,
+      category: formData.category,
+      properties: properties,
     };
 
     return onMutateTaskDecisionById({
-      context,
+      document: newDocument,
       action: 'update_document_properties',
     });
   };

@@ -35,6 +35,8 @@ import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-gu
 import { WorkflowEventDecisionInput } from '@/workflow/dtos/workflow-event-decision-input';
 import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
 import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
+import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
+import { DocumentUpdateInput } from './dtos/document-update-update-input';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -170,12 +172,29 @@ export class WorkflowControllerInternal {
     }
   }
 
+  @common.Patch(':id/documents/:documentId')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(WorkflowAssigneeGuard)
+  async updateDocumentPropertiesById(
+    @common.Param() params: DocumentUpdateParamsInput,
+    @common.Body() data: DocumentUpdateInput,
+  ) {
+    return await this.service.updateDocumentById(
+      {
+        workflowId: params?.id,
+        documentId: params?.documentId,
+      },
+      data.document,
+    );
+  }
+
   // PATCH /workflows/:workflowId/decision/:documentId
   @common.Patch('/:id/decision/:documentId')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseKeyAuthInDevGuard()
   @UseGuards(WorkflowAssigneeGuard)
   async updateDocumentDecisionById(
     @common.Param() params: DocumentDecisionParamsInput,
