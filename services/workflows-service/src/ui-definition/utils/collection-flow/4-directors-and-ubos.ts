@@ -49,7 +49,7 @@ const availableOnButtonRule = {
 
 export const directorsAndUbosPage = {
   type: 'page',
-  number: 5,
+  number: 4,
   stateName: 'directors_and_ubos',
   name: 'Directors and UBOs',
   elements: [

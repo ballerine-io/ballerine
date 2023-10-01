@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { personalInfoPage } from '../../../src/ui-definition/utils/collection-flow/personal-info-page';
-import { businessInfoPage } from '../../../src/ui-definition/utils/collection-flow/business-info-page';
+import { personalInfoPage } from '../../../src/ui-definition/utils/collection-flow/1-personal-info-page';
+import { businessInfoPage } from '../../../src/ui-definition/utils/collection-flow/2-business-info-page';
 import { defintion } from '../../../src/ui-definition/utils/collection-flow/defintion-logic';
 
 export const uiKybParentUiSchema = (workflowDefinitionId: string) =>
