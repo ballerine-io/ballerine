@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
 import { useNavigate } from 'react-router-dom';
-import { useSignin } from '@app/hooks/useSignin';
 import { useFlowContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useWorkflowContext';
 import { useRevisionWarnings } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useRevisionWarnings';
 import { useWorkflowIssues } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useWorkflowIssues';
@@ -20,7 +19,6 @@ import { uploadFilesAndSaveToStorage } from '@app/pages/CollectionFlow/component
 import { assignFileIdsToFlowData } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/helpers/assignFileIdsToFlowData';
 
 export const useBaseFlow = () => {
-  const { logoutSilent } = useSignin();
   const { user } = useSessionQuery();
   const { customer } = useCustomer();
   const { documentConfigurations } = useCollectionFlowSchemaQuery();
@@ -38,9 +36,7 @@ export const useBaseFlow = () => {
     (values: WorkflowFlowData) => {
       setUpdating(true);
 
-      updateFlow({
-        flowId: values.shared.workflowId,
-        flowType: import.meta.env.VITE_KYB_DEFINITION_ID,
+      void updateFlow({
         payload: {
           mainRepresentative: selectMainRepresentative(values, user),
           ubos: [],
@@ -63,11 +59,9 @@ export const useBaseFlow = () => {
         setLoading(true);
 
         await uploadFilesAndSaveToStorage(documentConfigurations, context);
-        const documents = await selectDocuments(context, flowData.documents, documentConfigurations);
+        const documents = selectDocuments(context, flowData.documents, documentConfigurations);
 
         const updatePayload: UpdateFlowDto = {
-          flowId: context.shared.workflowId,
-          flowType: import.meta.env.VITE_KYB_DEFINITION_ID,
           payload: {
             mainRepresentative: selectMainRepresentative(context, user),
             ubos: selectUbos(context, user),
@@ -81,13 +75,12 @@ export const useBaseFlow = () => {
 
         if (isUpdate) {
           await updateFlow(updatePayload);
-          await resubmitFlow(context.shared.workflowId);
+          await resubmitFlow();
         } else {
           await updateFlow(updatePayload);
-          await startFlow(context.shared.workflowId);
+          await startFlow();
         }
         setLoading(false);
-        setTimeout(() => logoutSilent(), 50);
         navigate('success');
       } catch (error) {
         console.log(
@@ -97,7 +90,7 @@ export const useBaseFlow = () => {
         setLoading(false);
       }
     },
-    [user, customer, views, logoutSilent, navigate],
+    [user, customer, views, navigate],
   );
 
   return {

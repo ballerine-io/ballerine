@@ -1,24 +1,9 @@
-import { useEffect } from 'react';
-import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
-import { useSignin } from '@app/hooks/useSignin';
 import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Card } from '@ballerine/ui';
-import { useCollectionFlowSchemaQuery } from '@app/hooks/useCollectionFlowSchemaQuery';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
 
 export const Rejected = withSessionProtected(() => {
-  const { documentConfigurations } = useCollectionFlowSchemaQuery();
   const { customer } = useCustomer();
-  const { isFetching, workflow } = useActiveWorkflowQuery(documentConfigurations);
-  const { logoutSilent } = useSignin();
-
-  useEffect(() => {
-    if (isFetching) return;
-
-    if (workflow?.state === 'rejected') {
-      setTimeout(logoutSilent, 250);
-    }
-  }, [isFetching, workflow, logoutSilent]);
 
   return (
     <div className="flex h-full items-center justify-center">

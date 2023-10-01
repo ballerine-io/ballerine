@@ -6,11 +6,11 @@ import { ArrowLeft } from 'lucide-react';
 import { useMemo } from 'react';
 
 export const BackButton = () => {
-  const { state, isFinished, steps, activeView, prev } = useViewState();
+  const { isFinished, steps, activeView, prev } = useViewState();
   const { logout } = useSignin();
   const { customer } = useCustomer();
 
-  const isExit = useMemo(() => steps[0]?.dataAlias === activeView.key, [state]);
+  const isExit = useMemo(() => steps[0]?.dataAlias === activeView.key, [steps, activeView]);
   const isDisabled = useMemo(() => {
     return activeView.stepMetadata?.status === 'warning';
   }, [activeView]);
