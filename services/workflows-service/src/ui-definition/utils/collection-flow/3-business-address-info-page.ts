@@ -55,7 +55,7 @@ const physicalAddressForm = {
 
 export const businessAddressInfoPage = {
   type: 'page',
-  number: 4,
+  number: 3,
   stateName: 'business_address_information',
   name: 'Company Address',
   elements: [
