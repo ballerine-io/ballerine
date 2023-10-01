@@ -1,10 +1,9 @@
 import { request } from '@app/common/utils/request';
 import {
-  AuthorizeDto,
   DocumentConfiguration,
   FlowData,
   GetActiveWorkflowDto,
-  GetSessionDto,
+  TCustomer,
   TFlowConfiguration,
   TFlowStep,
   TUser,
@@ -12,27 +11,13 @@ import {
   UpdateFlowDto,
 } from '@app/domains/collection-flow/types';
 
-export const authorizeUser = async (dto: AuthorizeDto): Promise<TUser> => {
-  const result = await request
-    .post('collection-flow/authorize', {
-      json: {
-        email: dto.email,
-        flowType: import.meta.env.VITE_KYB_DEFINITION_ID,
-      },
-    })
-    .json<TUser>();
+export const fetchUser = async (): Promise<TUser> => {
+  const result = await request.get('collection-flow/user').json<TUser>();
 
-  return {
-    id: result.id,
-    email: result.email,
-    businessId: result.businesses.at(-1).id,
-  } as TUser;
+  return result;
 };
 
-export const getFlowSession = async (query: GetSessionDto) => {
-  // Uisng same endpoint as used for auth till session mechanism will be implemented in backend for collection flow
-  return authorizeUser(query);
-};
+export const getFlowSession = fetchUser;
 
 export const fetchCollectionFlowSchema = async (): Promise<{
   steps: TFlowStep[];
@@ -78,14 +63,19 @@ export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<Fl
 };
 
 export const updateFlow = async (dto: UpdateFlowDto) => {
-  const { flowId, ...payload } = dto;
-  await request.put(`collection-flow/${flowId}`, { json: payload });
+  await request.put(`collection-flow`, { json: dto });
 };
 
-export const startFlow = async (flowId: string) => {
-  await request.post(`collection-flow/finish/${flowId}`);
+export const startFlow = async () => {
+  await request.post(`collection-flow/finish`);
 };
 
-export const resubmitFlow = async (flowId: string) => {
-  await request.post(`collection-flow/resubmit/${flowId}`);
+export const resubmitFlow = async () => {
+  await request.post(`collection-flow/resubmit`);
+};
+
+export const fetchCustomer = async (): Promise<TCustomer> => {
+  const result = await request.get('collection-flow/customer').json<TCustomer>();
+
+  return result;
 };

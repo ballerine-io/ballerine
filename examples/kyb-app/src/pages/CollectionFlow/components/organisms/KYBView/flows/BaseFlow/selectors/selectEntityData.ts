@@ -1,5 +1,4 @@
-import { EntityData } from '@app/domains/collection-flow';
-import { TCustomer } from '@app/domains/customer';
+import { EntityData, TCustomer } from '@app/domains/collection-flow';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { buildCompanyAddress } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/helpers/serialize-business-data';
 import { getFullCountryNameByCode } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/get-countries-list';

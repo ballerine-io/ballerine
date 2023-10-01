@@ -1,32 +1,20 @@
-import { delay } from '@app/common/utils/delay';
+import { AppNavigate } from '@app/common/components/organisms/NavigateWithToken';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
-import { useSessionQuery, withSessionProtected } from '@app/hooks/useSessionQuery';
-import { SigninCredentials, useSignin } from '@app/hooks/useSignin';
+import { useSessionQuery } from '@app/hooks/useSessionQuery';
 import { SigninLayout } from '@app/pages/SignIn/components/layouts/SigninLayout';
 import { SigninForm } from '@app/pages/SignIn/components/organisms/SigninForm';
 import { useCallback, useState } from 'react';
-import { Navigate } from 'react-router-dom';
 
 export const SignIn = () => {
-  const { signin } = useSignin();
   const { user } = useSessionQuery();
   const { customer } = useCustomer();
 
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading] = useState(false);
 
-  const handleSubmit = useCallback(
-    async (credentials: SigninCredentials) => {
-      setLoading(true);
-      // Simulating some background processes to make it look fancy :)
-      await delay(1000);
-      setLoading(false);
-      signin(credentials);
-    },
-    [signin],
-  );
+  const handleSubmit = useCallback(async () => {}, []);
 
   if (user) {
-    return <Navigate to={'/collection-flow'} />;
+    return <AppNavigate to={'/collection-flow'} />;
   }
 
   return (

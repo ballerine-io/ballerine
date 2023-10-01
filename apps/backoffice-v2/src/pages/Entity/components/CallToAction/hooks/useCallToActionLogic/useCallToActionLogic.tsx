@@ -4,7 +4,7 @@ import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/quer
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../../../Case/hooks/useCaseState/useCaseState';
 import toast from 'react-hot-toast';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRevisionTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
@@ -109,6 +109,10 @@ export const useCallToActionLogic = () => {
   const workflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??
     workflow?.context?.entity?.type === 'business';
+
+  useEffect(() => {
+    setReason(reasons?.[0] ?? '');
+  }, [action, reasons]);
 
   return {
     isLoadingTaskDecisionById,
