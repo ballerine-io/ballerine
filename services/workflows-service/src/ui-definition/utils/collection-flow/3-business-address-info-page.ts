@@ -53,7 +53,7 @@ const physicalAddressForm = {
   '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, true],
 };
 
-export const businessAddressInfoPage = {
+export const BusinessAddressInfoPage = {
   type: 'page',
   number: 3,
   stateName: 'business_address_information',
@@ -165,6 +165,7 @@ export const businessAddressInfoPage = {
                 'physical-country-input',
               ],
             },
+            visibleOn: [physicalAddressForm],
           },
           elements: [
             {
