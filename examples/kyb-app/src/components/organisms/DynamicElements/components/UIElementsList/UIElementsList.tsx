@@ -1,5 +1,6 @@
 import { useDynamicUIContext } from '@app/components/organisms/DynamicElements/hooks/useDynamicUIContext';
-import { UIElement, UIElementComponent } from '@app/components/organisms/DynamicElements/types';
+import { UIElementComponent } from '@app/components/organisms/DynamicElements/types';
+import { UIElement } from '@app/domains/collection-flow';
 
 interface Props {
   elements: Record<string, UIElementComponent>;

@@ -1,5 +1,5 @@
 import { RuleEngine } from '@app/components/organisms/DynamicElements/engines/rule-engine.abstract';
-import { Rule } from '@app/components/organisms/DynamicElements/types';
+import { Rule } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import jsonLogic from 'json-logic-js';
 

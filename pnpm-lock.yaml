@@ -621,8 +621,11 @@ importers:
 
   examples/kyb-app:
     dependencies:
+      '@ballerine/blocks':
+        specifier: ^0.1.6
+        version: link:../../packages/blocks
       '@ballerine/ui':
-        specifier: ^0.3.0
+        specifier: link:../../packages/ui
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3

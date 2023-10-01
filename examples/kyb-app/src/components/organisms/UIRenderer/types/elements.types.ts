@@ -1,7 +1,7 @@
+import { CellOptions } from '@app/components/organisms/UIRenderer/elements/Cell';
+import { TaskOptions } from '@app/components/organisms/UIRenderer/elements/Task';
+import { AnyChildren } from '@ballerine/ui';
 import React from 'react';
-import { AnyChildren } from '@common/types';
-import { CellOptions } from '@components/organisms/UIRenderer/elements/Cell';
-import { TaskOptions } from '@components/organisms/UIRenderer/elements/Task';
 
 export type BaseElementComponentProps<TOptions> = { children: AnyChildren; options: TOptions };
 

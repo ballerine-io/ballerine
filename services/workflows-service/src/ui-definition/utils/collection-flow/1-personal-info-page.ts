@@ -60,9 +60,11 @@ const availableOnButtonRule = {
 
 export const PersonalInfoPage = {
   type: 'page',
-  number: 1,
-  stateName: 'personal_details',
   name: 'Personal details',
+  optionss: {
+    number: 1,
+    stateName: 'personal_details',
+  },
   elements: [
     {
       type: 'mainContainer',
@@ -97,7 +99,7 @@ export const PersonalInfoPage = {
         },
         {
           type: 'json-form',
-          options: {
+          optionss: {
             jsonFormDefinition: {
               required: [
                 'first-name-input',
@@ -110,54 +112,83 @@ export const PersonalInfoPage = {
           },
           elements: [
             {
-              id: 'first-name-input',
+              name: 'first-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.firstName',
-              option: {
+              options: {
                 label: 'Name',
                 hint: 'First Name',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
               },
             },
             {
-              id: 'last-name-input',
+              name: 'last-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.lastName',
-              option: {
+              options: {
                 hint: 'Last Name',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
               },
             },
             {
-              id: 'job-title-input',
+              name: 'job-title-input',
               type: 'json-form:text',
               valueDestination:
                 'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle',
-              option: {
+              options: {
                 label: 'Title',
                 hint: 'CEO / Manager / Partner',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
               },
             },
             {
-              id: 'date-of-birth-input',
+              name: 'date-of-birth-input',
               type: 'json-form:date',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
-              option: {
+              options: {
                 label: 'Date of Birth',
                 hint: 'DD/MM/YYYY',
+                jsonFormDefinition: {
+                  type: 'string',
+                  minLength: 1,
+                },
+                uiSchema: {
+                  birthDate: {
+                    'ui:field': 'DateInput',
+                    'ui:label': true,
+                  },
+                },
               },
             },
             {
-              id: 'phone-number-input',
+              name: 'phone-number-input',
               type: 'international-phone-number',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.phone',
-              option: {
+              options: {
                 label: 'Phone number',
+                jsonFormDefinition: {
+                  type: 'string',
+                  minLength: 1,
+                },
+                uischema: {
+                  personalPhoneNumber: {
+                    'ui:field': 'PhoneInput',
+                    'ui:label': true,
+                  },
+                },
               },
             },
           ],
         },
         {
-          id: 'next-page-button',
-          type: 'button',
+          name: 'next-page-button',
+          type: 'json-form:button',
           uiDefinition: {
             classNames: ['align-right', 'padding-top-10'],
           },
@@ -167,7 +198,7 @@ export const PersonalInfoPage = {
               value: availableOnButtonRule,
             },
           ],
-          option: {
+          options: {
             text: 'Continue',
           },
         },

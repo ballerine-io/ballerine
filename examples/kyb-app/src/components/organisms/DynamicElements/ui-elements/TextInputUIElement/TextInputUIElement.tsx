@@ -16,13 +16,11 @@ export const TextInputUIElement: UIElementComponent<TextInputParams> = ({
   const { context } = useDynamicUIContext<AnyObject>();
   const { handlers, props } = useUIElement(definition, actions, context);
 
-  console.log('context', context);
-
   return (
     <Label className="flex flex-col gap-2">
-      <p>{definition.inputParams.title}</p>
+      <p>{definition.options.title}</p>
       <Input
-        placeholder={definition.inputParams.placeholder}
+        placeholder={definition.options.placeholder}
         onChange={handlers.onChange}
         name={definition.name}
         disabled={props.disabled}

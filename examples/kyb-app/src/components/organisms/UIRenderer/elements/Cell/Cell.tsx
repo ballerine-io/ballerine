@@ -1,10 +1,8 @@
-import { AnyChildren } from '@common/types';
-import { ctw } from '@utils/ctw';
 import { CSSProperties, useMemo } from 'react';
 import chunk from 'lodash/chunk';
-import { Column } from '@components/organisms/UIRenderer/elements/Cell/Column';
 import { BlocksComponent } from '@ballerine/blocks';
-import { baseElements } from '@components/organisms/UIRenderer/base-elements';
+import { baseElements } from '@app/components/organisms/UIRenderer/base-elements';
+import { Column } from '@app/components/organisms/UIRenderer/elements/Cell/Column';
 
 export interface CellOptions {
   columns?: number;
@@ -28,6 +26,7 @@ export const Cell = ({ options = {}, childrens: _childrens = [] }: CellProps) =>
         <BlocksComponent
           Block={({ children }) => <>{children}</>}
           blocks={childrens}
+          //@ts-ignore
           cells={baseElements}
         >
           {(Cell, cell) => (Cell ? <Cell {...cell} /> : null)}
@@ -37,7 +36,7 @@ export const Cell = ({ options = {}, childrens: _childrens = [] }: CellProps) =>
   }, [columns, _childrens]);
 
   return (
-    <div className={ctw('flex', className)} style={styles}>
+    <div className={'flex ' + className} style={styles}>
       {grid}
     </div>
   );

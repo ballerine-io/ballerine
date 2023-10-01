@@ -9,7 +9,7 @@ export const ButtonUIElement: UIElementComponent<{ label: string }> = ({ definit
 
   return (
     <Button variant="secondary" onClick={handlers.onClick} disabled={props.disabled}>
-      {definition.inputParams.label}
+      {definition.options.label}
     </Button>
   );
 };

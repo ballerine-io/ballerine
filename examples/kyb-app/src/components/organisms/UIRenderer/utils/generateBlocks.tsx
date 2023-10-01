@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { ElementsMap } from '../types/elements.types';
 import { UISchema } from '../types/ui-schema.types';
 import { createBlocks } from '@ballerine/blocks';

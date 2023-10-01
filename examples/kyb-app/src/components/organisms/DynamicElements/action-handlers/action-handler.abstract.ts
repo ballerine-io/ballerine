@@ -1,4 +1,4 @@
-import { Action } from '@app/components/organisms/DynamicElements/types';
+import { Action } from '@app/domains/collection-flow';
 
 export abstract class ActionHandler {
   public readonly ACTION_TYPE: string;

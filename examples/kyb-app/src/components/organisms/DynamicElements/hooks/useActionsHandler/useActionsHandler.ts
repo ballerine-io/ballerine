@@ -1,6 +1,6 @@
 import { ActionHandler } from '@app/components/organisms/DynamicElements/action-handlers/action-handler.abstract';
 import { ActionHandlerManager } from '@app/components/organisms/DynamicElements/helpers/action-handler-manager';
-import { Action } from '@app/components/organisms/DynamicElements/types';
+import { Action } from '@app/domains/collection-flow';
 import { useCallback, useEffect, useState } from 'react';
 
 export const useActionsHandler = <TContext>(

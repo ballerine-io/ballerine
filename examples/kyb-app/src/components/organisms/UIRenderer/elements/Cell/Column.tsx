@@ -1,4 +1,4 @@
-import { AnyChildren } from '@common/types';
+import { AnyChildren } from '@ballerine/ui';
 
 interface Props {
   children: AnyChildren;

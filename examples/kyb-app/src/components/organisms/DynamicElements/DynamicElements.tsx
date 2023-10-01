@@ -5,12 +5,9 @@ import { useContext } from '@app/components/organisms/DynamicElements/hooks/useC
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 import { dynamicUIRendererContext } from './context';
-import {
-  Action,
-  UIElement,
-  UIElementComponent,
-} from '@app/components/organisms/DynamicElements/types';
+import { UIElementComponent } from '@app/components/organisms/DynamicElements/types';
 import { UIElementsList } from '@app/components/organisms/DynamicElements/components/UIElementsList';
+import { Action, UIElement } from '@app/domains/collection-flow';
 
 const { Provider } = dynamicUIRendererContext;
 

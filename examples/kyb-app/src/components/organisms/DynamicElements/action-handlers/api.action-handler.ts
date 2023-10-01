@@ -6,7 +6,7 @@ import ky from 'ky';
 import jmespath from 'jmespath';
 import set from 'lodash/set';
 import { EventEngine } from '@app/components/organisms/DynamicElements/engines/event.engine';
-import { Action, Rule } from '@app/components/organisms/DynamicElements/types';
+import { Action, Rule } from '@app/domains/collection-flow';
 
 export interface ApiActionParams {
   url: string;

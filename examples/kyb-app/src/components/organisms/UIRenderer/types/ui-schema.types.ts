@@ -1,4 +1,4 @@
-import { AnyObject } from '@common/types';
+import { AnyObject } from '@ballerine/ui';
 
 export interface UISchema<TElementOptions = AnyObject> {
   type: string;
