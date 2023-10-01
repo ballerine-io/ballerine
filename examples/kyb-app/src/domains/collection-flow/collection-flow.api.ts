@@ -56,7 +56,7 @@ export const fetchUISchema = async (): Promise<UISchema> => {
   const result = await request
     .get('internal/ui-definition/workflow-runtime/test-workflow-risk-id-1', {
       searchParams: {
-        context: 'collection_flow',
+        uiContext: 'collection_flow',
       },
     })
     .json<UISchema>();

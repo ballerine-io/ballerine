@@ -42,7 +42,7 @@ export class UiDefinitionController {
   ): Promise<UiDefinitionModel> {
     const uiDefinition = await this.service.getByWorkflowDefinitionId(
       params.workflowDefinitionId,
-      params.context,
+      params.uiContext,
       projectIds,
       {},
     );
@@ -60,7 +60,7 @@ export class UiDefinitionController {
   ): Promise<UiDefinitionModel> {
     const uiDefinition = await this.service.getByRuntimeId(
       workflowRuntimeId,
-      query.context,
+      query.uiContext,
       projectIds,
       {},
     );
@@ -78,7 +78,7 @@ export class UiDefinitionController {
   ): Promise<TDocument | undefined> {
     const uiDocumentSchema = await this.service.getDocumentSchemaByRuntimeId(
       workflowRuntimeId,
-      params.context,
+      params.uiContext,
       projectIds,
       params.countryCode,
       params.category,

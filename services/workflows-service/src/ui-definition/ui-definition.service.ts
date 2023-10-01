@@ -29,13 +29,13 @@ export class UiDefinitionService {
 
   async getByWorkflowDefinitionId(
     workflowDefinitionId: string,
-    context: typeof UiDefinitionContext,
+    uiContext: keyof typeof UiDefinitionContext,
     projectIds: TProjectIds,
     args: Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
   ) {
     return await this.repository.findByWorkflowDefinitionId(
       workflowDefinitionId,
-      context,
+      uiContext,
       args,
       projectIds,
     );
@@ -43,24 +43,29 @@ export class UiDefinitionService {
 
   async getByRuntimeId(
     runtimeId: string,
-    context: typeof UiDefinitionContext,
+    uiContext: keyof typeof UiDefinitionContext,
     projectIds: TProjectIds,
     args: Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
   ) {
     const runtime = await this.workflowRuntimeRepository.findById(runtimeId, {}, projectIds);
 
-    return this.getByWorkflowDefinitionId(runtime.workflowDefinitionId, context, projectIds, args);
+    return this.getByWorkflowDefinitionId(
+      runtime.workflowDefinitionId,
+      uiContext,
+      projectIds,
+      args,
+    );
   }
   async getDocumentSchemaByRuntimeId(
     runtimeId: string,
-    context: typeof UiDefinitionContext,
+    uiContext: keyof typeof UiDefinitionContext,
     projectIds: TProjectIds,
     countryCode: CountryCode,
     category: string,
     type: string,
   ) {
     // TODO: Replace the logic from current schemas in Common package to the database
-    const uiDefinition = await this.getByRuntimeId(runtimeId, context, projectIds, {});
+    const uiDefinition = await this.getByRuntimeId(runtimeId, uiContext, projectIds, {});
     const runtimeData = await this.workflowRuntimeRepository.findById(runtimeId, {}, projectIds);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const documents = (uiDefinition.schemaOptions as TSchemaOption)['document'];

@@ -27,15 +27,18 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CustomerModule } from '@/customer/customer.module';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
 
 @Module({
-  imports: [AppLoggerModule, HttpModule, ProjectModule, CustomerModule],
+  imports: [AppLoggerModule, HttpModule, ProjectModule, CustomerModule, UiDefinitionModule],
   controllers: [ColectionFlowController],
   providers: [
     CollectionFlowService,
     EndUserService,
     EndUserRepository,
     WorkflowRuntimeDataRepository,
+    UiDefinitionService,
     WorkflowAdapterManager,
     WorkflowDefinitionRepository,
     BusinessRepository,

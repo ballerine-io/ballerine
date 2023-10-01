@@ -2,7 +2,7 @@ import { BusinessService } from '@/business/business.service';
 import { UpdateFlowPayload } from '@/collection-flow/dto/update-flow-input.dto';
 import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
-import { FlowStepModel } from '@/collection-flow/models/flow-step.model';
+import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
 import { GetActiveFlowParams, SigninCredentials } from '@/collection-flow/types/params';
 import { IWorkflowAdapter } from '@/collection-flow/workflow-adapters/abstract-workflow-adapter';
 import { KYBParentKYCSessionExampleFlowData } from '@/collection-flow/workflow-adapters/kyb_parent_kyc_session_example/kyb_parent_kyc_session_example.model';
@@ -14,9 +14,12 @@ import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.rep
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { Injectable } from '@nestjs/common';
-import { Business, Customer, EndUser } from '@prisma/client';
+import { Business, Customer, EndUser, UiDefinitionContext } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import keyBy from 'lodash/keyBy';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+
+type OptionalUiDefDefiniton = UiDefDefinition | null;
 
 @Injectable()
 export class CollectionFlowService {
@@ -27,6 +30,7 @@ export class CollectionFlowService {
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowService: WorkflowService,
     protected readonly businessService: BusinessService,
+    protected readonly uiDefinitionService: UiDefinitionService,
   ) {}
 
   async authorize(credentials: SigninCredentials, projectId: TProjectId): Promise<EndUser> {
@@ -56,7 +60,6 @@ export class CollectionFlowService {
 
     return existingEndUser;
   }
-
   private async initializeNewEndUser(credentials: SigninCredentials, projectId: TProjectId) {
     const endUser = await this.endUserService.createWithBusiness(
       {
@@ -81,20 +84,25 @@ export class CollectionFlowService {
       projectIds,
     );
 
-    return plainToClass(FlowConfigurationModel, {
+    const uiDefintion = await this.uiDefinitionService.getByWorkflowDefinitionId(
+      workflowDefinition.id,
+      'collection_flow' as keyof typeof UiDefinitionContext,
+      projectIds,
+      {},
+    );
+
+    return {
       id: workflowDefinition.id,
-      steps:
-        workflowDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
-          ?.steps || [],
-      documentConfigurations:
-        workflowDefinition.definition?.states?.data_collection?.metadata?.uiSettings.multiForm
-          .documents || [],
-    });
+      uiSchema: uiDefintion.uiSchema as unknown as UiSchemaStep[],
+      definition: uiDefintion.definition
+        ? (uiDefintion.definition as unknown as UiDefDefinition)
+        : undefined,
+    };
   }
 
   async updateFlowConfiguration(
     configurationId: string,
-    steps: FlowStepModel[],
+    steps: UiSchemaStep[],
     projectIds: TProjectIds,
     projectId: TProjectId,
   ): Promise<FlowConfigurationModel> {

@@ -65,10 +65,10 @@ export const personalInfoPage = {
   name: 'Personal details',
   elements: [
     {
-      type: 'case',
+      type: 'mainContainer',
       elements: [
         {
-          type: 'cell',
+          type: 'container',
           uiElements: {
             elementClass: ['inline'],
           },
@@ -87,7 +87,7 @@ export const personalInfoPage = {
           ],
         },
         {
-          type: 'cell',
+          type: 'container',
           elements: [
             {
               type: 'h1',
@@ -96,10 +96,22 @@ export const personalInfoPage = {
           ],
         },
         {
-          type: 'cell',
+          type: 'json-form',
+          options: {
+            definition: {
+              required: [
+                'first-name-input',
+                'last-name-input',
+                'job-title-input',
+                'date-of-birth-input',
+                'phone-number-input',
+              ],
+            },
+          },
           elements: [
             {
-              type: 'input-text',
+              id: 'first-name-input',
+              type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.firstName',
               option: {
                 label: 'Name',
@@ -107,14 +119,16 @@ export const personalInfoPage = {
               },
             },
             {
-              type: 'input-text',
+              id: 'last-name-input',
+              type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.lastName',
               option: {
                 hint: 'Last Name',
               },
             },
             {
-              type: 'input-text',
+              id: 'job-title-input',
+              type: 'json-form:text',
               valueDestination:
                 'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle',
               option: {
@@ -123,7 +137,8 @@ export const personalInfoPage = {
               },
             },
             {
-              type: 'date',
+              id: 'date-of-birth-input',
+              type: 'json-form:date',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
               option: {
                 label: 'Date of Birth',
@@ -131,6 +146,7 @@ export const personalInfoPage = {
               },
             },
             {
+              id: 'phone-number-input',
               type: 'international-phone-number',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.phone',
               option: {

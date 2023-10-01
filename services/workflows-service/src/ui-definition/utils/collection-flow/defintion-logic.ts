@@ -1,5 +1,5 @@
 export const defintion = {
-  id: 'clickspay_collection_flow',
+  id: 'dynamic_collection_flow',
   predictableActionArguments: true,
   initial: 'personal_details',
   context: {},
