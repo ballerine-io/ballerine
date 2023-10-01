@@ -33,6 +33,7 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowWithToken } from '@/workflow/dtos/workflow-with-token';
+import { Public } from '@/common/decorators/public.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -258,27 +259,22 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @Public()
   @VerifyUnifiedApiSignatureDecorator()
   async hook(
     @common.Param() params: WorkflowIdWithEventInput,
     @common.Query() query: WorkflowHookQuery,
     @common.Body() hookResponse: any,
-    @ProjectIds() projectIds: TProjectIds,
-    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<void> {
     try {
-      const workflowRuntime = await this.service.getWorkflowRuntimeDataById(
-        params.id,
-        {},
-        projectIds,
-      );
+      const workflowRuntime = await this.service.getWorkflowRuntimeDataByIdUnscoped(params.id);
       await this.normalizeService.handleHookResponse({
         workflowRuntime: workflowRuntime,
         data: hookResponse,
         resultDestinationPath: query.resultDestination || 'hookResponse',
         processName: query.processName,
-        projectIds,
-        currentProjectId,
+        projectIds: [workflowRuntime.projectId],
+        currentProjectId: workflowRuntime.projectId,
       });
 
       return await this.service.event(
@@ -286,8 +282,8 @@ export class WorkflowControllerExternal {
           id: params.id,
           name: params.event,
         },
-        projectIds,
-        currentProjectId,
+        [workflowRuntime.projectId],
+        workflowRuntime.projectId,
       );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -318,6 +314,9 @@ export class WorkflowControllerExternal {
       currentProjectId,
     );
 
+    const hasSalesforceRecord =
+      Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
+
     const workflow = await this.service.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: body.workflowDefinitionId,
       context: {
@@ -331,14 +330,14 @@ export class WorkflowControllerExternal {
           },
         },
         documents: [],
+        projectId: currentProjectId,
       },
       projectIds: [currentProjectId],
       currentProjectId: currentProjectId,
-      ...('salesforceObjectName' in body &&
-        'salesforceRecordId' in body && {
-          salesforceObjectName: body.salesforceObjectName,
-          salesforceRecordId: body.salesforceRecordId,
-        }),
+      ...(hasSalesforceRecord && {
+        salesforceObjectName: body.salesforceObjectName,
+        salesforceRecordId: body.salesforceRecordId,
+      }),
     });
 
     const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -350,6 +349,18 @@ export class WorkflowControllerExternal {
     });
 
     // @TODO: Send email with token
+
+    if (hasSalesforceRecord) {
+      await this.service.updateSalesforceRecord({
+        workflowRuntimeData: workflow[0].workflowRuntimeData,
+
+        data: {
+          KYB_Started_At__c: workflow[0].workflowRuntimeData.createdAt,
+          KYB_Status__c: 'In Progress',
+          KYB_Assigned_Agent__c: '',
+        },
+      });
+    }
 
     return { token: workflowToken.token };
   }

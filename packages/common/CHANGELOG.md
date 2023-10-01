@@ -1,5 +1,23 @@
 # @ballerine/common
 
+## 0.7.5
+
+### Patch Changes
+
+- Fix schema
+
+## 0.7.4
+
+### Patch Changes
+
+- Add business_utility_bill document
+
+## 0.7.3
+
+### Patch Changes
+
+- Update document schemas
+
 ## 0.7.2
 
 ### Patch Changes
@@ -29,6 +47,12 @@
 ### Patch Changes
 
 - c2a13806: Added StateTags
+
+## 0.5.24
+
+### Patch Changes
+
+- 204b5479: updated document schemas
 
 ## 0.5.23
 

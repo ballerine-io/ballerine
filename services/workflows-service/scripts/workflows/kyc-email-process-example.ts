@@ -13,6 +13,7 @@ export const kycEmailSessionDefinition = {
     initial: 'idle',
     states: {
       idle: {
+        tags: [StateTag.PENDING_PROCESS],
         on: {
           start: 'get_kyc_session',
         },
@@ -85,7 +86,7 @@ export const kycEmailSessionDefinition = {
               endUserId: join('__',[entity.id,pluginsOutput.kyc_session.kyc_session_1.result.metadata.id || '']),
               firstName: entity.data.firstName,
               lastName: entity.data.lastName,
-              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED', '?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
               vendor: 'veriff'
               }`, // jmespath
             },

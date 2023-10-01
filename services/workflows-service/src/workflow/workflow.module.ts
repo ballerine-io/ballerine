@@ -30,6 +30,8 @@ import { CustomerModule } from '@/customer/customer.module';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 
 @Module({
   imports: [
@@ -64,6 +66,8 @@ import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.re
     UserRepository,
     WorkflowTokenRepository,
     WorkflowTokenService,
+    SalesforceService,
+    SalesforceIntegrationRepository,
   ],
   exports: [
     WorkflowService,

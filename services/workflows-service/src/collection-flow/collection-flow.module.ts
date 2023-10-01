@@ -1,7 +1,7 @@
 import { PasswordService } from '@/auth/password/password.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
-import { ColectionFlowController } from '@/collection-flow/collection-flow.controller';
+import { ColectionFlowController } from '@/collection-flow/controllers/collection-flow.controller';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
@@ -29,10 +29,28 @@ import { Module } from '@nestjs/common';
 import { CustomerModule } from '@/customer/customer.module';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
+import { TokenAuthModule } from '@/common/guards/token-guard/token-auth.module';
+import { CollectionFlowFilesController } from '@/collection-flow/controllers/collection-flow.files.controller';
+import { CollectionFlowBusinessController } from '@/collection-flow/controllers/collection-flow.business.controller';
+import { CustomerService } from '@/customer/customer.service';
+import { CustomerRepository } from '@/customer/customer.repository';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 
 @Module({
-  imports: [AppLoggerModule, HttpModule, ProjectModule, CustomerModule, UiDefinitionModule],
-  controllers: [ColectionFlowController],
+  imports: [
+    AppLoggerModule,
+    HttpModule,
+    ProjectModule,
+    CustomerModule,
+    TokenAuthModule,
+    UiDefinitionModule,
+  ],
+  controllers: [
+    ColectionFlowController,
+    CollectionFlowFilesController,
+    CollectionFlowBusinessController,
+  ],
   providers: [
     CollectionFlowService,
     EndUserService,
@@ -58,6 +76,12 @@ import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
     UserService,
     UserRepository,
     PasswordService,
+    CustomerService,
+    CustomerRepository,
+    StorageService,
+    FileRepository,
+    SalesforceService,
+    SalesforceIntegrationRepository,
   ],
 })
 export class CollectionFlowModule {}
