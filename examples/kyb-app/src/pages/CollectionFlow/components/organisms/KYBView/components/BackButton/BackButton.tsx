@@ -10,7 +10,7 @@ export const BackButton = () => {
   const { logout } = useSignin();
   const { customer } = useCustomer();
 
-  const isExit = useMemo(() => steps[0]?.dataAlias === activeView.key, [state]);
+  const isExit = useMemo(() => steps[0]?.dataAlias === activeView.key, [steps, activeView]);
   const isDisabled = useMemo(() => {
     return activeView.stepMetadata?.status === 'warning';
   }, [activeView]);
