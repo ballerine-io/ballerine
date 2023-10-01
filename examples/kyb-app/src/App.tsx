@@ -11,6 +11,8 @@ import { useCustomerQuery } from '@app/hooks/useCustomerQuery';
 export const App = () => {
   const dependancyQueries = [useCollectionFlowSchemaQuery(), useCustomerQuery()];
 
+  console.log('query', dependancyQueries);
+
   return (
     <AppLoadingContainer dependencies={dependancyQueries}>
       <CustomerProvider loadingPlaceholder={<LoadingScreen />} fallback={CustomerProviderFallback}>

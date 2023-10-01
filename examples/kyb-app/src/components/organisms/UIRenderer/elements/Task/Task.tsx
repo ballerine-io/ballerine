@@ -1,7 +1,6 @@
+import { baseElements } from '@app/components/organisms/UIRenderer/base-elements';
 import { BlocksComponent } from '@ballerine/blocks';
-import { Card } from '@components/atoms';
-import { baseElements } from '@components/organisms/UIRenderer/base-elements';
-import { ctw } from '@utils/ctw';
+import { Card } from '@ballerine/ui';
 import { CSSProperties } from 'react';
 
 export interface TaskOptions {
@@ -20,13 +19,12 @@ export const Task = ({ options = {}, childrens, ...rest }: TaskProps) => {
 
   const Component = variant === 'wrapper' ? Card : 'div';
 
-  console.log('childrens', childrens);
-
   return (
-    <Component className={ctw(className)} style={styles} data-test-id="task">
+    <Component className={className} style={styles} data-test-id="task">
       <BlocksComponent
         Block={({ children }) => <>{children}</>}
         blocks={childrens}
+        //@ts-ignore
         cells={baseElements}
       >
         {(Cell, cell) => (Cell ? <Cell {...cell} /> : null)}

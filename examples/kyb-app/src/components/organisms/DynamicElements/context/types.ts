@@ -1,4 +1,4 @@
-import { Action, UIElement } from '@app/components/organisms/DynamicElements/types';
+import { Action, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export interface DynamicUIRendererContext<TContext> {

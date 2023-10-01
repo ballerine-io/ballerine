@@ -1,4 +1,4 @@
-import { Rule } from '@app/components/organisms/DynamicElements/types';
+import { Rule } from '@app/domains/collection-flow';
 
 export abstract class RuleEngine {
   public readonly ENGINE_NAME: string;

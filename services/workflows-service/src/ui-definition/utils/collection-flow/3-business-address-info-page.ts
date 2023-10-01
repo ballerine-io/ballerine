@@ -62,25 +62,25 @@ export const BusinessAddressInfoPage = {
     {
       type: 'mainContainer',
       elements: [
-        {
-          type: 'container',
-          uiElements: {
-            elementClass: ['inline'],
-          },
-          elements: [
-            {
-              name: 'page-stepper',
-              type: 'page-stepper',
-              uiElements: {
-                elementClass: ['inline'],
-              },
-            },
-            {
-              name: 'save-popup',
-              type: 'save-popup',
-            },
-          ],
-        },
+        // {
+        //   type: 'container',
+        //   uiElements: {
+        //     elementClass: ['inline'],
+        //   },
+        //   elements: [
+        //     {
+        //       name: 'page-stepper',
+        //       type: 'page-stepper',
+        //       uiElements: {
+        //         elementClass: ['inline'],
+        //       },
+        //     },
+        //     {
+        //       name: 'save-popup',
+        //       type: 'save-popup',
+        //     },
+        //   ],
+        // },
         {
           type: 'container',
           elements: [
