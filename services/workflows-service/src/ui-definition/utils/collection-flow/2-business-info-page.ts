@@ -130,7 +130,7 @@ const dispatchOpenCorporateRule = {
   ],
 };
 
-export const businessInfoPage = {
+export const BusinessInfoPage = {
   type: 'page',
   number: 2,
   stateName: 'business_information',

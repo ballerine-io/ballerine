@@ -47,7 +47,7 @@ const availableOnButtonRule = {
   ],
 };
 
-export const directorsAndUbosPage = {
+export const DirectorsAndUbosPage = {
   type: 'page',
   number: 4,
   stateName: 'directors_and_ubos',

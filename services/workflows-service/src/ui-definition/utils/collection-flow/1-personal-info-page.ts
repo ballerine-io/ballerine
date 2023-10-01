@@ -58,7 +58,7 @@ const availableOnButtonRule = {
   ],
 };
 
-export const personalInfoPage = {
+export const PersonalInfoPage = {
   type: 'page',
   number: 1,
   stateName: 'personal_details',
