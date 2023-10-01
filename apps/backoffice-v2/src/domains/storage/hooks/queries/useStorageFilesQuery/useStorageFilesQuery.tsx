@@ -11,8 +11,8 @@ export const useStorageFilesQuery = (fileIds: Array<string>) => {
       fileIds?.map(fileId => ({
         ...storageQueryKeys.fileById(fileId),
         enabled: isString(fileId) && !!fileId?.length && isAuthenticated,
-        staleTime: 100_000,
-        refetchInterval: 100_000,
+        staleTime: Infinity,
+        refetchInterval: false,
       })) ?? [],
   });
 };

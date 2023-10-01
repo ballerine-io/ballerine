@@ -10,11 +10,16 @@ export const BackButton = () => {
   const { logout } = useSignin();
   const { customer } = useCustomer();
 
-  const isExit = useMemo(() => steps[0]?.dataAlias === activeView.key, [steps, activeView]);
+  const isExit = useMemo(() => steps[0]?.dataAlias === activeView.key, [state]);
+  const isDisabled = useMemo(() => {
+    return activeView.stepMetadata?.status === 'warning';
+  }, [activeView]);
 
   return (
     <div
-      className={clsx('select-none', { 'pointer-events-none opacity-50': isFinished })}
+      className={clsx('select-none', {
+        'pointer-events-none opacity-50': isFinished || isDisabled,
+      })}
       onClick={!isExit ? prev : () => logout()}
     >
       <ArrowLeft className="inline" />
