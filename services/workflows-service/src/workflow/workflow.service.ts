@@ -698,7 +698,7 @@ export class WorkflowService {
       updatedWorkflow.status = allDocumentsResolved ? 'completed' : updatedWorkflow.status;
       await this.workflowRuntimeDataRepository.updateById(workflowId, {
         data: {
-          ...data,
+          status: updatedWorkflow.status,
           resolvedAt: new Date().toISOString(),
         },
       });
