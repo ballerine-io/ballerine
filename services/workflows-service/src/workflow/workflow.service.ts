@@ -711,6 +711,14 @@ export class WorkflowService {
       {},
       projectIds,
     );
+    // `name` is always `approve` and not `approved` etc.
+    const Status = {
+      approve: 'approved',
+      reject: 'rejected',
+      revision: 'revision',
+      revised: 'revised',
+    } as const;
+    const status = decision.status ? Status[decision.status] : null;
 
     this.__validateWorkflowDefinitionContext(workflowDefinition, {
       ...workflow?.context,
@@ -720,28 +728,24 @@ export class WorkflowService {
           // Validating the context should be done without the propertiesSchema
           propertiesSchema: _propertiesSchema,
           ...document
-        }: DefaultContextSchema['documents'][number]) => ({
-          ...document,
-          decision: {
-            ...document?.decision,
-            status: document?.decision?.status === null ? undefined : document?.decision?.status,
-          },
-          type:
-            document?.type === 'unknown' && document?.decision?.status === 'approved'
-              ? undefined
-              : document?.type,
-        }),
+        }: DefaultContextSchema['documents'][number]) => {
+          const updatedStatus = documentId === document.id ? status : document?.decision?.status;
+
+          return {
+            ...document,
+            decision: {
+              ...document?.decision,
+              status: updatedStatus === null ? undefined : updatedStatus,
+            },
+            type:
+              document?.type === 'unknown' && updatedStatus === 'approved'
+                ? undefined
+                : document?.type,
+          };
+        },
       ),
     });
 
-    // `name` is always `approve` and not `approved` etc.
-    const Status = {
-      approve: 'approved',
-      reject: 'rejected',
-      revision: 'revision',
-      revised: 'revised',
-    } as const;
-    const status = decision.status ? Status[decision.status] : null;
     const newDecision = (() => {
       if (!status || status === 'approved') {
         return {

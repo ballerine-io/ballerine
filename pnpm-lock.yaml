@@ -19,8 +19,8 @@ importers:
         version: 7.0.1
     devDependencies:
       '@branchlint/cli':
-        specifier: ^1.0.4
-        version: 1.0.4
+        specifier: ^1.0.5
+        version: 1.1.0
       '@branchlint/default-config':
         specifier: ^1.0.3
         version: 1.0.3
@@ -7959,13 +7959,14 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
 
-  /@branchlint/cli@1.0.4:
-    resolution: {integrity: sha512-m4H4yRaP8iDbb7SMnzbDVmW9qJhWh8FENSOYV4tUa9RZ0Mf+L9rzG1t6WOSXYaDeoHITQU/ockQj0Lw3it6G3A==}
+  /@branchlint/cli@1.1.0:
+    resolution: {integrity: sha512-iTYLrnCsyFtohuOgsHUXZAOkp7eGaFKY3ihGh1c5xF+VVePbNbZoum4XvlX9zzRD5UXURmVhm/FP16jaN6ovlw==}
     hasBin: true
     dependencies:
-      '@branchlint/common': 0.0.1
-      '@branchlint/default-config': 1.0.2
+      '@branchlint/default-config': 0.0.1
       inquirer: 8.0.1
+      lodash: 4.17.21
+      zod: 3.21.4
     dev: true
 
   /@branchlint/common@0.0.1:
@@ -7975,12 +7976,11 @@ packages:
       zod: 3.21.4
     dev: true
 
-  /@branchlint/default-config@1.0.2:
-    resolution: {integrity: sha512-DHAD3FPTNjSn7MVT7CQfVueru1kHTkFZdxyGwfQZyC3O0xmu32sX8jbkdxy0VcG+tk/a2hEjlwBkmUcvdcvWJQ==}
+  /@branchlint/default-config@0.0.1:
+    resolution: {integrity: sha512-mKK7k9l/qxhjHAnm5FYjraXeKkeRGVj4xad25bX31YLhRC07FpcHF/pYe4pbfuOVOYL3qpsEX3U8Jn1NyWpORQ==}
+    hasBin: true
     dependencies:
-      '@branchlint/common': 0.0.1
       lodash: 4.17.21
-      yargs: 17.7.1
       zod: 3.21.4
     dev: true
 
