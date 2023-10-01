@@ -130,10 +130,10 @@ const dispatchOpenCorporateRule = {
   ],
 };
 
-export const companyInfoPage = {
+export const businessInfoPage = {
   type: 'page',
   number: 2,
-  stateName: 'company_information',
+  stateName: 'business_information',
   name: 'Company Information',
   elements: [
     {
@@ -170,7 +170,7 @@ export const companyInfoPage = {
         {
           type: 'json-form',
           options: {
-            definition: {
+            jsonFormDefinition: {
               required: ['registration-number-input', 'country-picker-input', 'company-name-input'],
             },
           },
@@ -263,23 +263,23 @@ export const companyInfoPage = {
                 },
               },
             },
+          ],
+        },
+        {
+          id: 'next-page-button',
+          type: 'button',
+          uiDefinition: {
+            classNames: ['align-right', 'padding-top-10'],
+          },
+          availableOn: [
             {
-              id: 'next-page-button',
-              type: 'button',
-              uiDefinition: {
-                classNames: ['align-right', 'padding-top-10'],
-              },
-              availableOn: [
-                {
-                  type: 'json-logic',
-                  value: availableOnButtonRule,
-                },
-              ],
-              option: {
-                text: 'Continue',
-              },
+              type: 'json-logic',
+              value: availableOnButtonRule,
             },
           ],
+          option: {
+            text: 'Continue',
+          },
         },
       ],
     },

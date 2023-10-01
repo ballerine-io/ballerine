@@ -98,7 +98,7 @@ export const personalInfoPage = {
         {
           type: 'json-form',
           options: {
-            definition: {
+            jsonFormDefinition: {
               required: [
                 'first-name-input',
                 'last-name-input',
@@ -153,23 +153,23 @@ export const personalInfoPage = {
                 label: 'Phone number',
               },
             },
+          ],
+        },
+        {
+          id: 'next-page-button',
+          type: 'button',
+          uiDefinition: {
+            classNames: ['align-right', 'padding-top-10'],
+          },
+          availableOn: [
             {
-              id: 'next-page-button',
-              type: 'button',
-              uiDefinition: {
-                classNames: ['align-right', 'padding-top-10'],
-              },
-              availableOn: [
-                {
-                  type: 'json-logic',
-                  value: availableOnButtonRule,
-                },
-              ],
-              option: {
-                text: 'Continue',
-              },
+              type: 'json-logic',
+              value: availableOnButtonRule,
             },
           ],
+          option: {
+            text: 'Continue',
+          },
         },
       ],
     },
