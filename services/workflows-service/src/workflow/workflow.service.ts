@@ -660,7 +660,7 @@ export class WorkflowService {
         const { required: _required, ..._propertiesSchemaForValidation } = propertiesSchema;
         propertiesSchemaForValidation = _propertiesSchemaForValidation;
       }
-      const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation); // we shouldn't rely on schema from the client, add to tech debt
+      const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
 
       const isValidPropertiesSchema = validatePropertiesSchema(newDocument?.properties);
 
@@ -684,7 +684,6 @@ export class WorkflowService {
       ['active'].includes(updatedWorkflow.status) &&
       workflowDef.config?.completedWhenTasksResolved
     ) {
-      // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
       const allDocumentsResolved =
         updatedWorkflow.context?.documents?.length &&
         updatedWorkflow.context?.documents?.every(
