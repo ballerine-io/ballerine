@@ -7,6 +7,7 @@ import {
   ApprovalState,
   Business,
   EndUser,
+  File,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -76,6 +77,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
+import keyBy from 'lodash/keyBy';
 
 type TEntityId = string;
 
@@ -1835,7 +1837,10 @@ export class WorkflowService {
       let childContextToPersist = childWorkflow.context;
 
       for (const transformer of transformerInstance || []) {
-        childContextToPersist = await transformer.transform(childContextToPersist);
+        childContextToPersist = await transformer.transform({
+          ...childContextToPersist,
+          projectId: parentWorkflowRuntime.projectId,
+        });
       }
       contextToPersist[childWorkflow.id] = {
         entityId: childWorkflow.context.entity.id,
@@ -1916,10 +1921,17 @@ export class WorkflowService {
     if (!documents?.length) return documents;
 
     const documentsWithPersistedImages = await Promise.all(
-      documents?.map(async document => ({
-        ...document,
-        pages: await this.__persistDocumentPagesFiles(document, entityId, projectId, customerName),
-      })),
+      documents?.map(async document => {
+        return {
+          ...document,
+          pages: await this.__persistDocumentPagesFiles(
+            document,
+            entityId,
+            projectId,
+            customerName,
+          ),
+        };
+      }),
     );
 
     return documentsWithPersistedImages;
