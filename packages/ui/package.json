@@ -15,7 +15,7 @@
   },
   "scripts": {
     "spellcheck": "cspell \"*\"",
-    "dev": "vite build --watch",
+    "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
@@ -24,6 +24,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ballerine/blocks": "link:../blocks",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.14.2",
@@ -53,6 +54,7 @@
     "tailwind-merge": "^1.10.0"
   },
   "devDependencies": {
+    "@cspell/cspell-types": "^6.31.1",
     "@storybook/addon-essentials": "^7.0.26",
     "@storybook/addon-interactions": "^7.0.26",
     "@storybook/addon-links": "^7.0.26",
@@ -71,7 +73,6 @@
     "@vitejs/plugin-react": "^4.0.1",
     "autoprefixer": "10.4.14",
     "cspell": "^6.31.2",
-    "@cspell/cspell-types": "^6.31.1",
     "eslint": "^8.44.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
