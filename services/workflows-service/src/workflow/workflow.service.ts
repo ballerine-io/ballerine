@@ -611,32 +611,22 @@ export class WorkflowService {
 
       throw new BadRequestException(`Invalid decision status: ${status}`);
     })();
-    const documentsWithDecision = runtimeData?.context?.documents?.map(
-      (document: DefaultContextSchema['documents'][number]) => {
-        if (document.id !== documentId) return document;
-
-        return {
-          id: document.id,
-          decision: {
-            ...newDecision,
-            status,
-          },
-        };
-      },
+    const document = runtimeData?.context?.documents?.find(
+      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
     );
-    const updatedWorkflow = await this.updateContextById(workflowId, {
-      documents: documentsWithDecision,
-    });
 
-    const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow);
+    const documentWithDecision = {
+      id: document.id,
+      decision: {
+        ...newDecision,
+        status,
+      },
+    };
 
-    this.workflowEventEmitter.emit('workflow.context.changed', {
-      oldRuntimeData: runtimeData,
-      updatedRuntimeData: updatedWorkflow,
-      state: updatedWorkflow.state,
-      entityId: (updatedWorkflow.businessId || updatedWorkflow.endUserId) as string,
-      correlationId: correlationId,
-    });
+    const updatedWorkflow = await this.updateDocumentById(
+      { workflowId, documentId, checkRequiredFields: true },
+      documentWithDecision as unknown as DefaultContextSchema['documents'][number],
+    );
 
     return updatedWorkflow;
   }
@@ -644,13 +634,15 @@ export class WorkflowService {
     {
       workflowId,
       documentId,
+      checkRequiredFields = true,
     }: {
       workflowId: string;
       documentId: string;
+      checkRequiredFields?: boolean;
     },
     data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
   ) {
-    const workflowDef = await this.workflowDefinitionRepository.findById(workflowId);
+    const workflowDef = this.workflowDefinitionRepository.findById(workflowId);
     const document = {
       ...data,
       id: documentId,
@@ -659,8 +651,12 @@ export class WorkflowService {
     const newDocument = addPropertiesSchemaToDocument(document);
     const propertiesSchema = newDocument?.propertiesSchema ?? {};
     if (Object.keys(propertiesSchema)?.length) {
-      const { required: _required, ...propertiesSchemaWithoutRequired } = propertiesSchema;
-      const validatePropertiesSchema = ajv.compile(propertiesSchemaWithoutRequired); // we shouldn't rely on schema from the client, add to tech debt
+      let propertiesSchemaForValidation = propertiesSchema;
+      if (!checkRequiredFields) {
+        const { required: _required, ..._propertiesSchemaForValidation } = propertiesSchema;
+        propertiesSchemaForValidation = _propertiesSchemaForValidation;
+      }
+      const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation); // we shouldn't rely on schema from the client, add to tech debt
 
       const isValidPropertiesSchema = validatePropertiesSchema(newDocument?.properties);
 
@@ -678,6 +674,7 @@ export class WorkflowService {
     const updatedWorkflow = await this.updateContextById(workflowId, {
       documents: [newDocument],
     });
+    const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow);
 
     if (
       ['active'].includes(updatedWorkflow.status) &&
@@ -701,12 +698,34 @@ export class WorkflowService {
           resolvedAt: new Date().toISOString(),
         },
       });
+
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData: updatedWorkflow,
+        state: updatedWorkflow.state,
+        entityId: updatedWorkflow.businessId || updatedWorkflow.endUserId,
+        correlationId,
+      });
     }
 
     return updatedWorkflow;
   }
   async updateContextById(id: string, context: WorkflowRuntimeData['context']) {
-    return this.workflowRuntimeDataRepository.updateContextById(id, context);
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
+    const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData);
+    const updatedRuntimeData = await this.workflowRuntimeDataRepository.updateContextById(
+      id,
+      context,
+    );
+
+    this.workflowEventEmitter.emit('workflow.context.changed', {
+      oldRuntimeData: runtimeData,
+      updatedRuntimeData: updatedRuntimeData,
+      state: updatedRuntimeData.state as string,
+      entityId: (updatedRuntimeData.businessId || updatedRuntimeData.endUserId) as string,
+      correlationId: correlationId,
+    });
+
+    return updatedRuntimeData;
   }
 
   async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
