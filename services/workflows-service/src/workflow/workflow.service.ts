@@ -729,16 +729,16 @@ export class WorkflowService {
           propertiesSchema: _propertiesSchema,
           ...document
         }: DefaultContextSchema['documents'][number]) => {
-          const nextStatus = documentId === document.id ? status : document?.decision?.status;
+          const updatedStatus = documentId === document.id ? status : document?.decision?.status;
 
           return {
             ...document,
             decision: {
               ...document?.decision,
-              status: nextStatus === null ? undefined : nextStatus,
+              status: updatedStatus === null ? undefined : updatedStatus,
             },
             type:
-              document?.type === 'unknown' && nextStatus === 'approved'
+              document?.type === 'unknown' && updatedStatus === 'approved'
                 ? undefined
                 : document?.type,
           };
