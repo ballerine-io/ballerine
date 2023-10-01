@@ -1,4 +1,4 @@
-import { Action, UIElement } from '@app/components/organisms/DynamicUIRenderer/temp';
+import { Action, UIElement } from '@app/components/organisms/DynamicElements/types';
 import { Workflow } from '@app/domains/workflows/types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
