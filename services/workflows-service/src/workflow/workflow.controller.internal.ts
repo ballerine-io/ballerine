@@ -185,6 +185,7 @@ export class WorkflowControllerInternal {
       {
         workflowId: params?.id,
         documentId: params?.documentId,
+        checkRequiredFields: false,
       },
       data.document,
     );

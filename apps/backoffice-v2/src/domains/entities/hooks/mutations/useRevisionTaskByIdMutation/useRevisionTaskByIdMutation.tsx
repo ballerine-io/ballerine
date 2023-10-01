@@ -60,7 +60,7 @@ export const useRevisionTaskByIdMutation = (workflowId: string) => {
       toast.success(t('toast:ask_revision_document.success'));
     },
     onError: (_error, _variables, context) => {
-      toast.error(t('toast:ask_revision_document.error'));
+      toast.error(t('toast:ask_revision_document.error', { errorMessage: _error.message }));
       queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);
     },
   });

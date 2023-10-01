@@ -57,7 +57,7 @@ export const useUpdateDocumentByIdMutation = ({
       toast.success(t(`toast:${action}.success`));
     },
     onError: (error, { action }, context) => {
-      toast.error(t(`toast:${action}.error`));
+      toast.error(t(`toast:${action}.error`), { errorMessage: error.messsage });
       queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);
     },
     onSettled: () => {

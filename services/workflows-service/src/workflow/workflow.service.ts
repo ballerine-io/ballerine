@@ -616,15 +616,16 @@ export class WorkflowService {
     );
 
     const documentWithDecision = {
+      ...document,
       id: document.id,
       decision: {
         ...newDecision,
         status,
       },
     };
-
+    const checkRequiredFields = status === 'approved' ? true : false;
     const updatedWorkflow = await this.updateDocumentById(
-      { workflowId, documentId, checkRequiredFields: true },
+      { workflowId, documentId, checkRequiredFields },
       documentWithDecision as unknown as DefaultContextSchema['documents'][number],
     );
 
@@ -642,7 +643,10 @@ export class WorkflowService {
     },
     data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
   ) {
-    const workflowDef = this.workflowDefinitionRepository.findById(workflowId);
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowId);
+    const workflowDef = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+    );
     const document = {
       ...data,
       id: documentId,
