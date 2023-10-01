@@ -38,14 +38,14 @@ export class UiDefinitionRepository {
     T extends Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
   >(
     workflowDefinitionId: string,
-    context: typeof UiDefinitionContext,
+    uiContext: keyof typeof UiDefinitionContext,
     args: Prisma.SelectSubset<T, Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
   ): Promise<UiDefinition> {
     return await this.prisma.uiDefinition.findFirstOrThrow(
       this.scopeService.scopeFindFirst(
         {
-          where: { workflowDefinitionId, context },
+          where: { workflowDefinitionId, uiContext: uiContext },
           ...args,
         },
         projectIds,

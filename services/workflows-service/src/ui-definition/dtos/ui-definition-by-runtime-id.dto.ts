@@ -10,5 +10,5 @@ export class UiDefinitionByRuntimeIdDto {
   })
   @oneOf(Object.values(UiDefinitionContext), { each: true })
   @IsString()
-  context!: typeof UiDefinitionContext;
+  uiContext!: keyof typeof UiDefinitionContext;
 }

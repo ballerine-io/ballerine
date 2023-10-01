@@ -3,7 +3,7 @@ import { documentPersonalInformationCell } from '@/ui-definition/utils/document-
 export const generateEndUserDocumentTask = () => {
   return {
     name: 'default-end-user-document-task',
-    type: 'task',
+    type: 'container',
     elements: [
       {
         type: 'cell',

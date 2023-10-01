@@ -18,7 +18,6 @@ import { generateKybDefintion } from './workflows';
 import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
 import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
 import { env } from '../src/env';
-import { generateDynamicUiTest } from './workflows/ui-definition/e2e-dynamic-url-example-ui';
 
 seed(10).catch(error => {
   console.error(error);
@@ -1246,7 +1245,6 @@ async function seed(bcryptSalt: string | number) {
   await generateKycSessionDefinition(client);
   await generateParentKybWithSessionKycs(client);
   await generateKycForE2eTest(client);
-  await generateParentKybWithKycs(client);
-  await generateDynamicUiTest(client);
+  await generateParentKybWithKycs(client, project1.id);
   console.info('Seeded database successfully');
 }

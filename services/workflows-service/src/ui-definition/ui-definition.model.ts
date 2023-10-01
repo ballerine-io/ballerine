@@ -21,7 +21,7 @@ export class UiDefinitionModel {
     enum: ['back_office', 'collection_flow'],
     required: true,
   })
-  context!: string;
+  uiContext!: string;
 
   @ApiProperty({
     required: false,

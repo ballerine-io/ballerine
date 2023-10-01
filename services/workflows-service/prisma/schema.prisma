@@ -293,14 +293,14 @@ model Project {
 
   userToProjects UserToProject[]
 
-  filters               Filter[]
-  endUsers              EndUser[]
-  business              Business[]
-  workflowRuntimeData   WorkflowRuntimeData[]
-  files                 File[]
-  SalesforceIntegration SalesforceIntegration?
-  workflowDefinitions   WorkflowDefinition[]
-  uiDefinitions         UiDefinition[]
+  filters                  Filter[]
+  endUsers                 EndUser[]
+  business                 Business[]
+  workflowRuntimeData      WorkflowRuntimeData[]
+  files                    File[]
+  SalesforceIntegration    SalesforceIntegration?
+  workflowDefinitions      WorkflowDefinition[]
+  uiDefinitions            UiDefinition[]
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
 
   @@unique([name, customerId])
@@ -342,7 +342,7 @@ enum UiDefinitionContext {
 model UiDefinition {
   id                   String              @id @default(cuid())
   workflowDefinitionId String
-  context              UiDefinitionContext
+  uiContext            UiDefinitionContext
 
   page  Int?
   state String?

@@ -1,7 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { kycDynamicExample } from './kyc-dynamic-process-example';
 import { env } from '../../src/env';
 import { StateTag } from '@ballerine/common';
+import { generateDynamicUiTest } from './ui-definition/ui-kyb-parent-dynamic-example';
 
 export const kybParentDynamicExample = {
   id: 'dynamic_kyb_parent_example',
@@ -138,10 +139,18 @@ export const kybParentDynamicExample = {
       },
     ],
   },
-  isPublic: true,
-};
-export const generateParentKybWithKycs = async (prismaClient: PrismaClient) => {
-  return await prismaClient.workflowDefinition.create({
-    data: kybParentDynamicExample,
+} as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
+export const generateParentKybWithKycs = async (prismaClient: PrismaClient, projectId?: string) => {
+  const kybDynamicExample = {
+    ...kybParentDynamicExample,
+    isPublic: projectId ? false : true,
+    projectId: projectId,
+  };
+
+  const workflow = await prismaClient.workflowDefinition.create({
+    data: kybDynamicExample,
   });
+
+  await generateDynamicUiTest(prismaClient, workflow.id, projectId || workflow.projectId);
+  return workflow;
 };

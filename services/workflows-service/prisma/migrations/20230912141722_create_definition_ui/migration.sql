@@ -5,7 +5,7 @@ CREATE TYPE "UiDefinitionContext" AS ENUM ('back_office', 'collection_flow');
 CREATE TABLE "UiDefinition" (
     "id" TEXT NOT NULL,
     "workflowDefinitionId" TEXT NOT NULL,
-    "context" "UiDefinitionContext" NOT NULL,
+    "uiContext" "UiDefinitionContext" NOT NULL,
     "page" INTEGER,
     "state" TEXT,
     "definition" JSONB,

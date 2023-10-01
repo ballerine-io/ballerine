@@ -137,10 +137,10 @@ export const companyInfoPage = {
   name: 'Company Information',
   elements: [
     {
-      type: 'case',
+      type: 'mainContainer',
       elements: [
         {
-          type: 'cell',
+          type: 'container',
           uiElements: {
             elementClass: ['inline'],
           },
@@ -159,7 +159,7 @@ export const companyInfoPage = {
           ],
         },
         {
-          type: 'cell',
+          type: 'container',
           elements: [
             {
               type: 'h1',
@@ -168,11 +168,16 @@ export const companyInfoPage = {
           ],
         },
         {
-          type: 'cell',
+          type: 'json-form',
+          options: {
+            definition: {
+              required: ['registration-number-input', 'country-picker-input', 'company-name-input'],
+            },
+          },
           elements: [
             {
               id: 'registration-number-input',
-              type: 'input-text',
+              type: 'json-form:text',
               valueDestination: 'context.entity.data.registrationNumber',
               option: {
                 label: 'Registration Number',
@@ -188,7 +193,8 @@ export const companyInfoPage = {
               },
             },
             {
-              type: 'input-text',
+              id: 'company-name-input',
+              type: 'json-form:text',
               valueDestination: 'context.entity.data.companyName',
               option: {
                 label: 'Company English Name',
@@ -196,7 +202,8 @@ export const companyInfoPage = {
               },
             },
             {
-              type: 'input-text',
+              id: 'tax-identification-number-input',
+              type: 'json-form:text',
               valueDestination: 'context.entity.data.taxIdentificationNumber',
               option: {
                 label: 'Tax Identity Number',
@@ -204,28 +211,56 @@ export const companyInfoPage = {
               },
             },
             {
-              type: 'input-number',
+              id: 'number-of-employees-input',
+              type: 'json-form:text',
               valueDestination: 'context.entity.data.numberOfEmployees',
               option: {
+                jsonFormDefinition: {
+                  type: 'number',
+                },
                 hint: '20',
                 label: 'Amount of Employees',
               },
             },
             {
-              type: 'dropdown',
+              id: 'business-type-input',
+              type: 'json-form:dropdown',
               valueDestination: 'context.entity.data.businessType',
               option: {
                 hint: 'Corporation',
                 label: 'Corporate type',
+                options: [
+                  { label: 'Corporation', value: 'corporation' },
+                  { label: 'Limited Liability Company', value: 'limited_liability_company' },
+                  { label: 'Partnership', value: 'partnership' },
+                  { label: 'Sole Proprietorship', value: 'sole_proprietorship' },
+                  { label: 'Non-Profit', value: 'non_profit' },
+                  { label: 'Government', value: 'government' },
+                  { label: 'Other', value: 'other' },
+                ],
               },
             },
             {
-              type: 'input-number',
+              id: 'registered-capital-in-yuan-type-input',
+              type: 'json-form:text',
               valueDestination: 'context.entity.data.additionalInfo.registeredCapitalInYuan',
               option: {
+                jsonFormDefinition: {
+                  type: 'number',
+                },
                 format: 'currency',
                 hint: '2,000,000',
                 label: 'Registered capital (in Chinese Yuan)',
+              },
+            },
+            {
+              id: 'some-file-input',
+              type: 'file',
+              valueDestination: 'context.entity.data.additionalInfo.file_file',
+              option: {
+                jsonFormDefinition: {
+                  type: 'string',
+                },
               },
             },
             {
