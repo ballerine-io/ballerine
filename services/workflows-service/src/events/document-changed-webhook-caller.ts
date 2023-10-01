@@ -24,11 +24,9 @@ export class DocumentChangedWebhookCaller {
   ) {
     this.#__axios = this.httpService.axiosRef;
 
-    // @ts-ignore
-    workflowEventEmitter.on('workflow.context.changed', () => {
+    workflowEventEmitter.on('workflow.context.changed', async data => {
       try {
-        console.log('skipping webhook');
-        // await this.handleWorkflowEvent(data);
+        await this.handleWorkflowEvent(data);
       } catch (error) {
         console.error(error);
         alertWebhookFailure(error);
