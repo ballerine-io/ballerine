@@ -32,10 +32,24 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         msisdn: Type.String({ pattern: '^233[0-9]{9}$' }),
+        accountHolderName: Type.String(),
+        from: Type.Optional(Type.String({ format: 'date' })),
+        to: Type.Optional(Type.String({ format: 'date' })),
+        timeRun: Type.Optional(Type.String()),
+      }),
+    },
+    {
+      category: 'financial_information',
+      type: 'mtn_statement_businesses',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        msisdn: Type.String({ pattern: '^233[0-9]{9}$' }),
         accountHolderName: TypeStringAtLeastOneWord,
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
-        timeRun: Type.String({ format: 'date-time' }),
+        timeRun: Type.String(),
       }),
     },
     {
@@ -688,7 +702,7 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: {
         type: 'object',
-        // required: ['registrationNumber', 'taxIdNumber'],
+        required: ['registrationNumber', 'taxIdNumber'],
         properties: {
           registrationNumber: {
             type: 'string',
@@ -711,7 +725,7 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: {
         type: 'object',
-        // required: ['firstName', 'lastName'],
+        required: ['firstName', 'lastName'],
         properties: {
           firstName: {
             type: 'string',
@@ -725,6 +739,7 @@ export const getGhanaDocuments = (): TDocument[] => {
         },
       },
     },
+
     {
       category: 'company_structure',
       type: 'shareholders',
@@ -812,6 +827,7 @@ export const getGhanaDocuments = (): TDocument[] => {
         },
       },
     },
+
     // Proof of Ownership
     {
       category: 'proof_of_ownership',
@@ -833,7 +849,7 @@ export const getGhanaDocuments = (): TDocument[] => {
     },
     {
       category: 'proof_of_ownership',
-      type: 'permit',
+      type: 'receipt_for_permit',
       issuer: { country: 'GH' },
       issuingVersion: 1,
       version: 1,
@@ -850,6 +866,19 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         businessName: Type.String(),
+        payerName: Type.String(),
+        issueDate: TypePastDate,
+      }),
+    },
+    {
+      category: 'proof_of_ownership',
+      type: 'business_utility_bill',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        payerName: Type.String(),
         issueDate: TypePastDate,
       }),
     },

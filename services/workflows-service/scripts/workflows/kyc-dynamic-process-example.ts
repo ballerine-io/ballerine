@@ -67,7 +67,7 @@ export const kycDynamicExample = {
               transformer: 'jmespath',
               mapping: `{
               endUserId: entity.id,
-              callbackUrl: join('',['http://localhost:3000/api/v1/internal/workflows/',workflowRuntimeId,'/hook/KYC_RESPONDED']),
+              callbackUrl: join('',['http://localhost:3000/api/v1/internal/workflows/',workflowRuntimeId,'/hook/KYC_RESPONDED?&projectId=',projectId]),
               person: {
                firstName: entity.data.firstName,
                lastName: entity.data.lastName,

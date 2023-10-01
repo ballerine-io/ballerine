@@ -68,6 +68,10 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
+  async findByIdUnscoped(id: string): Promise<WorkflowRuntimeData> {
+    return await this.prisma.workflowRuntimeData.findFirstOrThrow({ where: { id } });
+  }
+
   async updateById<T extends Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>,

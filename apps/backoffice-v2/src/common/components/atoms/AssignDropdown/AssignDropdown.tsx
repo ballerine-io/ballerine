@@ -8,7 +8,7 @@ import { DropdownMenuContent } from '../../molecules/DropdownMenu/DropdownMenu.C
 import { UserAvatar } from '../UserAvatar/UserAvatar';
 import { TAuthenticatedUser } from '../../../../domains/auth/types';
 
-export type Assignee = Pick<TAuthenticatedUser, 'id' | 'fullName'>;
+export type Assignee = Pick<TAuthenticatedUser, 'id' | 'fullName' | 'avatarUrl'>;
 
 interface IAssignDropdownProps {
   avatarUrl: string | null;
@@ -52,7 +52,7 @@ export const AssignDropdown: React.FC<IAssignDropdownProps> = ({
           >
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center">
-                <UserAvatar avatarUrl={avatarUrl} fullName={assignee?.fullName} />
+                <UserAvatar avatarUrl={assignee.avatarUrl} fullName={assignee?.fullName} />
                 <span className="pl-2">{assignee?.fullName}</span>
               </div>
               {assignedUser?.id === assignee?.id && <CheckSvg className="d-4" />}

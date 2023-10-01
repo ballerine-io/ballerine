@@ -24,6 +24,11 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 import { createCustomer } from '@/test/helpers/create-customer';
 import { Project } from '@prisma/client';
 import { createProject } from '@/test/helpers/create-project';
+import { UserService } from '@/user/user.service';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
+import { UserRepository } from '@/user/user.repository';
+import { PasswordService } from '@/auth/password/password.service';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -51,6 +56,11 @@ describe('#EndUserControllerExternal', () => {
       WorkflowService,
       EventEmitter2,
       PrismaService,
+      UserService,
+      UserRepository,
+      SalesforceService,
+      SalesforceIntegrationRepository,
+      PasswordService,
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,
@@ -71,7 +81,7 @@ describe('#EndUserControllerExternal', () => {
     const customer = await createCustomer(
       await app.get(PrismaService),
       String(Date.now()),
-      'secret',
+      'secret2',
       '',
     );
     project = await createProject(await app.get(PrismaService), customer, '1');
@@ -90,7 +100,7 @@ describe('#EndUserControllerExternal', () => {
           firstName: 'test',
           lastName: 'lastName',
         })
-        .set('authorization', 'Bearer secret');
+        .set('authorization', 'Bearer secret2');
 
       expect(response.status).toBe(201);
 

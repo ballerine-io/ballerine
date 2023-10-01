@@ -7,6 +7,7 @@ import {
   ApprovalState,
   Business,
   EndUser,
+  File,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -16,7 +17,6 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import {
   ListRuntimeDataResult,
   ListWorkflowsRuntimeParams,
-  RunnableWorkflowData,
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
 } from './types';
@@ -75,6 +75,9 @@ import { GetLastActiveFlowParams } from '@/workflow/types/params';
 import { TDocumentsWithoutPageType, TDocumentWithoutPageType } from '@/common/types';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
+import { UserService } from '@/user/user.service';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import keyBy from 'lodash/keyBy';
 
 type TEntityId = string;
 
@@ -132,6 +135,8 @@ export class WorkflowService {
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
     private readonly projectScopeService: ProjectScopeService,
+    private readonly userService: UserService,
+    private readonly salesforceService: SalesforceService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
@@ -192,6 +197,10 @@ export class WorkflowService {
     projectIds: TProjectIds,
   ) {
     return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
+  }
+
+  async getWorkflowRuntimeDataByIdUnscoped(workflowRuntimeDataId: string) {
+    return await this.workflowRuntimeDataRepository.findByIdUnscoped(workflowRuntimeDataId);
   }
 
   async getWorkflowRuntimeWithChildrenDataById(
@@ -266,29 +275,16 @@ export class WorkflowService {
               doc => getDocumentId(doc, false) === getDocumentId(document, false),
             );
 
-            const propertiesSchema = {
-              ...(documentByCountry?.propertiesSchema ?? {}),
-              properties: Object.fromEntries(
-                Object.entries(documentByCountry?.propertiesSchema?.properties ?? {}).map(
-                  ([key, value]) => {
-                    if (!(key in document.properties)) return [key, value];
-                    if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string')
-                      return [key, value];
+            const propertiesSchema = documentByCountry?.propertiesSchema ?? {};
 
-                    return [
-                      key,
-                      {
-                        ...value,
-                        dropdownOptions: value.enum.map(item => ({
-                          value: item,
-                          label: item,
-                        })),
-                      },
-                    ];
-                  },
-                ),
-              ),
-            };
+            Object.entries(propertiesSchema?.properties ?? {}).forEach(([key, value]) => {
+              if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string') return;
+
+              value.dropdownOptions = value.enum.map(item => ({
+                value: item,
+                label: item,
+              }));
+            });
 
             return {
               ...document,
@@ -478,6 +474,7 @@ export class WorkflowService {
               id: workflow?.assigneeId,
               firstName: workflow?.assignee?.firstName,
               lastName: workflow?.assignee?.lastName,
+              avatarUrl: workflow?.assignee?.avatarUrl,
             }
           : null,
       };
@@ -716,20 +713,6 @@ export class WorkflowService {
       {},
       projectIds,
     );
-
-    this.__validateWorkflowDefinitionContext(workflowDefinition, {
-      ...workflow?.context,
-      documents: workflow?.context?.documents?.map(
-        (document: DefaultContextSchema['documents'][number]) => ({
-          ...document,
-          type:
-            document?.type === 'unknown' && document?.decision?.status === 'approved'
-              ? undefined
-              : document?.type,
-        }),
-      ),
-    });
-
     // `name` is always `approve` and not `approved` etc.
     const Status = {
       approve: 'approved',
@@ -738,6 +721,33 @@ export class WorkflowService {
       revised: 'revised',
     } as const;
     const status = decision.status ? Status[decision.status] : null;
+
+    this.__validateWorkflowDefinitionContext(workflowDefinition, {
+      ...workflow?.context,
+      documents: workflow?.context?.documents?.map(
+        ({
+          // @ts-ignore
+          // Validating the context should be done without the propertiesSchema
+          propertiesSchema: _propertiesSchema,
+          ...document
+        }: DefaultContextSchema['documents'][number]) => {
+          const updatedStatus = documentId === document.id ? status : document?.decision?.status;
+
+          return {
+            ...document,
+            decision: {
+              ...document?.decision,
+              status: updatedStatus === null ? undefined : updatedStatus,
+            },
+            type:
+              document?.type === 'unknown' && updatedStatus === 'approved'
+                ? undefined
+                : document?.type,
+          };
+        },
+      ),
+    });
+
     const newDecision = (() => {
       if (!status || status === 'approved') {
         return {
@@ -899,6 +909,10 @@ export class WorkflowService {
         documents: context?.documents?.map(
           (document: DefaultContextSchema['documents'][number]) => ({
             ...document,
+            decision: {
+              ...document?.decision,
+              status: document?.decision?.status === null ? undefined : document?.decision?.status,
+            },
             type:
               document?.type === 'unknown' && document?.decision?.status === 'approved'
                 ? undefined
@@ -1093,6 +1107,25 @@ export class WorkflowService {
       { data: { assigneeId, assignedAt: new Date() } },
       currentProjectId,
     );
+
+    if (
+      updatedWorkflowRuntimeData.salesforceObjectName &&
+      updatedWorkflowRuntimeData.salesforceRecordId
+    ) {
+      let agentName = '';
+
+      if (assigneeId) {
+        const user = await this.userService.getById(assigneeId, {}, projectIds);
+        agentName = `${user.firstName} ${user.lastName}`;
+      }
+
+      await this.updateSalesforceRecord({
+        workflowRuntimeData: updatedWorkflowRuntimeData,
+        data: {
+          KYB_Assigned_Agent__c: agentName,
+        },
+      });
+    }
 
     return updatedWorkflowRuntimeData;
   }
@@ -1382,10 +1415,16 @@ export class WorkflowService {
             } as InputJsonValue,
             config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
             status: 'active',
+            state: workflowDefinition.definition.initial,
+            tags: workflowDefinition.definition.states[workflowDefinition.definition.initial]?.tags,
             workflowDefinitionId: workflowDefinition.id,
-            ...(parentWorkflowId && {
-              parentWorkflowRuntimeDataId: parentWorkflowId,
-            }),
+            ...(parentWorkflowId &&
+              ({
+                parentRuntimeDataId: parentWorkflowId,
+              } satisfies Omit<
+                Prisma.WorkflowRuntimeDataCreateArgs['data'],
+                'context' | 'workflowDefinitionVersion'
+              >)),
             ...('salesforceObjectName' in salesforceData && salesforceData),
           },
         },
@@ -1450,6 +1489,8 @@ export class WorkflowService {
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
+        if (documentPage.ballerineFileId && documentPage.uri) return documentPage;
+
         const persistedFile = await this.fileService.copyToDestinationAndCreate(
           document,
           entityId,
@@ -1651,6 +1692,7 @@ export class WorkflowService {
         workflowDefinition,
         isFinal,
         projectIds,
+        currentProjectId,
         currentState,
       );
     }
@@ -1795,7 +1837,10 @@ export class WorkflowService {
       let childContextToPersist = childWorkflow.context;
 
       for (const transformer of transformerInstance || []) {
-        childContextToPersist = await transformer.transform(childContextToPersist);
+        childContextToPersist = await transformer.transform({
+          ...childContextToPersist,
+          projectId: parentWorkflowRuntime.projectId,
+        });
       }
       contextToPersist[childWorkflow.id] = {
         entityId: childWorkflow.context.entity.id,
@@ -1876,12 +1921,38 @@ export class WorkflowService {
     if (!documents?.length) return documents;
 
     const documentsWithPersistedImages = await Promise.all(
-      documents?.map(async document => ({
-        ...document,
-        pages: await this.__persistDocumentPagesFiles(document, entityId, projectId, customerName),
-      })),
+      documents?.map(async document => {
+        return {
+          ...document,
+          pages: await this.__persistDocumentPagesFiles(
+            document,
+            entityId,
+            projectId,
+            customerName,
+          ),
+        };
+      }),
     );
 
     return documentsWithPersistedImages;
+  }
+
+  async updateSalesforceRecord({
+    workflowRuntimeData,
+    data,
+  }: {
+    workflowRuntimeData: WorkflowRuntimeData;
+    data: {
+      KYB_Started_At__c?: Date;
+      KYB_Status__c?: 'Not Started' | 'In Progress' | 'Approved' | 'Rejected';
+      KYB_Assigned_Agent__c?: string;
+    };
+  }) {
+    return await this.salesforceService.updateRecord({
+      projectId: workflowRuntimeData.projectId,
+      objectName: workflowRuntimeData.salesforceObjectName,
+      recordId: workflowRuntimeData.salesforceRecordId,
+      data,
+    });
   }
 }

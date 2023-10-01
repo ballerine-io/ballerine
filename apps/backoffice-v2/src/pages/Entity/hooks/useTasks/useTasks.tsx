@@ -112,10 +112,10 @@ export const useTasks = ({
 
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
-
         const isDocumentRevision =
           decision?.status === 'revision' && (!isDoneWithRevision || noAction);
 
+        const isLegacyReject = workflow?.workflowDefinition?.config?.isLegacyReject;
         const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
           const badgeClassNames = 'text-sm font-bold';
 
@@ -184,7 +184,8 @@ export const useTasks = ({
           return [
             {
               type: 'callToAction',
-              value: 'Re-upload needed',
+              // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
+              value: isLegacyReject ? 'Reject' : 'Re-upload needed',
               data: {
                 id,
                 disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
@@ -221,6 +222,20 @@ export const useTasks = ({
           ],
         };
 
+        const decisionCell = {
+          type: 'details',
+          value: {
+            id,
+            title: 'Decision',
+            hideSeparator: true,
+            data: decision?.status
+              ? Object.entries(decision ?? {}).map(([title, value]) => ({
+                  title,
+                  value,
+                }))
+              : [],
+          },
+        };
         const detailsCell = {
           type: 'container',
           value: [
@@ -270,18 +285,7 @@ export const useTasks = ({
                 ),
               },
             },
-            {
-              type: 'details',
-              value: {
-                id,
-                title: 'Decision',
-                hideSeparator: true,
-                data: Object.entries(decision ?? {}).map(([title, value]) => ({
-                  title,
-                  value,
-                })),
-              },
-            },
+            decisionCell,
           ],
         };
 
@@ -313,99 +317,103 @@ export const useTasks = ({
 
   const entityInfoBlock =
     Object.keys(entity?.data ?? {}).length === 0
-      ? {}
-      : {
-          cells: [
-            {
-              type: 'container',
-              value: [
-                {
-                  type: 'heading',
-                  value: `${toStartCase(entity?.type)} Information`,
-                },
-                {
-                  type: 'subheading',
-                  value: 'User-provided data',
-                },
-              ],
-            },
-            {
-              id: 'entity-details',
-              type: 'details',
-              hideSeparator: true,
-              value: {
-                title: `${toStartCase(entity?.type)} Information`,
-                data: [
-                  ...Object.entries(
-                    omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
-                  ),
-                  ...Object.entries(entity?.data?.additionalInfo ?? {}),
-                ]
-                  ?.map(([title, value]) => ({
-                    title,
-                    value,
-                    type: 'string',
-                    isEditable: false,
-                  }))
-                  // removing private properties from list (__kyb_snapshot in this case)
-                  // __kyb_snapshot is state of KYB,temp solution
-                  // payload is not for users so removing it
-                  // TO DO: Remove this as soon as BE updated
-                  .filter(elem => !elem.title.startsWith('__')),
-              },
-            },
-          ],
-        };
-
-  const mapBlock =
-    Object.keys(address ?? {})?.length === 0
-      ? {}
-      : {
-          cells: locations &&
-            locations.length && [
+      ? []
+      : [
+          {
+            cells: [
               {
-                id: 'map-container',
                 type: 'container',
                 value: [
                   {
-                    id: 'header',
                     type: 'heading',
-                    value: `${toStartCase(entity?.type)} Address`,
+                    value: `${toStartCase(entity?.type)} Information`,
                   },
                   {
-                    type: 'details',
-                    hideSeparator: true,
-                    value: {
-                      title: `${toStartCase(entity?.type)} Address`,
-                      data:
-                        typeof address === 'string'
-                          ? [
-                              {
-                                title: 'Address',
-                                value: address,
-                                isEditable: false,
-                              },
-                            ]
-                          : Object.entries(address ?? {})?.map(([title, value]) => ({
-                              title,
-                              value,
-                              isEditable: false,
-                            })),
-                    },
-                  },
-                  {
-                    type: 'map',
-                    address,
-                    latitude: locations[0].lat,
-                    longitude: locations[0].lon,
+                    type: 'subheading',
+                    value: 'User-provided data',
                   },
                 ],
               },
+              {
+                id: 'entity-details',
+                type: 'details',
+                hideSeparator: true,
+                value: {
+                  title: `${toStartCase(entity?.type)} Information`,
+                  data: [
+                    ...Object.entries(
+                      omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
+                    ),
+                    ...Object.entries(entity?.data?.additionalInfo ?? {}),
+                  ]
+                    ?.map(([title, value]) => ({
+                      title,
+                      value,
+                      type: 'string',
+                      isEditable: false,
+                    }))
+                    // removing private properties from list (__kyb_snapshot in this case)
+                    // __kyb_snapshot is state of KYB,temp solution
+                    // payload is not for users so removing it
+                    // TO DO: Remove this as soon as BE updated
+                    .filter(elem => !elem.title.startsWith('__')),
+                },
+              },
             ],
-        };
+          },
+        ];
+
+  const mapBlock =
+    Object.keys(address ?? {})?.length === 0
+      ? []
+      : [
+          {
+            cells: locations &&
+              locations.length && [
+                {
+                  id: 'map-container',
+                  type: 'container',
+                  value: [
+                    {
+                      id: 'header',
+                      type: 'heading',
+                      value: `${toStartCase(entity?.type)} Address`,
+                    },
+                    {
+                      type: 'details',
+                      hideSeparator: true,
+                      value: {
+                        title: `${toStartCase(entity?.type)} Address`,
+                        data:
+                          typeof address === 'string'
+                            ? [
+                                {
+                                  title: 'Address',
+                                  value: address,
+                                  isEditable: false,
+                                },
+                              ]
+                            : Object.entries(address ?? {})?.map(([title, value]) => ({
+                                title,
+                                value,
+                                isEditable: false,
+                              })),
+                      },
+                    },
+                    {
+                      type: 'map',
+                      address,
+                      latitude: locations[0].lat,
+                      longitude: locations[0].lon,
+                    },
+                  ],
+                },
+              ],
+          },
+        ];
 
   return useMemo(() => {
-    return entity ? [entityInfoBlock, ...registryInfoBlock, ...taskBlocks, mapBlock] : [];
+    return entity ? [...entityInfoBlock, ...registryInfoBlock, ...taskBlocks, ...mapBlock] : [];
   }, [
     address,
     caseState.writeEnabled,

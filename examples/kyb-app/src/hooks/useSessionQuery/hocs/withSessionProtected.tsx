@@ -1,7 +1,6 @@
+import { AppNavigate } from '@app/common/components/organisms/NavigateWithToken';
 import { useSessionQuery } from '@app/hooks/useSessionQuery/useSessionQuery';
-import { useSignin } from '@app/hooks/useSignin/useSignin';
 import { LoadingScreen } from '@app/pages/CollectionFlow/components/atoms/LoadingScreen';
-import { Navigate } from 'react-router-dom';
 
 export function withSessionProtected<TComponentProps extends object>(
   Component: React.ComponentType<TComponentProps>,
@@ -14,7 +13,7 @@ export function withSessionProtected<TComponentProps extends object>(
 
     const isAuthenticated = Boolean(user);
 
-    if (!isAuthenticated) return <Navigate to={signinPath} />;
+    if (!isAuthenticated) return <AppNavigate to={signinPath} />;
 
     return <Component {...props} />;
   }
