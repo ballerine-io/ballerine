@@ -39,7 +39,7 @@ export const fetchCollectionFlowSchema = async (): Promise<{
 
 export const fetchUISchema = async (): Promise<UISchema> => {
   const result = await request
-    .get('internal/ui-definition/workflow-runtime/test-workflow-risk-id-1', {
+    .get('collection-flow/configuration', {
       searchParams: {
         uiContext: 'collection_flow',
       },
