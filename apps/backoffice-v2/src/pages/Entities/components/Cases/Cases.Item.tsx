@@ -6,7 +6,6 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { IItemProps } from '../../../Entity/components/Case/interfaces';
 import { stringToRGB } from '../../../../common/utils/string-to-rgb/string-to-rgb';
-import { getTimePastFromNow } from '../../../../common/utils/get-time-past-from-now';
 import { ApprovedSvg, RejectedSvg } from '../../../../common/components/atoms/icons';
 import { UserAvatar } from '../../../../common/components/atoms/UserAvatar/UserAvatar';
 import { createInitials } from '../../../../common/utils/create-initials/create-initials';
@@ -25,7 +24,7 @@ import dayjs from 'dayjs';
  * @param props.fullName - The full name of the entity.
  * @param props.createdAt - Expects an ISO date string to calculate the waiting time using {@link getTimePastFromNow}.
  * @param props.assignee - Which operator is now on the entity's case.
- * @param props.avatarUrl - The entity's image url to pass into {@link Avatar} and ${@Link UserAvatar}.
+ * @param props.entityAvatarUrl - The entity's image url to pass into {@link Avatar} and ${@Link UserAvatar}.
  * @param props.status - Whether the entity is approved or rejected.
  *
  * @constructor
@@ -35,8 +34,8 @@ export const Item: FunctionComponent<IItemProps> = ({
   fullName,
   createdAt,
   assignee,
-  avatarUrl,
   status,
+  entityAvatarUrl,
 }) => {
   const entityInitials = createInitials(fullName);
   const { ref, styles } = useEllipsesWithTitle<HTMLDivElement>();
@@ -73,10 +72,10 @@ export const Item: FunctionComponent<IItemProps> = ({
             {status === 'APPROVED' && <ApprovedSvg />}
           </motion.div>
           <Avatar
-            src={avatarUrl}
-            className="pt-1 text-base d-8"
+            src={entityAvatarUrl}
+            className="text-sm d-8"
             alt={`${fullName}'s avatar`}
-            placeholder={!avatarUrl ? entityInitials : undefined}
+            placeholder={entityInitials}
             style={{
               color: `rgb(${rgb})`,
               backgroundColor: `rgba(${rgb}, 0.2)`,
@@ -85,14 +84,14 @@ export const Item: FunctionComponent<IItemProps> = ({
         </div>
         <div className={`max-w-[115px]`}>
           <div ref={ref} className={`mb-[2px] text-sm font-bold`} style={styles}>
-            {fullName}
+            {fullName || 'N/A'}
           </div>
           <div className={`text-xs opacity-60`}>
             {dayjs(new Date(createdAt)).format('D MMM YYYY HH:mm')}
           </div>
         </div>
         <div className={`ml-auto mr-1 flex -space-x-2 overflow-hidden`}>
-          {!!assignee.id && <UserAvatar fullName={assignee.fullName} avatarUrl={avatarUrl} />}
+          {assignee && <UserAvatar fullName={assignee.fullName} avatarUrl={assignee.avatarUrl} />}
         </div>
       </NavLink>
     </li>

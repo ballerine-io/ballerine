@@ -15,7 +15,6 @@ export interface TUser {
   id: string;
   email: string;
   businessId: string;
-  businesses: { id: string }[];
 }
 
 export interface GetActiveWorkflowDto {
@@ -120,8 +119,6 @@ export interface BusinessData {
 }
 
 export interface UpdateFlowDto {
-  flowType: string;
-  flowId: string;
   payload: {
     mainRepresentative: MainRepresentative;
     documents: Document[];
@@ -131,4 +128,14 @@ export interface UpdateFlowDto {
     dynamicData: object;
     businessData: BusinessData;
   };
+}
+
+export interface TCustomer {
+  id: string;
+  name: string;
+  displayName: string;
+  logoImageUri: string;
+  customerStatus: string;
+  country: string;
+  language: string;
 }

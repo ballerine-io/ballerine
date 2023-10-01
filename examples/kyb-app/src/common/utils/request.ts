@@ -1,3 +1,4 @@
+import { getAccessToken } from '@app/helpers/get-access-token.helper';
 import ky from 'ky';
 
 export const request = ky.extend({
@@ -5,7 +6,7 @@ export const request = ky.extend({
   hooks: {
     beforeRequest: [
       request => {
-        request.headers.set('Authorization', `Bearer ${import.meta.env.VITE_API_KEY as string}`);
+        request.headers.set('Authorization', `Bearer ${getAccessToken()}`);
       },
     ],
   },
