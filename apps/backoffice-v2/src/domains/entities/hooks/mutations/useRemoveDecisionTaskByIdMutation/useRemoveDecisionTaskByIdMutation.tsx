@@ -44,7 +44,7 @@ export const useRemoveDecisionTaskByIdMutation = (
                 ...document,
                 decision: {
                   ...document?.decision,
-                  status: 'revision',
+                  status: null,
                   revisionReason: null,
                   rejectionReason: null,
                 },

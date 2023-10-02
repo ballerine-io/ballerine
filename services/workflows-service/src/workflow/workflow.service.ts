@@ -1559,9 +1559,8 @@ export class WorkflowService {
     workflowDefinition: WorkflowDefinition,
     context: DefaultContextSchema,
   ) {
-    console.log('running validate');
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
-    console.log('passed schema');
+
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate(context);
     console.log(JSON.stringify(context));
