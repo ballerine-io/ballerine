@@ -18,8 +18,8 @@ import { JmespathTransformer } from './utils/context-transformers/jmespath-trans
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import {
   ActionablePlugin,
-  ActionablePlugins,
-  CommonPlugins,
+  ActionablePlugins, CommonPlugin,
+  CommonPlugins, HttpPlugin,
   HttpPlugins,
   StatePlugin,
 } from './plugins/types';
@@ -473,29 +473,13 @@ export class WorkflowRunner {
 
     if (commonPlugins) {
       for (const commonPlugin of commonPlugins) {
-        // @ts-expect-error - multiple types of plugins return different responses
-        const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context);
-        if (!!error) {
-          this.#__context.pluginsOutput = {
-            ...(this.#__context.pluginsOutput || {}),
-            ...{ [commonPlugin.name]: { error: error } },
-          };
-        }
-        if (callbackAction) await this.sendEvent({ type: callbackAction });
+        await this.__invokeCommonPlugin(commonPlugin);
       }
     }
 
     if (stateApiPlugins) {
       for (const apiPlugin of stateApiPlugins) {
-        // @ts-expect-error - multiple types of plugins return different responses
-        const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
-        if (!this.isPluginWithCallbackAction(apiPlugin)) continue;
-
-        this.#__context.pluginsOutput = {
-          ...(this.#__context.pluginsOutput || {}),
-          ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
-        };
-        await this.sendEvent(callbackAction);
+        await this.__invokeApiPlugin(apiPlugin);
       }
     }
 
@@ -522,6 +506,30 @@ export class WorkflowRunner {
     }
   }
 
+  private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
+    // @ts-expect-error - multiple types of plugins return different responses
+    const {callbackAction, error} = await commonPlugin.invoke?.(this.#__context);
+    if (!!error) {
+      this.#__context.pluginsOutput = {
+        ...(this.#__context.pluginsOutput || {}),
+        ...{[commonPlugin.name]: {error: error}},
+      };
+    }
+    if (callbackAction) await this.sendEvent({type: callbackAction});
+  }
+
+  private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
+    // @ts-expect-error - multiple types of plugins return different responses
+    const {callbackAction, responseBody, error} = await apiPlugin.invoke?.(this.#__context);
+    if (!this.isPluginWithCallbackAction(apiPlugin)) return;
+
+    this.#__context.pluginsOutput = {
+      ...(this.#__context.pluginsOutput || {}),
+      ...{[apiPlugin.name]: responseBody ? responseBody : {error: error}},
+    };
+    await this.sendEvent(callbackAction);
+  }
+
   subscribe(callback: (event: WorkflowEvent) => void) {
     this.#__callback = callback;
     // Not currently in use.
@@ -532,5 +540,29 @@ export class WorkflowRunner {
     const service = interpret(this.#__workflow.withContext(this.#__context));
     service.start(this.#__currentState);
     return service.getSnapshot();
+  }
+
+  async invokePlugin(pluginName: string){
+    const { apiPlugins, commonPlugins, childWorkflowPlugins } = this.#__extensions;
+    const pluginToInvoke = [
+      ...(apiPlugins ?? []),
+      ...(commonPlugins ?? []),
+      ...(childWorkflowPlugins ?? [])
+    ]
+      .filter(plugin => !!plugin)
+      .find(plugin => plugin?.name === pluginName)
+
+    if (pluginToInvoke && this.isHttpPlugin(pluginToInvoke)) {
+      return await this.__invokeApiPlugin(pluginToInvoke)
+    }
+    if (pluginToInvoke && pluginToInvoke instanceof IterativePlugin) {
+      return await this.__invokeCommonPlugin(pluginToInvoke)
+    }
+  }
+
+  isHttpPlugin(plugin: unknown): plugin is HttpPlugin {
+    return plugin instanceof ApiPlugin ||
+      plugin instanceof WebhookPlugin ||
+      plugin instanceof KycPlugin;
   }
 }

@@ -228,6 +228,10 @@ export class WorkflowBrowserSDK {
     this.#__subscribers.push({ event, cb });
   }
 
+  async invokePlugin(pluginName: string) {
+    return await this.#__service.invokePlugin(pluginName);
+  }
+
   async sendEvent(event: WorkflowEventWithoutState) {
     return this.#__service.sendEvent(event);
   }
