@@ -15,25 +15,9 @@ export const ContactsPage = {
     {
       type: 'mainContainer',
       elements: [
-        // {
-        //   type: 'container',
-        //   uiElements: {
-        //     elementClass: ['inline'],
-        //   },
-        //   elements: [
-        //     {
-        //       name: 'page-stepper',
-        //       type: 'page-stepper',
-        //       uiElements: {
-        //         elementClass: ['inline'],
-        //       },
-        //     },
-        //     {
-        //       name: 'save-popup',
-        //       type: 'save-popup',
-        //     },
-        //   ],
-        // },
+        {
+          type: 'collection-flow-head'
+        },
         {
           type: 'container',
           elements: [
@@ -64,7 +48,7 @@ export const ContactsPage = {
           },
           elements: [
             {
-              id: 'first-name-input',
+              name: 'first-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.firstName',
               option: {
@@ -73,7 +57,7 @@ export const ContactsPage = {
               },
             },
             {
-              id: 'last-name-input',
+              name: 'last-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.lastName',
               option: {
@@ -81,7 +65,7 @@ export const ContactsPage = {
               },
             },
             {
-              id: 'email-input',
+              name: 'email-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.email',
               option: {
@@ -94,7 +78,7 @@ export const ContactsPage = {
               },
             },
             {
-              id: 'phone-number-input',
+              name: 'phone-number-input',
               type: 'international-phone-number',
               valueDestination: 'entity.data.additionalInfo.mainContact.phone',
               option: {
@@ -104,7 +88,7 @@ export const ContactsPage = {
           ],
         },
         {
-          id: 'next-page-button',
+          name: 'next-page-button',
           type: 'button',
           uiDefinition: {
             classNames: ['align-right', 'padding-top-10'],

@@ -61,32 +61,14 @@ const availableOnButtonRule = {
 export const PersonalInfoPage = {
   type: 'page',
   name: 'Personal details',
-  optionss: {
-    number: 1,
-    stateName: 'personal_details',
-  },
+  number: 1,
+  stateName: 'personal_details',
   elements: [
     {
       type: 'mainContainer',
       elements: [
         {
-          type: 'container',
-          uiElements: {
-            elementClass: ['inline'],
-          },
-          elements: [
-            {
-              name: 'page-stepper',
-              type: 'page-stepper',
-              uiElements: {
-                elementClass: ['inline'],
-              },
-            },
-            {
-              name: 'save-popup',
-              type: 'save-popup',
-            },
-          ],
+          type: 'collection-flow-head'
         },
         {
           type: 'container',
@@ -99,7 +81,7 @@ export const PersonalInfoPage = {
         },
         {
           type: 'json-form',
-          optionss: {
+          options: {
             jsonFormDefinition: {
               required: [
                 'first-name-input',
