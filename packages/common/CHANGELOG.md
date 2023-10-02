@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.6
+
+### Patch Changes
+
+- added common states and events
+
 ## 0.7.5
 
 ### Patch Changes
