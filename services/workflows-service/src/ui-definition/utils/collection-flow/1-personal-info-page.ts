@@ -75,7 +75,9 @@ export const PersonalInfoPage = {
           elements: [
             {
               type: 'h1',
-              value: 'Personal information',
+              options: {
+                text: 'Personal information',
+              },
             },
           ],
         },
@@ -190,7 +192,9 @@ export const PersonalInfoPage = {
   actions: [
     {
       type: 'definitionPlugin',
-      pluginName: 'update_end_user',
+      params: {
+        pluginName: 'update_end_user',
+      },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
@@ -203,7 +207,9 @@ export const PersonalInfoPage = {
     },
     {
       type: 'definitionEvent',
-      event: 'next',
+      params: {
+        eventName: 'next',
+      },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [

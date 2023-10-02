@@ -6,19 +6,18 @@ export const defintion = {
   states: {
     personal_details: {
       on: {
-        next: 'company_information',
+        next: 'business_information',
       },
     },
-    company_information: {
+    business_information: {
       on: {
-        next: 'address_information',
+        next: 'business_address_information',
         previous: 'personal_details',
       },
     },
-    address_information: {
+    business_address_information: {
       on: {
-        next: 'placeholder_1',
-        previous: 'company_information',
+        previous: 'business_information',
       },
     },
   },
