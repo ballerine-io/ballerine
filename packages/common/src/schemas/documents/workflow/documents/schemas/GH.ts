@@ -49,7 +49,7 @@ export const getGhanaDocuments = (): TDocument[] => {
         accountHolderName: TypeStringAtLeastOneWord,
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
-        timeRun: Type.String({ format: 'date-time' }),
+        timeRun: Type.String(),
       }),
     },
     {
