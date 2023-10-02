@@ -67,6 +67,25 @@ export const defintion = {
           ],
         },
       },
+      {
+        name: 'fetch_company_information',
+        pluginKind: 'api',
+        url: `{VITE_API_URL}/api/v1/collection-flow/business/business-information`,
+        method: 'GET',
+        headers: { Authorization: 'Bearer {tokenId}' },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+              registrationNumber: context.entity.data.registrationNumber,
+              jurisdictionCode: context.entity.data.country,
+              vendor: "open-corporates"
+              }`,
+            },
+          ],
+        },
+      }
     ],
   },
 };
