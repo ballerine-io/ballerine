@@ -1,13 +1,13 @@
 export interface TitleOptions {
-  title: string;
+  text: string;
 }
 
 export interface TitleProps {
   options: TitleOptions;
 }
 
-export const Title = ({ options = { title: '' } }: TitleProps) => {
-  const { title = '' } = options;
+export const Title = ({ options = { text: '' } }: TitleProps) => {
+  const { text = '' } = options;
 
-  return <p className="text-xl">{title}</p>;
+  return <p className="text-xl">{text}</p>;
 };

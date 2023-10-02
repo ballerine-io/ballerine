@@ -1,8 +1,8 @@
 import { CSSProperties, useMemo } from 'react';
 import chunk from 'lodash/chunk';
 import { BlocksComponent } from '@ballerine/blocks';
-import { baseElements } from '@app/components/organisms/UIRenderer/base-elements';
 import { Column } from '@app/components/organisms/UIRenderer/elements/Cell/Column';
+import { useUIRendererContext } from '@app/components/organisms/UIRenderer/hooks/useUIRendererContext/useUIRendererContext';
 
 export interface CellOptions {
   columns?: number;
@@ -16,6 +16,7 @@ export interface CellProps {
 }
 
 export const Cell = ({ options = {}, childrens: _childrens = [] }: CellProps) => {
+  const { elements } = useUIRendererContext();
   const { columns = 1, className, styles } = options;
 
   const grid = useMemo(() => {
@@ -27,13 +28,13 @@ export const Cell = ({ options = {}, childrens: _childrens = [] }: CellProps) =>
           Block={({ children }) => <>{children}</>}
           blocks={childrens}
           //@ts-ignore
-          cells={baseElements}
+          cells={elements}
         >
           {(Cell, cell) => (Cell ? <Cell {...cell} /> : null)}
         </BlocksComponent>
       </Column>
     ));
-  }, [columns, _childrens]);
+  }, [columns, _childrens, elements]);
 
   return (
     <div className={'flex ' + className} style={styles}>

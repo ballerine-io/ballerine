@@ -1,5 +1,4 @@
 import { AnyObject } from '@ballerine/ui';
-import { RJSFSchema } from '@rjsf/utils';
 
 export type UIElementType = 'text' | 'button';
 
@@ -10,7 +9,7 @@ export type EventRuleValue = {
 };
 
 export interface BaseRule {
-  engine: 'json-logic' | 'jmespath' | 'event';
+  type: 'json-logic' | 'jmespath' | 'event';
 }
 
 export interface Rule extends BaseRule {
@@ -23,7 +22,10 @@ export interface EventRule extends BaseRule {
 
 export interface Action<TParams = AnyObject> {
   type: string;
-  invokeOn: (Rule | EventRule)[];
+  dispatchOn: {
+    uiEvents: { event: string; uiElementName: string }[];
+    rules: (Rule | EventRule)[];
+  };
   params: TParams;
 }
 
@@ -34,5 +36,5 @@ export interface UIElement<TElementParams> {
   required?: boolean;
   options: TElementParams;
   valueDestination?: string;
-  uiElements?: UIElement<AnyObject>[];
+  elements?: UIElement<AnyObject>[];
 }

@@ -1,15 +1,16 @@
 //@ts-nocheck
+import { UIElement } from '@app/domains/collection-flow';
 import { ElementsMap } from '../types/elements.types';
-import { UISchema } from '../types/ui-schema.types';
 import { createBlocks } from '@ballerine/blocks';
 
-export const generateBlocks = (schema: UISchema | UISchema[], elements: ElementsMap) => {
+export const generateBlocks = (schema: UIElement | UIElement[], elements: ElementsMap) => {
   let base = createBlocks<keyof typeof elements>().addBlock();
 
   if (Array.isArray(schema)) {
     schema.forEach(schema => {
       base = base.addCell({
         type: schema.type,
+        definition: schema,
         childrens: schema.elements
           ? schema.elements.map(schema => generateBlocks(schema).flat(1))
           : [],
@@ -20,6 +21,7 @@ export const generateBlocks = (schema: UISchema | UISchema[], elements: Elements
     base = base.addCell({
       type: schema.type,
       options: schema.options,
+      definition: schema,
       childrens: schema.elements
         ? schema.elements.map(schema => generateBlocks(schema).flat(1))
         : [],
