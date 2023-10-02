@@ -1,5 +1,13 @@
 # @ballerine/backoffice-v2
 
+## 0.4.12
+
+### Patch Changes
+
+- gst
+- Updated dependencies
+  - @ballerine/common@0.6.7
+
 ## 0.4.11
 
 ### Patch Changes
