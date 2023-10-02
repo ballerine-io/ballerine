@@ -16,7 +16,7 @@ export interface IEditableDetails {
   valueId: string;
   id: string;
   documents: Array<{
-    propertiesSchema: any;
+    propertiesSchema: Record<string, unknown>;
     id: string;
     properties: Record<string, string>;
   }>;
