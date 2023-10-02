@@ -64,7 +64,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     documentId: valueId,
   });
   const onMutateTaskDecisionById = ({
-    // Ask Omri about this
     document,
     action,
   }: {
