@@ -132,32 +132,16 @@ const dispatchOpenCorporateRule = {
 
 export const BusinessInfoPage = {
   type: 'page',
-  number: 2,
-  stateName: 'business_information',
-  name: 'Company Information',
+  number: 2, // routing number of page
+  stateName: 'business_information', // this is the route from xstate
+  name: 'Company Information',  // page name ( in stepper )
   elements: [
     {
       type: 'mainContainer',
       elements: [
-        // {
-        //   type: 'container',
-        //   uiElements: {
-        //     elementClass: ['inline'],
-        //   },
-        //   elements: [
-        //     {
-        //       name: 'page-stepper',
-        //       type: 'page-stepper',
-        //       uiElements: {
-        //         elementClass: ['inline'],
-        //       },
-        //     },
-        //     {
-        //       name: 'save-popup',
-        //       type: 'save-popup',
-        //     },
-        //   ],
-        // },
+        {
+          type: 'collection-flow-head'
+        },
         {
           type: 'container',
           elements: [
@@ -176,7 +160,7 @@ export const BusinessInfoPage = {
           },
           elements: [
             {
-              id: 'registration-number-input',
+              name: 'registration-number-input',
               type: 'json-form:text',
               valueDestination: 'context.entity.data.registrationNumber',
               option: {
@@ -185,7 +169,7 @@ export const BusinessInfoPage = {
               },
             },
             {
-              id: 'country-picker-input',
+              name: 'country-picker-input',
               type: 'country-picker',
               valueDestination: 'context.entity.data.country',
               option: {
@@ -193,7 +177,7 @@ export const BusinessInfoPage = {
               },
             },
             {
-              id: 'company-name-input',
+              name: 'company-name-input',
               type: 'json-form:text',
               valueDestination: 'context.entity.data.companyName',
               option: {
@@ -202,7 +186,7 @@ export const BusinessInfoPage = {
               },
             },
             {
-              id: 'tax-identification-number-input',
+              name: 'tax-identification-number-input',
               type: 'json-form:text',
               valueDestination: 'context.entity.data.taxIdentificationNumber',
               option: {
@@ -211,7 +195,7 @@ export const BusinessInfoPage = {
               },
             },
             {
-              id: 'number-of-employees-input',
+              name: 'number-of-employees-input',
               type: 'json-form:text',
               valueDestination: 'context.entity.data.numberOfEmployees',
               option: {
@@ -223,7 +207,7 @@ export const BusinessInfoPage = {
               },
             },
             {
-              id: 'business-type-input',
+              name: 'business-type-input',
               type: 'json-form:dropdown',
               valueDestination: 'context.entity.data.businessType',
               option: {
@@ -241,7 +225,7 @@ export const BusinessInfoPage = {
               },
             },
             {
-              id: 'registered-capital-in-yuan-type-input',
+              name: 'registered-capital-in-yuan-type-input',
               type: 'json-form:text',
               valueDestination: 'context.entity.data.additionalInfo.registeredCapitalInYuan',
               option: {
@@ -254,7 +238,7 @@ export const BusinessInfoPage = {
               },
             },
             {
-              id: 'some-file-input',
+              name: 'some-file-input',
               type: 'file',
               valueDestination: 'context.entity.data.additionalInfo.file_file',
               option: {
@@ -266,7 +250,7 @@ export const BusinessInfoPage = {
           ],
         },
         {
-          id: 'next-page-button',
+          name: 'next-page-button',
           type: 'button',
           uiDefinition: {
             classNames: ['align-right', 'padding-top-10'],

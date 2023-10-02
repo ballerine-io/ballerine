@@ -62,25 +62,9 @@ export const BusinessAddressInfoPage = {
     {
       type: 'mainContainer',
       elements: [
-        // {
-        //   type: 'container',
-        //   uiElements: {
-        //     elementClass: ['inline'],
-        //   },
-        //   elements: [
-        //     {
-        //       name: 'page-stepper',
-        //       type: 'page-stepper',
-        //       uiElements: {
-        //         elementClass: ['inline'],
-        //       },
-        //     },
-        //     {
-        //       name: 'save-popup',
-        //       type: 'save-popup',
-        //     },
-        //   ],
-        // },
+        {
+          type: 'collection-flow-head'
+        },
         {
           type: 'container',
           elements: [
@@ -106,7 +90,7 @@ export const BusinessAddressInfoPage = {
           },
           elements: [
             {
-              id: 'street-input',
+              name: 'street-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.street',
               option: {
@@ -115,7 +99,7 @@ export const BusinessAddressInfoPage = {
               },
             },
             {
-              id: 'street-number-input',
+              name: 'street-number-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.streetNumber',
               option: {
@@ -127,7 +111,7 @@ export const BusinessAddressInfoPage = {
               },
             },
             {
-              id: 'city-input',
+              name: 'city-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.city',
               option: {
@@ -136,7 +120,7 @@ export const BusinessAddressInfoPage = {
               },
             },
             {
-              id: 'country-input',
+              name: 'country-input',
               type: 'country-picker',
               valueDestination: 'entity.data.additionalInfo.headquarters.country',
               option: {
@@ -145,7 +129,7 @@ export const BusinessAddressInfoPage = {
               },
             },
             {
-              id: 'different-from-physical-checkbox',
+              name: 'different-from-physical-checkbox',
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical',
               option: {
@@ -169,7 +153,7 @@ export const BusinessAddressInfoPage = {
           },
           elements: [
             {
-              id: 'physical-street-input',
+              name: 'physical-street-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.street',
               option: {
@@ -178,7 +162,7 @@ export const BusinessAddressInfoPage = {
               },
             },
             {
-              id: 'physical-street-number-input',
+              name: 'physical-street-number-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.streetNumber',
               option: {
@@ -190,7 +174,7 @@ export const BusinessAddressInfoPage = {
               },
             },
             {
-              id: 'physical-city-input',
+              name: 'physical-city-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.city',
               option: {
@@ -199,7 +183,7 @@ export const BusinessAddressInfoPage = {
               },
             },
             {
-              id: 'physical-country-input',
+              name: 'physical-country-input',
               type: 'country-picker',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.country',
               option: {
@@ -210,7 +194,7 @@ export const BusinessAddressInfoPage = {
           ],
         },
         {
-          id: 'next-page-button',
+          name: 'next-page-button',
           type: 'button',
           uiDefinition: {
             classNames: ['align-right', 'padding-top-10'],
