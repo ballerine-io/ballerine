@@ -542,6 +542,10 @@ export class WorkflowRunner {
     return service.getSnapshot();
   }
 
+  overrideContext(context: any){
+    return this.#__context = context
+  }
+
   async invokePlugin(pluginName: string){
     const { apiPlugins, commonPlugins, childWorkflowPlugins } = this.#__extensions;
     const pluginToInvoke = [
