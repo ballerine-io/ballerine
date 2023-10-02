@@ -19,6 +19,7 @@ export interface Workflow {
   sendEvent: (event: Omit<WorkflowEvent, 'state'>) => Promise<void>;
   getSnapshot: () => Record<PropertyKey, any>;
   invokePlugin: (pluginName: string) => Promise<void>;
+  overrideContext: (context: any) => any;
 }
 
 export interface WorkflowEvent {

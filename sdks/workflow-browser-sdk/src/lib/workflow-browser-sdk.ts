@@ -228,6 +228,9 @@ export class WorkflowBrowserSDK {
     this.#__subscribers.push({ event, cb });
   }
 
+  overrideContext(context: any) {
+    return this.#__service.overrideContext(context);
+  }
   async invokePlugin(pluginName: string) {
     return await this.#__service.invokePlugin(pluginName);
   }
