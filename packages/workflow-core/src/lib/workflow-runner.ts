@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { AnyRecord, uniqueArray } from '@ballerine/common';
+import { AnyRecord, isObject, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
@@ -523,10 +523,15 @@ export class WorkflowRunner {
     const {callbackAction, responseBody, error} = await apiPlugin.invoke?.(this.#__context);
     if (!this.isPluginWithCallbackAction(apiPlugin)) return;
 
-    this.#__context.pluginsOutput = {
-      ...(this.#__context.pluginsOutput || {}),
-      ...{[apiPlugin.name]: responseBody ? responseBody : {error: error}},
-    };
+    if (apiPlugin.persistResponseDestination && responseBody) {
+      this.#__context = this.mergeToContext(this.#__context, responseBody, apiPlugin.persistResponseDestination)
+    } else {
+      this.#__context.pluginsOutput = {
+        ...(this.#__context.pluginsOutput || {}),
+        ...{[apiPlugin.name]: responseBody ? responseBody : {error: error}},
+      };
+    }
+
     await this.sendEvent(callbackAction);
   }
 
@@ -569,4 +574,50 @@ export class WorkflowRunner {
       plugin instanceof WebhookPlugin ||
       plugin instanceof KycPlugin;
   }
+
+  mergeToContext(
+    sourceContext: Record<string, any>,
+    informationToPersist: Record<string, any>,
+    pathToPersist: string,
+  ) {
+    const keys = pathToPersist.split('.') as Array<string>;
+    let obj = sourceContext;
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      const key = keys[i] as string;
+      if (!obj[key]) {
+        obj[key] = {};
+      }
+      obj = obj[key];
+    }
+
+    const finalKey = keys[keys.length - 1] as string;
+    if (!obj[finalKey]) {
+      obj[finalKey] = {};
+    }
+
+    obj[finalKey] = this.deepMerge(informationToPersist, obj[finalKey]);
+
+    return sourceContext;
+  };
+
+  deepMerge(source: Record<string, any>, target: Record<string, any>) {
+    const output = {...target};
+
+    if (isObject(target) && isObject(source)) {
+      Object.keys(source).forEach((key) => {
+        if (isObject(source[key])) {
+          if (!target[key]) {
+            Object.assign(output, {[key]: source[key]});
+          } else {
+            output[key] = this.deepMerge(source[key], target[key]);
+          }
+        } else {
+          Object.assign(output, {[key]: source[key]});
+        }
+      });
+    }
+
+    return output;
+  };
 }
