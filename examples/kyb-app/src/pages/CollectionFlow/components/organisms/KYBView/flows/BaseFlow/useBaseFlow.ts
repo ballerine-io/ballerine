@@ -1,14 +1,14 @@
 import { useCallback, useState } from 'react';
 import { WorkflowFlowData } from '@app/domains/workflows/flow-data.type';
 import { useActiveWorkflowQuery } from '@app/hooks/useActiveWorkflowQuery';
-import { useNavigate } from 'react-router-dom';
+import { createSearchParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useFlowContext } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useWorkflowContext';
 import { useRevisionWarnings } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useRevisionWarnings';
 import { useWorkflowIssues } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useWorkflowIssues';
 import { useBaseFlowViews } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/hooks/useBaseFlowViews';
 import { useSessionQuery } from '@app/hooks/useSessionQuery';
 import { selectMainRepresentative } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectMainRepresentative';
-import { UpdateFlowDto, resubmitFlow, startFlow, updateFlow } from '@app/domains/collection-flow';
+import { resubmitFlow, startFlow, updateFlow, UpdateFlowDto } from '@app/domains/collection-flow';
 import { selectDocuments } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectDocuments';
 import { selectUbos } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectUbos';
 import { selectEntityData } from '@app/pages/CollectionFlow/components/organisms/KYBView/flows/BaseFlow/selectors/selectEntityData';
@@ -26,6 +26,7 @@ export const useBaseFlow = () => {
   const [isLoading, setLoading] = useState(false);
   const [isUpdating, setUpdating] = useState(false);
   const navigate = useNavigate();
+  const [searchQueryParams] = useSearchParams();
 
   const issues = useWorkflowIssues(flowData?.workflow);
   const warnings = useRevisionWarnings(issues);
@@ -80,8 +81,15 @@ export const useBaseFlow = () => {
           await updateFlow(updatePayload);
           await startFlow();
         }
+
         setLoading(false);
-        navigate('success');
+
+        navigate({
+          pathname: 'success',
+          search: createSearchParams({
+            token: searchQueryParams.get('token'),
+          }).toString(),
+        });
       } catch (error) {
         console.log(
           `Failed to perform ${isUpdate ? 'update' : 'create'},`,
