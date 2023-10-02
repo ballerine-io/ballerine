@@ -134,13 +134,13 @@ export const BusinessInfoPage = {
   type: 'page',
   number: 2, // routing number of page
   stateName: 'business_information', // this is the route from xstate
-  name: 'Company Information',  // page name ( in stepper )
+  name: 'Company Information', // page name ( in stepper )
   elements: [
     {
       type: 'mainContainer',
       elements: [
         {
-          type: 'collection-flow-head'
+          type: 'collection-flow-head',
         },
         {
           type: 'container',

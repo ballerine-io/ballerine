@@ -16,7 +16,7 @@ export const ContactsPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'collection-flow-head'
+          type: 'collection-flow-head',
         },
         {
           type: 'container',
