@@ -1,5 +1,12 @@
 const availableOnButtonRule = {
   and: [
+    { "var": "entity.data" },
+    { "var": "entity.data.additionalInfo" },
+    { "var": "entity.data.additionalInfo.mainContact" },
+    { "var": "entity.data.additionalInfo.mainContact.firstName" },
+    { "var": "entity.data.additionalInfo.mainContact.lastName" },
+    { "var": "entity.data.additionalInfo.mainContact.email" },
+    { "var": "entity.data.additionalInfo.mainContact.phone" },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.mainContact.firstName' }] }, 3] },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.mainContact.lastName' }] }, 3] },
     { regex: [{ var: 'entity.data.additionalInfo.mainContact.email' }, '^\\S+@\\S+\\.\\S+$'] },

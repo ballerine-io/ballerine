@@ -1,5 +1,14 @@
 const availableOnButtonRule = {
   and: [
+    { "var": "entity.data" },
+    { "var": "entity.data.additionalInfo" },
+    { "var": "entity.data.additionalInfo.store" },
+    { "var": "entity.data.additionalInfo.store.websiteUrls" },
+    { "var": "entity.data.additionalInfo.store.dba" },
+    { "var": "entity.data.additionalInfo.store.products" },
+    { "var": "entity.data.additionalInfo.store.established" },
+    { "var": "entity.data.additionalInfo.store.hasMobileApp" },
+    { "var": "entity.data.additionalInfo.store.hasActiveWebsite" },
     { '!=': [{ var: 'entity.data.additionalInfo.store.websiteUrls' }, ''] },
     { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
     { '!=': [{ var: 'entity.data.additionalInfo.store.products' }, ''] },
@@ -11,11 +20,16 @@ const availableOnButtonRule = {
     },
     { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
     {
-      if: [
-        { var: 'entity.data.additionalInfo.store.hasMobileApp' },
-        { '!=': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] },
-        { '==': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] },
-      ],
+      and: [
+        {"var": "entity.data.additionalInfo.store.mobileAppName"},
+        {
+          if: [
+            {var: 'entity.data.additionalInfo.store.hasMobileApp'},
+            {'!=': [{var: 'entity.data.additionalInfo.store.mobileAppName'}, '']},
+            {'==': [{var: 'entity.data.additionalInfo.store.mobileAppName'}, '']},
+          ]
+        },
+      ]
     },
   ],
 };

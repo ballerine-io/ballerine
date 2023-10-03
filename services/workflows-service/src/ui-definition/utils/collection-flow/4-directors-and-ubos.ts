@@ -1,5 +1,8 @@
 const availableOnButtonRule = {
     and: [
+      { "var": "entity.data" },
+      { "var": "entity.data.additionalInfo" },
+      { "var": "entity.data.additionalInfo.ubos" },
       {'>=': [ { length: [{ var: 'entity.data.additionalInfo.ubos' }] }, 1 ]},
       {
         reduce: [
@@ -19,6 +22,7 @@ const availableOnButtonRule = {
           true
         ]
       },
+      { "var": "entity.data.additionalInfo.directors" },
       {'>=': [ { length: [{ var: 'entity.data.additionalInfo.directors' }] }, 1 ]},
       {
         reduce: [
