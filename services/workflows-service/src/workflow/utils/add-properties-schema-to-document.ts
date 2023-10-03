@@ -25,7 +25,6 @@ function getPropertiesSchemaForDocument(document: DefaultContextSchema['document
     ...(documentByCountry?.propertiesSchema ?? {}),
     properties: Object.fromEntries(
       Object.entries(documentByCountry?.propertiesSchema?.properties ?? {}).map(([key, value]) => {
-        if (!(key in document.properties)) return [key, value];
         if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string')
           return [key, value];
 
