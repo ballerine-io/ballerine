@@ -3,15 +3,21 @@ const availableOnButtonRule = {
     { '!=': [{ var: 'entity.data.additionalInfo.store.websiteUrls' }, ''] },
     { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
     { '!=': [{ var: 'entity.data.additionalInfo.store.products' }, ''] },
-    { regex: [{ var: 'entity.data.additionalInfo.store.established' }, '^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$'] },
+    {
+      regex: [
+        { var: 'entity.data.additionalInfo.store.established' },
+        '^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$',
+      ],
+    },
     { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
     {
-      if: [{ var: 'entity.data.additionalInfo.store.hasMobileApp' },
+      if: [
+        { var: 'entity.data.additionalInfo.store.hasMobileApp' },
         { '!=': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] },
-        { '==': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] }
-      ]
-    }
-  ]
+        { '==': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] },
+      ],
+    },
+  ],
 };
 export const StoreInfoPage = {
   type: 'page',
@@ -38,7 +44,17 @@ export const StoreInfoPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: ['card-holder-name-input', 'resident-address-input', 'account-number-input', 'iban-input', 'swift-code-input', 'bank-name-input', 'bank-address-input', 'bank-sub-branch-input', 'account-currency-input'],
+              required: [
+                'card-holder-name-input',
+                'resident-address-input',
+                'account-number-input',
+                'iban-input',
+                'swift-code-input',
+                'bank-name-input',
+                'bank-address-input',
+                'bank-sub-branch-input',
+                'account-currency-input',
+              ],
             },
           },
           elements: [
@@ -68,17 +84,18 @@ export const StoreInfoPage = {
                 label: 'Industry',
                 hint: 'Food & Beverage',
                 options: [
-                  {label: 'Food & Beverage', value: 'Food & Beverage'},
-                  {label: 'Retail', value: 'Retail'},
-                  {label: 'Travel', value: 'Travel'},
-                  {label: 'Entertainment', value: 'Entertainment'},
-                  {label: 'Education', value: 'Education'},
-                  {label: 'Healthcare', value: 'Healthcare'},
-                  {label: 'Professional Services', value: 'Professional Services'},
-                  {label: 'Other', value: 'Other'}
-                ]
+                  { label: 'Food & Beverage', value: 'Food & Beverage' },
+                  { label: 'Retail', value: 'Retail' },
+                  { label: 'Travel', value: 'Travel' },
+                  { label: 'Entertainment', value: 'Entertainment' },
+                  { label: 'Education', value: 'Education' },
+                  { label: 'Healthcare', value: 'Healthcare' },
+                  { label: 'Professional Services', value: 'Professional Services' },
+                  { label: 'Other', value: 'Other' },
+                ],
               },
-            }, {
+            },
+            {
               name: 'store-products-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.products',
@@ -86,7 +103,8 @@ export const StoreInfoPage = {
                 label: 'Products (divide with comma if more than one)',
                 hint: 'Food, Beverage, etc.',
               },
-            }, {
+            },
+            {
               name: 'store-established-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.established',
@@ -98,14 +116,16 @@ export const StoreInfoPage = {
                 label: 'Established Date',
                 hint: 'DD/MM/YYYY',
               },
-            }, {
+            },
+            {
               name: 'store-has-mobile-checkbox',
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.store.hasMobileApp',
               option: {
                 label: 'I have mobile application',
               },
-            }, {
+            },
+            {
               name: 'store-mobile-app-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.mobileAppName',
@@ -113,14 +133,16 @@ export const StoreInfoPage = {
                 label: 'App Name',
                 hint: 'App Name',
               },
-            }, {
+            },
+            {
               name: 'active-store-website-checkbox',
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.store.hasActiveWebsite',
               option: {
                 label: "I declare that the website's business activity does not require a license",
               },
-            },{
+            },
+            {
               name: 'active-store-website-checkbox',
               type: 'json-form:label',
               option: {
