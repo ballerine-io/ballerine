@@ -8,57 +8,64 @@ export const definition = {
     states: {
       personal_details: {
         on: {
-          next: 'company_information',
+          NEXT: 'company_information',
         },
       },
       company_information: {
         on: {
-          next: 'business_address_information',
-          previous: 'personal_details',
+          NEXT: 'business_address_information',
+          PREVIOUS: 'personal_details',
         },
       },
       business_address_information: {
         on: {
-          next: 'directors_and_ubos',
-          previous: 'company_information',
+          NEXT: 'directors_and_ubos',
+          PREVIOUS: 'company_information',
         },
       },
       directors_and_ubos: {
         on: {
-          next: 'contacts_page',
-          previous: 'business_address_information',
+          NEXT: 'contacts_page',
+          PREVIOUS: 'business_address_information',
         },
       },
       contacts_page: {
         on: {
-          next: 'banking_details',
-          previous: 'directors_and_ubos',
+          NEXT: 'banking_details',
+          PREVIOUS: 'directors_and_ubos',
         },
       },
       banking_details: {
         on: {
-          next: 'store_info',
-          previous: 'contacts_page',
+          NEXT: 'store_info',
+          PREVIOUS: 'contacts_page',
         },
       },
       store_info: {
         on: {
-          next: 'website_basic_requirement',
-          previous: 'banking_details',
+          NEXT: 'website_basic_requirement',
+          PREVIOUS: 'banking_details',
         },
       },
       website_basic_requirement: {
         on: {
-          next: 'processing_details',
-          previous: 'store_info',
+          NEXT: 'processing_details',
+          PREVIOUS: 'store_info',
         },
       },
       processing_details: {
         on: {
-          next: 'website_basic_requirement',
-          previous: 'website_basic_requirement',
+          NEXT: 'company_documents',
+          PREVIOUS: 'website_basic_requirement',
         },
       },
+      company_documents: {
+        on: {
+          NEXT: 'finish',
+          PREVIOUS: "website_basic_requirement"
+        },
+      },
+      finish: {type: 'final'}
     },
   },
   extensions: {
@@ -68,7 +75,7 @@ export const definition = {
         pluginKind: 'api',
         url: `{VITE_API_URL}/api/v1/collection-flow/end-user`,
         method: 'POST',
-        headers: { Authorization: 'Bearer {tokenId}' },
+        headers: {Authorization: 'Bearer {tokenId}'},
         request: {
           transform: [
             {
@@ -90,7 +97,7 @@ export const definition = {
         url: `{VITE_API_URL}/api/v1/collection-flow/{tokenId}`,
         method: 'PUT',
         stateNames: ['company_information', 'address_information'],
-        headers: { Authorization: 'Bearer {tokenId}' },
+        headers: {Authorization: 'Bearer {tokenId}'},
         request: {
           transform: [
             {
@@ -111,14 +118,14 @@ export const definition = {
         pluginKind: 'api',
         url: `{VITE_API_URL}/api/v1/collection-flow/business/business-information`,
         method: 'GET',
-        headers: { Authorization: 'Bearer {tokenId}' },
+        headers: {Authorization: 'Bearer {tokenId}'},
         request: {
           transform: [
             {
               transformer: 'jmespath',
               mapping: `{
-              registrationNumber: context.entity.data.registrationNumber,
-              jurisdictionCode: context.entity.data.country,
+              registrationNumber: entity.data.registrationNumber,
+              jurisdictionCode: entity.data.country,
               vendor: 'open-corporates'
               }`,
             },

@@ -1,17 +1,17 @@
 const availableOnButtonRule = {
     and: [
-      {'===': [ { typeof: { var: 'context.entity.data.additionalInfo.registeredCapitalInYuan' } }, 'number']},
-      {'>': [ { length: { var: 'context.entity.data.businessType' } }, 3]},
-      {'===': [ { typeof: { var: 'context.entity.data.numberOfEmployees' } }, 'number']},
-      {'>': [ { length: { var: 'context.entity.data.taxIdentificationNumber' } }, 3]},
-      {'>': [ { length: { var: 'context.entity.data.companyName' } }, 3]},
+      {'===': [ { typeof: { var: 'entity.data.additionalInfo.registeredCapitalInYuan' } }, 'number']},
+      {'>': [ { length: { var: 'entity.data.businessType' } }, 3]},
+      {'===': [ { typeof: { var: 'entity.data.numberOfEmployees' } }, 'number']},
+      {'>': [ { length: { var: 'entity.data.taxIdentificationNumber' } }, 3]},
+      {'>': [ { length: { var: 'entity.data.companyName' } }, 3]},
       {
         and: [
-          {'==': [ { length: { var: 'context.entity.data.country' } }, 2]},
-          {'==': [ { var: 'context.entity.data.country' }, { toUpperCase: { var: 'context.entity.data.country' } }]}
+          {'==': [ { length: { var: 'entity.data.country' } }, 2]},
+          {'==': [ { var: 'entity.data.country' }, { toUpperCase: { var: 'entity.data.country' } }]}
         ]
       },
-      {'>': [ { length: { var: 'context.entity.data.registrationNumber' } }, 3]}
+      {'>': [ { length: { var: 'entity.data.registrationNumber' } }, 3]}
     ]
   };
 
@@ -21,7 +21,7 @@ const dispatchOpenCorporateRule = {
       '>': [
         {
           length: {
-            var: 'context.entity.data.registrationNumber',
+            var: 'entity.data.registrationNumber',
           },
         },
         4,
@@ -33,7 +33,7 @@ const dispatchOpenCorporateRule = {
           '==': [
             {
               length: {
-                var: 'context.entity.data.country',
+                var: 'entity.data.country',
               },
             },
             2,
@@ -42,11 +42,11 @@ const dispatchOpenCorporateRule = {
         {
           '==': [
             {
-              var: 'context.entity.data.country',
+              var: 'entity.data.country',
             },
             {
               toUpperCase: {
-                var: 'context.entity.data.country',
+                var: 'entity.data.country',
               },
             },
           ],
@@ -88,7 +88,7 @@ export const BusinessInfoPage = {
             {
               name: 'registration-number-input',
               type: 'json-form:text',
-              valueDestination: 'context.entity.data.registrationNumber',
+              valueDestination: 'entity.data.registrationNumber',
               option: {
                 label: 'Registration Number',
                 hint: '1000000032985',
@@ -97,7 +97,7 @@ export const BusinessInfoPage = {
             {
               name: 'country-picker-input',
               type: 'country-picker',
-              valueDestination: 'context.entity.data.country',
+              valueDestination: 'entity.data.country',
               option: {
                 hint: 'Hong Kong',
               },
@@ -105,7 +105,7 @@ export const BusinessInfoPage = {
             {
               name: 'company-name-input',
               type: 'json-form:text',
-              valueDestination: 'context.entity.data.companyName',
+              valueDestination: 'entity.data.companyName',
               option: {
                 label: 'Company English Name',
                 hint: 'English Name',
@@ -114,7 +114,7 @@ export const BusinessInfoPage = {
             {
               name: 'tax-identification-number-input',
               type: 'json-form:text',
-              valueDestination: 'context.entity.data.taxIdentificationNumber',
+              valueDestination: 'entity.data.taxIdentificationNumber',
               option: {
                 label: 'Tax Identity Number',
                 hint: '1234567898765',
@@ -123,7 +123,7 @@ export const BusinessInfoPage = {
             {
               name: 'number-of-employees-input',
               type: 'json-form:text',
-              valueDestination: 'context.entity.data.numberOfEmployees',
+              valueDestination: 'entity.data.numberOfEmployees',
               option: {
                 jsonFormDefinition: {
                   type: 'number',
@@ -135,7 +135,7 @@ export const BusinessInfoPage = {
             {
               name: 'business-type-input',
               type: 'json-form:dropdown',
-              valueDestination: 'context.entity.data.businessType',
+              valueDestination: 'entity.data.businessType',
               option: {
                 hint: 'Corporation',
                 label: 'Corporate type',
@@ -153,7 +153,7 @@ export const BusinessInfoPage = {
             {
               name: 'registered-capital-in-yuan-type-input',
               type: 'json-form:text',
-              valueDestination: 'context.entity.data.additionalInfo.registeredCapitalInYuan',
+              valueDestination: 'entity.data.additionalInfo.registeredCapitalInYuan',
               option: {
                 jsonFormDefinition: {
                   type: 'number',
@@ -161,16 +161,6 @@ export const BusinessInfoPage = {
                 format: 'currency',
                 hint: '2,000,000',
                 label: 'Registered capital (in Chinese Yuan)',
-              },
-            },
-            {
-              name: 'some-file-input',
-              type: 'file',
-              valueDestination: 'context.entity.data.additionalInfo.file_file',
-              option: {
-                jsonFormDefinition: {
-                  type: 'string',
-                },
               },
             },
           ],
