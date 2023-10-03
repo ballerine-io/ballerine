@@ -16,7 +16,7 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
-import { IntentResponse, WorkflowService } from './workflow.service';
+import { WorkflowService } from './workflow.service';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { plainToClass } from 'class-transformer';
@@ -347,6 +347,14 @@ export class WorkflowControllerExternal {
       endUserId: endUser.id,
       expiresAt: nowPlus30Days,
     });
+
+    await this.service.updateContextById(
+      workflow[0].workflowRuntimeData.id,
+      {
+        token: workflowToken.token,
+      },
+      [currentProjectId],
+    );
 
     // @TODO: Send email with token
 
