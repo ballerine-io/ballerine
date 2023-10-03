@@ -4,7 +4,7 @@ const availableOnButtonRule = {
     { var: 'entity.data.additionalInfo' },
     { var: 'entity.data.additionalInfo.store' },
     { var: 'entity.data.additionalInfo.store.website' },
-    { var: 'entity.data.additionalInfo.store.website.operationEntitiesName' },
+    { var: 'entity.data.additionalInfo.store.website.mainWebsite' },
     { var: 'entity.data.additionalInfo.store.website.contactDetails' },
     { var: 'entity.data.additionalInfo.store.website.returnPolicyUrl' },
     { var: 'entity.data.additionalInfo.store.website.shippingPolicyUrl' },
@@ -13,7 +13,7 @@ const availableOnButtonRule = {
     { var: 'entity.data.additionalInfo.store.website.productDescription' },
     { var: 'entity.data.additionalInfo.store.website.productPrice' },
     { var: 'entity.data.additionalInfo.store.website.websiteLanguage' },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.website.operationEntitiesName' }, ''] },
+    { '!=': [{ var: 'entity.data.additionalInfo.store.website.mainWebsite' }, ''] },
     { '!=': [{ var: 'entity.data.additionalInfo.store.website.contactDetails' }, ''] },
     { '!=': [{ var: 'entity.data.additionalInfo.store.website.returnPolicyUrl' }, ''] },
     { '!=': [{ var: 'entity.data.additionalInfo.store.website.shippingPolicyUrl' }, ''] },
@@ -71,19 +71,13 @@ export const WebsiteBasicRequirement = {
               },
             },
             {
-              name: 'operation-entities-name-input',
+              name: 'main-company-website-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.store.website.operationEntitiesName',
+              valueDestination: 'entity.data.additionalInfo.store.website.mainWebsite',
               option: {
-                label: 'Operation Entities Name, address',
-                hint: 'Example Corp.',
-              },
-            },
-            {
-              type: 'json-form:hint',
-              option: {
-                style: 'padding-top: -10px;',
-                label: 'the same as the application Entities',
+                label: "Company's Main Website Address",
+                hint: 'www.example.cn',
+                description: 'the same as the application Entities'
               },
             },
             {
@@ -137,7 +131,8 @@ export const WebsiteBasicRequirement = {
               valueDestination: 'entity.data.additionalInfo.store.website.productDescription',
               option: {
                 label: 'Adequate Product/Service Description',
-                hint: 'Descriptive text about the product/service',
+                hint: 'offers a range of organic skincare products, including moisturizers, serums, and cleansers. Each product is made using natural ingredients sourced sustainably.',
+                classNames: ['min-width-40px'],
               },
             },
             {

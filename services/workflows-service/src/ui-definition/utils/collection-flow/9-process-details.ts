@@ -10,6 +10,7 @@ const availableOnButtonRule = {
     { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay' },
     { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' },
     { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' },
+    { var: 'entity.data.additionalInfo.store.processingDetails.mainCategory' },
     {
       if: [
         {var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales'},
@@ -21,9 +22,11 @@ const availableOnButtonRule = {
             {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay'}]},
             {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales'}]},
             {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.spikeSalesVolume'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.spikeSalesAverageVolume'}]},
             {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.spikeTransactionNumber'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion'}]}
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.mainCategory'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.businessModel'}]}
           ]
         },
         {
@@ -33,7 +36,9 @@ const availableOnButtonRule = {
             {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay'}]},
             {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay'}]},
             {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales'}]}
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.mainCategory'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.businessModel'}]}
           ]
         }
       ]
@@ -153,19 +158,6 @@ export const ProcessingDetails = {
               },
             },
             {
-              name: 'maximum-ticket-sales-input',
-              type: 'json-form:text',
-              valueDestination:
-                'entity.data.additionalInfo.store.processingDetails.maximumTicketSales',
-              option: {
-                label: 'Maximum Ticket Sales',
-                hint: '200',
-                jsonFormDefinition: {
-                  type: 'number',
-                },
-              },
-            },
-            {
               name: 'spike-in-transactions-input',
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales',
@@ -193,9 +185,9 @@ export const ProcessingDetails = {
                   name: 'spike-sales-volume-input',
                   type: 'json-form:text',
                   valueDestination:
-                    'entity.data.additionalInfo.store.processingDetails.spikeSalesVolume',
+                    'entity.data.additionalInfo.store.processingDetails.spikeSalesAverageVolume',
                   option: {
-                    label: 'Spike Sales Volume',
+                    label: 'Spike Sales Average Volume',
                     hint: '150,000',
                     jsonFormDefinition: {
                       type: 'number',
@@ -222,10 +214,7 @@ export const ProcessingDetails = {
                     'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion',
                   option: {
                     label: 'Split of volume by regions in %',
-                    hint: '30%',
-                    jsonFormDefinition: {
-                      type: 'number',
-                    },
+                    hint: 'Asia 70%, Europe 30%',
                   },
                 },
               ],
@@ -246,8 +235,22 @@ export const ProcessingDetails = {
                   uniqueItems: true,
                 },
               },
-              valueDestination: 'entity.data.additionalInfo.store.processingDetails.mainContact',
+              valueDestination: 'entity.data.additionalInfo.store.processingDetails.mainCategory',
             },
+            {
+              type: 'json-form',
+              options: {
+                jsonFormDefinition: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    enum: ['Membership', 'Direct Purchase', 'Other'],
+                  },
+                  uniqueItems: true,
+                },
+              },
+              valueDestination: 'entity.data.additionalInfo.store.processingDetails.businessModel',
+            }
           ],
         },
         {

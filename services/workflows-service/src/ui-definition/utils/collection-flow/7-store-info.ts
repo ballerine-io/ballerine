@@ -119,8 +119,9 @@ export const StoreInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.products',
               option: {
+                classNames: ['min-width-40px'],
                 label: 'Products (divide with comma if more than one)',
-                hint: 'Food, Beverage, etc.',
+                hint: 'Smart Watches, Wireless Earbuds, Portable Chargers.',
               },
             },
             {
