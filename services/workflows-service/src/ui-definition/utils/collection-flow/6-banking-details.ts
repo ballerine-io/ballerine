@@ -2,17 +2,19 @@ const availableOnButtonRule = {
   and: [
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.holderName' }] }, 5] },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.holderFullAddress' }] }, 8] },
-    { and: [
+    {
+      and: [
         { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.accountNumber' }] }, 6] },
-        { '<= ': [{ maxLength: [{ var: 'entity.data.additionalInfo.bank.accountNumber' }] }, 15] }
-      ]},
+        { '<= ': [{ maxLength: [{ var: 'entity.data.additionalInfo.bank.accountNumber' }] }, 15] },
+      ],
+    },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.iban' }] }, 15] },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.swiftCode' }] }, 8] },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.bankName' }] }, 3] },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.bankAddress' }] }, 10] },
     { regex: [{ var: 'entity.data.additionalInfo.bank.subBranch' }, '^[0-9]+$'] },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.bankName' }] }, 3] },
-  ]
+  ],
 };
 export const BankingDetailsPage = {
   type: 'page',
@@ -39,7 +41,17 @@ export const BankingDetailsPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: ['card-holder-name-input', 'resident-address-input', 'account-number-input', 'iban-input', 'swift-code-input', 'bank-name-input', 'bank-address-input', 'bank-sub-branch-input', 'account-currency-input'],
+              required: [
+                'card-holder-name-input',
+                'resident-address-input',
+                'account-number-input',
+                'iban-input',
+                'swift-code-input',
+                'bank-name-input',
+                'bank-address-input',
+                'bank-sub-branch-input',
+                'account-currency-input',
+              ],
             },
           },
           elements: [
@@ -78,7 +90,8 @@ export const BankingDetailsPage = {
                 label: 'IBAN',
                 hint: 'PayLync Technologies, Inc.',
               },
-            },{
+            },
+            {
               name: 'swift-code-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.swiftCode',
@@ -86,7 +99,8 @@ export const BankingDetailsPage = {
                 label: 'Swift Code',
                 hint: 'BBBBCCDDXXX',
               },
-            },{
+            },
+            {
               name: 'bank-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.bankName',
@@ -94,7 +108,8 @@ export const BankingDetailsPage = {
                 label: 'Bank Name',
                 hint: 'Barcalays Bank',
               },
-            },{
+            },
+            {
               name: 'bank-address-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.bankAddress',
@@ -102,7 +117,8 @@ export const BankingDetailsPage = {
                 label: 'Bank Address',
                 hint: 'Delaware 125 South West Street Wilmington, DE 19801',
               },
-            },{
+            },
+            {
               name: 'bank-sub-branch-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.subBranch',
@@ -110,7 +126,8 @@ export const BankingDetailsPage = {
                 label: 'Sub-Branch Number',
                 hint: '123456789',
               },
-            },{
+            },
+            {
               name: 'account-currency-input',
               type: 'currency-picker',
               valueDestination: 'entity.data.additionalInfo.bank.currency',

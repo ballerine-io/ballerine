@@ -4,56 +4,19 @@ const availableOnButtonRule = {
       var: 'entity.data.additionalInfo.mainRepresentative.phone',
     },
     {
-      match: [
-        {
-          var: 'entity.data.additionalInfo.mainRepresentative.phone',
-        },
-        '^[+]?[0-9]{10,15}$',
-      ],
+      var: 'entity.data.additionalInfo.mainRepresentative.phone',
     },
     {
-      match: [
-        {
-          var: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
-        },
-        '^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\\d{4})$',
-      ],
+      var: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
     },
     {
-      '>': [
-        {
-          length: [
-            {
-              var: 'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle',
-            },
-          ],
-        },
-        2,
-      ],
+      var: 'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle',
     },
     {
-      '>': [
-        {
-          length: [
-            {
-              var: 'entity.data.additionalInfo.mainRepresentative.firstName',
-            },
-          ],
-        },
-        1,
-      ],
+      var: 'entity.data.additionalInfo.mainRepresentative.firstName',
     },
     {
-      '>': [
-        {
-          length: [
-            {
-              var: 'entity.data.additionalInfo.mainRepresentative.lastName',
-            },
-          ],
-        },
-        1,
-      ],
+      var: 'entity.data.additionalInfo.mainRepresentative.lastName',
     },
   ],
 };
@@ -94,6 +57,7 @@ export const PersonalInfoPage = {
               ],
             },
           },
+          valueDestination: 'entity.data.additionalInfo.mainRepresentative',
           elements: [
             {
               name: 'first-name-input',
