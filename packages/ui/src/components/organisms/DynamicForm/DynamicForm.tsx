@@ -1,10 +1,11 @@
-import { RJSFSchema, RJSFValidationError, UiSchema } from '@rjsf/utils';
-import Form, { FormProps, IChangeEvent } from '@rjsf/core';
+import { RJSFSchema, RJSFValidationError, RegistryFieldsType, UiSchema } from '@rjsf/utils';
+import Form, { IChangeEvent } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
-import { fields } from './fields';
+import { fields as baseFields } from './fields';
 import { templates } from './templates';
 import { useCallback, useMemo } from 'react';
 import { Provider, WarningsContext } from './warnings.context';
+import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters';
 
 type InputName = string;
 export type InputWarning = string | string[];
@@ -20,10 +21,10 @@ interface Props<TFormData> {
   formData?: object;
   warnings?: InputsWarnings;
   disabled?: boolean;
+  fields?: Record<keyof RegistryFieldsType, RJSVInputAdapter<any>>;
   transformErrors?: (errors: RJSFValidationError[], uiSchema: UiSchema) => RJSFValidationError[];
   onChange?: (formData: TFormData) => void;
   onSubmit: (formData: TFormData) => void;
-  overrideFormProps?: (baseProps: FormProps) => FormProps;
 }
 
 export function DynamicForm<TFormData extends object>({
@@ -33,7 +34,7 @@ export function DynamicForm<TFormData extends object>({
   formData,
   warnings,
   disabled,
-  overrideFormProps,
+  fields = baseFields,
   transformErrors,
   onChange,
   onSubmit,
@@ -60,38 +61,23 @@ export function DynamicForm<TFormData extends object>({
     return ctx;
   }, [warnings]);
 
-  const baseFormProps = useMemo(() => {
-    const props = {
-      className,
-      schema,
-      formData,
-      uiSchema,
-      onSubmit: handleSubmit,
-      onChange: handleChange,
-      validator,
-      fields,
-      templates,
-      showErrorList: false,
-      disabled,
-      transformErrors,
-    } as FormProps;
-
-    return overrideFormProps ? overrideFormProps(props) : props;
-  }, [
-    className,
-    schema,
-    formData,
-    uiSchema,
-    disabled,
-    transformErrors,
-    overrideFormProps,
-    handleSubmit,
-    handleChange,
-  ]);
-
   return (
     <Provider value={warningsContext}>
-      <Form {...baseFormProps} />
+      <Form
+        className={className}
+        schema={schema}
+        formData={formData}
+        uiSchema={uiSchema}
+        onSubmit={handleSubmit}
+        onChange={handleChange}
+        validator={validator}
+        fields={fields as unknown as RegistryFieldsType}
+        autoComplete="on"
+        templates={templates}
+        showErrorList={false}
+        disabled={disabled}
+        transformErrors={transformErrors}
+      />
     </Provider>
   );
 }

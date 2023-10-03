@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.1
+
+### Patch Changes
+
+- extended DynamicForm exports
+
 ## 0.3.0
 
 ### Minor Changes

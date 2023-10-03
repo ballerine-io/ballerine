@@ -14,5 +14,4 @@ export interface BaseElements {
 
 export type BaseElementsType = keyof BaseElements;
 
-export type ElementsMap = Record<BaseElementsType, ElementComponent<any>> &
-  Record<string, ElementComponent<any>>;
+export type ElementsMap = Record<string, ElementComponent<any>>;
