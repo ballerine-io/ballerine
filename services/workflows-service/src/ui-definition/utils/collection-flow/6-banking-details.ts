@@ -73,7 +73,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.holderName',
               option: {
                 label: 'Cardholder Name',
-                hint: 'Jon Deo',
+                hint: 'John W. Doe',
               },
             },
             {
@@ -82,7 +82,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.holderFullAddress',
               option: {
                 label: 'Resident Address',
-                hint: '10 Downing Street, London, UK, 2W1A2AA',
+                hint: 'Fla 5A, Tower 2, The Peak, 123 Queens Road, Hong Kong',
               },
             },
             {
@@ -91,7 +91,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.accountNumber',
               option: {
                 label: 'Account Number',
-                hint: '20456720',
+                hint: '0123456789',
               },
             },
             {
@@ -100,7 +100,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.iban',
               option: {
                 label: 'IBAN',
-                hint: 'PayLync Technologies, Inc.',
+                hint: 'HK00HKB01234567890123',
               },
             },
             {
@@ -118,7 +118,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.bankName',
               option: {
                 label: 'Bank Name',
-                hint: 'Barcalays Bank',
+                hint: 'Honk Kong Bank',
               },
             },
             {
@@ -127,7 +127,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.bankAddress',
               option: {
                 label: 'Bank Address',
-                hint: 'Delaware 125 South West Street Wilmington, DE 19801',
+                hint: "456 King's Road, North Point, Hong Kong",
               },
             },
             {
@@ -136,7 +136,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.subBranch',
               option: {
                 label: 'Sub-Branch Number',
-                hint: '123456789',
+                hint: '0012',
               },
             },
             {
