@@ -11,14 +11,50 @@ export const defintion = {
     },
     company_information: {
       on: {
-        next: 'address_information',
+        next: 'business_address_information',
         previous: 'personal_details',
       },
     },
-    address_information: {
+    business_address_information: {
       on: {
-        next: 'placeholder_1',
+        next: 'directors_and_ubos',
         previous: 'company_information',
+      },
+    },
+    directors_and_ubos: {
+      on: {
+        next: 'contacts_page',
+        previous: 'business_address_information',
+      },
+    },
+    contacts_page: {
+      on: {
+        next: 'banking_details',
+        previous: 'directors_and_ubos',
+      },
+    },
+    banking_details: {
+      on: {
+        next: 'store_info',
+        previous: 'contacts_page',
+      },
+    },
+    store_info: {
+      on: {
+        next: 'website_basic_requirement',
+        previous: 'banking_details',
+      },
+    },
+    website_basic_requirement: {
+      on: {
+        next: 'processing_details',
+        previous: 'store_info',
+      },
+    },
+    processing_details: {
+      on: {
+        next: 'website_basic_requirement',
+        previous: 'website_basic_requirement',
       },
     },
   },
@@ -80,12 +116,12 @@ export const defintion = {
               mapping: `{
               registrationNumber: context.entity.data.registrationNumber,
               jurisdictionCode: context.entity.data.country,
-              vendor: "open-corporates"
+              vendor: 'open-corporates'
               }`,
             },
           ],
         },
-      }
+      },
     ],
   },
 };

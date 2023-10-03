@@ -1,23 +1,21 @@
 const availableOnButtonRule = {
   and: [
-    { '!=': [{ var: 'entity.data.additionalInfo.store.websiteUrls' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.products' }, ''] },
-    { regex: [{ var: 'entity.data.additionalInfo.store.established' }, '^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$'] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
-    {
-      if: [{ var: 'entity.data.additionalInfo.store.hasMobileApp' },
-        { '!=': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] },
-        { '==': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] }
-      ]
-    }
-  ]
+    { '!=': [{ var: 'entity.data.additionalInfo.store.website.operationEntitiesName' }, ''] },
+    { '!=': [{ var: 'entity.data.additionalInfo.store.website.contactDetails' }, ''] },
+    { '!=': [{ var: 'entity.data.additionalInfo.store.website.returnPolicyUrl' }, ''] },
+    { '!=': [{ var: 'entity.data.additionalInfo.store.website.shippingPolicyUrl' }, ''] },
+    { '!=': [{ var: 'entity.data.additionalInfo.store.website.aboutUsUrl' }, ''] },
+    { '!=': [{ var: 'entity.data.additionalInfo.store.website.productQuantityUrl' }, ''] },
+    { '!=': [{ var: 'entity.data.additionalInfo.store.website.productDescription' }, ''] },
+    { '!=': [{ var: 'entity.data.additionalInfo.store.website.productPrice' }, ''] },
+    { '!=': [{ var: 'entity.data.additionalInfo.store.website.websiteLanguage' }, ''] },
+  ],
 };
-export const StoreInfoPage = {
+export const WebsiteBasicRequirement = {
   type: 'page',
-  number: 7,
-  stateName: 'store_info',
-  name: 'Store Info',
+  number: 8,
+  stateName: 'website_basic_requirement',
+  name: 'Website Basic Requirement',
   elements: [
     {
       type: 'mainContainer',
@@ -30,7 +28,7 @@ export const StoreInfoPage = {
           elements: [
             {
               type: 'h1',
-              value: 'Store Info',
+              value: 'Website Basic Requirement',
             },
           ],
         },
@@ -38,94 +36,116 @@ export const StoreInfoPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: ['card-holder-name-input', 'resident-address-input', 'account-number-input', 'iban-input', 'swift-code-input', 'bank-name-input', 'bank-address-input', 'bank-sub-branch-input', 'account-currency-input'],
+              required: [
+                'operation-entities-name-input',
+                'contact-details-input',
+                'return-policy-url-input',
+                'shipping-policy-url-input',
+                'about-us-url-input',
+                'product-quantity-url-input',
+                'product-description-input',
+                'product-price-input',
+                'website-language-input',
+              ],
             },
           },
           elements: [
             {
-              name: 'store-website-urls-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.store.websiteUrls',
+              type: 'json-form:hint',
               option: {
-                label: 'Website URLS (divide with comma if more than one)',
-                hint: 'www.example.cn',
+                label:
+                  'This list is intended only as a basic pre-entry check of the websites and does not refer to specific product application requirements.',
               },
             },
             {
-              name: 'store-dba-input',
+              name: 'operation-entities-name-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.store.dba',
+              valueDestination: 'entity.data.additionalInfo.store.website.operationEntitiesName',
               option: {
-                label: 'DBA (Descriptor)',
-                hint: 'Barclays',
+                label: 'Operation Entities Name, address',
+                hint: 'Example Corp.',
               },
             },
             {
-              name: 'store-industry-input',
-              type: 'json-form:dropdown',
-              valueDestination: 'entity.data.additionalInfo.store.industry',
+              type: 'json-form:hint',
               option: {
-                label: 'Industry',
-                hint: 'Food & Beverage',
-                options: [
-                  {label: 'Food & Beverage', value: 'Food & Beverage'},
-                  {label: 'Retail', value: 'Retail'},
-                  {label: 'Travel', value: 'Travel'},
-                  {label: 'Entertainment', value: 'Entertainment'},
-                  {label: 'Education', value: 'Education'},
-                  {label: 'Healthcare', value: 'Healthcare'},
-                  {label: 'Professional Services', value: 'Professional Services'},
-                  {label: 'Other', value: 'Other'}
-                ]
+                style: 'padding-top: -10px;',
+                label: 'the same as the application Entities',
               },
-            }, {
-              name: 'store-products-input',
+            },
+            {
+              name: 'contact-details-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.store.products',
+              valueDestination: 'entity.data.additionalInfo.store.website.contactDetails',
               option: {
-                label: 'Products (divide with comma if more than one)',
-                hint: 'Food, Beverage, etc.',
+                label: 'Contact Details (or Return Address)',
+                hint: '22, chaoyangmen, chaoyan district, beijing, china',
               },
-            }, {
-              name: 'store-established-input',
+            },
+            {
+              name: 'return-policy-url-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.store.established',
+              valueDestination: 'entity.data.additionalInfo.store.website.returnPolicyUrl',
               option: {
+                label: 'Return / Exchange Policy URL',
+                hint: 'www.example.com/return-policy',
+              },
+            },
+            {
+              name: 'shipping-policy-url-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.store.website.shippingPolicyUrl',
+              option: {
+                label: 'Shipping Policy',
+                hint: 'www.example.com/shipping-policy',
+              },
+            },
+            {
+              name: 'about-us-url-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.store.website.aboutUsUrl',
+              option: {
+                label: 'About Us/Brand Intro URL',
+                hint: 'www.example.com/about-us',
+              },
+            },
+            {
+              name: 'product-quantity-url-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.store.website.productQuantityUrl',
+              option: {
+                label: 'Product Quantity URL',
+                hint: 'www.example.com/products',
+              },
+            },
+            {
+              name: 'product-description-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.store.website.productDescription',
+              option: {
+                label: 'Adequate Product/Service Description',
+                hint: 'Descriptive text about the product/service',
+              },
+            },
+            {
+              name: 'product-price-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.store.website.productPrice',
+              option: {
+                label: 'Reasonable Product/Service Price',
+                hint: '100 USD',
                 jsonFormDefinition: {
-                  type: 'string',
-                  format: 'date',
+                  type: 'number',
                 },
-                label: 'Established Date',
-                hint: 'DD/MM/YYYY',
               },
-            }, {
-              name: 'store-has-mobile-checkbox',
-              type: 'checkbox',
-              valueDestination: 'entity.data.additionalInfo.store.hasMobileApp',
+            },
+            {
+              name: 'website-language-input',
+              type: 'json-form:dropdown',
+              valueDestination: 'entity.data.additionalInfo.store.website.websiteLanguage',
               option: {
-                label: 'I have mobile application',
-              },
-            }, {
-              name: 'store-mobile-app-name-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.store.mobileAppName',
-              option: {
-                label: 'App Name',
-                hint: 'App Name',
-              },
-            }, {
-              name: 'active-store-website-checkbox',
-              type: 'checkbox',
-              valueDestination: 'entity.data.additionalInfo.store.hasActiveWebsite',
-              option: {
-                label: "I declare that the website's business activity does not require a license",
-              },
-            },{
-              name: 'active-store-website-checkbox',
-              type: 'json-form:label',
-              option: {
-                label: "I declare that the website's business activity does not require a license",
-                classNames: ['text-color-grey', 'padding-top-10'],
+                label: 'Website Language',
+                hint: 'English',
               },
             },
           ],

@@ -5,10 +5,10 @@ import { defintion } from '../../../src/ui-definition/utils/collection-flow/defi
 import { ContactsPage } from '../../../src/ui-definition/utils/collection-flow/5-contacts-page';
 import { BusinessAddressInfoPage } from '../../../src/ui-definition/utils/collection-flow/3-business-address-info-page';
 import { DirectorsAndUbosPage } from '../../../src/ui-definition/utils/collection-flow/4-directors-and-ubos';
-import {
-  BankingDetailsPage
-} from "../../../src/ui-definition/utils/collection-flow/6-banking-details";
-import { StoreInfoPage } from "../../../src/ui-definition/utils/collection-flow/7-store-info";
+import { BankingDetailsPage } from '../../../src/ui-definition/utils/collection-flow/6-banking-details';
+import { StoreInfoPage } from '../../../src/ui-definition/utils/collection-flow/7-store-info';
+import { WebsiteBasicRequirement } from '../../../src/ui-definition/utils/collection-flow/8-website-basic-requirement';
+import { ProcessingDetails } from '../../../src/ui-definition/utils/collection-flow/9-process-details';
 
 export const uiKybParentUiSchema = (workflowDefinitionId: string) =>
   ({
@@ -21,8 +21,9 @@ export const uiKybParentUiSchema = (workflowDefinitionId: string) =>
         DirectorsAndUbosPage,
         ContactsPage,
         BankingDetailsPage,
-        StoreInfoPage
-
+        StoreInfoPage,
+        WebsiteBasicRequirement,
+        ProcessingDetails,
       ],
     },
     definition: defintion,
