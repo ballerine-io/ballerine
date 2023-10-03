@@ -1,31 +1,45 @@
 const availableOnButtonRule = {
-    if: [
-      { var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' },
-      {
-        and: [
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.spikeSalesVolume' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.spikeTransactionNumber' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion' } ]}
-        ]
-      },
-      {
-        and: [
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' } ]},
-          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' } ]}
-        ]
-      }
-    ]
-  };
+  and: [
+    { var: 'entity.data' },
+    { var: 'entity.data.additionalInfo' },
+    { var: 'entity.data.additionalInfo.store' },
+    { var: 'entity.data.additionalInfo.store.processingDetails' },
+    { var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume' },
+    { var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions' },
+    { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay' },
+    { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay' },
+    { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' },
+    { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' },
+    {
+      if: [
+        {var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales'},
+        {
+          and: [
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.spikeSalesVolume'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.spikeTransactionNumber'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion'}]}
+          ]
+        },
+        {
+          and: [
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales'}]},
+            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales'}]}
+          ]
+        }
+      ]
+    }
+  ]
+}
 
 const isSpikeInSaleVisibility = {
   '==': [{ var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' }, true],

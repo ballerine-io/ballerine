@@ -1,5 +1,14 @@
 const availableOnButtonRule = {
     and: [
+      { "var": "entity.data" },
+      { "var": "entity.data.additionalInfo" },
+      { "var": "entity.data.additionalInfo.registeredCapitalInYuan" },
+      { "var": "entity.data.businessType" },
+      { "var": "entity.data.numberOfEmployees" },
+      { "var": "entity.data.taxIdentificationNumber" },
+      { "var": "entity.data.companyName" },
+      { "var": "entity.data.country" },
+      { "var": "entity.data.registrationNumber" },
       {'===': [ { typeof: { var: 'entity.data.additionalInfo.registeredCapitalInYuan' } }, 'number']},
       {'>': [ { length: { var: 'entity.data.businessType' } }, 3]},
       {'===': [ { typeof: { var: 'entity.data.numberOfEmployees' } }, 'number']},

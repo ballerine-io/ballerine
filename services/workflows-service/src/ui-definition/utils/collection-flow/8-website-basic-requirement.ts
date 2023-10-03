@@ -1,5 +1,18 @@
 const availableOnButtonRule = {
   and: [
+    { var: 'entity.data' },
+    { var: 'entity.data.additionalInfo' },
+    { var: 'entity.data.additionalInfo.store' },
+    { var: 'entity.data.additionalInfo.store.website' },
+    { var: 'entity.data.additionalInfo.store.website.operationEntitiesName' },
+    { var: 'entity.data.additionalInfo.store.website.contactDetails' },
+    { var: 'entity.data.additionalInfo.store.website.returnPolicyUrl' },
+    { var: 'entity.data.additionalInfo.store.website.shippingPolicyUrl' },
+    { var: 'entity.data.additionalInfo.store.website.aboutUsUrl' },
+    { var: 'entity.data.additionalInfo.store.website.productQuantityUrl' },
+    { var: 'entity.data.additionalInfo.store.website.productDescription' },
+    { var: 'entity.data.additionalInfo.store.website.productPrice' },
+    { var: 'entity.data.additionalInfo.store.website.websiteLanguage' },
     { '!=': [{ var: 'entity.data.additionalInfo.store.website.operationEntitiesName' }, ''] },
     { '!=': [{ var: 'entity.data.additionalInfo.store.website.contactDetails' }, ''] },
     { '!=': [{ var: 'entity.data.additionalInfo.store.website.returnPolicyUrl' }, ''] },
