@@ -4,8 +4,8 @@ import ky from 'ky';
 import jmespath from 'jmespath';
 import set from 'lodash/set';
 import { Action, Rule } from '@app/domains/collection-flow';
-import { EventEngine } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/rule-engines/event.engine';
-import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/rule-engines/json-logic.rule-engine';
+import { EventEngine } from '@app/components/organisms/DynamicUI/rule-engines/event.engine';
+import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
 import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
 
 export interface ApiActionParams {

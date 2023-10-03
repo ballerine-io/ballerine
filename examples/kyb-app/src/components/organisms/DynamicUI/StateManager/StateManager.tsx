@@ -13,11 +13,10 @@ export const StateManager = ({ definition, children, workflowId }: StateManagerP
     () => createStateMachine(workflowId, definition),
     [definition, workflowId],
   );
+
   const { machineApi } = useMachineLogic(machine);
-  const { contextPayload, state, sendEvent, invokePlugin, setContext, getContext } = useStateLogic(
-    machineApi,
-    machine,
-  );
+  const { contextPayload, state, sendEvent, invokePlugin, setContext, getContext, getState } =
+    useStateLogic(machineApi);
 
   const context: StateManagerContext = useMemo(() => {
     const ctx: StateManagerContext = {
@@ -26,13 +25,14 @@ export const StateManager = ({ definition, children, workflowId }: StateManagerP
         invokePlugin,
         setContext,
         getContext,
+        getState,
       },
       state,
       payload: contextPayload,
     };
 
     return ctx;
-  }, [state, contextPayload, sendEvent, invokePlugin, setContext, getContext]);
+  }, [state, contextPayload, getState, sendEvent, invokePlugin, setContext, getContext]);
 
   const child = useMemo(
     () => (typeof children === 'function' ? children(context) : children),

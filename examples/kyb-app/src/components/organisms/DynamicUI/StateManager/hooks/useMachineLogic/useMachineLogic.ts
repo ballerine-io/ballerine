@@ -7,6 +7,7 @@ export interface StateMachineAPI {
   sendEvent: (eventName: string) => Promise<void>;
   setContext: (newContext: AnyObject) => AnyObject;
   getContext: () => AnyObject;
+  getState: () => string;
 }
 
 export const useMachineLogic = (
@@ -50,6 +51,7 @@ export const useMachineLogic = (
       sendEvent,
       setContext,
       getContext: () => machine.getSnapshot().context as AnyObject,
+      getState: () => machine.getSnapshot().value as string,
     }),
     [invokePlugin, sendEvent, setContext, machine],
   );

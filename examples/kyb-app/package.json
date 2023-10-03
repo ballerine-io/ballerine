@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ballerine/blocks": "^0.1.6",
+    "@ballerine/blocks": "link:../../packages/blocks",
     "@ballerine/ui": "link:../../packages/ui",
     "@ballerine/workflow-browser-sdk": "link:../../sdks/workflow-browser-sdk",
     "@lukemorales/query-key-factory": "^1.0.3",
