@@ -7,15 +7,9 @@ import { BusinessAddressInfoPage } from '../../../src/ui-definition/utils/collec
 import { DirectorsAndUbosPage } from '../../../src/ui-definition/utils/collection-flow/4-directors-and-ubos';
 import { BankingDetailsPage } from '../../../src/ui-definition/utils/collection-flow/6-banking-details';
 import { StoreInfoPage } from '../../../src/ui-definition/utils/collection-flow/7-store-info';
-<<<<<<< Updated upstream
 import { WebsiteBasicRequirement } from '../../../src/ui-definition/utils/collection-flow/8-website-basic-requirement';
 import { ProcessingDetails } from '../../../src/ui-definition/utils/collection-flow/9-process-details';
-import {
-  CompanyDocuments
-} from "../../../src/ui-definition/utils/collection-flow/10-company-documents";
-
-=======
->>>>>>> Stashed changes
+import { CompanyDocuments } from '../../../src/ui-definition/utils/collection-flow/10-company-documents';
 
 export const uiKybParentUiSchema = (workflowDefinitionId: string) =>
   ({
@@ -31,7 +25,7 @@ export const uiKybParentUiSchema = (workflowDefinitionId: string) =>
         StoreInfoPage,
         WebsiteBasicRequirement,
         ProcessingDetails,
-        CompanyDocuments
+        CompanyDocuments,
       ],
     },
     definition: definition,
