@@ -1,53 +1,29 @@
 const availableOnButtonRule = {
-  or: [
-    {
-      and: [
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.street' }] }, 2] },
-        { typeof: [{ var: 'entity.data.additionalInfo.headquarters.streetNumber' }, 'number'] },
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.city' }] }, 2] },
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.country' }] }, 2] },
-        {
-          '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, false],
-        },
-      ],
-    },
-    {
-      and: [
-        {
-          '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, true],
-        },
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.street' }] }, 2] },
-        { typeof: [{ var: 'entity.data.additionalInfo.headquarters.streetNumber' }, 'number'] },
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.city' }] }, 2] },
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.country' }] }, 2] },
-        {
-          '>= ': [
-            { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.street' }] },
-            2,
-          ],
-        },
-        {
-          typeof: [
-            { var: 'entity.data.additionalInfo.headquarters.physical.streetNumber' },
-            'number',
-          ],
-        },
-        {
-          '>= ': [
-            { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.city' }] },
-            2,
-          ],
-        },
-        {
-          '>= ': [
-            { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.country' }] },
-            2,
-          ],
-        },
-      ],
-    },
-  ],
-};
+    or: [
+      {
+        and: [
+          {'>= ': [ { minLength: [{ var: 'entity.data.additionalInfo.headquarters.street' }] }, 2 ]},
+          { typeof: [{ var: 'entity.data.additionalInfo.headquarters.streetNumber' }, 'number'] },
+          {'>= ': [ { minLength: [{ var: 'entity.data.additionalInfo.headquarters.city' }] }, 2 ]},
+          {'>= ': [ { minLength: [{ var: 'entity.data.additionalInfo.headquarters.country' }] }, 2 ]},
+          {'==': [ { var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, false ]}
+        ]
+      },
+      {
+        and: [
+          {'==': [ { var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, true ]},
+          {'>= ': [ { minLength: [{ var: 'entity.data.additionalInfo.headquarters.street' }] }, 2 ]},
+          { typeof: [{ var: 'entity.data.additionalInfo.headquarters.streetNumber' }, 'number'] },
+          {'>= ': [ { minLength: [{ var: 'entity.data.additionalInfo.headquarters.city' }] }, 2 ]},
+          {'>= ': [ { minLength: [{ var: 'entity.data.additionalInfo.headquarters.country' }] }, 2 ]},
+          {'>= ': [ { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.street' }] }, 2 ]},
+          { typeof: [ { var: 'entity.data.additionalInfo.headquarters.physical.streetNumber' }, 'number' ]},
+          {'>= ': [ { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.city' }] }, 2 ]},
+          {'>= ': [ { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.country' }] }, 2 ]}
+        ]
+      }
+    ]
+  };
 
 const physicalAddressForm = {
   '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, true],
