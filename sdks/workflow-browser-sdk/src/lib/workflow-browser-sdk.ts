@@ -59,6 +59,7 @@ export class WorkflowBrowserSDK {
       ...options,
       extensions: {
         statePlugins,
+        ...options?.extensions,
       },
       definition: {
         ...options?.definition,

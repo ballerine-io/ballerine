@@ -1,51 +1,43 @@
 const availableOnButtonRule = {
-  and: [
-    {
-      '>=': [{ length: [{ var: 'entity.data.additionalInfo.ubos' }] }, 1],
-    },
-    {
-      reduce: [
-        {
-          var: 'entity.data.additionalInfo.ubos',
-        },
-        {
-          and: [
-            { '>= ': [{ minLength: [{ var: 'current.firstName' }] }, 3] },
-            { '>= ': [{ minLength: [{ var: 'current.lastName' }] }, 3] },
-            { '>= ': [{ minLength: [{ var: 'current.nationality' }] }, 3] },
-            { '!!': [{ var: 'current.identityNumber' }] },
-            { regex: [{ var: 'current.email' }, '^\\S+@\\S+\\.\\S+$'] },
-            { '!!': [{ var: 'current.fullAddress' }] },
-            { '>= ': [{ var: 'current.percentageOfOwnership' }, 25] },
-            { '<= ': [{ var: 'current.percentageOfOwnership' }, 100] },
-          ],
-        },
-        true,
-      ],
-    },
-    {
-      '>=': [{ length: [{ var: 'entity.data.additionalInfo.directors' }] }, 1],
-    },
-    {
-      reduce: [
-        {
-          var: 'entity.data.additionalInfo.directors',
-        },
-        {
-          and: [
-            { '>= ': [{ minLength: [{ var: 'current.firstName' }] }, 3] },
-            { '>= ': [{ minLength: [{ var: 'current.lastName' }] }, 3] },
-            { '>= ': [{ minLength: [{ var: 'current.nationality' }] }, 3] },
-            { '!!': [{ var: 'current.identityNumber' }] },
-            { regex: [{ var: 'current.email' }, '^\\S+@\\S+\\.\\S+$'] },
-            { '!!': [{ var: 'current.fullAddress' }] },
-          ],
-        },
-        true,
-      ],
-    },
-  ],
-};
+    and: [
+      {'>=': [ { length: [{ var: 'entity.data.additionalInfo.ubos' }] }, 1 ]},
+      {
+        reduce: [
+          { var: 'entity.data.additionalInfo.ubos' },
+          {
+            and: [
+              {'>= ': [ { minLength: [{ var: 'current.firstName' }] }, 3 ]},
+              {'>= ': [ { minLength: [{ var: 'current.lastName' }] }, 3 ]},
+              {'>= ': [ { minLength: [{ var: 'current.nationality' }] }, 3 ]},
+              {'!!': [ { var: 'current.identityNumber' } ]},
+              { regex: [ { var: 'current.email' }, '^\\S+@\\S+\\.\\S+$' ]},
+              {'!!': [ { var: 'current.fullAddress' } ]},
+              {'>= ': [ { var: 'current.percentageOfOwnership' }, 25 ]},
+              {'<= ': [ { var: 'current.percentageOfOwnership' }, 100 ]}
+            ]
+          },
+          true
+        ]
+      },
+      {'>=': [ { length: [{ var: 'entity.data.additionalInfo.directors' }] }, 1 ]},
+      {
+        reduce: [
+          { var: 'entity.data.additionalInfo.directors' },
+          {
+            and: [
+              {'>= ': [ { minLength: [{ var: 'current.firstName' }] }, 3 ]},
+              {'>= ': [ { minLength: [{ var: 'current.lastName' }] }, 3 ]},
+              {'>= ': [ { minLength: [{ var: 'current.nationality' }] }, 3 ]},
+              {'!!': [ { var: 'current.identityNumber' } ]},
+              { regex: [ { var: 'current.email' }, '^\\S+@\\S+\\.\\S+$' ]},
+              {'!!': [ { var: 'current.fullAddress' } ]}
+            ]
+          },
+          true
+        ]
+      }
+    ]
+  };
 
 export const DirectorsAndUbosPage = {
   type: 'page',
@@ -90,7 +82,7 @@ export const DirectorsAndUbosPage = {
                 {
                   name: 'first-name-input',
                   type: 'json-form:text',
-                  valueDestination: 'firstName', //entity.data.additionalInfo.ubos[0].kaki
+                  valueDestination: 'firstName', //entity.data.additionalInfo.ubos[0].firstName
                   option: {
                     label: 'Name',
                     hint: 'First Name',

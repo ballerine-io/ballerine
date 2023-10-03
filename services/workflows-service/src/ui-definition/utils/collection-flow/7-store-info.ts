@@ -19,6 +19,11 @@ const availableOnButtonRule = {
     },
   ],
 };
+
+const hasMobileAppVisibilityRule = {
+  '==': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, true],
+};
+
 export const StoreInfoPage = {
   type: 'page',
   number: 7,
@@ -129,6 +134,7 @@ export const StoreInfoPage = {
               name: 'store-mobile-app-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.mobileAppName',
+              visibleOn: [hasMobileAppVisibilityRule],
               option: {
                 label: 'App Name',
                 hint: 'App Name',
