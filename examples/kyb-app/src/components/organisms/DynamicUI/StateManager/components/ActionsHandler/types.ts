@@ -4,6 +4,7 @@ import { AnyChildren } from '@ballerine/ui';
 
 export interface ActionsHandlerContext {
   dispatchAction: (action: Action) => void;
+  actions: Action[];
 }
 
 export type ActionsHandlerRenderCallback = (context: ActionsHandlerContext) => JSX.Element;

@@ -1,5 +1,4 @@
 import { AnyObject } from '@ballerine/ui';
-import { WorkflowBrowserSDK } from '@ballerine/workflow-browser-sdk';
 import { useCallback, useRef, useState } from 'react';
 import isEqual from 'lodash/isEqual';
 import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
@@ -11,59 +10,57 @@ interface State {
   payload: ContextPayload;
 }
 
-export const useStateLogic = (machineApi: StateMachineAPI, machine: WorkflowBrowserSDK) => {
+export const useStateLogic = (machineApi: StateMachineAPI) => {
   const [contextPayload, _setContext] = useState<State>(() => ({
-    machineState: machine.getSnapshot().value as string,
-    payload: machine.getSnapshot().context as ContextPayload,
+    machineState: machineApi.getState(),
+    payload: machineApi.getContext(),
   }));
   const contextRef = useRef<ContextPayload>(contextPayload);
 
   const setContext = useCallback(
     (newContext: AnyObject) => {
       const newCtx = { ...newContext };
-      machine.overrideContext(newCtx);
+      machineApi.setContext(newCtx);
 
       _setContext(prev => ({ ...prev, payload: newCtx }));
       contextRef.current = newCtx;
 
       return newCtx;
     },
-    [machine, contextRef],
+    [machineApi, contextRef],
   );
 
   const invokePlugin = useCallback(
     async (pluginName: string) => {
-      await machine.invokePlugin(pluginName);
-
-      const snapshot = machine.getSnapshot();
+      await machineApi.invokePlugin(pluginName);
 
       _setContext({
-        machineState: snapshot.value as string,
-        payload: snapshot.context as ContextPayload,
+        machineState: machineApi.getState(),
+        payload: machineApi.getContext(),
       });
     },
-    [machine],
+    [machineApi],
   );
 
   const sendEvent = useCallback(
     async (eventName: string) => {
-      await machine.sendEvent({ type: eventName });
+      await machineApi.sendEvent(eventName);
 
-      const snapshot = machine.getSnapshot();
-
-      if (!isEqual(snapshot.context, contextRef.current)) {
+      if (!isEqual(machineApi.getContext(), contextRef.current)) {
         _setContext({
-          machineState: snapshot.value as string,
-          payload: snapshot.context as ContextPayload,
+          machineState: machineApi.getState(),
+          payload: machineApi.getContext(),
         });
       }
 
-      _setContext(prev => ({ ...prev, machineState: snapshot.value as string }));
+      _setContext(prev => ({ ...prev, machineState: machineApi.getState() }));
     },
-    [machine, contextRef],
+    [machineApi, contextRef],
   );
 
-  const getContext = useCallback(() => machine.getSnapshot().context as AnyObject, [machine]);
+  const getContext = useCallback(() => machineApi.getContext(), [machineApi]);
+
+  const getState = useCallback(() => machineApi.getState(), [machineApi]);
 
   return {
     contextPayload: contextPayload.payload,
@@ -72,5 +69,6 @@ export const useStateLogic = (machineApi: StateMachineAPI, machine: WorkflowBrow
     setContext,
     sendEvent,
     getContext,
+    getState,
   };
 };

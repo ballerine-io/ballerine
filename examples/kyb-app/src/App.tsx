@@ -17,12 +17,19 @@ import { ActionsHandler } from '@app/components/organisms/DynamicUI/StateManager
 import { ButtonUIElement } from '@app/components/organisms/UIRenderer/elements/ButtonUI';
 import { JSONForm } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
 
+const elems = {
+  h1: Title,
+  'json-form': JSONForm,
+  container: Cell,
+  mainContainer: Cell,
+  'json-form:button': ButtonUIElement,
+};
+
 export const App = () => {
   const dependancyQueries = [useCollectionFlowSchemaQuery(), useCustomerQuery()];
   const schema = useUISchemasQuery();
   const elements = schema.data?.uiSchema?.elements;
   const definition = schema.data?.definition;
-  const initialContext = {};
 
   return (
     <AppLoadingContainer dependencies={dependancyQueries}>
@@ -38,16 +45,7 @@ export const App = () => {
                   return currentPage ? (
                     <>
                       <ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
-                        <UIRenderer
-                          elements={{
-                            h1: Title,
-                            'json-form': JSONForm,
-                            container: Cell,
-                            mainContainer: Cell,
-                            'json-form:button': ButtonUIElement,
-                          }}
-                          schema={currentPage.elements}
-                        />
+                        <UIRenderer elements={elems} schema={currentPage.elements} />
                       </ActionsHandler>
                       <div className="flex flex-col gap-4">
                         <div>

@@ -1,4 +1,4 @@
-import { RuleEngine } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/rule-engines/rule-engine.abstract';
+import { RuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
 
 export class EngineManager {
   constructor(private readonly engines: RuleEngine[]) {}

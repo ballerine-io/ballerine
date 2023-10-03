@@ -8,10 +8,13 @@ import { actionsHandlerContext } from './actions-handler.context';
 
 const { Provider } = actionsHandlerContext;
 
-export const ActionsHandler = ({ stateApi, children }: ActionsHandlerProps) => {
+export const ActionsHandler = ({ stateApi, children, actions }: ActionsHandlerProps) => {
   const { dispatchAction } = useActionsHandlerLogic(stateApi);
 
-  const context: ActionsHandlerContext = useMemo(() => ({ dispatchAction }), [dispatchAction]);
+  const context: ActionsHandlerContext = useMemo(
+    () => ({ dispatchAction, actions }),
+    [actions, dispatchAction],
+  );
 
   const child = useMemo(
     () => (typeof children === 'function' ? children(context) : children),

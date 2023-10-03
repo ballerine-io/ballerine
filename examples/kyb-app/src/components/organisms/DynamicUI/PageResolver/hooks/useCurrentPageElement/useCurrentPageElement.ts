@@ -7,7 +7,5 @@ export const useCurrentPageElement = (state: string, pages: UIPage[]) => {
     [state, pages],
   );
 
-  console.log({ state, pages });
-
   return currentPage;
 };
