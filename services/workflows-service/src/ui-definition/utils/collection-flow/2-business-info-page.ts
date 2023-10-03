@@ -1,93 +1,19 @@
 const availableOnButtonRule = {
-  and: [
-    {
-      '===': [
-        {
-          typeof: {
-            var: 'context.entity.data.additionalInfo.registeredCapitalInYuan',
-          },
-        },
-        'number',
-      ],
-    },
-    {
-      '>': [
-        {
-          length: {
-            var: 'context.entity.data.businessType',
-          },
-        },
-        3,
-      ],
-    },
-    {
-      '===': [
-        {
-          typeof: {
-            var: 'context.entity.data.numberOfEmployees',
-          },
-        },
-        'number',
-      ],
-    },
-    {
-      '>': [
-        {
-          length: {
-            var: 'context.entity.data.taxIdentificationNumber',
-          },
-        },
-        3,
-      ],
-    },
-    {
-      '>': [
-        {
-          length: {
-            var: 'context.entity.data.companyName',
-          },
-        },
-        3,
-      ],
-    },
-    {
-      and: [
-        {
-          '==': [
-            {
-              length: {
-                var: 'context.entity.data.country',
-              },
-            },
-            2,
-          ],
-        },
-        {
-          '==': [
-            {
-              var: 'context.entity.data.country',
-            },
-            {
-              toUpperCase: {
-                var: 'context.entity.data.country',
-              },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      '>': [
-        {
-          length: {
-            var: 'context.entity.data.registrationNumber',
-          },
-        },
-        3,
-      ],
-    },
-  ],
-};
+    and: [
+      {'===': [ { typeof: { var: 'context.entity.data.additionalInfo.registeredCapitalInYuan' } }, 'number']},
+      {'>': [ { length: { var: 'context.entity.data.businessType' } }, 3]},
+      {'===': [ { typeof: { var: 'context.entity.data.numberOfEmployees' } }, 'number']},
+      {'>': [ { length: { var: 'context.entity.data.taxIdentificationNumber' } }, 3]},
+      {'>': [ { length: { var: 'context.entity.data.companyName' } }, 3]},
+      {
+        and: [
+          {'==': [ { length: { var: 'context.entity.data.country' } }, 2]},
+          {'==': [ { var: 'context.entity.data.country' }, { toUpperCase: { var: 'context.entity.data.country' } }]}
+        ]
+      },
+      {'>': [ { length: { var: 'context.entity.data.registrationNumber' } }, 3]}
+    ]
+  };
 
 const dispatchOpenCorporateRule = {
   and: [

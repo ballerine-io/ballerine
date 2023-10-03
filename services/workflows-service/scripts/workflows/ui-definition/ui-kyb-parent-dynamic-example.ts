@@ -10,6 +10,10 @@ import { StoreInfoPage } from '../../../src/ui-definition/utils/collection-flow/
 <<<<<<< Updated upstream
 import { WebsiteBasicRequirement } from '../../../src/ui-definition/utils/collection-flow/8-website-basic-requirement';
 import { ProcessingDetails } from '../../../src/ui-definition/utils/collection-flow/9-process-details';
+import {
+  CompanyDocuments
+} from "../../../src/ui-definition/utils/collection-flow/10-company-documents";
+
 =======
 >>>>>>> Stashed changes
 
@@ -25,11 +29,9 @@ export const uiKybParentUiSchema = (workflowDefinitionId: string) =>
         ContactsPage,
         BankingDetailsPage,
         StoreInfoPage,
-<<<<<<< Updated upstream
         WebsiteBasicRequirement,
         ProcessingDetails,
-=======
->>>>>>> Stashed changes
+        CompanyDocuments
       ],
     },
     definition: definition,

@@ -1,24 +1,36 @@
 const availableOnButtonRule = {
-  and: [
-    { '!=': [{ var: 'entity.data.additionalInfo.store.websiteUrls' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.products' }, ''] },
-    {
-      regex: [
-        { var: 'entity.data.additionalInfo.store.established' },
-        '^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$',
-      ],
-    },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
-    {
-      if: [
-        { var: 'entity.data.additionalInfo.store.hasMobileApp' },
-        { '!=': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] },
-        { '==': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] },
-      ],
-    },
-  ],
+    if: [
+      { var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' },
+      {
+        and: [
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.spikeSalesVolume' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.spikeTransactionNumber' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion' } ]}
+        ]
+      },
+      {
+        and: [
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' } ]},
+          {'!!': [ { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' } ]}
+        ]
+      }
+    ]
+  };
+
+const isSpikeInSaleVisibility = {
+  '==': [{ var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' }, true],
 };
+
 export const ProcessingDetails = {
   type: 'page',
   number: 9,
@@ -149,6 +161,78 @@ export const ProcessingDetails = {
                   type: 'number',
                 },
               },
+            },
+            {
+              type: 'json-form',
+              options: {
+                jsonFormDefinition: {
+                  required: [
+                    'spike-sales-volume-input',
+                    'spike-sales-transaction-number-input',
+                    'split-of-volume-in-region',
+                  ],
+                },
+              },
+              visibleOn: [isSpikeInSaleVisibility],
+              elements: [
+                {
+                  name: 'spike-sales-volume-input',
+                  type: 'json-form:text',
+                  valueDestination:
+                    'entity.data.additionalInfo.store.processingDetails.spikeSalesVolume',
+                  option: {
+                    label: 'Spike Sales Volume',
+                    hint: '150,000',
+                    jsonFormDefinition: {
+                      type: 'number',
+                    },
+                  },
+                },
+                {
+                  name: 'spike-sales-transaction-number-input',
+                  type: 'json-form:text',
+                  valueDestination:
+                    'entity.data.additionalInfo.store.processingDetails.spikeTransactionNumber',
+                  option: {
+                    label: 'Spike Transaction Number',
+                    hint: '200',
+                    jsonFormDefinition: {
+                      type: 'number',
+                    },
+                  },
+                },
+                {
+                  name: 'spike-split-of-volume-in-region',
+                  type: 'json-form:text',
+                  valueDestination:
+                    'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion',
+                  option: {
+                    label: 'Split of volume by regions in %',
+                    hint: '30%',
+                    jsonFormDefinition: {
+                      type: 'number',
+                    },
+                  },
+                },
+              ],
+            },
+            {
+              type: 'h3',
+              value: 'Main Contact',
+            },
+            {
+              type: 'json-form',
+              options: {
+                jsonFormDefinition: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    enum: ['B2C', 'B2B', 'C2C', 'Other'],
+                  },
+                  uniqueItems: true,
+                },
+              },
+              valueDestination: 'entity.data.additionalInfo.store.processingDetails.mainContact',
             },
           ],
         },
