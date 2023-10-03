@@ -1,16 +1,16 @@
 const availableOnButtonRule = {
-    and: [
-      { "var": "entity.data" },
-      { "var": "entity.data.additionalInfo" },
-      { "var": "entity.data.additionalInfo.mainRepresentative" },
-      {var: 'entity.data.additionalInfo.mainRepresentative.phone'},
-      {match: [{ var: 'entity.data.additionalInfo.mainRepresentative.phone' }, '^[+]?[0-9]{10,15}$']},
-      {match: [{ var: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth' }, '^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\\d{4})$']},
-      {'>': [{ length: [{ var: 'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle' }] }, 2]},
-      {'>': [{ length: [{ var: 'entity.data.additionalInfo.mainRepresentative.firstName' }] }, 1]},
-      {'>': [{ length: [{ var: 'entity.data.additionalInfo.mainRepresentative.lastName' }] }, 1]}
-    ]
-  };
+  and: [
+    { var: 'entity.data' },
+    { var: 'entity.data.additionalInfo' },
+    { var: 'entity.data.additionalInfo.mainRepresentative' },
+    // {var: 'entity.data.additionalInfo.mainRepresentative.phone'},
+    // {match: [{ var: 'entity.data.additionalInfo.mainRepresentative.phone' }, '^[+]?[0-9]{10,15}$']},
+    // {match: [{ var: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth' }, '^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\\d{4})$']},
+    // {'>': [{ length: [{ var: 'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle' }] }, 2]},
+    // {'>': [{ length: [{ var: 'entity.data.additionalInfo.mainRepresentative.firstName' }] }, 1]},
+    // {'>': [{ length: [{ var: 'entity.data.additionalInfo.mainRepresentative.lastName' }] }, 1]}
+  ],
+};
 
 export const PersonalInfoPage = {
   type: 'page',
@@ -163,7 +163,7 @@ export const PersonalInfoPage = {
     {
       type: 'definitionEvent',
       params: {
-        eventName: 'next',
+        eventName: 'NEXT',
       },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],

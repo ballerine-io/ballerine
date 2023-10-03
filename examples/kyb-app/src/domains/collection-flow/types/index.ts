@@ -146,7 +146,11 @@ export interface UISchema {
   uiSchema: {
     elements: UIPage[];
   };
-  definition: AnyObject;
+  definition: {
+    definitionType: string;
+    definition: AnyObject;
+    extensions: AnyObject;
+  };
 }
 
 export * from './ui-schema.types';

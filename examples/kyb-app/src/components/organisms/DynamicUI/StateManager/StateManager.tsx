@@ -8,9 +8,15 @@ import {
 } from '@app/components/organisms/DynamicUI/StateManager/types';
 import { useMemo } from 'react';
 
-export const StateManager = ({ definition, children, workflowId }: StateManagerProps) => {
+export const StateManager = ({
+  definition,
+  extensions,
+  definitionType,
+  children,
+  workflowId,
+}: StateManagerProps) => {
   const machine = useMemo(
-    () => createStateMachine(workflowId, definition),
+    () => createStateMachine(workflowId, definition, definitionType, extensions),
     [definition, workflowId],
   );
 

@@ -8,10 +8,10 @@ export const definition = {
     states: {
       personal_details: {
         on: {
-          NEXT: 'company_information',
+          NEXT: 'business_information',
         },
       },
-      company_information: {
+      business_information: {
         on: {
           NEXT: 'business_address_information',
           PREVIOUS: 'personal_details',
@@ -20,7 +20,7 @@ export const definition = {
       business_address_information: {
         on: {
           NEXT: 'directors_and_ubos',
-          PREVIOUS: 'company_information',
+          PREVIOUS: 'business_information',
         },
       },
       directors_and_ubos: {
@@ -62,10 +62,10 @@ export const definition = {
       company_documents: {
         on: {
           NEXT: 'finish',
-          PREVIOUS: "website_basic_requirement"
+          PREVIOUS: 'website_basic_requirement',
         },
       },
-      finish: {type: 'final'}
+      finish: { type: 'final' },
     },
   },
   extensions: {
@@ -75,7 +75,7 @@ export const definition = {
         pluginKind: 'api',
         url: `{VITE_API_URL}/api/v1/collection-flow/end-user`,
         method: 'POST',
-        headers: {Authorization: 'Bearer {tokenId}'},
+        headers: { Authorization: 'Bearer {tokenId}' },
         request: {
           transform: [
             {
@@ -97,7 +97,7 @@ export const definition = {
         url: `{VITE_API_URL}/api/v1/collection-flow/{tokenId}`,
         method: 'PUT',
         stateNames: ['company_information', 'address_information'],
-        headers: {Authorization: 'Bearer {tokenId}'},
+        headers: { Authorization: 'Bearer {tokenId}' },
         request: {
           transform: [
             {
@@ -118,7 +118,7 @@ export const definition = {
         pluginKind: 'api',
         url: `{VITE_API_URL}/api/v1/collection-flow/business/business-information`,
         method: 'GET',
-        headers: {Authorization: 'Bearer {tokenId}'},
+        headers: { Authorization: 'Bearer {tokenId}' },
         request: {
           transform: [
             {
