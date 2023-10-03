@@ -1,28 +1,28 @@
 const availableOnButtonRule = {
-    and: [
-      { "var": "entity.data" },
-      { "var": "entity.data.additionalInfo" },
-      { "var": "entity.data.additionalInfo.registeredCapitalInYuan" },
-      { "var": "entity.data.businessType" },
-      { "var": "entity.data.numberOfEmployees" },
-      { "var": "entity.data.taxIdentificationNumber" },
-      { "var": "entity.data.companyName" },
-      { "var": "entity.data.country" },
-      { "var": "entity.data.registrationNumber" },
-      {'===': [ { typeof: { var: 'entity.data.additionalInfo.registeredCapitalInYuan' } }, 'number']},
-      {'>': [ { length: { var: 'entity.data.businessType' } }, 3]},
-      {'===': [ { typeof: { var: 'entity.data.numberOfEmployees' } }, 'number']},
-      {'>': [ { length: { var: 'entity.data.taxIdentificationNumber' } }, 3]},
-      {'>': [ { length: { var: 'entity.data.companyName' } }, 3]},
-      {
-        and: [
-          {'==': [ { length: { var: 'entity.data.country' } }, 2]},
-          {'==': [ { var: 'entity.data.country' }, { toUpperCase: { var: 'entity.data.country' } }]}
-        ]
-      },
-      {'>': [ { length: { var: 'entity.data.registrationNumber' } }, 3]}
-    ]
-  };
+  and: [
+    { var: 'entity.data' },
+    { var: 'entity.data.additionalInfo' },
+    { var: 'entity.data.additionalInfo.registeredCapitalInYuan' },
+    { var: 'entity.data.businessType' },
+    { var: 'entity.data.numberOfEmployees' },
+    { var: 'entity.data.taxIdentificationNumber' },
+    { var: 'entity.data.companyName' },
+    { var: 'entity.data.country' },
+    { var: 'entity.data.registrationNumber' },
+    // {'===': [ { typeof: { var: 'entity.data.additionalInfo.registeredCapitalInYuan' } }, 'number']},
+    // {'>': [ { length: { var: 'entity.data.businessType' } }, 3]},
+    // {'===': [ { typeof: { var: 'entity.data.numberOfEmployees' } }, 'number']},
+    // {'>': [ { length: { var: 'entity.data.taxIdentificationNumber' } }, 3]},
+    // {'>': [ { length: { var: 'entity.data.companyName' } }, 3]},
+    {
+      and: [
+        { '==': [{ length: { var: 'entity.data.country' } }, 2] },
+        { '==': [{ var: 'entity.data.country' }, { toUpperCase: { var: 'entity.data.country' } }] },
+      ],
+    },
+    { '>': [{ length: { var: 'entity.data.registrationNumber' } }, 3] },
+  ],
+};
 
 const dispatchOpenCorporateRule = {
   and: [
@@ -88,7 +88,7 @@ export const BusinessInfoPage = {
         },
         {
           type: 'json-form',
-          options: {
+          optionss: {
             jsonFormDefinition: {
               required: ['registration-number-input', 'country-picker-input', 'company-name-input'],
             },
@@ -98,42 +98,54 @@ export const BusinessInfoPage = {
               name: 'registration-number-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.registrationNumber',
-              option: {
+              options: {
                 label: 'Registration Number',
                 hint: '1000000032985',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
               },
             },
             {
               name: 'country-picker-input',
               type: 'country-picker',
               valueDestination: 'entity.data.country',
-              option: {
+              options: {
                 hint: 'Hong Kong',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
               },
             },
             {
               name: 'company-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.companyName',
-              option: {
+              options: {
                 label: 'Company English Name',
                 hint: 'English Name',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
               },
             },
             {
               name: 'tax-identification-number-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.taxIdentificationNumber',
-              option: {
+              options: {
                 label: 'Tax Identity Number',
                 hint: '1234567898765',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
               },
             },
             {
               name: 'number-of-employees-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.numberOfEmployees',
-              option: {
+              options: {
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -145,10 +157,13 @@ export const BusinessInfoPage = {
               name: 'business-type-input',
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.businessType',
-              option: {
+              options: {
                 hint: 'Corporation',
                 label: 'Corporate type',
-                options: [
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                optionss: [
                   { label: 'Corporation', value: 'corporation' },
                   { label: 'Limited Liability Company', value: 'limited_liability_company' },
                   { label: 'Partnership', value: 'partnership' },
@@ -163,7 +178,7 @@ export const BusinessInfoPage = {
               name: 'registered-capital-in-yuan-type-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.registeredCapitalInYuan',
-              option: {
+              options: {
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -186,7 +201,7 @@ export const BusinessInfoPage = {
               value: availableOnButtonRule,
             },
           ],
-          option: {
+          options: {
             text: 'Continue',
           },
         },
@@ -199,8 +214,8 @@ export const BusinessInfoPage = {
       pluginName: 'fetch_company_information',
       dispatchOn: {
         uiEvents: [
-          { event: 'onChanged', uiElementName: 'registration-number-input' },
-          { event: 'onChanged', uiElementName: 'country-picker-input' },
+          { event: 'onChange', uiElementName: 'registration-number-input' },
+          { event: 'onChange', uiElementName: 'country-picker-input' },
         ],
         rules: [
           {
@@ -212,7 +227,7 @@ export const BusinessInfoPage = {
     },
     {
       type: 'definitionEvent',
-      event: 'next',
+      event: 'NEXT',
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [

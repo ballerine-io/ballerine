@@ -29,7 +29,9 @@ export const App = () => {
   const dependancyQueries = [useCollectionFlowSchemaQuery(), useCustomerQuery()];
   const schema = useUISchemasQuery();
   const elements = schema.data?.uiSchema?.elements;
-  const definition = schema.data?.definition;
+  const definition = schema.data?.definition.definition;
+
+  console.log('def', definition);
 
   return (
     <AppLoadingContainer dependencies={dependancyQueries}>
@@ -38,10 +40,16 @@ export const App = () => {
       </CustomerProvider> */}
       {definition ? (
         <DynamicUI>
-          <DynamicUI.StateManager workflowId="1" definition={definition as State}>
+          <DynamicUI.StateManager
+            workflowId="1"
+            definitionType={schema.data?.definition.definitionType}
+            extensions={schema.data?.definition.extensions}
+            definition={definition as State}
+          >
             {({ state, stateApi }) => (
               <DynamicUI.PageResolver state={state} pages={elements}>
                 {({ currentPage }) => {
+                  console.log('current page', currentPage);
                   return currentPage ? (
                     <>
                       <ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
@@ -54,8 +62,8 @@ export const App = () => {
                             : 'Page not found and state ' + state}
                         </div>
                         <div className="flex gap-4">
-                          <button onClick={() => stateApi.sendEvent('previous')}>prev</button>
-                          <button onClick={() => stateApi.sendEvent('next')}>next</button>
+                          <button onClick={() => stateApi.sendEvent('PREVIOUS')}>prev</button>
+                          <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>
                         </div>
                       </div>
                     </>

@@ -19,5 +19,7 @@ export type StateManagerChildCallback = (bag: StateManagerContext) => JSX.Elemen
 export interface StateManagerProps {
   workflowId: string;
   definition: State;
+  definitionType: string;
+  extensions: AnyObject;
   children: AnyChildren | StateManagerChildCallback;
 }
