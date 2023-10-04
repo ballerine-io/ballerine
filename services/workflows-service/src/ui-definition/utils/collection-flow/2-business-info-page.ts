@@ -1,40 +1,92 @@
 import { getCountriesList } from '../schema-utils/countries';
 
-const availableOnButtonRule = {
-  and: [
-    { var: 'entity.data' },
-    { var: 'entity.data.additionalInfo' },
-    { var: 'entity.data.additionalInfo.registeredCapitalInYuan' },
-    { var: 'entity.data.businessType' },
-    { var: 'entity.data.numberOfEmployees' },
-    { var: 'entity.data.taxIdentificationNumber' },
-    { var: 'entity.data.companyName' },
-    { var: 'entity.data.country' },
-    { var: 'entity.data.registrationNumber' },
-    // {'===': [ { typeof: { var: 'entity.data.additionalInfo.registeredCapitalInYuan' } }, 'number']},
-    // {'>': [ { length: { var: 'entity.data.businessType' } }, 3]},
-    // {'===': [ { typeof: { var: 'entity.data.numberOfEmployees' } }, 'number']},
-    // {'>': [ { length: { var: 'entity.data.taxIdentificationNumber' } }, 3]},
-    // {'>': [ { length: { var: 'entity.data.companyName' } }, 3]},
-    {
-      and: [
-        { '==': [{ length: { var: 'entity.data.country' } }, 2] },
-        { '==': [{ var: 'entity.data.country' }, { toUpperCase: { var: 'entity.data.country' } }] },
-      ],
-    },
-    { '>': [{ length: { var: 'entity.data.registrationNumber' } }, 3] },
-  ],
+const availableOnButtonRule =  {
+  "type": "object",
+  "properties": {
+    "entity": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "object",
+          "required": [
+            "additionalInfo",
+            "businessType",
+            "numberOfEmployees",
+            "taxIdentificationNumber",
+            "companyName",
+            "country",
+            "registrationNumber"
+          ],
+          "properties": {
+            "additionalInfo": {
+              "type": "object",
+              "required": ["registeredCapitalInYuan"],
+              "properties": {
+                "registeredCapitalInYuan": {
+                  "type": "number"
+                }
+              }
+            },
+            "businessType": {
+              "type": "string",
+              "minLength": 4
+            },
+            "numberOfEmployees": {
+              "type": "number"
+            },
+            "taxIdentificationNumber": {
+              "type": "string",
+              "minLength": 4
+            },
+            "companyName": {
+              "type": "string",
+              "minLength": 4
+            },
+            "country": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 2,
+              "pattern": "^[A-Z]{2}$"
+            },
+            "registrationNumber": {
+              "type": "string",
+              "minLength": 4
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["entity"]
 };
 
 const dispatchOpenCorporateRule = {
-  and: [
-    {
-      var: 'entity.data.registrationNumber',
-    },
-    {
-      var: 'entity.data.country',
-    },
-  ],
+  "type": "object",
+  "properties": {
+    "entity": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "object",
+          "required": ["registrationNumber", "country"],
+          "properties": {
+            "registrationNumber": {
+              "type": "string",
+              "minLength": 6
+            },
+            "country": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 2
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["entity"]
 };
 
 export const BusinessInfoPage = {
@@ -205,7 +257,7 @@ export const BusinessInfoPage = {
         ],
         rules: [
           {
-            type: 'json-logic',
+            type: 'json-schema',
             value: dispatchOpenCorporateRule,
           },
         ],
@@ -218,7 +270,7 @@ export const BusinessInfoPage = {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
-            type: 'json-logic',
+            type: 'json-schema',
             value: availableOnButtonRule,
           },
         ],
