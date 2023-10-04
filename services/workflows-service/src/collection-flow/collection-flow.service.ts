@@ -294,10 +294,10 @@ export class CollectionFlowService {
       );
     }
 
-    return await this.workflowService.updateContextById(
+    return await this.workflowService.syncContextById(
       tokenScope.workflowRuntimeDataId,
       payload.data.context as DefaultContextSchema,
-      [tokenScope.projectId]
+      tokenScope.projectId
     );
   }
 
