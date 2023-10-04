@@ -523,7 +523,10 @@ export class WorkflowRunner {
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
+    debugger;
     if (!this.isPluginWithCallbackAction(apiPlugin)) return;
+
+    debugger;
 
     if (apiPlugin.persistResponseDestination && responseBody) {
       this.#__context = this.mergeToContext(
@@ -531,11 +534,13 @@ export class WorkflowRunner {
         responseBody,
         apiPlugin.persistResponseDestination,
       );
+      debugger;
     } else {
       this.#__context.pluginsOutput = {
         ...(this.#__context.pluginsOutput || {}),
         ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
       };
+      debugger;
     }
 
     await this.sendEvent(callbackAction);
@@ -567,7 +572,10 @@ export class WorkflowRunner {
       .filter(plugin => !!plugin)
       .find(plugin => plugin?.name === pluginName);
 
+    debugger;
+
     if (pluginToInvoke && this.isHttpPlugin(pluginToInvoke)) {
+      debugger;
       return await this.__invokeApiPlugin(pluginToInvoke);
     }
     if (pluginToInvoke && pluginToInvoke instanceof IterativePlugin) {

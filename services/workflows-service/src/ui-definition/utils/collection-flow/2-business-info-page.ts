@@ -31,10 +31,7 @@ const dispatchOpenCorporateRule = {
     },
     {
       var: 'entity.data.country',
-    },
-    {
-      var: 'entity.data.state',
-    },
+    }
   ],
 };
 

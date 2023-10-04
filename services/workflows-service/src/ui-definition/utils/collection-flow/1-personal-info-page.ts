@@ -145,21 +145,21 @@ export const PersonalInfoPage = {
     },
   ],
   actions: [
-    // {
-    //   type: 'definitionPlugin',
-    //   params: {
-    //     pluginName: 'update_end_user',
-    //   },
-    //   dispatchOn: {
-    //     uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
-    //     rules: [
-    //       {
-    //         type: 'json-logic',
-    //         value: availableOnButtonRule,
-    //       },
-    //     ],
-    //   },
-    // },
+    {
+      type: 'definitionPlugin',
+      params: {
+        pluginName: 'update_end_user',
+      },
+      dispatchOn: {
+        uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
+        rules: [
+          {
+            type: 'json-logic',
+            value: availableOnButtonRule,
+          },
+        ],
+      },
+    },
     {
       type: 'definitionEvent',
       params: {
