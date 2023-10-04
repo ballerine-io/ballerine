@@ -150,15 +150,6 @@ export class CollectionFlowService {
     return workflowData ? workflowData : null;
   }
 
-  async getWorkflowContext(workflowId: string, projectIds: TProjectIds) {
-    const workflowContext = await this.workflowRuntimeDataRepository.findContext(
-      workflowId,
-      projectIds,
-    );
-
-    return workflowContext;
-  }
-
   // async updateFlow(
   //   adapter: IWorkflowAdapter,
   //   updatePayload: UpdateFlowPayload,
@@ -285,6 +276,31 @@ export class CollectionFlowService {
       currentProjectId: tokenScope.projectId,
     });
   }
+
+  async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {
+    if (payload.data.endUser) {
+      await this.endUserService.updateById(
+        tokenScope.endUserId,
+        { data: payload.data.endUser },
+        tokenScope.projectId,
+      );
+    }
+
+    if (payload.data.ballerineEntityId && payload.data.business) {
+      await this.businessService.updateById(
+        payload.data.ballerineEntityId!,
+        { data: payload.data.business },
+        tokenScope.projectId,
+      );
+    }
+
+    return await this.workflowService.updateContextById(
+      tokenScope.workflowRuntimeDataId,
+      payload.data.context as DefaultContextSchema,
+      [tokenScope.projectId]
+    );
+  }
+
 
   async finishFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
     await this.workflowService.event({ id: flowId, name: 'start' }, projectIds, currentProjectId);

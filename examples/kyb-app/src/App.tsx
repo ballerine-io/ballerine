@@ -42,9 +42,10 @@ export const App = () => {
       {/* <CustomerProvider loadingPlaceholder={<LoadingScreen />} fallback={CustomerProviderFallback}>
         <RouterProvider router={router} />
       </CustomerProvider> */}
-      {definition && context ? (
+      {definition && context?.context ? (
         <DynamicUI>
           <DynamicUI.StateManager
+            initialContext={context.context}
             workflowId="1"
             definitionType={schema.data?.definition.definitionType}
             extensions={schema.data?.definition.extensions}

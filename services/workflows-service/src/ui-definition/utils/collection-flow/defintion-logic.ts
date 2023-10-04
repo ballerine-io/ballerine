@@ -73,9 +73,9 @@ export const definition = {
       {
         name: 'update_end_user',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/end-user?token={tokenId}`,
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/end-user?token={flowConfig.tokenId}`,
         method: 'POST',
-        headers: { Authorization: 'Bearer {tokenId}' },
+        headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
         stateNames: [],
         request: {
           transform: [
@@ -95,10 +95,33 @@ export const definition = {
       {
         name: 'sync_workflow_runtime',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/?token={tokenId}`,
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/sync/?token={flowConfig.tokenId}`,
         method: 'PUT',
-        stateNames: ['personal_details', 'business_information', 'business_address_information', 'directors_and_ubos', 'contacts_page', 'banking_details', 'store_info', 'website_basic_requirement', 'processing_details', 'company_documents', 'finish'],
-        headers: { Authorization: 'Bearer {tokenId}' },
+        stateNames: ['personal_details', 'business_information', 'business_address_information', 'directors_and_ubos', 'contacts_page', 'banking_details', 'store_info', 'website_basic_requirement', 'processing_details', 'company_documents'],
+        headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+              data: {
+                context: @,
+                endUser: entity.data.additionalInfo.mainRepresentative,
+                business: entity.data,
+                ballerineEntityId: ballerineEntityId
+                }
+              }`
+            },
+          ],
+        },
+      },
+      {
+        name: 'sync_workflow_runtime',
+        pluginKind: 'api',
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/?token={flowConfig.tokenId}`,
+        method: 'PUT',
+        stateNames: ['finish'],
+        headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
         request: {
           transform: [
             {
@@ -121,13 +144,13 @@ export const definition = {
         url: `{flowConfig.apiUrl}/api/v1/collection-flow/business/business-information`,
         method: 'GET',
         stateNames: [],
-        headers: { Authorization: 'Bearer {tokenId}' },
+        headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
         request: {
           transform: [
             {
               transformer: 'jmespath',
               mapping: `{
-              token: tokenId,
+              token: flowConfig.tokenId,
               registrationNumber: entity.data.registrationNumber,
               jurisdictionCode: entity.data.country,
               vendor: 'open-corporates'
@@ -156,10 +179,10 @@ export const definition = {
       {
         name: 'send_collection_flow_finished',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/send-event/?token={tokenId}`,
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/send-event/?token={flowConfig.tokenId}`,
         method: 'POST',
         stateNames: ['finished'],
-        headers: { Authorization: 'Bearer {tokenId}' },
+        headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
         request: {
           transform: [
             {
