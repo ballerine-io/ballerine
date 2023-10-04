@@ -93,7 +93,7 @@
     "swagger-ui-express": "4.6.2",
     "tmp": "^0.2.1",
     "winston": "^3.9.0",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@cspell/cspell-types": "^6.31.1",
