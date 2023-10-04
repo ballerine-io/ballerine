@@ -14,6 +14,8 @@ import {
 import { DynamicForm } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { useCallback, useMemo, useState } from 'react';
+import set from 'lodash/set';
+import { AnyObject } from '../../../../../../../../packages/ui/dist';
 
 export const fields = {
   // Component with suffix Field is an overriding of internal RSJV components
@@ -43,17 +45,27 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
     () => createFormSchemaFromUIElements(definition),
     [definition],
   );
+  const { stateApi } = useStateManagerContext();
 
   const { payload } = useStateManagerContext();
-  console.log('payload', payload);
   const initialFormData = useMemo(
     () => createInitialFormData(definition, payload),
     [definition, payload],
   );
 
-  const handleSubmit = useCallback(() => {}, []);
+  const handleArrayInputChange = useCallback(
+    (values: AnyObject[]) => {
+      if (definition.options?.jsonFormDefinition?.type === 'array') {
+        const prevContext = stateApi.getContext();
+        set(prevContext, definition.valueDestination, values);
 
-  console.log('FORM DATA', initialFormData);
+        stateApi.setContext(prevContext);
+      }
+    },
+    [definition, stateApi],
+  );
+
+  const handleSubmit = useCallback(() => {}, []);
 
   return (
     <DynamicForm
@@ -62,6 +74,7 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
       liveValidate
       fields={fields}
       formData={initialFormData}
+      onChange={handleArrayInputChange}
       onSubmit={handleSubmit}
     />
   );
