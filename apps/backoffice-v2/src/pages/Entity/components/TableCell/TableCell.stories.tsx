@@ -105,7 +105,6 @@ export const WithNoColumns = {
 export const WithCustomCells = {
   args: {
     value: {
-      caption: 'Caption',
       columns: [
         {
           accessorKey: 'url',
@@ -115,6 +114,10 @@ export const WithCustomCells = {
           accessorKey: 'json',
           header: 'JSON',
         },
+        {
+          accessorKey: 'date',
+          header: 'Date',
+        },
       ],
       data: [
         {
@@ -122,10 +125,12 @@ export const WithCustomCells = {
           json: {
             foo: 'bar',
           },
+          date: new Date().toISOString(),
         },
         {
           url: 'https://www.example2.com',
           json: [1, 2, 3],
+          date: new Date().toISOString(),
         },
       ],
     },

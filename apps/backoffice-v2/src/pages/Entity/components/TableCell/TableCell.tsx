@@ -16,6 +16,10 @@ import { buttonVariants } from '../../../../common/components/atoms/Button/Butto
 import { isObject } from '@ballerine/common';
 import { FileJson2 } from 'lucide-react';
 import { JsonDialog } from '../../../../common/components/molecules/JsonDialog';
+import { isValidDate } from '../../../../common/utils/is-valid-date';
+import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
+import { formatDate } from '../../../../common/utils/format-date';
+import dayjs from 'dayjs';
 
 export const TableCell = forwardRef(
   <TData extends RowData, TValue = unknown>(
@@ -30,6 +34,10 @@ export const TableCell = forwardRef(
       defaultColumn: {
         cell: props => {
           const value = props.getValue();
+
+          if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value)) {
+            return formatDate(dayjs(value).toDate());
+          }
 
           if (isObject(value) || Array.isArray(value)) {
             return (
