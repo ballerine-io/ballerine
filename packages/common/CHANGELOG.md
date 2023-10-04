@@ -4,6 +4,12 @@
 
 ### Patch Changes
 
+- Documents schemas update
+
+## 0.6.7
+
+### Patch Changes
+
 - gst
 
 ## 0.5.24
