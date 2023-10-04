@@ -149,54 +149,54 @@ export class CollectionFlowService {
     return workflowData ? workflowData : null;
   }
 
-  async updateFlow(
-    adapter: IWorkflowAdapter,
-    updatePayload: UpdateFlowPayload,
-    flowId: string,
-    projectId: TProjectId,
-    customer: Customer,
-  ) {
-    const workflow = await this.workflowRuntimeDataRepository.findById(flowId, {}, [
-      projectId,
-    ] as TProjectIds);
-
-    if (!workflow) throw new NotFoundException();
-
-    const flowData = plainToClass(KYBParentKYCSessionExampleFlowData, {
-      id: flowId,
-      state: updatePayload.flowState,
-      flowData: updatePayload.dynamicData,
-      mainRepresentative: updatePayload.mainRepresentative,
-      documents: updatePayload.documents,
-      ubos: updatePayload.ubos,
-      flowState: updatePayload.flowState,
-      businessData: updatePayload.businessData,
-    });
-
-    const workflowData = adapter.deserialize(flowData as any, workflow, customer);
-
-    workflowData.context.documents = await this.__persistFileUrlsToDocuments(
-      workflowData.context.documents,
-      [projectId],
-    );
-
-    await this.businessService.updateById(
-      workflow.businessId,
-      {
-        data: updatePayload.businessData,
-      },
-      projectId,
-    );
-
-    await this.workflowService.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId: workflowData.workflowDefinitionId,
-      context: workflowData.context,
-      projectIds: [projectId] as TProjectIds,
-      currentProjectId: projectId,
-    });
-
-    return flowData;
-  }
+  // async updateFlow(
+  //   adapter: IWorkflowAdapter,
+  //   updatePayload: UpdateFlowPayload,
+  //   flowId: string,
+  //   projectId: TProjectId,
+  //   customer: Customer,
+  // ) {
+  //   const workflow = await this.workflowRuntimeDataRepository.findById(flowId, {}, [
+  //     projectId,
+  //   ] as TProjectIds);
+  //
+  //   if (!workflow) throw new NotFoundException();
+  //
+  //   const flowData = plainToClass(KYBParentKYCSessionExampleFlowData, {
+  //     id: flowId,
+  //     state: updatePayload.flowState,
+  //     flowData: updatePayload.dynamicData,
+  //     mainRepresentative: updatePayload.mainRepresentative,
+  //     documents: updatePayload.documents,
+  //     ubos: updatePayload.ubos,
+  //     flowState: updatePayload.flowState,
+  //     businessData: updatePayload.businessData,
+  //   });
+  //
+  //   const workflowData = adapter.deserialize(flowData as any, workflow, customer);
+  //
+  //   workflowData.context.documents = await this.__persistFileUrlsToDocuments(
+  //     workflowData.context.documents,
+  //     [projectId],
+  //   );
+  //
+  //   await this.businessService.updateById(
+  //     workflow.businessId,
+  //     {
+  //       data: updatePayload.businessData,
+  //     },
+  //     projectId,
+  //   );
+  //
+  //   await this.workflowService.createOrUpdateWorkflowRuntime({
+  //     workflowDefinitionId: workflowData.workflowDefinitionId,
+  //     context: workflowData.context,
+  //     projectIds: [projectId] as TProjectIds,
+  //     currentProjectId: projectId,
+  //   });
+  //
+  //   return flowData;
+  // }
 
   private async __persistFileUrlsToDocuments(
     documents: TDocument[] = [],
