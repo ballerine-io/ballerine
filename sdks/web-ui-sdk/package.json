@@ -80,7 +80,7 @@
     "eslint-plugin-svelte3": "^4.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "jsdom": "^20.0.2",
-    "postcss": "^8.4.18",
+    "postcss": "^8.4.31",
     "prettier": "^2.7.1",
     "prettier-plugin-svelte": "^2.8.0",
     "rollup-plugin-visualizer": "^5.8.3",
