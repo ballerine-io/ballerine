@@ -30,8 +30,10 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
       'ui:placeholder': uiElement?.options?.hint,
     };
 
-    uiElement[uiElement.name] = elementUISchema;
+    uiSchema[uiElement.name] = elementUISchema;
   });
+
+  console.log('ui schema', uiSchema);
 
   return {
     formSchema,
