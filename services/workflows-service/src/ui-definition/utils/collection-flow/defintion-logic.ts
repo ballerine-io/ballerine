@@ -117,7 +117,7 @@ export const definition = {
       {
         name: 'fetch_company_information',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/business/business-information`,
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/business/business-information?token={tokenId}`,
         method: 'GET',
         stateNames: [],
         headers: { Authorization: 'Bearer {tokenId}' },
