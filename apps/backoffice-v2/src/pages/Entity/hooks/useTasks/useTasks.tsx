@@ -411,90 +411,9 @@ export const useTasks = ({
               ],
           },
         ];
-  const tableBlock = [
-    {
-      className: 'p-4',
-      cells: [
-        {
-          type: 'table',
-          value: {
-            columns: [
-              {
-                accessorKey: 'id',
-                header: 'ID',
-              },
-              {
-                accessorKey: 'name',
-                header: 'Name',
-              },
-              {
-                accessorKey: 'age',
-                header: 'Age',
-              },
-            ],
-            data: [
-              {
-                id: 1,
-                name: 'John',
-                age: 20,
-              },
-              {
-                id: 2,
-                name: 'Jane',
-                age: 30,
-              },
-              {
-                id: 3,
-                name: 'Jack',
-                age: 40,
-              },
-            ],
-          },
-        },
-        {
-          type: 'table',
-          value: {
-            columns: [
-              {
-                accessorKey: 'id',
-                header: 'ID',
-              },
-              {
-                accessorKey: 'name',
-                header: 'Name',
-              },
-              {
-                accessorKey: 'age',
-                header: 'Age',
-              },
-            ],
-            data: [
-              {
-                id: 1,
-                name: 'John',
-                age: 20,
-              },
-              {
-                id: 2,
-                name: 'Jane',
-                age: 30,
-              },
-              {
-                id: 3,
-                name: 'Jack',
-                age: 40,
-              },
-            ],
-          },
-        },
-      ],
-    },
-  ];
 
   return useMemo(() => {
-    return entity
-      ? [...entityInfoBlock, ...registryInfoBlock, ...taskBlocks, ...mapBlock, ...tableBlock]
-      : [];
+    return entity ? [...entityInfoBlock, ...registryInfoBlock, ...taskBlocks, ...mapBlock] : [];
   }, [
     address,
     caseState.writeEnabled,

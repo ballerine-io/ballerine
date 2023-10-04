@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { TableCell } from './TableCell';
+import { AlertTriangle } from 'lucide-react';
 
 const meta = {
   component: TableCell,
@@ -118,6 +119,19 @@ export const WithCustomCells = {
           accessorKey: 'date',
           header: 'Date',
         },
+        {
+          accessorKey: 'custom',
+          header: 'Custom',
+          cell: props => {
+            const value = props.getValue();
+
+            return (
+              <div className={'flex items-center gap-x-2 text-warning'}>
+                <AlertTriangle size={16} /> <>{value}</>
+              </div>
+            );
+          },
+        },
       ],
       data: [
         {
@@ -126,11 +140,13 @@ export const WithCustomCells = {
             foo: 'bar',
           },
           date: new Date().toISOString(),
+          custom: 'Warning',
         },
         {
           url: 'https://www.example2.com',
           json: [1, 2, 3],
           date: new Date().toISOString(),
+          custom: 'Warning',
         },
       ],
     },

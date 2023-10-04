@@ -11,68 +11,20 @@ import {
 } from '../../../../common/components/atoms/Table';
 import { ITableCellProps } from './interfaces';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { isValidUrl } from '../../../../common/utils/is-valid-url';
-import { buttonVariants } from '../../../../common/components/atoms/Button/Button';
-import { isObject } from '@ballerine/common';
-import { FileJson2 } from 'lucide-react';
-import { JsonDialog } from '../../../../common/components/molecules/JsonDialog';
-import { isValidDate } from '../../../../common/utils/is-valid-date';
-import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
-import { formatDate } from '../../../../common/utils/format-date';
-import dayjs from 'dayjs';
+import { DefaultCell } from './DefaultCell';
 
 export const TableCell = forwardRef(
   <TData extends RowData, TValue = unknown>(
     { value }: ITableCellProps<TData, TValue>,
     ref: ForwardedRef<ElementRef<typeof Table>>,
   ) => {
-    const table = useReactTable({
+    const table = useReactTable<TData>({
       ...value?.options,
       data: value.data ?? [],
       columns: value.columns ?? [],
       getCoreRowModel: getCoreRowModel(),
       defaultColumn: {
-        cell: props => {
-          const value = props.getValue();
-
-          if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value)) {
-            return formatDate(dayjs(value).toDate());
-          }
-
-          if (isObject(value) || Array.isArray(value)) {
-            return (
-              <div className={`flex items-end justify-start`}>
-                <JsonDialog
-                  buttonProps={{
-                    variant: 'link',
-                    className: 'p-0 text-blue-500',
-                  }}
-                  rightIcon={<FileJson2 size={`16`} />}
-                  dialogButtonText={`View Information`}
-                  json={JSON.stringify(value)}
-                />
-              </div>
-            );
-          }
-
-          if (isValidUrl(value)) {
-            return (
-              <a
-                className={buttonVariants({
-                  variant: 'link',
-                  className: '!block cursor-pointer !p-0 !text-blue-500',
-                })}
-                target={'_blank'}
-                rel={'noopener noreferrer'}
-                href={value}
-              >
-                {value}
-              </a>
-            );
-          }
-
-          return value;
-        },
+        cell: DefaultCell,
       },
     });
 
@@ -91,14 +43,17 @@ export const TableCell = forwardRef(
             <TableRow
               key={headerGroup.id}
               {...value?.props?.row}
-              className={ctw(value?.props?.row?.className, 'border-none')}
+              className={ctw(value?.props?.row?.className, 'hover:bg-unset border-none')}
             >
               {headerGroup.headers?.map(header => {
                 return (
                   <TableHead
                     key={header.id}
                     {...value?.props?.head}
-                    className={ctw(value?.props?.head?.className, 'font-bold text-foreground')}
+                    className={ctw(
+                      value?.props?.head?.className,
+                      '!h-[unset] pb-2 pt-0 text-sm font-medium leading-none text-foreground',
+                    )}
                   >
                     {!header.isPlaceholder &&
                       flexRender(header.column.columnDef.header, header.getContext())}
@@ -120,7 +75,7 @@ export const TableCell = forwardRef(
                   <TableCellComponent
                     key={cell.id}
                     {...value?.props?.cell}
-                    className={ctw(value?.props?.cell?.className, 'py-1')}
+                    className={ctw(value?.props?.cell?.className, '!py-px')}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCellComponent>
