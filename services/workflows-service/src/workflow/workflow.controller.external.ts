@@ -324,13 +324,12 @@ export class WorkflowControllerExternal {
           ballerineEntityId: endUser.businesses.at(-1)?.id,
           type: 'business',
           data: {
-            additionalInformation: {
+            additionalInfo: {
               endUserId: endUser.id,
             },
           },
         },
-        documents: [],
-        projectId: currentProjectId,
+        documents: []
       },
       projectIds: [currentProjectId],
       currentProjectId: currentProjectId,

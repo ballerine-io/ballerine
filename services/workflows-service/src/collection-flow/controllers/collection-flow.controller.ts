@@ -14,7 +14,6 @@ import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorat
 import { WorkflowService } from '@/workflow/workflow.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { BusinessService } from '@/business/business.service';
-import { DefaultContextSchema } from '@ballerine/common';
 
 @Public()
 @UseTokenAuthGuard()
@@ -63,9 +62,7 @@ export class ColectionFlowController {
 
   @common.Get('/context')
   async getContext(@TokenScope() tokenScope: ITokenScope) {
-    return await this.service.getWorkflowContext(tokenScope.workflowRuntimeDataId, [
-      tokenScope.projectId,
-    ]);
+    return await this.workflowService.getWorkflowRuntimeDataById(tokenScope.workflowRuntimeDataId, {select: {context: true}}, [tokenScope.projectId]);
   }
 
   @common.Get('/configuration')
@@ -99,6 +96,11 @@ export class ColectionFlowController {
   @common.Put('')
   async updateFlow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
     return await this.service.updateWorkflowRuntimeData(payload, tokenScope);
+  }
+
+  @common.Put('/sync')
+  async syncWorkflow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
+    return await this.service.syncWorkflow(payload, tokenScope);
   }
 
   @common.Post('/send-event')
