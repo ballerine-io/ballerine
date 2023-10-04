@@ -11,7 +11,11 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
     required: formElement.options?.jsonFormDefinition?.required ?? [],
   };
 
-  const uiSchema: UiSchema = {};
+  const uiSchema: UiSchema = {
+    'ui:submitButtonOptions': {
+      norender: true,
+    },
+  };
 
   if (formSchema.type === 'object') {
     formSchema.properties = {};

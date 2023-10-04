@@ -67,6 +67,8 @@ export const withDynamicUIInterceptor = (Component: React.ComponentType<RJSVInpu
       onChange(value);
     }, []);
 
+    console.log('def destination', definition.valueDestination);
+
     const value = useMemo(
       () => get(payload, definition.valueDestination) as any,
       [payload, definition],
