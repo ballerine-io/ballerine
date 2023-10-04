@@ -14,6 +14,8 @@ export interface UIRendererProps {
   elements?: ElementsMap;
 }
 
+const Block = props => <div {...props} />;
+
 export const UIRenderer = ({ schema, elements = baseElements }: UIRendererProps) => {
   //@ts-ignore
   const blocks = useMemo(() => generateBlocks(schema, elements) as any[], [schema, elements]);
@@ -21,7 +23,7 @@ export const UIRenderer = ({ schema, elements = baseElements }: UIRendererProps)
 
   return (
     <Provider value={context}>
-      <BlocksComponent cells={elements as any} blocks={blocks}>
+      <BlocksComponent Block={Block} cells={elements as any} blocks={blocks}>
         {(Cell, cell) => (Cell ? <Cell {...cell} /> : <div>not implemented</div>)}
       </BlocksComponent>
     </Provider>

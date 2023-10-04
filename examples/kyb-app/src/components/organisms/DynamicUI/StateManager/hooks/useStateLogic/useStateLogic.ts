@@ -1,7 +1,8 @@
 import { AnyObject } from '@ballerine/ui';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import isEqual from 'lodash/isEqual';
 import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
+import { getAccessToken } from '@app/helpers/get-access-token.helper';
 
 type ContextPayload = AnyObject;
 
@@ -11,6 +12,14 @@ interface State {
 }
 
 export const useStateLogic = (machineApi: StateMachineAPI) => {
+  useEffect(() => {
+    machineApi.setContext({
+      ...machineApi.getContext(),
+      flowConfig: { apiUrl: `http://${new URL(import.meta.env.VITE_API_URL as string).host}` },
+      tokenId: getAccessToken(),
+    });
+  }, []);
+
   const [contextPayload, _setContext] = useState<State>(() => ({
     machineState: machineApi.getState(),
     payload: machineApi.getContext(),
