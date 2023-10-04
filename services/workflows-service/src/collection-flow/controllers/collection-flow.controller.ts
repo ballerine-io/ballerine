@@ -92,26 +92,8 @@ export class ColectionFlowController {
   }
 
   @common.Put('')
-  async updateFlow(@common.Body() dto: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
-    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(tokenScope.workflowRuntimeDataId,{}, [tokenScope.projectId] as TProjectIds);
-
-    if (dto.data.endUser){
-      await this.endUserService.updateById(tokenScope.endUserId, {data: dto.data.endUser}, tokenScope.projectId)
-    }
-
-    if (dto.data.ballerineEntityId && dto.data.business){
-      await this.businessService.updateById(dto.data.ballerineEntityId!, { data: dto.data.business }, tokenScope.projectId)
-    }
-
-    return await this.workflowService.createOrUpdateWorkflowRuntime({
-        workflowDefinitionId: workflowRuntime.workflowDefinitionId,
-        context: dto.data.context as DefaultContextSchema,
-        config: workflowRuntime.config,
-        parentWorkflowId: undefined,
-        projectIds: [tokenScope.projectId],
-        currentProjectId: tokenScope.projectId
-      }
-    );
+  async updateFlow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
+    return await this.service.updateWorkflowRuntimeData(payload, tokenScope)
   }
 
   @common.Post('/send-event')
@@ -125,7 +107,8 @@ export class ColectionFlowController {
         name: body.eventName
       },
       [tokenScope.projectId],
-      tokenScope.projectId)
+      tokenScope.projectId
+    )
   }
 
   @common.Post('resubmit')
