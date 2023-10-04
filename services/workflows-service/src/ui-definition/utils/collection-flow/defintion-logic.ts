@@ -148,7 +148,8 @@ export const definition = {
           ],
         },
         persistResponseDestination: 'entity.data',
-        successAction: 'business_information'
+        successAction: 'business_information',
+        errorAction: 'business_information'
       },
     ],
   },
