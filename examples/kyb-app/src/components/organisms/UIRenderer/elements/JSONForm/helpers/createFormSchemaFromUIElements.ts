@@ -33,8 +33,6 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
     uiSchema[uiElement.name] = elementUISchema;
   });
 
-  console.log('ui schema', uiSchema);
-
   return {
     formSchema,
     uiSchema,

@@ -98,10 +98,8 @@ export const PersonalInfoPage = {
                   minLength: 1,
                 },
                 uiSchema: {
-                  birthDate: {
-                    'ui:field': 'DateInput',
-                    'ui:label': true,
-                  },
+                  'ui:field': 'DateInput',
+                  'ui:label': true,
                 },
               },
             },
@@ -115,11 +113,9 @@ export const PersonalInfoPage = {
                   type: 'string',
                   minLength: 1,
                 },
-                uischema: {
-                  personalPhoneNumber: {
-                    'ui:field': 'PhoneInput',
-                    'ui:label': true,
-                  },
+                uiSchema: {
+                  'ui:field': 'PhoneInput',
+                  'ui:label': true,
                 },
               },
             },

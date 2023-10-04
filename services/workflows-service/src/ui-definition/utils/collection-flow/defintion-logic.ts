@@ -73,7 +73,7 @@ export const definition = {
       {
         name: 'update_end_user',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/end-user?toke={tokenId}`,
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/end-user?token={tokenId}`,
         method: 'POST',
         headers: { Authorization: 'Bearer {tokenId}' },
         stateNames: [],
@@ -82,9 +82,9 @@ export const definition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              firstName: entity.data.additionalInfo.mainRepresentative.countryOfIncorporation,
-              lastName: entity.data.additionalInfo.mainRepresentative.registrationNumber,
-              additionalInfo: {title: entity.data.additionalInfo.mainRepresentative.additionalInfo.title},
+              firstName: entity.data.additionalInfo.mainRepresentative.firstName,
+              lastName: entity.data.additionalInfo.mainRepresentative.lastName,
+              additionalInfo: {title: entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle},
               phone: entity.data.additionalInfo.mainRepresentative.phone,
               dateOfBirth: entity.data.additionalInfo.mainRepresentative.dateOfBirth
               }`,
@@ -95,7 +95,7 @@ export const definition = {
       {
         name: 'update_runtime_data',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/{tokenId}`,
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/?token={tokenId}`,
         method: 'PUT',
         stateNames: ['company_information', 'address_information'],
         headers: { Authorization: 'Bearer {tokenId}' },
@@ -150,7 +150,7 @@ export const definition = {
         },
         persistResponseDestination: 'entity.data',
         successAction: 'business_information',
-        errorAction: 'business_information'
+        errorAction: 'business_information',
       },
     ],
   },
