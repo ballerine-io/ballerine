@@ -11,6 +11,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { BusinessUpdateDto } from "@/business/dtos/business.update";
 
 export class MainRepresentative {
   @IsString()
@@ -87,34 +88,18 @@ export class UBOShareholder {
 }
 
 export class UpdateFlowPayload {
-  @ValidateNested()
-  @Type(() => MainRepresentative)
-  mainRepresentative!: MainRepresentative;
-
-  @ValidateNested()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CompanyDocument)
-  documents!: CompanyDocument[];
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  ubos!: UBOShareholder[];
+  @IsObject()
+  business?: object;
 
   @IsObject()
-  dynamicData!: object;
-
-  @IsNullable()
-  @IsString()
-  flowState!: string | null;
+  endUser?: object;
 
   @IsObject()
-  businessData!: object;
+  context!: object;
 }
 
 export class UpdateFlowDto {
   @ValidateNested()
   @IsNotEmpty()
-  @Type(() => UpdateFlowPayload)
-  payload!: UpdateFlowPayload;
+  data!: any;
 }
