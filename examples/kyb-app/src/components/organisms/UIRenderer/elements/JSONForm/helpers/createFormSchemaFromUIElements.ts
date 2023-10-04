@@ -7,31 +7,61 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
 export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormElementParams>) => {
   const formSchema: RJSFSchema = {
-    type: 'object',
+    type: formElement.options?.jsonFormDefinition.type === 'array' ? 'array' : 'object',
     required: formElement.options?.jsonFormDefinition?.required ?? [],
-    properties: {},
   };
 
   const uiSchema: UiSchema = {};
 
-  (formElement.elements as UIElement<JSONFormElementBaseParams>[])?.forEach(uiElement => {
-    if (!uiElement.options?.jsonFormDefinition) return;
+  if (formSchema.type === 'object') {
+    formSchema.properties = {};
 
-    const elementDefinition = {
-      ...uiElement.options.jsonFormDefinition,
-      title: uiElement.options.label,
+    (formElement.elements as UIElement<JSONFormElementBaseParams>[])?.forEach(uiElement => {
+      if (!uiElement.options?.jsonFormDefinition) return;
+
+      const elementDefinition = {
+        ...uiElement.options.jsonFormDefinition,
+        title: uiElement.options.label,
+      };
+
+      formSchema.properties[uiElement.name] = elementDefinition;
+
+      const elementUISchema = {
+        ...uiElement?.options?.uiSchema,
+        'ui:label': Boolean(uiElement?.options?.label),
+        'ui:placeholder': uiElement?.options?.hint,
+      };
+
+      uiSchema[uiElement.name] = elementUISchema;
+    });
+  }
+
+  if (formSchema.type === 'array') {
+    formSchema.items = {
+      type: 'object',
+      properties: {},
     };
 
-    formSchema.properties[uiElement.name] = elementDefinition;
+    (formElement.elements as UIElement<JSONFormElementBaseParams>[])?.forEach(uiElement => {
+      if (!uiElement.options?.jsonFormDefinition) return;
 
-    const elementUISchema = {
-      ...uiElement?.options?.uiSchema,
-      'ui:label': Boolean(uiElement?.options?.label),
-      'ui:placeholder': uiElement?.options?.hint,
-    };
+      const elementDefinition = {
+        ...uiElement.options.jsonFormDefinition,
+        title: uiElement.options.label,
+      };
 
-    uiSchema[uiElement.name] = elementUISchema;
-  });
+      //@ts-nocheck
+      (formSchema.items as RJSFSchema).properties[uiElement.name] = elementDefinition;
+
+      const elementUISchema = {
+        ...uiElement?.options?.uiSchema,
+        'ui:label': Boolean(uiElement?.options?.label),
+        'ui:placeholder': uiElement?.options?.hint,
+      };
+
+      uiSchema[uiElement.name] = elementUISchema;
+    });
+  }
 
   return {
     formSchema,

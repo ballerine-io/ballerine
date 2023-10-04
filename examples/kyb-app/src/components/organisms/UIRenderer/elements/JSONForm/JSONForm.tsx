@@ -33,19 +33,16 @@ export interface JSONFormElementBaseParams {
 }
 
 export interface JSONFormElementParams {
-  jsonFormDefinition?: { required?: string[] };
+  jsonFormDefinition?: { type?: string; required?: string[] };
 }
 
 export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition, actions }) => {
-  console.log('definition', definition);
   const { formSchema, uiSchema } = useMemo(
     () => createFormSchemaFromUIElements(definition),
     [definition],
   );
 
   const handleSubmit = useCallback(() => {}, []);
-
-  console.log('json form render', uiSchema);
 
   return (
     <DynamicForm schema={formSchema} uiSchema={uiSchema} fields={fields} onSubmit={handleSubmit} />

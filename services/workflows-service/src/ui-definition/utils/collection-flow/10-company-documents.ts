@@ -3,15 +3,15 @@ const availableOnButtonRule = {
     { '!=': [{ var: 'entity.data.additionalInfo.signature.isConfirmed' }, ''] },
     {
       all: [
-        { var: "documents" },
+        { var: 'documents' },
         {
           and: [
-            { "!!": [{ "var": "ballerineFileId" }] },
-            { "===": [ { "length": [{ "var": "ballerineFileId" }] }, 9 ] }
-          ]
-        }
-      ]
-    }
+            { '!!': [{ var: 'ballerineFileId' }] },
+            { '===': [{ length: [{ var: 'ballerineFileId' }] }, 9] },
+          ],
+        },
+      ],
+    },
   ],
 };
 export const CompanyDocuments = {
@@ -40,7 +40,7 @@ export const CompanyDocuments = {
           ],
         },
         {
-          type: 'json-form',
+          type: 'json-form:Documents',
           options: {
             jsonFormDefinition: {
               required: [],
@@ -175,22 +175,24 @@ export const CompanyDocuments = {
             },
             {
               type: 'description',
-              label: 'By checking the checkbox below, I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practice and all other submitted information.',
+              label:
+                'By checking the checkbox below, I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practice and all other submitted information.',
             },
             {
               name: 'confirmation-checkbox',
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.signature.isConfirmed',
               option: {
-                label: 'I Confirm'
-              }
+                label: 'I Confirm',
+              },
             },
             {
-              type: 'pipe'
+              type: 'pipe',
             },
             {
               type: 'description',
-              label: "By click 'Next', an email containing an identity verification link will be sent to shareholders listed.",
+              label:
+                "By click 'Next', an email containing an identity verification link will be sent to shareholders listed.",
             },
           ],
         },
