@@ -694,20 +694,22 @@ export class WorkflowService {
           },
         );
 
-      updatedWorkflow.status = allDocumentsResolved ? 'completed' : updatedWorkflow.status;
-      await this.workflowRuntimeDataRepository.updateById(workflowId, {
-        data: {
-          status: updatedWorkflow.status,
-          resolvedAt: new Date().toISOString(),
-        },
-      });
+      if (allDocumentsResolved) {
+        updatedWorkflow.status = allDocumentsResolved ? 'completed' : updatedWorkflow.status;
+        await this.workflowRuntimeDataRepository.updateById(workflowId, {
+          data: {
+            status: updatedWorkflow.status,
+            resolvedAt: new Date().toISOString(),
+          },
+        });
 
-      this.workflowEventEmitter.emit('workflow.completed', {
-        runtimeData: updatedWorkflow,
-        state: updatedWorkflow.state,
-        entityId: updatedWorkflow.businessId || updatedWorkflow.endUserId,
-        correlationId,
-      });
+        this.workflowEventEmitter.emit('workflow.completed', {
+          runtimeData: updatedWorkflow,
+          state: updatedWorkflow.state,
+          entityId: updatedWorkflow.businessId || updatedWorkflow.endUserId,
+          correlationId,
+        });
+      }
     }
 
     return updatedWorkflow;
