@@ -6,6 +6,7 @@ import set from 'lodash/set';
 import { Action, Rule } from '@app/domains/collection-flow';
 import { EventEngine } from '@app/components/organisms/DynamicUI/rule-engines/event.engine';
 import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
+import { JsonSchemaRuleEngine } from "@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine";
 import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
 
 export interface ApiActionParams {
@@ -24,6 +25,7 @@ export class ApiActionHandler implements ActionHandler {
   public readonly ACTION_TYPE = 'api';
   private readonly engineManager = new EngineManager([
     new JsonLogicRuleEngine(),
+    new JsonSchemaRuleEngine(),
     new EventEngine(),
   ]);
 
