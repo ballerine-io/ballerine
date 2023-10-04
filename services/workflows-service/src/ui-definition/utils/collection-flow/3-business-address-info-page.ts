@@ -1,3 +1,5 @@
+import { getCountriesList } from '../schema-utils/countries';
+
 const availableOnButtonRule = {
   or: [
     {
@@ -6,13 +8,13 @@ const availableOnButtonRule = {
         { var: 'entity.data.additionalInfo' },
         { var: 'entity.data.additionalInfo.headquarters' },
         { var: 'entity.data.additionalInfo.headquarters.street' },
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.street' }] }, 2] },
-        { typeof: [{ var: 'entity.data.additionalInfo.headquarters.streetNumber' }, 'number'] },
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.city' }] }, 2] },
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.country' }] }, 2] },
-        {
-          '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, false],
-        },
+        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.street' }] }, 2] },
+        // { typeof: [{ var: 'entity.data.additionalInfo.headquarters.streetNumber' }, 'number'] },
+        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.city' }] }, 2] },
+        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.country' }] }, 2] },
+        // {
+        //   '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, false],
+        // },
       ],
     },
     {
@@ -21,37 +23,37 @@ const availableOnButtonRule = {
         { var: 'entity.data.additionalInfo' },
         { var: 'entity.data.additionalInfo.headquarters' },
         { var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' },
-        {
-          '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, true],
-        },
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.street' }] }, 2] },
-        { typeof: [{ var: 'entity.data.additionalInfo.headquarters.streetNumber' }, 'number'] },
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.city' }] }, 2] },
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.country' }] }, 2] },
-        {
-          '>= ': [
-            { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.street' }] },
-            2,
-          ],
-        },
-        {
-          typeof: [
-            { var: 'entity.data.additionalInfo.headquarters.physical.streetNumber' },
-            'number',
-          ],
-        },
-        {
-          '>= ': [
-            { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.city' }] },
-            2,
-          ],
-        },
-        {
-          '>= ': [
-            { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.country' }] },
-            2,
-          ],
-        },
+        // {
+        //   '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, true],
+        // },
+        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.street' }] }, 2] },
+        // { typeof: [{ var: 'entity.data.additionalInfo.headquarters.streetNumber' }, 'number'] },
+        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.city' }] }, 2] },
+        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.country' }] }, 2] },
+        // {
+        //   '>= ': [
+        //     { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.street' }] },
+        //     2,
+        //   ],
+        // },
+        // {
+        //   typeof: [
+        //     { var: 'entity.data.additionalInfo.headquarters.physical.streetNumber' },
+        //     'number',
+        //   ],
+        // },
+        // {
+        //   '>= ': [
+        //     { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.city' }] },
+        //     2,
+        //   ],
+        // },
+        // {
+        //   '>= ': [
+        //     { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.country' }] },
+        //     2,
+        //   ],
+        // },
       ],
     },
   ],
@@ -110,7 +112,7 @@ export const BusinessAddressInfoPage = {
               name: 'street-number-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.streetNumber',
-              option: {
+              options: {
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -122,7 +124,10 @@ export const BusinessAddressInfoPage = {
               name: 'city-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.city',
-              option: {
+              options: {
+                jsonFormDefinition: {
+                  type: 'string',
+                },
                 label: 'City',
                 hint: 'London',
               },
@@ -131,17 +136,31 @@ export const BusinessAddressInfoPage = {
               name: 'country-input',
               type: 'country-picker',
               valueDestination: 'entity.data.additionalInfo.headquarters.country',
-              option: {
+              options: {
                 label: 'Country',
                 hint: 'United Kingdom',
+                jsonFormDefinition: {
+                  type: 'string',
+                  oneOf: [
+                    // Line below should removed in case when field is required.
+                    // { const: '', title: '' },
+                    ...getCountriesList().map(countryData => ({
+                      const: countryData.isoCode,
+                      title: countryData.fullName,
+                    })),
+                  ],
+                },
               },
             },
             {
               name: 'different-from-physical-checkbox',
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical',
-              option: {
+              options: {
                 label: 'Different from physical address',
+                jsonFormDefinition: {
+                  type: 'boolean',
+                },
               },
             },
           ],
@@ -157,23 +176,26 @@ export const BusinessAddressInfoPage = {
                 'physical-country-input',
               ],
             },
-            visibleOn: [physicalAddressForm],
           },
+          visibleOn: [physicalAddressForm],
           elements: [
             {
               name: 'physical-street-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.street',
-              option: {
+              options: {
                 label: 'Street',
                 hint: 'Downing Street',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
               },
             },
             {
               name: 'physical-street-number-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.streetNumber',
-              option: {
+              options: {
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -185,18 +207,32 @@ export const BusinessAddressInfoPage = {
               name: 'physical-city-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.city',
-              option: {
+              options: {
                 label: 'City',
                 hint: 'London',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
               },
             },
             {
               name: 'physical-country-input',
               type: 'country-picker',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.country',
-              option: {
+              options: {
                 label: 'Country',
                 hint: 'United Kingdom',
+                jsonFormDefinition: {
+                  type: 'string',
+                  oneOf: [
+                    // Line below should removed in case when field is required.
+                    // { const: '', title: '' },
+                    ...getCountriesList().map(countryData => ({
+                      const: countryData.isoCode,
+                      title: countryData.fullName,
+                    })),
+                  ],
+                },
               },
             },
           ],
