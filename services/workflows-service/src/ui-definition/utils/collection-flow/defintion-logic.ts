@@ -108,7 +108,7 @@ export const definition = {
                 context: @,
                 endUser: entity.data.additionalInfo.mainRepresentative,
                 business: entity.data,
-                ballerineEntityId: ballerineEntityId
+                ballerineEntityId: entity.ballerineEntityId
                 }
               }`
             },
