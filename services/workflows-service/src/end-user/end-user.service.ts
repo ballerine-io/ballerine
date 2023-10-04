@@ -73,10 +73,6 @@ export class EndUserService {
     endUser: Omit<Prisma.EndUserUpdateArgs, 'where'>,
     projectId: TProjectId,
   ) {
-    return await this.repository.updateById(
-      id,
-      endUser,
-      projectId,
-    );
+    return await this.repository.updateById(id, endUser, projectId);
   }
 }

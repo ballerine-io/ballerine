@@ -1,3 +1,5 @@
+import { getCountriesList } from '../schema-utils/countries';
+
 const availableOnButtonRule = {
   and: [
     { var: 'entity.data' },
@@ -31,7 +33,7 @@ const dispatchOpenCorporateRule = {
     },
     {
       var: 'entity.data.country',
-    }
+    },
   ],
 };
 
@@ -58,7 +60,7 @@ export const BusinessInfoPage = {
         },
         {
           type: 'json-form',
-          optionss: {
+          options: {
             jsonFormDefinition: {
               required: ['registration-number-input', 'country-picker-input', 'company-name-input'],
             },
@@ -81,20 +83,18 @@ export const BusinessInfoPage = {
               type: 'country-picker',
               valueDestination: 'entity.data.country',
               options: {
+                label: 'Country',
                 hint: 'Hong Kong',
                 jsonFormDefinition: {
                   type: 'string',
-                },
-              },
-            },
-            {
-              name: 'state-input',
-              type: 'state',
-              valueDestination: 'entity.data.state',
-              options: {
-                hint: 'State',
-                jsonFormDefinition: {
-                  type: 'string',
+                  oneOf: [
+                    // Line below should removed in case when field is required.
+                    // { const: '', title: '' },
+                    ...getCountriesList().map(countryData => ({
+                      const: countryData.isoCode,
+                      title: countryData.fullName,
+                    })),
+                  ],
                 },
               },
             },
@@ -144,15 +144,20 @@ export const BusinessInfoPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                optionss: [
-                  { label: 'Corporation', value: 'corporation' },
-                  { label: 'Limited Liability Company', value: 'limited_liability_company' },
-                  { label: 'Partnership', value: 'partnership' },
-                  { label: 'Sole Proprietorship', value: 'sole_proprietorship' },
-                  { label: 'Non-Profit', value: 'non_profit' },
-                  { label: 'Government', value: 'government' },
-                  { label: 'Other', value: 'other' },
-                ],
+                uiSchema: {
+                  'ui:placeholder': 'Corporation',
+                  'ui:field': 'AutocompleteInput',
+                  'ui:label': true,
+                  options: [
+                    { label: 'Corporation', value: 'corporation' },
+                    { label: 'Limited Liability Company', value: 'limited_liability_company' },
+                    { label: 'Partnership', value: 'partnership' },
+                    { label: 'Sole Proprietorship', value: 'sole_proprietorship' },
+                    { label: 'Non-Profit', value: 'non_profit' },
+                    { label: 'Government', value: 'government' },
+                    { label: 'Other', value: 'other' },
+                  ],
+                },
               },
             },
             {
@@ -192,7 +197,7 @@ export const BusinessInfoPage = {
   actions: [
     {
       type: 'definitionPlugin',
-      params: {pluginName: 'fetch_company_information'},
+      params: { pluginName: 'fetch_company_information' },
       dispatchOn: {
         uiEvents: [
           { event: 'onChange', uiElementName: 'registration-number-input' },
