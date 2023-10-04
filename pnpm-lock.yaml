@@ -715,7 +715,11 @@ importers:
         specifier: ^4.38.2
         version: 4.38.2
       zod:
+<<<<<<< HEAD
         specifier: ^3.21.4
+=======
+        specifier: ^3.22.3
+>>>>>>> 9bda0fa1 (chore(deps): bump zod from 3.21.4 to 3.22.3 (#1359))
         version: 3.22.3
     devDependencies:
       '@types/jmespath':
