@@ -15,7 +15,6 @@ export class PluginRunnerHandler implements ActionHandler {
     api: StateMachineAPI,
   ): Promise<TContext> {
     await api.invokePlugin(action.params.pluginName);
-    debugger;
     return api.getContext();
   }
 }

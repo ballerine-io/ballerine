@@ -37,7 +37,6 @@ export const useActionsHandlerLogic = (
         for (const action of actions) {
           const actionHandler = actionHandlerManager.getActionHandler(action.type);
           if (!actionHandler) throw new Error(`Action ${action.type} is not supported`);
-
           context = await actionHandler.run(context, action, stateApi);
         }
 

@@ -17,10 +17,7 @@ export interface UIRendererProps {
 export const UIRenderer = ({ schema, elements = baseElements }: UIRendererProps) => {
   //@ts-ignore
   const blocks = useMemo(() => generateBlocks(schema, elements) as any[], [schema, elements]);
-  console.log('blocks', blocks);
   const context = useMemo(() => ({ elements }), [elements]);
-
-  console.log('CTX', context);
 
   return (
     <Provider value={context}>
