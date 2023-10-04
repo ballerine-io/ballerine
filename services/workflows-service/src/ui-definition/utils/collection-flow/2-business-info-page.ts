@@ -195,7 +195,7 @@ export const BusinessInfoPage = {
   actions: [
     {
       type: 'definitionPlugin',
-      pluginName: 'fetch_company_information',
+      params: {pluginName: 'fetch_company_information'},
       dispatchOn: {
         uiEvents: [
           { event: 'onChange', uiElementName: 'registration-number-input' },
