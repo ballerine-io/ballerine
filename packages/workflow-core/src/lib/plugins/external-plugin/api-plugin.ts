@@ -33,7 +33,7 @@ export class ApiPlugin {
   }
   async invoke(context: TContext) {
     try {
-      const requestPayload = await this.transformData(this.request.transformers, context);
+            const requestPayload = await this.transformData(this.request.transformers, context);
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,
         requestPayload,
@@ -99,7 +99,7 @@ export class ApiPlugin {
       headers: headers,
     };
 
-    if (this.method.toUpperCase() === 'POST') {
+    if (this.method.toUpperCase() === 'POST' || this.method.toUpperCase() === 'PUT' ) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       requestParams.body = JSON.stringify(payload);

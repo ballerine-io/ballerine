@@ -525,7 +525,7 @@ export class WorkflowRunner {
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
     if (!this.isPluginWithCallbackAction(apiPlugin)) return;
-    debugger
+
     if (apiPlugin.persistResponseDestination && responseBody) {
       this.#__context = this.mergeToContext(
         this.#__context,
