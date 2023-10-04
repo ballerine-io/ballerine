@@ -41,13 +41,7 @@ import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
-import {
-  DefaultContextSchema,
-  getDocumentId,
-  getDocumentsByCountry,
-  isObject,
-  safeEvery,
-} from '@ballerine/common';
+import { DefaultContextSchema } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import {
@@ -71,6 +65,7 @@ import {
 } from '@ballerine/workflow-core';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
+import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
 import { GetLastActiveFlowParams } from '@/workflow/types/params';
 import { TDocumentsWithoutPageType, TDocumentWithoutPageType } from '@/common/types';
 import { CustomerService } from '@/customer/customer.service';
@@ -270,26 +265,7 @@ export class WorkflowService {
         ...workflow.context,
         documents: workflow.context?.documents?.map(
           (document: DefaultContextSchema['documents'][number]) => {
-            const documentsByCountry = getDocumentsByCountry(document?.issuer?.country);
-            const documentByCountry = documentsByCountry?.find(
-              doc => getDocumentId(doc, false) === getDocumentId(document, false),
-            );
-
-            const propertiesSchema = documentByCountry?.propertiesSchema ?? {};
-
-            Object.entries(propertiesSchema?.properties ?? {}).forEach(([key, value]) => {
-              if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string') return;
-
-              value.dropdownOptions = value.enum.map(item => ({
-                value: item,
-                label: item,
-              }));
-            });
-
-            return {
-              ...document,
-              propertiesSchema,
-            };
+            return addPropertiesSchemaToDocument(document);
           },
         ),
       },
@@ -773,91 +749,123 @@ export class WorkflowService {
       throw new BadRequestException(`Invalid decision status: ${status}`);
     })();
 
-    const documentsWithDecision = workflow?.context?.documents?.map(
-      (document: DefaultContextSchema['documents'][number]) => {
-        if (document.id !== documentId) return document;
-
-        return {
-          id: document.id,
-          decision: {
-            ...newDecision,
-            status,
-          },
-        };
-      },
+    const document = workflow?.context?.documents?.find(
+      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
     );
+
+    const documentWithDecision = {
+      ...document,
+      id: document.id,
+      decision: {
+        ...newDecision,
+        status,
+      },
+    };
+    const checkRequiredFields = status === 'approved' ? true : false;
+    const updatedWorkflow = await this.updateDocumentById(
+      { workflowId, documentId, checkRequiredFields },
+      documentWithDecision as unknown as DefaultContextSchema['documents'][number],
+      projectIds![0]!,
+    );
+
+    return updatedWorkflow;
+  }
+
+  async updateDocumentById(
+    {
+      workflowId,
+      documentId,
+      checkRequiredFields = true,
+    }: {
+      workflowId: string;
+      documentId: string;
+      checkRequiredFields?: boolean;
+    },
+    data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
+    projectId: TProjectId,
+  ) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowId, {}, [
+      projectId,
+    ]);
+    const workflowDef = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+      {},
+      [projectId],
+    );
+    const document = {
+      ...data,
+      id: documentId,
+    };
+
+    const newDocument = addPropertiesSchemaToDocument(document);
+    const propertiesSchema = newDocument?.propertiesSchema ?? {};
+    if (Object.keys(propertiesSchema)?.length) {
+      let propertiesSchemaForValidation = propertiesSchema;
+      if (!checkRequiredFields) {
+        const { required: _required, ..._propertiesSchemaForValidation } = propertiesSchema;
+        propertiesSchemaForValidation = _propertiesSchemaForValidation;
+      }
+      const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
+
+      const isValidPropertiesSchema = validatePropertiesSchema(newDocument?.properties);
+
+      if (!isValidPropertiesSchema) {
+        throw new BadRequestException(
+          validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
+            ...rest,
+            message: `${instancePath} ${message}`,
+            instancePath,
+          })),
+        );
+      }
+    }
 
     const updatedWorkflow = await this.updateContextById(
       workflowId,
       {
-        documents: documentsWithDecision,
+        documents: [newDocument],
       },
-      projectIds,
+      [projectId],
     );
-    const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, projectIds);
-    const entityId = updatedWorkflow.businessId || updatedWorkflow.endUserId;
+    const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, [projectId]);
 
-    this.workflowEventEmitter.emit('workflow.context.changed', {
-      oldRuntimeData: workflow,
-      updatedRuntimeData: updatedWorkflow,
-      state: updatedWorkflow.state,
-      entityId,
-      correlationId: correlationId,
-    });
+    if (
+      ['active'].includes(updatedWorkflow.status) &&
+      workflowDef.config?.completedWhenTasksResolved
+    ) {
+      const allDocumentsResolved =
+        updatedWorkflow.context?.documents?.length &&
+        updatedWorkflow.context?.documents?.every(
+          (document: DefaultContextSchema['documents'][number]) => {
+            return ['approved', 'rejected', 'revision'].includes(
+              document?.decision?.status as string,
+            );
+          },
+        );
 
-    // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
-    const resolvedStates = ['approved', 'rejected'];
-    const shouldResolve =
-      workflowDefinition?.config?.completedWhenTasksResolved && workflow?.status === 'active';
-    const allDocumentsResolved =
-      shouldResolve &&
-      safeEvery(
-        updatedWorkflow?.context?.documents,
-        (document: DefaultContextSchema['documents'][number]) => {
-          if (!document?.decision?.status) return false;
+      if (allDocumentsResolved) {
+        updatedWorkflow.status = allDocumentsResolved ? 'completed' : updatedWorkflow.status;
+        await this.workflowRuntimeDataRepository.updateById(
+          workflowId,
+          {
+            data: {
+              status: updatedWorkflow.status,
+              resolvedAt: new Date().toISOString(),
+            },
+          },
+          projectId,
+        );
 
-          return resolvedStates.includes(document?.decision?.status);
-        },
-      );
-
-    const workflowService = createWorkflow({
-      runtimeId: workflow?.id,
-      definition: workflowDefinition?.definition,
-      definitionType: workflowDefinition?.definitionType,
-      workflowContext: {
-        machineContext: workflow?.context,
-        state: workflow?.state ?? workflowDefinition?.definition?.initial,
-      },
-    });
-
-    const snapshot = workflowService.getSnapshot();
-    const isFinal = workflowDefinition?.definition?.states?.[snapshot?.value]?.type === 'final';
-    const isResolved =
-      isFinal || allDocumentsResolved || workflow?.status === WorkflowRuntimeDataStatus.completed;
-
-    const updatedWorkflowWithResolve = await this.workflowRuntimeDataRepository.updateById(
-      workflow?.id,
-      {
-        data: {
-          status: allDocumentsResolved ? 'completed' : workflow?.status,
-          resolvedAt: isResolved ? new Date().toISOString() : null,
-        },
-      },
-      currentProjectId,
-    );
-
-    if (isResolved) {
-      this.logger.log('Workflow resolved', { id: updatedWorkflowWithResolve?.id });
-
-      this.workflowEventEmitter.emit('workflow.completed', {
-        runtimeData: updatedWorkflowWithResolve,
-        state: snapshot?.value ?? updatedWorkflowWithResolve?.state,
-        entityId: updatedWorkflowWithResolve?.businessId || updatedWorkflowWithResolve?.endUserId,
-        correlationId: updatedWorkflowWithResolve?.correlationId,
-      });
+        this.workflowEventEmitter.emit('workflow.completed', {
+          runtimeData: updatedWorkflow,
+          state: updatedWorkflow.state,
+          entityId: updatedWorkflow.businessId || updatedWorkflow.endUserId,
+          correlationId,
+        });
+      }
     }
 
-    return updatedWorkflowWithResolve;
+    return updatedWorkflow;
   }
 
   async updateContextById(
@@ -865,7 +873,24 @@ export class WorkflowService {
     context: WorkflowRuntimeData['context'],
     projectIds: TProjectIds,
   ) {
-    return this.workflowRuntimeDataRepository.updateContextById(id, context, undefined, projectIds);
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(id, {}, projectIds);
+    const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData, projectIds);
+    const updatedRuntimeData = await this.workflowRuntimeDataRepository.updateContextById(
+      id,
+      context,
+      undefined,
+      projectIds,
+    );
+
+    this.workflowEventEmitter.emit('workflow.context.changed', {
+      oldRuntimeData: runtimeData,
+      updatedRuntimeData: updatedRuntimeData,
+      state: updatedRuntimeData.state as string,
+      entityId: (updatedRuntimeData.businessId || updatedRuntimeData.endUserId) as string,
+      correlationId: correlationId,
+    });
+
+    return updatedRuntimeData;
   }
 
   async updateWorkflowRuntimeData(
@@ -928,7 +953,7 @@ export class WorkflowService {
 
         if (!Object.keys(propertiesSchema ?? {})?.length) return;
 
-        const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {});
+        const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {}); // we shouldn't rely on schema from the client, add to tech debt
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
         if (!isValidPropertiesSchema) {
